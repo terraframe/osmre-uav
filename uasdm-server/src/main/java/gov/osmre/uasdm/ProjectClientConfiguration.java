@@ -18,7 +18,14 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
   @Override
   public List<GeoprismApplication> getApplications(ClientRequestIF request)
   {
+    GeoprismApplication management = new GeoprismApplication();
+    management.setId("projects");
+    management.setLabel(LocalizationFacadeDTO.getFromBundles(request, "projects.landing"));
+    management.setSrc("net/geoprism/images/dm_icon.svg");
+    management.setUrl("project/management");
+
     List<GeoprismApplication> applications = new LinkedList<GeoprismApplication>();
+    applications.add(management);
     
     return applications;
   }

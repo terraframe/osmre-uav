@@ -5,9 +5,9 @@ var helpers = require('./helpers');
 
 module.exports = {
   entry: {
-    'map-polyfills': './src/polyfills.ts',
-    'map-vendor': './src/vendor.ts',
-    'map-app': './src/main.ts'
+    'uasdm-polyfills': './src/polyfills.ts',
+    'uasdm-vendor': './src/vendor.ts',
+    'uasdm-app': './src/main.ts'
   },
 
   resolve: {
@@ -54,7 +54,7 @@ module.exports = {
     ),
 
     new webpack.optimize.CommonsChunkPlugin({
-      name: ['map-app', 'map-vendor', 'map-polyfills']
+      name: ['uasdm-app', 'uasdm-vendor', 'uasdm-polyfills']
     }),
   ]
 };
