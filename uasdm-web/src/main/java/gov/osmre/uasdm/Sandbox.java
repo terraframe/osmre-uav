@@ -1,3 +1,4 @@
+package gov.osmre.uasdm;
 import net.geoprism.GeoprismPatcher;
 
 public class Sandbox

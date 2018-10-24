@@ -1,4 +1,4 @@
-package net.geoprism.georegistry;
+package gov.osmre.uasdm;
 
 import java.util.LinkedList;
 import java.util.List;

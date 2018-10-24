@@ -11,7 +11,7 @@
 
   <map uri="app" forward="/index.jsp"/>
   
-  <!-- GeoRegistry URLs -->  
-  <package name="net.geoprism.georegistry"/>  
+  <!-- UASDM URLs -->  
+  <package name="gov.osmre.uasdm"/>  
   
 </mappings>
