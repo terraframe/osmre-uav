@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { DOCUMENT } from "@angular/platform-browser";
+import { TreeNode } from 'angular-tree-component';
+
+import { ManagementService } from './management.service';
 
 @Component( {
     selector: 'projects',
@@ -8,35 +9,19 @@ import { DOCUMENT } from "@angular/platform-browser";
     styleUrls: []
 } )
 export class ProjectsComponent implements OnInit {
-    nodes = [
-        {
-            id: 1,
-            name: 'root1',
-            children: [
-                { id: 2, name: 'child1' },
-                { id: 3, name: 'child2' }
-            ]
-        },
-        {
-            id: 4,
-            name: 'root2',
-            children: [
-                { id: 5, name: 'child2.1' },
-                {
-                    id: 6,
-                    name: 'child2.2',
-                    children: [
-                        { id: 7, name: 'subsub' }
-                    ]
-                }
-            ]
-        }
-    ];
+    nodes = [] as TreeNode[];
 
-    options = {};
-    constructor( private router: Router ) {
-    }
+    options = {
+        getChildren: ( node: TreeNode ) => {
+          return this.service.getChildren(node);
+        }
+    };
+
+    constructor(private service:ManagementService) { }
 
     ngOnInit(): void {
+        this.service.roots().then(nodes => {
+            this.nodes = nodes;
+        });
     }
 }
