@@ -1,12 +1,10 @@
-import { Component } from '@angular/core';
-
-declare var acp: any;
+import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   
   selector: 'uasdm-app',
   templateUrl: './uasdm-app.component.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class UasdmAppComponent {
   constructor() {}

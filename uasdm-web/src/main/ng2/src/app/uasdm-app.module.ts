@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpModule, XHRBackend, RequestOptions, Http} from '@angular/http';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { TreeModule } from 'angular-tree-component';
 import './rxjs-extensions';
 
 
@@ -18,6 +19,7 @@ import { ManagementService } from './management/management.service';
     HttpModule,    
     UasdmAppRoutingModule,
     ReactiveFormsModule,
+    TreeModule.forRoot(),
     ModalModule.forRoot()    
   ],
   declarations: [
