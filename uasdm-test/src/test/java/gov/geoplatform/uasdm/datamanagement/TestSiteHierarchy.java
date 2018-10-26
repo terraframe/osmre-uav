@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.datamanagement;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -13,6 +14,8 @@ import com.runwaysdk.session.Request;
 public class TestSiteHierarchy
 {
 
+  private static String siteId;
+  
   
   @BeforeClass
   @Request
@@ -27,6 +30,8 @@ public class TestSiteHierarchy
     Site site = new Site();
     site.setName("Cottonwood");
     site.apply();
+    
+    siteId = site.getOid();
     
     Project project1 = new Project();
     project1.setName("Project 1");
@@ -81,8 +86,38 @@ public class TestSiteHierarchy
   
   
   @Test
-  public void test1()
+  public void testRelationships()
   {
+    Site site = Site.get(siteId);
+    
+    OIterator<? extends Project> projects = site.getAllProjects();
+    
+    int projectCount = 0;
+    int missionCount = 0;
+    int collectionCount = 0;
+    for (Project project : projects)
+    {
+      projectCount++;
+      
+      OIterator<? extends Mission> missions = project.getAllMissions();
+      
+      for (Mission mission : missions)
+      {
+        missionCount++;
+        
+        OIterator<? extends Collection> collections = mission.getAllCollections();
+        
+        for (@SuppressWarnings("unused") Collection collection : collections)
+        {
+          collectionCount++;
+        }
+      }
+    }
+    
+    Assert.assertEquals("Incorrect number of projects", 1, projectCount);
+    Assert.assertEquals("Incorrect number of missions", 1, missionCount);
+    Assert.assertEquals("Incorrect number of collections", 1, collectionCount);
+    
     System.out.println("Hello World!");
   }
   
