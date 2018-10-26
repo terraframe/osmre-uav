@@ -1,4 +1,5 @@
-export class Project {
-  id:string;
-  name:string;
+export class SiteEntity {
+    id: string;
+    name: string;
+    hasChildren: boolean;
 }

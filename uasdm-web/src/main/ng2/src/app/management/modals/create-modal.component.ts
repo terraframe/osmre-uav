@@ -3,6 +3,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
+import { SiteEntity } from '../management';
 import { ManagementService } from '../management.service';
 
 
@@ -17,12 +18,12 @@ export class CreateModalComponent implements OnInit {
      */
     parentId: string;
 
-    node: TreeNode;
+    entity: SiteEntity;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
      */
-    public onNodeChange: Subject<TreeNode>;
+    public onNodeChange: Subject<SiteEntity>;
 
     constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
@@ -31,7 +32,7 @@ export class CreateModalComponent implements OnInit {
     }
 
     handleOnSubmit(): void {
-        this.service.applyWithParent( this.node, this.parentId ).then( data => {
+        this.service.applyWithParent( this.entity, this.parentId ).then( data => {
             this.onNodeChange.next( data );
             this.bsModalRef.hide();
         } );

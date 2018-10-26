@@ -1,10 +1,10 @@
 package gov.osmre.uasdm;
 
-import java.util.UUID;
+import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
@@ -15,12 +15,22 @@ import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
 
+import gov.osmre.uasdm.service.ProjectManagementService;
+import gov.osmre.uasdm.view.SiteItem;
+
 @Controller(url = "project")
 public class ProjectManagementController
 {
-  public static final String JSP_DIR   = "/WEB-INF/";
+  public static final String       JSP_DIR   = "/WEB-INF/";
 
-  public static final String INDEX_JSP = "gov/osmre/uasdm/index.jsp";
+  public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
+
+  private ProjectManagementService service;
+
+  public ProjectManagementController()
+  {
+    this.service = new ProjectManagementService();
+  }
 
   @Endpoint(method = ServletMethod.GET)
   public ResponseIF management()
@@ -29,69 +39,62 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getChildren(@RequestParamter(name = "id") String id)
+  public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    JSONArray children = new JSONArray();
-    children.put(this.toNode("2", "Child-1.1", false));
-    children.put(this.toNode("3", "Child-1.2", false));
+    List<SiteItem> children = this.service.getChildren(request.getSessionId(), id);
 
-    return new RestBodyResponse(children);
+    return new RestBodyResponse(SiteItem.serialize(children));
   }
 
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getRoots()
+  public ResponseIF getRoots(ClientRequestIF request)
   {
-    JSONArray roots = new JSONArray();
-    roots.put(this.toNode("1", "Root", true));
+    List<SiteItem> children = this.service.getRoots(request.getSessionId());
 
-    return new RestBodyResponse(roots);
+    return new RestBodyResponse(SiteItem.serialize(children));
   }
 
   @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newChild(@RequestParamter(name = "id") String id)
+  public ResponseIF newChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
   {
-    return new RestBodyResponse(this.toNode(UUID.randomUUID().toString(), "", false));
+    SiteItem item = this.service.newChild(request.getSessionId(), parentId);
+
+    return new RestBodyResponse(item.toJSON());
   }
 
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF applyWithParent(@RequestParamter(name = "node") String node, @RequestParamter(name = "parentId") String parentId)
+  public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {
-    JSONObject object = new JSONObject(node);
-    String id = object.getString("id");
-    String name = object.getString("name");
+    SiteItem item = SiteItem.deserialize(new JSONObject(entity));
 
-    return new RestBodyResponse(this.toNode(id, name, false));
+    SiteItem result = this.service.applyWithParent(request.getSessionId(), item, parentId);
+
+    return new RestBodyResponse(result.toJSON());
   }
 
   @Endpoint(url = "edit", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF edit(@RequestParamter(name = "id") String id)
+  public ResponseIF edit(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    return new RestBodyResponse(this.toNode(id, "Test", true));
+    SiteItem item = this.service.edit(request.getSessionId(), id);
+
+    return new RestBodyResponse(item.toJSON());
   }
 
   @Endpoint(url = "update", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF update(@RequestParamter(name = "node") String node)
+  public ResponseIF update(ClientRequestIF request, @RequestParamter(name = "entity") String entity)
   {
-    JSONObject object = new JSONObject(node);
-    String id = object.getString("id");
-    String name = object.getString("name");
+    SiteItem item = SiteItem.deserialize(new JSONObject(entity));
 
-    return new RestBodyResponse(this.toNode(id, name, false));
+    SiteItem result = this.service.update(request.getSessionId(), item);
+
+    return new RestBodyResponse(result.toJSON());
   }
 
   @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF remove(@RequestParamter(name = "id") String id)
+  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
+    this.service.remove(request.getSessionId(), id);
+
     return new RestResponse();
   }
-
-  private JSONObject toNode(String oid, String name, boolean hasChildren)
-  {
-    JSONObject child = new JSONObject();
-    child.put("id", oid);
-    child.put("name", name);
-    child.put("hasChildren", hasChildren);
-    return child;
-  }
-
 }
