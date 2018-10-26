@@ -1,0 +1,65 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+    
+      <mdBusiness name="gov.geoplatform.uasdm.datamanagement.UasComponent" label="UAS Component" cacheAlgorithm="nothing" generateController="false" isAbstract="true" >
+        <attributes>
+          <char name="name" required="true" label="Name" size="256" />
+          <char name="s3location" required="false" label="Name" size="4096" />
+        </attributes>
+      </mdBusiness>
+    
+      <mdBusiness name="gov.geoplatform.uasdm.datamanagement.Site" label="Site" extends="gov.geoplatform.uasdm.datamanagement.UasComponent" cacheAlgorithm="nothing" generateController="false">
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.datamanagement.Project" label="Project" extends="gov.geoplatform.uasdm.datamanagement.UasComponent" cacheAlgorithm="nothing" generateController="false">
+      </mdBusiness>
+           
+      <mdBusiness name="gov.geoplatform.uasdm.datamanagement.Mission" label="Mission" extends="gov.geoplatform.uasdm.datamanagement.UasComponent" cacheAlgorithm="nothing" generateController="false">
+      </mdBusiness>
+      
+       <mdBusiness name="gov.geoplatform.uasdm.datamanagement.Collection" label="Collection" extends="gov.geoplatform.uasdm.datamanagement.UasComponent" cacheAlgorithm="nothing" generateController="false">
+      </mdBusiness>
+      
+       <mdGraph name="gov.geoplatform.uasdm.datamanagement.ComponentHasComponent" label="Component Has Component" cacheAlgorithm="nothing" isAbstract="true" composition="true">
+        <parent cardinality="1" name="gov.geoplatform.uasdm.datamanagement.UasComponent" method="Component" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.datamanagement.UasComponent" method="Components" />
+      </mdGraph>
+      
+      <mdGraph name="gov.geoplatform.uasdm.datamanagement.SiteHasProjects" label="Site Has Projects" cacheAlgorithm="nothing"
+               extends="gov.geoplatform.uasdm.datamanagement.ComponentHasComponent" composition="true">
+        <parent cardinality="1" name="gov.geoplatform.uasdm.datamanagement.Site" method="Site" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.datamanagement.Project" method="Projects" />
+      </mdGraph>
+      
+      <mdGraph name="gov.geoplatform.uasdm.datamanagement.ProjectHasMission" label="Project Has Mission" cacheAlgorithm="nothing"
+               extends="gov.geoplatform.uasdm.datamanagement.ComponentHasComponent" composition="true">
+        <parent cardinality="1" name="gov.geoplatform.uasdm.datamanagement.Project" method="Project" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.datamanagement.Mission" method="Missions" />
+      </mdGraph>
+      
+      <mdGraph name="gov.geoplatform.uasdm.datamanagement.MissionHasCollection" label="Mission Has Collection" cacheAlgorithm="nothing"
+               extends="gov.geoplatform.uasdm.datamanagement.ComponentHasComponent" composition="true">
+        <parent cardinality="1" name="gov.geoplatform.uasdm.datamanagement.Mission" method="Mission" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.datamanagement.Collection" method="Collections" />
+      </mdGraph>
+      
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.datamanagement.MissionHasCollection" type="com.runwaysdk.system.metadata.MdGraph" />
+      <object key="gov.geoplatform.uasdm.datamanagement.ProjectHasMission" type="com.runwaysdk.system.metadata.MdGraph" />
+      <object key="gov.geoplatform.uasdm.datamanagement.SiteHasProjects" type="com.runwaysdk.system.metadata.MdGraph" />
+      <object key="gov.geoplatform.uasdm.datamanagement.ComponentHasComponent" type="com.runwaysdk.system.metadata.MdGraph" />
+
+
+      <object key="gov.geoplatform.uasdm.datamanagement.Collection" type="com.runwaysdk.system.metadata.MdBusiness" />   
+      <object key="gov.geoplatform.uasdm.datamanagement.Mission" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.datamanagement.Project" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.datamanagement.Site" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.datamanagement.UasComponent" type="com.runwaysdk.system.metadata.MdBusiness" />
+    </delete>
+  </undoIt>
+</version>
