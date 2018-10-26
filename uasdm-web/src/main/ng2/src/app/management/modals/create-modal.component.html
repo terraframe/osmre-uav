@@ -1,0 +1,12 @@
+<form>
+  <div *ngIf="node != null" class="modal-body ">
+    <div class="form-group">
+      <label for="nameInput">Name</label>
+      <input  [(ngModel)]="node.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" required>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()">Ok</button>
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+    </div>
+  </div>
+</form>
