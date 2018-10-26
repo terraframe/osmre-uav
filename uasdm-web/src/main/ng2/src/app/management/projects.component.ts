@@ -63,6 +63,8 @@ export class ProjectsComponent implements OnInit {
     ngOnInit(): void {
         this.service.roots().then( nodes => {
             this.nodes = nodes;
+        } ).catch( err => {
+            // Handle error
         } );
     }
 
@@ -101,6 +103,8 @@ export class ProjectsComponent implements OnInit {
 
                 this.tree.treeModel.update();
             } );
+        } ).catch( err => {
+            // Handle error
         } );
     }
 
@@ -122,6 +126,8 @@ export class ProjectsComponent implements OnInit {
                 // Do something
                 this.current.data = entity;
             } );
+        } ).catch( err => {
+            // Handle error
         } );
     }
 
@@ -139,8 +145,14 @@ export class ProjectsComponent implements OnInit {
             let children = parent.data.children;
 
             parent.data.children = children.filter(( node: any ) => node.id !== this.current.data.id );
+            
+            if(parent.data.children.length === 0) {
+                parent.data.hasChildren = false; 
+            }
 
             this.tree.treeModel.update();
+        } ).catch( err => {
+            // Handle error
         } );
     }
 }
