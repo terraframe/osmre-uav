@@ -13,6 +13,8 @@ import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
 import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
+import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
+import { ErrorModalComponent } from './management/modals/error-modal.component';
 
 import { ManagementService } from './management/management.service';
 
@@ -31,6 +33,9 @@ import { ManagementService } from './management/management.service';
         UasdmAppComponent,
         EditModalComponent,
         CreateModalComponent,
+        ConfirmModalComponent,
+        ErrorModalComponent,
+        
         // Routing components
         routedComponents
     ],
@@ -38,6 +43,6 @@ import { ManagementService } from './management/management.service';
         ManagementService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent]
+    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]
 } )
 export class UasdmAppModule { }

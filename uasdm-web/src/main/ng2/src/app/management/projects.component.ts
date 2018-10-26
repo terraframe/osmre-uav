@@ -6,6 +6,8 @@ import { ContextMenuService } from 'ngx-contextmenu';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
+import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from './management';
 import { ManagementService } from './management.service';
 
@@ -63,8 +65,8 @@ export class ProjectsComponent implements OnInit {
     ngOnInit(): void {
         this.service.roots().then( nodes => {
             this.nodes = nodes;
-        } ).catch( err => {
-            // Handle error
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
         } );
     }
 
@@ -103,8 +105,8 @@ export class ProjectsComponent implements OnInit {
 
                 this.tree.treeModel.update();
             } );
-        } ).catch( err => {
-            // Handle error
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
         } );
     }
 
@@ -126,33 +128,48 @@ export class ProjectsComponent implements OnInit {
                 // Do something
                 this.current.data = entity;
             } );
-        } ).catch( err => {
-            // Handle error
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
         } );
     }
 
     handleDelete( node: TreeNode ): void {
-        this.current = node;
+        this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+        } );
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.data.name + ']';
+        this.bsModalRef.content.data = node;
 
-        this.bsModalRef = this.modalService.show( this.confirmTemplate, { class: 'modal-sm' } );
+        ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
+            this.remove( data );
+        } );
     }
 
-    confirm(): void {
-        this.bsModalRef.hide();
-
-        this.service.remove( this.current.data.id ).then( response => {
-            const parent = this.current.parent;
+    remove( node: TreeNode ): void {
+        this.service.remove( node.data.id ).then( response => {
+            const parent = node.parent;
             let children = parent.data.children;
 
             parent.data.children = children.filter(( node: any ) => node.id !== this.current.data.id );
-            
-            if(parent.data.children.length === 0) {
-                parent.data.hasChildren = false; 
+
+            if ( parent.data.children.length === 0 ) {
+                parent.data.hasChildren = false;
             }
 
             this.tree.treeModel.update();
-        } ).catch( err => {
-            // Handle error
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
         } );
+    }
+
+    error( err: any ): void {
+        // Handle error
+        if ( err !== null ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+        }
+
     }
 }

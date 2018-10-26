@@ -14,12 +14,11 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public List<SiteItem> getChildren(String sessionId, String id)
   {
-    // TODO Do domain stuff here 
-    
+    // TODO Do domain stuff here
+
     LinkedList<SiteItem> children = new LinkedList<SiteItem>();
     children.add(this.toItem("2", "Child-1.1", false));
     children.add(this.toItem("3", "Child-1.2", false));
-    
 
     return children;
   }
@@ -27,7 +26,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public List<SiteItem> getRoots(String sessionId)
   {
-    // TODO Do domain stuff here 
+    // TODO Do domain stuff here
 
     LinkedList<SiteItem> roots = new LinkedList<SiteItem>();
     roots.add(this.toItem("1", "Root", true));
@@ -38,7 +37,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem newChild(String sessionId, String parentId)
   {
-    // TODO Do domain stuff here 
+    // TODO Do domain stuff here
 
     return this.toItem(UUID.randomUUID().toString(), "", false);
   }
@@ -46,7 +45,8 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem applyWithParent(String sessionId, SiteItem item, String parentId)
   {
-    // TODO Do domain stuff here 
+    // TODO Do domain stuff here
+//    throw new ProgrammingErrorException("Unable to create item");
 
     return item;
   }
@@ -54,7 +54,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem edit(String sessionId, String id)
   {
-    // TODO Do domain stuff here 
+    // TODO Do domain stuff here
 
     return this.toItem(id, "Test Name", false);
   }
@@ -62,7 +62,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem update(String sessionId, SiteItem item)
   {
-    // TODO Do domain stuff here 
+    // TODO Do domain stuff here
 
     return item;
   }
@@ -70,8 +70,8 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String id)
   {
-    // TODO Do domain stuff here 
-
+    // TODO Do domain stuff here
+//    throw new ProgrammingErrorException("Unable to delete item [" + id + "]");
   }
 
   private SiteItem toItem(String oid, String name, boolean hasChildren)

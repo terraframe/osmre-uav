@@ -18,6 +18,9 @@ export class EditModalComponent implements OnInit {
      */
     entity: SiteEntity;
 
+    message: string = null;
+
+
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
      */
@@ -30,10 +33,23 @@ export class EditModalComponent implements OnInit {
     }
 
     handleOnSubmit(): void {
+        this.message = null;
+
         this.service.update( this.entity ).then( node => {
             this.onNodeChange.next( node );
-            
+
             this.bsModalRef.hide();
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
         } );
     }
+
+    error( err: any ): void {
+        // Handle error
+        if ( err !== null ) {
+            this.message = ( err.localizedMessage || err.message );
+        }
+    }
+
+
 }
