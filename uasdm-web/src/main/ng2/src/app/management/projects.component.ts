@@ -152,7 +152,7 @@ export class ProjectsComponent implements OnInit {
             const parent = node.parent;
             let children = parent.data.children;
 
-            parent.data.children = children.filter(( node: any ) => node.id !== this.current.data.id );
+            parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
 
             if ( parent.data.children.length === 0 ) {
                 parent.data.hasChildren = false;
