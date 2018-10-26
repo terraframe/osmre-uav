@@ -63,7 +63,7 @@ export class ManagementService {
             } )
     }
 
-    newChild( id: string ): Promise<SiteEntity> {
+    newChild( parentId: string ): Promise<SiteEntity> {
 
         let headers = new Headers( {
             'Content-Type': 'application/json'
@@ -71,7 +71,7 @@ export class ManagementService {
 
 
         return this.http
-            .post( acp + '/project/new-child', JSON.stringify( { id: id } ), { headers: headers } )
+            .post( acp + '/project/new-child', JSON.stringify( { parentId: parentId } ), { headers: headers } )
             .toPromise()
             .then( response => {
                 return response.json() as SiteEntity;
