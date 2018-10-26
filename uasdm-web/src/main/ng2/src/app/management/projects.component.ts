@@ -6,6 +6,7 @@ import { ContextMenuService } from 'ngx-contextmenu';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
+import { SiteEntity } from './management';
 import { ManagementService } from './management.service';
 
 @Component( {
@@ -23,14 +24,14 @@ export class ProjectsComponent implements OnInit {
     /* 
      * Root nodes of the tree
      */
-    nodes = [] as TreeNode[];
+    nodes = [] as SiteEntity[];
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
      */
     options = {
         getChildren: ( node: TreeNode ) => {
-            return this.service.getChildren( node );
+            return this.service.getChildren( node.data.id );
         },
         actionMapping: {
             mouse: {
@@ -84,17 +85,17 @@ export class ProjectsComponent implements OnInit {
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.node = data;
+            this.bsModalRef.content.entity = data;
             this.bsModalRef.content.parentId = parent.data.id;
 
-            ( <CreateModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( rData => {
+            ( <CreateModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
                 const d = this.current.data;
 
                 if ( d.children != null ) {
-                    d.children.push( rData );
+                    d.children.push( entity );
                 }
                 else {
-                    d.children = [rData];
+                    d.children = [entity];
                     d.hasChildren = true;
                 }
 
@@ -115,11 +116,11 @@ export class ProjectsComponent implements OnInit {
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.node = data;
+            this.bsModalRef.content.entity = data;
 
-            ( <EditModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( rData => {
+            ( <EditModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
                 // Do something
-                this.current.data = data;
+                this.current.data = entity;
             } );
         } );
     }

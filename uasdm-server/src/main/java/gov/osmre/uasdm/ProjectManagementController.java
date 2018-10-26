@@ -54,9 +54,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF applyWithParent(@RequestParamter(name = "node") String node, @RequestParamter(name = "parentId") String parentId)
+  public ResponseIF applyWithParent(@RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {
-    JSONObject object = new JSONObject(node);
+    JSONObject object = new JSONObject(entity);
     String id = object.getString("id");
     String name = object.getString("name");
 
@@ -70,13 +70,14 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "update", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF update(@RequestParamter(name = "node") String node)
+  public ResponseIF update(@RequestParamter(name = "entity") String entity)
   {
-    JSONObject object = new JSONObject(node);
+    JSONObject object = new JSONObject(entity);
     String id = object.getString("id");
     String name = object.getString("name");
+    boolean hasChildren = object.getBoolean("hasChildren");
 
-    return new RestBodyResponse(this.toNode(id, name, false));
+    return new RestBodyResponse(this.toNode(id, name, hasChildren));
   }
 
   @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
