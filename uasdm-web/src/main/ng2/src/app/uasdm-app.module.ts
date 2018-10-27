@@ -13,6 +13,8 @@ import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
 import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
+import { UasdmHeaderComponent } from './header.component';
+
 
 import { ManagementService } from './management/management.service';
 
@@ -32,7 +34,8 @@ import { ManagementService } from './management/management.service';
         EditModalComponent,
         CreateModalComponent,
         // Routing components
-        routedComponents
+        routedComponents,
+        UasdmHeaderComponent,
     ],
     providers: [
         ManagementService
