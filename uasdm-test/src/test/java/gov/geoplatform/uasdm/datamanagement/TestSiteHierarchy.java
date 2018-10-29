@@ -86,6 +86,7 @@ public class TestSiteHierarchy
   
   
   @Test
+  @Request
   public void testRelationships()
   {
     Site site = Site.get(siteId);

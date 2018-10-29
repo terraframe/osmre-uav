@@ -2,7 +2,7 @@
 
 <div id="app-container" class="container">
 
-  <div *ngIf="nodes.length > 0">
+  <div *ngIf="nodes.length > 0" class="tree">
     <tree-root [nodes]="nodes" [options]="options"></tree-root>
   </div>  
 </div>
@@ -18,11 +18,3 @@
     Delete
   </ng-template>
 </context-menu>
-
-<ng-template #confirmTemplate>
-  <div class="modal-body text-center">
-    <p>Are you sure?</p>
-    <button type="button" class="btn btn-default" (click)="confirm()" >Yes</button>
-    <button type="button" class="btn btn-primary" (click)="bsModalRef.hide()" >No</button>
-  </div>
-</ng-template>
