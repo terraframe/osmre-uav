@@ -1,0 +1,42 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.UasComponent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Site">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Project">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Mission">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Collection">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ComponentHasComponent">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.SiteHasProjects">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ProjectHasMission">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.MissionHasCollection">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
+    <create></create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.CommonProperties;
@@ -34,8 +33,7 @@ public class TestSiteHierarchy
   private static String                   projectId1;
   
   private static String                   missionId1;
-  
-  private static String                   collectionId1;
+
   
   /**
    * The test user object
@@ -111,7 +109,6 @@ public class TestSiteHierarchy
     Collection collection1 = new Collection();
     collection1.setName("Collection 1");
     collection1.apply();
-    collectionId1 = collection1.getOid();
     
     mission1.addCollections(collection1).apply();
     
@@ -215,8 +212,6 @@ public class TestSiteHierarchy
     try
     {
       List<SiteItem> siteItems = service.getChildren(sessionId, siteId);
-      
-//      siteItems.forEach(s -> System.out.println("From service: "+s.getName()));
 
       Assert.assertEquals("Wrong number of projects returned", 2, siteItems.size());
       
@@ -303,40 +298,25 @@ public class TestSiteHierarchy
 
     try
     {
-      List<SiteItem> roots = service.getRoots(sessionId);
-
-      for (SiteItem siteItem : roots)
-      {                
-        if (siteItem.getId().equals(siteId))
-        {
-          siteItem.setName("Cottonwood X");
-          
-          service.update(sessionId, siteItem);        
-        }
-      }
-     
-      roots = service.getRoots(sessionId);
- 
+      SiteItem siteItem = service.edit(sessionId, siteId);
       
-      System.out.println("Heads up: "+siteId);
+      siteItem.setName("Cottonwood X");
+   
+      service.update(sessionId, siteItem);  
       
-      boolean valueUpdated = false;
-      for (SiteItem siteItem : roots)
-      {  
-        System.out.println("Heads up: "+siteItem.getId() + " "+ siteItem.getName());
-        
-        
-        if (siteItem.getId().equals(siteId) && siteItem.getName().equals("Cottonwood X"))
-        {
-          valueUpdated = true;
-          
-          siteItem.setName("Cottonwood");
-          
-          service.update(sessionId, siteItem);
-        }
-      }
       
-      Assert.assertEquals("The service update method did not update a value", true, valueUpdated);
+      siteItem = service.edit(sessionId, siteId);
+      
+      Assert.assertEquals("SiteItem ws not correctly updated in the database", "Cottonwood X", siteItem.getName());
+      
+      
+      siteItem.setName("Cottonwood");
+      
+      service.update(sessionId, siteItem);  
+      
+      siteItem = service.edit(sessionId, siteId);
+      
+      Assert.assertEquals("SiteItem ws not correctly updated in the database", "Cottonwood", siteItem.getName()); 
       
     }
     finally

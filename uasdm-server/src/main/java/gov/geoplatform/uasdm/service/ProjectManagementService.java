@@ -112,9 +112,9 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem edit(String sessionId, String id)
   {
-    // TODO Do domain stuff here
-
-    return this.toItem(id, "Test Name", false);
+    UasComponent uasComponent = UasComponent.get(id);
+    
+    return Converter.toSiteItem(uasComponent);
   }
 
   @Request(RequestType.SESSION)
@@ -142,16 +142,5 @@ public class ProjectManagementService
     
     uasComponent.delete();
   }
-
-  private SiteItem toItem(String oid, String name, boolean hasChildren)
-  {
-    SiteItem item = new SiteItem();
-    item.setId(oid);
-    item.setName(name);
-    item.setHasChildren(hasChildren);
-
-    return item;
-  }
- 
 
 }
