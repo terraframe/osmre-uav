@@ -12,16 +12,9 @@ public class ProjectConverter extends Converter
   }
   
   @Override
-  protected Project convert(SiteItem siteItem)
+  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    Project project = new Project();
-    
-    return (Project)convert(siteItem, project);
-  }
-  
-  protected UasComponent convert(SiteItem siteItem, Project project)
-  {
-    return super.convert(siteItem, project);
+    return super.convert(siteItem, uasComponent);
   }
   
   protected SiteItem convert(Project project)

@@ -49,8 +49,6 @@ public abstract class Converter
     return siteItem;
   }
   
-  protected abstract UasComponent convert(SiteItem siteItem);
-  
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
     uasComponent.setName(siteItem.getName());
@@ -94,10 +92,10 @@ public abstract class Converter
   
   
   public static UasComponent toExistingUasComponent(SiteItem siteItem)
-  {
+  { 
     UasComponent uasComponent = UasComponent.get(siteItem.getId());
     
-    return factory(uasComponent).convert(siteItem);
+    return factory(uasComponent).convert(siteItem, uasComponent);
   }
   
   public static SiteItem toSiteItem(UasComponent uasComponent)

@@ -9,18 +9,11 @@ public class SiteConverter extends Converter
   {
     super();
   }
-  
+
   @Override
-  protected Site convert(SiteItem siteItem)
+  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    Site site = new Site();
-    
-    return (Site)convert(siteItem, site);
-  }
-  
-  protected UasComponent convert(SiteItem siteItem, Site site)
-  {
-    return super.convert(siteItem, site);
+    return super.convert(siteItem, uasComponent);
   }
   
   protected SiteItem convert(Site site)

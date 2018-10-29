@@ -12,16 +12,9 @@ public class MissionConverter extends Converter
   }
   
   @Override
-  protected Mission convert(SiteItem siteItem)
+  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    Mission mission = new Mission();
-    
-    return (Mission)convert(siteItem, mission);
-  }
-  
-  protected UasComponent convert(SiteItem siteItem, Mission mission)
-  {
-    return super.convert(siteItem, mission);
+    return super.convert(siteItem, uasComponent);
   }
   
   protected SiteItem convert(Mission mission)

@@ -295,6 +295,57 @@ public class TestSiteHierarchy
     }
   }
   
+  @Test
+  public void testUpdate()
+  {
+    String sessionId = this.logInAdmin();
+    
+
+    try
+    {
+      List<SiteItem> roots = service.getRoots(sessionId);
+
+      for (SiteItem siteItem : roots)
+      {                
+        if (siteItem.getId().equals(siteId))
+        {
+          siteItem.setName("Cottonwood X");
+          
+          service.update(sessionId, siteItem);        
+        }
+      }
+     
+      roots = service.getRoots(sessionId);
+ 
+      
+      System.out.println("Heads up: "+siteId);
+      
+      boolean valueUpdated = false;
+      for (SiteItem siteItem : roots)
+      {  
+        System.out.println("Heads up: "+siteItem.getId() + " "+ siteItem.getName());
+        
+        
+        if (siteItem.getId().equals(siteId) && siteItem.getName().equals("Cottonwood X"))
+        {
+          valueUpdated = true;
+          
+          siteItem.setName("Cottonwood");
+          
+          service.update(sessionId, siteItem);
+        }
+      }
+      
+      Assert.assertEquals("The service update method did not update a value", true, valueUpdated);
+      
+    }
+    finally
+    {
+      
+      logOutAdmin(sessionId);
+    }
+  }
+  
   /**
    * Logs in admin user and returns session id of the user.
    * 

@@ -12,16 +12,9 @@ public class CollectionConverter extends Converter
   }
   
   @Override
-  protected Collection convert(SiteItem siteItem)
+  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    Collection collection = new Collection();
-    
-    return (Collection)convert(siteItem, collection);
-  }
-  
-  protected UasComponent convert(SiteItem siteItem, Collection collection)
-  {
-    return super.convert(siteItem, collection);
+    return super.convert(siteItem, uasComponent);
   }
   
   protected SiteItem convert(Collection collection)

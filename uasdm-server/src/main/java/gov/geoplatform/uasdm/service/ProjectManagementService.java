@@ -120,10 +120,16 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem update(String sessionId, SiteItem siteItem)
   {
-    UasComponent uasComponent = Converter.toExistingUasComponent(siteItem);
+    UasComponent uasComponent = UasComponent.get(siteItem.getId());
+
+    uasComponent.lock();
+    
+    uasComponent = Converter.toExistingUasComponent(siteItem);
     
     uasComponent.apply();
 
+    uasComponent.unlock();
+    
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent);
     
     return updatedSiteItem;
