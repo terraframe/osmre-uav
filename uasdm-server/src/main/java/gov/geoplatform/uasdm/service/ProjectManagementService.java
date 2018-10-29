@@ -4,6 +4,7 @@ import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.Converter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ProjectManagementService
     
     try
     {
-      i.forEach(c -> children.add(this.convertToSiteItem(c)));
+      i.forEach(c -> children.add(Converter.toSiteItem(c)));
     }
     finally
     {
@@ -47,7 +48,7 @@ public class ProjectManagementService
     
     try
     {      
-      i.forEach(s -> roots.add(this.convertToSiteItem(s)));
+      i.forEach(s -> roots.add(Converter.toSiteItem(s)));
     }
     finally
     {
@@ -73,26 +74,39 @@ public class ProjectManagementService
     
     if (childUasComponent != null)
     {
-      return this.convertToSiteItem(childUasComponent);
+      return Converter.toSiteItem(childUasComponent);
     }
     else
     {
       return null;
     }
-
-//    return this.toItem(UUID.randomUUID().toString(), "", false);
   }
 
+  /**
+   * Returns null if the given parent type has no child type.
+   * 
+   * @param parent
+   * @param siteItem
+   * @return
+   */
   @Request(RequestType.SESSION)
-  public SiteItem applyWithParent(String sessionId, SiteItem item, String parentId)
+  public SiteItem applyWithParent(String sessionId, SiteItem siteItem, String parentId)
   {
+    UasComponent parent = UasComponent.get(parentId);
+    
+    UasComponent child = Converter.toNewUasComponent(parent, siteItem);
+    
+    if (child != null)
+    {
+      child.apply();
+      return Converter.toSiteItem(child);
+    }
+    else
+    {
+      return null;
+    }
     // TODO Do domain stuff here
 //    throw new ProgrammingErrorException("Unable to create item");
-
-
-    
-    
-    return item;
   }
 
   @Request(RequestType.SESSION)
@@ -104,18 +118,23 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public SiteItem update(String sessionId, SiteItem item)
+  public SiteItem update(String sessionId, SiteItem siteItem)
   {
-    // TODO Do domain stuff here
+    UasComponent uasComponent = Converter.toExistingUasComponent(siteItem);
+    
+    uasComponent.apply();
 
-    return item;
+    SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent);
+    
+    return updatedSiteItem;
   }
 
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String id)
   {
-    // TODO Do domain stuff here
-//    throw new ProgrammingErrorException("Unable to delete item [" + id + "]");
+    UasComponent uasComponent = UasComponent.get(id);
+    
+    uasComponent.delete();
   }
 
   private SiteItem toItem(String oid, String name, boolean hasChildren)
@@ -127,34 +146,6 @@ public class ProjectManagementService
 
     return item;
   }
-  
-  private SiteItem convertToSiteItem(UasComponent uasComponent)
-  {
-    SiteItem siteItem = new SiteItem();
-    
-    siteItem.setId(uasComponent.getOid());
-    
-    siteItem.setName(uasComponent.getName());
-    
-    OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
-    
-    try
-    {
-      if (children.hasNext())
-      {
-        siteItem.setHasChildren(true);
-      }
-      else
-      {
-        siteItem.setHasChildren(false);
-      }
-    }
-    finally
-    {
-      children.close();
-    }
-     
-    return siteItem;
-  }
+ 
 
 }

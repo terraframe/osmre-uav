@@ -11,10 +11,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.constants.UserInfo;
+import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -27,24 +29,30 @@ public class TestSiteHierarchy
   
   private static ProjectManagementService service;
 
-  private static String siteId;
+  private static String                   siteId;
+  
+  private static String                   projectId1;
+  
+  private static String                   missionId1;
+  
+  private static String                   collectionId1;
   
   /**
    * The test user object
    */
-  private static UserDAO                 newUser;
+  private static UserDAO                  newUser;
   
   /**
    * The username for the user
    */
-  private final static String            USERNAME       = "btables";
+  private final static String             USERNAME       = "btables";
 
   /**
    * The password for the user
    */
-  private final static String            PASSWORD       = "1234";
+  private final static String             PASSWORD       = "1234";
 
-  private final static int               sessionLimit   = 2;
+  private final static int                sessionLimit   = 2;
   
   @BeforeClass
   @Request
@@ -58,27 +66,36 @@ public class TestSiteHierarchy
   @Transaction
   private static void createSiteHierarchyTransaction()
   {    
-    // Create a new user
-    newUser = UserDAO.newInstance();
-    newUser.setValue(UserInfo.USERNAME, USERNAME);
-    newUser.setValue(UserInfo.PASSWORD, PASSWORD);
-    newUser.setValue(UserInfo.SESSION_LIMIT, Integer.toString(sessionLimit));
-    newUser.apply();
     
-    // Make the user an admin
-    RoleDAO adminRole = RoleDAO.findRole(RoleDAO.ADMIN_ROLE).getBusinessDAO();
-    adminRole.assignMember(newUser);
+    try
+    {
+      // Create a new user
+      newUser = UserDAO.newInstance();
+      newUser.setValue(UserInfo.USERNAME, USERNAME);
+      newUser.setValue(UserInfo.PASSWORD, PASSWORD);
+      newUser.setValue(UserInfo.SESSION_LIMIT, Integer.toString(sessionLimit));
+      newUser.apply();
+      
+      // Make the user an admin
+      RoleDAO adminRole = RoleDAO.findRole(RoleDAO.ADMIN_ROLE).getBusinessDAO();
+      adminRole.assignMember(newUser);
+    }
+    catch (DuplicateDataException e)
+    {
+      
+    }
 
     Site site = new Site();
     site.setName("Cottonwood");
     site.apply();
-    
     siteId = site.getOid();
     
     Project project1 = new Project();
     project1.setName("Project 1");
     project1.apply();
     site.addProjects(project1).apply();
+    projectId1 = project1.getOid();
+    
     
     Project project2 = new Project();
     project2.setName("Project 2");
@@ -89,10 +106,12 @@ public class TestSiteHierarchy
     mission1.setName("Mission 1");
     mission1.apply();
     project1.addMissions(mission1).apply();
+    missionId1 = mission1.getOid();
     
     Collection collection1 = new Collection();
     collection1.setName("Collection 1");
     collection1.apply();
+    collectionId1 = collection1.getOid();
     
     mission1.addCollections(collection1).apply();
     
@@ -109,8 +128,11 @@ public class TestSiteHierarchy
   @Transaction
   public static void classTearDownTransaction()
   {
-    newUser.getBusinessDAO().delete();
-    
+    if (newUser.isAppliedToDB())
+    {
+      newUser.getBusinessDAO().delete();
+    }
+      
     QueryFactory qf = new QueryFactory();
     
     SiteQuery sq = new SiteQuery(qf);
@@ -219,6 +241,56 @@ public class TestSiteHierarchy
     }
     finally
     {
+      logOutAdmin(sessionId);
+    }
+  }
+
+  @Test
+  public void testServiceNewChild()
+  {
+    String sessionId = this.logInAdmin();
+    
+    String projectId = null;
+    
+    String missionId = null;
+    
+    String collectionId = null;
+
+    try
+    {
+      SiteItem newProject = service.newChild(sessionId, siteId);
+      newProject.setName("Project X");
+      projectId = newProject.getId();
+      service.applyWithParent(sessionId, newProject, siteId);
+      
+      SiteItem newMission = service.newChild(sessionId, projectId1);
+      newMission.setName("Mission X");
+      missionId = newMission.getId();
+      service.applyWithParent(sessionId, newMission, projectId);
+      
+      SiteItem newCollection = service.newChild(sessionId, missionId1);
+      newCollection.setName("Collection X");
+      collectionId = newCollection.getId();
+      service.applyWithParent(sessionId, newCollection, missionId);
+      
+    }
+    finally
+    {
+      if (projectId != null)
+      {
+        service.remove(sessionId, projectId);
+      }
+      
+      if (missionId != null)
+      {
+        service.remove(sessionId, missionId);
+      }
+
+      if (collectionId != null)
+      {
+        service.remove(sessionId, collectionId);
+      }
+      
       logOutAdmin(sessionId);
     }
   }
