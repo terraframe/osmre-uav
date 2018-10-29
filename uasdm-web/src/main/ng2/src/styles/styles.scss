@@ -2,6 +2,7 @@
 
 .node-content-wrapper, .tree-children {
   position: relative;
+  font-size: 18px;
 }
 
 .node-content-wrapper::before, .tree-children::after {
@@ -40,3 +41,29 @@ tree-node:last-child > .tree-node > .tree-children::after {
 .toggle-children {
   z-index: 1;
 }
+
+
+
+
+.node-content-wrapper{
+  //background-color: lightgrey;
+}
+.node-content-wrapper:hover {
+    background: #f2f2f2;
+}
+.node-content-wrapper-focused {
+    background: lightgrey;
+}
+
+.tree-children {
+    padding-left: 29px !important;
+}
+
+tree-node-expander{
+  display: none !important;
+}
+
+
+.dropdown-menu {
+  font-size: 18px;
+  }

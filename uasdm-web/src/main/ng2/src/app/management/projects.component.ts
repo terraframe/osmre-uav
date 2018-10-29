@@ -74,17 +74,14 @@ export class ProjectsComponent implements OnInit {
     }
     
     handleOnClick( node: any, $event: any ): void {
-    	console.log("click")
-    	
-    	node.treeModel.focusDrillDown();
-//    	node.setIsActive(node, $event);
-//    	
-//    	if(node.isExpanded){
-//    		node.treeModel.expandAll();
-//    	}
-//    	else{
-//    		node.treeModel.collapseAll();
-//    	}
+    	if(node.treeModel.isExpanded(node)){
+        	node.treeModel.setFocusedNode(node);
+        	node.treeModel.collapseAll();
+    	}
+    	else{
+        	node.treeModel.setFocusedNode(node);
+        	node.treeModel.expandAll();
+    	}
     }
 
     handleOnMenu( node: any, $event: any ): void {
