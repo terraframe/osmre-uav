@@ -1,7 +1,6 @@
 package gov.geoplatform.uasdm.view;
 
 import gov.geoplatform.uasdm.bus.Mission;
-import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.UasComponent;
 
 public class MissionConverter extends Converter

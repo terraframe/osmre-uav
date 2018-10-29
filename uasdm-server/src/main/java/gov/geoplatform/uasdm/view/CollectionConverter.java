@@ -1,7 +1,6 @@
 package gov.geoplatform.uasdm.view;
 
 import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.UasComponent;
 
 public class CollectionConverter extends Converter
