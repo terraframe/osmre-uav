@@ -220,18 +220,18 @@ public class TestSiteHierarchy
   @Test
   public void testServiceGetRoots()
   {
-//    String sessionId = this.logInAdmin();
-//
-//    try
-//    {
-//      List<SiteItem> siteItems = service.getRoots(sessionId);
-//      
-//      Assert.assertEquals("Wrong number of projects returned", 1, siteItems.size());
-//    }
-//    finally
-//    {
-//      logOutAdmin(sessionId);
-//    }
+    String sessionId = this.logInAdmin();
+
+    try
+    {
+      List<SiteItem> siteItems = service.getRoots(sessionId);
+      
+      Assert.assertEquals("Wrong number of projects returned", 1, siteItems.size());
+    }
+    finally
+    {
+      logOutAdmin(sessionId);
+    }
   }
   
   
