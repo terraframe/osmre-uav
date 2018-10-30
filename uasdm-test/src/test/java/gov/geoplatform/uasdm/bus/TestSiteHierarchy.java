@@ -137,7 +137,6 @@ public class TestSiteHierarchy
     Collection collection1 = new Collection();
     collection1.setName("Collection 1");
     collection1.apply();
-    collectionId1 = collection1.getOid();
     
     mission1.addCollections(collection1).apply();
   }
@@ -218,24 +217,6 @@ public class TestSiteHierarchy
   }
   
   @Test
-  public void testServiceGetRoots()
-  {
-//    String sessionId = this.logInAdmin();
-//
-//    try
-//    {
-//      List<SiteItem> siteItems = service.getRoots(sessionId);
-//      
-//      Assert.assertEquals("Wrong number of projects returned", 1, siteItems.size());
-//    }
-//    finally
-//    {
-//      logOutAdmin(sessionId);
-//    }
-  }
-  
-  
-  @Test
   public void testServiceGetChildren()
   {
     String sessionId = this.logInAdmin();
@@ -284,14 +265,19 @@ public class TestSiteHierarchy
 
     try
     {
+      int siteChildren = service.getChildren(sessionId, siteId).size();
       SiteItem newProject = service.newChild(sessionId, siteId);
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
-      
+
       newProject.setName("Project X");
       projectId = newProject.getId();
       service.applyWithParent(sessionId, newProject, siteId);
       
+      Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
+      
+      
+      Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
       
       SiteItem newMission = service.newChild(sessionId, projectId1);
       
@@ -301,6 +287,10 @@ public class TestSiteHierarchy
       missionId = newMission.getId();
       service.applyWithParent(sessionId, newMission, projectId);
       
+      Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
+      
+      
+      Assert.assertTrue(0 == service.getChildren(sessionId, missionId).size());
       
       SiteItem newCollection = service.newChild(sessionId, missionId1);
       
@@ -309,6 +299,8 @@ public class TestSiteHierarchy
       newCollection.setName("Collection X");
       collectionId = newCollection.getId();
       service.applyWithParent(sessionId, newCollection, missionId);
+      
+      Assert.assertTrue(1 == service.getChildren(sessionId, missionId).size());
       
       
       newProject = service.edit(sessionId, projectId);
