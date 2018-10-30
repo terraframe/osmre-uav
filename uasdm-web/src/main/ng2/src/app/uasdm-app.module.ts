@@ -18,8 +18,10 @@ import { CreateModalComponent } from './management/modals/create-modal.component
 import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
+import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
 import { ManagementService } from './management/management.service';
+import { EventService } from './event/event.service';
 
 @NgModule( {
     imports: [
@@ -39,14 +41,16 @@ import { ManagementService } from './management/management.service';
         CreateModalComponent,
         ConfirmModalComponent,
         ErrorModalComponent,
+        LoadingBarComponent,
         
         // Routing components
         routedComponents,
         UasdmHeaderComponent,
     ],
     providers: [
+        CookieService,
         ManagementService,
-        CookieService
+        EventService        
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]

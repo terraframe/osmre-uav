@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild, TemplateRef } from '@angular/core
 import { TreeNode, TreeComponent } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { ContextMenuService } from 'ngx-contextmenu';
+import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
@@ -54,9 +54,19 @@ export class ProjectsComponent implements OnInit {
     private tree: TreeComponent;
 
     /*
-     * Template for the delete confrimation
+     * Template for the delete confirmation
      */
     @ViewChild( 'confirmTemplate' ) public confirmTemplate: TemplateRef<any>;
+
+    /*
+     * Template for tree node menu
+     */
+    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
+
+    /*
+     * Template for leaf menu
+     */
+    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
 
     /* 
      * Currently clicked on id for delete confirmation modal 
@@ -100,7 +110,9 @@ export class ProjectsComponent implements OnInit {
     		node.data.childType = null
     	}
     	
+    	
         this.contextMenuService.show.next( {
+            contextMenu: (node.data.childType !== null ? this.nodeMenuComponent : this.leafMenuComponent),
             event: $event,
             item: node,
         } );
