@@ -84,7 +84,7 @@ public class TestSiteHierarchy
     }
 
     Site site = new Site();
-    site.setName("Cottonwood");
+    site.setName("Site 1");
     site.apply();
     siteId = site.getOid();
     
@@ -114,34 +114,6 @@ public class TestSiteHierarchy
     
   }
   
-  @Transaction
-  private static void createDefaultStructure()
-  {
-    Site site = new Site();
-    site.setName("Cottonwood");
-    site.apply();
-    siteId = site.getOid();
-    
-    Project project1 = new Project();
-    project1.setName("Project 1");
-    project1.apply();
-    site.addProjects(project1).apply();
-    projectId1 = project1.getOid();
-    
-    Mission mission1 = new Mission();
-    mission1.setName("Mission 1");
-    mission1.apply();
-    project1.addMissions(mission1).apply();
-    missionId1 = mission1.getOid();
-    
-    Collection collection1 = new Collection();
-    collection1.setName("Collection 1");
-    collection1.apply();
-    
-    mission1.addCollections(collection1).apply();
-  }
-  
-  
   @AfterClass
   @Request
   public static void classTearDown()
@@ -167,17 +139,17 @@ public class TestSiteHierarchy
     {
       for(Site site : i)
       {
-        site.delete();
-        System.out.println("Site deleted: "+site.getName());
+        if (!site.getName().equals(Site.DEFAULT_SITE_NAME))
+        {
+          site.delete();
+          System.out.println("Site deleted: "+site.getName());
+        }
       }
     }
     finally
     {
       i.close();
     }
-    
-    // Setup a default tree structure for demos
-    createDefaultStructure();
   }
   
   
@@ -339,22 +311,22 @@ public class TestSiteHierarchy
     {
       SiteItem siteItem = service.edit(sessionId, siteId);
       
-      siteItem.setName("Cottonwood X");
+      siteItem.setName("Site 1-X");
    
       service.update(sessionId, siteItem);  
 
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Cottonwood X", siteItem.getName());
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site 1-X", siteItem.getName());
       
       
-      siteItem.setName("Cottonwood");
+      siteItem.setName("Site 1");
       
       service.update(sessionId, siteItem);  
       
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Cottonwood", siteItem.getName()); 
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site 1", siteItem.getName()); 
       
     }
     finally
