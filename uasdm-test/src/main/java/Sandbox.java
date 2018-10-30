@@ -19,7 +19,7 @@ public class Sandbox
     
 //    createFolder();
     
-    deleteFolder();
+//    deleteFolder();
     
     
 //    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
