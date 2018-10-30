@@ -11,6 +11,7 @@ import com.runwaysdk.constants.EntityInfo;
 import com.runwaysdk.dataaccess.EntityDAO;
 import com.runwaysdk.dataaccess.attributes.entity.Attribute;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.session.Session;
 
 public abstract class Converter
 {
@@ -25,6 +26,12 @@ public abstract class Converter
     SiteItem siteItem = new SiteItem();
     
     siteItem.setId(uasComponent.getOid());
+    
+    String typeName = uasComponent.getMdClass().getTypeName();
+    siteItem.setType(typeName);
+    
+    String typeLabel = uasComponent.getMdClass().getDisplayLabel(Session.getCurrentLocale());
+    siteItem.setTypeLabel(typeLabel);
     
     siteItem.setName(uasComponent.getName());
     

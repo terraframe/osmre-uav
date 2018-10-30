@@ -14,4 +14,8 @@ public class Project extends ProjectBase
     return new Mission();
   }
   
+  public ComponentHasComponent addComponent(gov.geoplatform.uasdm.bus.UasComponent uasComponent)
+  {
+    return this.addMissions((Mission)uasComponent);
+  }
 }

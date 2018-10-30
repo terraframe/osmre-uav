@@ -8,7 +8,21 @@ import org.json.JSONObject;
 
 public class SiteItem
 {
+  private static String ID            = "id";
+  
+  private static String TYPE          = "type";
+  
+  private static String TYPE_LABEL    = "typeLabel";
+  
+  private static String NAME          = "name";
+  
+  private static String HAS_CHILDREN  = "hasChildren";
+  
   private String  id;
+  
+  private String  type;
+
+  private String  typeLabel;
 
   private String  name;
 
@@ -24,6 +38,21 @@ public class SiteItem
     this.id = id;
   }
 
+  public String getType()
+  {
+    return type;
+  }
+
+  public void setType(String type)
+  {
+    this.type = type;
+  }
+  
+  public String getTypeLabel()
+  {
+    return typeLabel;
+  }
+  
   public String getName()
   {
     return name;
@@ -32,6 +61,11 @@ public class SiteItem
   public void setName(String name)
   {
     this.name = name;
+  }
+
+  public void setTypeLabel(String typeLabel)
+  {
+    this.typeLabel = typeLabel;
   }
 
   public Boolean getHasChildren()
@@ -47,9 +81,11 @@ public class SiteItem
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();
-    obj.put("id", this.id);
-    obj.put("name", this.name);
-    obj.put("hasChildren", this.hasChildren);
+    obj.put(ID, this.id);
+    obj.put(TYPE, this.type);
+    obj.put(TYPE_LABEL, this.typeLabel);
+    obj.put(NAME, this.name);
+    obj.put(HAS_CHILDREN, this.hasChildren);
     return obj;
   }
 
@@ -68,9 +104,11 @@ public class SiteItem
   public static SiteItem deserialize(JSONObject object)
   {
     SiteItem item = new SiteItem();
-    item.setId(object.getString("id"));
-    item.setName(object.getString("name"));
-    item.setHasChildren(object.getBoolean("hasChildren"));
+    item.setId(object.getString(ID));
+    item.setId(object.getString(TYPE));
+    item.setId(object.getString(TYPE_LABEL));
+    item.setName(object.getString(NAME));
+    item.setHasChildren(object.getBoolean(HAS_CHILDREN));
 
     return item;
   }
