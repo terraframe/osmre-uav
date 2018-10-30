@@ -7,12 +7,21 @@
   </div>  
 </div>
 
-<context-menu>
+<context-menu #nodeMenu>
   <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
     Edit {{item?.data.name}}
   </ng-template>
   <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)">
     Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}}
+  </ng-template>
+  <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
+    Delete {{item?.data.name}}
+  </ng-template>
+</context-menu>
+
+<context-menu #leafMenu>
+  <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
+    Edit {{item?.data.name}}
   </ng-template>
   <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
     Delete {{item?.data.name}}
