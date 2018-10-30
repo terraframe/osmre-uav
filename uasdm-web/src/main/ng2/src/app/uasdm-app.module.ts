@@ -5,6 +5,7 @@ import { HttpModule, XHRBackend, RequestOptions, Http } from '@angular/http';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import './rxjs-extensions';
 
@@ -13,6 +14,7 @@ import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
 import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
+import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 
@@ -27,7 +29,8 @@ import { ManagementService } from './management/management.service';
         ReactiveFormsModule,
         TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
-        ModalModule.forRoot()
+        ModalModule.forRoot(),
+        BsDropdownModule.forRoot(),
     ],
     declarations: [
         UasdmAppComponent,
@@ -37,7 +40,8 @@ import { ManagementService } from './management/management.service';
         ErrorModalComponent,
         
         // Routing components
-        routedComponents
+        routedComponents,
+        UasdmHeaderComponent,
     ],
     providers: [
         ManagementService

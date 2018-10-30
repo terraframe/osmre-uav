@@ -39,6 +39,9 @@ export class ProjectsComponent implements OnInit {
             mouse: {
                 contextMenu: ( tree: any, node: any, $event: any ) => {
                     this.handleOnMenu( node, $event );
+                },
+                click : ( tree: any, node: any, $event: any ) => {
+                    this.handleOnClick( node, $event );
                 }
             }
         }
@@ -68,6 +71,17 @@ export class ProjectsComponent implements OnInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+    
+    handleOnClick( node: any, $event: any ): void {
+    	if(node.treeModel.isExpanded(node)){
+        	node.treeModel.setFocusedNode(node);
+        	node.treeModel.collapseAll();
+    	}
+    	else{
+        	node.treeModel.setFocusedNode(node);
+        	node.treeModel.expandAll();
+    	}
     }
 
     handleOnMenu( node: any, $event: any ): void {

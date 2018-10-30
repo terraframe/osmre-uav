@@ -1,17 +1,20 @@
+<uasdm-header></uasdm-header>
+
 <div id="app-container" class="container">
-  <div *ngIf="nodes.length > 0">
+
+  <div *ngIf="nodes.length > 0" class="tree">
     <tree-root [nodes]="nodes" [options]="options"></tree-root>
   </div>  
 </div>
 
 <context-menu>
-  <ng-template contextMenuItem (execute)="handleEdit($event.item)">
-    Edit
+  <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
+    Edit {{item?.data.name}}
   </ng-template>
-  <ng-template contextMenuItem (execute)="handleCreate($event.item)">
-    Add
+  <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)">
+    Add 
   </ng-template>
-  <ng-template contextMenuItem (execute)="handleDelete($event.item)">
-    Delete
+  <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
+    Delete {{item?.data.name}}
   </ng-template>
 </context-menu>

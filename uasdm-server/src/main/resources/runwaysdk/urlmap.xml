@@ -12,6 +12,6 @@
   <map uri="app" forward="/index.jsp"/>
   
   <!-- UASDM URLs -->  
-  <package name="gov.osmre.uasdm"/>  
+  <package name="gov.geoplatform.uasdm"/>  
   
 </mappings>
