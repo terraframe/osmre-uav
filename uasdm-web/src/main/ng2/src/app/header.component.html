@@ -14,14 +14,14 @@
           </a>    
           <ul *dropdownMenu class="dropdown-menu">
             <li role="menuitem"><a class="dropdown-item" routerLink="/porjects" routerLinkActive="active">Projects</a></li>
-            <li role="menuitem"><a class="dropdown-item" routerLink="/" routerLinkActive="active">Help</a></li>
-            <li role="menuitem"><a class="dropdown-item" routerLink="/" routerLinkActive="active">Log out</a></li>
+<!--             <li role="menuitem"><a class="dropdown-item" routerLink="/" routerLinkActive="active">Help</a></li> -->
+            <li role="menuitem"><a class="dropdown-item" href="{{context}}/session/logout">Log out</a></li>
           </ul>
         </li>
       </ul>
       
       <div class="navbar-right">
-        <p class="navbar-text">Logged in as <b style="color:white;">Admin</b></p>
+        <p class="navbar-text">Logged in as <b style="color:white;">{{userName}}</b></p>
       </div>
       
     </div>

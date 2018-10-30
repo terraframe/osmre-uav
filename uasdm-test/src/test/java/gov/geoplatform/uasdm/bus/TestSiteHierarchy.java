@@ -188,7 +188,7 @@ public class TestSiteHierarchy
     Assert.assertEquals("Incorrect number of collections", 1, collectionCount);
   }
   
-  @Test
+
   public void testServiceGetChildren()
   {
     String sessionId = this.logInAdmin();

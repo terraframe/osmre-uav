@@ -6,6 +6,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { CookieService } from 'ngx-cookie-service';
 
 import './rxjs-extensions';
 
@@ -44,7 +45,8 @@ import { ManagementService } from './management/management.service';
         UasdmHeaderComponent,
     ],
     providers: [
-        ManagementService
+        ManagementService,
+        CookieService
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]
