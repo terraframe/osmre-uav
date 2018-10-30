@@ -47,7 +47,7 @@ export class ManagementService {
             .post( acp + '/project/edit', JSON.stringify( { id: id } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
-            } )            
+            } )
             .toPromise()
             .then( response => {
                 return response.json() as SiteEntity;
@@ -125,7 +125,7 @@ export class ManagementService {
             .post( acp + '/project/remove', JSON.stringify( { id: id } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
-            } )            
+            } )
             .toPromise()
     }
 }
