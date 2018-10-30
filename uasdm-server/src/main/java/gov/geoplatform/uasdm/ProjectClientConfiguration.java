@@ -3,14 +3,13 @@ package gov.geoplatform.uasdm;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
+
+import com.runwaysdk.constants.ClientRequestIF;
 
 import net.geoprism.ClientConfigurationIF;
 import net.geoprism.DefaultClientConfiguration;
 import net.geoprism.GeoprismApplication;
 import net.geoprism.localization.LocalizationFacadeDTO;
-
-import com.runwaysdk.constants.ClientRequestIF;
 
 public class ProjectClientConfiguration extends DefaultClientConfiguration implements ClientConfigurationIF
 {
@@ -36,9 +35,7 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
   @Override
   public Set<String> getPublicEndpoints()
   {
-    Set<String> endpoints = new TreeSet<String>();
-
-    return endpoints;
+    return super.getPublicEndpoints();
   }
 
 }
