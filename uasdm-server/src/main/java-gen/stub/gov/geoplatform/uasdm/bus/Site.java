@@ -13,4 +13,9 @@ public class Site extends SiteBase
   {
     return new Project();
   }
+  
+  public ComponentHasComponent addComponent(gov.geoplatform.uasdm.bus.UasComponent uasComponent)
+  {
+    return this.addProjects((Project)uasComponent);
+  }
 }

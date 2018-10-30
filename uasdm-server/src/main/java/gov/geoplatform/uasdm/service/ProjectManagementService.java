@@ -99,6 +99,9 @@ public class ProjectManagementService
     if (child != null)
     {
       child.apply();
+      
+      parent.addComponent(child).apply();
+      
       return Converter.toSiteItem(child);
     }
     else

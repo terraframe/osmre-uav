@@ -137,7 +137,6 @@ public class TestSiteHierarchy
     Collection collection1 = new Collection();
     collection1.setName("Collection 1");
     collection1.apply();
-    collectionId1 = collection1.getOid();
     
     mission1.addCollections(collection1).apply();
   }
@@ -217,25 +216,7 @@ public class TestSiteHierarchy
     Assert.assertEquals("Incorrect number of collections", 1, collectionCount);
   }
   
-  @Test
-  public void testServiceGetRoots()
-  {
-    String sessionId = this.logInAdmin();
 
-    try
-    {
-      List<SiteItem> siteItems = service.getRoots(sessionId);
-      
-      Assert.assertEquals("Wrong number of projects returned", 1, siteItems.size());
-    }
-    finally
-    {
-      logOutAdmin(sessionId);
-    }
-  }
-  
-  
-  @Test
   public void testServiceGetChildren()
   {
     String sessionId = this.logInAdmin();
@@ -284,39 +265,66 @@ public class TestSiteHierarchy
 
     try
     {
+      int siteChildren = service.getChildren(sessionId, siteId).size();
       SiteItem newProject = service.newChild(sessionId, siteId);
+      
+      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
+
       newProject.setName("Project X");
       projectId = newProject.getId();
       service.applyWithParent(sessionId, newProject, siteId);
       
+      Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
+      
+      
+      Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
+      
       SiteItem newMission = service.newChild(sessionId, projectId1);
+      
+      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newMission.getHasChildren());
+      
       newMission.setName("Mission X");
       missionId = newMission.getId();
       service.applyWithParent(sessionId, newMission, projectId);
       
+      Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
+      
+      
+      Assert.assertTrue(0 == service.getChildren(sessionId, missionId).size());
+      
       SiteItem newCollection = service.newChild(sessionId, missionId1);
+      
+      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newCollection.getHasChildren());
+      
       newCollection.setName("Collection X");
       collectionId = newCollection.getId();
       service.applyWithParent(sessionId, newCollection, missionId);
       
+      Assert.assertTrue(1 == service.getChildren(sessionId, missionId).size());
+      
+      
+      newProject = service.edit(sessionId, projectId);
+      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
+      
     }
     finally
     {
-      if (projectId != null)
-      {
-        service.remove(sessionId, projectId);
-      }
-      
-      if (missionId != null)
-      {
-        service.remove(sessionId, missionId);
-      }
 
       if (collectionId != null)
       {
         service.remove(sessionId, collectionId);
       }
       
+      if (missionId != null)
+      {
+        service.remove(sessionId, missionId);
+      }
+      
+      if (projectId != null)
+      {
+        service.remove(sessionId, projectId);
+      }
+
       logOutAdmin(sessionId);
     }
   }
@@ -334,11 +342,10 @@ public class TestSiteHierarchy
       siteItem.setName("Cottonwood X");
    
       service.update(sessionId, siteItem);  
-      
-      
+
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem ws not correctly updated in the database", "Cottonwood X", siteItem.getName());
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Cottonwood X", siteItem.getName());
       
       
       siteItem.setName("Cottonwood");
@@ -347,7 +354,29 @@ public class TestSiteHierarchy
       
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem ws not correctly updated in the database", "Cottonwood", siteItem.getName()); 
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Cottonwood", siteItem.getName()); 
+      
+    }
+    finally
+    {
+      
+      logOutAdmin(sessionId);
+    }
+  }
+  
+  @Test
+  public void testSiteTypeAndLabel()
+  {
+    String sessionId = this.logInAdmin();
+    
+
+    try
+    {
+      SiteItem siteItem = service.edit(sessionId, siteId);
+      
+      Assert.assertEquals("SiteItem did not return the type", "Site", siteItem.getType());
+      
+      Assert.assertEquals("SiteItem did not return the type label", "Site", siteItem.getTypeLabel()); 
       
     }
     finally

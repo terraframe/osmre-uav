@@ -14,4 +14,9 @@ public class Mission extends MissionBase
     return new Collection();
   }
   
+  public ComponentHasComponent addComponent(gov.geoplatform.uasdm.bus.UasComponent uasComponent)
+  {
+    return this.addCollections((Collection)uasComponent);
+  }
+  
 }
