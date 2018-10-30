@@ -105,8 +105,8 @@ public class SiteItem
   {
     SiteItem item = new SiteItem();
     item.setId(object.getString(ID));
-    item.setId(object.getString(TYPE));
-    item.setId(object.getString(TYPE_LABEL));
+    item.setType(object.getString(TYPE));
+    item.setTypeLabel(object.getString(TYPE_LABEL));
     item.setName(object.getString(NAME));
     item.setHasChildren(object.getBoolean(HAS_CHILDREN));
 

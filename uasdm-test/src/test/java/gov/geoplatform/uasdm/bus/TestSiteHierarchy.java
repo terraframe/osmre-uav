@@ -84,33 +84,40 @@ public class TestSiteHierarchy
     }
 
     Site site = new Site();
-    site.setName("Site 1");
-    site.apply();
+    site.setName("Site1");
+    site.applyWithParent(null);
+System.out.println("S3: "+site.getS3location());
     siteId = site.getOid();
     
     Project project1 = new Project();
-    project1.setName("Project 1");
-    project1.apply();
-    site.addProjects(project1).apply();
+    project1.setName("Project1");
+//    project1.apply();
+    project1.applyWithParent(site);
+System.out.println("S3: "+project1.getS3location());
+//    site.addProjects(project1).apply();
     projectId1 = project1.getOid();
     
     
     Project project2 = new Project();
-    project2.setName("Project 2");
-    project2.apply();
-    site.addProjects(project2).apply();
+    project2.setName("Project2");
+//    project2.apply();
+    project2.applyWithParent(site);
+//    site.addProjects(project2).apply();
     
     Mission mission1 = new Mission();
-    mission1.setName("Mission 1");
-    mission1.apply();
-    project1.addMissions(mission1).apply();
+    mission1.setName("Mission1");
+//    mission1.apply();
+    mission1.applyWithParent(project1);
+System.out.println("S3: "+mission1.getS3location());
+//    project1.addMissions(mission1).apply();
     missionId1 = mission1.getOid();
     
     Collection collection1 = new Collection();
-    collection1.setName("Collection 1");
-    collection1.apply();
-    
-    mission1.addCollections(collection1).apply();
+    collection1.setName("Collection1");
+//    collection1.apply();
+    collection1.applyWithParent(mission1);
+System.out.println("S3: "+collection1.getS3location());
+//    mission1.addCollections(collection1).apply();
     
   }
   
@@ -203,13 +210,13 @@ public class TestSiteHierarchy
       SiteItem siteItem2 = siteItems.get(1);
       
       boolean siteItem1ValidName = false;
-      if (siteItem1.getName().equals("Project 1") || siteItem1.getName().equals("Project 2"))
+      if (siteItem1.getName().equals("Project1") || siteItem1.getName().equals("Project2"))
       {
         siteItem1ValidName = true;
       }    
       
       boolean siteItem2ValidName = false;
-      if (siteItem2.getName().equals("Project 1") || siteItem2.getName().equals("Project 2"))
+      if (siteItem2.getName().equals("Project1") || siteItem2.getName().equals("Project2"))
       {
         siteItem2ValidName = true;
       }  
@@ -242,9 +249,9 @@ public class TestSiteHierarchy
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
 
-      newProject.setName("Project X");
+      newProject.setName("ProjectX");
       projectId = newProject.getId();
-      service.applyWithParent(sessionId, newProject, siteId);
+      newProject = service.applyWithParent(sessionId, newProject, siteId);
       
       Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
       
@@ -255,7 +262,7 @@ public class TestSiteHierarchy
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newMission.getHasChildren());
       
-      newMission.setName("Mission X");
+      newMission.setName("MissionX");
       missionId = newMission.getId();
       service.applyWithParent(sessionId, newMission, projectId);
       
@@ -268,7 +275,7 @@ public class TestSiteHierarchy
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newCollection.getHasChildren());
       
-      newCollection.setName("Collection X");
+      newCollection.setName("CollectionX");
       collectionId = newCollection.getId();
       service.applyWithParent(sessionId, newCollection, missionId);
       
@@ -278,6 +285,10 @@ public class TestSiteHierarchy
       newProject = service.edit(sessionId, projectId);
       Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
       
+    }
+    catch (RuntimeException re)
+    {
+      re.printStackTrace();
     }
     finally
     {

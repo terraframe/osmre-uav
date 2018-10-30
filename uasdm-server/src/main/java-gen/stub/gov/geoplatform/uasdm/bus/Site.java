@@ -1,8 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
+
 public class Site extends SiteBase
 {
-  private static final long serialVersionUID = -986618112;
+  private static final long serialVersionUID    = -986618112;
+  
+  public static final String DEFAULT_SITE_NAME = "Cottonwood";
   
   public Site()
   {
@@ -18,5 +21,4 @@ public class Site extends SiteBase
   {
     return this.addProjects((Project)uasComponent);
   }
-  
 }

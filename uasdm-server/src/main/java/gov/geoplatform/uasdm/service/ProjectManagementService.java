@@ -98,9 +98,11 @@ public class ProjectManagementService
     
     if (child != null)
     {
-      child.apply();
+//      child.setS3location(child.buildS3Key(parent));
       
-      parent.addComponent(child).apply();
+      child.applyWithParent(parent);
+      
+//      parent.addComponent(child).apply();
       
       return Converter.toSiteItem(child);
     }
