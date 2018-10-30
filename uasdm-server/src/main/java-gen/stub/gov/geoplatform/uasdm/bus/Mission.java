@@ -6,6 +6,8 @@ public class Mission extends MissionBase
 {
   private static final long serialVersionUID = -112103870;
   
+  public static final String ACCESSIBLE_SUPPORT = "accessible_support";
+  
   public Mission()
   {
     super();
@@ -32,5 +34,25 @@ public class Mission extends MissionBase
   public void applyWithParent(Project parent)
   { 
     super.applyWithParent(parent);
+    
+    if (this.isNew())
+    {      
+      this.createS3Folder(this.buildAccessibleSupportKey());
+    }
+  }
+  
+  public void delete()
+  { 
+    super.delete();
+    
+    if (!this.getS3location().trim().equals(""))
+    {
+      this.deleteS3Folder(this.buildAccessibleSupportKey());
+    }
+  }
+  
+  private String buildAccessibleSupportKey()
+  {
+    return this.getS3location()+ACCESSIBLE_SUPPORT+"/";
   }
 }

@@ -68,13 +68,13 @@ public abstract class UasComponent extends UasComponentBase
   }
   
   public void delete()
-  {
+  { 
+    super.delete();
+    
     if (!this.getS3location().trim().equals(""))
     {
-      deleteS3Folder(this.getS3location());
+      this.deleteS3Folder(this.getS3location());
     }
-    
-    super.delete();
   }
 
   /**
