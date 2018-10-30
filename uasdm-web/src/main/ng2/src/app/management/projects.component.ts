@@ -74,17 +74,32 @@ export class ProjectsComponent implements OnInit {
     }
     
     handleOnClick( node: any, $event: any ): void {
+    	
+    	node.treeModel.setFocusedNode(node);
+    	
     	if(node.treeModel.isExpanded(node)){
-        	node.treeModel.setFocusedNode(node);
-        	node.treeModel.collapseAll();
+        	node.collapse();
     	}
     	else{
-        	node.treeModel.setFocusedNode(node);
         	node.treeModel.expandAll();
     	}
     }
 
     handleOnMenu( node: any, $event: any ): void {
+    	
+    	if(node.data.typeLabel === "Site"){
+    		node.data.childType = "Project"
+    	}
+    	else if(node.data.typeLabel === "Project"){
+    		node.data.childType = "Mission"
+    	}
+    	else if(node.data.typeLabel === "Mission"){
+    		node.data.childType = "Collection"
+    	}
+    	else if(node.data.typeLabel === "Collection"){
+    		node.data.childType = null
+    	}
+    	
         this.contextMenuService.show.next( {
             event: $event,
             item: node,

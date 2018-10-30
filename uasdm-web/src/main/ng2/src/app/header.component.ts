@@ -17,6 +17,7 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 import { Component } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 
 declare var acp: any;
 
@@ -28,8 +29,19 @@ declare var acp: any;
 })
 export class UasdmHeaderComponent {
   private context:string;
+  private userName:string;
 
-  constructor() {
+  constructor( private cookieService: CookieService ) {
     this.context = acp;
   }
+  
+  ngOnInit(): void {
+	
+	if(this.cookieService.check("user")){
+	  let cookieData:string = this.cookieService.get("user")
+	  let cookieDataJSON:any = JSON.parse(JSON.parse(cookieData));
+	  this.userName = cookieDataJSON.userName;
+	}
+  }
+  
 }
