@@ -7,10 +7,12 @@ import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Session;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -41,6 +43,12 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {     
+    
+    /*
+    https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
+     
+    Characters That Might Require Special Handling
+     */
     if (this.isModified(UasComponent.NAME))
     {
       String name = this.getName();
@@ -60,6 +68,17 @@ public abstract class UasComponent extends UasComponentBase
           name.contains("&") ||
           name.contains("*") ||
           name.contains("?") ||
+          name.contains(";") ||
+          name.contains(":") ||
+          name.contains(",") ||
+          name.contains("^") ||
+          name.contains("{") ||
+          name.contains("}") ||
+          name.contains("]") ||
+          name.contains("[") ||
+          name.contains("`") ||
+          name.contains("~") ||
+          name.contains("|") ||
           name.contains("/") ||
           name.contains("\\"))
       {
@@ -67,35 +86,39 @@ public abstract class UasComponent extends UasComponentBase
       }
     }
     
-    
-//    However, no spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes will be allowed.
-    
     if (this.isNew())
     {
-//      QueryFactory qf = new QueryFactory();
-//      UasComponentQuery childQ = new UasComponentQuery(qf);
-//      
-//      UasComponentQuery parentQ = new UasComponentQuery(qf);
-//      parentQ.WHERE(parentQ.getOid().EQ(parent.getOid()));
-//      
-//      
-//      
-//      childQ.WHERE(childQ.getName().EQ(this.getName()));
-//      childQ.AND(childQ.getOid().NE(this.getOid()));
-//      childQ.AND(childQ.component(parentQ));
-//      
-//      OIterator<? extends UasComponent> i = childQ.getIterator();
-//      
-//      for (UasComponent uasComponent : i)
-//      {
-//        System.out.println("Duplicate Found! "+uasComponent.getName());
-//      }
+      if (parent != null)
+      {
+        QueryFactory qf = new QueryFactory();
+        UasComponentQuery childQ = new UasComponentQuery(qf);
       
+        UasComponentQuery parentQ = new UasComponentQuery(qf);
+        parentQ.WHERE(parentQ.getOid().EQ(parent.getOid())); 
       
-//      DuplicateComponentException e = new DuplicateComponentException();
-//      e.setParentName("");
-//      e.setChildComponentLabel("");
-//      e.setChildName("");
+        childQ.WHERE(childQ.getName().EQ(this.getName()));
+        childQ.AND(childQ.getOid().NE(this.getOid()));
+        childQ.AND(childQ.component(parentQ));
+      
+        OIterator<? extends UasComponent> i = childQ.getIterator();
+      
+        try
+        {
+          if (i.hasNext())
+          {
+            DuplicateComponentException e = new DuplicateComponentException();
+            e.setParentName(parent.getName());
+            e.setChildComponentLabel(this.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
+            e.setChildName(this.getName());
+          
+            throw e;
+          } 
+        }
+        finally
+        {
+          i.close();
+        }
+      }
       
       
       String key;
@@ -169,7 +192,6 @@ public abstract class UasComponent extends UasComponentBase
     
     // send request to S3 to create folder
     client.putObject(putObjectRequest);
- 
   }
   
   protected void deleteS3Folder(String key)
@@ -180,8 +202,9 @@ public abstract class UasComponent extends UasComponentBase
     .withKeys(key)
     .withQuiet(false);
     
-    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
-    int successfulDeletes = delObjRes.getDeletedObjects().size();
-    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
+    client.deleteObjects(multiObjectDeleteRequest);
+//    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
+//    int successfulDeletes = delObjRes.getDeletedObjects().size();
+//    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
   }
 }

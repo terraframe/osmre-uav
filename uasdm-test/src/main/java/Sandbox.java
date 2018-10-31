@@ -28,21 +28,21 @@ public class Sandbox
 //    
 //    for (Bucket bucket : bucketList)
 //    { 
-//      if (bucket.getName().equals("osmre-uas-repo"))
+//      if (bucket.getName().equals("BUCKET_NAME"))
 //      {
 //        System.out.println("Bucket Name: " +bucket.getName());
 //      }
 //    }   
 
     
-//    GetObjectRequest request = new GetObjectRequest("osmre-uas-repo", "CottonwoodData/");        
+//    GetObjectRequest request = new GetObjectRequest("BUCKET_NAME", "CottonwoodData/");        
 //    S3Object object = client.getObject(request); 
 //    System.out.println("Bucket Name: "+object.getBucketName());
 //    System.out.println("Key: "+object.getKey());
     
 
 //  ListObjectsRequest request = new ListObjectsRequest();
-//  request = request.withBucketName("osmre-uas-repo");
+//  request = request.withBucketName("BUCKET_NAME");
 //  request = request.withPrefix("CottonwoodData");
 //    
 //    ObjectListing listing;
@@ -69,97 +69,37 @@ public class Sandbox
 //    } while (listing != null && listing.isTruncated());
     
   }
-  
-  public static void createFolder()
-  {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-    
-    // create meta-data for your folder and set content-length to 0
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(0);
-
-    // create empty content
-    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-    
-    PutObjectRequest putObjectRequest = new PutObjectRequest("osmre-uas-repo",
-        "CottonwoodData/Project1/", emptyContent, metadata);
-    
-    // send request to S3 to create folder
-    client.putObject(putObjectRequest);
-  }
-  
-  public static void deleteFolder()
-  {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-    
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest("osmre-uas-repo")
-    .withKeys("CottonwoodData/Project2/")
-    .withQuiet(false);
-    
-    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
-    int successfulDeletes = delObjRes.getDeletedObjects().size();
-    System.out.println(successfulDeletes + " objects successfully deleted.");
-  }
+//  
+//  public static void createFolder()
+//  {
+//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//    
+//    // create meta-data for your folder and set content-length to 0
+//    ObjectMetadata metadata = new ObjectMetadata();
+//    metadata.setContentLength(0);
+//
+//    // create empty content
+//    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+//    
+//    PutObjectRequest putObjectRequest = new PutObjectRequest("BUCKET_NAME",
+//        "CottonwoodData/Project1/", emptyContent, metadata);
+//    
+//    // send request to S3 to create folder
+//    client.putObject(putObjectRequest);
+//  }
+//  
+//  public static void deleteFolder()
+//  {
+//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//    
+//    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest("BUCKET_NAME")
+//    .withKeys("CottonwoodData/Project2/")
+//    .withQuiet(false);
+//    
+//    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
+//    int successfulDeletes = delObjRes.getDeletedObjects().size();
+//    System.out.println(successfulDeletes + " objects successfully deleted.");
+//  }
 }
 
-/* 
-https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
- 
-Characters That Might Require Special Handling
-The following characters in a key name might require additional code handling and likely will need to be URL encoded or referenced as HEX. Some of these are non-printable characters and your browser might not handle them, which also requires special handling:
 
-Ampersand ("&")
-
-Dollar ("$")
-
-ASCII character ranges 00–1F hex (0–31 decimal) and 7F (127 decimal)
-
-'At' symbol ("@")
-
-Equals ("=")
-
-Semicolon (";")
-
-Colon (":")
-
-Plus ("+")
-
-Space – Significant sequences of spaces may be lost in some uses (especially multiple spaces)
-
-Comma (",")
-
-Question mark ("?")
-
-Characters to Avoid
-Avoid the following characters in a key name because of significant special handling for consistency across all applications.
-
-Backslash ("\")
-
-Left curly brace ("{")
-
-Non-printable ASCII characters (128–255 decimal characters)
-
-Caret ("^")
-
-Right curly brace ("}")
-
-Percent character ("%")
-
-Grave accent / back tick ("`")
-
-Right square bracket ("]")
-
-Quotation marks
-
-'Greater Than' symbol (">")
-
-Left square bracket ("[")
-
-Tilde ("~")
-
-'Less Than' symbol ("<")
-
-'Pound' character ("#")
-
-Vertical bar / pipe ("|")
-*/

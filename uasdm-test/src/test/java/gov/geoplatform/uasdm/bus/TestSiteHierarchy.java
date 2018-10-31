@@ -85,41 +85,32 @@ public class TestSiteHierarchy
     }
 
     Site site = new Site();
-    site.setName("Site1");
+    site.setName("Site_Unit_Test");
     site.applyWithParent(null);
-System.out.println("S3: "+site.getS3location());
+//System.out.println("S3: "+site.getS3location());
     siteId = site.getOid();
     
     Project project1 = new Project();
     project1.setName("Project1");
-//    project1.apply();
     project1.applyWithParent(site);
-System.out.println("S3: "+project1.getS3location());
-//    site.addProjects(project1).apply();
+//System.out.println("S3: "+project1.getS3location());
     projectId1 = project1.getOid();
     
     
     Project project2 = new Project();
     project2.setName("Project2");
-//    project2.apply();
     project2.applyWithParent(site);
-//    site.addProjects(project2).apply();
     
     Mission mission1 = new Mission();
     mission1.setName("Mission1");
-//    mission1.apply();
     mission1.applyWithParent(project1);
-System.out.println("S3: "+mission1.getS3location());
-//    project1.addMissions(mission1).apply();
+//System.out.println("S3: "+mission1.getS3location());
     missionId1 = mission1.getOid();
     
     Collection collection1 = new Collection();
     collection1.setName("Collection1");
-//    collection1.apply();
     collection1.applyWithParent(mission1);
-System.out.println("S3: "+collection1.getS3location());
-//    mission1.addCollections(collection1).apply();
-    
+//System.out.println("S3: "+collection1.getS3location()); 
   }
   
   @AfterClass
@@ -249,7 +240,37 @@ System.out.println("S3: "+collection1.getS3location());
     }
     catch (SmartExceptionDTO re)
     {
-      // We want to land here
+System.out.println(re.getLocalizedMessage());
+    }
+    finally
+    { 
+      if (projectId != null)
+      {
+        service.remove(sessionId, projectId);
+      }
+
+      logOutAdmin(sessionId);
+    }
+  }
+  
+  @Test
+  public void testDuplicateName()
+  {
+    String sessionId = this.logInAdmin();
+    
+    String projectId = null;
+
+    try
+    {
+      SiteItem newProject = service.newChild(sessionId, siteId);
+      newProject.setName("Project1");
+      newProject = service.applyWithParent(sessionId, newProject, siteId);
+      projectId = newProject.getId();
+      Assert.fail("A Project was created with a duplicate name");
+    }
+    catch (SmartExceptionDTO re)
+    {
+System.out.println(re.getLocalizedMessage());
     }
     finally
     { 
@@ -353,22 +374,22 @@ System.out.println("S3: "+collection1.getS3location());
     {
       SiteItem siteItem = service.edit(sessionId, siteId);
       
-      siteItem.setName("Site1-X");
+      siteItem.setName("Site_Unit_Test-X");
    
       service.update(sessionId, siteItem);  
 
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site1-X", siteItem.getName());
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test-X", siteItem.getName());
       
       
-      siteItem.setName("Site1");
+      siteItem.setName("Site_Unit_Test");
       
       service.update(sessionId, siteItem);  
       
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site1", siteItem.getName()); 
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test", siteItem.getName()); 
       
     }
     finally
