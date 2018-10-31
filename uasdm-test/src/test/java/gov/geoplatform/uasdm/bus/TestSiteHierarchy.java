@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.runwaysdk.business.SmartExceptionDTO;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.CommonProperties;
@@ -232,6 +233,36 @@ System.out.println("S3: "+collection1.getS3location());
   }
 
   @Test
+  public void testInvalidName()
+  {
+    String sessionId = this.logInAdmin();
+    
+    String projectId = null;
+
+    try
+    {
+      SiteItem newProject = service.newChild(sessionId, siteId);
+      newProject.setName("Project ");
+      newProject = service.applyWithParent(sessionId, newProject, siteId);
+      projectId = newProject.getId();
+      Assert.fail("A Project was created with an invalid name.");
+    }
+    catch (SmartExceptionDTO re)
+    {
+      // We want to land here
+    }
+    finally
+    { 
+      if (projectId != null)
+      {
+        service.remove(sessionId, projectId);
+      }
+
+      logOutAdmin(sessionId);
+    }
+  }
+  
+  @Test
   public void testServiceNewChild()
   {
     String sessionId = this.logInAdmin();
@@ -322,22 +353,22 @@ System.out.println("S3: "+collection1.getS3location());
     {
       SiteItem siteItem = service.edit(sessionId, siteId);
       
-      siteItem.setName("Site 1-X");
+      siteItem.setName("Site1-X");
    
       service.update(sessionId, siteItem);  
 
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site 1-X", siteItem.getName());
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site1-X", siteItem.getName());
       
       
-      siteItem.setName("Site 1");
+      siteItem.setName("Site1");
       
       service.update(sessionId, siteItem);  
       
       siteItem = service.edit(sessionId, siteId);
       
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site 1", siteItem.getName()); 
+      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site1", siteItem.getName()); 
       
     }
     finally

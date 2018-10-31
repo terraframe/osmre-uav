@@ -1,16 +1,8 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -41,8 +33,63 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {     
+    if (this.isModified(UasComponent.NAME))
+    {
+      String name = this.getName();
+      
+      if (name.contains(" ") ||
+          name.contains("<") ||
+          name.contains(">") ||
+          name.contains("-") ||
+          name.contains("+") ||
+          name.contains("=") ||
+          name.contains("!") ||
+          name.contains("@") ||
+          name.contains("#") ||
+          name.contains("$") ||
+          name.contains("%") ||
+          name.contains("^") ||
+          name.contains("&") ||
+          name.contains("*") ||
+          name.contains("?") ||
+          name.contains("/") ||
+          name.contains("\\"))
+      {
+        throw new InvalidUasComponentNameException("The name field has an invalid character");
+      }
+    }
+    
+    
+//    However, no spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes will be allowed.
+    
     if (this.isNew())
     {
+//      QueryFactory qf = new QueryFactory();
+//      UasComponentQuery childQ = new UasComponentQuery(qf);
+//      
+//      UasComponentQuery parentQ = new UasComponentQuery(qf);
+//      parentQ.WHERE(parentQ.getOid().EQ(parent.getOid()));
+//      
+//      
+//      
+//      childQ.WHERE(childQ.getName().EQ(this.getName()));
+//      childQ.AND(childQ.getOid().NE(this.getOid()));
+//      childQ.AND(childQ.component(parentQ));
+//      
+//      OIterator<? extends UasComponent> i = childQ.getIterator();
+//      
+//      for (UasComponent uasComponent : i)
+//      {
+//        System.out.println("Duplicate Found! "+uasComponent.getName());
+//      }
+      
+      
+//      DuplicateComponentException e = new DuplicateComponentException();
+//      e.setParentName("");
+//      e.setChildComponentLabel("");
+//      e.setChildName("");
+      
+      
       String key;
       
       if (parent != null)
@@ -100,33 +147,33 @@ public abstract class UasComponent extends UasComponentBase
   
   protected void createS3Folder(String key)
   {    
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-    
-    // create meta-data for your folder and set content-length to 0
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(0);
-
-    // create empty content
-    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-    
-    PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET,
-        key, emptyContent, metadata);
-    
-    // send request to S3 to create folder
-    client.putObject(putObjectRequest);
+//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//    
+//    // create meta-data for your folder and set content-length to 0
+//    ObjectMetadata metadata = new ObjectMetadata();
+//    metadata.setContentLength(0);
+//
+//    // create empty content
+//    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+//    
+//    PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET,
+//        key, emptyContent, metadata);
+//    
+//    // send request to S3 to create folder
+//    client.putObject(putObjectRequest);
  
   }
   
   protected void deleteS3Folder(String key)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-    
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(S3_BUCKET)
-    .withKeys(key)
-    .withQuiet(false);
-    
-    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
-    int successfulDeletes = delObjRes.getDeletedObjects().size();
-    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
+//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//    
+//    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(S3_BUCKET)
+//    .withKeys(key)
+//    .withQuiet(false);
+//    
+//    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
+//    int successfulDeletes = delObjRes.getDeletedObjects().size();
+//    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
   }
 }
