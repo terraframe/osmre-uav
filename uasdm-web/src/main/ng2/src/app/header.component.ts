@@ -21,27 +21,40 @@ import { CookieService } from 'ngx-cookie-service';
 
 declare var acp: any;
 
-@Component({
-  
-  selector: 'uasdm-header',
-  templateUrl: './header.component.html',
-  styleUrls: []
-})
-export class UasdmHeaderComponent {
-  private context:string;
-  private userName:string;
+@Component( {
 
-  constructor( private cookieService: CookieService ) {
-    this.context = acp;
-  }
-  
-  ngOnInit(): void {
-	
-	if(this.cookieService.check("user")){
-	  let cookieData:string = this.cookieService.get("user")
-	  let cookieDataJSON:any = JSON.parse(JSON.parse(cookieData));
-	  this.userName = cookieDataJSON.userName;
-	}
-  }
-  
+    selector: 'uasdm-header',
+    templateUrl: './header.component.html',
+    styleUrls: []
+} )
+export class UasdmHeaderComponent {
+    private context: string;
+    private userName: string = "admin";
+
+    constructor( private cookieService: CookieService ) {
+        this.context = acp;
+    }
+
+    ngOnInit(): void {
+
+        if ( this.cookieService.check( "user" ) ) {
+            let cookieData: string = this.cookieService.get( "user" )
+            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+            this.userName = cookieDataJSON.userName;
+        }
+        else {
+            console.log('Check fails for the existence of the cookie')
+            
+            let cookieData: string = this.cookieService.get( "user" )
+            
+            if(cookieData != null) {
+              let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+              this.userName = cookieDataJSON.userName;                
+            }
+            else {
+                console.log('Unable to get cookie');
+            }
+        }
+    }
+
 }
