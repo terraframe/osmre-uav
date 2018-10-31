@@ -29,7 +29,8 @@ public class Project extends ProjectBase
    * @param parent
    */
   @Transaction
-  public void applyWithParent(Site parent)
+  @Override 
+  public void applyWithParent(UasComponent parent)
   { 
     super.applyWithParent(parent);
   }

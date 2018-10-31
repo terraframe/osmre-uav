@@ -42,7 +42,8 @@ public class Collection extends CollectionBase
    * @param parent
    */
   @Transaction
-  public void applyWithParent(Mission parent)
+  @Override 
+  public void applyWithParent(UasComponent parent)
   { 
     super.applyWithParent(parent);
     

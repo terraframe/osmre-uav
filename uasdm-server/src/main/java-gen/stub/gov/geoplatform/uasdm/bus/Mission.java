@@ -31,7 +31,8 @@ public class Mission extends MissionBase
    * @param parent
    */
   @Transaction
-  public void applyWithParent(Project parent)
+  @Override 
+  public void applyWithParent(UasComponent parent)
   { 
     super.applyWithParent(parent);
     
@@ -52,7 +53,7 @@ public class Mission extends MissionBase
   }
   
   private String buildAccessibleSupportKey()
-  {
+  {    
     return this.getS3location()+ACCESSIBLE_SUPPORT+"/";
   }
 }
