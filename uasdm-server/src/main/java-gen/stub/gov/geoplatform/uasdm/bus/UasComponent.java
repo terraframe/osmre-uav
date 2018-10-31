@@ -1,8 +1,16 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -147,33 +155,33 @@ public abstract class UasComponent extends UasComponentBase
   
   protected void createS3Folder(String key)
   {    
-//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-//    
-//    // create meta-data for your folder and set content-length to 0
-//    ObjectMetadata metadata = new ObjectMetadata();
-//    metadata.setContentLength(0);
-//
-//    // create empty content
-//    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-//    
-//    PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET,
-//        key, emptyContent, metadata);
-//    
-//    // send request to S3 to create folder
-//    client.putObject(putObjectRequest);
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    
+    // create meta-data for your folder and set content-length to 0
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(0);
+
+    // create empty content
+    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+    
+    PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET,
+        key, emptyContent, metadata);
+    
+    // send request to S3 to create folder
+    client.putObject(putObjectRequest);
  
   }
   
   protected void deleteS3Folder(String key)
   {
-//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-//    
-//    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(S3_BUCKET)
-//    .withKeys(key)
-//    .withQuiet(false);
-//    
-//    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
-//    int successfulDeletes = delObjRes.getDeletedObjects().size();
-//    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(S3_BUCKET)
+    .withKeys(key)
+    .withQuiet(false);
+    
+    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
+    int successfulDeletes = delObjRes.getDeletedObjects().size();
+    System.out.println(successfulDeletes + " objects successfully deleted. "+key);
   }
 }
