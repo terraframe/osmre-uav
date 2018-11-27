@@ -18,25 +18,25 @@ public abstract class Converter
 
   public Converter()
   {
-    
+
   }
-  
+
   protected SiteItem convert(UasComponent uasComponent)
   {
     SiteItem siteItem = new SiteItem();
-    
+
     siteItem.setId(uasComponent.getOid());
-    
+
     String typeName = uasComponent.getMdClass().getTypeName();
     siteItem.setType(typeName);
-    
+
     String typeLabel = uasComponent.getMdClass().getDisplayLabel(Session.getCurrentLocale());
     siteItem.setTypeLabel(typeLabel);
-    
+
     siteItem.setName(uasComponent.getName());
-    
+
     OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
-    
+
     try
     {
       if (children.hasNext())
@@ -52,30 +52,33 @@ public abstract class Converter
     {
       children.close();
     }
-     
+
     return siteItem;
   }
-  
+
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
     uasComponent.setName(siteItem.getName());
-    
+
     return uasComponent;
   }
-
 
   protected UasComponent convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
     uasComponent.setName(siteItem.getName());
-    
-    // Sets the id to the id of the {@link SiteItem} which came from the backend initially.
-    EntityDAO entityDAO = (EntityDAO)BusinessFacade.getEntityDAO(uasComponent);
-    Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
-    attribute.setValue(siteItem.getId());
-    
+
+    // Sets the id to the id of the {@link SiteItem} which came from the backend
+    // initially.
+    if (siteItem.getId() != null)
+    {
+      EntityDAO entityDAO = (EntityDAO) BusinessFacade.getEntityDAO(uasComponent);
+      Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
+      attribute.setValue(siteItem.getId());
+    }
+
     return uasComponent;
   }
-  
+
   /**
    * Returns null if the given parent type has no child type.
    * 
@@ -86,7 +89,7 @@ public abstract class Converter
   public static UasComponent toNewUasComponent(UasComponent parent, SiteItem siteItem)
   {
     UasComponent newChild = parent.createChild();
-    
+
     if (newChild != null)
     {
       return factory(newChild).convertNew(newChild, siteItem);
@@ -96,21 +99,19 @@ public abstract class Converter
       return null;
     }
   }
-  
-  
+
   public static UasComponent toExistingUasComponent(SiteItem siteItem)
-  { 
+  {
     UasComponent uasComponent = UasComponent.get(siteItem.getId());
-    
+
     return factory(uasComponent).convert(siteItem, uasComponent);
   }
-  
+
   public static SiteItem toSiteItem(UasComponent uasComponent)
   {
     return factory(uasComponent).convert(uasComponent);
   }
-  
-  
+
   private static Converter factory(UasComponent uasComponent)
   {
     if (uasComponent instanceof Site)
@@ -124,17 +125,17 @@ public abstract class Converter
     else if (uasComponent instanceof Mission)
     {
       return new MissionConverter();
-    } 
+    }
     else if (uasComponent instanceof Collection)
     {
       return new CollectionConverter();
-    } 
+    }
     else
     {
       // Should never hit this case unless a new type is added to the hierarchy
       return null;
     }
-    
+
   }
-  
+
 }

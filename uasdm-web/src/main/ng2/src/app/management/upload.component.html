@@ -26,13 +26,13 @@
       </div>
       <div class="form-check">
         <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" [checked]="values.create==true" />
+          <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
           Create new collection
         </label>
       </div>
       <div class="form-check">
         <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" [value]="false" [checked]="values.create==false" />
+          <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" (change)="handleChange()" [value]="false" [checked]="values.create==false" />
           Add to existing collection
         </label>
       </div>

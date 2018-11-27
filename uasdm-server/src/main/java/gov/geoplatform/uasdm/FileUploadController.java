@@ -111,12 +111,7 @@ public class FileUploadController
       }
       else if (e instanceof SmartExceptionDTO)
       {
-        String type = ( (SmartExceptionDTO) e ).getType();
-
-        if (type.equals(DuplicateComponentException.CLASS) || type.equals(InvalidUasComponentNameException.CLASS))
-        {
-          return this.writeResponse(e.getMessage(), isIframe, false, true);
-        }
+        return this.writeResponse(e.getMessage(), isIframe, false, true);
       }
 
       return this.writeResponse(e.getMessage(), isIframe, false, false);

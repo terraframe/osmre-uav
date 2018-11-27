@@ -174,6 +174,11 @@ public class ProjectManagementService
       String missionId = params.get("mission");
       String name = params.get("name");
 
+      SiteItem item = new SiteItem();
+      item.setName(name);
+
+      item = this.applyWithParent(sessionId, item, missionId);
+
       log.info("Uploading file to newly created collection with the parent id [" + missionId + "] and name [" + name + "]");
     }
 

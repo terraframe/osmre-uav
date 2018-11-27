@@ -83,9 +83,9 @@ export class UploadComponent implements OnInit {
                     mode: 'custom',
                     responseProperty: 'error'
                 },
-                validation: {
-                    allowedExtensions: ['zip', '.tar.gz']
-                }
+                //                validation: {
+                //                    allowedExtensions: ['zip', '.tar.gz']
+                //                }
 
             };
 
@@ -155,8 +155,28 @@ export class UploadComponent implements OnInit {
 
         // Reset form values
         this.values.collection = null;
+        this.values.name = null;
 
-        if ( missionId != null && missionId.length > 0 ) {
+        if ( missionId != null && missionId.length > 0 && !this.values.create ) {
+
+            this.service.getChildren( this.values.mission ).then( collections => {
+                this.collections = collections;
+            } ).catch(( err: any ) => {
+                this.error( err.json() );
+            } );
+        }
+    }
+
+    handleChange(): void {
+
+        // Reset select options
+        this.collections = [] as SiteEntity[];
+
+        // Reset form values
+        this.values.collection = null;
+        this.values.name = null;
+
+        if ( this.values.mission != null && this.values.mission.length > 0 && !this.values.create ) {
 
             this.service.getChildren( this.values.mission ).then( collections => {
                 this.collections = collections;
