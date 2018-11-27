@@ -18,6 +18,7 @@
     "@angular/router": "~5.2.1",
     "angular-tree-component": "^8.0.0",
     "core-js": "^2.4.1",
+    "fine-uploader": "^5.16.2",
     "ngx-bootstrap": "^2.0.2",
     "ngx-contextmenu": "^4.2.0",
     "ngx-cookie-service": "^1.0.10",
