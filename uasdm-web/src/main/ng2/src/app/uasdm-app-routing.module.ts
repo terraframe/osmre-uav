@@ -4,24 +4,29 @@ import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnaps
 import { Observable } from 'rxjs/Observable';
 
 import { ProjectsComponent } from './management/projects.component';
+import { UploadComponent } from './management/upload.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    redirectTo: '/projects',
-    pathMatch: 'full'
-  },
-  {
-    path: 'projects',
-    component: ProjectsComponent
-  },
+    {
+        path: '',
+        redirectTo: '/projects',
+        pathMatch: 'full'
+    },
+    {
+        path: 'projects',
+        component: ProjectsComponent
+    },
+    {
+        path: 'upload',
+        component: UploadComponent
+    },
 ];
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
-})
+@NgModule( {
+    imports: [RouterModule.forRoot( routes )],
+    exports: [RouterModule],
+    providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }]
+} )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent];

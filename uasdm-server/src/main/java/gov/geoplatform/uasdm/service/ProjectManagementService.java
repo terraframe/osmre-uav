@@ -1,30 +1,39 @@
 package gov.geoplatform.uasdm.service;
 
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.SiteQuery;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.Converter;
-
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.Site;
+import gov.geoplatform.uasdm.bus.SiteQuery;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.SiteItem;
+
 public class ProjectManagementService
 {
+
+  final Logger log = LoggerFactory.getLogger(ProjectManagementService.class);
+
   @Request(RequestType.SESSION)
   public List<SiteItem> getChildren(String sessionId, String parentid)
   {
     LinkedList<SiteItem> children = new LinkedList<SiteItem>();
-    
+
     UasComponent uasComponent = UasComponent.get(parentid);
-    
+
     OIterator<? extends UasComponent> i = uasComponent.getAllComponents();
-    
+
     try
     {
       i.forEach(c -> children.add(Converter.toSiteItem(c)));
@@ -43,11 +52,11 @@ public class ProjectManagementService
 
     QueryFactory qf = new QueryFactory();
     SiteQuery q = new SiteQuery(qf);
-    
+
     OIterator<? extends Site> i = q.getIterator();
-    
+
     try
-    {      
+    {
       i.forEach(s -> roots.add(Converter.toSiteItem(s)));
     }
     finally
@@ -69,9 +78,9 @@ public class ProjectManagementService
   public SiteItem newChild(String sessionId, String parentId)
   {
     UasComponent uasComponent = UasComponent.get(parentId);
-    
+
     UasComponent childUasComponent = uasComponent.createChild();
-    
+
     if (childUasComponent != null)
     {
       return Converter.toSiteItem(childUasComponent);
@@ -93,17 +102,17 @@ public class ProjectManagementService
   public SiteItem applyWithParent(String sessionId, SiteItem siteItem, String parentId)
   {
     UasComponent parent = UasComponent.get(parentId);
-    
+
     UasComponent child = Converter.toNewUasComponent(parent, siteItem);
-    
+
     if (child != null)
     {
-//      child.setS3location(child.buildS3Key(parent));
-      
+      // child.setS3location(child.buildS3Key(parent));
+
       child.applyWithParent(parent);
-      
-//      parent.addComponent(child).apply();
-      
+
+      // parent.addComponent(child).apply();
+
       return Converter.toSiteItem(child);
     }
     else
@@ -111,14 +120,14 @@ public class ProjectManagementService
       return null;
     }
     // TODO Do domain stuff here
-//    throw new ProgrammingErrorException("Unable to create item");
+    // throw new ProgrammingErrorException("Unable to create item");
   }
 
   @Request(RequestType.SESSION)
   public SiteItem edit(String sessionId, String id)
   {
     UasComponent uasComponent = UasComponent.get(id);
-    
+
     return Converter.toSiteItem(uasComponent);
   }
 
@@ -128,15 +137,15 @@ public class ProjectManagementService
     UasComponent uasComponent = UasComponent.get(siteItem.getId());
 
     uasComponent.lock();
-    
+
     uasComponent = Converter.toExistingUasComponent(siteItem);
-    
+
     uasComponent.apply();
 
     uasComponent.unlock();
-    
+
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent);
-    
+
     return updatedSiteItem;
   }
 
@@ -144,8 +153,50 @@ public class ProjectManagementService
   public void remove(String sessionId, String id)
   {
     UasComponent uasComponent = UasComponent.get(id);
-    
+
     uasComponent.delete();
+  }
+
+  @Request(RequestType.SESSION)
+  public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
+  {
+    Map<String, String> params = parser.getCustomParams();
+    Boolean createCollection = new Boolean(params.get("create"));
+
+    if (!createCollection)
+    {
+      String collectionId = params.get("collection");
+
+      log.info("Uploading file to the collection [" + collectionId + "]");
+    }
+    else
+    {
+      String missionId = params.get("mission");
+      String name = params.get("name");
+
+      SiteItem item = new SiteItem();
+      item.setName(name);
+
+      item = this.applyWithParent(sessionId, item, missionId);
+
+      log.info("Uploading file to newly created collection with the parent id [" + missionId + "] and name [" + name + "]");
+    }
+
+  }
+
+  @Request(RequestType.SESSION)
+  public void validate(String sessionId, RequestParser parser)
+  {
+    Map<String, String> params = parser.getCustomParams();
+    Boolean createCollection = new Boolean(params.get("create"));
+
+    if (createCollection)
+    {
+      String missionId = params.get("mission");
+      String name = params.get("name");
+
+      UasComponent.validateName(missionId, name);
+    }
   }
 
 }
