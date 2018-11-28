@@ -1,6 +1,10 @@
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
 
+.tree {
+  height: calc(100vh - 70px);
+}
+
 .node-content-wrapper, .tree-children {
   position: relative;
   font-size: 18px;
