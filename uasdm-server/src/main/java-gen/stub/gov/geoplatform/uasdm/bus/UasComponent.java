@@ -16,12 +16,11 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.AppProperties;
+
 public abstract class UasComponent extends UasComponentBase
 {
-  private static final long   serialVersionUID = -2027002868;
-
-  // private static final String S3_BUCKET = "osmre-uas-repo";
-  private static final String S3_BUCKET        = "osmre-uas-test";
+  private static final long serialVersionUID = -2027002868;
 
   public UasComponent()
   {
@@ -67,16 +66,16 @@ public abstract class UasComponent extends UasComponentBase
       if (parent != null)
       {
         boolean isDuplicate = isDuplicateName(parent.getOid(), this.getOid(), this.getName());
-        
-        if(isDuplicate)
+
+        if (isDuplicate)
         {
           DuplicateComponentException e = new DuplicateComponentException();
           e.setParentName(parent.getName());
           e.setChildComponentLabel(this.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
           e.setChildName(this.getName());
-          
-          throw e;          
-        }        
+
+          throw e;
+        }
       }
 
       String key;
@@ -146,7 +145,7 @@ public abstract class UasComponent extends UasComponentBase
     // create empty content
     InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
 
-    PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET, key, emptyContent, metadata);
+    PutObjectRequest putObjectRequest = new PutObjectRequest(AppProperties.getBucketName(), key, emptyContent, metadata);
 
     // send request to S3 to create folder
     client.putObject(putObjectRequest);
@@ -156,7 +155,7 @@ public abstract class UasComponent extends UasComponentBase
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(S3_BUCKET).withKeys(key).withQuiet(false);
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(AppProperties.getBucketName()).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
     // DeleteObjectsResult delObjRes =
@@ -165,41 +164,14 @@ public abstract class UasComponent extends UasComponentBase
     // System.out.println(successfulDeletes + " objects successfully deleted.
     // "+key);
   }
-  
+
   public static boolean isValidName(String name)
   {
-    if (name.contains(" ") ||
-        name.contains("<") ||
-        name.contains(">") ||
-        name.contains("-") ||
-        name.contains("+") ||
-        name.contains("=") ||
-        name.contains("!") ||
-        name.contains("@") ||
-        name.contains("#") ||
-        name.contains("$") ||
-        name.contains("%") ||
-        name.contains("^") ||
-        name.contains("&") ||
-        name.contains("*") ||
-        name.contains("?") ||
-        name.contains(";") ||
-        name.contains(":") ||
-        name.contains(",") ||
-        name.contains("^") ||
-        name.contains("{") ||
-        name.contains("}") ||
-        name.contains("]") ||
-        name.contains("[") ||
-        name.contains("`") ||
-        name.contains("~") ||
-        name.contains("|") ||
-        name.contains("/") ||
-        name.contains("\\"))
+    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
     {
       return false;
     }
-    
+
     return true;
   }
 
@@ -217,7 +189,7 @@ public abstract class UasComponent extends UasComponentBase
     if (oid != null)
     {
       childQ.AND(childQ.getOid().NE(oid));
-    }    
+    }
 
     OIterator<? extends UasComponent> i = childQ.getIterator();
 
@@ -235,24 +207,24 @@ public abstract class UasComponent extends UasComponentBase
 
     return false;
   }
-  
+
   public static void validateName(String parentId, String name)
   {
-    if(!isValidName(name))
+    if (!isValidName(name))
     {
       throw new InvalidUasComponentNameException("The name field has an invalid character");
     }
-    else if(isDuplicateName(parentId, null, name))
+    else if (isDuplicateName(parentId, null, name))
     {
       UasComponent parent = UasComponent.get(parentId);
       MdClassDAOIF mdClass = MdClassDAO.getMdClassDAO(Collection.CLASS);
-      
+
       DuplicateComponentException e = new DuplicateComponentException();
       e.setParentName(parent.getName());
       e.setChildComponentLabel(mdClass.getDisplayLabel(Session.getCurrentLocale()));
       e.setChildName(name);
-      
-      throw e;          
+
+      throw e;
     }
   }
 }

@@ -31,8 +31,6 @@ import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
 
-import gov.geoplatform.uasdm.bus.DuplicateComponentException;
-import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.MultipartUploadParser;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -69,11 +67,7 @@ public class FileUploadController
     }
   }
 
-  public static final File         UPLOAD_DIR = new File("test/uploads");
-
-  public static File               TEMP_DIR   = new File("test/uploadsTemp");
-
-  final Logger                     log        = LoggerFactory.getLogger(FileUploadController.class);
+  final Logger                     log = LoggerFactory.getLogger(FileUploadController.class);
 
   private ProjectManagementService service;
 
@@ -82,7 +76,9 @@ public class FileUploadController
     this.service = new ProjectManagementService();
   }
 
-  @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON, factory = ChunkFileItemFactory.class)
+  // @Endpoint(url = "upload", method = ServletMethod.POST, error =
+  // ErrorSerialization.JSON, factory = ChunkFileItemFactory.class)
+  @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF upload(ClientRequestIF clientRequest, ServletRequestIF request, @RequestParamter(name = "values") Map<String, ParameterValue> values)
   {
     HttpServletRequest req = ( (RequestDecorator) request ).getRequest();
@@ -92,10 +88,20 @@ public class FileUploadController
 
     try
     {
-      MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, TEMP_DIR, context);
+      MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, AppProperties.getTempDirectory(), context);
       RequestParser requestParser = RequestParser.getInstance(req, multipartUploadParser);
 
-      this.service.validate(clientRequest.getSessionId(), requestParser);
+      if (requestParser.isFirst() || requestParser.isResume())
+      {
+        // Validate that the collection name
+        this.service.validate(clientRequest.getSessionId(), requestParser);
+      }
+
+      if (requestParser.isResume())
+      {
+        // Validate that the chunks still exist on the file system
+        this.assertChunksExist(requestParser.getUuid());
+      }
 
       this.writeFileForMultipartRequest(clientRequest, requestParser);
 
@@ -120,7 +126,7 @@ public class FileUploadController
 
   private void writeFileForMultipartRequest(ClientRequestIF clientRequest, RequestParser requestParser) throws Exception
   {
-    File dir = new File(UPLOAD_DIR, requestParser.getUuid());
+    File dir = new File(AppProperties.getUploadDirectory(), requestParser.getUuid());
     dir.mkdirs();
 
     if (requestParser.getPartIndex() >= 0)
@@ -153,11 +159,23 @@ public class FileUploadController
   {
     if (totalFileSize != outputFile.length())
     {
-      deletePartitionFiles(UPLOAD_DIR, uuid);
+      deletePartitionFiles(AppProperties.getUploadDirectory(), uuid);
+
       outputFile.delete();
+
       throw new MergePartsException("Incorrect combined file size!");
     }
 
+  }
+
+  private void assertChunksExist(String uuid) throws MergePartsException
+  {
+    File dir = new File(AppProperties.getUploadDirectory(), uuid);
+
+    if (dir.exists() && dir.isDirectory() && dir.list().length == 0)
+    {
+      throw new MergePartsException("Chunks no longer exist on the server file system.  Upload needs to be reset.");
+    }
   }
 
   private File mergeFiles(File outputFile, File partFile) throws IOException
@@ -260,6 +278,7 @@ public class FileUploadController
   private static void deletePartitionFiles(File directory, String filename)
   {
     File[] partFiles = getPartitionFiles(directory, filename);
+
     for (File partFile : partFiles)
     {
       partFile.delete();

@@ -68,7 +68,8 @@ export class UploadComponent implements OnInit {
                     endpoint: acp + "/file/upload"
                 },
                 resume: {
-                    enabled: true
+                    enabled: true,
+                    recordsExpireIn: 1
                 },
                 chunking: {
                     enabled: true
@@ -83,9 +84,9 @@ export class UploadComponent implements OnInit {
                     mode: 'custom',
                     responseProperty: 'error'
                 },
-                //                validation: {
-                //                    allowedExtensions: ['zip', '.tar.gz']
-                //                }
+                validation: {
+                    allowedExtensions: ['zip', '.tar.gz']
+                }
 
             };
 
