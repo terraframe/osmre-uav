@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ViewChild, TemplateRef } from '@angular/core';
-import { TreeNode, TreeComponent } from 'angular-tree-component';
+import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
@@ -40,9 +40,7 @@ export class ProjectsComponent implements OnInit {
                 contextMenu: ( tree: any, node: any, $event: any ) => {
                     this.handleOnMenu( node, $event );
                 },
-                click : ( tree: any, node: any, $event: any ) => {
-                    this.handleOnClick( node, $event );
-                }
+                click : TREE_ACTIONS.TOGGLE_EXPANDED
             }
         }
     };
@@ -83,17 +81,6 @@ export class ProjectsComponent implements OnInit {
         } );
     }
     
-    handleOnClick( node: any, $event: any ): void {
-    	
-    	node.treeModel.setFocusedNode(node);
-    	
-    	if(node.treeModel.isExpanded(node)){
-        	node.collapse();
-    	}
-    	else{
-        	node.treeModel.expandAll();
-    	}
-    }
 
     handleOnMenu( node: any, $event: any ): void {
     	
