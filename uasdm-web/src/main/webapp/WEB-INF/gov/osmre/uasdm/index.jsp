@@ -58,7 +58,7 @@ body {
             </div>
             <div class="buttons">
                 <div class="qq-upload-button-selector qq-upload-button">
-                    <div>Select files</div>
+                    <div>Select file</div>
                 </div>
             </div>
             <span class="qq-drop-processing-selector qq-drop-processing">
