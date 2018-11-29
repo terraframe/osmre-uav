@@ -18,6 +18,8 @@ import { ManagementService } from './management.service';
 export class UserProfileComponent implements OnInit {
 
     private userName: string = "";
+    private totalTaskCount: number = 0;
+	private totalActionsCount: number = 0;
 
     /*
      * Reference to the modal current showing
@@ -41,10 +43,27 @@ export class UserProfileComponent implements OnInit {
 
         this.managementService.tasks().then( data => {
             this.messages = data.messages;
-            this.tasks = data.tasks;
+            
+            this.totalTaskCount = data.tasks.length;
+            
+            this.totalActionsCount = this.getTotalActionsCount(data.tasks);
+            
+            this.tasks = data.tasks.sort((a: any, b: any) => 
+              new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+            );
+            
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+    
+    getTotalActionsCount(tasks: Task[]){
+    	let count = 0;
+    	tasks.forEach( (task) => {
+    		count = count + task.actions.length;
+    	})
+    	
+    	return count
     }
 
     error( err: any ): void {

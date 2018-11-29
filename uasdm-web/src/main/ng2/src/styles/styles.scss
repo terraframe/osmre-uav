@@ -1,6 +1,10 @@
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
 
+body {
+  overflow-y: auto;
+}
+
 .tree {
   height: calc(100vh - 70px);
 }
@@ -71,4 +75,8 @@ tree-node-expander{
 
 .dropdown-menu {
   font-size: 18px;
+}
+
+.panel-heading:hover {
+  background-color: #e0e0e0;
 }

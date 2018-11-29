@@ -24,8 +24,8 @@
           
           <ul class="list-group">
             <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Tasks</strong></span> 3</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Actions</strong></span> 3</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Tasks</strong></span> {{totalTaskCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Actions</strong></span> {{totalActionsCount}}</li>
           </ul> 
                
           <div class="panel panel-default">
@@ -61,42 +61,47 @@
                 </alert>
                                 
                 <div class="panel-group">
-                  <div class="panel panel-default">
+                  <div *ngFor="let task of tasks; let i=index" class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse1">
+                        <a data-toggle="collapse" href="#collapse{{i}}">
                         <ul class="list-inline" style="margin: 0;">
-                          <li>Task 1</li>
-                          <li>Created on: <b>11/28/2018</b></li>
-                          <li>Last updated: <b>11/28/2018</b></li> 
-                          <li>Status: <b>Started</b></li>
+                          <li>{{task.label}}</li>
                         </ul>
                         </a>
                       </h4>
                     </div>
-                    <div id="collapse1" class="panel-collapse collapse">
+                    <div id="collapse{{i}}" class="panel-collapse collapse">
                       <div class="panel-body">
-<!--                         <ul class="list-inline"> -->
-<!--                           <li>Created on: <b>11/28/2018</b></li> -->
-<!--                           <li>Last updated: <b>11/28/2018</b></li> -->
-<!--                           <li>Status: <b>Started</b></li> -->
-<!--                         </ul> -->
+                        <ul class="list-inline" style="margin: 0;">
+                          <li>Created on: <b>{{task.createDate}}</b></li>
+                          <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
+                          <li>Status: <b>{{task.status}}</b></li>
+                        </ul>
                         
                         <hr>
                         
-                        <h4>Actions for Collection 1</h4>
+                        <h4>Actions for {{task.label}}</h4>
                         <table class="table table-bordered"> 
                           <thead> 
                             <tr> 
                               <th>#</th> 
                               <th>Type</th> 
                               <th>Description</th> 
+                              <th>Creation Date</th> 
+                              <th>Last Updated</th> 
                             </tr> 
                           </thead> 
                           <tbody> 
-                            <tr class="active"><th scope="row">1</th> <td>Message</td> <td></td> </tr> 
-                            <tr class="active"><th scope="row">2</th> <td>Process Imagery</td> <td></td> </tr> 
-                            <tr class="danger"><th scope="row">3</th> <td>Upload Required Metadata</td> <td>Metadata is required for each upload.</td> </tr>
+<!--                             <template let-actions ngFor [ngForOf]="task.actions"> -->
+                            <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
+                              <th scope="row">{{i + 1}}</th> 
+                              <td>{{action.type}}</td> 
+                              <td>{{action.description}}</td> 
+                              <td>{{action.createdDate}}</td> 
+                              <td>{{action.lastUpdatedDate}}</td> 
+                            </tr> 
+<!--                             </template> -->
                           </tbody> 
                         </table>
                       </div>
