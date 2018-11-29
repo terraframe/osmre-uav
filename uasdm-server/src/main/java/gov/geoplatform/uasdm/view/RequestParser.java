@@ -143,7 +143,7 @@ public class RequestParser
 
   public boolean isFirst()
   {
-    return ( this.partIndex == 0 );
+    return ( this.partIndex == 0 || this.partIndex < 0 );
   }
 
   public Map<String, String> getCustomParams()
@@ -192,7 +192,11 @@ public class RequestParser
     {
       requestParser.resume = false;
     }
+  }
 
+  public int getPercent()
+  {
+    return ( (int) ( (double) this.getPartIndex() / this.getTotalParts() * 100 ) );
   }
 
   private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)

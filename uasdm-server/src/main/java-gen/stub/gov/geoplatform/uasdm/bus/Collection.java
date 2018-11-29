@@ -120,7 +120,7 @@ public class Collection extends CollectionBase
     return this.getS3location() + ORTHO + "/";
   }
 
-  public void uploadArchive(File archive)
+  public void uploadArchive(WorkflowTask task, File archive)
   {
     String extension = FilenameUtils.getExtension(archive.getName());
 
@@ -176,7 +176,7 @@ public class Collection extends CollectionBase
               }
 
               // Upload the file to S3
-              this.uploadRawFile(entry.getName(), tmp);
+              this.uploadFile(this.buildRawKey(), entry.getName(), tmp);
             }
             finally
             {
@@ -185,11 +185,9 @@ public class Collection extends CollectionBase
 
           }
         }
-
-        System.out.println("Untar completed successfully!");
       }
     }
-    catch (IOException | AmazonClientException | InterruptedException e)
+    catch (IOException e)
     {
       // TODO give better error message?
       throw new ProgrammingErrorException(e);
@@ -219,7 +217,7 @@ public class Collection extends CollectionBase
           }
 
           // Upload the file to S3
-          this.uploadRawFile(entry.getName(), tmp);
+          this.uploadFile(this.buildRawKey(), entry.getName(), tmp);
         }
         finally
         {
@@ -227,61 +225,69 @@ public class Collection extends CollectionBase
         }
       }
     }
-    catch (IOException | AmazonClientException | InterruptedException e)
+    catch (IOException e)
     {
       // TODO give better error message?
       throw new ProgrammingErrorException(e);
     }
   }
 
-  private void uploadRawFile(String name, File tmp) throws IOException, AmazonClientException, InterruptedException
+  private void uploadFile(String keySuffix, String name, File tmp) throws IOException
   {
     if (isValidName(name))
     {
-      String key = this.buildRawKey() + name;
+      String key = keySuffix + name;
 
-      TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
-      Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
-
-      // You can poll your transfer's status to check its progress
-      if (myUpload.isDone() == false)
+      try
       {
-        System.out.println("Transfer: " + myUpload.getDescription());
-        System.out.println("  - State: " + myUpload.getState());
-        System.out.println("  - Progress: " + myUpload.getProgress().getBytesTransferred());
-      }
+        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+        Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
 
-      // Transfers also allow you to set a <code>ProgressListener</code> to
-      // receive
-      // asynchronous notifications about your transfer's progress.
-      myUpload.addProgressListener(new ProgressListener()
-      {
-        int count = 0;
-
-        @Override
-        public void progressChanged(ProgressEvent progressEvent)
+        // You can poll your transfer's status to check its progress
+        if (myUpload.isDone() == false)
         {
-          if (count % 2000 == 0)
-          {
-            long total = myUpload.getProgress().getTotalBytesToTransfer();
-            long current = myUpload.getProgress().getBytesTransferred();
-            System.out.println(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-            count = 0;
-          }
-
-          count++;
+          System.out.println("Transfer: " + myUpload.getDescription());
+          System.out.println("  - State: " + myUpload.getState());
+          System.out.println("  - Progress: " + myUpload.getProgress().getBytesTransferred());
         }
-      });
 
-      // Or you can block the current thread and wait for your transfer to
-      // to complete. If the transfer fails, this method will throw an
-      // AmazonClientException or AmazonServiceException detailing the reason.
-      myUpload.waitForCompletion();
+        // Transfers also allow you to set a <code>ProgressListener</code> to
+        // receive
+        // asynchronous notifications about your transfer's progress.
+        myUpload.addProgressListener(new ProgressListener()
+        {
+          int count = 0;
 
-      // After the upload is complete, call shutdownNow to release the
-      // resources.
-      tx.shutdownNow();
+          @Override
+          public void progressChanged(ProgressEvent progressEvent)
+          {
+            if (count % 2000 == 0)
+            {
+              long total = myUpload.getProgress().getTotalBytesToTransfer();
+              long current = myUpload.getProgress().getBytesTransferred();
+              System.out.println(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+
+              count = 0;
+            }
+
+            count++;
+          }
+        });
+
+        // Or you can block the current thread and wait for your transfer to
+        // to complete. If the transfer fails, this method will throw an
+        // AmazonClientException or AmazonServiceException detailing the reason.
+        myUpload.waitForCompletion();
+
+        // After the upload is complete, call shutdownNow to release the
+        // resources.
+        tx.shutdownNow();
+      }
+      catch (AmazonClientException | InterruptedException e)
+      {
+        // TODO give better error message?
+        throw new ProgrammingErrorException(e);
+      }
     }
     else
     {

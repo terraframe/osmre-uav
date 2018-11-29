@@ -62,10 +62,12 @@ export class UploadComponent implements OnInit {
             let uiOptions: UIOptions = {
                 debug: true,
                 autoUpload: false,
+                multiple: false,
                 element: elem.nativeElement,
                 template: 'qq-template',
                 request: {
-                    endpoint: acp + "/file/upload"
+                    endpoint: acp + "/file/upload",
+                    forceMultipart: true
                 },
                 resume: {
                     enabled: true,
@@ -86,7 +88,11 @@ export class UploadComponent implements OnInit {
                 },
                 validation: {
                     allowedExtensions: ['zip', '.tar.gz']
-                }
+                },
+                //                callbacks: {
+                //                    onAutoRetry: function( id, name, attemptNumber ) {
+                //                    }
+                //                }
 
             };
 

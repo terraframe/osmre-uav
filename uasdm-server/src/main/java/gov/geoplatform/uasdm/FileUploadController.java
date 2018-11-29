@@ -32,6 +32,7 @@ import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
 
 import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.MultipartUploadParser;
 import gov.geoplatform.uasdm.view.RequestParser;
 
@@ -69,11 +70,14 @@ public class FileUploadController
 
   final Logger                     log = LoggerFactory.getLogger(FileUploadController.class);
 
-  private ProjectManagementService service;
+  private ProjectManagementService pService;
+
+  private WorkflowService          wService;
 
   public FileUploadController()
   {
-    this.service = new ProjectManagementService();
+    this.pService = new ProjectManagementService();
+    this.wService = new WorkflowService();
   }
 
   // @Endpoint(url = "upload", method = ServletMethod.POST, error =
@@ -91,19 +95,23 @@ public class FileUploadController
       MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, AppProperties.getTempDirectory(), context);
       RequestParser requestParser = RequestParser.getInstance(req, multipartUploadParser);
 
-      if (requestParser.isFirst() || requestParser.isResume())
-      {
-        // Validate that the collection name
-        this.service.validate(clientRequest.getSessionId(), requestParser);
-      }
-
       if (requestParser.isResume())
       {
         // Validate that the chunks still exist on the file system
         this.assertChunksExist(requestParser.getUuid());
       }
 
+      if (requestParser.isFirst() || requestParser.isResume())
+      {
+        this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
+      }
+
       this.writeFileForMultipartRequest(clientRequest, requestParser);
+
+      if (requestParser.getPartIndex() % 10 == 0)
+      {
+        this.wService.updateUploadTask(clientRequest.getSessionId(), requestParser);
+      }
 
       return writeResponse(requestParser.generateError() ? "Generated error" : null, isIframe, false, false);
     }
@@ -146,12 +154,15 @@ public class FileUploadController
         this.assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
         deletePartitionFiles(dir, requestParser.getUuid());
 
-        this.service.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
+        this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
       }
     }
     else
     {
-      writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getFilename()), null);
+      File outputFile = new File(dir, requestParser.getFilename());
+      writeFile(requestParser.getUploadItem().getInputStream(), outputFile, null);
+
+      this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
     }
   }
 

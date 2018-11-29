@@ -18,6 +18,7 @@ import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -164,30 +165,14 @@ public class ProjectManagementService
   {
     try
     {
-      Map<String, String> params = parser.getCustomParams();
-      Boolean createCollection = new Boolean(params.get("create"));
+      WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+      task.lock();
+      task.setStatus("Processing");
+      task.setMessage("Processing archived files");
+      task.apply();
 
-      if (!createCollection)
-      {
-        String collectionId = params.get("collection");
-
-        Collection uasComponent = Collection.get(collectionId);
-        uasComponent.uploadArchive(infile);
-
-        log.info("Uploading file to the collection [" + collectionId + "]");
-      }
-      else
-      {
-        String missionId = params.get("mission");
-        String name = params.get("name");
-
-        SiteItem item = new SiteItem();
-        item.setName(name);
-
-        item = this.applyWithParent(sessionId, item, missionId);
-
-        log.info("Uploading file to newly created collection with the parent id [" + missionId + "] and name [" + name + "]");
-      }
+      Collection collection = task.getCollection();
+      collection.uploadArchive(task, infile);
     }
     finally
     {
@@ -210,5 +195,4 @@ public class ProjectManagementService
       UasComponent.validateName(missionId, name);
     }
   }
-
 }
