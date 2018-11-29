@@ -14,7 +14,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
@@ -126,15 +125,15 @@ public class Collection extends CollectionBase
 
     if (extension.equalsIgnoreCase("zip"))
     {
-      this.uploadZipArchive(archive);
+      this.uploadZipArchive(task, archive);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      this.uploadTarGzArchive(archive);
+      this.uploadTarGzArchive(task, archive);
     }
   }
 
-  private void uploadTarGzArchive(File archive)
+  private void uploadTarGzArchive(WorkflowTask task, File archive)
   {
     byte data[] = new byte[BUFFER_SIZE];
 
@@ -176,7 +175,7 @@ public class Collection extends CollectionBase
               }
 
               // Upload the file to S3
-              this.uploadFile(this.buildRawKey(), entry.getName(), tmp);
+              this.uploadFile(task, this.buildRawKey(), entry.getName(), tmp);
             }
             finally
             {
@@ -189,12 +188,13 @@ public class Collection extends CollectionBase
     }
     catch (IOException e)
     {
-      // TODO give better error message?
+      task.createAction(e.getMessage(), "error");
+
       throw new ProgrammingErrorException(e);
     }
   }
 
-  public void uploadZipArchive(File archive)
+  public void uploadZipArchive(WorkflowTask task, File archive)
   {
     byte[] buffer = new byte[BUFFER_SIZE];
 
@@ -217,7 +217,7 @@ public class Collection extends CollectionBase
           }
 
           // Upload the file to S3
-          this.uploadFile(this.buildRawKey(), entry.getName(), tmp);
+          this.uploadFile(task, this.buildRawKey(), entry.getName(), tmp);
         }
         finally
         {
@@ -227,12 +227,13 @@ public class Collection extends CollectionBase
     }
     catch (IOException e)
     {
-      // TODO give better error message?
+      task.createAction(e.getMessage(), "error");
+
       throw new ProgrammingErrorException(e);
     }
   }
 
-  private void uploadFile(String keySuffix, String name, File tmp) throws IOException
+  private void uploadFile(WorkflowTask task, String keySuffix, String name, File tmp)
   {
     if (isValidName(name))
     {
@@ -241,57 +242,53 @@ public class Collection extends CollectionBase
       try
       {
         TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
-        Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
 
-        // You can poll your transfer's status to check its progress
-        if (myUpload.isDone() == false)
+        try
         {
-          System.out.println("Transfer: " + myUpload.getDescription());
-          System.out.println("  - State: " + myUpload.getState());
-          System.out.println("  - Progress: " + myUpload.getProgress().getBytesTransferred());
-        }
+          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
 
-        // Transfers also allow you to set a <code>ProgressListener</code> to
-        // receive
-        // asynchronous notifications about your transfer's progress.
-        myUpload.addProgressListener(new ProgressListener()
-        {
-          int count = 0;
-
-          @Override
-          public void progressChanged(ProgressEvent progressEvent)
+          if (myUpload.isDone() == false)
           {
-            if (count % 2000 == 0)
-            {
-              long total = myUpload.getProgress().getTotalBytesToTransfer();
-              long current = myUpload.getProgress().getBytesTransferred();
-              System.out.println(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-              count = 0;
-            }
-
-            count++;
+            System.out.println("Transfer: " + myUpload.getDescription());
+            System.out.println("  - State: " + myUpload.getState());
+            System.out.println("  - Progress: " + myUpload.getProgress().getBytesTransferred());
           }
-        });
 
-        // Or you can block the current thread and wait for your transfer to
-        // to complete. If the transfer fails, this method will throw an
-        // AmazonClientException or AmazonServiceException detailing the reason.
-        myUpload.waitForCompletion();
+          myUpload.addProgressListener(new ProgressListener()
+          {
+            int count = 0;
 
-        // After the upload is complete, call shutdownNow to release the
-        // resources.
-        tx.shutdownNow();
+            @Override
+            public void progressChanged(ProgressEvent progressEvent)
+            {
+              if (count % 2000 == 0)
+              {
+                long total = myUpload.getProgress().getTotalBytesToTransfer();
+                long current = myUpload.getProgress().getBytesTransferred();
+                System.out.println(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+
+                count = 0;
+              }
+
+              count++;
+            }
+          });
+
+          myUpload.waitForCompletion();
+        }
+        finally
+        {
+          tx.shutdownNow();
+        }
       }
-      catch (AmazonClientException | InterruptedException e)
+      catch (Exception e)
       {
-        // TODO give better error message?
-        throw new ProgrammingErrorException(e);
+        task.createAction(e.getMessage(), "error");
       }
     }
     else
     {
-      System.out.println("Name [" + name + "] is invalid");
+      task.createAction("The filename [" + name + "] is invalid", "error");
     }
   }
 }

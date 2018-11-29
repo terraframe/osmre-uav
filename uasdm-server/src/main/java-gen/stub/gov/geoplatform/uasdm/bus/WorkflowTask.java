@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
@@ -32,6 +33,16 @@ public class WorkflowTask extends WorkflowTaskBase
     }
 
     return null;
+  }
+
+  @Transaction
+  public void createAction(String message, String type)
+  {
+    WorkflowAction action = new WorkflowAction();
+    action.setActionType(type);
+    action.setDescription(message);
+    action.setWorkflowTask(this);
+    action.apply();
   }
 
 }

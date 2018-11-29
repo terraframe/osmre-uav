@@ -95,25 +95,41 @@ public class FileUploadController
       MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, AppProperties.getTempDirectory(), context);
       RequestParser requestParser = RequestParser.getInstance(req, multipartUploadParser);
 
-      if (requestParser.isResume())
+      try
       {
-        // Validate that the chunks still exist on the file system
-        this.assertChunksExist(requestParser.getUuid());
-      }
+        if (requestParser.isResume())
+        {
+          // Validate that the chunks still exist on the file system
+          this.assertChunksExist(requestParser.getUuid());
+        }
 
-      if (requestParser.isFirst() || requestParser.isResume())
+        if (requestParser.isFirst() || requestParser.isResume())
+        {
+          this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
+        }
+
+        this.writeFileForMultipartRequest(clientRequest, requestParser);
+
+        if (requestParser.getPartIndex() % 10 == 0)
+        {
+          this.wService.updateUploadTask(clientRequest.getSessionId(), requestParser);
+        }
+
+        return writeResponse(requestParser.generateError() ? "Generated error" : null, isIframe, false, false);
+      }
+      catch (SmartExceptionDTO e)
       {
-        this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
+        try
+        {
+          this.wService.errorUploadTask(clientRequest.getSessionId(), requestParser, e.getMessage());
+        }
+        catch (Exception e1)
+        {
+          log.error("Problem handling exception", e1);
+        }
+
+        return this.writeResponse(e.getMessage(), isIframe, false, true);
       }
-
-      this.writeFileForMultipartRequest(clientRequest, requestParser);
-
-      if (requestParser.getPartIndex() % 10 == 0)
-      {
-        this.wService.updateUploadTask(clientRequest.getSessionId(), requestParser);
-      }
-
-      return writeResponse(requestParser.generateError() ? "Generated error" : null, isIframe, false, false);
     }
     catch (Exception e)
     {
@@ -122,10 +138,6 @@ public class FileUploadController
       if (e instanceof MergePartsException)
       {
         return this.writeResponse(e.getMessage(), isIframe, true, false);
-      }
-      else if (e instanceof SmartExceptionDTO)
-      {
-        return this.writeResponse(e.getMessage(), isIframe, false, true);
       }
 
       return this.writeResponse(e.getMessage(), isIframe, false, false);

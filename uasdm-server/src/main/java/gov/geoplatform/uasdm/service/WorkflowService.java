@@ -73,6 +73,26 @@ public class WorkflowService
     }
   }
 
+  @Request(RequestType.SESSION)
+  public void errorUploadTask(String sessionId, RequestParser parser, String message)
+  {
+    this.errorUploadTaskInTransaction(sessionId, parser, message);
+  }
+
+  @Transaction
+  public void errorUploadTaskInTransaction(String sessionId, RequestParser parser, String message)
+  {
+    WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+
+    if (task != null)
+    {
+      task.lock();
+      task.setStatus("Error");
+      task.setMessage(message);
+      task.apply();
+    }
+  }
+
   // Determine if a collection needs to be created
   public Collection getCollection(String sessionId, RequestParser parser)
   {
@@ -98,5 +118,4 @@ public class WorkflowService
       return Collection.get(collectionId);
     }
   }
-
 }
