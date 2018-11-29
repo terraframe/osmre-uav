@@ -3,9 +3,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 
-import { CreateModalComponent } from './modals/create-modal.component';
-import { EditModalComponent } from './modals/edit-modal.component';
-import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { MetadataModalComponent } from './modals/metadata-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { Message, Task } from './management';
 import { ManagementService } from './management.service';
@@ -64,6 +62,22 @@ export class UserProfileComponent implements OnInit {
     	})
     	
     	return count
+    }
+
+    handleMessage( message: Message ): void {
+        this.bsModalRef = this.modalService.show( MetadataModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            'class': 'upload-modal'
+        } );
+        this.bsModalRef.content.missionId = message.missionId;
+
+        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( missionId => {
+            // Remove the message
+            
+        } );
+
     }
 
     error( err: any ): void {

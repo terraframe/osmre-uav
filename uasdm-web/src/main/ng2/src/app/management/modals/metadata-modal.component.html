@@ -1,0 +1,25 @@
+<form>
+
+  <div class="modal-header">
+    <h2>Metadata file upload</h2>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{message}}</p>
+        </div>
+      </div>
+    </div>
+    <div #uploader></div>
+    <div>
+      <button type="button" [ngClass]="{disabled : disabled}" class="btn btn-primary" (click)="handleSubmit($event)">
+        <i class="icon-upload icon-white"></i> Upload
+      </button>
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,18 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Mission">
+        <create>
+          <attributes>
+            <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " description="Flag indicating whether metadata XML file has been uploaded for the mission." />
+          </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.Mission.metadataUploaded" type="com.runwaysdk.system.metadata.MdAttributeBoolean" />
+    </delete>
+  </undoIt>
+</version>
