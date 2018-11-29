@@ -1,8 +1,9 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.File;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,45 +16,34 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.service.ProjectManagementService;
 import net.geoprism.GeoprismUser;
 
-public class UploadArchiveTest
+public class WorkflowTaskTest
 {
-  private static ProjectManagementService service;
-
-  private static String                   siteId;
-
-  private static String                   projectId1;
-
-  private static String                   missionId1;
-
-  private static String                   collectionId1;
+  private static String       collectionId1;
 
   /**
    * The test user object
    */
-  private static GeoprismUser             newUser;
+  private static GeoprismUser newUser;
 
   /**
    * The username for the user
    */
-  private final static String             USERNAME     = "btables";
+  private final static String USERNAME     = "btables";
 
   /**
    * The password for the user
    */
-  private final static String             PASSWORD     = "1234";
+  private final static String PASSWORD     = "1234";
 
-  private final static int                sessionLimit = 2;
+  private final static int    sessionLimit = 2;
 
   @BeforeClass
   @Request
   public static void classSetUp()
   {
     createSiteHierarchyTransaction();
-
-    service = new ProjectManagementService();
   }
 
   @Transaction
@@ -84,14 +74,10 @@ public class UploadArchiveTest
     Site site = new Site();
     site.setName("Site_Unit_Test");
     site.applyWithParent(null);
-    // System.out.println("S3: "+site.getS3location());
-    siteId = site.getOid();
 
     Project project1 = new Project();
     project1.setName("Project1");
     project1.applyWithParent(site);
-    // System.out.println("S3: "+project1.getS3location());
-    projectId1 = project1.getOid();
 
     Project project2 = new Project();
     project2.setName("Project2");
@@ -100,8 +86,6 @@ public class UploadArchiveTest
     Mission mission1 = new Mission();
     mission1.setName("Mission1");
     mission1.applyWithParent(project1);
-    // System.out.println("S3: "+mission1.getS3location());
-    missionId1 = mission1.getOid();
 
     Collection collection1 = new Collection();
     collection1.setName("Collection1");
@@ -148,25 +132,10 @@ public class UploadArchiveTest
     }
   }
 
-  // @Test
-  // @Request
-  // public void testZipArchive()
-  // {
-  // System.out.println("Starting");
-  //
-  // Collection collection = Collection.get(collectionId1);
-  // collection.uploadArchive(new
-  // File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.zip"));
-  //
-  // System.out.println("Finished");
-  // }
-
   @Test
   @Request
-  public void testTarGzArchive()
+  public void testToJSON()
   {
-    System.out.println("Starting");
-
     Collection collection = Collection.get(collectionId1);
 
     WorkflowTask task = new WorkflowTask();
@@ -174,11 +143,23 @@ public class UploadArchiveTest
     task.setCollection(collection);
     task.setUpLoadId("testID");
     task.setStatus("Test Status");
+    task.setTaskLabel("Test label");
     task.apply();
 
-    collection.uploadArchive(task, new File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.tar.gz"));
+    WorkflowAction action = new WorkflowAction();
+    action.setActionType("TEST");
+    action.setDescription("TEST");
+    action.setWorkflowTask(task);
+    action.apply();
 
-    System.out.println("Finished");
+    JSONObject json = task.toJSON();
+
+    Assert.assertTrue(json.has("actions"));
+    Assert.assertEquals(task.getTaskLabel(), json.getString("label"));
+
+    JSONArray actions = json.getJSONArray("actions");
+
+    Assert.assertEquals(1, actions.length());
   }
 
 }

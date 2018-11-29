@@ -2,13 +2,19 @@ package gov.geoplatform.uasdm.bus;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.VersionListing;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -155,19 +161,81 @@ public abstract class UasComponent extends UasComponentBase
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(AppProperties.getBucketName()).withKeys(key).withQuiet(false);
+    String bucketName = AppProperties.getBucketName();
+
+    ObjectListing objectListing = client.listObjects(bucketName, key);
+
+    while (true)
+    {
+      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+
+      while (objIter.hasNext())
+      {
+        client.deleteObject(bucketName, objIter.next().getKey());
+      }
+
+      // If the bucket contains many objects, the listObjects() call
+      // might not return all of the objects in the first listing. Check to
+      // see whether the listing was truncated. If so, retrieve the next page of
+      // objects
+      // and delete them.
+      if (objectListing.isTruncated())
+      {
+        objectListing = client.listNextBatchOfObjects(objectListing);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    // Delete all object versions (required for versioned buckets).
+    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withKeyMarker(key));
+    while (true)
+    {
+      Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
+      while (versionIter.hasNext())
+      {
+        S3VersionSummary vs = versionIter.next();
+        client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+      }
+
+      if (versionList.isTruncated())
+      {
+        versionList = client.listNextBatchOfVersions(versionList);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
-    // DeleteObjectsResult delObjRes =
-    // client.deleteObjects(multiObjectDeleteRequest);
-    // int successfulDeletes = delObjRes.getDeletedObjects().size();
-    // System.out.println(successfulDeletes + " objects successfully deleted.
-    // "+key);
   }
 
   public static boolean isValidName(String name)
   {
-    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
+    if (name.contains(" ") 
+        || name.contains("<") 
+        || name.contains(">") 
+        || name.contains("-") 
+        || name.contains("+") 
+        || name.contains("=") 
+        || name.contains("!") 
+        || name.contains("@") 
+        || name.contains("#") 
+        || name.contains("$") 
+        || name.contains("%") 
+        || name.contains("^") 
+        || name.contains("&") 
+        || name.contains("*") 
+        || name.contains("?") 
+        || name.contains(";")
+        || name.contains(":") 
+        || name.contains(",") 
+        || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
     {
       return false;
     }

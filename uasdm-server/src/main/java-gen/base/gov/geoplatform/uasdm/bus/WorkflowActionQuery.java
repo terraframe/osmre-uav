@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 142005681)
+@com.runwaysdk.business.ClassSignature(hash = -1302329681)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -306,27 +306,27 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowAction.TYPE, alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask()
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask()
   {
     return getWorkflowTask(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
   {
 
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK);
 
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, mdAttributeIF, this, alias, null);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, mdAttributeIF, this, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
   {
 
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK);
 
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, mdAttributeIF, this, alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, mdAttributeIF, this, alias, displayLabel);
 
   }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
@@ -355,7 +355,7 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK)) 
     {
-       return new gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else 
     {
@@ -438,9 +438,9 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     public com.runwaysdk.query.SelectableChar getType();
     public com.runwaysdk.query.SelectableChar getType(String alias);
     public com.runwaysdk.query.SelectableChar getType(String alias, String displayLabel);
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask();
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias);
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask();
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias);
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.WorkflowAction workflowAction);
 
@@ -714,21 +714,21 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.TYPE, alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask()
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask()
   {
     return getWorkflowTask(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, alias, null);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK,  alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK,  alias, displayLabel);
 
   }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
@@ -757,7 +757,7 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK)) 
     {
-       return new gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else 
     {
@@ -817,9 +817,9 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     public com.runwaysdk.query.SelectableChar getType();
     public com.runwaysdk.query.SelectableChar getType(String alias);
     public com.runwaysdk.query.SelectableChar getType(String alias, String displayLabel);
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask();
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias);
-    public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask();
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias);
+    public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.WorkflowAction ... workflowAction);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.WorkflowAction ... workflowAction);
@@ -1142,21 +1142,21 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.TYPE, alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask()
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask()
   {
     return getWorkflowTask(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, alias, null);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF getWorkflowTask(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK,  alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK,  alias, displayLabel);
 
   }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
@@ -1185,7 +1185,7 @@ public  class WorkflowActionQuery extends com.runwaysdk.query.GeneratedBusinessQ
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.WorkflowAction.WORKFLOWTASK)) 
     {
-       return new gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else 
     {

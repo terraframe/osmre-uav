@@ -3,6 +3,9 @@
     <permissions>
       <role roleName="geoprism.admin.Administrator">
         <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
           <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowTask">
             <operation name="ALL" />
           </mdBusinessPermission>

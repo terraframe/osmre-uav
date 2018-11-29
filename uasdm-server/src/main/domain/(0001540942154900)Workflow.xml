@@ -1,10 +1,8 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" label="Task" cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask" label="Abstract Task" cacheAlgorithm="nothing" generateController="false" isAbstract="true" generateSource="true"  >
         <attributes>
-          <char name="upLoadId"  required="true" label="Upload ID" size="256" />
-          <reference name="collection" label="Collection" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.Collection" indexType="non-unique index" />
           <!-- Reference to the TeoPrism User -->
           <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
           <!-- Start Date will be the default create date -->
@@ -13,11 +11,19 @@
           <char name="status"  required="true" label="Status" size="256" />
           <!-- An optional field to provide additional information, such as how far along an upload is.  -->
           <char name="message" required="false" label="Message" size="4096" />
+          <!-- An optional field to provide additional information, such as how far along an upload is.  -->
+          <char name="taskLabel" required="false" label="Label" size="4096" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+        <attributes>
+          <char name="upLoadId"  required="true" label="Upload ID" size="256" />
+          <reference name="collection" label="Collection" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.Collection" indexType="non-unique index" />
         </attributes>
       </mdBusiness>
       <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowAction" label="Action" cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
         <attributes>
-          <reference name="workflowTask" label="Task" required="true" immutable="true" type="gov.geoplatform.uasdm.bus.WorkflowTask" indexType="non-unique index" />
+          <reference name="workflowTask" label="Task" required="true" immutable="true" type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask" indexType="non-unique index" />
           <!-- In the interest of being Agile, we will not make type an enumeration, but rather a string to make it easier to change -->
           <char name="actionType"  required="true" label="Type" size="256" />
           <!-- An optional field to provide additional information, such as how far along an upload is.  -->
@@ -31,6 +37,7 @@
     <delete>
       <object key="gov.geoplatform.uasdm.bus.WorkflowAction" type="com.runwaysdk.system.metadata.MdBusiness" />
       <object key="gov.geoplatform.uasdm.bus.WorkflowTask"   type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask" type="com.runwaysdk.system.metadata.MdBusiness" />
     </delete>
   </undoIt>
 </version>

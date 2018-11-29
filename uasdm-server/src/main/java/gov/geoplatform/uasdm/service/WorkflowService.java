@@ -1,7 +1,10 @@
 package gov.geoplatform.uasdm.service;
 
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +12,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -38,6 +42,7 @@ public class WorkflowService
       task.setUpLoadId(parser.getUuid());
       task.setCollection(collection);
       task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+      task.setTaskLabel("Upload of file [" + parser.getOriginalFilename() + "] to collection [" + collection.getName() + "]");
     }
     else
     {
@@ -118,4 +123,17 @@ public class WorkflowService
       return Collection.get(collectionId);
     }
   }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getTasks(String sessionId)
+  {
+    List<AbstractWorkflowTask> tasks = AbstractWorkflowTask.getUserTasks();
+    
+    JSONObject response = new JSONObject();
+    response.put("tasks", AbstractWorkflowTask.serialize(tasks));
+    response.put("messages", new JSONArray());
+    
+    return response;
+  }
+
 }

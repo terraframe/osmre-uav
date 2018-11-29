@@ -200,10 +200,4 @@ public class ProjectManagementService
       UasComponent.validateName(missionId, name);
     }
   }
-  
-  public List<WorkflowTask> getTasks(String sessionId)
-  {
-	  //TODO: Get tasks for the user
-	  return null;
-  }
 }
