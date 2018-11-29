@@ -18,6 +18,8 @@
 ///
 import { Component } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { ManagementService } from './management/management.service';
+
 
 declare var acp: any;
 
@@ -29,32 +31,15 @@ declare var acp: any;
 } )
 export class UasdmHeaderComponent {
     private context: string;
-    private userName: string = "admin";
+    private userName: string = "";
 
-    constructor( private cookieService: CookieService ) {
+    constructor( private managementService: ManagementService, private cookieService: CookieService ) {
         this.context = acp;
     }
 
     ngOnInit(): void {
 
-        if ( this.cookieService.check( "user" ) ) {
-            let cookieData: string = this.cookieService.get( "user" )
-            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-            this.userName = cookieDataJSON.userName;
-        }
-        else {
-            console.log('Check fails for the existence of the cookie')
-            
-            let cookieData: string = this.cookieService.get( "user" )
-            
-            if(cookieData != null) {
-              let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-              this.userName = cookieDataJSON.userName;                
-            }
-            else {
-                console.log('Unable to get cookie');
-            }
-        }
+        this.userName = this.managementService.getCurrentUser();
     }
 
 }

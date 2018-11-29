@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
 import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -16,7 +16,7 @@ import { ManagementService } from './management.service';
     templateUrl: './projects.component.html',
     styleUrls: []
 } )
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent implements OnInit, AfterViewInit {
 
     /*
      * Reference to the modal current showing
@@ -42,7 +42,9 @@ export class ProjectsComponent implements OnInit {
                 },
                 click : TREE_ACTIONS.TOGGLE_EXPANDED
             }
-        }
+        },
+        allowDrag:false,
+        allowDrop:false
     };
 
     /*
@@ -79,6 +81,15 @@ export class ProjectsComponent implements OnInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+    
+    ngAfterViewInit() {
+    	
+      setTimeout(()=>{
+          if(this.tree){
+            this.tree.treeModel.expandAll();
+          }
+      }, 1000)
     }
     
 

@@ -5,11 +5,12 @@ import { Observable } from 'rxjs/Observable';
 
 import { ProjectsComponent } from './management/projects.component';
 import { UploadComponent } from './management/upload.component';
+import { UserProfileComponent } from './management/user-profile.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/projects',
+        redirectTo: '/profile',
         pathMatch: 'full'
     },
     {
@@ -20,6 +21,10 @@ const routes: Routes = [
         path: 'upload',
         component: UploadComponent
     },
+    {
+        path: 'profile',
+        component: UserProfileComponent
+    },
 ];
 
 @NgModule( {
@@ -29,4 +34,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];
