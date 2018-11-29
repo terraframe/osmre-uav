@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,6 +23,8 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
 
@@ -85,6 +89,13 @@ public class Collection extends CollectionBase
 
   public void delete()
   {
+    List<WorkflowTask> tasks = this.getTasks();
+
+    for (WorkflowTask task : tasks)
+    {
+      task.delete();
+    }
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -96,6 +107,23 @@ public class Collection extends CollectionBase
       this.deleteS3Folder(this.buildDemKey());
 
       this.deleteS3Folder(this.buildOrthoKey());
+    }
+  }
+
+  public List<WorkflowTask> getTasks()
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(this));
+
+    OIterator<? extends WorkflowTask> iterator = query.getIterator();
+
+    try
+    {
+      return new LinkedList<WorkflowTask>(iterator.getAll());
+    }
+    finally
+    {
+      iterator.close();
     }
   }
 
