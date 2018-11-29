@@ -1,9 +1,9 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.File;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,12 +20,6 @@ import net.geoprism.GeoprismUser;
 
 public class WorkflowTaskTest
 {
-  private static String       siteId;
-
-  private static String       projectId1;
-
-  private static String       missionId1;
-
   private static String       collectionId1;
 
   /**
@@ -80,14 +74,10 @@ public class WorkflowTaskTest
     Site site = new Site();
     site.setName("Site_Unit_Test");
     site.applyWithParent(null);
-    // System.out.println("S3: "+site.getS3location());
-    siteId = site.getOid();
 
     Project project1 = new Project();
     project1.setName("Project1");
     project1.applyWithParent(site);
-    // System.out.println("S3: "+project1.getS3location());
-    projectId1 = project1.getOid();
 
     Project project2 = new Project();
     project2.setName("Project2");
@@ -96,8 +86,6 @@ public class WorkflowTaskTest
     Mission mission1 = new Mission();
     mission1.setName("Mission1");
     mission1.applyWithParent(project1);
-    // System.out.println("S3: "+mission1.getS3location());
-    missionId1 = mission1.getOid();
 
     Collection collection1 = new Collection();
     collection1.setName("Collection1");
@@ -148,8 +136,6 @@ public class WorkflowTaskTest
   @Request
   public void testToJSON()
   {
-    System.out.println("Starting");
-
     Collection collection = Collection.get(collectionId1);
 
     WorkflowTask task = new WorkflowTask();
@@ -157,16 +143,23 @@ public class WorkflowTaskTest
     task.setCollection(collection);
     task.setUpLoadId("testID");
     task.setStatus("Test Status");
+    task.setTaskLabel("Test label");
     task.apply();
 
     WorkflowAction action = new WorkflowAction();
     action.setActionType("TEST");
     action.setDescription("TEST");
+    action.setWorkflowTask(task);
     action.apply();
 
     JSONObject json = task.toJSON();
 
-    System.out.println(json.toString());
+    Assert.assertTrue(json.has("actions"));
+    Assert.assertEquals(task.getTaskLabel(), json.getString("label"));
+
+    JSONArray actions = json.getJSONArray("actions");
+
+    Assert.assertEquals(1, actions.length());
   }
 
 }

@@ -103,7 +103,7 @@ public class ProjectManagementController
   @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getTasks(ClientRequestIF request)
   {
-    JSONArray response = new WorkflowService().getTasks(request.getSessionId());
+    JSONObject response = new WorkflowService().getTasks(request.getSessionId());
 
     return new RestBodyResponse(response);
   }
