@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -651110986)
+@com.runwaysdk.business.ClassSignature(hash = 2119290268)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class MissionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.Mission.CLASS;
+  }
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, displayLabel);
+
   }
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
@@ -302,6 +319,9 @@ public  class MissionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface MissionQueryReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Mission mission);
 
@@ -389,6 +409,23 @@ public  class MissionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
       return this.NE(mission.getOid());
     }
 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, displayLabel);
+
+  }
 
   public com.runwaysdk.query.Condition collections()
   {
@@ -630,6 +667,9 @@ public  class MissionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface MissionQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.Mission ... mission);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.Mission ... mission);
@@ -713,6 +753,23 @@ public  class MissionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Mission.METADATAUPLOADED, alias, displayLabel);
+
   }
   }
 }

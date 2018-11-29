@@ -3,7 +3,6 @@ package gov.geoplatform.uasdm.service;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -128,11 +128,12 @@ public class WorkflowService
   public JSONObject getTasks(String sessionId)
   {
     List<AbstractWorkflowTask> tasks = AbstractWorkflowTask.getUserTasks();
-    
+    List<Mission> missions = Mission.getAll();
+
     JSONObject response = new JSONObject();
     response.put("tasks", AbstractWorkflowTask.serialize(tasks));
-    response.put("messages", new JSONArray());
-    
+    response.put("messages", Mission.toMetadataMessage(missions));
+
     return response;
   }
 

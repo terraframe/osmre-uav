@@ -5,20 +5,28 @@ import { Observable } from 'rxjs/Observable';
 
 import { ProjectsComponent } from './management/projects.component';
 import { UploadComponent } from './management/upload.component';
+import { UserProfileComponent } from './management/user-profile.component';
+
+import { AdminGuard } from './auth/admin.guard';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/projects',
+        redirectTo: '/profile',
         pathMatch: 'full'
     },
     {
         path: 'projects',
+        canActivate: [ AdminGuard ],        
         component: ProjectsComponent
     },
     {
         path: 'upload',
         component: UploadComponent
+    },
+    {
+        path: 'profile',
+        component: UserProfileComponent
     },
 ];
 
@@ -29,4 +37,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];

@@ -3,7 +3,9 @@ import { Headers, Http, Response, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
-import { SiteEntity } from './management';
+import { CookieService } from 'ngx-cookie-service';
+
+import { SiteEntity, Message, Task } from './management';
 import { EventService } from '../event/event.service';
 
 declare var acp: any;
@@ -11,7 +13,7 @@ declare var acp: any;
 @Injectable()
 export class ManagementService {
 
-    constructor( private http: Http, private eventService: EventService ) { }
+    constructor( private http: Http, private eventService: EventService, private cookieService: CookieService ) { }
 
     getChildren( id: string ): Promise<SiteEntity[]> {
         let params: URLSearchParams = new URLSearchParams();
@@ -113,6 +115,31 @@ export class ManagementService {
             } )
     }
 
+    getCurrentUser(): string {
+        let userName: string = "admin";
+
+        if ( this.cookieService.check( "user" ) ) {
+            let cookieData: string = this.cookieService.get( "user" )
+            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+            userName = cookieDataJSON.userName;
+        }
+        else {
+            console.log( 'Check fails for the existence of the cookie' )
+
+            let cookieData: string = this.cookieService.get( "user" )
+
+            if ( cookieData != null ) {
+                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+                userName = cookieDataJSON.userName;
+            }
+            else {
+                console.log( 'Unable to get cookie' );
+            }
+        }
+
+        return userName;
+    }
+
     remove( id: string ): Promise<Response> {
 
         let headers = new Headers( {
@@ -127,5 +154,14 @@ export class ManagementService {
                 this.eventService.complete();
             } )
             .toPromise()
+    }
+
+    tasks(): Promise<{ messages: Message[], tasks: Task[] }> {
+        return this.http
+            .get( acp + '/project/tasks' )
+            .toPromise()
+            .then( response => {
+                return response.json() as { messages: Message[], tasks: Task[] };
+            } )
     }
 }

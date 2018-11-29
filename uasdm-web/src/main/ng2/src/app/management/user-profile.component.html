@@ -1,0 +1,150 @@
+<uasdm-header></uasdm-header>
+
+<div id="app-container" class="container">
+    <div class="row">
+      <div class="col-sm-10"><h1>{{userName}}</h1></div>
+<!--       <div class="col-sm-2"><a href="/users" class="pull-right"><img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/avatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=100"></a></div> -->
+    </div>
+    <div class="row">
+      <div class="col-sm-3"><!--left col-->
+              
+
+      <div class="text-center">
+        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
+<!--         <h6>Upload a different photo...</h6> -->
+<!--         <input type="file" class="text-center center-block file-upload"> -->
+      </div><br>
+
+               
+<!--           <div class="panel panel-default"> -->
+<!--             <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div> -->
+<!--             <div class="panel-body"><a href="http://bootnipets.com">bootnipets.com</a></div> -->
+<!--           </div> -->
+          
+          
+          <ul class="list-group">
+            <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Tasks</strong></span> {{totalTaskCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Actions</strong></span> {{totalActionsCount}}</li>
+          </ul> 
+               
+          <div class="panel panel-default">
+            <div class="panel-heading">Help Resources</div>
+            <div class="panel-body">
+              <i class="fa fa-link fa-2x">&#32; Help Docs</i>
+            </div>
+          </div>
+          
+        </div><!--/col-3-->
+      <div class="col-sm-9">
+         <ul class="nav nav-tabs">
+<!--             <li class="active"><a data-toggle="tab" href="#overview">Home</a></li> -->
+            <li class="active"><a data-toggle="tab" href="#tasks">Tasks</a></li>
+<!--             <li><a data-toggle="tab" href="#actions">Actions</a></li> -->
+          </ul>
+              
+          <div class="tab-content">
+<!--               <div class="tab-pane active" id="overview"> -->
+                
+<!--                 <h2>Your Overview</h2> -->
+                
+<!--                 <hr> -->
+              
+<!--               </div> -->
+              <div class="tab-pane active" id="tasks">
+                
+                <h2>Your tasks</h2>
+                
+                <hr>
+                <alert *ngFor="let message of messages" type="danger" (click)="handleMessage(message)">
+                  {{message.message}}
+                </alert>
+                                
+                <div class="panel-group">
+                  <div *ngFor="let task of tasks; let i=index" class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse{{i}}">
+                        <ul class="list-inline" style="margin: 0;">
+                          <li>{{task.label}}</li>
+                        </ul>
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapse{{i}}" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <ul class="list-inline" style="margin: 0;">
+                          <li>Created on: <b>{{task.createDate}}</b></li>
+                          <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
+                          <li>Status: <b>{{task.status}}</b></li>
+                        </ul>
+                        
+                        <hr>
+                        
+                        <h4>Actions for {{task.label}}</h4>
+                        <table class="table table-bordered"> 
+                          <thead> 
+                            <tr> 
+                              <th>#</th> 
+                              <th>Type</th> 
+                              <th>Description</th> 
+                              <th>Creation Date</th> 
+                              <th>Last Updated</th> 
+                            </tr> 
+                          </thead> 
+                          <tbody> 
+<!--                             <template let-actions ngFor [ngForOf]="task.actions"> -->
+                            <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
+                              <th scope="row">{{i + 1}}</th> 
+                              <td>{{action.type}}</td> 
+                              <td>{{action.description}}</td> 
+                              <td>{{action.createdDate}}</td> 
+                              <td>{{action.lastUpdatedDate}}</td> 
+                            </tr> 
+<!--                             </template> -->
+                          </tbody> 
+                        </table>
+                      </div>
+<!--                       <div class="panel-footer">Panel Footer</div> -->
+                    </div>
+                  </div>
+                </div>
+                
+<!--                 <div class="panel panel-default"> -->
+<!--                   <table class="table">  -->
+<!--                     <thead>  -->
+<!--                       <tr>  -->
+<!--                         <th>#</th>  -->
+<!--                         <th>Data Manager</th>  -->
+<!--                         <th>Start Date</th>  -->
+<!--                         <th>Last Updated</th>  -->
+<!--                         <th>Status</th>  -->
+<!--                         <th>Message</th>  -->
+<!--                       </tr>  -->
+<!--                     </thead>  -->
+<!--                     <tbody>  -->
+<!--                       <tr data-toggle="collapse" data-target="#accordion" class="active clickable"><th scope="row">1</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Started</td> <td></td> </tr>  -->
+                      
+<!--                       <tr id="accordion" class="danger collapse"> -->
+<!--                        <th scope="row">3</th> <td>Upload Required Metadata</td> <td>Metadata is required for each upload.</td>  -->
+<!--                       </tr> -->
+                      
+<!--                       <tr class="active"><th scope="row">2</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Uploading</td> <td></td> </tr>  -->
+<!--                       <tr class="danger"><th scope="row">3</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Failed</td> <td>ERROR: Network disruption</td> </tr> -->
+<!--                       <tr class="success"><th scope="row">4</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Complete</td> <td></td> </tr> -->
+<!--                     </tbody>  -->
+<!--                   </table> -->
+<!--                 </div> -->
+                
+              </div><!--/tab-pane-->
+<!--               <div class="tab-pane" id="actions"> -->
+<!--                  <h2>Actions</h2> -->
+<!--                  <hr> -->
+<!--                </div> -->
+               
+              </div><!--/tab-pane-->
+          </div><!--/tab-content-->
+
+        </div><!--/col-9-->
+</div>
+

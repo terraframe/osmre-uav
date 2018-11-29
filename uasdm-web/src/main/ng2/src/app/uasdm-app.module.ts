@@ -6,6 +6,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 
 import './rxjs-extensions';
@@ -15,6 +16,7 @@ import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
 import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
+import { MetadataModalComponent } from './management/modals/metadata-modal.component';
 import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
@@ -22,6 +24,8 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
 import { ManagementService } from './management/management.service';
 import { EventService } from './event/event.service';
+import { AuthService } from './auth/auth.service';
+import { AdminGuard } from './auth/admin.guard';
 
 @NgModule( {
     imports: [
@@ -33,6 +37,7 @@ import { EventService } from './event/event.service';
         TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
         ModalModule.forRoot(),
+        AlertModule.forRoot(),        
         BsDropdownModule.forRoot(),
     ],
     declarations: [
@@ -40,19 +45,22 @@ import { EventService } from './event/event.service';
         EditModalComponent,
         CreateModalComponent,
         ConfirmModalComponent,
+        MetadataModalComponent,
         ErrorModalComponent,
         LoadingBarComponent,
-        
+
         // Routing components
         routedComponents,
         UasdmHeaderComponent,
     ],
     providers: [
+        AdminGuard,
         CookieService,
+        AuthService,
         ManagementService,
-        EventService        
+        EventService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]
+    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]
 } )
 export class UasdmAppModule { }
