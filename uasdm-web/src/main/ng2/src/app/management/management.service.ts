@@ -5,7 +5,7 @@ import 'rxjs/add/operator/finally';
 
 import { CookieService } from 'ngx-cookie-service';
 
-import { SiteEntity } from './management';
+import { SiteEntity, Message, Task } from './management';
 import { EventService } from '../event/event.service';
 
 declare var acp: any;
@@ -114,30 +114,30 @@ export class ManagementService {
                 return response.json() as SiteEntity;
             } )
     }
-    
-    getCurrentUser() : string {
-    	let userName: string = "admin";
-    
-    	if ( this.cookieService.check( "user" ) ) {
+
+    getCurrentUser(): string {
+        let userName: string = "admin";
+
+        if ( this.cookieService.check( "user" ) ) {
             let cookieData: string = this.cookieService.get( "user" )
             let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
             userName = cookieDataJSON.userName;
         }
         else {
-            console.log('Check fails for the existence of the cookie')
-            
+            console.log( 'Check fails for the existence of the cookie' )
+
             let cookieData: string = this.cookieService.get( "user" )
-            
-            if(cookieData != null) {
-              let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-              userName = cookieDataJSON.userName;                
+
+            if ( cookieData != null ) {
+                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+                userName = cookieDataJSON.userName;
             }
             else {
-                console.log('Unable to get cookie');
+                console.log( 'Unable to get cookie' );
             }
         }
-    	
-    	return userName;
+
+        return userName;
     }
 
     remove( id: string ): Promise<Response> {
@@ -154,5 +154,14 @@ export class ManagementService {
                 this.eventService.complete();
             } )
             .toPromise()
+    }
+
+    tasks(): Promise<{ messages: Message[], tasks: Task[] }> {
+        return this.http
+            .get( acp + '/project/tasks' )
+            .toPromise()
+            .then( response => {
+                return response.json() as { messages: Message[], tasks: Task[] };
+            } )
     }
 }

@@ -6,6 +6,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 
 import './rxjs-extensions';
@@ -35,6 +36,7 @@ import { AdminGuard } from './auth/admin.guard';
         TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
         ModalModule.forRoot(),
+        AlertModule.forRoot(),        
         BsDropdownModule.forRoot(),
     ],
     declarations: [

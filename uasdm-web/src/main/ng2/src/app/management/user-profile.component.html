@@ -56,11 +56,10 @@
                 <h2>Your tasks</h2>
                 
                 <hr>
-                
-                <p>Metadata Missing: upload required metadata</p>
-                <p>Metadata Missing: upload required metadata</p>
-                <p>Metadata Missing: upload required metadata</p>
-                
+                <alert *ngFor="let message of messages" type="danger">
+                  {{message.message}}
+                </alert>
+                                
                 <div class="panel-group">
                   <div class="panel panel-default">
                     <div class="panel-heading">
@@ -69,7 +68,7 @@
                         <ul class="list-inline" style="margin: 0;">
                           <li>Task 1</li>
                           <li>Created on: <b>11/28/2018</b></li>
-                          <li>Last updated: <b>11/28/2018</b></li>
+                          <li>Last updated: <b>11/28/2018</b></li> 
                           <li>Status: <b>Started</b></li>
                         </ul>
                         </a>

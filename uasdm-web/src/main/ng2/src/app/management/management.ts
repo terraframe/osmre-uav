@@ -13,3 +13,24 @@ export class UploadForm {
     name: string;
 }
 
+export class Action {
+    createDate: string;
+    lastUpdatedDate: string;
+    type: string;
+    description: string;
+}
+
+export class Task {
+    oid: string;
+    label: string;
+    createDate: string;
+    lastUpdatedDate: string;
+    status: string;
+    message: string;
+    actions: Action[];
+}
+
+export class Message {
+    missionId: string;
+    message: string;
+}

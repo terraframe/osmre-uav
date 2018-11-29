@@ -7,7 +7,7 @@ import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
-import { SiteEntity } from './management';
+import { Message, Task } from './management';
 import { ManagementService } from './management.service';
 
 @Component( {
@@ -17,24 +17,34 @@ import { ManagementService } from './management.service';
 } )
 export class UserProfileComponent implements OnInit {
 
-	private userName: string = "";
+    private userName: string = "";
 
     /*
      * Reference to the modal current showing
      */
     private bsModalRef: BsModalRef;
 
+    /*
+     * List of messages
+     */
+    private messages: Message[];
 
     /*
-     * Template for the delete confirmation
+     * List of tasks
      */
-    @ViewChild( 'confirmTemplate' ) public confirmTemplate: TemplateRef<any>;
-
+    private tasks: Task[];
 
     constructor( private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) { }
 
     ngOnInit(): void {
-    	this.userName = this.managementService.getCurrentUser();
+        this.userName = this.managementService.getCurrentUser();
+
+        this.managementService.tasks().then( data => {
+            this.messages = data.messages;
+            this.tasks = data.tasks;
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
+        } );
     }
 
     error( err: any ): void {
