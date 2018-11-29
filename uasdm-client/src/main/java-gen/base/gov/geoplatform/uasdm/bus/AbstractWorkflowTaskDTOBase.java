@@ -1,12 +1,12 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1616317880)
-public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.BusinessDTO
+@com.runwaysdk.business.ClassSignature(hash = 542778887)
+public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
-  public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowAction";
-  private static final long serialVersionUID = 1616317880;
+  public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
+  private static final long serialVersionUID = 542778887;
   
-  protected WorkflowActionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(clientRequest);
   }
@@ -17,7 +17,7 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
   * @param businessDTO The BusinessDTO to duplicate
   * @param clientRequest The clientRequest this DTO should use to communicate with the server.
   */
-  protected WorkflowActionDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected AbstractWorkflowTaskDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(businessDTO, clientRequest);
   }
@@ -27,58 +27,22 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     return CLASS;
   }
   
-  public static java.lang.String ACTIONTYPE = "actionType";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String DESCRIPTION = "description";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public static java.lang.String GEOPRISMUSER = "geoprismUser";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String MESSAGE = "message";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
+  public static java.lang.String STATUS = "status";
+  public static java.lang.String TASKLABEL = "taskLabel";
   public static java.lang.String TYPE = "type";
-  public static java.lang.String WORKFLOWTASK = "workflowTask";
-  public String getActionType()
-  {
-    return getValue(ACTIONTYPE);
-  }
-  
-  public void setActionType(String value)
-  {
-    if(value == null)
-    {
-      setValue(ACTIONTYPE, "");
-    }
-    else
-    {
-      setValue(ACTIONTYPE, value);
-    }
-  }
-  
-  public boolean isActionTypeWritable()
-  {
-    return isWritable(ACTIONTYPE);
-  }
-  
-  public boolean isActionTypeReadable()
-  {
-    return isReadable(ACTIONTYPE);
-  }
-  
-  public boolean isActionTypeModified()
-  {
-    return isModified(ACTIONTYPE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getActionTypeMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(ACTIONTYPE).getAttributeMdDTO();
-  }
-  
   public java.util.Date getCreateDate()
   {
     return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(CREATEDATE));
@@ -141,43 +105,6 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(CREATEDBY).getAttributeMdDTO();
   }
   
-  public String getDescription()
-  {
-    return getValue(DESCRIPTION);
-  }
-  
-  public void setDescription(String value)
-  {
-    if(value == null)
-    {
-      setValue(DESCRIPTION, "");
-    }
-    else
-    {
-      setValue(DESCRIPTION, value);
-    }
-  }
-  
-  public boolean isDescriptionWritable()
-  {
-    return isWritable(DESCRIPTION);
-  }
-  
-  public boolean isDescriptionReadable()
-  {
-    return isReadable(DESCRIPTION);
-  }
-  
-  public boolean isDescriptionModified()
-  {
-    return isModified(DESCRIPTION);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeClobMdDTO getDescriptionMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeClobMdDTO) getAttributeDTO(DESCRIPTION).getAttributeMdDTO();
-  }
-  
   public com.runwaysdk.system.metadata.MdDomainDTO getEntityDomain()
   {
     if(getValue(ENTITYDOMAIN) == null || getValue(ENTITYDOMAIN).trim().equals(""))
@@ -225,6 +152,55 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getEntityDomainMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(ENTITYDOMAIN).getAttributeMdDTO();
+  }
+  
+  public net.geoprism.GeoprismUserDTO getGeoprismUser()
+  {
+    if(getValue(GEOPRISMUSER) == null || getValue(GEOPRISMUSER).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return net.geoprism.GeoprismUserDTO.get(getRequest(), getValue(GEOPRISMUSER));
+    }
+  }
+  
+  public String getGeoprismUserOid()
+  {
+    return getValue(GEOPRISMUSER);
+  }
+  
+  public void setGeoprismUser(net.geoprism.GeoprismUserDTO value)
+  {
+    if(value == null)
+    {
+      setValue(GEOPRISMUSER, "");
+    }
+    else
+    {
+      setValue(GEOPRISMUSER, value.getOid());
+    }
+  }
+  
+  public boolean isGeoprismUserWritable()
+  {
+    return isWritable(GEOPRISMUSER);
+  }
+  
+  public boolean isGeoprismUserReadable()
+  {
+    return isReadable(GEOPRISMUSER);
+  }
+  
+  public boolean isGeoprismUserModified()
+  {
+    return isModified(GEOPRISMUSER);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getGeoprismUserMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(GEOPRISMUSER).getAttributeMdDTO();
   }
   
   public String getKeyName()
@@ -363,6 +339,43 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
   }
   
+  public String getMessage()
+  {
+    return getValue(MESSAGE);
+  }
+  
+  public void setMessage(String value)
+  {
+    if(value == null)
+    {
+      setValue(MESSAGE, "");
+    }
+    else
+    {
+      setValue(MESSAGE, value);
+    }
+  }
+  
+  public boolean isMessageWritable()
+  {
+    return isWritable(MESSAGE);
+  }
+  
+  public boolean isMessageReadable()
+  {
+    return isReadable(MESSAGE);
+  }
+  
+  public boolean isMessageModified()
+  {
+    return isModified(MESSAGE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getMessageMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(MESSAGE).getAttributeMdDTO();
+  }
+  
   public com.runwaysdk.system.ActorDTO getOwner()
   {
     if(getValue(OWNER) == null || getValue(OWNER).trim().equals(""))
@@ -462,60 +475,85 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SITEMASTER).getAttributeMdDTO();
   }
   
-  public gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO getWorkflowTask()
+  public String getStatus()
   {
-    if(getValue(WORKFLOWTASK) == null || getValue(WORKFLOWTASK).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO.get(getRequest(), getValue(WORKFLOWTASK));
-    }
+    return getValue(STATUS);
   }
   
-  public String getWorkflowTaskOid()
-  {
-    return getValue(WORKFLOWTASK);
-  }
-  
-  public void setWorkflowTask(gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO value)
+  public void setStatus(String value)
   {
     if(value == null)
     {
-      setValue(WORKFLOWTASK, "");
+      setValue(STATUS, "");
     }
     else
     {
-      setValue(WORKFLOWTASK, value.getOid());
+      setValue(STATUS, value);
     }
   }
   
-  public boolean isWorkflowTaskWritable()
+  public boolean isStatusWritable()
   {
-    return isWritable(WORKFLOWTASK);
+    return isWritable(STATUS);
   }
   
-  public boolean isWorkflowTaskReadable()
+  public boolean isStatusReadable()
   {
-    return isReadable(WORKFLOWTASK);
+    return isReadable(STATUS);
   }
   
-  public boolean isWorkflowTaskModified()
+  public boolean isStatusModified()
   {
-    return isModified(WORKFLOWTASK);
+    return isModified(STATUS);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getWorkflowTaskMd()
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getStatusMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(WORKFLOWTASK).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(STATUS).getAttributeMdDTO();
   }
   
-  public static gov.geoplatform.uasdm.bus.WorkflowActionDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
+  public String getTaskLabel()
+  {
+    return getValue(TASKLABEL);
+  }
+  
+  public void setTaskLabel(String value)
+  {
+    if(value == null)
+    {
+      setValue(TASKLABEL, "");
+    }
+    else
+    {
+      setValue(TASKLABEL, value);
+    }
+  }
+  
+  public boolean isTaskLabelWritable()
+  {
+    return isWritable(TASKLABEL);
+  }
+  
+  public boolean isTaskLabelReadable()
+  {
+    return isReadable(TASKLABEL);
+  }
+  
+  public boolean isTaskLabelModified()
+  {
+    return isModified(TASKLABEL);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getTaskLabelMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(TASKLABEL).getAttributeMdDTO();
+  }
+  
+  public static gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
   {
     com.runwaysdk.business.EntityDTO dto = (com.runwaysdk.business.EntityDTO)clientRequest.get(oid);
     
-    return (gov.geoplatform.uasdm.bus.WorkflowActionDTO) dto;
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO) dto;
   }
   
   public void apply()
@@ -534,9 +572,9 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     getRequest().delete(this.getOid());
   }
   
-  public static gov.geoplatform.uasdm.bus.WorkflowActionQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
+  public static gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
   {
-    return (gov.geoplatform.uasdm.bus.WorkflowActionQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.bus.WorkflowActionDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
   }
   
   public void lock()
@@ -544,12 +582,12 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     getRequest().lock(this);
   }
   
-  public static gov.geoplatform.uasdm.bus.WorkflowActionDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.WorkflowActionDTO.CLASS, "lock", _declaredTypes);
-    return (gov.geoplatform.uasdm.bus.WorkflowActionDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO.CLASS, "lock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
   public void unlock()
@@ -557,12 +595,12 @@ public abstract class WorkflowActionDTOBase extends com.runwaysdk.business.Busin
     getRequest().unlock(this);
   }
   
-  public static gov.geoplatform.uasdm.bus.WorkflowActionDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.WorkflowActionDTO.CLASS, "unlock", _declaredTypes);
-    return (gov.geoplatform.uasdm.bus.WorkflowActionDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO.CLASS, "unlock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
 }

@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.constants.ClientRequestIF;
@@ -16,6 +17,7 @@ import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
 
 import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.SiteItem;
 
 @Controller(url = "project")
@@ -96,5 +98,13 @@ public class ProjectManagementController
     this.service.remove(request.getSessionId(), id);
 
     return new RestResponse();
+  }
+
+  @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getTasks(ClientRequestIF request)
+  {
+    JSONObject response = new WorkflowService().getTasks(request.getSessionId());
+
+    return new RestBodyResponse(response);
   }
 }

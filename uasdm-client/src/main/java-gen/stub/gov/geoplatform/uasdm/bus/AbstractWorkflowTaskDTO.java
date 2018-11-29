@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-public class WorkflowTaskDTO extends WorkflowTaskDTOBase
+public abstract class AbstractWorkflowTaskDTO extends AbstractWorkflowTaskDTOBase
 {
-  private static final long serialVersionUID = -1508138865;
+  private static final long serialVersionUID = -1203150262;
   
-  public WorkflowTaskDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
+  public AbstractWorkflowTaskDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(clientRequest);
   }
@@ -15,7 +15,7 @@ public class WorkflowTaskDTO extends WorkflowTaskDTOBase
   * @param businessDTO The BusinessDTO to duplicate
   * @param clientRequest The clientRequest this DTO should use to communicate with the server.
   */
-  protected WorkflowTaskDTO(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected AbstractWorkflowTaskDTO(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(businessDTO, clientRequest);
   }

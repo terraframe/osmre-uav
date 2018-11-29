@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.chunk;
 
 import java.io.File;
 
@@ -11,6 +11,8 @@ import org.apache.commons.io.FileCleaningTracker;
 
 import com.runwaysdk.controller.RequestManager;
 import com.runwaysdk.mvc.ServletFileUploadFactory;
+
+import gov.geoplatform.uasdm.AppProperties;
 
 public class ChunkFileItemFactory implements ServletFileUploadFactory
 {
@@ -28,7 +30,7 @@ public class ChunkFileItemFactory implements ServletFileUploadFactory
   {
     ServletContext context = manager.getReq().getServletContext();
 
-    DiskFileItemFactory fileItemsFactory = setupFileItemFactory(FileUploadController.TEMP_DIR, context);
+    DiskFileItemFactory fileItemsFactory = setupFileItemFactory(AppProperties.getTempDirectory(), context);
 
     ServletFileUpload upload = new ServletFileUpload(fileItemsFactory);
 

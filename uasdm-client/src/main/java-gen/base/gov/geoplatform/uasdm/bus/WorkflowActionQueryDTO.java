@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1196967043)
+@com.runwaysdk.business.ClassSignature(hash = -2011790463)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class WorkflowActionQueryDTO extends com.runwaysdk.business.BusinessQueryDTO
 {
-private static final long serialVersionUID = 1196967043;
+private static final long serialVersionUID = -2011790463;
 
   protected WorkflowActionQueryDTO(String type)
   {

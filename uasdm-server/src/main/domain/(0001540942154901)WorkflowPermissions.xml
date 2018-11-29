@@ -1,0 +1,24 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowAction">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+    <create></create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

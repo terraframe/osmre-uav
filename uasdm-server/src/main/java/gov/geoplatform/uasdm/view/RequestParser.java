@@ -1,14 +1,15 @@
 package gov.geoplatform.uasdm.view;
 
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class RequestParser
 {
@@ -23,6 +24,8 @@ public class RequestParser
   private static String       UUID_PARAM           = "qquuid";
 
   private static String       PART_FILENAME_PARAM  = "qqfilename";
+
+  private static String       PART_RESUME_PARAM    = "qqresume";
 
   private static String       METHOD_PARAM         = "_method";
 
@@ -47,6 +50,8 @@ public class RequestParser
   private String              method;
 
   private Map<String, String> customParams         = new HashMap<>();
+
+  private Boolean             resume;
 
   private RequestParser()
   {
@@ -131,6 +136,16 @@ public class RequestParser
     return method;
   }
 
+  public boolean isResume()
+  {
+    return resume;
+  }
+
+  public boolean isFirst()
+  {
+    return ( this.partIndex == 0 || this.partIndex < 0 );
+  }
+
   public Map<String, String> getCustomParams()
   {
     return customParams;
@@ -166,6 +181,22 @@ public class RequestParser
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
     }
+
+    String resume = multipartUploadParser.getParams().get(PART_RESUME_PARAM);
+
+    if (resume != null)
+    {
+      requestParser.resume = Boolean.parseBoolean(resume);
+    }
+    else
+    {
+      requestParser.resume = false;
+    }
+  }
+
+  public int getPercent()
+  {
+    return ( (int) ( (double) this.getPartIndex() / this.getTotalParts() * 100 ) );
   }
 
   private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)
@@ -271,4 +302,5 @@ public class RequestParser
 
     return content.toString();
   }
+
 }

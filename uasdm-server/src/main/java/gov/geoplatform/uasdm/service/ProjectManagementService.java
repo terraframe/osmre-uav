@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,11 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -160,26 +163,25 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
   {
-    Map<String, String> params = parser.getCustomParams();
-    Boolean createCollection = new Boolean(params.get("create"));
-
-    if (!createCollection)
+    try
     {
-      String collectionId = params.get("collection");
+      WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+      task.lock();
+      task.setStatus("Processing");
+      task.setMessage("Processing archived files");
+      task.apply();
 
-      log.info("Uploading file to the collection [" + collectionId + "]");
+      Collection collection = task.getCollection();
+      collection.uploadArchive(task, infile);
+
+      task.lock();
+      task.setStatus("Complete");
+      task.setMessage("The Uploaded successfully completed.  All files except those mentioned were archived.");
+      task.apply();
     }
-    else
+    finally
     {
-      String missionId = params.get("mission");
-      String name = params.get("name");
-
-      SiteItem item = new SiteItem();
-      item.setName(name);
-
-      item = this.applyWithParent(sessionId, item, missionId);
-
-      log.info("Uploading file to newly created collection with the parent id [" + missionId + "] and name [" + name + "]");
+      FileUtils.deleteQuietly(infile);
     }
 
   }
@@ -198,5 +200,4 @@ public class ProjectManagementService
       UasComponent.validateName(missionId, name);
     }
   }
-
 }

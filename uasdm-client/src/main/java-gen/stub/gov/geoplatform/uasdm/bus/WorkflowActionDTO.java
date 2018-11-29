@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class WorkflowActionDTO extends WorkflowActionDTOBase
 {
-  private static final long serialVersionUID = 1810634685;
+  private static final long serialVersionUID = 1755872443;
   
   public WorkflowActionDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
