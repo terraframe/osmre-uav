@@ -18,19 +18,13 @@
           <text name="childName" label="Child Name" />
         </attributes>
       </mdException>
-    
-    <!-- 
-      <mdInformation name="net.geoprism.dashboard.layer.EmptyLayerInformation" label="Empty Layer Information" description="Created when a user creates a layer with no data to display." message="The layer [{layerName}] has no data to display. Either your filter parameters are too restrictive or there is no data for the requested datatype.">
-        <attributes>
-          <text name="layerName" label="Layer Name" />
-        </attributes>
-      </mdInformation>
-    -->
-    
     </create>
     <update></update>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.InvalidUasComponentNameException" type="com.runwaysdk.system.metadata.MdException" />
+      <object key="gov.geoplatform.uasdm.bus.DuplicateComponentException"      type="com.runwaysdk.system.metadata.MdException" />
+    </delete>
   </undoIt>
 </version>
