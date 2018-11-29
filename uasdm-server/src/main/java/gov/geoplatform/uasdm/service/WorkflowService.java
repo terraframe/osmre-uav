@@ -1,7 +1,9 @@
 package gov.geoplatform.uasdm.service;
 
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,4 +120,12 @@ public class WorkflowService
       return Collection.get(collectionId);
     }
   }
+
+  @Request(RequestType.SESSION)
+  public JSONArray getTasks(String sessionId)
+  {
+    List<WorkflowTask> tasks = WorkflowTask.getUserTasks();
+    return WorkflowTask.serialize(tasks);
+  }
+
 }

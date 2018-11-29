@@ -18,7 +18,6 @@ public class WorkflowAction extends WorkflowActionBase
 	obj.put("lastUpdatedDate", this.getLastUpdateDate());
 	obj.put("type", this.getActionType());
 	obj.put("description", this.getDescription());
-	obj.put("task", this.getWorkflowTask());
 	
 	return obj;
   }
