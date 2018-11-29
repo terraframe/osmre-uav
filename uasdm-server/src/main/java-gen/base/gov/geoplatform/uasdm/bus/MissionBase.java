@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -921733569)
+@com.runwaysdk.business.ClassSignature(hash = 1419697395)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,11 +11,40 @@ package gov.geoplatform.uasdm.bus;
 public abstract class MissionBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Mission";
-  private static final long serialVersionUID = -921733569;
+  public static java.lang.String METADATAUPLOADED = "metadataUploaded";
+  private static final long serialVersionUID = 1419697395;
   
   public MissionBase()
   {
     super();
+  }
+  
+  public Boolean getMetadataUploaded()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(METADATAUPLOADED));
+  }
+  
+  public void validateMetadataUploaded()
+  {
+    this.validateAttribute(METADATAUPLOADED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getMetadataUploadedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Mission.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(METADATAUPLOADED);
+  }
+  
+  public void setMetadataUploaded(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(METADATAUPLOADED, "");
+    }
+    else
+    {
+      setValue(METADATAUPLOADED, java.lang.Boolean.toString(value));
+    }
   }
   
   protected String getDeclaredType()

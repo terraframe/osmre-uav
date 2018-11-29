@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1608026177)
+@com.runwaysdk.business.ClassSignature(hash = 230435699)
 public abstract class MissionDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Mission";
-  private static final long serialVersionUID = -1608026177;
+  private static final long serialVersionUID = 230435699;
   
   protected MissionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -25,6 +25,44 @@ public abstract class MissionDTOBase extends gov.geoplatform.uasdm.bus.UasCompon
   protected java.lang.String getDeclaredType()
   {
     return CLASS;
+  }
+  
+  public static java.lang.String METADATAUPLOADED = "metadataUploaded";
+  public Boolean getMetadataUploaded()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(METADATAUPLOADED));
+  }
+  
+  public void setMetadataUploaded(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(METADATAUPLOADED, "");
+    }
+    else
+    {
+      setValue(METADATAUPLOADED, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isMetadataUploadedWritable()
+  {
+    return isWritable(METADATAUPLOADED);
+  }
+  
+  public boolean isMetadataUploadedReadable()
+  {
+    return isReadable(METADATAUPLOADED);
+  }
+  
+  public boolean isMetadataUploadedModified()
+  {
+    return isModified(METADATAUPLOADED);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getMetadataUploadedMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(METADATAUPLOADED).getAttributeMdDTO();
   }
   
   @SuppressWarnings("unchecked")
