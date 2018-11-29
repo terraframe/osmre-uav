@@ -22,6 +22,8 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
 import { ManagementService } from './management/management.service';
 import { EventService } from './event/event.service';
+import { AuthService } from './auth/auth.service';
+import { AdminGuard } from './auth/admin.guard';
 
 @NgModule( {
     imports: [
@@ -42,15 +44,17 @@ import { EventService } from './event/event.service';
         ConfirmModalComponent,
         ErrorModalComponent,
         LoadingBarComponent,
-        
+
         // Routing components
         routedComponents,
         UasdmHeaderComponent,
     ],
     providers: [
+        AdminGuard,
         CookieService,
+        AuthService,
         ManagementService,
-        EventService        
+        EventService
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]

@@ -7,6 +7,8 @@ import { ProjectsComponent } from './management/projects.component';
 import { UploadComponent } from './management/upload.component';
 import { UserProfileComponent } from './management/user-profile.component';
 
+import { AdminGuard } from './auth/admin.guard';
+
 const routes: Routes = [
     {
         path: '',
@@ -15,6 +17,7 @@ const routes: Routes = [
     },
     {
         path: 'projects',
+        canActivate: [ AdminGuard ],        
         component: ProjectsComponent
     },
     {
