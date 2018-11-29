@@ -16,6 +16,7 @@ import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
 import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
+import { MetadataModalComponent } from './management/modals/metadata-modal.component';
 import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
@@ -44,6 +45,7 @@ import { AdminGuard } from './auth/admin.guard';
         EditModalComponent,
         CreateModalComponent,
         ConfirmModalComponent,
+        MetadataModalComponent,
         ErrorModalComponent,
         LoadingBarComponent,
 
@@ -59,6 +61,6 @@ import { AdminGuard } from './auth/admin.guard';
         EventService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, ErrorModalComponent]
+    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]
 } )
 export class UasdmAppModule { }

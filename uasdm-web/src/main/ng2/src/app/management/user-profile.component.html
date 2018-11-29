@@ -56,7 +56,7 @@
                 <h2>Your tasks</h2>
                 
                 <hr>
-                <alert *ngFor="let message of messages" type="danger">
+                <alert *ngFor="let message of messages" type="danger" (click)="handleMessage(message)">
                   {{message.message}}
                 </alert>
                                 

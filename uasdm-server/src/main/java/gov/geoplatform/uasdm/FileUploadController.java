@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.SmartExceptionDTO;
 import com.runwaysdk.constants.ClientRequestIF;
+import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ParameterValue;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
@@ -80,8 +83,6 @@ public class FileUploadController
     this.wService = new WorkflowService();
   }
 
-  // @Endpoint(url = "upload", method = ServletMethod.POST, error =
-  // ErrorSerialization.JSON, factory = ChunkFileItemFactory.class)
   @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF upload(ClientRequestIF clientRequest, ServletRequestIF request, @RequestParamter(name = "values") Map<String, ParameterValue> values)
   {
@@ -307,4 +308,45 @@ public class FileUploadController
       partFile.delete();
     }
   }
+
+  @Endpoint(url = "metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF metadata(ClientRequestIF clientRequest, ServletRequestIF request, @RequestParamter(name = "missionId") String missionId, @RequestParamter(name = "values") Map<String, ParameterValue> values)
+  {
+
+    try
+    {
+      MultipartFileParameter file = this.getFile(values);
+
+      if (file != null)
+      {
+        this.pService.uploadMetadata(clientRequest.getSessionId(), missionId, file);
+
+        return writeResponse(null, false, false, false);
+      }
+      else
+      {
+        throw new RuntimeException("File is required");
+      }
+    }
+    catch (Exception e)
+    {
+      return this.writeResponse(e.getMessage(), false, false, false);
+    }
+  }
+
+  private MultipartFileParameter getFile(Map<String, ParameterValue> values)
+  {
+    Set<Entry<String, ParameterValue>> entries = values.entrySet();
+
+    for (Entry<String, ParameterValue> entry : entries)
+    {
+      if (entry.getValue() instanceof MultipartFileParameter)
+      {
+        return (MultipartFileParameter) entry.getValue();
+      }
+    }
+
+    return null;
+  }
+
 }

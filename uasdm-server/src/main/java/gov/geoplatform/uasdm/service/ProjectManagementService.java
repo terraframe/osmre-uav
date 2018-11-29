@@ -1,6 +1,8 @@
 package gov.geoplatform.uasdm.service;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +11,15 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.controller.MultipartFileParameter;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
@@ -198,6 +203,20 @@ public class ProjectManagementService
       String name = params.get("name");
 
       UasComponent.validateName(missionId, name);
+    }
+  }
+
+  @Request(RequestType.SESSION)
+  public void uploadMetadata(String sessionId, String missionId, MultipartFileParameter file)
+  {
+    try (InputStream istream = file.getInputStream())
+    {
+      Mission mission = Mission.get(missionId);
+      mission.uploadMetadata(file.getFieldName(), file.getSize(), istream);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
   }
 }

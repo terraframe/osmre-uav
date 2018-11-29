@@ -1,14 +1,23 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+
+import gov.geoplatform.uasdm.AppProperties;
 
 public class Mission extends MissionBase
 {
@@ -100,5 +109,39 @@ public class Mission extends MissionBase
     }
 
     return messages;
+  }
+
+  public void uploadMetadata(String name, long length, InputStream istream)
+  {
+    if (name.endsWith("_uasmeta.xml") && isValidName(name))
+    {
+      String key = this.buildAccessibleSupportKey() + name;
+
+      try
+      {
+        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+
+        try
+        {
+          ObjectMetadata metadata = new ObjectMetadata();
+          metadata.setContentLength(length);
+
+          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, istream, metadata);
+          myUpload.waitForCompletion();
+        }
+        finally
+        {
+          tx.shutdownNow();
+        }
+      }
+      catch (AmazonClientException | InterruptedException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+    else
+    {
+      throw new InvalidUasComponentNameException("The name field has an invalid character");
+    }
   }
 }
