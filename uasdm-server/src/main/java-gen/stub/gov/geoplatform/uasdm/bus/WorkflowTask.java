@@ -3,6 +3,9 @@ package gov.geoplatform.uasdm.bus;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -77,5 +80,31 @@ public class WorkflowTask extends WorkflowTaskBase
     }
 
     return null;
+  }
+  
+  public JSONObject toJSON()
+  {
+	JSONObject obj = new JSONObject();
+	obj.put("id", this.getUpLoadId());
+	obj.put("createDate", this.getCreateDate());
+	obj.put("lastUpdatedDate", this.getLastUpdateDate());
+	obj.put("status", this.getStatus());
+	obj.put("message", this.getMessage());
+	obj.put("collection", this.getCollectionOid());
+	obj.put("owner", this.getGeoprismUser());
+	
+	return obj;
+  }
+  
+  public static JSONArray serialize(List<WorkflowTask> tasks)
+  {
+    JSONArray array = new JSONArray();
+
+    for (WorkflowTask task : tasks)
+    {
+      array.put(task.toJSON());
+    }
+
+    return array;
   }
 }
