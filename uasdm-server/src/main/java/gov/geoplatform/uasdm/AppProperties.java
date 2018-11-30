@@ -1,59 +1,63 @@
 package gov.geoplatform.uasdm;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
 
+import com.runwaysdk.configuration.ConfigurationManager;
+import com.runwaysdk.configuration.ConfigurationReaderIF;
 import com.runwaysdk.constants.DeployProperties;
 
 public class AppProperties
 {
-  private static AppProperties instance;
-
-  private Properties           props;
+  /**
+   * The server.properties configuration file
+   */
+  private ConfigurationReaderIF props;
 
   private AppProperties()
   {
-    this.props = new Properties();
-
-    try
-    {
-      this.props.load(this.getClass().getResourceAsStream("/app.properties"));
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException(e);
-    }
+    this.props = ConfigurationManager.getReader(UasdmConfigGroup.COMMON, "app.properties");
   }
 
-  public static synchronized AppProperties instance()
+  private static class Singleton
   {
-    if (instance == null)
+    private static AppProperties INSTANCE = new AppProperties();
+
+    private static AppProperties getInstance()
     {
-      instance = new AppProperties();
+      // INSTANCE will only ever be null if there is a problem. The if check is
+      // to allow for debugging.
+      if (INSTANCE == null)
+      {
+        INSTANCE = new AppProperties();
+      }
+
+      return INSTANCE;
     }
 
-    return instance;
+    private static ConfigurationReaderIF getProps()
+    {
+      return getInstance().props;
+    }
   }
-  
+
   public static String getBucketName()
   {
-    return instance().props.getProperty("bucket.name");
+    return Singleton.getProps().getString("bucket.name");
   }
 
   public static File getTempDirectory()
   {
-    return new File(DeployProperties.getDeployPath() + File.separator + instance().props.getProperty("temp.dir"));
+    return new File(DeployProperties.getDeployPath() + File.separator + Singleton.getProps().getString("temp.dir"));
   }
 
   public static File getUploadDirectory()
   {
-    return new File(DeployProperties.getDeployPath() + File.separator + instance().props.getProperty("upload.dir"));
+    return new File(DeployProperties.getDeployPath() + File.separator + Singleton.getProps().getString("upload.dir"));
   }
 
   public static Integer getChunkExpireTime()
   {
-    return new Integer(instance().props.getProperty("chunk.expire.time"));
+    return Singleton.getProps().getInteger("chunk.expire.time");
   }
 
 }
