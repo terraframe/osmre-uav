@@ -128,7 +128,7 @@ public class WorkflowService
   public JSONObject getTasks(String sessionId)
   {
     List<AbstractWorkflowTask> tasks = AbstractWorkflowTask.getUserTasks();
-    List<Mission> missions = Mission.getAll();
+    List<Mission> missions = Mission.getMissingMetadata();
 
     JSONObject response = new JSONObject();
     response.put("tasks", AbstractWorkflowTask.serialize(tasks));
