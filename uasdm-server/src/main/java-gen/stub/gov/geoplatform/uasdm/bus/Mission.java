@@ -1,8 +1,12 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.AppProperties;
+
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+
+import net.geoprism.GeoprismUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,8 +20,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-
-import gov.geoplatform.uasdm.AppProperties;
+import com.runwaysdk.system.SingleActor;
 
 public class Mission extends MissionBase
 {
@@ -147,5 +150,41 @@ public class Mission extends MissionBase
     {
       throw new InvalidMetadataFilenameException("The name field has an invalid character");
     }
+  }
+  
+  public static List<Mission> getMissingMetadata()
+  {
+    List<Mission> missionList = new LinkedList<Mission>();
+    
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+    
+    if (singleActor != null)
+    {
+      QueryFactory qf = new QueryFactory();
+    
+      MissionQuery mQ = new MissionQuery(qf);
+      CollectionQuery cQ = new CollectionQuery(qf);
+
+      WorkflowTaskQuery wQ = new WorkflowTaskQuery(qf);
+      
+      // Get Workflow Tasks created by the current user
+      wQ.WHERE(wQ.getGeoprismUser().EQ(singleActor));
+
+      // Get Collections associated with those tasks
+      cQ.WHERE(cQ.getOid().EQ(wQ.getCollection().getOid()));
+ 
+      // Get the Missions of those Collections;    
+      mQ.WHERE(mQ.collections(cQ));
+      mQ.AND(mQ.getMetadataUploaded().EQ(false).OR(mQ.getMetadataUploaded().EQ((Boolean)null)));
+
+      OIterator<? extends Mission> i = mQ.getIterator();
+      
+      for (Mission mission : i)
+      {
+        missionList.add(mission);
+      }
+    }
+    
+    return missionList;
   }
 }
