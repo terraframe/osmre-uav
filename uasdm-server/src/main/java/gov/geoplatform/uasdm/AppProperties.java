@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.runwaysdk.constants.DeployProperties;
+
 public class AppProperties
 {
   private static AppProperties instance;
@@ -41,12 +43,12 @@ public class AppProperties
 
   public static File getTempDirectory()
   {
-    return new File(instance().props.getProperty("temp.dir"));
+    return new File(DeployProperties.getDeployPath() + File.separator + instance().props.getProperty("temp.dir"));
   }
 
   public static File getUploadDirectory()
   {
-    return new File(instance().props.getProperty("upload.dir"));
+    return new File(DeployProperties.getDeployPath() + File.separator + instance().props.getProperty("upload.dir"));
   }
 
   public static Integer getChunkExpireTime()

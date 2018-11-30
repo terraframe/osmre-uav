@@ -24,14 +24,14 @@
           
           <ul class="list-group">
             <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Tasks</strong></span> {{totalTaskCount}}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Active Actions</strong></span> {{totalActionsCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Tasks</strong></span> {{totalTaskCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Actions</strong></span> {{totalActionsCount}}</li>
           </ul> 
                
           <div class="panel panel-default">
-            <div class="panel-heading">Help Resources</div>
+            <div class="panel-heading">Resources</div>
             <div class="panel-body">
-              <i class="fa fa-link fa-2x">&#32; Help Docs</i>
+              <a target="_blank" href="https://terraframe.atlassian.net/wiki/spaces/OSMRE/overview"><i class="fa fa-link" style="font-size: 20px;">&#32; Help Docs</i></a>
             </div>
           </div>
           
@@ -40,25 +40,23 @@
          <ul class="nav nav-tabs">
 <!--             <li class="active"><a data-toggle="tab" href="#overview">Home</a></li> -->
             <li class="active"><a data-toggle="tab" href="#tasks">Tasks</a></li>
-<!--             <li><a data-toggle="tab" href="#actions">Actions</a></li> -->
           </ul>
               
           <div class="tab-content">
 <!--               <div class="tab-pane active" id="overview"> -->
-                
 <!--                 <h2>Your Overview</h2> -->
-                
 <!--                 <hr> -->
-              
 <!--               </div> -->
               <div class="tab-pane active" id="tasks">
                 
-                <h2>Your tasks</h2>
+                <h2>Your Tasks</h2>
                 
                 <hr>
-                <alert *ngFor="let message of messages" type="danger" (click)="handleMessage(message)">
-                  {{message.message}}
-                </alert>
+                <a href="#" *ngFor="let message of messages">
+                  <alert type="danger" (click)="handleMessage(message)" >
+                    {{message.message}}
+                  </alert>
+                </a>
                                 
                 <div class="panel-group">
                   <div *ngFor="let task of tasks; let i=index" class="panel panel-default">
@@ -67,22 +65,28 @@
                         <a data-toggle="collapse" href="#collapse{{i}}">
                         <ul class="list-inline" style="margin: 0;">
                           <li>{{task.label}}</li>
+                          <li *ngIf="task.status !== 'Complete'" class="pull-right" style="color:green;"><b>{{task.status}}...</b></li>
                         </ul>
                         </a>
                       </h4>
                     </div>
                     <div id="collapse{{i}}" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <ul class="list-inline" style="margin: 0;">
+                      <div *ngIf="task.status !== 'Complete'" class="panel-body">
+                        <h3>{{task.message}}</h3>
+                      </div>
+                      <div *ngIf="task.status === 'Complete'" class="panel-body">
+                        <ul class="list-unstyled" style="margin: 0;">
                           <li>Created on: <b>{{task.createDate}}</b></li>
                           <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
                           <li>Status: <b>{{task.status}}</b></li>
+                          <li>Message: <b>{{task.message}}</b></li>
                         </ul>
                         
                         <hr>
                         
-                        <h4>Actions for {{task.label}}</h4>
-                        <table class="table table-bordered"> 
+                        <h4>Actions:</h4>
+                        <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
+                        <table *ngIf="task.actions.length > 0" class="table table-bordered"> 
                           <thead> 
                             <tr> 
                               <th>#</th> 
@@ -93,54 +97,20 @@
                             </tr> 
                           </thead> 
                           <tbody> 
-<!--                             <template let-actions ngFor [ngForOf]="task.actions"> -->
                             <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
                               <th scope="row">{{i + 1}}</th> 
                               <td>{{action.type}}</td> 
                               <td>{{action.description}}</td> 
-                              <td>{{action.createdDate}}</td> 
+                              <td>{{action.createDate}}</td> 
                               <td>{{action.lastUpdatedDate}}</td> 
                             </tr> 
-<!--                             </template> -->
                           </tbody> 
                         </table>
-                      </div>
-<!--                       <div class="panel-footer">Panel Footer</div> -->
+                      </div><!-- /panel-body -->
                     </div>
                   </div>
                 </div>
-                
-<!--                 <div class="panel panel-default"> -->
-<!--                   <table class="table">  -->
-<!--                     <thead>  -->
-<!--                       <tr>  -->
-<!--                         <th>#</th>  -->
-<!--                         <th>Data Manager</th>  -->
-<!--                         <th>Start Date</th>  -->
-<!--                         <th>Last Updated</th>  -->
-<!--                         <th>Status</th>  -->
-<!--                         <th>Message</th>  -->
-<!--                       </tr>  -->
-<!--                     </thead>  -->
-<!--                     <tbody>  -->
-<!--                       <tr data-toggle="collapse" data-target="#accordion" class="active clickable"><th scope="row">1</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Started</td> <td></td> </tr>  -->
-                      
-<!--                       <tr id="accordion" class="danger collapse"> -->
-<!--                        <th scope="row">3</th> <td>Upload Required Metadata</td> <td>Metadata is required for each upload.</td>  -->
-<!--                       </tr> -->
-                      
-<!--                       <tr class="active"><th scope="row">2</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Uploading</td> <td></td> </tr>  -->
-<!--                       <tr class="danger"><th scope="row">3</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Failed</td> <td>ERROR: Network disruption</td> </tr> -->
-<!--                       <tr class="success"><th scope="row">4</th><td>Justin</td> <td>11/28/2018</td> <td>11/28/2018</td> <td>Complete</td> <td></td> </tr> -->
-<!--                     </tbody>  -->
-<!--                   </table> -->
-<!--                 </div> -->
-                
               </div><!--/tab-pane-->
-<!--               <div class="tab-pane" id="actions"> -->
-<!--                  <h2>Actions</h2> -->
-<!--                  <hr> -->
-<!--                </div> -->
                
               </div><!--/tab-pane-->
           </div><!--/tab-content-->

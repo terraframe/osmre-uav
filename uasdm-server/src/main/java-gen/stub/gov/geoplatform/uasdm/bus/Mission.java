@@ -131,6 +131,10 @@ public class Mission extends MissionBase
 
           Upload myUpload = tx.upload(AppProperties.getBucketName(), key, istream, metadata);
           myUpload.waitForCompletion();
+          
+          this.lock();
+          this.setMetadataUploaded(true);
+          this.apply();
         }
         finally
         {

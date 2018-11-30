@@ -53,14 +53,18 @@ export class UploadComponent implements OnInit {
      */
     uploader = null as FineUploader;
 
+    disabled: boolean = false;
+
     constructor( private service: ManagementService, private modalService: BsModalService ) { }
 
     @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
 
+        const that = this;
+
         if ( elem != null && this.uploader == null ) {
 
             let uiOptions: UIOptions = {
-                debug: true,
+                debug: false,
                 autoUpload: false,
                 multiple: false,
                 element: elem.nativeElement,
@@ -89,14 +93,18 @@ export class UploadComponent implements OnInit {
                 validation: {
                     allowedExtensions: ['zip', '.tar.gz']
                 },
-                //                callbacks: {
-                //                    onAutoRetry: function( id, name, attemptNumber ) {
-                //                    }
-                //                }
-
+                callbacks: {
+                    onUpload: function( id: any, name: any ): void {
+                        that.disabled = true;
+                    },
+                    onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
+                        that.disabled = false;
+                    }
+                }
             };
 
             this.uploader = new FineUploader( uiOptions );
+
         }
     }
 
