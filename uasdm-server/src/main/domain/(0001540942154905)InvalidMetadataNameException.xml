@@ -1,0 +1,17 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.bus.InvalidMetadataFilenameException" 
+                   label="Invalid Metadata Filename" 
+                   description="Thrown when a user uploads a bad metadata filename." 
+                   message="Invalid metadata file name. No spaces or special characters such as &lt;, &gt;, -, +, =, !, @, #, $, %, ^, &amp;, *, ?,/, \ or apostrophes are allowed. Additionally the filename must end in _uasmeta.xml">
+      </mdException>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.InvalidMetadataFilenameException" type="com.runwaysdk.system.metadata.MdException" />
+    </delete>
+  </undoIt>
+</version>

@@ -6,11 +6,14 @@ import gov.geoplatform.uasdm.view.SiteItem;
 import java.util.List;
 import java.util.Locale;
 
+import net.geoprism.GeoprismUser;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.runwaysdk.business.BusinessFacade;
 import com.runwaysdk.business.SmartExceptionDTO;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
@@ -21,7 +24,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.SessionFacade;
+import com.runwaysdk.system.SingleActor;
 
 
 public class TestSiteHierarchy
@@ -39,7 +44,7 @@ public class TestSiteHierarchy
   /**
    * The test user object
    */
-  private static UserDAO                  newUser;
+  private static GeoprismUser             newUser;
   
   /**
    * The username for the user
@@ -68,16 +73,18 @@ public class TestSiteHierarchy
     
     try
     {
-      // Create a new user
-      newUser = UserDAO.newInstance();
-      newUser.setValue(UserInfo.USERNAME, USERNAME);
-      newUser.setValue(UserInfo.PASSWORD, PASSWORD);
-      newUser.setValue(UserInfo.SESSION_LIMIT, Integer.toString(sessionLimit));
+      newUser = new GeoprismUser();
+      newUser.setUsername(USERNAME);
+      newUser.setPassword(PASSWORD);
+      newUser.setFirstName("Bobby");
+      newUser.setLastName("Tables");
+      newUser.setEmail("bobby@tables.com");
+      newUser.setSessionLimit(sessionLimit);
       newUser.apply();
       
       // Make the user an admin
       RoleDAO adminRole = RoleDAO.findRole(RoleDAO.ADMIN_ROLE).getBusinessDAO();
-      adminRole.assignMember(newUser);
+      adminRole.assignMember((UserDAO)BusinessFacade.getEntityDAO(newUser));
     }
     catch (DuplicateDataException e)
     {
@@ -122,12 +129,7 @@ public class TestSiteHierarchy
   
   @Transaction
   public static void classTearDownTransaction()
-  {
-    if (newUser.isAppliedToDB())
-    {
-      newUser.getBusinessDAO().delete();
-    }
-      
+  {      
     QueryFactory qf = new QueryFactory();
     
     SiteQuery sq = new SiteQuery(qf);
@@ -148,6 +150,11 @@ public class TestSiteHierarchy
     finally
     {
       i.close();
+    }
+    
+    if (newUser.isAppliedToDB())
+    {
+      newUser.delete();
     }
   }
   
@@ -365,39 +372,109 @@ System.out.println(re.getLocalizedMessage());
   }
   
   @Test
-  public void testUpdate()
+  public void testUploadMetadataCheck()
   {
     String sessionId = this.logInAdmin();
     
+    String collectionId = null;
 
     try
+    { 
+      SiteItem newCollection = service.newChild(sessionId, missionId1);
+            
+      newCollection.setName("CollectionTest");
+      collectionId = newCollection.getId();
+      service.applyWithParent(sessionId, newCollection, missionId1);
+      
+      this.checkMetadata(sessionId, collectionId);
+    }
+    catch (RuntimeException re)
     {
-      SiteItem siteItem = service.edit(sessionId, siteId);
-      
-      siteItem.setName("Site_Unit_Test-X");
-   
-      service.update(sessionId, siteItem);  
-
-      siteItem = service.edit(sessionId, siteId);
-      
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test-X", siteItem.getName());
-      
-      
-      siteItem.setName("Site_Unit_Test");
-      
-      service.update(sessionId, siteItem);  
-      
-      siteItem = service.edit(sessionId, siteId);
-      
-      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test", siteItem.getName()); 
-      
+      re.printStackTrace();
     }
     finally
     {
-      
+
+      if (collectionId != null)
+      {
+        service.remove(sessionId, collectionId);
+      }
+
       logOutAdmin(sessionId);
     }
   }
+  @Request(RequestType.SESSION)
+  private void checkMetadata(String sessionId, String collectionId)
+  {    
+    
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+    
+    WorkflowTask workflowTask = new WorkflowTask();
+    workflowTask.setGeoprismUserId(singleActor.getOid());
+    workflowTask.setStatus("Test Status");
+    workflowTask.setTaskLabel("Test Task");
+    workflowTask.setUpLoadId("123");
+    workflowTask.setCollectionId(collectionId);
+    workflowTask.apply();
+
+    try
+    {
+      List<Mission> missionList = Mission.getMissingMetadata();
+    
+//      System.out.println("Missions that need metadata.");
+//      System.out.println("----------------------------");
+      
+      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() > 0);
+      for (Mission mission : missionList)
+      {
+        mission.lock();
+        mission.setMetadataUploaded(true);
+        mission.apply();
+      }
+      
+      missionList = Mission.getMissingMetadata();
+      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() == 0);
+    }
+    finally
+    {
+      workflowTask.delete();
+    }
+  }
+  
+//  @Test
+//  public void testUpdate()
+//  {
+//    String sessionId = this.logInAdmin();
+//    
+//
+//    try
+//    {
+//      SiteItem siteItem = service.edit(sessionId, siteId);
+//      
+//      siteItem.setName("Site_Unit_Test-X");
+//   
+//      service.update(sessionId, siteItem);  
+//
+//      siteItem = service.edit(sessionId, siteId);
+//      
+//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test-X", siteItem.getName());
+//      
+//      
+//      siteItem.setName("Site_Unit_Test");
+//      
+//      service.update(sessionId, siteItem);  
+//      
+//      siteItem = service.edit(sessionId, siteId);
+//      
+//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test", siteItem.getName()); 
+//      
+//    }
+//    finally
+//    {
+//      
+//      logOutAdmin(sessionId);
+//    }
+//  }
   
   @Test
   public void testSiteTypeAndLabel()
