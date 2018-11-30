@@ -17,7 +17,7 @@ export class UserProfileComponent implements OnInit {
 
     private userName: string = "";
     private totalTaskCount: number = 0;
-	private totalActionsCount: number = 0;
+    private totalActionsCount: number = 0;
 
     /*
      * Reference to the modal current showing
@@ -41,27 +41,27 @@ export class UserProfileComponent implements OnInit {
 
         this.managementService.tasks().then( data => {
             this.messages = data.messages;
-            
+
             this.totalTaskCount = data.tasks.length;
-            
-            this.totalActionsCount = this.getTotalActionsCount(data.tasks);
-            
-            this.tasks = data.tasks.sort((a: any, b: any) => 
-              new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+
+            this.totalActionsCount = this.getTotalActionsCount( data.tasks );
+
+            this.tasks = data.tasks.sort(( a: any, b: any ) =>
+                new Date( b.lastUpdatedDate ).getTime() - new Date( a.lastUpdatedDate ).getTime()
             );
-            
+
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
     }
-    
-    getTotalActionsCount(tasks: Task[]){
-    	let count = 0;
-    	tasks.forEach( (task) => {
-    		count = count + task.actions.length;
-    	})
-    	
-    	return count
+
+    getTotalActionsCount( tasks: Task[] ) {
+        let count = 0;
+        tasks.forEach(( task ) => {
+            count = count + task.actions.length;
+        } )
+
+        return count
     }
 
     handleMessage( message: Message ): void {
@@ -73,9 +73,15 @@ export class UserProfileComponent implements OnInit {
         } );
         this.bsModalRef.content.missionId = message.missionId;
 
-        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( missionId => {
+        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( () => {
             // Remove the message
+            const index = this.messages.indexOf( message );
             
+            console.log(index);
+
+            if ( index > -1 ) {
+                this.messages.splice( index, 1 );
+            }
         } );
 
     }

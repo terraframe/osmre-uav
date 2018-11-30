@@ -52,9 +52,11 @@
                 <h2>Your Tasks</h2>
                 
                 <hr>
-                <alert *ngFor="let message of messages" type="danger" (click)="handleMessage(message)">
-                  {{message.message}}
-                </alert>
+                <a href="#" *ngFor="let message of messages">
+                  <alert type="danger" (click)="handleMessage(message)" >
+                    {{message.message}}
+                  </alert>
+                </a>
                                 
                 <div class="panel-group">
                   <div *ngFor="let task of tasks; let i=index" class="panel panel-default">

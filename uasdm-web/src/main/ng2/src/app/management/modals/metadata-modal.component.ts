@@ -67,9 +67,11 @@ export class MetadataModalComponent implements OnInit {
                     },
                     onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
                         console.log( responseJSON );
+                        that.disabled = false;
 
                         if ( responseJSON.success ) {
-                            that.onMetadataChange.next( that.missionId );
+                            that.onMetadataChange.next();
+                            that.bsModalRef.hide()                            
                         }
                     },
                     onError: function( id: any, name: any, errorReason: any, xhrOrXdr: any ): void {
