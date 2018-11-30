@@ -4,7 +4,7 @@
       <mdBusiness name="gov.geoplatform.uasdm.bus.Mission">
         <create>
           <attributes>
-            <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " description="Flag indicating whether metadata XML file has been uploaded for the mission." />
+            <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " defaultValue="false" description="Flag indicating whether metadata XML file has been uploaded for the mission." />
           </attributes>
         </create>
       </mdBusiness>

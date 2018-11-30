@@ -160,19 +160,19 @@ public class Mission extends MissionBase
     
       MissionQuery mQ = new MissionQuery(qf);
       CollectionQuery cQ = new CollectionQuery(qf);
-      MissionHasCollectionQuery mHasCQ = new MissionHasCollectionQuery(qf);
+
       WorkflowTaskQuery wQ = new WorkflowTaskQuery(qf);
       
       // Get Workflow Tasks created by the current user
       wQ.WHERE(wQ.getGeoprismUser().EQ(singleActor));
 
       // Get Collections associated with those tasks
-      cQ.WHERE(cQ.getOid().EQ(wQ.getOid()));
-      
+      cQ.WHERE(cQ.getOid().EQ(wQ.getCollection().getOid()));
+ 
       // Get the Missions of those Collections;    
       mQ.WHERE(mQ.collections(cQ));
+      mQ.AND(mQ.getMetadataUploaded().EQ(false).OR(mQ.getMetadataUploaded().EQ((Boolean)null)));
 
-      
       OIterator<? extends Mission> i = mQ.getIterator();
       
       for (Mission mission : i)
