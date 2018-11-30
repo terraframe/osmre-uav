@@ -20,6 +20,9 @@
           <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowAction">
             <operation name="ALL" />
           </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Mission">
+            <operation name="ALL" />
+          </mdBusinessPermission>
           <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Collection">
             <operation name="ALL" />
           </mdBusinessPermission>

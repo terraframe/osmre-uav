@@ -196,7 +196,7 @@ public class FileUploadController
   {
     File dir = new File(AppProperties.getUploadDirectory(), uuid);
 
-    if (dir.exists() && dir.isDirectory() && dir.list().length == 0)
+    if (!dir.exists() || !dir.isDirectory() || dir.list().length == 0)
     {
       throw new MergePartsException("Chunks no longer exist on the server file system.  Upload needs to be reset.");
     }
