@@ -145,7 +145,7 @@ public class Mission extends MissionBase
     }
     else
     {
-      throw new InvalidUasComponentNameException("The name field has an invalid character");
+      throw new InvalidMetadataFilenameException("The name field has an invalid character");
     }
   }
 }
