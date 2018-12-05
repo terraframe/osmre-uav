@@ -33,156 +33,170 @@ public class SolrService
 
   public static void deleteDocuments(UasComponent component)
   {
-    try
+    if (AppProperties.isSolrEnabled())
     {
-      HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
-
       try
       {
-        client.deleteByQuery("component:" + ClientUtils.escapeQueryChars(component.getOid()));
-        client.commit();
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+        try
+        {
+          client.deleteByQuery("component:" + ClientUtils.escapeQueryChars(component.getOid()));
+          client.commit();
+        }
+        finally
+        {
+          client.close();
+        }
       }
-      finally
+      catch (SolrServerException | IOException e)
       {
-        client.close();
+        throw new ProgrammingErrorException(e);
       }
-    }
-    catch (SolrServerException | IOException e)
-    {
-      throw new ProgrammingErrorException(e);
     }
   }
 
   public static void updateOrCreateDocument(UasComponent component, String key, String name)
   {
-    SolrDocument existing = SolrService.find(component, key);
-
-    try
+    if (AppProperties.isSolrEnabled())
     {
-      HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+      SolrDocument existing = SolrService.find(component, key);
 
       try
       {
-        SolrInputDocument document = new SolrInputDocument();
-        document.setField("component", component.getOid());
-        document.setField("key", key);
-        document.setField("name", name);
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
 
-        if (existing != null)
+        try
         {
-          document.setField("id", existing.getFieldValue("id"));
-        }
-        else
-        {
-          document.setField("id", UUID.randomUUID().toString());
-        }
+          SolrInputDocument document = new SolrInputDocument();
+          document.setField("component", component.getOid());
+          document.setField("key", key);
+          document.setField("name", name);
 
-        client.add(document);
-        client.commit();
+          if (existing != null)
+          {
+            document.setField("id", existing.getFieldValue("id"));
+          }
+          else
+          {
+            document.setField("id", UUID.randomUUID().toString());
+          }
+
+          client.add(document);
+          client.commit();
+        }
+        finally
+        {
+          client.close();
+        }
       }
-      finally
+      catch (SolrServerException | IOException e)
       {
-        client.close();
+        throw new ProgrammingErrorException(e);
       }
-    }
-    catch (SolrServerException | IOException e)
-    {
-      throw new ProgrammingErrorException(e);
     }
   }
 
   public static void updateOrCreateMetadataDocument(UasComponent component, String key, String name, File metadata)
   {
-    SolrDocument document = SolrService.find(component, key);
-
-    try
+    if (AppProperties.isSolrEnabled())
     {
-      HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+      SolrDocument document = SolrService.find(component, key);
 
       try
       {
-        try (StringWriter writer = new StringWriter())
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+        try
         {
-          AutoDetectParser parser = new AutoDetectParser();
-
-          ParseContext context = new ParseContext();
-          context.set(Parser.class, parser);
-
-          try (FileInputStream istream = new FileInputStream(metadata))
+          try (StringWriter writer = new StringWriter())
           {
-            parser.parse(istream, new BodyContentHandler(writer), new Metadata(), context);
-          }
+            AutoDetectParser parser = new AutoDetectParser();
 
-          SolrInputDocument iDocument = new SolrInputDocument();
-          iDocument.setField("component", component.getOid());
-          iDocument.setField("key", key);
-          iDocument.setField("name", name);
-          iDocument.setField("metadata", writer.toString());
+            ParseContext context = new ParseContext();
+            context.set(Parser.class, parser);
 
-          if (document != null)
-          {
-            iDocument.setField("id", document.getFieldValue("id"));
-          }
-          else
-          {
-            iDocument.setField("id", UUID.randomUUID().toString());
-          }
+            try (FileInputStream istream = new FileInputStream(metadata))
+            {
+              parser.parse(istream, new BodyContentHandler(writer), new Metadata(), context);
+            }
 
-          client.add(iDocument);
-          client.commit();
+            SolrInputDocument iDocument = new SolrInputDocument();
+            iDocument.setField("component", component.getOid());
+            iDocument.setField("key", key);
+            iDocument.setField("name", name);
+            iDocument.setField("metadata", writer.toString());
+
+            if (document != null)
+            {
+              iDocument.setField("id", document.getFieldValue("id"));
+            }
+            else
+            {
+              iDocument.setField("id", UUID.randomUUID().toString());
+            }
+
+            client.add(iDocument);
+            client.commit();
+          }
+        }
+        finally
+        {
+          client.close();
         }
       }
-      finally
+      catch (SAXException | TikaException e)
       {
-        client.close();
+        throw new ProgrammingErrorException(e);
       }
-    }
-    catch (SAXException | TikaException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-    catch (SolrServerException | IOException e)
-    {
-      throw new ProgrammingErrorException(e);
+      catch (SolrServerException | IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
     }
   }
 
   public static SolrDocument find(UasComponent component, String key)
   {
-    try
+    if (AppProperties.isSolrEnabled())
     {
-      HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
-
       try
       {
-        SolrQuery query = new SolrQuery();
-        query.setQuery("key:" + ClientUtils.escapeQueryChars(key) + " AND component:" + ClientUtils.escapeQueryChars(component.getOid()));
-        query.setFields("id");
-        query.setRows(20);
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
 
-        QueryResponse response = client.query(query);
-        SolrDocumentList list = response.getResults();
-
-        Iterator<SolrDocument> iterator = list.iterator();
-
-        if (iterator.hasNext())
+        try
         {
-          SolrDocument document = iterator.next();
-          String documentId = (String) document.getFieldValue("id");
+          SolrQuery query = new SolrQuery();
+          query.setQuery("key:" + ClientUtils.escapeQueryChars(key) + " AND component:" + ClientUtils.escapeQueryChars(component.getOid()));
+          query.setFields("id");
+          query.setRows(20);
 
-          return client.getById(documentId);
+          QueryResponse response = client.query(query);
+          SolrDocumentList list = response.getResults();
+
+          Iterator<SolrDocument> iterator = list.iterator();
+
+          if (iterator.hasNext())
+          {
+            SolrDocument document = iterator.next();
+            String documentId = (String) document.getFieldValue("id");
+
+            return client.getById(documentId);
+          }
         }
-
-        return null;
+        finally
+        {
+          client.close();
+        }
       }
-      finally
+      catch (SolrServerException | IOException e)
       {
-        client.close();
+        throw new ProgrammingErrorException(e);
       }
     }
-    catch (SolrServerException | IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
+
+    return null;
   }
 }

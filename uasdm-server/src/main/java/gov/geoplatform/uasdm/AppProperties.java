@@ -44,10 +44,15 @@ public class AppProperties
   {
     return Singleton.getProps().getString("bucket.name");
   }
-  
+
   public static String getSolrUrl()
   {
     return Singleton.getProps().getString("solr.url");
+  }
+
+  public static Boolean isSolrEnabled()
+  {
+    return Singleton.getProps().getBoolean("solr.enabled");
   }
 
   public static File getTempDirectory()
