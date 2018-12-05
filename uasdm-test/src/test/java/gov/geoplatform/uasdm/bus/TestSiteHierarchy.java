@@ -1,12 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.view.SiteItem;
-
 import java.util.List;
 import java.util.Locale;
-
-import net.geoprism.GeoprismUser;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -18,7 +13,6 @@ import com.runwaysdk.business.SmartExceptionDTO;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.CommonProperties;
-import com.runwaysdk.constants.UserInfo;
 import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
@@ -27,6 +21,10 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.SessionFacade;
 import com.runwaysdk.system.SingleActor;
+
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.view.SiteItem;
+import net.geoprism.GeoprismUser;
 
 
 public class TestSiteHierarchy

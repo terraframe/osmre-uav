@@ -5,20 +5,32 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 public class Project extends ProjectBase
 {
   private static final long serialVersionUID = 935245787;
-  
+
   public Project()
   {
     super();
   }
-  
+
   public Mission createChild()
   {
     return new Mission();
   }
-  
+
+  @Override
+  public String getSolrIdField()
+  {
+    return "projectId";
+  }
+
+  @Override
+  public String getSolrNameField()
+  {
+    return "projectName";
+  }
+
   public ComponentHasComponent addComponent(gov.geoplatform.uasdm.bus.UasComponent uasComponent)
   {
-    return this.addSite((Site)uasComponent);
+    return this.addSite((Site) uasComponent);
   }
 
   /**
@@ -29,10 +41,10 @@ public class Project extends ProjectBase
    * @param parent
    */
   @Transaction
-  @Override 
+  @Override
   public void applyWithParent(UasComponent parent)
-  { 
+  {
     super.applyWithParent(parent);
   }
-  
+
 }
