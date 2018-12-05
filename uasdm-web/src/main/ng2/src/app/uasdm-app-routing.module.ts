@@ -6,13 +6,14 @@ import { Observable } from 'rxjs/Observable';
 import { ProjectsComponent } from './management/projects.component';
 import { UploadComponent } from './management/upload.component';
 import { UserProfileComponent } from './management/user-profile.component';
+import { SearchComponent } from './management/search.component';
 
 import { AdminGuard } from './auth/admin.guard';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/profile',
+        redirectTo: '/tasks',
         pathMatch: 'full'
     },
     {
@@ -25,9 +26,13 @@ const routes: Routes = [
         component: UploadComponent
     },
     {
-        path: 'profile',
+        path: 'tasks',
         component: UserProfileComponent
     },
+    {
+        path: 'search',
+        component: SearchComponent
+    }
 ];
 
 @NgModule( {
@@ -37,4 +42,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, SearchComponent];
