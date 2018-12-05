@@ -123,11 +123,25 @@
     <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 	
-    <field name="component" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="key" type="string" indexed="true" stored="true" required="true" multiValued="false" />	
-    <field name="name" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="metadata" type="text_general" indexed="true" stored="true" multiValued="false"/>
+    <field name="collectionId" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="collectionName" type="string" indexed="true" stored="true" multiValued="false" />	
+    <field name="missionId" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="missionName" type="string" indexed="true" stored="true" multiValued="false" />	
+    <field name="projectId" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="projectName" type="string" indexed="true" stored="true" multiValued="false" />	
+    <field name="siteId" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="siteName" type="string" indexed="true" stored="true" multiValued="false" />		
 	
+    <field name="filename" type="string" indexed="true" stored="true" multiValued="false" />
+    <field name="key" type="string" indexed="true" stored="true" multiValued="false" />		
+    <field name="content" type="text_general" indexed="true" stored="false" multiValued="false"/>	
+	
+	<copyField source="collectionName" dest="_text_"/>
+	<copyField source="missionName" dest="_text_"/>
+	<copyField source="projectName" dest="_text_"/>
+	<copyField source="siteName" dest="_text_"/>
+	<copyField source="filename" dest="_text_"/>
+	<copyField source="content" dest="_text_"/>
 
     <!-- Only enabled in the "schemaless" data-driven example (assuming the client
          does not know what fields may be searched) because it's very expensive to index everything twice. -->
