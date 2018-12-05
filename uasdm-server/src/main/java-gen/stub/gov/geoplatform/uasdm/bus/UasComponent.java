@@ -28,6 +28,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 public abstract class UasComponent extends UasComponentBase
@@ -122,6 +123,8 @@ public abstract class UasComponent extends UasComponentBase
     {
       this.deleteS3Folder(this.getS3location());
     }
+
+    SolrService.deleteDocuments(this);
   }
 
   /**

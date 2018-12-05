@@ -214,7 +214,7 @@ public class ProjectManagementService
     try (InputStream istream = file.getInputStream())
     {
       Mission mission = Mission.get(missionId);
-      mission.uploadMetadata(file.getFilename(), file.getSize(), istream);
+      mission.uploadMetadata(file.getFilename(), istream);
     }
     catch (IOException e)
     {

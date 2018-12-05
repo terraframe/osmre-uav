@@ -1,15 +1,19 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -19,6 +23,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.GeoprismUser;
 
@@ -114,36 +119,58 @@ public class Mission extends MissionBase
     return messages;
   }
 
-  public void uploadMetadata(String name, long length, InputStream istream)
+  public void uploadMetadata(String name, InputStream istream)
   {
     if (name.endsWith("_uasmeta.xml") && isValidName(name))
     {
       String key = this.buildAccessibleSupportKey() + name;
 
+      File temp = null;
+
       try
       {
-        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+        temp = File.createTempFile("metadata", "xml");
+
+        try (FileOutputStream ostream = new FileOutputStream(temp))
+        {
+          IOUtils.copy(istream, ostream);
+        }
 
         try
         {
-          ObjectMetadata metadata = new ObjectMetadata();
-          metadata.setContentLength(length);
+          TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
 
-          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, istream, metadata);
-          myUpload.waitForCompletion();
+          try
+          {
+            Upload myUpload = tx.upload(AppProperties.getBucketName(), key, temp);
+            myUpload.waitForCompletion();
 
-          this.lock();
-          this.setMetadataUploaded(true);
-          this.apply();
+            this.lock();
+            this.setMetadataUploaded(true);
+            this.apply();
+          }
+          finally
+          {
+            tx.shutdownNow();
+          }
+
+          SolrService.updateOrCreateMetadataDocument(this, key, name, temp);
         }
-        finally
+        catch (AmazonClientException | InterruptedException e)
         {
-          tx.shutdownNow();
+          throw new ProgrammingErrorException(e);
         }
       }
-      catch (AmazonClientException | InterruptedException e)
+      catch (IOException e)
       {
         throw new ProgrammingErrorException(e);
+      }
+      finally
+      {
+        if (temp != null)
+        {
+          FileUtils.deleteQuietly(temp);
+        }
       }
     }
     else

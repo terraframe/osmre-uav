@@ -1,8 +1,13 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +21,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.SolrService;
 import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
@@ -165,8 +171,6 @@ public class UploadArchiveTest
   @Request
   public void testTarGzArchive()
   {
-    System.out.println("Starting");
-
     Collection collection = Collection.get(collectionId1);
 
     WorkflowTask task = new WorkflowTask();
@@ -178,7 +182,28 @@ public class UploadArchiveTest
 
     collection.uploadArchive(task, new File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.tar.gz"));
 
-    System.out.println("Finished");
+    List<WorkflowAction> actions = task.getActions();
+
+    Assert.assertEquals(0, actions.size());
+  }
+
+  @Test
+  @Request
+  public void testUploadMetadata() throws FileNotFoundException, IOException
+  {
+    Mission collection = Mission.get(missionId1);
+
+    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
+    {
+      collection.uploadMetadata("mission_1_uasmeta.xml", istream);
+    }
+    
+    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
+    {
+      collection.uploadMetadata("mission_1_uasmeta.xml", istream);
+    }
+    
+    System.out.println("Test");
   }
 
 }
