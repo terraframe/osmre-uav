@@ -43,6 +43,18 @@ public class Mission extends MissionBase
     return new Collection();
   }
 
+  @Override
+  public String getSolrIdField()
+  {
+    return "missionId";
+  }
+
+  @Override
+  public String getSolrNameField()
+  {
+    return "missionName";
+  }
+
   public ComponentHasComponent addComponent(UasComponent uasComponent)
   {
     return this.addProject((Project) uasComponent);
@@ -123,6 +135,8 @@ public class Mission extends MissionBase
   {
     if (name.endsWith("_uasmeta.xml") && isValidName(name))
     {
+      List<UasComponent> ancestors = this.getAncestors();
+
       String key = this.buildAccessibleSupportKey() + name;
 
       File temp = null;
@@ -154,7 +168,7 @@ public class Mission extends MissionBase
             tx.shutdownNow();
           }
 
-          SolrService.updateOrCreateMetadataDocument(this, key, name, temp);
+          SolrService.updateOrCreateMetadataDocument(ancestors, this, key, name, temp);
         }
         catch (AmazonClientException | InterruptedException e)
         {

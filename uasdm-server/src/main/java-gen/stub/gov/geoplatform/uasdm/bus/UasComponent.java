@@ -49,6 +49,16 @@ public abstract class UasComponent extends UasComponentBase
   public abstract UasComponent createChild();
 
   /**
+   * @return The name of the solr field for the components id.
+   */
+  public abstract String getSolrIdField();
+
+  /**
+   * @return The name of the solr field for the components name.
+   */
+  public abstract String getSolrNameField();
+
+  /**
    * Creates the object and builds the relationship with the parent.
    * 
    * Creates directory in S3.
@@ -64,7 +74,9 @@ public abstract class UasComponent extends UasComponentBase
      * 
      * Characters That Might Require Special Handling
      */
-    if (this.isModified(UasComponent.NAME))
+    boolean isNameModified = this.isModified(UasComponent.NAME);
+
+    if (isNameModified)
     {
       String name = this.getName();
 
@@ -74,7 +86,9 @@ public abstract class UasComponent extends UasComponentBase
       }
     }
 
-    if (this.isNew())
+    boolean isNew = this.isNew();
+
+    if (isNew)
     {
       if (parent != null)
       {
@@ -112,6 +126,15 @@ public abstract class UasComponent extends UasComponentBase
     if (parent != null)
     {
       this.addComponent(parent).apply();
+    }
+
+    if (!isNew && isNameModified)
+    {
+      SolrService.updateName(this);
+    }
+    else if (isNew)
+    {
+      SolrService.createDocument(this.getAncestors(), this);
     }
   }
 
@@ -342,4 +365,30 @@ public abstract class UasComponent extends UasComponentBase
     return client.getObject(request);
   }
 
+  public List<UasComponent> getAncestors()
+  {
+    List<UasComponent> ancestors = new LinkedList<UasComponent>();
+
+    List<UasComponent> parents = new LinkedList<>();
+
+    OIterator<? extends UasComponent> it = this.getAllComponent();
+
+    try
+    {
+      parents.addAll(it.getAll());
+    }
+    finally
+    {
+      it.close();
+    }
+
+    ancestors.addAll(parents);
+
+    for (UasComponent parent : parents)
+    {
+      ancestors.addAll(parent.getAncestors());
+    }
+
+    return ancestors;
+  }
 }

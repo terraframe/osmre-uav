@@ -63,6 +63,18 @@ public class Collection extends CollectionBase
     return null;
   }
 
+  @Override
+  public String getSolrIdField()
+  {
+    return "collectionId";
+  }
+
+  @Override
+  public String getSolrNameField()
+  {
+    return "collectionName";
+  }
+
   public ComponentHasComponent addComponent(UasComponent uasComponent)
   {
     return this.addMission((Mission) uasComponent);
@@ -169,6 +181,8 @@ public class Collection extends CollectionBase
 
   private void uploadTarGzArchive(WorkflowTask task, File archive)
   {
+    List<UasComponent> ancestors = this.getAncestors();
+
     byte data[] = new byte[BUFFER_SIZE];
 
     try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
@@ -209,7 +223,7 @@ public class Collection extends CollectionBase
               }
 
               // Upload the file to S3
-              this.uploadFile(task, this.buildRawKey(), entry.getName(), tmp);
+              this.uploadFile(task, ancestors, this.buildRawKey(), entry.getName(), tmp);
             }
             finally
             {
@@ -230,6 +244,8 @@ public class Collection extends CollectionBase
 
   public void uploadZipArchive(WorkflowTask task, File archive)
   {
+    List<UasComponent> ancestors = this.getAncestors();
+
     byte[] buffer = new byte[BUFFER_SIZE];
 
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
@@ -251,7 +267,7 @@ public class Collection extends CollectionBase
           }
 
           // Upload the file to S3
-          this.uploadFile(task, this.buildRawKey(), entry.getName(), tmp);
+          this.uploadFile(task, ancestors, this.buildRawKey(), entry.getName(), tmp);
         }
         finally
         {
@@ -267,7 +283,7 @@ public class Collection extends CollectionBase
     }
   }
 
-  private void uploadFile(WorkflowTask task, String keySuffix, String name, File tmp)
+  private void uploadFile(WorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp)
   {
     if (isValidName(name))
     {
@@ -316,7 +332,7 @@ public class Collection extends CollectionBase
           tx.shutdownNow();
         }
 
-        SolrService.updateOrCreateDocument(this, key, name);
+        SolrService.updateOrCreateDocument(ancestors, this, key, name);
       }
       catch (Exception e)
       {
@@ -376,5 +392,4 @@ public class Collection extends CollectionBase
 
     return objects;
   }
-
 }

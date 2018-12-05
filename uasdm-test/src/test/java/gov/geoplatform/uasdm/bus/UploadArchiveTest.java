@@ -21,7 +21,6 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.SolrService;
 import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
@@ -191,18 +190,18 @@ public class UploadArchiveTest
   @Request
   public void testUploadMetadata() throws FileNotFoundException, IOException
   {
-    Mission collection = Mission.get(missionId1);
+    Mission mission = Mission.get(missionId1);
 
     try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
     {
-      collection.uploadMetadata("mission_1_uasmeta.xml", istream);
+      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
     }
-    
+
     try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
     {
-      collection.uploadMetadata("mission_1_uasmeta.xml", istream);
+      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
     }
-    
+
     System.out.println("Test");
   }
 
