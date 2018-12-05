@@ -47,8 +47,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-<<<<<<< HEAD
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, SearchComponent];
-=======
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, ViewerComponent];
->>>>>>> f29d7e428728a2ae865210143389432c7abe33bb
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, ViewerComponent, SearchComponent];
