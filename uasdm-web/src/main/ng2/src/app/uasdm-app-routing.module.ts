@@ -4,6 +4,7 @@ import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnaps
 import { Observable } from 'rxjs/Observable';
 
 import { ProjectsComponent } from './management/projects.component';
+import { ViewerComponent } from './management/viewer.component';
 import { UploadComponent } from './management/upload.component';
 import { UserProfileComponent } from './management/user-profile.component';
 
@@ -25,6 +26,10 @@ const routes: Routes = [
         component: UploadComponent
     },
     {
+        path: 'viewer',
+        component: ViewerComponent
+    },
+    {
         path: 'profile',
         component: UserProfileComponent
     },
@@ -37,4 +42,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, ViewerComponent];

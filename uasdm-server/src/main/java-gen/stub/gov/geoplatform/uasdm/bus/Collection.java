@@ -27,6 +27,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.view.SiteObject;
 
 public class Collection extends CollectionBase
 {
@@ -319,4 +320,53 @@ public class Collection extends CollectionBase
       task.createAction("The filename [" + name + "] is invalid", "error");
     }
   }
+
+  @Override
+  public List<SiteObject> getSiteObjects(String folder)
+  {
+    List<SiteObject> objects = new LinkedList<SiteObject>();
+
+    if (folder == null)
+    {
+      SiteObject raw = new SiteObject();
+      raw.setId(this.getOid() + "-" + RAW);
+      raw.setName(RAW);
+      raw.setComponentId(this.getOid());
+      raw.setKey(this.buildRawKey());
+      raw.setType(SiteObject.FOLDER);
+
+      SiteObject ptCloud = new SiteObject();
+      ptCloud.setId(this.getOid() + "-" + PTCLOUD);
+      ptCloud.setName(PTCLOUD);
+      ptCloud.setComponentId(this.getOid());
+      ptCloud.setKey(this.buildPointCloudKey());
+      ptCloud.setType(SiteObject.FOLDER);
+
+      SiteObject dem = new SiteObject();
+      dem.setId(this.getOid() + "-" + DEM);
+      dem.setName(DEM);
+      dem.setComponentId(this.getOid());
+      dem.setKey(this.buildDemKey());
+      dem.setType(SiteObject.FOLDER);
+
+      SiteObject ortho = new SiteObject();
+      ortho.setId(this.getOid() + "-" + ORTHO);
+      ortho.setName(ORTHO);
+      ortho.setComponentId(this.getOid());
+      ortho.setKey(this.buildOrthoKey());
+      ortho.setType(SiteObject.FOLDER);
+
+      objects.add(raw);
+      objects.add(ptCloud);
+      objects.add(dem);
+      objects.add(ortho);
+    }
+    else
+    {
+      this.getSiteObjects(folder, objects);
+    }
+
+    return objects;
+  }
+
 }

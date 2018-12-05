@@ -1,12 +1,8 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.AppProperties;
-
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.geoprism.GeoprismUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +17,10 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.SingleActor;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.GeoprismUser;
 
 public class Mission extends MissionBase
 {
@@ -131,7 +131,7 @@ public class Mission extends MissionBase
 
           Upload myUpload = tx.upload(AppProperties.getBucketName(), key, istream, metadata);
           myUpload.waitForCompletion();
-          
+
           this.lock();
           this.setMetadataUploaded(true);
           this.apply();
@@ -151,40 +151,64 @@ public class Mission extends MissionBase
       throw new InvalidMetadataFilenameException("The name field has an invalid character");
     }
   }
-  
+
   public static List<Mission> getMissingMetadata()
   {
     List<Mission> missionList = new LinkedList<Mission>();
-    
+
     SingleActor singleActor = GeoprismUser.getCurrentUser();
-    
+
     if (singleActor != null)
     {
       QueryFactory qf = new QueryFactory();
-    
+
       MissionQuery mQ = new MissionQuery(qf);
       CollectionQuery cQ = new CollectionQuery(qf);
 
       WorkflowTaskQuery wQ = new WorkflowTaskQuery(qf);
-      
+
       // Get Workflow Tasks created by the current user
       wQ.WHERE(wQ.getGeoprismUser().EQ(singleActor));
 
       // Get Collections associated with those tasks
       cQ.WHERE(cQ.getOid().EQ(wQ.getCollection().getOid()));
- 
-      // Get the Missions of those Collections;    
+
+      // Get the Missions of those Collections;
       mQ.WHERE(mQ.collections(cQ));
-      mQ.AND(mQ.getMetadataUploaded().EQ(false).OR(mQ.getMetadataUploaded().EQ((Boolean)null)));
+      mQ.AND(mQ.getMetadataUploaded().EQ(false).OR(mQ.getMetadataUploaded().EQ((Boolean) null)));
 
       OIterator<? extends Mission> i = mQ.getIterator();
-      
+
       for (Mission mission : i)
       {
         missionList.add(mission);
       }
     }
-    
+
     return missionList;
+  }
+
+  @Override
+  public List<SiteObject> getSiteObjects(String folder)
+  {
+    List<SiteObject> objects = new LinkedList<SiteObject>();
+
+    if (folder == null)
+    {
+      SiteObject object = new SiteObject();
+      object.setId(this.getOid() + "-" + ACCESSIBLE_SUPPORT);
+      object.setName(ACCESSIBLE_SUPPORT);
+      object.setComponentId(this.getOid());
+      object.setKey(this.buildAccessibleSupportKey());
+      object.setType(SiteObject.FOLDER);
+
+      objects.add(object);
+    }
+    else
+    {
+      this.getSiteObjects(folder, objects);
+    }
+
+    return objects;
   }
 }

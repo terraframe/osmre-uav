@@ -1,0 +1,8 @@
+<uasdm-header></uasdm-header>
+
+<div id="app-container" class="container">
+
+  <div *ngIf="nodes.length > 0" class="tree">
+    <tree-root [nodes]="nodes" [options]="options"></tree-root>
+  </div>  
+</div>
