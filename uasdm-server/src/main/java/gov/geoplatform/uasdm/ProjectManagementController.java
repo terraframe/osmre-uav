@@ -24,6 +24,7 @@ import com.runwaysdk.mvc.ViewResponse;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -114,44 +115,13 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
-  @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getFiles(ClientRequestIF request, @RequestParamter(name = "term") String term)
-  {
-	  JSONArray arr = new JSONArray();
-	  
-	  JSONObject obj = new JSONObject();
-	  obj.put("name", "File 1");
-	  obj.put("id", "999");
-	  
-	  JSONArray hArr = new JSONArray();
-	  
-	  JSONObject hObj1 = new JSONObject();
-	  hObj1.put("id", "1");
-	  hObj1.put("label", "Site");
-	  hArr.put(hObj1);
-	  
-	  JSONObject hObj2 = new JSONObject();
-	  hObj2.put("id", "2");
-	  hObj2.put("label", "Project");
-	  hArr.put(hObj2);
-	  
-	  JSONObject hObj3 = new JSONObject();
-	  hObj3.put("id", "3");
-	  hObj3.put("label", "Mission");
-	  hArr.put(hObj3);
-	  
-	  JSONObject hObj4 = new JSONObject();
-	  hObj4.put("id", "4");
-	  hObj4.put("label", "Collection");
-	  hArr.put(hObj4);
-	  
-	  obj.put("hierarchy", hArr);
-	  
-	  
-	  arr.put(obj);
 
-    return new RestBodyResponse(arr);
+  @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "term") String term)
+  {
+    List<QueryResult> list = this.service.search(request.getSessionId(), term);
+
+    return new RestBodyResponse(QueryResult.serialize(list));
   }
 
   @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)

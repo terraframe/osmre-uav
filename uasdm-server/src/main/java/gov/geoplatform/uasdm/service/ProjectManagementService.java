@@ -26,6 +26,7 @@ import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -236,5 +237,13 @@ public class ProjectManagementService
     UasComponent component = UasComponent.get(id);
 
     return component.download(key);
+  }
+
+  @Request(RequestType.SESSION)
+  public List<QueryResult> search(String sessionId, String term)
+  {
+    List<QueryResult> results = SolrService.query(term);
+
+    return results;
   }
 }

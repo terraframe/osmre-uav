@@ -21,6 +21,8 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.QueryResult;
 import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
@@ -202,7 +204,9 @@ public class UploadArchiveTest
       mission.uploadMetadata("mission_1_uasmeta.xml", istream);
     }
 
-    System.out.println("Test");
+    List<QueryResult> results = SolrService.query(mission.getName());
+
+    Assert.assertEquals(3, results.size());
   }
 
 }

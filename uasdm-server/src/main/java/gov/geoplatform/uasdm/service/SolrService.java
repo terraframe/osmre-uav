@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.view.QueryResult;
 
 public class SolrService
 {
@@ -294,6 +296,52 @@ public class SolrService
         throw new ProgrammingErrorException(e);
       }
     }
+  }
+
+  public static List<QueryResult> query(String text)
+  {
+    List<QueryResult> results = new LinkedList<QueryResult>();
+
+    if (AppProperties.isSolrEnabled())
+    {
+      try
+      {
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+        try
+        {
+          StringBuilder ql = new StringBuilder();
+          ql.append(ClientUtils.escapeQueryChars(text));
+
+          SolrQuery query = new SolrQuery();
+          query.setQuery(ql.toString());
+          query.setFields("*");
+          query.setRows(20);
+
+          QueryResponse response = client.query(query);
+          SolrDocumentList list = response.getResults();
+
+          Iterator<SolrDocument> iterator = list.iterator();
+
+          while (iterator.hasNext())
+          {
+            SolrDocument document = iterator.next();
+
+            results.add(QueryResult.build(document));
+          }
+        }
+        finally
+        {
+          client.close();
+        }
+      }
+      catch (SolrServerException | IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+
+    return results;
   }
 
 }
