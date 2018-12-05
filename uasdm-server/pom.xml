@@ -66,6 +66,21 @@
 			<artifactId>commons-compress</artifactId>
 			<version>1.18</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>6.6.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<version>1.19.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.19.1</version>
+		</dependency>
 	</dependencies>
 
 	<!-- These profiles allow for Maven execution of Runway-SDK's Java Tools, 
@@ -181,7 +196,7 @@
 						<executions>
 							<execution>
 								<id>import-working</id>
-								<phase>verify</phase>
+								<phase>process-resources</phase>
 								<goals>
 									<goal>java</goal>
 								</goals>

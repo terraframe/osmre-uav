@@ -3,15 +3,20 @@ package gov.geoplatform.uasdm.bus;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
@@ -23,6 +28,8 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -116,6 +123,8 @@ public abstract class UasComponent extends UasComponentBase
     {
       this.deleteS3Folder(this.getS3location());
     }
+
+    SolrService.deleteDocuments(this);
   }
 
   /**
@@ -217,25 +226,7 @@ public abstract class UasComponent extends UasComponentBase
 
   public static boolean isValidName(String name)
   {
-    if (name.contains(" ") 
-        || name.contains("<") 
-        || name.contains(">") 
-        || name.contains("-") 
-        || name.contains("+") 
-        || name.contains("=") 
-        || name.contains("!") 
-        || name.contains("@") 
-        || name.contains("#") 
-        || name.contains("$") 
-        || name.contains("%") 
-        || name.contains("^") 
-        || name.contains("&") 
-        || name.contains("*") 
-        || name.contains("?") 
-        || name.contains(";")
-        || name.contains(":") 
-        || name.contains(",") 
-        || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
+    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
     {
       return false;
     }
@@ -295,4 +286,60 @@ public abstract class UasComponent extends UasComponentBase
       throw e;
     }
   }
+
+  public List<SiteObject> getSiteObjects(String folder)
+  {
+    return new LinkedList<SiteObject>();
+  }
+
+  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  {
+    String key = this.getS3location() + folder;
+
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+
+    String bucketName = AppProperties.getBucketName();
+
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+    ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+    while (true)
+    {
+      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+
+      while (objIter.hasNext())
+      {
+        S3ObjectSummary summary = objIter.next();
+
+        if (!summary.getKey().endsWith("/"))
+        {
+          objects.add(SiteObject.create(this, key, summary));
+        }
+      }
+
+      // If the bucket contains many objects, the listObjects() call
+      // might not return all of the objects in the first listing. Check to
+      // see whether the listing was truncated.
+      if (objectListing.isTruncated())
+      {
+        objectListing = client.listNextBatchOfObjects(objectListing);
+      }
+      else
+      {
+        break;
+      }
+    }
+  }
+
+  public S3Object download(String key)
+  {
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    String bucketName = AppProperties.getBucketName();
+
+    GetObjectRequest request = new GetObjectRequest(bucketName, key);
+
+    return client.getObject(request);
+  }
+
 }

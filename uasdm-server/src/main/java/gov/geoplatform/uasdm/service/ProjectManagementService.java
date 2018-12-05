@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
@@ -25,6 +26,7 @@ import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
 
@@ -212,11 +214,27 @@ public class ProjectManagementService
     try (InputStream istream = file.getInputStream())
     {
       Mission mission = Mission.get(missionId);
-      mission.uploadMetadata(file.getFilename(), file.getSize(), istream);
+      mission.uploadMetadata(file.getFilename(), istream);
     }
     catch (IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
+  }
+
+  @Request(RequestType.SESSION)
+  public List<SiteObject> getItems(String sessionId, String id, String key)
+  {
+    UasComponent component = UasComponent.get(id);
+
+    return component.getSiteObjects(key);
+  }
+
+  @Request(RequestType.SESSION)
+  public S3Object download(String sessionId, String id, String key)
+  {
+    UasComponent component = UasComponent.get(id);
+
+    return component.download(key);
   }
 }

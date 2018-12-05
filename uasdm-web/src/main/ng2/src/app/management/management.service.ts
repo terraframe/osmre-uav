@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams } from '@angular/http';
+import { Headers, Http, Response, URLSearchParams, RequestOptions, ResponseContentType } from '@angular/http';
+import { Observable } from 'rxjs';
+
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
@@ -22,6 +25,22 @@ export class ManagementService {
 
         return this.http
             .get( acp + '/project/get-children', { search: params } )
+            .toPromise()
+            .then( response => {
+                return response.json() as SiteEntity[];
+            } )
+    }
+
+    getItems( id: string, key: string ): Promise<SiteEntity[]> {
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'id', id );
+
+        if ( key != null ) {
+            params.set( 'key', key );
+        }
+
+        return this.http
+            .get( acp + '/project/items', { search: params } )
             .toPromise()
             .then( response => {
                 return response.json() as SiteEntity[];
@@ -163,5 +182,22 @@ export class ManagementService {
             .then( response => {
                 return response.json() as { messages: Message[], tasks: Task[] };
             } )
+    }
+
+    download( id: string, key: string ): Observable<Blob> {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'id', id );
+        params.set( 'key', key );
+
+        let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
+        
+        this.eventService.start();
+
+        return this.http.get( acp + '/project/download', options )
+            .finally(() => {
+                this.eventService.complete();
+            } )        
+            .map( res => res.blob() )
     }
 }

@@ -1,24 +1,31 @@
 package gov.geoplatform.uasdm;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
+import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
 
+import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.SiteObject;
 
 @Controller(url = "project")
 public class ProjectManagementController
@@ -145,5 +152,43 @@ public class ProjectManagementController
 	  arr.put(obj);
 
     return new RestBodyResponse(arr);
+  }
+
+  @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  {
+    if (key == null || key.length() == 0)
+    {
+      List<SiteItem> children = this.service.getChildren(request.getSessionId(), id);
+
+      for (SiteItem child : children)
+      {
+        if (child.getType().equals("Collection") || child.getType().equals("Mission"))
+        {
+          child.setHasChildren(true);
+        }
+      }
+
+      List<SiteObject> objects = this.service.getItems(request.getSessionId(), id, null);
+
+      JSONArray response = SiteItem.serialize(children);
+
+      for (SiteObject object : objects)
+      {
+        response.put(object.toJSON());
+      }
+
+      return new RestBodyResponse(response);
+    }
+
+    List<SiteObject> objects = this.service.getItems(request.getSessionId(), id, key);
+
+    return new RestBodyResponse(SiteObject.serialize(objects));
+  }
+
+  @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF download(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  {
+    return new S3GetResponse(this.service.download(request.getSessionId(), id, key));
   }
 }

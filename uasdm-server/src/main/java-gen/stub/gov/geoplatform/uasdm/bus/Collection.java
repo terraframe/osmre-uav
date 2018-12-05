@@ -15,6 +15,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.event.ProgressEvent;
@@ -27,6 +29,8 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
 
 public class Collection extends CollectionBase
 {
@@ -41,6 +45,8 @@ public class Collection extends CollectionBase
   public static final String DEM              = "dem";
 
   public static final String ORTHO            = "ortho";
+
+  final Logger               log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -277,9 +283,9 @@ public class Collection extends CollectionBase
 
           if (myUpload.isDone() == false)
           {
-            System.out.println("Transfer: " + myUpload.getDescription());
-            System.out.println("  - State: " + myUpload.getState());
-            System.out.println("  - Progress: " + myUpload.getProgress().getBytesTransferred());
+            this.log.info("Transfer: " + myUpload.getDescription());
+            this.log.info(" - State: " + myUpload.getState());
+            this.log.info(" - Progress: " + myUpload.getProgress().getBytesTransferred());
           }
 
           myUpload.addProgressListener(new ProgressListener()
@@ -293,7 +299,8 @@ public class Collection extends CollectionBase
               {
                 long total = myUpload.getProgress().getTotalBytesToTransfer();
                 long current = myUpload.getProgress().getBytesTransferred();
-                System.out.println(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+
+                log.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
 
                 count = 0;
               }
@@ -308,6 +315,8 @@ public class Collection extends CollectionBase
         {
           tx.shutdownNow();
         }
+
+        SolrService.updateOrCreateDocument(this, key, name);
       }
       catch (Exception e)
       {
@@ -319,4 +328,53 @@ public class Collection extends CollectionBase
       task.createAction("The filename [" + name + "] is invalid", "error");
     }
   }
+
+  @Override
+  public List<SiteObject> getSiteObjects(String folder)
+  {
+    List<SiteObject> objects = new LinkedList<SiteObject>();
+
+    if (folder == null)
+    {
+      SiteObject raw = new SiteObject();
+      raw.setId(this.getOid() + "-" + RAW);
+      raw.setName(RAW);
+      raw.setComponentId(this.getOid());
+      raw.setKey(this.buildRawKey());
+      raw.setType(SiteObject.FOLDER);
+
+      SiteObject ptCloud = new SiteObject();
+      ptCloud.setId(this.getOid() + "-" + PTCLOUD);
+      ptCloud.setName(PTCLOUD);
+      ptCloud.setComponentId(this.getOid());
+      ptCloud.setKey(this.buildPointCloudKey());
+      ptCloud.setType(SiteObject.FOLDER);
+
+      SiteObject dem = new SiteObject();
+      dem.setId(this.getOid() + "-" + DEM);
+      dem.setName(DEM);
+      dem.setComponentId(this.getOid());
+      dem.setKey(this.buildDemKey());
+      dem.setType(SiteObject.FOLDER);
+
+      SiteObject ortho = new SiteObject();
+      ortho.setId(this.getOid() + "-" + ORTHO);
+      ortho.setName(ORTHO);
+      ortho.setComponentId(this.getOid());
+      ortho.setKey(this.buildOrthoKey());
+      ortho.setType(SiteObject.FOLDER);
+
+      objects.add(raw);
+      objects.add(ptCloud);
+      objects.add(dem);
+      objects.add(ortho);
+    }
+    else
+    {
+      this.getSiteObjects(folder, objects);
+    }
+
+    return objects;
+  }
+
 }

@@ -8,25 +8,25 @@ import org.json.JSONObject;
 
 public class SiteItem
 {
-  private static String ID            = "id";
-  
-  private static String TYPE          = "type";
-  
-  private static String TYPE_LABEL    = "typeLabel";
-  
-  private static String NAME          = "name";
-  
-  private static String HAS_CHILDREN  = "hasChildren";
-  
-  private String  id;
-  
-  private String  type;
+  public static String ID           = "id";
 
-  private String  typeLabel;
+  public static String TYPE         = "type";
 
-  private String  name;
+  public static String TYPE_LABEL   = "typeLabel";
 
-  private Boolean hasChildren;
+  public static String NAME         = "name";
+
+  public static String HAS_CHILDREN = "hasChildren";
+
+  private String       id;
+
+  private String       type;
+
+  private String       typeLabel;
+
+  private String       name;
+
+  private Boolean      hasChildren;
 
   public String getId()
   {
@@ -47,12 +47,12 @@ public class SiteItem
   {
     this.type = type;
   }
-  
+
   public String getTypeLabel()
   {
     return typeLabel;
   }
-  
+
   public String getName()
   {
     return name;

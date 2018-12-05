@@ -4,7 +4,7 @@
     
       <mdBusiness name="gov.geoplatform.uasdm.bus.UasComponent" label="UAS Component" cacheAlgorithm="nothing" generateController="false" isAbstract="true" >
         <attributes>
-          <char name="name" required="true" label="Name" size="256" />
+          <char name="name" required="true" label="Name" size="256" immutable="true"/>
           <char name="s3location" required="false" label="Name" size="4096" />
         </attributes>
       </mdBusiness>
@@ -16,6 +16,11 @@
       </mdBusiness>
            
       <mdBusiness name="gov.geoplatform.uasdm.bus.Mission" label="Mission" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
+<!-- 
+        <attributes>
+          <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " description="Flag indicating whether metadata XML file has been uploaded for the mission." />
+        </attributes>
+ -->
       </mdBusiness>
       
        <mdBusiness name="gov.geoplatform.uasdm.bus.Collection" label="Collection" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">

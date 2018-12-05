@@ -116,6 +116,8 @@ body {
   <uasdm-app> </uasdm-app>
 
     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>      
-<%--     <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>       --%>
+<%--
+     <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
+     --%>
 <!--   </div> -->
 </body>

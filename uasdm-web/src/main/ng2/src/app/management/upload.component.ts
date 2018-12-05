@@ -91,7 +91,7 @@ export class UploadComponent implements OnInit {
                     responseProperty: 'error'
                 },
                 validation: {
-                    allowedExtensions: ['zip', '.tar.gz']
+                    allowedExtensions: ['zip', 'tar.gz']
                 },
                 callbacks: {
                     onUpload: function( id: any, name: any ): void {
