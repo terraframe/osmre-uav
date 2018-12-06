@@ -87,7 +87,7 @@ export class ViewerComponent implements OnInit, AfterViewInit {
                         node.setActiveAndVisible();
                         node.expand();
                     }
-                }, 1000 );
+                }, 20 );
             }
 
         } ).catch(( err: any ) => {
