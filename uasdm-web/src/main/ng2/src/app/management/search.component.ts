@@ -29,8 +29,9 @@ export class SearchComponent implements OnInit {
 	    this.searchService.search(this.searchTerm$)
 	      .subscribe(results => {
 	    	  
-	    	let hierarchyStr = "";
 	    	results.forEach( (result:any) => {
+	    	    
+	            let hierarchyStr = "";	    	    
 	    		
 	    		result.hierarchy.forEach( (h:any) => {
 	    			hierarchyStr += "/" + h.label;

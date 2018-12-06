@@ -47,9 +47,16 @@ export class ManagementService {
             } )
     }
 
-    roots(): Promise<SiteEntity[]> {
+    roots( id: string ): Promise<SiteEntity[]> {
+        let params: URLSearchParams = new URLSearchParams();
+
+        if ( id != null ) {
+            params.set( 'id', id );
+        }
+
+
         return this.http
-            .get( acp + '/project/roots' )
+            .get( acp + '/project/roots', { search: params } )
             .toPromise()
             .then( response => {
                 return response.json() as SiteEntity[];
@@ -191,13 +198,13 @@ export class ManagementService {
         params.set( 'key', key );
 
         let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
-        
+
         this.eventService.start();
 
         return this.http.get( acp + '/project/download', options )
             .finally(() => {
                 this.eventService.complete();
-            } )        
+            } )
             .map( res => res.blob() )
     }
 }

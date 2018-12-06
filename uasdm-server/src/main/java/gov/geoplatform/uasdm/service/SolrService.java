@@ -302,7 +302,7 @@ public class SolrService
   {
     List<QueryResult> results = new LinkedList<QueryResult>();
 
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSolrEnabled() && text != null && text.length() > 0)
     {
       try
       {

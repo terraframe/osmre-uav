@@ -76,7 +76,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     constructor( private service: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) { }
 
     ngOnInit(): void {
-        this.service.roots().then( nodes => {
+        this.service.roots(null).then( nodes => {
             this.nodes = nodes;
         } ).catch(( err: any ) => {
             this.error( err.json() );

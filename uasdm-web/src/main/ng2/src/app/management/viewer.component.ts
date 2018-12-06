@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -71,11 +72,22 @@ export class ViewerComponent implements OnInit, AfterViewInit {
      */
     current: TreeNode;
 
-    constructor( private service: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) { }
+    constructor( private service: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService, private route: ActivatedRoute ) { }
 
     ngOnInit(): void {
-        this.service.roots().then( nodes => {
+        let id = this.route.snapshot.paramMap.get( 'id' );
+
+        this.service.roots( id ).then( nodes => {
             this.nodes = nodes;
+
+            if ( id != null ) {
+                setTimeout(() => {
+                    if ( this.tree ) {
+                        this.tree.treeModel.expandAll();
+                    }
+                }, 1000 );
+            }
+
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );

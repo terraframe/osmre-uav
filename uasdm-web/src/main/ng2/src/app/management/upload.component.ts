@@ -109,7 +109,7 @@ export class UploadComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.service.roots().then( sites => {
+        this.service.roots(null).then( sites => {
             this.sites = sites;
 
         } ).catch(( err: any ) => {

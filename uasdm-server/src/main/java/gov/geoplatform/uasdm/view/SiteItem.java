@@ -8,25 +8,34 @@ import org.json.JSONObject;
 
 public class SiteItem
 {
-  public static String ID           = "id";
+  public static String   ID           = "id";
 
-  public static String TYPE         = "type";
+  public static String   TYPE         = "type";
 
-  public static String TYPE_LABEL   = "typeLabel";
+  public static String   TYPE_LABEL   = "typeLabel";
 
-  public static String NAME         = "name";
+  public static String   NAME         = "name";
 
-  public static String HAS_CHILDREN = "hasChildren";
+  public static String   HAS_CHILDREN = "hasChildren";
 
-  private String       id;
+  public static String   CHILDREN     = "children";
 
-  private String       type;
+  private String         id;
 
-  private String       typeLabel;
+  private String         type;
 
-  private String       name;
+  private String         typeLabel;
 
-  private Boolean      hasChildren;
+  private String         name;
+
+  private Boolean        hasChildren;
+
+  private List<SiteItem> children;
+
+  public SiteItem()
+  {
+    this.children = new LinkedList<SiteItem>();
+  }
 
   public String getId()
   {
@@ -78,6 +87,11 @@ public class SiteItem
     this.hasChildren = hasChildren;
   }
 
+  public void addChild(SiteItem child)
+  {
+    this.children.add(child);
+  }
+
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();
@@ -86,6 +100,12 @@ public class SiteItem
     obj.put(TYPE_LABEL, this.typeLabel);
     obj.put(NAME, this.name);
     obj.put(HAS_CHILDREN, this.hasChildren);
+
+    if (this.children != null && this.children.size() > 0)
+    {
+      obj.put(CHILDREN, SiteItem.serialize(this.children));
+    }
+
     return obj;
   }
 

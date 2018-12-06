@@ -18,10 +18,16 @@
         <ul class="list-group" *ngIf="results">
           <li class="list-group-item" *ngFor="let result of results | slice:0:9">
             <a href="{{ result.latest }}" target="_blank">
-              {{ result.name }}
+              {{ result.filename }}
             </a>
             
-             <span class="pull-right">{{result.hierarchyStr}}</span>
+             <div class="pull-right">
+               <ol class="breadcrumb">
+                 <li *ngFor="let site of result.hierarchy" class="breadcrumb-item active" aria-current="page">
+                   {{site.label}}
+                 </li>
+               </ol>             
+             </div>
           </li>
         </ul>
       </div>

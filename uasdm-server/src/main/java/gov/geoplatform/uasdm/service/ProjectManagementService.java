@@ -27,9 +27,9 @@ import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
-import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.SiteObject;
 
 public class ProjectManagementService
 {
@@ -57,12 +57,13 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<SiteItem> getRoots(String sessionId)
+  public List<SiteItem> getRoots(String sessionId, String id)
   {
     LinkedList<SiteItem> roots = new LinkedList<SiteItem>();
 
     QueryFactory qf = new QueryFactory();
     SiteQuery q = new SiteQuery(qf);
+    q.ORDER_BY_ASC(q.getName());
 
     OIterator<? extends Site> i = q.getIterator();
 
@@ -73,6 +74,52 @@ public class ProjectManagementService
     finally
     {
       i.close();
+    }
+
+    if (id != null)
+    {
+      UasComponent component = UasComponent.get(id);
+      SiteItem child = Converter.toSiteItem(component);
+
+      List<UasComponent> ancestors = component.getAncestors();
+
+      for (int j = 0; j < ancestors.size(); j++)
+      {
+        SiteItem parent = null;
+
+        if (j == ( ancestors.size() - 1 ))
+        {
+          UasComponent root = ancestors.get(ancestors.size() - 1);
+
+          for (SiteItem r : roots)
+          {
+            if (r.getId().equals(root.getOid()))
+            {
+              parent = r;
+            }
+          }
+        }
+        else
+        {
+          parent = Converter.toSiteItem(ancestors.get(j));
+        }
+
+        List<SiteItem> children = this.getChildren(sessionId, parent.getId());
+
+        for (SiteItem c : children)
+        {
+          if (!c.getId().equals(child.getId()))
+          {
+            parent.addChild(c);
+          }
+          else
+          {
+            parent.addChild(child);
+          }
+        }
+
+        child = parent;
+      }
     }
 
     return roots;

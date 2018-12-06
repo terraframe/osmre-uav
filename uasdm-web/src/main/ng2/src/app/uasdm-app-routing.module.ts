@@ -31,6 +31,10 @@ const routes: Routes = [
         component: ViewerComponent
     },
     {
+        path: 'viewer/:id',
+        component: ViewerComponent
+    },
+    {
         path: 'tasks',
         component: UserProfileComponent
     },

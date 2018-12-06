@@ -57,11 +57,11 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getRoots(ClientRequestIF request)
+  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    List<SiteItem> children = this.service.getRoots(request.getSessionId());
+    List<SiteItem> roots = this.service.getRoots(request.getSessionId(), id);
 
-    return new RestBodyResponse(SiteItem.serialize(children));
+    return new RestBodyResponse(SiteItem.serialize(roots));
   }
 
   @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
