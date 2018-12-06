@@ -27,19 +27,7 @@ export class SearchComponent implements OnInit {
 	
 	constructor(private searchService: SearchService, private modalService: BsModalService) {
 	    this.searchService.search(this.searchTerm$)
-	      .subscribe(results => {
-	    	  
-	    	results.forEach( (result:any) => {
-	    	    
-	            let hierarchyStr = "";	    	    
-	    		
-	    		result.hierarchy.forEach( (h:any) => {
-	    			hierarchyStr += "/" + h.label;
-	    		})
-	    		
-	    		result.hierarchyStr = hierarchyStr;
-	    	})
-	    	
+	      .subscribe(results => {	    	
 	        this.results = results;
 	      });
 	}

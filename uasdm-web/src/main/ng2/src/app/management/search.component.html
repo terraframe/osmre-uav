@@ -17,6 +17,9 @@
   
         <div class="list-group" *ngIf="results">
           <div class="list-group-item" *ngFor="let result of results | slice:0:9">
+            <span *ngIf="result.filename == null"><i class="fa fa-folder-open"></i></span>
+            <span *ngIf="result.filename != null"><i class="fa fa-file"></i></span>
+          
             <a href="{{ result.latest }}" target="_blank">
               {{ result.filename || result.hierarchy[result.hierarchy.length -1].label}}
             </a>
