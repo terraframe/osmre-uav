@@ -15,21 +15,25 @@
           </div>
         </div>
   
-        <ul class="list-group" *ngIf="results">
-          <li class="list-group-item" *ngFor="let result of results | slice:0:9">
+        <div class="list-group" *ngIf="results">
+          <div class="list-group-item" *ngFor="let result of results | slice:0:9">
             <a href="{{ result.latest }}" target="_blank">
-              {{ result.filename }}
+              {{ result.filename || result.hierarchy[result.hierarchy.length -1].label}}
             </a>
             
              <div class="pull-right">
-               <ol class="breadcrumb">
-                 <li *ngFor="let site of result.hierarchy" class="breadcrumb-item active" aria-current="page">
+                 <span *ngFor="let site of result.hierarchy; index as i">
                    {{site.label}}
-                 </li>
-               </ol>             
+                   
+                   <span *ngIf="i < (result.hierarchy.length -1)">
+                    /
+                   </span>
+                   
+                   
+                 </span>
              </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
       <div class="col-sm-3"></div> 
     </div>
