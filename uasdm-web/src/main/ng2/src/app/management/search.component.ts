@@ -1,4 +1,5 @@
 import { Component, OnInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
@@ -17,24 +18,28 @@ import { SearchService } from './search.service';
 } )
 export class SearchComponent implements OnInit {
 
-	results: Object;
-	searchTerm$ = new Subject<string>();
-	
+    results: Object;
+    searchTerm$ = new Subject<string>();
+
     /*
      * Reference to the modal current showing
      */
     private bsModalRef: BsModalRef;
-	
-	constructor(private searchService: SearchService, private modalService: BsModalService) {
-	    this.searchService.search(this.searchTerm$)
-	      .subscribe(results => {	    	
-	        this.results = results;
-	      });
-	}
-	
-	ngOnInit(): void {
-		
-	}
+
+    constructor( private searchService: SearchService, private modalService: BsModalService, private router: Router ) {
+        this.searchService.search( this.searchTerm$ )
+            .subscribe( results => {
+                this.results = results;
+            } );
+    }
+
+    ngOnInit(): void {
+
+    }
+
+    handleClick( $event: any, result: any ): void {
+        this.router.navigate( ['viewer', result.hierarchy[result.hierarchy.length - 1].id] );
+    }
 
     error( err: any ): void {
         // Handle error
