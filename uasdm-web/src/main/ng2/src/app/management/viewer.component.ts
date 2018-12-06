@@ -85,6 +85,7 @@ export class ViewerComponent implements OnInit, AfterViewInit {
                     if ( this.tree ) {
                         let node = this.tree.treeModel.getNodeById(id);
                         node.setActiveAndVisible();
+                        node.expand();
                     }
                 }, 1000 );
             }
