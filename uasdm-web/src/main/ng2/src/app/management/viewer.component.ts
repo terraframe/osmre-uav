@@ -13,7 +13,7 @@ import { ManagementService } from './management.service';
 
 @Component( {
     selector: 'viewer',
-    templateUrl: './projects.component.html',
+    templateUrl: './viewer.component.html',
     styleUrls: []
 } )
 export class ViewerComponent implements OnInit, AfterViewInit {

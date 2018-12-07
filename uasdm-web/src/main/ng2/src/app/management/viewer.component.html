@@ -1,8 +1,18 @@
 <uasdm-header></uasdm-header>
 
 <div id="app-container" class="container">
-
-  <div *ngIf="nodes.length > 0" class="tree">
-    <tree-root [nodes]="nodes" [options]="options"></tree-root>
-  </div>  
+  <div class="row">
+    <h2>Data viewer </h2>
+  </div>
+  <div class="row">
+    <div *ngIf="nodes.length > 0" class="tree">
+      <tree-root [nodes]="nodes" [options]="options"></tree-root>
+    </div>  
+  </div>
 </div>
+
+<context-menu #objectMenu>
+  <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)">
+    Download {{item?.data.name}}
+  </ng-template>
+</context-menu>

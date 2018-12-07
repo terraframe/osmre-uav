@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -17,6 +18,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CursorMarkParams;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -311,23 +313,39 @@ public class SolrService
         try
         {
           StringBuilder ql = new StringBuilder();
-          ql.append(ClientUtils.escapeQueryChars(text));
+          ql.append("_text_:" + "*" + ClientUtils.escapeQueryChars(text) + "*");
 
           SolrQuery query = new SolrQuery();
           query.setQuery(ql.toString());
           query.setFields("*");
-          query.setRows(20);
+          query.setRows(500);
+          query.addSort("id", ORDER.asc); // Pay attention to this line
+          String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
-          QueryResponse response = client.query(query);
-          SolrDocumentList list = response.getResults();
-
-          Iterator<SolrDocument> iterator = list.iterator();
-
-          while (iterator.hasNext())
+          boolean done = false;
+          while (!done)
           {
-            SolrDocument document = iterator.next();
+            query.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
 
-            results.add(QueryResult.build(document));
+            QueryResponse response = client.query(query);
+            SolrDocumentList list = response.getResults();
+
+            String nextCursorMark = response.getNextCursorMark();
+            Iterator<SolrDocument> iterator = list.iterator();
+
+            while (iterator.hasNext())
+            {
+              SolrDocument document = iterator.next();
+
+              results.add(QueryResult.build(document));
+            }
+
+            if (cursorMark.equals(nextCursorMark))
+            {
+              done = true;
+            }
+
+            cursorMark = nextCursorMark;
           }
         }
         finally
@@ -343,5 +361,4 @@ public class SolrService
 
     return results;
   }
-
 }
