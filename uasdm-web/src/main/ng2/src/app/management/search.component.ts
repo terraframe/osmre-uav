@@ -20,6 +20,7 @@ export class SearchComponent implements OnInit {
 
     results: Object;
     searchTerm$ = new Subject<string>();
+    searchTerm = "";
 
     /*
      * Reference to the modal current showing
@@ -36,7 +37,7 @@ export class SearchComponent implements OnInit {
     ngOnInit(): void {
 
     }
-
+    
     handleClick( $event: any, result: any ): void {
         this.router.navigate( ['viewer', result.hierarchy[result.hierarchy.length - 1].id] );
     }

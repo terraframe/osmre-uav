@@ -92,6 +92,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
       }, 1000)
     }
     
+    handleOnUpdateData(): void {
+    	this.tree.treeModel.expandAll();
+    }
 
     handleOnMenu( node: any, $event: any ): void {
     	
@@ -148,7 +151,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             this.error( err.json() );
         } );
     }
-
+    
     handleEdit( node: TreeNode ): void {
         this.current = node;
 

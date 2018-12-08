@@ -1,12 +1,12 @@
-<uasdm-header></uasdm-header>
+<uasdm-header [title]="'Project Management'"></uasdm-header>
 
 <div id="app-container" class="container">
-  <div class="row">
-    <h2>Project Management</h2>
-  </div>
+<!--   <div class="row"> -->
+<!--     <h2>Project Management</h2> -->
+<!--   </div> -->
   <div class="row">
     <div *ngIf="nodes.length > 0" class="tree">
-      <tree-root [nodes]="nodes" [options]="options"></tree-root>
+      <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"></tree-root>
     </div>  
   </div>
 </div>

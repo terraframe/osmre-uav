@@ -1,4 +1,4 @@
-<uasdm-header></uasdm-header>
+<uasdm-header [title]="'Search'"></uasdm-header>
 
 <div id="app-container" class="container">
     <div class="row">
@@ -6,13 +6,13 @@
       <div class="col-sm-6">
       
         <h2>File Search</h2>
-        <div class="input-group">
-          <input class="form-control" type="text" (keyup)="searchTerm$.next($event.target.value)">
-          <div class="input-group-btn">
-            <button class="btn btn-primary" style="padding:6px;" type="submit">
-              <span class="glyphicon glyphicon-search"></span>
-            </button>
-          </div>
+        <div class="input-group" style="width:100%;">
+          <input class="form-control" type="text" placeholder="Search..." (keyup)="searchTerm$.next($event.target.value)">
+<!--           <div class="input-group-btn"> -->
+<!--             <button class="btn btn-primary" style="padding:6px;" type="submit"> -->
+<!--               <span class="glyphicon glyphicon-search"></span> -->
+<!--             </button> -->
+<!--           </div> -->
         </div>
   
         <div class="list-group" *ngIf="results">

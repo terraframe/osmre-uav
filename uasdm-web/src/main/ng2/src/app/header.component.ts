@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { ManagementService } from './management/management.service';
 import { AuthService } from './auth/auth.service';
@@ -16,6 +16,8 @@ export class UasdmHeaderComponent {
     private context: string;
     private userName: string = "";
     private admin: boolean = false;
+
+	@Input() title: string;
 
 
     constructor( private managementService: ManagementService, private authService: AuthService ) {
