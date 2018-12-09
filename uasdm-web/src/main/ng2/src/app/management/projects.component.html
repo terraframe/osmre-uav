@@ -6,7 +6,12 @@
 <!--   </div> -->
   <div class="row">
     <div *ngIf="nodes.length > 0" class="tree">
-      <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"></tree-root>
+      <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()">
+        <ng-template #treeNodeTemplate let-node let-index="index">
+          <span>{{ node.data.name }}</span>
+          <i class="fa fa-folder" *ngIf="!isData(node)"></i>
+        </ng-template>
+      </tree-root>
     </div>  
   </div>
 </div>

@@ -103,6 +103,28 @@ export class ViewerComponent implements OnInit, AfterViewInit {
         //            }
         //        }, 1000 )
     }
+    
+    isData( node: any ): boolean {
+    	
+    	if(node.data.typeLabel === "Site"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Project"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Mission"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Collection"){
+    		return false;
+    	}
+    	else if(node.data.type === "folder"){
+    		return false;
+    	}
+    	else{
+    		return true;
+    	}
+    }
 
 
     handleOnMenu( node: any, $event: any ): void {

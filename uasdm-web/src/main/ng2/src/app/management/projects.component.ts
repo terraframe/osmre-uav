@@ -92,6 +92,25 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
       }, 1000)
     }
     
+    isData( node: any ): boolean {
+    	
+    	if(node.data.typeLabel === "Site"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Project"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Mission"){
+    		return false;
+    	}
+    	else if(node.data.typeLabel === "Collection"){
+    		return false;
+    	}
+    	else{
+    		return true;
+    	}
+    }
+    
     handleOnUpdateData(): void {
     	this.tree.treeModel.expandAll();
     }
