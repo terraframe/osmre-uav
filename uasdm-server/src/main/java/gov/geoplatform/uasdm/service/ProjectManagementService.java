@@ -80,6 +80,7 @@ public class ProjectManagementService
     {
       UasComponent component = UasComponent.get(id);
       SiteItem child = Converter.toSiteItem(component);
+      child.setHasChildren(true);
 
       List<UasComponent> ancestors = component.getAncestors();
 
@@ -108,6 +109,8 @@ public class ProjectManagementService
 
         for (SiteItem c : children)
         {
+          c.setHasChildren(true);
+          
           if (!c.getId().equals(child.getId()))
           {
             parent.addChild(c);
