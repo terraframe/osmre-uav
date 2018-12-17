@@ -190,6 +190,19 @@ export class ManagementService {
                 return response.json() as { messages: Message[], tasks: Task[] };
             } )
     }
+    
+    task(id: string): Promise<{ messages: Message[], task: Task }> {
+    	
+    	let params: URLSearchParams = new URLSearchParams();
+        params.set( 'id', id );
+    
+        return this.http
+            .get( acp + '/project/task', {params : params} )
+            .toPromise()
+            .then( response => {
+                return response.json() as { messages: Message[], task: Task };
+            } )
+    }
 
     download( id: string, key: string ): Observable<Blob> {
 

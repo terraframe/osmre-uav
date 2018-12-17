@@ -234,7 +234,7 @@ public class ProjectManagementService
 
       task.lock();
       task.setStatus("Complete");
-      task.setMessage("The Uploaded successfully completed.  All files except those mentioned were archived.");
+      task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
       task.apply();
     }
     finally

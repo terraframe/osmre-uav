@@ -2,11 +2,14 @@ import { Component, OnInit, AfterViewInit, Inject, ViewChild, ElementRef } from 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
+import 'rxjs/Rx';
+import {Observable} from 'rxjs/Rx';
+
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { ErrorModalComponent } from './modals/error-modal.component';
-import { SiteEntity, UploadForm } from './management';
+import { SiteEntity, UploadForm, Task } from './management';
 import { ManagementService } from './management.service';
 
 declare var acp: string;
@@ -54,7 +57,15 @@ export class UploadComponent implements OnInit {
     uploader = null as FineUploader;
 
     disabled: boolean = false;
-
+    
+    taskStatusMessages: string[] = [];
+    
+    currentTask: Task = null;
+    
+    taskPolling: any;
+    
+    pollingIsSet: boolean = false;
+    
     constructor( private service: ManagementService, private modalService: BsModalService ) { }
 
     @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
@@ -97,13 +108,51 @@ export class UploadComponent implements OnInit {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
                     },
+                    onProgress: function(id: any, name: any, uploadedBytes: any, totalBytes: any): void {
+                    	//console.log("progressing")
+//                    	let ups = this.getUploads();
+//                    	console.log(ups)
+                    },
+                    onUploadChunk: function(id: any, name: any, chunkData: any): void {
+                    	//console.log("uploadChunk")
+                    },
+                    onUploadChunkSuccess: function(id: any, chunkData: any, responseJSON: any, xhr: any): void {
+                    	
+                    	//console.log(responseJSON)
+                    	
+                    	if(responseJSON.message && responseJSON.message.currentTask && !that.currentTask){
+                    		that.currentTask = responseJSON.message.currentTask;
+                    	}
+                    	
+                    	if(that.currentTask && !that.pollingIsSet){
+                    		that.pollingIsSet = true;
+                    		
+                            that.taskPolling =Observable.interval(2000)
+                            .switchMap(() => {
+                              if(that.currentTask){
+                                return that.service.task(that.currentTask.oid);
+                              }
+                            }).map((data) => data)
+                            .subscribe((data) => {
+                                that.currentTask = data.task
+                            });
+                    	}
+                    },
                     onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
                         that.disabled = false;
+                        that.currentTask = null;
+                        
+                        that.taskPolling.unsubscribe();
+                        
+                        this.clearStoredFiles();
                     }
                 }
             };
 
             this.uploader = new FineUploader( uiOptions );
+            
+            let resumable = this.uploader.getResumableFilesData();
+            
 
         }
     }
@@ -139,7 +188,7 @@ export class UploadComponent implements OnInit {
             } );
         }
 
-        console.log( this.values );
+        //console.log( this.values );
     }
 
     onProjectSelect( projectId: string ): void {
@@ -224,6 +273,11 @@ export class UploadComponent implements OnInit {
         }
 
     }
+    
+//    resumeUpload(): void {
+//    	let resumable = this.uploader.getResumableFilesData();
+//    	this.uploader.retry(resumable[0].uuid)
+//    }
 
     error( err: any ): void {
         // Handle error

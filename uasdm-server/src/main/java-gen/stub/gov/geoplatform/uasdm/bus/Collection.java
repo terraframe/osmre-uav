@@ -283,6 +283,7 @@ public class Collection extends CollectionBase
     }
   }
 
+  @Transaction
   private void uploadFile(WorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp)
   {
     if (isValidName(name))
@@ -302,6 +303,10 @@ public class Collection extends CollectionBase
             this.log.info("Transfer: " + myUpload.getDescription());
             this.log.info(" - State: " + myUpload.getState());
             this.log.info(" - Progress: " + myUpload.getProgress().getBytesTransferred());
+            
+            task.lock();
+            task.setMessage(myUpload.getDescription());
+            task.apply();
           }
 
           myUpload.addProgressListener(new ProgressListener()

@@ -19,6 +19,10 @@ public class WorkflowTask extends WorkflowTaskBase
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUpLoadId());
     obj.put("collection", this.getCollectionOid());
+    obj.put("message", this.getMessage());
+    obj.put("status", this.getStatus());
+    obj.put("lastUpdateDate", this.getLastUpdateDate());
+    obj.put("createDate", this.getCreateDate());
 
     return obj;
   }

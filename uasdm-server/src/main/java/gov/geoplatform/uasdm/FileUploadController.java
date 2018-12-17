@@ -34,6 +34,7 @@ import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
 
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.MultipartUploadParser;
@@ -95,7 +96,8 @@ public class FileUploadController
     {
       MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, AppProperties.getTempDirectory(), context);
       RequestParser requestParser = RequestParser.getInstance(req, multipartUploadParser);
-
+      JSONObject taskMessage = null;
+      
       try
       {
         if (requestParser.isResume())
@@ -106,17 +108,17 @@ public class FileUploadController
 
         if (requestParser.isFirst() || requestParser.isResume())
         {
-          this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
+          taskMessage = this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
         }
 
         this.writeFileForMultipartRequest(clientRequest, requestParser);
 
-        if (requestParser.getPartIndex() % 10 == 0)
+        if (requestParser.getPartIndex() < requestParser.getTotalParts() - 1)
         {
-          this.wService.updateUploadTask(clientRequest.getSessionId(), requestParser);
+          taskMessage = this.wService.updateUploadTask(clientRequest.getSessionId(), requestParser);
         }
 
-        return writeResponse(requestParser.generateError() ? "Generated error" : null, isIframe, false, false);
+        return writeResponse(requestParser.generateError() ? "Generated error" : null, isIframe, false, false, taskMessage);
       }
       catch (SmartExceptionDTO e)
       {
@@ -129,7 +131,7 @@ public class FileUploadController
           log.error("Problem handling exception", e1);
         }
 
-        return this.writeResponse(e.getMessage(), isIframe, false, true);
+        return this.writeResponse(e.getMessage(), isIframe, false, true, null);
       }
     }
     catch (Exception e)
@@ -138,10 +140,10 @@ public class FileUploadController
 
       if (e instanceof MergePartsException)
       {
-        return this.writeResponse(e.getMessage(), isIframe, true, false);
+        return this.writeResponse(e.getMessage(), isIframe, true, false, null);
       }
 
-      return this.writeResponse(e.getMessage(), isIframe, false, false);
+      return this.writeResponse(e.getMessage(), isIframe, false, false, null);
     }
   }
 
@@ -164,7 +166,7 @@ public class FileUploadController
           this.mergeFiles(outputFile, part);
         }
 
-        this.assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+        this.assertCombinedFileIsValid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
         deletePartitionFiles(dir, requestParser.getUuid());
 
         this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
@@ -179,7 +181,7 @@ public class FileUploadController
     }
   }
 
-  private void assertCombinedFileIsVaid(long totalFileSize, File outputFile, String uuid) throws MergePartsException
+  private void assertCombinedFileIsValid(long totalFileSize, File outputFile, String uuid) throws MergePartsException
   {
     if (totalFileSize != outputFile.length())
     {
@@ -264,12 +266,13 @@ public class FileUploadController
     }
   }
 
-  private ResponseIF writeResponse(String failureReason, boolean isIframe, boolean restartChunking, boolean preventRetry)
+  private ResponseIF writeResponse(String failureReason, boolean isIframe, boolean restartChunking, boolean preventRetry, JSONObject message)
   {
     if (failureReason == null)
     {
       JSONObject response = new JSONObject();
       response.put("success", true);
+      response.put("message", message);
 
       return new RestBodyResponse(response);
     }
@@ -321,7 +324,7 @@ public class FileUploadController
       {
         this.pService.uploadMetadata(clientRequest.getSessionId(), missionId, file);
 
-        return writeResponse(null, false, false, false);
+        return writeResponse(null, false, false, false, null);
       }
       else
       {
@@ -330,7 +333,7 @@ public class FileUploadController
     }
     catch (Exception e)
     {
-      return this.writeResponse(e.getMessage(), false, false, false);
+      return this.writeResponse(e.getMessage(), false, false, false, null);
     }
   }
 

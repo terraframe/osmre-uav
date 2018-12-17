@@ -115,6 +115,14 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
+  
+  @Endpoint(url = "task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getTask(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  {
+    JSONObject response = new WorkflowService().getTask(request.getSessionId(), id);
+
+    return new RestBodyResponse(response);
+  }
 
   @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "term") String term)

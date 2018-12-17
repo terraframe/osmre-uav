@@ -24,13 +24,13 @@ public class WorkflowService
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
 
   @Request(RequestType.SESSION)
-  public void createUploadTask(String sessionId, RequestParser parser)
+  public JSONObject createUploadTask(String sessionId, RequestParser parser)
   {
-    this.createUploadTaskInTransaction(sessionId, parser);
+    return this.createUploadTaskInTransaction(sessionId, parser);
   }
 
   @Transaction
-  public void createUploadTaskInTransaction(String sessionId, RequestParser parser)
+  public JSONObject createUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
     WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
 
@@ -56,16 +56,21 @@ public class WorkflowService
 
     task.setMessage(parser.getPercent() + "% complete");
     task.apply();
+    
+    JSONObject message = new JSONObject();
+    message.put("currentTask", task.toJSON());
+    
+    return message;
   }
 
   @Request(RequestType.SESSION)
-  public void updateUploadTask(String sessionId, RequestParser parser)
+  public JSONObject updateUploadTask(String sessionId, RequestParser parser)
   {
-    this.updateUploadTaskInTransaction(sessionId, parser);
+    return this.updateUploadTaskInTransaction(sessionId, parser);
   }
 
   @Transaction
-  public void updateUploadTaskInTransaction(String sessionId, RequestParser parser)
+  public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
     WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
 
@@ -73,9 +78,14 @@ public class WorkflowService
     {
       task.lock();
       task.setStatus("Uploading");
-      task.setMessage(parser.getPercent() + "% complete");
+      task.setMessage("Uploading to the staging environment..."); //parser.getPercent() + "% complete"
       task.apply();
     }
+    
+    JSONObject message = new JSONObject();
+    message.put("currentTask", task.toJSON());
+    
+    return message;
   }
 
   @Request(RequestType.SESSION)
@@ -133,6 +143,15 @@ public class WorkflowService
     JSONObject response = new JSONObject();
     response.put("tasks", AbstractWorkflowTask.serialize(tasks));
     response.put("messages", Mission.toMetadataMessage(missions));
+
+    return response;
+  }
+  
+  @Request(RequestType.SESSION)
+  public JSONObject getTask(String sessionId, String id)
+  {
+    JSONObject response = new JSONObject();
+    response.put("task", WorkflowTask.get(id).toJSON());
 
     return response;
   }
