@@ -181,6 +181,22 @@ export class ManagementService {
             } )
             .toPromise()
     }
+    
+    removeTask( uploadId: string ): Promise<Response> {
+
+        let headers = new Headers( {
+            'Content-Type': 'application/json'
+        } );
+
+        this.eventService.start();
+
+        return this.http
+            .post( acp + '/project/remove-task', JSON.stringify( { uploadId : uploadId } ), { headers: headers } )
+            .finally(() => {
+                this.eventService.complete();
+            })
+            .toPromise()
+    }
 
     tasks(): Promise<{ messages: Message[], tasks: Task[] }> {
         return this.http

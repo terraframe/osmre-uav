@@ -217,6 +217,14 @@ public class ProjectManagementService
 
     uasComponent.delete();
   }
+  
+  @Request(RequestType.SESSION)
+  public void removeTask(String sessionId, String uploadId)
+  {
+    WorkflowTask wfTask = WorkflowTask.getTaskByUploadId(uploadId);
+
+    wfTask.delete();
+  }
 
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParser parser, File infile)

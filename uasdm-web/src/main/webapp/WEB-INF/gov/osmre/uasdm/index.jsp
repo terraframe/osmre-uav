@@ -40,19 +40,17 @@ body {
 
 <!-- IE required polyfills, in this exact order -->
 
-<!--
-<script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>
-<script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>
- -->
+<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script> -->
+<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script> -->
   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>  
   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>  
 
 
     <script type="text/template" id="qq-template">
-        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
-            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drag & drop your files here">
+           <%-- <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
                 <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
-            </div>
+            </div> --%>
             <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
                 <span class="qq-upload-drop-area-text-selector"></span>
             </div>
@@ -115,9 +113,7 @@ body {
   <!--   <div> -->
   <uasdm-app> </uasdm-app>
 
-<%--
-    <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>      
-     --%>
+<!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
      <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
 <!--   </div> -->
 </body>

@@ -12,6 +12,8 @@ import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity, UploadForm, Task } from './management';
 import { ManagementService } from './management.service';
 
+import { ConfirmModalComponent } from './modals/confirm-modal.component';
+
 declare var acp: string;
 
 @Component( {
@@ -62,9 +64,13 @@ export class UploadComponent implements OnInit {
     
     currentTask: Task = null;
     
+    existingTask: boolean = false;
+    
     taskPolling: any;
     
     pollingIsSet: boolean = false;
+    
+    uploadVisible: boolean = true;
     
     constructor( private service: ManagementService, private modalService: BsModalService ) { }
 
@@ -98,27 +104,24 @@ export class UploadComponent implements OnInit {
                     defaultResponseError: "Upload failed"
                 },
                 failedUploadTextDisplay: {
-                    mode: 'custom',
-                    responseProperty: 'error'
+                    mode: 'none'
+                    //responseProperty: 'error'
                 },
                 validation: {
                     allowedExtensions: ['zip', 'tar.gz']
+                },
+                showMessage: function(message: string) {
+                	// 
                 },
                 callbacks: {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
                     },
                     onProgress: function(id: any, name: any, uploadedBytes: any, totalBytes: any): void {
-                    	//console.log("progressing")
-//                    	let ups = this.getUploads();
-//                    	console.log(ups)
                     },
                     onUploadChunk: function(id: any, name: any, chunkData: any): void {
-                    	//console.log("uploadChunk")
                     },
                     onUploadChunkSuccess: function(id: any, chunkData: any, responseJSON: any, xhr: any): void {
-                    	
-                    	//console.log(responseJSON)
                     	
                     	if(responseJSON.message && responseJSON.message.currentTask && !that.currentTask){
                     		that.currentTask = responseJSON.message.currentTask;
@@ -141,20 +144,34 @@ export class UploadComponent implements OnInit {
                     onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
                         that.disabled = false;
                         that.currentTask = null;
+                        that.existingTask = false;
                         
-                        that.taskPolling.unsubscribe();
+                        if(that.taskPolling){
+                          that.taskPolling.unsubscribe();
+                        }
                         
                         this.clearStoredFiles();
+                    },
+                    onCancel: function(id: number, name: string){
+                    	//that.currentTask = null;
+                    },
+                    onError: function(id: number, errorReason: string, xhrOrXdr: string) {
+                    	that.error({message : xhrOrXdr});
                     }
                 }
             };
 
             this.uploader = new FineUploader( uiOptions );
-            
-            let resumable = this.uploader.getResumableFilesData();
-            
 
         }
+    }
+    
+    ngAfterViewInit() {
+    	
+      setTimeout(()=>{ // setTimeout is a workaround for getting access to this.uploader after ViewChild is finished
+    	  this.setExistingTask();
+      }, 5)
+      
     }
 
     ngOnInit(): void {
@@ -164,6 +181,14 @@ export class UploadComponent implements OnInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+    
+    setExistingTask(): void {
+    	let resumable = this.uploader.getResumableFilesData() as any[];
+	      if(resumable.length > 0){
+	    	this.existingTask = true;
+	    	this.hideUploadPanel();
+	      }
     }
 
     onSiteSelect( siteId: string ): void {
@@ -259,11 +284,11 @@ export class UploadComponent implements OnInit {
         /*
          * Validate form values before uploading
          */
-        if ( !this.values.create && this.values.collection == null ) {
+        if ( !this.values.create && this.values.collection == null && !this.existingTask ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
         }
-        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) ) {
+        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = "Name is required";
         }
@@ -274,11 +299,43 @@ export class UploadComponent implements OnInit {
 
     }
     
-//    resumeUpload(): void {
-//    	let resumable = this.uploader.getResumableFilesData();
-//    	this.uploader.retry(resumable[0].uuid)
-//    }
+    removeUpload(event:any): void {
+    	let that = this;
+    	
+    	this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+        } );
+        this.bsModalRef.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
+//        this.bsModalRef.content.data = node;
 
+        ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
+        	this.service.removeTask(this.uploader.getResumableFilesData()[0].uuid)
+            .then( () => {
+          	  //that.uploader.clearStoredFiles();
+          	  //that.uploader.cancelAll()
+          	  
+          	  // The above clearStoredFiles() and cancelAll() methods don't appear to work so 
+          	  // we are clearing localStorage manually.
+          	  localStorage.clear();
+          	  that.existingTask = false;
+          	  that.showUploadPanel();
+
+            } ).catch(( err: any ) => {
+                this.error( err.json() );
+            } );
+        } );
+    }
+    
+    hideUploadPanel(): void {
+    	this.uploadVisible = false;
+    }
+    
+    showUploadPanel(): void {
+    	this.uploadVisible = true;
+    }
+    
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {

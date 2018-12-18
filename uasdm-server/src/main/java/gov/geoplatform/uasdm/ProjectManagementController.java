@@ -107,6 +107,14 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
+  
+  @Endpoint(url = "remove-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF removeTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  {
+    this.service.removeTask(request.getSessionId(), uploadId);
+
+    return new RestResponse();
+  }
 
   @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getTasks(ClientRequestIF request)

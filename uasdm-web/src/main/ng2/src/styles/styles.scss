@@ -91,3 +91,14 @@ tree-node-expander{
 .qq-upload-status-text-selector.qq-upload-status-text {
   float: right;
 }
+
+.error-modal{
+    color: #a16969;
+    font-size: 20px;
+    padding: 50px 10px 38px 10px;
+    border: solid 1px;
+    background: rgba(255,255,255,.5);
+}
+.error-modal button {
+    float: right;
+}
