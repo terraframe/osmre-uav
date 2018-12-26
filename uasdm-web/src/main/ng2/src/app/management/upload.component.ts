@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, ViewChild, ElementRef, KeyValueDiffers, DoCheck  } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
@@ -71,8 +71,22 @@ export class UploadComponent implements OnInit {
     pollingIsSet: boolean = false;
     
     uploadVisible: boolean = true;
+
+    differ: any;
     
-    constructor( private service: ManagementService, private modalService: BsModalService ) { }
+    constructor( private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
+        this.differ = differs.find([]).create();
+    }
+
+    ngDoCheck() {
+
+        if(this.uploader){
+          const change = this.differ.diff(this.uploader);
+          if(change){
+            this.setExistingTask();
+          }
+        }
+    }
 
     @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
 
@@ -168,9 +182,9 @@ export class UploadComponent implements OnInit {
     
     ngAfterViewInit() {
     	
-      setTimeout(()=>{ // setTimeout is a workaround for getting access to this.uploader after ViewChild is finished
-    	  this.setExistingTask();
-      }, 5)
+    //   setTimeout(()=>{ // setTimeout is a workaround for getting access to this.uploader after ViewChild is finished
+    	//   this.setExistingTask();
+    //   }, 0)
       
     }
 
