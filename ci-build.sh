@@ -27,12 +27,13 @@ if [ "$build_artifact" == "true" ]; then
 : ----------------------------------
 :
 ## Build angular source ##
-cd $WORKSPACE/geoprism/geoprism-web/src/main/ng2
-npm install
-npm install typings
-typings install lodash
-npm run build
+#cd $WORKSPACE/geoprism/geoprism-web/src/main/ng2
+#npm install
+#npm install typings
+#typings install lodash
+#npm run build
 cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
+[ -e ./node_modules ] && rm -r node_modules
 npm install
 npm install typings
 typings install lodash
@@ -56,7 +57,7 @@ fi
 : ----------------------------------
 :
 cd $WORKSPACE/uasdm
-mvn clean deploy -B -P package-deployable -Dgeoprism.basedir=$WORKSPACE/geoprism
+mvn clean deploy -B
 fi
 
 
