@@ -159,15 +159,36 @@ export class UploadComponent implements OnInit {
                         that.disabled = false;
                         that.currentTask = null;
                         that.existingTask = false;
-                        
+                                            
                         if(that.taskPolling){
-                          that.taskPolling.unsubscribe();
+                            that.taskPolling.unsubscribe();
+                            that.pollingIsSet = false;
                         }
                         
                         this.clearStoredFiles();
                     },
                     onCancel: function(id: number, name: string){
-                    	//that.currentTask = null;
+                        //that.currentTask = null;
+                        
+                        if(that.currentTask && that.currentTask.uploadId){
+                            that.service.removeTask(that.currentTask.uploadId)
+                            .then(()=> {
+                                this.clearStoredFiles();
+                            })
+                            .catch(( err: any ) => {
+                                this.error( err.json() );
+                            } );
+                        }
+
+                        that.disabled = false;
+                        that.currentTask = null;
+                        that.existingTask = false;
+                                                
+                        if(that.taskPolling){
+                            that.taskPolling.unsubscribe();
+                            that.pollingIsSet = false;
+                        }
+                            
                     },
                     onError: function(id: number, errorReason: string, xhrOrXdr: string) {
                     	that.error({message : xhrOrXdr});
@@ -196,6 +217,7 @@ export class UploadComponent implements OnInit {
             this.error( err.json() );
         } );
     }
+
     
     setExistingTask(): void {
     	let resumable = this.uploader.getResumableFilesData() as any[];

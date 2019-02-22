@@ -28,6 +28,7 @@ export class Task {
     status: string;
     message: string;
     actions: Action[];
+    uploadId: string;
 }
 
 export class Message {
