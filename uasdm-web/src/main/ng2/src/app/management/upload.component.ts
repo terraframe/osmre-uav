@@ -71,6 +71,7 @@ export class UploadComponent implements OnInit {
     pollingIsSet: boolean = false;
     
     uploadVisible: boolean = true;
+    selectedContinue: boolean = false;
 
     differ: any;
     
@@ -203,10 +204,6 @@ export class UploadComponent implements OnInit {
     
     ngAfterViewInit() {
     	
-    //   setTimeout(()=>{ // setTimeout is a workaround for getting access to this.uploader after ViewChild is finished
-    	//   this.setExistingTask();
-    //   }, 0)
-      
     }
 
     ngOnInit(): void {
@@ -222,8 +219,11 @@ export class UploadComponent implements OnInit {
     setExistingTask(): void {
     	let resumable = this.uploader.getResumableFilesData() as any[];
 	      if(resumable.length > 0){
-	    	this.existingTask = true;
-	    	this.hideUploadPanel();
+            this.existingTask = true;
+            
+            if(!this.selectedContinue){
+              this.hideUploadPanel();
+            }
 	      }
     }
 
@@ -369,7 +369,8 @@ export class UploadComponent implements OnInit {
     }
     
     showUploadPanel(): void {
-    	this.uploadVisible = true;
+        this.uploadVisible = true;
+        this.selectedContinue = true;
     }
     
     error( err: any ): void {
