@@ -220,6 +220,15 @@ export class ManagementService {
             } )
     }
 
+    getMissingMetadata(): Promise< Message[]> {
+        return this.http
+            .get( acp + '/project/missing-metadata' )
+            .toPromise()
+            .then( response => {
+                return response.json() as Message[];
+            } )
+    }
+
     download( id: string, key: string ): Observable<Blob> {
 
         let params: URLSearchParams = new URLSearchParams();

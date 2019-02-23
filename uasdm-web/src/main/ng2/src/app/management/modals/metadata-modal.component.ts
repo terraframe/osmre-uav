@@ -66,7 +66,6 @@ export class MetadataModalComponent implements OnInit {
                         that.disabled = true;
                     },
                     onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
-                        console.log( responseJSON );
                         that.disabled = false;
 
                         if ( responseJSON.success ) {

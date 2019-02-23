@@ -1,0 +1,10 @@
+.btn.btn-danger {
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+    margin-top: 10px !important;
+}
+.btn.btn-danger:hover {
+    background-color: #d2322d !important;
+    border-color: #ac2925 !important;
+
+}

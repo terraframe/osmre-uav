@@ -5,13 +5,14 @@ import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 
 import { MetadataModalComponent } from './modals/metadata-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
+import { ConfirmModalComponent } from './modals/confirm-modal.component';
 import { Message, Task } from './management';
 import { ManagementService } from './management.service';
 
 @Component( {
     selector: 'user-profile',
     templateUrl: './user-profile.component.html',
-    styleUrls: []
+    styleUrls: ['./user-profile.css']
 } )
 export class UserProfileComponent implements OnInit {
 
@@ -77,12 +78,68 @@ export class UserProfileComponent implements OnInit {
             // Remove the message
             const index = this.messages.indexOf( message );
             
-            console.log(index);
 
             if ( index > -1 ) {
                 this.messages.splice( index, 1 );
             }
         } );
+
+    }
+
+    removeTask(task: Task): void {
+
+        this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+        } );
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + ']';
+        this.bsModalRef.content.data = task;
+
+        ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( task => {
+            this.deleteTask( task );
+        } );
+
+    }
+
+    deleteTask(task: Task) {
+        this.managementService.removeTask(task.uploadId)
+            .then(() => {
+                let pos = null;
+                for (let i = 0; i < this.tasks.length; i++) {
+                    let thisTask = this.tasks[i];
+
+                    if (thisTask.uploadId === task.uploadId) {
+                        pos = i;
+                        break;
+                    }
+                }
+
+                if (pos !== null) {
+                    this.tasks.splice(pos, 1);
+                }
+
+                this.getMissingMetadata();
+
+                this.totalTaskCount = this.tasks.length;
+
+                this.totalActionsCount = this.getTotalActionsCount( this.tasks );
+
+            })
+            .catch((err: any) => {
+                this.error(err.json());
+            });
+    }
+
+    getMissingMetadata(): void {
+
+        this.managementService.getMissingMetadata()
+            .then( messages => {
+                this.messages = messages;
+            })
+            .catch((err: any) => {
+                this.error(err.json());
+            });
 
     }
 

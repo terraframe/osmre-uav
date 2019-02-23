@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.service;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,6 +146,14 @@ public class WorkflowService
     response.put("messages", Mission.toMetadataMessage(missions));
 
     return response;
+  }
+  
+  @Request(RequestType.SESSION)
+  public JSONArray getMissingMetadata(String sessionId)
+  {
+    List<Mission> missions = Mission.getMissingMetadata();
+
+    return Mission.toMetadataMessage(missions);
   }
   
   @Request(RequestType.SESSION)

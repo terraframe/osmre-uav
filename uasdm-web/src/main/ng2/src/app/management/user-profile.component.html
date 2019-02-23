@@ -74,6 +74,7 @@
                     <div id="collapse{{i}}" class="panel-collapse collapse">
                       <div *ngIf="task.status !== 'Complete'" class="panel-body">
                         <h3>{{task.message}}</h3>
+                        <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
                       </div>
                       <div *ngIf="task.status === 'Complete'" class="panel-body">
                         <ul class="list-unstyled" style="margin: 0;">
@@ -82,7 +83,10 @@
                           <li>Status: <b>{{task.status}}</b></li>
                           <li>Message: <b>{{task.message}}</b></li>
                         </ul>
-                        
+
+                        <div class="table-row">
+                        <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
+                        </div>
                         <hr>
                         
                         <h4>Actions:</h4>
