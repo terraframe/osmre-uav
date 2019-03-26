@@ -3,7 +3,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { SiteEntity, AttributeType } from '../management';
+import { SiteEntity, AttributeType, Condition } from '../management';
 import { ManagementService } from '../management.service';
 
 @Component( {
@@ -43,6 +43,15 @@ export class EditModalComponent implements OnInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+
+    evaluate( condition: Condition ): boolean {
+
+        if ( condition != null && condition.type === 'eq' ) {
+            return ( this.entity[condition.name] === condition.value );
+        }
+
+        return false;
     }
 
     error( err: any ): void {

@@ -11,17 +11,19 @@
         </div>
       </div>
     </div>
-    <div *ngFor="let attribute of attributes" class="form-group">
-      <div *ngIf="attribute.type === 'text'">
-        <label>{{attribute.label}}</label>
-        <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [placeholder]="attribute.label" [required]="attribute.required" />
-      </div>
-      <div *ngIf="attribute.type === 'list'">
-        <label>{{attribute.label}}</label>
-        <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [required]="attribute.required">
-          <option></option>
-          <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
-        </select>
+    <div *ngFor="let attribute of attributes">
+      <div *ngIf="attribute.condition == null || evaluate(attribute.condition)" class="form-group">
+        <div *ngIf="attribute.type === 'text'">
+          <label>{{attribute.label}}</label>
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [placeholder]="attribute.label" [required]="attribute.required" />
+        </div>
+        <div *ngIf="attribute.type === 'list'">
+          <label>{{attribute.label}}</label>
+          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [required]="attribute.required">
+            <option></option>
+            <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
+          </select>
+        </div>
       </div>
     </div>
     <div>

@@ -195,7 +195,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         if ( event.features != null && event.features.length > 0 ) {
 
-            const feature = event.features[0];
+            let feature = event.features[0];
             feature.id = this.current.data.id;
 
             this.updateGeometry( feature )
@@ -203,12 +203,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     updateGeometry( feature: any ): void {
-        const index = this.nodes.findIndex( node => {
+        let index = this.nodes.findIndex( node => {
             return node.id === feature.id;
         } );
 
         if ( index !== -1 ) {
-            const entity = { ...this.nodes[index] };
+            let entity = { ...this.nodes[index] };
             entity.geometry = feature.geometry;
 
             this.service.update( entity ).then( node => {
@@ -288,7 +288,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     handleCreate( parent: TreeNode ): void {
         this.current = parent;
 
-        const parentId = parent != null ? parent.data.id : null;
+        let parentId = parent != null ? parent.data.id : null;
 
         this.service.newChild( parentId ).then( data => {
             this.bsModalRef = this.modalService.show( CreateModalComponent, {
@@ -307,7 +307,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
 
                 if ( this.current != null ) {
-                    const d = this.current.data;
+                    let d = this.current.data;
 
                     if ( d.children != null ) {
                         d.children.push( entity );
@@ -361,7 +361,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     handleEdit( node: TreeNode ): void {
         this.current = node;
 
-        const data = node.data;
+        let data = node.data;
 
         this.service.edit( data.id ).then( data => {
             this.bsModalRef = this.modalService.show( EditModalComponent, {
@@ -399,7 +399,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     remove( node: TreeNode ): void {
         this.service.remove( node.data.id ).then( response => {
             if ( node.data.type !== 'Site' ) {
-                const parent = node.parent;
+                let parent = node.parent;
                 let children = parent.data.children;
 
                 parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );

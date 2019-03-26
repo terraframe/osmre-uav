@@ -110,38 +110,61 @@ export class ViewerComponent implements OnInit, AfterViewInit {
             center: [-78.880453, 42.897852]
         } );
 
-        this.draw = new MapboxDraw( {
-            displayControlsDefault: false,
-            controls: {
-                point: true
+        this.map.on( 'load', () => {
+            this.initMap();
+        } );
+    }
+
+    initMap(): void {
+        this.map.addSource( 'sites', {
+            type: 'geojson',
+            data: {
+                "type": "FeatureCollection",
+                "features": []
             }
         } );
 
-        this.mapService.features().then( geojson => {
+        // Point layer
+        this.map.addLayer( {
+            "id": "points",
+            "type": "circle",
+            "source": 'sites',
+            "paint": {
+                "circle-radius": 10,
+                "circle-color": '#3bb2d0',
+                "circle-stroke-width": 2,
+                "circle-stroke-color": '#223b53'
+            }
+        } );
 
+        // Label layer
+        this.map.addLayer( {
+            "id": "points-label",
+            "source": 'sites',
+            "type": "symbol",
+            "paint": {
+                "text-color": "black",
+                "text-halo-color": "#fff",
+                "text-halo-width": 2
+            },
+            "layout": {
+                "text-field": "{name}",
+                "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                "text-offset": [0, 0.6],
+                "text-anchor": "top",
+                "text-size": 12,
+            }
+        } );
 
-            this.map.addLayer( {
-                "id": "points",
-                "type": "circle",
-                "source": geojson,
-                "paint": {
-                    "circle-radius": 20,
-                    "circle-color": '#3bb2d0',
-                    "circle-stroke-width": 2,
-                    "circle-stroke-color": '#223b53'
-                },
-                "layout": {
-                    "text-field": "{name}",
-                    "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-                    "text-offset": [0, 0.6],
-                    "text-anchor": "top"
-                }
-            } );
+        this.refresh();
+    }
 
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+    refresh(): void {
+        this.mapService.features().then( data => {
+            ( <any>this.map.getSource( 'sites' ) ).setData( data );
         } );
     }
+
 
     isData( node: any ): boolean {
 

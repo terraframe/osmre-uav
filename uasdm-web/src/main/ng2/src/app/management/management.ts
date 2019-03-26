@@ -1,3 +1,9 @@
+export class Condition {
+    name: string;
+    value: string;
+    type: string;
+}
+
 export class AttributeType {
     name: string;
     label: string;
