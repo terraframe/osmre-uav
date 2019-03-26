@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -713470531)
+@com.runwaysdk.business.ClassSignature(hash = 1298418041)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,11 +11,93 @@ package gov.geoplatform.uasdm.bus;
 public abstract class SiteBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Site";
-  private static final long serialVersionUID = -713470531;
+  public static java.lang.String BUREAU = "bureau";
+  public static java.lang.String OTHERBUREAUTXT = "otherBureauTxt";
+  private static final long serialVersionUID = 1298418041;
   
   public SiteBase()
   {
     super();
+  }
+  
+  public gov.geoplatform.uasdm.bus.Bureau getBureau()
+  {
+    if (getValue(BUREAU).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return gov.geoplatform.uasdm.bus.Bureau.get(getValue(BUREAU));
+    }
+  }
+  
+  public String getBureauOid()
+  {
+    return getValue(BUREAU);
+  }
+  
+  public void validateBureau()
+  {
+    this.validateAttribute(BUREAU);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getBureauMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Site.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(BUREAU);
+  }
+  
+  public void setBureau(gov.geoplatform.uasdm.bus.Bureau value)
+  {
+    if(value == null)
+    {
+      setValue(BUREAU, "");
+    }
+    else
+    {
+      setValue(BUREAU, value.getOid());
+    }
+  }
+  
+  public void setBureauId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(BUREAU, "");
+    }
+    else
+    {
+      setValue(BUREAU, oid);
+    }
+  }
+  
+  public String getOtherBureauTxt()
+  {
+    return getValue(OTHERBUREAUTXT);
+  }
+  
+  public void validateOtherBureauTxt()
+  {
+    this.validateAttribute(OTHERBUREAUTXT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getOtherBureauTxtMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Site.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(OTHERBUREAUTXT);
+  }
+  
+  public void setOtherBureauTxt(String value)
+  {
+    if(value == null)
+    {
+      setValue(OTHERBUREAUTXT, "");
+    }
+    else
+    {
+      setValue(OTHERBUREAUTXT, value);
+    }
   }
   
   protected String getDeclaredType()

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1866164596)
+@com.runwaysdk.business.ClassSignature(hash = -2101193182)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -38,6 +38,60 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   {
     return gov.geoplatform.uasdm.bus.Site.CLASS;
   }
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau()
+  {
+    return getBureau(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Site.BUREAU);
+
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Site.BUREAU, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Site.BUREAU);
+
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Site.BUREAU, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt()
+  {
+    return getOtherBureauTxt(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Site.BUREAU)) 
+    {
+       return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
    * on this query object. 
@@ -186,6 +240,12 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface SiteQueryReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF
   {
 
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau();
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias);
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt();
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias);
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Site site);
 
@@ -249,6 +309,40 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
       return this.NE(site.getOid());
     }
 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau()
+  {
+    return getBureau(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Site.BUREAU, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Site.BUREAU,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt()
+  {
+    return getOtherBureauTxt(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, displayLabel);
+
+  }
 
   public com.runwaysdk.query.Condition projects()
   {
@@ -365,6 +459,20 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
     return this.isNotParentIn_SUBSELECT(siteHasProjectsQuery);
   }
 
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Site.BUREAU)) 
+    {
+       return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   }
 
 /**
@@ -374,6 +482,12 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface SiteQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryMultiReferenceIF
   {
 
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau();
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias);
+    public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt();
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias);
+    public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.Site ... site);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.Site ... site);
@@ -458,5 +572,53 @@ public  class SiteQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
 
       return this.containsExactly(itemIdArray);
   }
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau()
+  {
+    return getBureau(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Site.BUREAU, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF getBureau(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Site.BUREAU,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt()
+  {
+    return getOtherBureauTxt(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOtherBureauTxt(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Site.OTHERBUREAUTXT, alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Site.BUREAU)) 
+    {
+       return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   }
 }

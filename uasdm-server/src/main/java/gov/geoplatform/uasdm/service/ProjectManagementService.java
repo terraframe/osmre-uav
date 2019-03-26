@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class ProjectManagementService
 
     try
     {
-      i.forEach(c -> children.add(Converter.toSiteItem(c)));
+      i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
     }
     finally
     {
@@ -69,7 +70,7 @@ public class ProjectManagementService
 
     try
     {
-      i.forEach(s -> roots.add(Converter.toSiteItem(s)));
+      i.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
     }
     finally
     {
@@ -79,7 +80,7 @@ public class ProjectManagementService
     if (id != null)
     {
       UasComponent component = UasComponent.get(id);
-      SiteItem child = Converter.toSiteItem(component);
+      SiteItem child = Converter.toSiteItem(component, false);
       child.setHasChildren(true);
 
       List<UasComponent> ancestors = component.getAncestors();
@@ -102,7 +103,7 @@ public class ProjectManagementService
         }
         else
         {
-          parent = Converter.toSiteItem(ancestors.get(j));
+          parent = Converter.toSiteItem(ancestors.get(j), false);
         }
 
         List<SiteItem> children = this.getChildren(sessionId, parent.getId());
@@ -110,7 +111,7 @@ public class ProjectManagementService
         for (SiteItem c : children)
         {
           c.setHasChildren(true);
-          
+
           if (!c.getId().equals(child.getId()))
           {
             parent.addChild(c);
@@ -128,7 +129,6 @@ public class ProjectManagementService
     return roots;
   }
 
-  @Request(RequestType.SESSION)
   /**
    * Should this method return null if the given parent has no children?
    * 
@@ -136,19 +136,27 @@ public class ProjectManagementService
    * @param parentId
    * @return
    */
+  @Request(RequestType.SESSION)
   public SiteItem newChild(String sessionId, String parentId)
   {
-    UasComponent uasComponent = UasComponent.get(parentId);
-
-    UasComponent childUasComponent = uasComponent.createChild();
-
-    if (childUasComponent != null)
+    if (parentId != null)
     {
-      return Converter.toSiteItem(childUasComponent);
+      UasComponent uasComponent = UasComponent.get(parentId);
+
+      UasComponent childUasComponent = uasComponent.createChild();
+
+      if (childUasComponent != null)
+      {
+        return Converter.toSiteItem(childUasComponent, true);
+      }
+      else
+      {
+        return null;
+      }
     }
     else
     {
-      return null;
+      return Converter.toSiteItem(new Site(), true);
     }
   }
 
@@ -162,7 +170,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem applyWithParent(String sessionId, SiteItem siteItem, String parentId)
   {
-    UasComponent parent = UasComponent.get(parentId);
+    UasComponent parent = parentId != null ? UasComponent.get(parentId) : null;
 
     UasComponent child = Converter.toNewUasComponent(parent, siteItem);
 
@@ -174,7 +182,7 @@ public class ProjectManagementService
 
       // parent.addComponent(child).apply();
 
-      return Converter.toSiteItem(child);
+      return Converter.toSiteItem(child, false);
     }
     else
     {
@@ -189,7 +197,7 @@ public class ProjectManagementService
   {
     UasComponent uasComponent = UasComponent.get(id);
 
-    return Converter.toSiteItem(uasComponent);
+    return Converter.toSiteItem(uasComponent, true);
   }
 
   @Request(RequestType.SESSION)
@@ -205,7 +213,7 @@ public class ProjectManagementService
 
     uasComponent.unlock();
 
-    SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent);
+    SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
     return updatedSiteItem;
   }
@@ -217,7 +225,7 @@ public class ProjectManagementService
 
     uasComponent.delete();
   }
-  
+
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)
   {
@@ -303,5 +311,11 @@ public class ProjectManagementService
     List<QueryResult> results = SolrService.query(term);
 
     return results;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject features(String sessionId) throws IOException
+  {
+    return UasComponent.features();
   }
 }

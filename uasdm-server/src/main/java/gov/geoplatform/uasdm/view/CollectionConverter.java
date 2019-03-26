@@ -9,20 +9,21 @@ public class CollectionConverter extends Converter
   {
     super();
   }
-  
+
   @Override
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
     return super.convert(siteItem, uasComponent);
   }
-  
-  protected SiteItem convert(Collection collection)
+
+  @Override
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
   {
-    return super.convert(collection);
+    return super.convert(uasComponent, metadata);
   }
-  
+
   protected Collection convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
-    return (Collection)super.convertNew(uasComponent, siteItem);
+    return (Collection) super.convertNew(uasComponent, siteItem);
   }
 }

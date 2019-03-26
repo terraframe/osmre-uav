@@ -15,14 +15,15 @@ public class SiteConverter extends Converter
   {
     return super.convert(siteItem, uasComponent);
   }
-  
-  protected SiteItem convert(Site site)
+
+  @Override
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
   {
-    return super.convert(site);
+    return super.convert(uasComponent, metadata);
   }
-  
+
   protected Site convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
-    return (Site)super.convertNew(uasComponent, siteItem);
+    return (Site) super.convertNew(uasComponent, siteItem);
   }
 }

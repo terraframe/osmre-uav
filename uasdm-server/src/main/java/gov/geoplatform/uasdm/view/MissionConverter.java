@@ -9,20 +9,21 @@ public class MissionConverter extends Converter
   {
     super();
   }
-  
+
   @Override
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
     return super.convert(siteItem, uasComponent);
   }
-  
-  protected SiteItem convert(Mission mission)
+
+  @Override
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
   {
-    return super.convert(mission);
+    return super.convert(uasComponent, metadata);
   }
-  
+
   protected Mission convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
-    return (Mission)super.convertNew(uasComponent, siteItem);
+    return (Mission) super.convertNew(uasComponent, siteItem);
   }
 }

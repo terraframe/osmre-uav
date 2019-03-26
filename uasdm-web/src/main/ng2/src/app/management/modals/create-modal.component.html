@@ -1,5 +1,5 @@
-<form>
-  
+<form #ngForm>
+
   <div *ngIf="entity != null" class="modal-body">
     <div *ngIf="message != null" class="error-container">
       <div class="label-holder">
@@ -11,9 +11,18 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <label for="nameInput">Name</label>
-      <input  [(ngModel)]="entity.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" required>
+    <div *ngFor="let attribute of attributes" class="form-group">
+      <div *ngIf="attribute.type === 'text'">
+        <label>{{attribute.label}}</label>
+        <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [placeholder]="attribute.label" [required]="attribute.required" />
+      </div>
+      <div *ngIf="attribute.type === 'list'">
+        <label>{{attribute.label}}</label>
+        <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [required]="attribute.required">
+          <option></option>
+          <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
+        </select>
+      </div>
     </div>
     <div>
       <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()">Ok</button>

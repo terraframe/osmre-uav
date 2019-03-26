@@ -1,10 +1,16 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.geotools.geojson.geom.GeometryJSON;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -29,7 +35,9 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -391,4 +399,95 @@ public abstract class UasComponent extends UasComponentBase
 
     return ancestors;
   }
+
+  public List<AttributeType> attributes()
+  {
+    List<AttributeType> list = new LinkedList<AttributeType>();
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME)));
+
+    return list;
+  }
+
+  public void writeFeature(JSONWriter writer) throws IOException
+  {
+    GeometryJSON gjson = new GeometryJSON();
+
+    StringWriter geomWriter = new StringWriter();
+
+    gjson.write(this.getGeoPoint(), geomWriter);
+
+    writer.object();
+
+    writer.key("type");
+    writer.value("Feature");
+
+    writer.key("properties");
+    writer.value(this.getProperties());
+
+    writer.key("id");
+    writer.value(this.getOid());
+
+    writer.key("geometry");
+    writer.value(new JSONStringImpl(geomWriter.toString()));
+
+    writer.endObject();
+  }
+
+  public JSONObject getProperties()
+  {
+    JSONObject properties = new JSONObject();
+    properties.put("oid", this.getOid());
+    properties.put("name", this.getName());
+
+    return properties;
+  }
+
+  public static JSONObject features() throws IOException
+  {
+    StringWriter sWriter = new StringWriter();
+    JSONWriter writer = new JSONWriter(sWriter);
+
+    SiteQuery query = new SiteQuery(new QueryFactory());
+    query.WHERE(query.getGeoPoint().NE((String) null));
+
+    OIterator<? extends Site> it = query.getIterator();
+
+    try
+    {
+      writer.object();
+
+      writer.key("type");
+      writer.value("FeatureCollection");
+      writer.key("features");
+      writer.array();
+
+      while (it.hasNext())
+      {
+        Site site = it.next();
+
+        if (site.getGeoPoint() != null)
+        {
+          site.writeFeature(writer);
+        }
+      }
+
+      writer.endArray();
+
+      writer.key("totalFeatures");
+      writer.value(query.getCount());
+
+      writer.key("crs");
+      writer.value(new JSONObject("{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:EPSG::4326\"}}"));
+
+      writer.endObject();
+    }
+    finally
+    {
+      it.close();
+    }
+
+    return new JSONObject(sWriter.toString());
+  }
+
 }

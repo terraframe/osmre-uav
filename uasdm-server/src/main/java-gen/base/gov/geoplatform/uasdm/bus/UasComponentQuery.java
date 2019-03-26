@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -848078208)
+@com.runwaysdk.business.ClassSignature(hash = -903619280)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -99,6 +99,40 @@ public  class UasComponentQuery extends com.runwaysdk.query.GeneratedBusinessQue
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.UasComponent.ENTITYDOMAIN);
 
     return (com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.UasComponent.ENTITYDOMAIN, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getFolderName()
+  {
+    return getFolderName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint()
+  {
+    return getGeoPoint(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -610,6 +644,12 @@ public  class UasComponentQuery extends com.runwaysdk.query.GeneratedBusinessQue
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getFolderName();
+    public com.runwaysdk.query.SelectableChar getFolderName(String alias);
+    public com.runwaysdk.query.SelectableChar getFolderName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint();
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias);
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -779,6 +819,40 @@ public  class UasComponentQuery extends com.runwaysdk.query.GeneratedBusinessQue
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.UasComponent.ENTITYDOMAIN,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getFolderName()
+  {
+    return getFolderName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint()
+  {
+    return getGeoPoint(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -1249,6 +1323,12 @@ public  class UasComponentQuery extends com.runwaysdk.query.GeneratedBusinessQue
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getFolderName();
+    public com.runwaysdk.query.SelectableChar getFolderName(String alias);
+    public com.runwaysdk.query.SelectableChar getFolderName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint();
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias);
+    public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -1415,6 +1495,40 @@ public  class UasComponentQuery extends com.runwaysdk.query.GeneratedBusinessQue
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.UasComponent.ENTITYDOMAIN,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getFolderName()
+  {
+    return getFolderName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFolderName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.UasComponent.FOLDERNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint()
+  {
+    return getGeoPoint(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeoPoint(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.UasComponent.GEOPOINT, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()

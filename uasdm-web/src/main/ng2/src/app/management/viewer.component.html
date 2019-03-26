@@ -1,24 +1,19 @@
 <uasdm-header [title]="'Data viewer'"></uasdm-header>
 
 <div id="app-container" class="container">
-<!--   <div class="row"> -->
-<!--     <h2>Data viewer </h2> -->
-<!--   </div> -->
+  <!--   <div class="row"> -->
+  <!--     <h2>Data viewer </h2> -->
+  <!--   </div> -->
   <div class="row">
-    <div *ngIf="nodes.length > 0" class="tree">
-      <tree-root [nodes]="nodes" [options]="options">
-        <ng-template #treeNodeTemplate let-node let-index="index">
-          <span>{{ node.data.name }}</span>
-          <i class="fa fa-folder" *ngIf="!isData(node)"></i>
-          <i class="fa fa-file-photo-o" *ngIf="isData(node)"></i>
-        </ng-template>
-      </tree-root>
-    </div>  
+    <div class="col-md-2">
+      <div *ngIf="nodes.length > 0" class="tree">
+        <tree-root [nodes]="nodes" [options]="options"> <ng-template #treeNodeTemplate let-node let-index="index"> <span>{{ node.data.name }}</span> <i class="fa fa-folder" *ngIf="!isData(node)"></i> <i class="fa fa-file-photo-o" *ngIf="isData(node)"></i> </ng-template> </tree-root>
+      </div>
+    </div>
+    <div class="col-md-10">
+      <div id="map" style="height: 500px; width:900px; " ></div>
+    </div>
   </div>
 </div>
 
-<context-menu #objectMenu>
-  <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)">
-    Download {{item?.data.name}}
-  </ng-template>
-</context-menu>
+<context-menu #objectMenu> <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> Download {{item?.data.name}} </ng-template> </context-menu>

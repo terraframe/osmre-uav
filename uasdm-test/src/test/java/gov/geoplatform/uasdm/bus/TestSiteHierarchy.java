@@ -90,30 +90,30 @@ public class TestSiteHierarchy
     }
 
     Site site = new Site();
-    site.setName("Site_Unit_Test");
+    site.setValue(UasComponent.NAME,"Site_Unit_Test");
     site.applyWithParent(null);
 //System.out.println("S3: "+site.getS3location());
     siteId = site.getOid();
     
     Project project1 = new Project();
-    project1.setName("Project1");
+    project1.setValue(UasComponent.NAME,"Project1");
     project1.applyWithParent(site);
 //System.out.println("S3: "+project1.getS3location());
     projectId1 = project1.getOid();
     
     
     Project project2 = new Project();
-    project2.setName("Project2");
+    project2.setValue(UasComponent.NAME,"Project2");
     project2.applyWithParent(site);
     
     Mission mission1 = new Mission();
-    mission1.setName("Mission1");
+    mission1.setValue(UasComponent.NAME,"Mission1");
     mission1.applyWithParent(project1);
 //System.out.println("S3: "+mission1.getS3location());
     missionId1 = mission1.getOid();
     
     Collection collection1 = new Collection();
-    collection1.setName("Collection1");
+    collection1.setValue(UasComponent.NAME,"Collection1");
     collection1.applyWithParent(mission1);
 //System.out.println("S3: "+collection1.getS3location()); 
   }
@@ -138,10 +138,10 @@ public class TestSiteHierarchy
     {
       for(Site site : i)
       {
-        if (!site.getName().equals(Site.DEFAULT_SITE_NAME))
+        if (!site.getValue(UasComponent.NAME).equals(Site.DEFAULT_SITE_NAME))
         {
           site.delete();
-          System.out.println("Site deleted: "+site.getName());
+          System.out.println("Site deleted: "+site.getValue(UasComponent.NAME));
         }
       }
     }
@@ -207,13 +207,13 @@ public class TestSiteHierarchy
       SiteItem siteItem2 = siteItems.get(1);
       
       boolean siteItem1ValidName = false;
-      if (siteItem1.getName().equals("Project1") || siteItem1.getName().equals("Project2"))
+      if (siteItem1.getValue(UasComponent.NAME).equals("Project1") || siteItem1.getValue(UasComponent.NAME).equals("Project2"))
       {
         siteItem1ValidName = true;
       }    
       
       boolean siteItem2ValidName = false;
-      if (siteItem2.getName().equals("Project1") || siteItem2.getName().equals("Project2"))
+      if (siteItem2.getValue(UasComponent.NAME).equals("Project1") || siteItem2.getValue(UasComponent.NAME).equals("Project2"))
       {
         siteItem2ValidName = true;
       }  
@@ -238,7 +238,7 @@ public class TestSiteHierarchy
     try
     {
       SiteItem newProject = service.newChild(sessionId, siteId);
-      newProject.setName("Project ");
+      newProject.setValue(UasComponent.NAME,"Project ");
       newProject = service.applyWithParent(sessionId, newProject, siteId);
       projectId = newProject.getId();
       Assert.fail("A Project was created with an invalid name.");
@@ -268,7 +268,7 @@ System.out.println(re.getLocalizedMessage());
     try
     {
       SiteItem newProject = service.newChild(sessionId, siteId);
-      newProject.setName("Project1");
+      newProject.setValue(UasComponent.NAME,"Project1");
       newProject = service.applyWithParent(sessionId, newProject, siteId);
       projectId = newProject.getId();
       Assert.fail("A Project was created with a duplicate name");
@@ -306,7 +306,7 @@ System.out.println(re.getLocalizedMessage());
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
 
-      newProject.setName("ProjectX");
+      newProject.setValue(UasComponent.NAME,"ProjectX");
       projectId = newProject.getId();
       newProject = service.applyWithParent(sessionId, newProject, siteId);
       
@@ -319,7 +319,7 @@ System.out.println(re.getLocalizedMessage());
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newMission.getHasChildren());
       
-      newMission.setName("MissionX");
+      newMission.setValue(UasComponent.NAME,"MissionX");
       missionId = newMission.getId();
       service.applyWithParent(sessionId, newMission, projectId);
       
@@ -332,7 +332,7 @@ System.out.println(re.getLocalizedMessage());
       
       Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newCollection.getHasChildren());
       
-      newCollection.setName("CollectionX");
+      newCollection.setValue(UasComponent.NAME,"CollectionX");
       collectionId = newCollection.getId();
       service.applyWithParent(sessionId, newCollection, missionId);
       
@@ -380,7 +380,7 @@ System.out.println(re.getLocalizedMessage());
     { 
       SiteItem newCollection = service.newChild(sessionId, missionId1);
             
-      newCollection.setName("CollectionTest");
+      newCollection.setValue(UasComponent.NAME,"CollectionTest");
       collectionId = newCollection.getId();
       service.applyWithParent(sessionId, newCollection, missionId1);
       
@@ -449,22 +449,22 @@ System.out.println(re.getLocalizedMessage());
 //    {
 //      SiteItem siteItem = service.edit(sessionId, siteId);
 //      
-//      siteItem.setName("Site_Unit_Test-X");
+//      siteItem.setValue(UasComponent.NAME,"Site_Unit_Test-X");
 //   
 //      service.update(sessionId, siteItem);  
 //
 //      siteItem = service.edit(sessionId, siteId);
 //      
-//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test-X", siteItem.getName());
+//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test-X", siteItem.getValue(UasComponent.NAME));
 //      
 //      
-//      siteItem.setName("Site_Unit_Test");
+//      siteItem.setValue(UasComponent.NAME,"Site_Unit_Test");
 //      
 //      service.update(sessionId, siteItem);  
 //      
 //      siteItem = service.edit(sessionId, siteId);
 //      
-//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test", siteItem.getName()); 
+//      Assert.assertEquals("SiteItem is not correctly updated in the database", "Site_Unit_Test", siteItem.getValue(UasComponent.NAME)); 
 //      
 //    }
 //    finally

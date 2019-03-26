@@ -3,7 +3,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { SiteEntity } from '../management';
+import { SiteEntity, AttributeType } from '../management';
 import { ManagementService } from '../management.service';
 
 @Component( {
@@ -18,8 +18,9 @@ export class EditModalComponent implements OnInit {
      */
     entity: SiteEntity;
 
-    message: string = null;
+    attributes: AttributeType[];
 
+    message: string = null;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 

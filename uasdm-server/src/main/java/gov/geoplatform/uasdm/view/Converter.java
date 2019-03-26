@@ -6,12 +6,16 @@ import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
 
+import java.util.List;
+
 import com.runwaysdk.business.BusinessFacade;
 import com.runwaysdk.constants.EntityInfo;
 import com.runwaysdk.dataaccess.EntityDAO;
 import com.runwaysdk.dataaccess.attributes.entity.Attribute;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.session.Session;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 
 public abstract class Converter
 {
@@ -21,7 +25,7 @@ public abstract class Converter
 
   }
 
-  protected SiteItem convert(UasComponent uasComponent)
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
   {
     SiteItem siteItem = new SiteItem();
 
@@ -33,7 +37,14 @@ public abstract class Converter
     String typeLabel = uasComponent.getMdClass().getDisplayLabel(Session.getCurrentLocale());
     siteItem.setTypeLabel(typeLabel);
 
-    siteItem.setName(uasComponent.getName());
+    List<AttributeType> attributes = uasComponent.attributes();
+
+    for (AttributeType attribute : attributes)
+    {
+      siteItem.setValue(attribute.getName(), uasComponent.getObjectValue(attribute.getName()));
+    }
+
+    siteItem.setGeometry(uasComponent.getGeoPoint());
 
     OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
 
@@ -53,19 +64,48 @@ public abstract class Converter
       children.close();
     }
 
+    if (metadata)
+    {
+      siteItem.setAttributes(attributes);
+    }
+
     return siteItem;
   }
 
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    uasComponent.setName(siteItem.getName());
+    List<AttributeType> attributes = uasComponent.attributes();
+
+    for (AttributeType attribute : attributes)
+    {
+      uasComponent.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
+    }
+
+    Geometry geometry = siteItem.getGeometry();
+
+    if (geometry != null && geometry instanceof Point)
+    {
+      uasComponent.setGeoPoint((Point) geometry);
+    }
 
     return uasComponent;
   }
 
   protected UasComponent convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
-    uasComponent.setName(siteItem.getName());
+    List<AttributeType> attributes = uasComponent.attributes();
+
+    for (AttributeType attribute : attributes)
+    {
+      uasComponent.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
+    }
+
+    Geometry geometry = siteItem.getGeometry();
+
+    if (geometry != null && geometry instanceof Point)
+    {
+      uasComponent.setGeoPoint((Point) geometry);
+    }
 
     // Sets the id to the id of the {@link SiteItem} which came from the backend
     // initially.
@@ -88,7 +128,7 @@ public abstract class Converter
    */
   public static UasComponent toNewUasComponent(UasComponent parent, SiteItem siteItem)
   {
-    UasComponent newChild = parent.createChild();
+    UasComponent newChild = parent != null ? parent.createChild() : new Site();
 
     if (newChild != null)
     {
@@ -107,9 +147,9 @@ public abstract class Converter
     return factory(uasComponent).convert(siteItem, uasComponent);
   }
 
-  public static SiteItem toSiteItem(UasComponent uasComponent)
+  public static SiteItem toSiteItem(UasComponent uasComponent, boolean metadata)
   {
-    return factory(uasComponent).convert(uasComponent);
+    return factory(uasComponent).convert(uasComponent, metadata);
   }
 
   private static Converter factory(UasComponent uasComponent)

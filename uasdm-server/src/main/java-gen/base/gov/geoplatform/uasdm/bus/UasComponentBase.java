@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -281073719)
+@com.runwaysdk.business.ClassSignature(hash = -301860487)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -14,6 +14,8 @@ public abstract class UasComponentBase extends com.runwaysdk.business.Business
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public static java.lang.String FOLDERNAME = "folderName";
+  public static java.lang.String GEOPOINT = "geoPoint";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
@@ -25,7 +27,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.Business
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -281073719;
+  private static final long serialVersionUID = -301860487;
   
   public UasComponentBase()
   {
@@ -125,6 +127,62 @@ public abstract class UasComponentBase extends com.runwaysdk.business.Business
     else
     {
       setValue(ENTITYDOMAIN, oid);
+    }
+  }
+  
+  public String getFolderName()
+  {
+    return getValue(FOLDERNAME);
+  }
+  
+  public void validateFolderName()
+  {
+    this.validateAttribute(FOLDERNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getFolderNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.UasComponent.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(FOLDERNAME);
+  }
+  
+  public void setFolderName(String value)
+  {
+    if(value == null)
+    {
+      setValue(FOLDERNAME, "");
+    }
+    else
+    {
+      setValue(FOLDERNAME, value);
+    }
+  }
+  
+  public com.vividsolutions.jts.geom.Point getGeoPoint()
+  {
+    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOPOINT);
+  }
+  
+  public void validateGeoPoint()
+  {
+    this.validateAttribute(GEOPOINT);
+  }
+  
+  public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getGeoPointMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.UasComponent.CLASS);
+    return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(GEOPOINT);
+  }
+  
+  public void setGeoPoint(com.vividsolutions.jts.geom.Point value)
+  {
+    if(value == null)
+    {
+      setValue(GEOPOINT, "");
+    }
+    else
+    {
+      setValue(GEOPOINT, value);
     }
   }
   

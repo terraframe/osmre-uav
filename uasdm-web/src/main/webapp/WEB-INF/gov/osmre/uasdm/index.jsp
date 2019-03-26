@@ -36,6 +36,9 @@ body {
 <jwr:script src="/bundles/main.js" useRandomParam="false" />
 <jwr:script src="/bundles/localization.js" useRandomParam="false" />
 
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.css' />
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css' />
+
 <script type="text/javascript" src="${pageContext.request.contextPath}/net/geoprism/Localized.js.jsp"></script>
 
 <!-- IE required polyfills, in this exact order -->
@@ -115,5 +118,4 @@ body {
 
 <!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
      <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
-<!--   </div> -->
 </body>

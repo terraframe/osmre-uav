@@ -3,7 +3,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { SiteEntity } from '../management';
+import { SiteEntity, AttributeType } from '../management';
 import { ManagementService } from '../management.service';
 
 
@@ -19,6 +19,8 @@ export class CreateModalComponent implements OnInit {
     parentId: string;
 
     entity: SiteEntity;
+
+    attributes: AttributeType[];
 
     message: string = null;
 

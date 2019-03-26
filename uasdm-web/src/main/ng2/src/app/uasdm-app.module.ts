@@ -23,6 +23,7 @@ import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
 import { ManagementService } from './management/management.service';
+import { MapService } from './service/map.service';
 import { SearchService } from './management/search.service';
 import { EventService } from './event/event.service';
 import { AuthService } from './auth/auth.service';
@@ -60,7 +61,8 @@ import { AdminGuard } from './auth/admin.guard';
         AuthService,
         ManagementService,
         EventService,
-        SearchService
+        SearchService,
+        MapService
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]

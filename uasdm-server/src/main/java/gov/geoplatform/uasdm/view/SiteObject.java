@@ -13,6 +13,8 @@ public class SiteObject
 {
   public static final String KEY       = "key";
 
+  public static final String NAME      = "name";
+
   public static final String COMPONENT = "component";
 
   public static final String FOLDER    = "folder";
@@ -95,8 +97,8 @@ public class SiteObject
   {
     JSONObject json = new JSONObject();
     json.put(SiteItem.ID, this.id);
-    json.put(SiteItem.NAME, this.name);
     json.put(SiteItem.TYPE, this.type);
+    json.put(SiteObject.NAME, this.name);
     json.put(SiteObject.KEY, this.key);
     json.put(SiteObject.COMPONENT, this.componentId);
 

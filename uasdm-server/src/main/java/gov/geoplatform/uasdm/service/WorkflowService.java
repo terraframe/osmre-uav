@@ -15,6 +15,7 @@ import com.runwaysdk.session.RequestType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Mission;
+import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -57,10 +58,10 @@ public class WorkflowService
 
     task.setMessage(parser.getPercent() + "% complete");
     task.apply();
-    
+
     JSONObject message = new JSONObject();
     message.put("currentTask", task.toJSON());
-    
+
     return message;
   }
 
@@ -79,13 +80,15 @@ public class WorkflowService
     {
       task.lock();
       task.setStatus("Uploading");
-      task.setMessage("Uploading to the staging environment..."); //parser.getPercent() + "% complete"
+      task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
+                                                                  // + "%
+                                                                  // complete"
       task.apply();
     }
-    
+
     JSONObject message = new JSONObject();
     message.put("currentTask", task.toJSON());
-    
+
     return message;
   }
 
@@ -121,7 +124,7 @@ public class WorkflowService
       String name = params.get("name");
 
       SiteItem item = new SiteItem();
-      item.setName(name);
+      item.setValue(UasComponent.NAME, name);
 
       item = new ProjectManagementService().applyWithParent(sessionId, item, missionId);
 
@@ -147,7 +150,7 @@ public class WorkflowService
 
     return response;
   }
-  
+
   @Request(RequestType.SESSION)
   public JSONArray getMissingMetadata(String sessionId)
   {
@@ -155,7 +158,7 @@ public class WorkflowService
 
     return Mission.toMetadataMessage(missions);
   }
-  
+
   @Request(RequestType.SESSION)
   public JSONObject getTask(String sessionId, String id)
   {

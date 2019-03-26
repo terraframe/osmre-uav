@@ -3,6 +3,8 @@ import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
+import { Map } from 'mapbox-gl';
+import * as MapboxDraw from 'mapbox-gl-draw';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
@@ -10,6 +12,9 @@ import { ConfirmModalComponent } from './modals/confirm-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from './management';
 import { ManagementService } from './management.service';
+import { MapService } from '../service/map.service';
+
+declare var acp: any;
 
 @Component( {
     selector: 'projects',
@@ -40,11 +45,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 contextMenu: ( tree: any, node: any, $event: any ) => {
                     this.handleOnMenu( node, $event );
                 },
-                click : TREE_ACTIONS.TOGGLE_EXPANDED
+                click: TREE_ACTIONS.TOGGLE_EXPANDED
             }
         },
-        allowDrag:false,
-        allowDrop:false
+        allowDrag: false,
+        allowDrop: false
     };
 
     /*
@@ -64,6 +69,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
 
     /*
+     * Template for tree node menu
+     */
+    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
+
+    /*
      * Template for leaf menu
      */
     @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
@@ -73,66 +83,201 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     current: TreeNode;
 
-    constructor( private service: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) { }
+    map: Map;
+
+    draw: MapboxDraw;
+
+    constructor( private service: ManagementService, private modalService: BsModalService, private mapService: MapService, private contextMenuService: ContextMenuService ) { }
 
     ngOnInit(): void {
-        this.service.roots(null).then( nodes => {
+        this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
     }
-    
+
     ngAfterViewInit() {
-    	
-      setTimeout(()=>{
-          if(this.tree){
-            this.tree.treeModel.expandAll();
-          }
-      }, 1000)
+
+        setTimeout(() => {
+            if ( this.tree ) {
+                this.tree.treeModel.expandAll();
+            }
+        }, 1000 );
+
+        this.map = new Map( {
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v9',
+            zoom: 5,
+            center: [-78.880453, 42.897852]
+        } );
+
+        this.map.on( 'load', () => {
+            this.initMap();
+        } );
+
     }
-    
+
+    initMap(): void {
+        this.map.addSource( 'sites', {
+            type: 'geojson',
+            data: {
+                "type": "FeatureCollection",
+                "features": []
+            }
+        } );
+
+        // Point layer
+        this.map.addLayer( {
+            "id": "points",
+            "type": "circle",
+            "source": 'sites',
+            "paint": {
+                "circle-radius": 10,
+                "circle-color": '#3bb2d0',
+                "circle-stroke-width": 2,
+                "circle-stroke-color": '#223b53'
+            }
+        } );
+
+        // Label layer
+        this.map.addLayer( {
+            "id": "points-label",
+            "source": 'sites',
+            "type": "symbol",
+            "paint": {
+                "text-color": "black",
+                "text-halo-color": "#fff",
+                "text-halo-width": 2
+            },
+            "layout": {
+                "text-field": "{name}",
+                "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                "text-offset": [0, 0.6],
+                "text-anchor": "top",
+                "text-size": 12,
+            }
+        } );
+
+        this.refresh();
+
+        this.draw = new MapboxDraw( {
+            displayControlsDefault: false,
+            controls: {
+                point: false
+            }
+        } );
+
+        this.map.addControl( this.draw );
+
+        this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
+        this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
+        this.map.on( "draw.modechange", ( $event ) => { this.onDrawUpdate( $event ) } );
+    }
+
+    refresh(): void {
+        this.mapService.features().then( data => {
+            ( <any>this.map.getSource( 'sites' ) ).setData( data );
+        } );
+    }
+
+    onDrawUpdate( event: any ): void {
+
+        console.log( event );
+
+        if ( event.action === 'move' && event.features != null && event.features.length > 0 ) {
+            this.updateGeometry( event.features[0] )
+        }
+    }
+
+    onDrawCreate( event: any ): void {
+        console.log( event );
+
+        if ( event.features != null && event.features.length > 0 ) {
+
+            const feature = event.features[0];
+            feature.id = this.current.data.id;
+
+            this.updateGeometry( feature )
+        }
+    }
+
+    updateGeometry( feature: any ): void {
+        const index = this.nodes.findIndex( node => {
+            return node.id === feature.id;
+        } );
+
+        if ( index !== -1 ) {
+            const entity = { ...this.nodes[index] };
+            entity.geometry = feature.geometry;
+
+            this.service.update( entity ).then( node => {
+                this.nodes[index] = node;
+                this.current.data = node;
+
+                this.refresh();
+            } ).catch(( err: any ) => {
+                this.error( err.json() );
+            } );
+        }
+
+        this.draw.deleteAll();
+
+        // Most be after the draw has been added to trigger a repaint of the map
+        this.map.setFilter( "points" );
+        this.map.setFilter( "points-label" );
+    }
+
+
     isData( node: any ): boolean {
-    	
-    	if(node.data.typeLabel === "Site"){
-    		return false;
-    	}
-    	else if(node.data.typeLabel === "Project"){
-    		return false;
-    	}
-    	else if(node.data.typeLabel === "Mission"){
-    		return false;
-    	}
-    	else if(node.data.typeLabel === "Collection"){
-    		return false;
-    	}
-    	else{
-    		return true;
-    	}
+
+        if ( node.data.typeLabel === "Site" ) {
+            return false;
+        }
+        else if ( node.data.typeLabel === "Project" ) {
+            return false;
+        }
+        else if ( node.data.typeLabel === "Mission" ) {
+            return false;
+        }
+        else if ( node.data.typeLabel === "Collection" ) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
-    
+
     handleOnUpdateData(): void {
-    	this.tree.treeModel.expandAll();
+        this.tree.treeModel.expandAll();
     }
 
     handleOnMenu( node: any, $event: any ): void {
-    	
-    	if(node.data.typeLabel === "Site"){
-    		node.data.childType = "Project"
-    	}
-    	else if(node.data.typeLabel === "Project"){
-    		node.data.childType = "Mission"
-    	}
-    	else if(node.data.typeLabel === "Mission"){
-    		node.data.childType = "Collection"
-    	}
-    	else if(node.data.typeLabel === "Collection"){
-    		node.data.childType = null
-    	}
-    	
-    	
+
+        if ( node.data.typeLabel === "Site" ) {
+            node.data.childType = "Project"
+        }
+        else if ( node.data.typeLabel === "Project" ) {
+            node.data.childType = "Mission"
+        }
+        else if ( node.data.typeLabel === "Mission" ) {
+            node.data.childType = "Collection"
+        }
+        else if ( node.data.typeLabel === "Collection" ) {
+            node.data.childType = null
+        }
+
+        let contextMenu = this.leafMenuComponent;
+
+        if ( node.data.type === 'Site' ) {
+            contextMenu = this.siteMenuComponent;
+        }
+        else if ( node.data.childType !== null ) {
+            contextMenu = this.nodeMenuComponent;
+        }
+
         this.contextMenuService.show.next( {
-            contextMenu: (node.data.childType !== null ? this.nodeMenuComponent : this.leafMenuComponent),
+            contextMenu: contextMenu,
             event: $event,
             item: node,
         } );
@@ -143,34 +288,76 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     handleCreate( parent: TreeNode ): void {
         this.current = parent;
 
-        this.service.newChild( parent.data.id ).then( data => {
+        const parentId = parent != null ? parent.data.id : null;
+
+        this.service.newChild( parentId ).then( data => {
             this.bsModalRef = this.modalService.show( CreateModalComponent, {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.entity = data;
-            this.bsModalRef.content.parentId = parent.data.id;
+            this.bsModalRef.content.entity = data.item;
+            this.bsModalRef.content.attributes = data.attributes;
 
-            ( <CreateModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
-                const d = this.current.data;
+            if ( parent != null ) {
+                this.bsModalRef.content.parentId = parent.data.id;
+            }
 
-                if ( d.children != null ) {
-                    d.children.push( entity );
+            this.bsModalRef.content.onNodeChange.subscribe( entity => {
+
+                if ( this.current != null ) {
+                    const d = this.current.data;
+
+                    if ( d.children != null ) {
+                        d.children.push( entity );
+                    }
+                    else {
+                        d.children = [entity];
+                        d.hasChildren = true;
+                    }
+
+                    this.tree.treeModel.update();
                 }
                 else {
-                    d.children = [entity];
-                    d.hasChildren = true;
-                }
+                    this.nodes.push( entity );
 
-                this.tree.treeModel.update();
+                    this.tree.treeModel.update();
+
+                    this.refresh();
+                }
             } );
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
     }
-    
+
+    handleEditGeom( node: TreeNode ): void {
+        this.current = node;
+
+        if ( this.current.data.geometry != null ) {
+            let feature = {
+                id: node.data.id,
+                type: 'Feature',
+                properties: {
+                    oid: node.data.id,
+                    name: node.data.name
+                },
+                geometry: node.data.geometry
+            };
+
+            this.draw.add( feature );
+            this.draw.changeMode( 'simple_select', { featureIds: [feature.id] } );
+        }
+        else {
+            this.draw.changeMode( 'draw_point', {} );
+        }
+
+        // Most be after the draw has been added to trigger a repaint of the map
+        this.map.setFilter( "points", ["==", "id", ""] );
+        this.map.setFilter( "points-label", ["==", "id", ""] );
+    }
+
     handleEdit( node: TreeNode ): void {
         this.current = node;
 
@@ -183,7 +370,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.entity = data;
+            this.bsModalRef.content.entity = data.item;
+            this.bsModalRef.content.attributes = data.attributes;
 
             ( <EditModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
                 // Do something
@@ -210,13 +398,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     remove( node: TreeNode ): void {
         this.service.remove( node.data.id ).then( response => {
-            const parent = node.parent;
-            let children = parent.data.children;
+            if ( node.data.type !== 'Site' ) {
+                const parent = node.parent;
+                let children = parent.data.children;
 
-            parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
+                parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
 
-            if ( parent.data.children.length === 0 ) {
-                parent.data.hasChildren = false;
+                if ( parent.data.children.length === 0 ) {
+                    parent.data.hasChildren = false;
+                }
+            }
+            else {
+                this.nodes = this.nodes.filter(( n: any ) => n.id !== node.data.id );
+
+                this.refresh();
             }
 
             this.tree.treeModel.update();
