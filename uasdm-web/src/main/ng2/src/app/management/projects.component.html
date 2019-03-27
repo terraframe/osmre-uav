@@ -44,49 +44,25 @@
       </div>
     </div>
     <div class="col-md-8">
-      <div id="map" style="height: 500px; width: 900px;"></div>
+      <div class="row">
+        <div id='menu'>
+          <span *ngFor="let baseLayer of baseLayers">
+            <input type='radio' name='rtoggle' [value]='baseLayer.id' (change)="handleStyle(baseLayer)">
+            <label>{{baseLayer.label}}</label>
+          </span>
+        </div>
+      </div>
+      <div class="row">
+        <div id="map" style="height: 500px; width: 900px;"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<context-menu #nodeMenu>
-  <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
-    Edit {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)">
-    Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
-    Delete {{item?.data.name}}
-  </ng-template>
-</context-menu>
+<context-menu #nodeMenu> <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)"> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)"> Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)"> Delete {{item?.data.name}} </ng-template> </context-menu>
 
-<context-menu #siteMenu>
-  <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
-    Edit {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleEditGeom($event.item)">
-    Edit geometry for {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)">
-    Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
-    Delete {{item?.data.name}}
-  </ng-template>
-</context-menu>
+<context-menu #siteMenu> <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)"> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleEditGeom($event.item)"> Edit geometry for {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleCreate($event.item)"> Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)"> Delete {{item?.data.name}} </ng-template> </context-menu>
 
-<context-menu #leafMenu>
-  <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)">
-    Edit {{item?.data.name}}
-  </ng-template>
-  <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
-    Delete {{item?.data.name}}
-  </ng-template>
-</context-menu>
+<context-menu #leafMenu> <ng-template contextMenuItem let-item (execute)="handleEdit($event.item)"> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)"> Delete {{item?.data.name}} </ng-template> </context-menu>
 
-<context-menu #objectMenu> 
-  <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)">
-     Download {{item?.data.name}} 
-  </ng-template>
-</context-menu>
+<context-menu #objectMenu> <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> Download {{item?.data.name}} </ng-template> </context-menu>

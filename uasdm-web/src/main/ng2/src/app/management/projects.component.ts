@@ -4,8 +4,8 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 import { saveAs as importedSaveAs } from "file-saver";
-import { Map } from 'mapbox-gl';
-import * as MapboxDraw from 'mapbox-gl-draw';
+import { Map, LngLatBounds, NavigationControl } from 'mapbox-gl';
+import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Subject } from 'rxjs/Subject';
 
 import { CreateModalComponent } from './modals/create-modal.component';
@@ -100,7 +100,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     nodes = [] as SiteEntity[];
 
     /* 
-     * Currently clicked on id for delete confirmation modal 
+     * Currently clicked on id
      */
     current: TreeNode;
 
@@ -109,6 +109,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     draw: MapboxDraw;
 
     admin: boolean = false;
+
+    baseLayers: any[] = [{
+        label: 'Streets',
+        id: 'streets-v11'
+    }, {
+        label: 'Light',
+        id: 'light-v10'
+    }, {
+        label: 'Dark',
+        id: 'dark-v10'
+    }, {
+        label: 'Outdoors',
+        id: 'outdoors-v11'
+    }, {
+        label: 'Satellite',
+        id: 'satellite-v9'
+    }];
 
     constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
         this.service.search( this.searchTerm$ )
@@ -149,6 +166,37 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     initMap(): void {
+
+        this.map.on( 'style.load', () => {
+            this.addLayers();
+            this.refresh( false );
+        } );
+
+        this.addLayers();
+
+        this.refresh( true );
+
+        // Add zoom and rotation controls to the map.
+        this.map.addControl( new NavigationControl() );
+
+        if ( this.admin ) {
+            this.draw = new MapboxDraw( {
+                displayControlsDefault: false,
+                controls: {
+                    point: false
+                }
+            } );
+
+            this.map.addControl( this.draw );
+
+            this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
+            this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
+            this.map.on( "draw.modechange", ( $event ) => { this.onDrawUpdate( $event ) } );
+        }
+    }
+
+    addLayers(): void {
+
         this.map.addSource( 'sites', {
             type: 'geojson',
             data: {
@@ -188,24 +236,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 "text-size": 12,
             }
         } );
-
-        this.refresh( true );
-
-        if ( this.admin ) {
-            this.draw = new MapboxDraw( {
-                displayControlsDefault: false,
-                controls: {
-                    point: false
-                }
-            } );
-
-            this.map.addControl( this.draw );
-
-            this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
-            this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
-            this.map.on( "draw.modechange", ( $event ) => { this.onDrawUpdate( $event ) } );
-        }
-
     }
 
     refresh( zoom: boolean ): void {
@@ -213,13 +243,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             ( <any>this.map.getSource( 'sites' ) ).setData( data.features );
 
             if ( zoom ) {
-                this.map.fitBounds( [[
-                    data.bbox[0],
-                    data.bbox[1]
-                ], [
-                    data.bbox[2],
-                    data.bbox[3]
-                ]] );
+                let bounds = new LngLatBounds( [data.bbox[0], data.bbox[1]], [data.bbox[2], data.bbox[3]] );
+
+                this.map.fitBounds( bounds, { padding: 50 } );
             }
         } );
     }
@@ -478,12 +504,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         } );
     }
 
-    error( err: any ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
-        }
+    handleStyle( layer: any ): void {
+        this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
 
     handleClick( $event: any, result: any ): void {
@@ -517,5 +539,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
+
+    error( err: any ): void {
+        // Handle error
+        if ( err !== null ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+        }
+    }
 
 }

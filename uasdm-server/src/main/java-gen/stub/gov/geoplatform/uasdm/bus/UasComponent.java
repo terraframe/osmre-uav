@@ -547,6 +547,8 @@ public abstract class UasComponent extends UasComponentBase
               bboxArr.put(e.getMinY());
               bboxArr.put(e.getMaxX());
               bboxArr.put(e.getMaxY());
+
+              return bboxArr;
             }
           }
         }
