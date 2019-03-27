@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
 
-public class SiteObject
+public class SiteObject implements TreeComponent
 {
   public static final String KEY       = "key";
 
@@ -81,16 +81,10 @@ public class SiteObject
     this.type = type;
   }
 
-  public static JSONArray serialize(List<SiteObject> objects)
+  @Override
+  public void addChild(TreeComponent child)
   {
-    JSONArray array = new JSONArray();
-
-    for (SiteObject object : objects)
-    {
-      array.put(object.toJSON());
-    }
-
-    return array;
+    throw new UnsupportedOperationException();
   }
 
   public JSONObject toJSON()
@@ -125,4 +119,15 @@ public class SiteObject
     return object;
   }
 
+  public static JSONArray serialize(List<SiteObject> objects)
+  {
+    JSONArray array = new JSONArray();
+
+    for (SiteObject object : objects)
+    {
+      array.put(object.toJSON());
+    }
+
+    return array;
+  }
 }

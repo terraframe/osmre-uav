@@ -17,9 +17,9 @@ public class CollectionConverter extends Converter
   }
 
   @Override
-  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
   {
-    return super.convert(uasComponent, metadata);
+    return super.convert(uasComponent, metadata, hasChildren);
   }
 
   protected Collection convertNew(UasComponent uasComponent, SiteItem siteItem)

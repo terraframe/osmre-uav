@@ -4,13 +4,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geotools.geojson.geom.GeometryJSON;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.postgis.PGbox2d;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -26,12 +32,19 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
+import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.database.Database;
+import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
@@ -82,13 +95,13 @@ public abstract class UasComponent extends UasComponentBase
      * 
      * Characters That Might Require Special Handling
      */
-    boolean isNameModified = this.isModified(UasComponent.NAME);
+    boolean isNameModified = this.isModified(UasComponent.FOLDERNAME);
 
     if (isNameModified)
     {
-      String name = this.getName();
+      String folderName = this.getFolderName();
 
-      if (!isValidName(name))
+      if (!isValidName(folderName))
       {
         throw new InvalidUasComponentNameException("The name field has an invalid character");
       }
@@ -100,7 +113,7 @@ public abstract class UasComponent extends UasComponentBase
     {
       if (parent != null)
       {
-        boolean isDuplicate = isDuplicateName(parent.getOid(), this.getOid(), this.getName());
+        boolean isDuplicate = isDuplicateFolderName(parent.getOid(), this.getOid(), this.getFolderName());
 
         if (isDuplicate)
         {
@@ -265,7 +278,7 @@ public abstract class UasComponent extends UasComponentBase
     return true;
   }
 
-  public static boolean isDuplicateName(String parentId, String oid, String name)
+  public static boolean isDuplicateFolderName(String parentId, String oid, String folderName)
   {
     QueryFactory qf = new QueryFactory();
     UasComponentQuery childQ = new UasComponentQuery(qf);
@@ -273,7 +286,7 @@ public abstract class UasComponent extends UasComponentBase
     UasComponentQuery parentQ = new UasComponentQuery(qf);
     parentQ.WHERE(parentQ.getOid().EQ(parentId));
 
-    childQ.WHERE(childQ.getName().EQ(name));
+    childQ.WHERE(childQ.getFolderName().EQ(folderName));
     childQ.AND(childQ.component(parentQ));
 
     if (oid != null)
@@ -298,13 +311,13 @@ public abstract class UasComponent extends UasComponentBase
     return false;
   }
 
-  public static void validateName(String parentId, String name)
+  public static void validateFolderName(String parentId, String name)
   {
     if (!isValidName(name))
     {
-      throw new InvalidUasComponentNameException("The name field has an invalid character");
+      throw new InvalidUasComponentNameException("The folder name field has an invalid character");
     }
-    else if (isDuplicateName(parentId, null, name))
+    else if (isDuplicateFolderName(parentId, null, name))
     {
       UasComponent parent = UasComponent.get(parentId);
       MdClassDAOIF mdClass = MdClassDAO.getMdClassDAO(Collection.CLASS);
@@ -490,4 +503,67 @@ public abstract class UasComponent extends UasComponentBase
     return new JSONObject(sWriter.toString());
   }
 
+  public static JSONArray bbox()
+  {
+    try
+    {
+      MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+      MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.GEOPOINT);
+
+      StringBuffer sql = new StringBuffer();
+      sql.append("SELECT ST_AsText(ST_Extent(" + mdAttribute.getColumnName() + ")) AS bbox");
+      sql.append(" FROM " + mdBusiness.getTableName());
+      sql.append(" WHERE " + mdAttribute.getColumnName() + " IS NOT NULL");
+
+      try (ResultSet resultSet = Database.query(sql.toString()))
+      {
+        if (resultSet.next())
+        {
+          String bbox = resultSet.getString("bbox");
+
+          if (bbox != null)
+          {
+            Pattern p = Pattern.compile("POLYGON\\(\\((.*)\\)\\)");
+            Matcher m = p.matcher(bbox);
+
+            if (m.matches())
+            {
+              String coordinates = m.group(1);
+              List<Coordinate> coords = new LinkedList<Coordinate>();
+
+              for (String c : coordinates.split(","))
+              {
+                String[] xAndY = c.split(" ");
+                double x = Double.valueOf(xAndY[0]);
+                double y = Double.valueOf(xAndY[1]);
+
+                coords.add(new Coordinate(x, y));
+              }
+
+              Envelope e = new Envelope(coords.get(0), coords.get(2));
+
+              JSONArray bboxArr = new JSONArray();
+              bboxArr.put(e.getMinX());
+              bboxArr.put(e.getMinY());
+              bboxArr.put(e.getMaxX());
+              bboxArr.put(e.getMaxY());
+            }
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      // Ignore the error and just return the default bounding box
+    }
+
+    // Extent of the continental United States
+    JSONArray bboxArr = new JSONArray();
+    bboxArr.put(-124.848974);
+    bboxArr.put(-66.885444);
+    bboxArr.put(24.396308);
+    bboxArr.put(49.384358);
+
+    return bboxArr;
+  }
 }

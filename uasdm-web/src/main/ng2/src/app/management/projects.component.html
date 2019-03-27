@@ -1,29 +1,51 @@
-<uasdm-header [title]="'Project Management'"></uasdm-header>
+<uasdm-header [title]="'Site Viewer'"></uasdm-header>
 
 <div id="app-container" class="container">
-<!--   <div class="row"> -->
-<!--     <h2>Project Management</h2> -->
-<!--   </div> -->
   <div class="row">
-    <div class="col-md-2">  
-      <div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+      <div class="input-group" style="width: 100%;">
+        <input class="form-control" type="text" placeholder="Search..." (keyup)="searchTerm$.next($event.target.value)">
+      </div>
+
+      <div class="list-group" *ngIf="results">
+        <div class="list-group-item" *ngFor="let result of results">
+          <span *ngIf="result.filename == null">
+            <i class="fa fa-folder-open"></i>
+          </span>
+          <span *ngIf="result.filename != null">
+            <i class="fa fa-file"></i>
+          </span>
+
+          <a (click)="handleClick($event, result)"> {{ result.filename || result.hierarchy[result.hierarchy.length -1].label}} </a>
+
+          <div class="pull-right">
+            <span *ngFor="let site of result.hierarchy; index as i">
+              {{site.label}}
+              <span *ngIf="i < (result.hierarchy.length -1)"> / </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div *ngIf="admin" class="row">
         <button (click)="handleCreate()" class="btn btn-primary">Create new site</button>
         <hr>
-      </div>    
+      </div>
       <div class="row">
         <div *ngIf="nodes.length > 0" class="tree">
-          <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()">
-            <ng-template #treeNodeTemplate let-node let-index="index">
-              <span>{{ node.data.name }}</span>
-              <i class="fa fa-folder" *ngIf="!isData(node)"></i>
-            </ng-template>
-          </tree-root>
-        </div>  
-      </div>    
+          <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"> <ng-template #treeNodeTemplate let-node let-index="index"> <span>{{ node.data.name }}</span> <i class="fa fa-folder" *ngIf="!isData(node)"></i> </ng-template> </tree-root>
+        </div>
+      </div>
     </div>
-    <div class="col-md-10">
-      <div id="map" style="height: 500px; width:900px; " ></div>
-    </div>    
+    <div class="col-md-8">
+      <div id="map" style="height: 500px; width: 900px;"></div>
+    </div>
   </div>
 </div>
 
@@ -60,5 +82,11 @@
   </ng-template>
   <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
     Delete {{item?.data.name}}
+  </ng-template>
+</context-menu>
+
+<context-menu #objectMenu> 
+  <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)">
+     Download {{item?.data.name}} 
   </ng-template>
 </context-menu>

@@ -18,21 +18,12 @@ const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'projects',
-        canActivate: [ AdminGuard ],        
+        path: 'viewer',
         component: ProjectsComponent
     },
     {
         path: 'upload',
         component: UploadComponent
-    },
-    {
-        path: 'viewer',
-        component: ViewerComponent
-    },
-    {
-        path: 'viewer/:id',
-        component: ViewerComponent
     },
     {
         path: 'tasks',

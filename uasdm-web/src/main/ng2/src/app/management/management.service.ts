@@ -260,4 +260,20 @@ export class ManagementService {
             } )
             .map( res => res.blob() )
     }
+
+    search( terms: Observable<string> ) {
+        return terms.debounceTime( 400 )
+            .distinctUntilChanged()
+            .switchMap( term => this.searchEntries( term ) );
+    }
+
+    searchEntries( term: string ) {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'term', term );
+
+        return this.http
+            .get( acp + '/project/search', { search: params } )
+            .map( res => res.json() );
+    }
 }

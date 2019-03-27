@@ -3,8 +3,10 @@ import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
+import { saveAs as importedSaveAs } from "file-saver";
 import { Map } from 'mapbox-gl';
 import * as MapboxDraw from 'mapbox-gl-draw';
+import { Subject } from 'rxjs/Subject';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
@@ -13,6 +15,7 @@ import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from './management';
 import { ManagementService } from './management.service';
 import { MapService } from '../service/map.service';
+import { AuthService } from '../auth/auth.service';
 
 declare var acp: any;
 
@@ -29,16 +32,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     private bsModalRef: BsModalRef;
 
     /* 
-     * Root nodes of the tree
-     */
-    nodes = [] as SiteEntity[];
-
-    /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
      */
     options = {
         getChildren: ( node: TreeNode ) => {
-            return this.service.getChildren( node.data.id );
+            if ( node.data.type === "folder" ) {
+                return this.service.getItems( node.data.component, node.data.name );
+            }
+            else if ( node.data.type === "object" ) {
+                // Do nothing there are no children
+                //                return this.service.getItems( node.data.id, node.data.name );
+            }
+            else {
+                return this.service.getItems( node.data.id, null );
+            }
         },
         actionMapping: {
             mouse: {
@@ -69,7 +76,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
 
     /*
-     * Template for tree node menu
+     * Template for site items
      */
     @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
 
@@ -77,6 +84,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      * Template for leaf menu
      */
     @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
+
+    /*
+     * Template for object items
+     */
+    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
+
+    searchTerm$ = new Subject<string>();
+    searchTerm = "";
+    results: Object;
+
+    /* 
+     * Root nodes of the tree
+     */
+    nodes = [] as SiteEntity[];
 
     /* 
      * Currently clicked on id for delete confirmation modal 
@@ -87,9 +108,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     draw: MapboxDraw;
 
-    constructor( private service: ManagementService, private modalService: BsModalService, private mapService: MapService, private contextMenuService: ContextMenuService ) { }
+    admin: boolean = false;
+
+    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
+        this.service.search( this.searchTerm$ )
+            .subscribe( results => {
+                this.results = results;
+            } );
+    }
 
     ngOnInit(): void {
+        this.admin = this.authService.isAdmin();
+
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
         } ).catch(( err: any ) => {
@@ -108,7 +138,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.map = new Map( {
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v9',
-            zoom: 5,
+            zoom: 2,
             center: [-78.880453, 42.897852]
         } );
 
@@ -159,40 +189,48 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             }
         } );
 
-        this.refresh();
+        this.refresh( true );
 
-        this.draw = new MapboxDraw( {
-            displayControlsDefault: false,
-            controls: {
-                point: false
-            }
-        } );
+        if ( this.admin ) {
+            this.draw = new MapboxDraw( {
+                displayControlsDefault: false,
+                controls: {
+                    point: false
+                }
+            } );
 
-        this.map.addControl( this.draw );
+            this.map.addControl( this.draw );
 
-        this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
-        this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
-        this.map.on( "draw.modechange", ( $event ) => { this.onDrawUpdate( $event ) } );
+            this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
+            this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
+            this.map.on( "draw.modechange", ( $event ) => { this.onDrawUpdate( $event ) } );
+        }
+
     }
 
-    refresh(): void {
+    refresh( zoom: boolean ): void {
         this.mapService.features().then( data => {
-            ( <any>this.map.getSource( 'sites' ) ).setData( data );
+            ( <any>this.map.getSource( 'sites' ) ).setData( data.features );
+
+            if ( zoom ) {
+                this.map.fitBounds( [[
+                    data.bbox[0],
+                    data.bbox[1]
+                ], [
+                    data.bbox[2],
+                    data.bbox[3]
+                ]] );
+            }
         } );
     }
 
     onDrawUpdate( event: any ): void {
-
-        console.log( event );
-
         if ( event.action === 'move' && event.features != null && event.features.length > 0 ) {
             this.updateGeometry( event.features[0] )
         }
     }
 
     onDrawCreate( event: any ): void {
-        console.log( event );
-
         if ( event.features != null && event.features.length > 0 ) {
 
             let feature = event.features[0];
@@ -215,7 +253,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 this.nodes[index] = node;
                 this.current.data = node;
 
-                this.refresh();
+                this.refresh( false );
             } ).catch(( err: any ) => {
                 this.error( err.json() );
             } );
@@ -231,16 +269,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     isData( node: any ): boolean {
 
-        if ( node.data.typeLabel === "Site" ) {
+        if ( node.data.type === "Site" ) {
             return false;
         }
-        else if ( node.data.typeLabel === "Project" ) {
+        else if ( node.data.type === "Project" ) {
             return false;
         }
-        else if ( node.data.typeLabel === "Mission" ) {
+        else if ( node.data.type === "Mission" ) {
             return false;
         }
-        else if ( node.data.typeLabel === "Collection" ) {
+        else if ( node.data.type === "Collection" ) {
             return false;
         }
         else {
@@ -249,40 +287,53 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     handleOnUpdateData(): void {
-        this.tree.treeModel.expandAll();
+        //        this.tree.treeModel.expandAll();
     }
 
     handleOnMenu( node: any, $event: any ): void {
 
-        if ( node.data.typeLabel === "Site" ) {
-            node.data.childType = "Project"
+        if ( node.data.type === "object" ) {
+            this.contextMenuService.show.next( {
+                contextMenu: this.objectMenuComponent,
+                event: $event,
+                item: node,
+            } );
+            $event.preventDefault();
+            $event.stopPropagation();
         }
-        else if ( node.data.typeLabel === "Project" ) {
-            node.data.childType = "Mission"
-        }
-        else if ( node.data.typeLabel === "Mission" ) {
-            node.data.childType = "Collection"
-        }
-        else if ( node.data.typeLabel === "Collection" ) {
-            node.data.childType = null
+        else if ( this.admin && node.data.type !== "folder" ) {
+            if ( node.data.type === "Site" ) {
+                node.data.childType = "Project"
+            }
+            else if ( node.data.type === "Project" ) {
+                node.data.childType = "Mission"
+            }
+            else if ( node.data.type === "Mission" ) {
+                node.data.childType = "Collection"
+            }
+            else if ( node.data.type === "Collection" ) {
+                node.data.childType = null
+            }
+
+            let contextMenu = this.leafMenuComponent;
+
+            if ( node.data.type === 'Site' ) {
+                contextMenu = this.siteMenuComponent;
+            }
+            else if ( node.data.childType !== null ) {
+                contextMenu = this.nodeMenuComponent;
+            }
+
+
+            this.contextMenuService.show.next( {
+                contextMenu: contextMenu,
+                event: $event,
+                item: node,
+            } );
+            $event.preventDefault();
+            $event.stopPropagation();
         }
 
-        let contextMenu = this.leafMenuComponent;
-
-        if ( node.data.type === 'Site' ) {
-            contextMenu = this.siteMenuComponent;
-        }
-        else if ( node.data.childType !== null ) {
-            contextMenu = this.nodeMenuComponent;
-        }
-
-        this.contextMenuService.show.next( {
-            contextMenu: contextMenu,
-            event: $event,
-            item: node,
-        } );
-        $event.preventDefault();
-        $event.stopPropagation();
     }
 
     handleCreate( parent: TreeNode ): void {
@@ -324,7 +375,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
                     this.tree.treeModel.update();
 
-                    this.refresh();
+                    this.refresh( false );
                 }
             } );
         } ).catch(( err: any ) => {
@@ -411,12 +462,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             else {
                 this.nodes = this.nodes.filter(( n: any ) => n.id !== node.data.id );
 
-                this.refresh();
+                this.refresh( false );
             }
 
             this.tree.treeModel.update();
         } ).catch(( err: any ) => {
             this.error( err.json() );
+        } );
+    }
+
+
+    handleDownload( node: TreeNode ): void {
+        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
+            importedSaveAs( blob, node.data.name );
         } );
     }
 
@@ -426,6 +484,38 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = ( err.localizedMessage || err.message );
         }
-
     }
+
+    handleClick( $event: any, result: any ): void {
+        let id = result.hierarchy[result.hierarchy.length - 1].id;
+
+        if ( id != null ) {
+            let node = this.tree.treeModel.getNodeById( id );
+
+            if ( node != null ) {
+                node.setActiveAndVisible();
+                node.expand();
+            }
+            else {
+                this.service.roots( id ).then( nodes => {
+                    this.nodes = nodes;
+
+                    if ( id != null ) {
+                        setTimeout(() => {
+                            if ( this.tree ) {
+                                let node = this.tree.treeModel.getNodeById( id );
+                                node.setActiveAndVisible();
+                                node.expand();
+                            }
+                        }, 20 );
+                    }
+
+                } ).catch(( err: any ) => {
+                    this.error( err.json() );
+                } );
+            }
+        }
+    }
+
+
 }

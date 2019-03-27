@@ -25,7 +25,7 @@ public abstract class Converter
 
   }
 
-  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
   {
     SiteItem siteItem = new SiteItem();
 
@@ -46,22 +46,33 @@ public abstract class Converter
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
 
-    OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
-
-    try
+    if (uasComponent instanceof Collection || uasComponent instanceof Mission || hasChildren)
     {
-      if (children.hasNext())
-      {
-        siteItem.setHasChildren(true);
-      }
-      else
-      {
-        siteItem.setHasChildren(false);
-      }
+      /*
+       * Collection and Mission always have children because of the image and
+       * metadata folders
+       */
+      siteItem.setHasChildren(true);
     }
-    finally
+    else
     {
-      children.close();
+      OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
+
+      try
+      {
+        if (children.hasNext())
+        {
+          siteItem.setHasChildren(true);
+        }
+        else
+        {
+          siteItem.setHasChildren(false);
+        }
+      }
+      finally
+      {
+        children.close();
+      }
     }
 
     if (metadata)
@@ -149,7 +160,12 @@ public abstract class Converter
 
   public static SiteItem toSiteItem(UasComponent uasComponent, boolean metadata)
   {
-    return factory(uasComponent).convert(uasComponent, metadata);
+    return toSiteItem(uasComponent, metadata, false);
+  }
+
+  public static SiteItem toSiteItem(UasComponent uasComponent, boolean metadata, boolean hasChildren)
+  {
+    return factory(uasComponent).convert(uasComponent, metadata, hasChildren);
   }
 
   private static Converter factory(UasComponent uasComponent)

@@ -20,14 +20,14 @@ export class MapService {
         ( mapboxgl as any ).accessToken = 'pk.eyJ1IjoiZHozMTY0MjQiLCJhIjoiNzI3NmNkOTcyNWFlNGQxNzU2OTA1N2EzN2FkNWIwMTcifQ.NS8KWg47FzfLPlKY0JMNiQ';
     }
 
-    features(): Promise<GeoJSONSource> {
+    features(): Promise<{ features: GeoJSONSource, bbox: number[] }> {
         let params: URLSearchParams = new URLSearchParams();
 
         return this.http
             .get( acp + '/project/features', { search: params } )
             .toPromise()
             .then( response => {
-                return response.json() as GeoJSONSource;
+                return response.json() as { features: GeoJSONSource, bbox: number[] };
             } )
     }
 

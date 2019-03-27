@@ -17,9 +17,9 @@ public class ProjectConverter extends Converter
   }
 
   @Override
-  protected SiteItem convert(UasComponent uasComponent, boolean metadata)
+  protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
   {
-    return super.convert(uasComponent, metadata);
+    return super.convert(uasComponent, metadata, hasChildren);
   }
 
   protected Project convertNew(UasComponent uasComponent, SiteItem siteItem)

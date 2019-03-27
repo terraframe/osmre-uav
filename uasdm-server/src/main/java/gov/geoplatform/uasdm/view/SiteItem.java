@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SiteItem
+public class SiteItem implements TreeComponent
 {
   public static String        ID           = "id";
 
@@ -40,7 +40,7 @@ public class SiteItem
 
   private Boolean             hasChildren;
 
-  private List<SiteItem>      children;
+  private List<TreeComponent> children;
 
   private Map<String, Object> values;
 
@@ -48,7 +48,7 @@ public class SiteItem
 
   public SiteItem()
   {
-    this.children = new LinkedList<SiteItem>();
+    this.children = new LinkedList<TreeComponent>();
     this.values = new HashMap<String, Object>();
   }
 
@@ -92,7 +92,7 @@ public class SiteItem
     this.hasChildren = hasChildren;
   }
 
-  public void addChild(SiteItem child)
+  public void addChild(TreeComponent child)
   {
     this.children.add(child);
   }
@@ -170,11 +170,11 @@ public class SiteItem
     }
   }
 
-  public static JSONArray serialize(Iterable<SiteItem> items)
+  public static JSONArray serialize(Iterable<TreeComponent> items)
   {
     JSONArray array = new JSONArray();
 
-    for (SiteItem item : items)
+    for (TreeComponent item : items)
     {
       array.put(item.toJSON());
     }
