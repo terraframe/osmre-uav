@@ -72,7 +72,9 @@
     <ng-template contextMenuItem let-item [visible]="isSite" (execute)="handleEditGeom($event.item)"> <i class="fa fa-globe" aria-hidden="true"></i>
         Edit geometry for {{item?.data.name}} 
     </ng-template>
-    <ng-template contextMenuItem divider="true"></ng-template>
+<!-- 
+    <ng-template contextMenuItem [visible]="canEdit" divider="true"></ng-template>
+ -->    
     <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item)"> <i class="fa fa-arrow-circle-down"></i>
         Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template>
     <ng-template contextMenuItem let-item [visible]="canDelete" (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i>

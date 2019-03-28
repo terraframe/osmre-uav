@@ -337,7 +337,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             $event.preventDefault();
             $event.stopPropagation();
         }
-        else if ( this.admin && node.data.type !== "folder" ) {
+        else if ( node.data.type !== "folder" ) {
             if ( node.data.type === "Site" ) {
                 node.data.childType = "Project"
             }
@@ -351,13 +351,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 node.data.childType = null
             }
 
-            this.contextMenuService.show.next( {
-                contextMenu: this.nodeMenuComponent,
-                event: $event,
-                item: node,
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
+            if ( node.data.type !== "Site" || this.admin ) {
+                this.contextMenuService.show.next( {
+                    contextMenu: this.nodeMenuComponent,
+                    event: $event,
+                    item: node,
+                } );
+                $event.preventDefault();
+                $event.stopPropagation();
+            }
+
         }
     }
 
@@ -598,6 +601,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public isSite = ( item: any ): boolean => {
-        return item.data.type === "Site";
+        return item.data.type === "Site" && this.canEdit( item );
     }
 }
