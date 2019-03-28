@@ -25,7 +25,6 @@
     "file-saver": "^2.0.0",
     "fine-uploader": "^5.16.2",
     "mapbox-gl": "0.53.1",
-    "mapbox-gl-draw": "^0.16.0",
     "ngx-bootstrap": "^2.0.2",
     "ngx-contextmenu": "^4.2.0",
     "ngx-cookie-service": "^1.0.10",
