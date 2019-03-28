@@ -9,7 +9,8 @@
                     <div class="location-management-widget-section">
                         <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="search"
                             [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
-                            [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label" />
+                            [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
+                            [ngModelOptions]="{standalone: true}" />
                     </div>
                 </div>
                 <div *ngIf="admin" class="row">
