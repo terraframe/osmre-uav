@@ -10,8 +10,11 @@
         </div>
       </div>
       <div *ngIf="admin" class="row-fluid">
-        <button (click)="handleCreate()" class="btn btn-primary">Create new site</button>
-      </div>    
+        <button (click)="handleCreate()" class="btn btn-primary create-site-btn">Create new site</button>
+      </div>   
+      
+      <!-- <hr> -->
+
       <div class="row-fluid">
         <div class="location-management-widget-section location-management-list-container">
           <div *ngIf="nodes.length > 0" class="tree">
@@ -24,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-9" id="location-explorer-map">
+    <div class="col-md-9" id="site-explorer-map">
       <div class="row">
         <aside class="base-layer-panel mapboxgl-ctrl mapboxgl-ctrl-group">
           <span *ngFor="let baseLayer of baseLayers">

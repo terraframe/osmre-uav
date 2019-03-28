@@ -32,10 +32,10 @@
  --theme-cancel-button-color: grey;
  --theme-cancel-button-color-hover: #6BA53A;
 
- --theme-submit-button-color: #6BA53A;
- --theme-submit-button-color-hover: #6BA53A;
- --theme-submit-button-color-light: #EDF4E8;
- --theme-submit-button-color-light-hover: #f4fcef;
+ --theme-submit-button-color: #007276;
+ --theme-submit-button-color-hover: #00adb3;
+ --theme-submit-button-color-light: #B6D7D8;
+ --theme-submit-button-color-light-hover: #deeded;
 
  --theme-alert-button-color: #e30000;
 
