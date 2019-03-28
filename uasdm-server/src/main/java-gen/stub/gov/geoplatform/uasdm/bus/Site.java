@@ -1,5 +1,16 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.view.AttributeListType;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.EqCondition;
+import gov.geoplatform.uasdm.view.Option;
+
 public class Site extends SiteBase
 {
   private static final long  serialVersionUID  = -986618112;
@@ -9,6 +20,22 @@ public class Site extends SiteBase
   public Site()
   {
     super();
+  }
+
+  @Override
+  public List<AttributeType> attributes()
+  {
+    AttributeListType attributeType = (AttributeListType) AttributeType.create(this.getMdAttributeDAO(Site.BUREAU));
+    attributeType.setOptions(Site.getBureauOptions());
+
+    AttributeType otherAttributeType = AttributeType.create(this.getMdAttributeDAO(Site.OTHERBUREAUTXT));
+    otherAttributeType.setCondition(Site.getBureauCondition());
+
+    List<AttributeType> list = super.attributes();
+    list.add(attributeType);
+    list.add(otherAttributeType);
+
+    return list;
   }
 
   @Override
@@ -32,4 +59,34 @@ public class Site extends SiteBase
   {
     return this.addProjects((Project) uasComponent);
   }
+
+  protected boolean needsUpdate()
+  {
+    return this.isModified(Site.BUREAU);
+  }
+
+  @Request
+  public static EqCondition getBureauCondition()
+  {
+    return new EqCondition(Site.BUREAU, Bureau.getByKey(Bureau.OTHER).getOid());
+  }
+
+  @Request
+  public static List<Option> getBureauOptions()
+  {
+    List<Option> options = new LinkedList<Option>();
+
+    BureauQuery query = new BureauQuery(new QueryFactory());
+    query.ORDER_BY_ASC(query.getDisplayLabel());
+
+    List<? extends Bureau> bureaus = query.getIterator().getAll();
+
+    for (Bureau bureau : bureaus)
+    {
+      options.add(new Option(bureau.getOid(), bureau.getDisplayLabel()));
+    }
+
+    return options;
+  }
+
 }

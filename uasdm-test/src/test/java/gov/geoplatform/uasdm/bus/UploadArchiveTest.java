@@ -90,28 +90,33 @@ public class UploadArchiveTest
 
     Site site = new Site();
     site.setName("Site_Unit_Test");
+    site.setFolderName("Site_Unit_Test");
     site.applyWithParent(null);
     // System.out.println("S3: "+site.getS3location());
     siteId = site.getOid();
 
     Project project1 = new Project();
     project1.setName("Project1");
+    project1.setFolderName("Project1");
     project1.applyWithParent(site);
     // System.out.println("S3: "+project1.getS3location());
     projectId1 = project1.getOid();
 
     Project project2 = new Project();
     project2.setName("Project2");
+    project2.setFolderName("Project2");
     project2.applyWithParent(site);
 
     Mission mission1 = new Mission();
     mission1.setName("Mission1");
+    mission1.setFolderName("Mission1");
     mission1.applyWithParent(project1);
     // System.out.println("S3: "+mission1.getS3location());
     missionId1 = mission1.getOid();
 
     Collection collection1 = new Collection();
     collection1.setName("Collection1");
+    collection1.setFolderName("Collection1");
     collection1.applyWithParent(mission1);
     // System.out.println("S3: "+collection1.getS3location());
     collectionId1 = collection1.getOid();

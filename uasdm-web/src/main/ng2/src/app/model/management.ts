@@ -1,6 +1,23 @@
+export class Condition {
+    name: string;
+    value: string;
+    type: string;
+}
+
+export class AttributeType {
+    name: string;
+    label: string;
+    type: string;
+    required: boolean;
+    immutable: boolean;
+}
+
 export class SiteEntity {
     id: string;
     name: string;
+    folderName: string;
+    type: string;
+    geometry: any;
     hasChildren: boolean;
 }
 

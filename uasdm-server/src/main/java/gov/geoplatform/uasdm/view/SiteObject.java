@@ -9,9 +9,11 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
 
-public class SiteObject
+public class SiteObject implements TreeComponent
 {
   public static final String KEY       = "key";
+
+  public static final String NAME      = "name";
 
   public static final String COMPONENT = "component";
 
@@ -79,24 +81,18 @@ public class SiteObject
     this.type = type;
   }
 
-  public static JSONArray serialize(List<SiteObject> objects)
+  @Override
+  public void addChild(TreeComponent child)
   {
-    JSONArray array = new JSONArray();
-
-    for (SiteObject object : objects)
-    {
-      array.put(object.toJSON());
-    }
-
-    return array;
+    throw new UnsupportedOperationException();
   }
 
   public JSONObject toJSON()
   {
     JSONObject json = new JSONObject();
     json.put(SiteItem.ID, this.id);
-    json.put(SiteItem.NAME, this.name);
     json.put(SiteItem.TYPE, this.type);
+    json.put(SiteObject.NAME, this.name);
     json.put(SiteObject.KEY, this.key);
     json.put(SiteObject.COMPONENT, this.componentId);
 
@@ -123,4 +119,15 @@ public class SiteObject
     return object;
   }
 
+  public static JSONArray serialize(List<SiteObject> objects)
+  {
+    JSONArray array = new JSONArray();
+
+    for (SiteObject object : objects)
+    {
+      array.put(object.toJSON());
+    }
+
+    return array;
+  }
 }

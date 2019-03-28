@@ -3,8 +3,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { SiteEntity } from '../management';
-import { ManagementService } from '../management.service';
+import { SiteEntity, AttributeType, Condition } from '../../model/management';
+import { ManagementService } from '../../service/management.service';
 
 
 @Component( {
@@ -19,6 +19,8 @@ export class CreateModalComponent implements OnInit {
     parentId: string;
 
     entity: SiteEntity;
+
+    attributes: AttributeType[];
 
     message: string = null;
 
@@ -44,12 +46,21 @@ export class CreateModalComponent implements OnInit {
         } );
     }
 
+    evaluate( condition: Condition ): boolean {
+
+        if ( condition != null && condition.type === 'eq' ) {
+            return ( this.entity[condition.name] === condition.value );
+        }
+
+        return false;
+    }
+
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.localizedMessage || err.message );
-            
-            console.log(this.message);
+
+            console.log( this.message );
         }
     }
 

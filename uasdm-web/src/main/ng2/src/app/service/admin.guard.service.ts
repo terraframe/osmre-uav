@@ -5,7 +5,7 @@ import { AuthService} from './auth.service';
 declare var acp: any;
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class AdminGuardService implements CanActivate {
 
   constructor(private service:AuthService, private router: Router) {}
 

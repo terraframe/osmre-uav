@@ -9,8 +9,8 @@ import {Observable} from 'rxjs/Rx';
 import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { ErrorModalComponent } from './modals/error-modal.component';
-import { SiteEntity, UploadForm, Task } from './management';
-import { ManagementService } from './management.service';
+import { SiteEntity, UploadForm, Task } from '../model/management';
+import { ManagementService } from '../service/management.service';
 
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
 

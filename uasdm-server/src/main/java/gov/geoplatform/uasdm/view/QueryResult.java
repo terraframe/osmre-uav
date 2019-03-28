@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.view;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
@@ -54,10 +53,13 @@ public class QueryResult
 
   private JSONObject toJSON()
   {
+    String label = this.filename != null ? this.filename : this.hierarchy.getJSONObject(this.hierarchy.length() - 1).getString("label");
+
     JSONObject object = new JSONObject();
     object.put("id", this.id);
     object.put("filename", this.filename);
     object.put("hierarchy", this.hierarchy);
+    object.put("label", label);
 
     return object;
   }

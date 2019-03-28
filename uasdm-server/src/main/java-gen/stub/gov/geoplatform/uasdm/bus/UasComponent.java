@@ -1,10 +1,20 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.geotools.geojson.geom.GeometryJSON;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -20,16 +30,24 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
+import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
+import com.runwaysdk.dataaccess.database.Database;
+import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -68,31 +86,13 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {
-
-    /*
-     * https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
-     * 
-     * Characters That Might Require Special Handling
-     */
-    boolean isNameModified = this.isModified(UasComponent.NAME);
-
-    if (isNameModified)
-    {
-      String name = this.getName();
-
-      if (!isValidName(name))
-      {
-        throw new InvalidUasComponentNameException("The name field has an invalid character");
-      }
-    }
-
     boolean isNew = this.isNew();
 
     if (isNew)
     {
       if (parent != null)
       {
-        boolean isDuplicate = isDuplicateName(parent.getOid(), this.getOid(), this.getName());
+        boolean isDuplicate = isDuplicateFolderName(parent.getOid(), this.getOid(), this.getFolderName());
 
         if (isDuplicate)
         {
@@ -128,14 +128,38 @@ public abstract class UasComponent extends UasComponentBase
       this.addComponent(parent).apply();
     }
 
-    if (!isNew && isNameModified)
-    {
-      SolrService.updateName(this);
-    }
-    else if (isNew)
+    if (isNew)
     {
       SolrService.createDocument(this.getAncestors(), this);
     }
+  }
+
+  @Override
+  public void apply()
+  {
+    boolean isNameModified = this.isModified(UasComponent.NAME);
+    boolean needsUpdate = this.needsUpdate();
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (!isNew)
+    {
+      if (isNameModified)
+      {
+        SolrService.updateName(this);
+      }
+
+      if (needsUpdate)
+      {
+        SolrService.updateComponent(this);
+      }
+    }
+  }
+
+  protected boolean needsUpdate()
+  {
+    return this.isModified(UasComponent.DESCRIPTION);
   }
 
   public void delete()
@@ -167,7 +191,7 @@ public abstract class UasComponent extends UasComponentBase
       key += parent.getS3location();
     }
 
-    key += this.getName() + "/";
+    key += this.getFolderName() + "/";
 
     return key;
   }
@@ -257,7 +281,7 @@ public abstract class UasComponent extends UasComponentBase
     return true;
   }
 
-  public static boolean isDuplicateName(String parentId, String oid, String name)
+  public static boolean isDuplicateFolderName(String parentId, String oid, String folderName)
   {
     QueryFactory qf = new QueryFactory();
     UasComponentQuery childQ = new UasComponentQuery(qf);
@@ -265,7 +289,7 @@ public abstract class UasComponent extends UasComponentBase
     UasComponentQuery parentQ = new UasComponentQuery(qf);
     parentQ.WHERE(parentQ.getOid().EQ(parentId));
 
-    childQ.WHERE(childQ.getName().EQ(name));
+    childQ.WHERE(childQ.getFolderName().EQ(folderName));
     childQ.AND(childQ.component(parentQ));
 
     if (oid != null)
@@ -290,13 +314,13 @@ public abstract class UasComponent extends UasComponentBase
     return false;
   }
 
-  public static void validateName(String parentId, String name)
+  public static void validateFolderName(String parentId, String name)
   {
     if (!isValidName(name))
     {
-      throw new InvalidUasComponentNameException("The name field has an invalid character");
+      throw new InvalidUasComponentNameException("The folder name field has an invalid character");
     }
-    else if (isDuplicateName(parentId, null, name))
+    else if (isDuplicateFolderName(parentId, null, name))
     {
       UasComponent parent = UasComponent.get(parentId);
       MdClassDAOIF mdClass = MdClassDAO.getMdClassDAO(Collection.CLASS);
@@ -390,5 +414,162 @@ public abstract class UasComponent extends UasComponentBase
     }
 
     return ancestors;
+  }
+
+  public List<AttributeType> attributes()
+  {
+    List<AttributeType> list = new LinkedList<AttributeType>();
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
+
+    return list;
+  }
+
+  public void writeFeature(JSONWriter writer) throws IOException
+  {
+    GeometryJSON gjson = new GeometryJSON();
+
+    StringWriter geomWriter = new StringWriter();
+
+    gjson.write(this.getGeoPoint(), geomWriter);
+
+    writer.object();
+
+    writer.key("type");
+    writer.value("Feature");
+
+    writer.key("properties");
+    writer.value(this.getProperties());
+
+    writer.key("id");
+    writer.value(this.getOid());
+
+    writer.key("geometry");
+    writer.value(new JSONStringImpl(geomWriter.toString()));
+
+    writer.endObject();
+  }
+
+  public JSONObject getProperties()
+  {
+    JSONObject properties = new JSONObject();
+    properties.put("oid", this.getOid());
+    properties.put("name", this.getName());
+
+    return properties;
+  }
+
+  public static JSONObject features() throws IOException
+  {
+    StringWriter sWriter = new StringWriter();
+    JSONWriter writer = new JSONWriter(sWriter);
+
+    SiteQuery query = new SiteQuery(new QueryFactory());
+    query.WHERE(query.getGeoPoint().NE((String) null));
+
+    OIterator<? extends Site> it = query.getIterator();
+
+    try
+    {
+      writer.object();
+
+      writer.key("type");
+      writer.value("FeatureCollection");
+      writer.key("features");
+      writer.array();
+
+      while (it.hasNext())
+      {
+        Site site = it.next();
+
+        if (site.getGeoPoint() != null)
+        {
+          site.writeFeature(writer);
+        }
+      }
+
+      writer.endArray();
+
+      writer.key("totalFeatures");
+      writer.value(query.getCount());
+
+      writer.key("crs");
+      writer.value(new JSONObject("{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:EPSG::4326\"}}"));
+
+      writer.endObject();
+    }
+    finally
+    {
+      it.close();
+    }
+
+    return new JSONObject(sWriter.toString());
+  }
+
+  public static JSONArray bbox()
+  {
+    try
+    {
+      MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+      MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.GEOPOINT);
+
+      StringBuffer sql = new StringBuffer();
+      sql.append("SELECT ST_AsText(ST_Extent(" + mdAttribute.getColumnName() + ")) AS bbox");
+      sql.append(" FROM " + mdBusiness.getTableName());
+      sql.append(" WHERE " + mdAttribute.getColumnName() + " IS NOT NULL");
+
+      try (ResultSet resultSet = Database.query(sql.toString()))
+      {
+        if (resultSet.next())
+        {
+          String bbox = resultSet.getString("bbox");
+
+          if (bbox != null)
+          {
+            Pattern p = Pattern.compile("POLYGON\\(\\((.*)\\)\\)");
+            Matcher m = p.matcher(bbox);
+
+            if (m.matches())
+            {
+              String coordinates = m.group(1);
+              List<Coordinate> coords = new LinkedList<Coordinate>();
+
+              for (String c : coordinates.split(","))
+              {
+                String[] xAndY = c.split(" ");
+                double x = Double.valueOf(xAndY[0]);
+                double y = Double.valueOf(xAndY[1]);
+
+                coords.add(new Coordinate(x, y));
+              }
+
+              Envelope e = new Envelope(coords.get(0), coords.get(2));
+
+              JSONArray bboxArr = new JSONArray();
+              bboxArr.put(e.getMinX());
+              bboxArr.put(e.getMinY());
+              bboxArr.put(e.getMaxX());
+              bboxArr.put(e.getMaxY());
+
+              return bboxArr;
+            }
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      // Ignore the error and just return the default bounding box
+    }
+
+    // Extent of the continental United States
+    JSONArray bboxArr = new JSONArray();
+    bboxArr.put(-124.848974);
+    bboxArr.put(-66.885444);
+    bboxArr.put(24.396308);
+    bboxArr.put(49.384358);
+
+    return bboxArr;
   }
 }

@@ -4,12 +4,10 @@ import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnaps
 import { Observable } from 'rxjs/Observable';
 
 import { ProjectsComponent } from './management/projects.component';
-import { ViewerComponent } from './management/viewer.component';
 import { UploadComponent } from './management/upload.component';
 import { UserProfileComponent } from './management/user-profile.component';
-import { SearchComponent } from './management/search.component';
 
-import { AdminGuard } from './auth/admin.guard';
+import { AdminGuardService } from './service/admin.guard.service';
 
 const routes: Routes = [
     {
@@ -18,8 +16,7 @@ const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'projects',
-        canActivate: [ AdminGuard ],        
+        path: 'viewer',
         component: ProjectsComponent
     },
     {
@@ -27,20 +24,8 @@ const routes: Routes = [
         component: UploadComponent
     },
     {
-        path: 'viewer',
-        component: ViewerComponent
-    },
-    {
-        path: 'viewer/:id',
-        component: ViewerComponent
-    },
-    {
         path: 'tasks',
         component: UserProfileComponent
-    },
-    {
-        path: 'search',
-        component: SearchComponent
     }
 ];
 
@@ -51,4 +36,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, ViewerComponent, SearchComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];

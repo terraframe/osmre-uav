@@ -11,7 +11,7 @@
       <mdException name="gov.geoplatform.uasdm.bus.DuplicateComponentException" 
                    label="Empty Layer Information" 
                    description="Thrown when someone tries to create a child item whose name conflicts with an existing child name." 
-                   message="[{parentName}] already has a [{childComponentLabel}] with the name [{childName}].">
+                   message="[{parentName}] already has a [{childComponentLabel}] with the folder name [{childName}].">
         <attributes>
           <text name="parentName" label="Parent Name" />
           <text name="childComponentLabel" label="Child Component Label" />

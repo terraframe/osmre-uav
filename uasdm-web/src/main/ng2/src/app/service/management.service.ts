@@ -8,8 +8,8 @@ import 'rxjs/add/operator/finally';
 
 import { CookieService } from 'ngx-cookie-service';
 
-import { SiteEntity, Message, Task } from './management';
-import { EventService } from '../event/event.service';
+import { SiteEntity, Message, Task, AttributeType } from '../model/management';
+import { EventService } from './event.service';
 
 declare var acp: any;
 
@@ -63,7 +63,7 @@ export class ManagementService {
             } )
     }
 
-    edit( id: string ): Promise<SiteEntity> {
+    edit( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
         let headers = new Headers( {
             'Content-Type': 'application/json'
@@ -78,7 +78,7 @@ export class ManagementService {
             } )
             .toPromise()
             .then( response => {
-                return response.json() as SiteEntity;
+                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
             } )
     }
 
@@ -101,22 +101,29 @@ export class ManagementService {
             } )
     }
 
-    newChild( parentId: string ): Promise<SiteEntity> {
+    newChild( parentId: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
         let headers = new Headers( {
             'Content-Type': 'application/json'
         } );
 
+        let params = {} as any;
+
+        if ( parentId != null ) {
+            params.parentId = parentId;
+        }
+
         this.eventService.start();
 
+
         return this.http
-            .post( acp + '/project/new-child', JSON.stringify( { parentId: parentId } ), { headers: headers } )
+            .post( acp + '/project/new-child', JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
             .then( response => {
-                return response.json() as SiteEntity;
+                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
             } )
     }
 
@@ -128,10 +135,18 @@ export class ManagementService {
             'Content-Type': 'application/json'
         } );
 
+
+        let params = { entity: entity } as any;
+
+        if ( parentId != null ) {
+            params.parentId = parentId;
+        }
+
+
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/apply-with-parent', JSON.stringify( { entity: entity, parentId: parentId } ), { headers: headers } )
+            .post( acp + '/project/apply-with-parent', JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
@@ -181,7 +196,7 @@ export class ManagementService {
             } )
             .toPromise()
     }
-    
+
     removeTask( uploadId: string ): Promise<Response> {
 
         let headers = new Headers( {
@@ -191,10 +206,10 @@ export class ManagementService {
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/remove-task', JSON.stringify( { uploadId : uploadId } ), { headers: headers } )
+            .post( acp + '/project/remove-task', JSON.stringify( { uploadId: uploadId } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
-            })
+            } )
             .toPromise()
     }
 
@@ -206,21 +221,21 @@ export class ManagementService {
                 return response.json() as { messages: Message[], tasks: Task[] };
             } )
     }
-    
-    task(id: string): Promise<{ messages: Message[], task: Task }> {
-    	
-    	let params: URLSearchParams = new URLSearchParams();
+
+    task( id: string ): Promise<{ messages: Message[], task: Task }> {
+
+        let params: URLSearchParams = new URLSearchParams();
         params.set( 'id', id );
-    
+
         return this.http
-            .get( acp + '/project/task', {params : params} )
+            .get( acp + '/project/task', { params: params } )
             .toPromise()
             .then( response => {
                 return response.json() as { messages: Message[], task: Task };
             } )
     }
 
-    getMissingMetadata(): Promise< Message[]> {
+    getMissingMetadata(): Promise<Message[]> {
         return this.http
             .get( acp + '/project/missing-metadata' )
             .toPromise()
@@ -244,5 +259,34 @@ export class ManagementService {
                 this.eventService.complete();
             } )
             .map( res => res.blob() )
+    }
+
+    search( terms: Observable<string> ) {
+        return terms.debounceTime( 400 )
+            .distinctUntilChanged()
+            .switchMap( term => this.searchEntries( term ) );
+    }
+
+    searchEntries( term: string ) {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'term', term );
+
+        return this.http
+            .get( acp + '/project/search', { search: params } )
+            .map( res => res.json() );
+    }
+
+    searchEntites( term: string ): Promise<any> {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'term', term );
+
+        return this.http
+            .get( acp + '/project/search', { search: params } )
+            .toPromise()
+            .then( response => {
+                return response.json();
+            } )
     }
 }

@@ -3,6 +3,7 @@
     <create>
       <object key="gov.geoplatform.uasdm.bus.Site.Cottonwood" type="gov.geoplatform.uasdm.bus.Site">
         <attribute name="name" value="Cottonwood" />
+        <attribute name="folderName" value="Cottonwood" />
         <attribute name="s3location" value="Cottonwood/" />
       </object>
     </create>

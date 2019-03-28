@@ -1,11 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
-import { TreeNode } from 'angular-tree-component';
-
-import { SiteEntity } from '../management';
-import { ManagementService } from '../management.service';
-
 
 @Component( {
     selector: 'confirm-modal',

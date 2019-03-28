@@ -6,27 +6,23 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
 
-import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.TreeComponent;
 
 @Controller(url = "project")
 public class ProjectManagementController
@@ -51,7 +47,7 @@ public class ProjectManagementController
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    List<SiteItem> children = this.service.getChildren(request.getSessionId(), id);
+    List<TreeComponent> children = this.service.getChildren(request.getSessionId(), id);
 
     return new RestBodyResponse(SiteItem.serialize(children));
   }
@@ -59,7 +55,7 @@ public class ProjectManagementController
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    List<SiteItem> roots = this.service.getRoots(request.getSessionId(), id);
+    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id);
 
     return new RestBodyResponse(SiteItem.serialize(roots));
   }
@@ -69,7 +65,10 @@ public class ProjectManagementController
   {
     SiteItem item = this.service.newChild(request.getSessionId(), parentId);
 
-    return new RestBodyResponse(item.toJSON());
+    RestResponse response = new RestResponse();
+    response.set("item", item.toJSON());
+    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
+    return response;
   }
 
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
@@ -87,7 +86,10 @@ public class ProjectManagementController
   {
     SiteItem item = this.service.edit(request.getSessionId(), id);
 
-    return new RestBodyResponse(item.toJSON());
+    RestResponse response = new RestResponse();
+    response.set("item", item.toJSON());
+    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
+    return response;
   }
 
   @Endpoint(url = "update", method = ServletMethod.POST, error = ErrorSerialization.JSON)
@@ -107,7 +109,7 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "remove-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF removeTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
   {
@@ -123,7 +125,7 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getTask(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
@@ -131,7 +133,7 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "missing-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getMissingMetadata(ClientRequestIF request)
   {
@@ -151,38 +153,26 @@ public class ProjectManagementController
   @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
-    if (key == null || key.length() == 0)
-    {
-      List<SiteItem> children = this.service.getChildren(request.getSessionId(), id);
+    List<TreeComponent> children = this.service.items(request.getSessionId(), id, key);
 
-      for (SiteItem child : children)
-      {
-        if (child.getType().equals("Collection") || child.getType().equals("Mission"))
-        {
-          child.setHasChildren(true);
-        }
-      }
+    JSONArray response = SiteItem.serialize(children);
 
-      List<SiteObject> objects = this.service.getItems(request.getSessionId(), id, null);
-
-      JSONArray response = SiteItem.serialize(children);
-
-      for (SiteObject object : objects)
-      {
-        response.put(object.toJSON());
-      }
-
-      return new RestBodyResponse(response);
-    }
-
-    List<SiteObject> objects = this.service.getItems(request.getSessionId(), id, key);
-
-    return new RestBodyResponse(SiteObject.serialize(objects));
+    return new RestBodyResponse(response);
   }
 
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
     return new S3GetResponse(this.service.download(request.getSessionId(), id, key));
+  }
+
+  @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF features(ClientRequestIF request) throws IOException
+  {
+    RestResponse response = new RestResponse();
+    response.set("features", this.service.features(request.getSessionId()));
+    response.set("bbox", this.service.bbox(request.getSessionId()));
+
+    return response;
   }
 }

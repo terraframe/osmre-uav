@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.TreeComponent;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -37,9 +40,14 @@ public class ProjectManagementService
   final Logger log = LoggerFactory.getLogger(ProjectManagementService.class);
 
   @Request(RequestType.SESSION)
-  public List<SiteItem> getChildren(String sessionId, String parentid)
+  public List<TreeComponent> getChildren(String sessionId, String parentid)
   {
-    LinkedList<SiteItem> children = new LinkedList<SiteItem>();
+    return this.getChildren(parentid);
+  }
+
+  public List<TreeComponent> getChildren(String parentid)
+  {
+    LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
 
     UasComponent uasComponent = UasComponent.get(parentid);
 
@@ -47,7 +55,7 @@ public class ProjectManagementService
 
     try
     {
-      i.forEach(c -> children.add(Converter.toSiteItem(c)));
+      i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
     }
     finally
     {
@@ -57,9 +65,9 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<SiteItem> getRoots(String sessionId, String id)
+  public List<TreeComponent> getRoots(String sessionId, String id)
   {
-    LinkedList<SiteItem> roots = new LinkedList<SiteItem>();
+    LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
     QueryFactory qf = new QueryFactory();
     SiteQuery q = new SiteQuery(qf);
@@ -69,7 +77,7 @@ public class ProjectManagementService
 
     try
     {
-      i.forEach(s -> roots.add(Converter.toSiteItem(s)));
+      i.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
     }
     finally
     {
@@ -79,20 +87,25 @@ public class ProjectManagementService
     if (id != null)
     {
       UasComponent component = UasComponent.get(id);
-      SiteItem child = Converter.toSiteItem(component);
-      child.setHasChildren(true);
+
+      TreeComponent child = Converter.toSiteItem(component, false, true);
 
       List<UasComponent> ancestors = component.getAncestors();
 
       for (int j = 0; j < ancestors.size(); j++)
       {
-        SiteItem parent = null;
+        TreeComponent parent = null;
 
         if (j == ( ancestors.size() - 1 ))
         {
+          /*
+           * The last ancestor in the list should be the root tree node, which
+           * should already be in the roots list. As such use the root list node
+           * instead and add children to it.
+           */
           UasComponent root = ancestors.get(ancestors.size() - 1);
 
-          for (SiteItem r : roots)
+          for (TreeComponent r : roots)
           {
             if (r.getId().equals(root.getOid()))
             {
@@ -102,33 +115,41 @@ public class ProjectManagementService
         }
         else
         {
-          parent = Converter.toSiteItem(ancestors.get(j));
+          parent = Converter.toSiteItem(ancestors.get(j), false);
         }
 
-        List<SiteItem> children = this.getChildren(sessionId, parent.getId());
-
-        for (SiteItem c : children)
+        if (parent instanceof SiteItem)
         {
-          c.setHasChildren(true);
-          
-          if (!c.getId().equals(child.getId()))
-          {
-            parent.addChild(c);
-          }
-          else
-          {
-            parent.addChild(child);
-          }
-        }
+          /*
+           * For each ancestor get all of its children TreeComponents
+           */
+          List<TreeComponent> children = this.items(parent.getId(), null);
 
-        child = parent;
+          for (TreeComponent chi : children)
+          {
+            if (chi instanceof SiteItem)
+            {
+              ( (SiteItem) chi ).setHasChildren(true);
+            }
+
+            if (!chi.getId().equals(child.getId()))
+            {
+              parent.addChild(chi);
+            }
+            else
+            {
+              parent.addChild(child);
+            }
+          }
+
+          child = parent;
+        }
       }
     }
 
     return roots;
   }
 
-  @Request(RequestType.SESSION)
   /**
    * Should this method return null if the given parent has no children?
    * 
@@ -136,19 +157,27 @@ public class ProjectManagementService
    * @param parentId
    * @return
    */
+  @Request(RequestType.SESSION)
   public SiteItem newChild(String sessionId, String parentId)
   {
-    UasComponent uasComponent = UasComponent.get(parentId);
-
-    UasComponent childUasComponent = uasComponent.createChild();
-
-    if (childUasComponent != null)
+    if (parentId != null)
     {
-      return Converter.toSiteItem(childUasComponent);
+      UasComponent uasComponent = UasComponent.get(parentId);
+
+      UasComponent childUasComponent = uasComponent.createChild();
+
+      if (childUasComponent != null)
+      {
+        return Converter.toSiteItem(childUasComponent, true);
+      }
+      else
+      {
+        return null;
+      }
     }
     else
     {
-      return null;
+      return Converter.toSiteItem(new Site(), true);
     }
   }
 
@@ -162,7 +191,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem applyWithParent(String sessionId, SiteItem siteItem, String parentId)
   {
-    UasComponent parent = UasComponent.get(parentId);
+    UasComponent parent = parentId != null ? UasComponent.get(parentId) : null;
 
     UasComponent child = Converter.toNewUasComponent(parent, siteItem);
 
@@ -174,7 +203,7 @@ public class ProjectManagementService
 
       // parent.addComponent(child).apply();
 
-      return Converter.toSiteItem(child);
+      return Converter.toSiteItem(child, false);
     }
     else
     {
@@ -189,7 +218,7 @@ public class ProjectManagementService
   {
     UasComponent uasComponent = UasComponent.get(id);
 
-    return Converter.toSiteItem(uasComponent);
+    return Converter.toSiteItem(uasComponent, true);
   }
 
   @Request(RequestType.SESSION)
@@ -205,7 +234,7 @@ public class ProjectManagementService
 
     uasComponent.unlock();
 
-    SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent);
+    SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
     return updatedSiteItem;
   }
@@ -217,7 +246,7 @@ public class ProjectManagementService
 
     uasComponent.delete();
   }
-  
+
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)
   {
@@ -261,9 +290,9 @@ public class ProjectManagementService
     if (createCollection)
     {
       String missionId = params.get("mission");
-      String name = params.get("name");
+      String folderName = params.get("folderName");
 
-      UasComponent.validateName(missionId, name);
+      UasComponent.validateFolderName(missionId, folderName);
     }
   }
 
@@ -284,6 +313,11 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public List<SiteObject> getItems(String sessionId, String id, String key)
   {
+    return this.getObjects(id, key);
+  }
+
+  public List<SiteObject> getObjects(String id, String key)
+  {
     UasComponent component = UasComponent.get(id);
 
     return component.getSiteObjects(key);
@@ -303,5 +337,40 @@ public class ProjectManagementService
     List<QueryResult> results = SolrService.query(term);
 
     return results;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject features(String sessionId) throws IOException
+  {
+    return UasComponent.features();
+  }
+
+  @Request(RequestType.SESSION)
+  public List<TreeComponent> items(String sessionId, String id, String key)
+  {
+    return this.items(id, key);
+  }
+
+  public List<TreeComponent> items(String id, String key)
+  {
+    List<TreeComponent> items = new LinkedList<TreeComponent>();
+
+    if (key == null || key.length() == 0)
+    {
+      items.addAll(this.getChildren(id));
+      items.addAll(this.getObjects(id, null));
+    }
+    else
+    {
+      items.addAll(this.getObjects(id, key));
+    }
+
+    return items;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray bbox(String sessionId)
+  {
+    return UasComponent.bbox();
   }
 }

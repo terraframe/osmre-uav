@@ -1,12 +1,27 @@
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
+@import '~mapbox-gl/dist/mapbox-gl.css';
+@import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 body {
   overflow-y: auto;
 }
 
 .tree {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 300px);
+}
+
+.map-view-port {
+  height: calc(100vh - 150px); 
+  width: 75vw;
+}
+
+.base-layer-panel{ 
+  position:absolute; 
+  top: 10px; 
+  left: 10px; 
+  z-index:2;
+  padding:5px;
 }
 
 .node-content-wrapper, .tree-children {

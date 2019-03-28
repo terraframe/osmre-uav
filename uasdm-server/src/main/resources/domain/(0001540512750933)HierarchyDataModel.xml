@@ -1,54 +1,115 @@
-<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version_gis.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-    
-      <mdBusiness name="gov.geoplatform.uasdm.bus.UasComponent" label="UAS Component" cacheAlgorithm="nothing" generateController="false" isAbstract="true" >
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Bureau" label="Bureau" cacheAlgorithm="everything" generateController="false">
         <attributes>
-          <char name="name" required="true" label="Name" size="256" immutable="true"/>
-          <char name="s3location" required="false" label="Name" size="4096" />
+          <char name="name" required="false" label="Name" size="4096" />
+          <char name="displayLabel" required="false" label="Label" size="4096" />
         </attributes>
       </mdBusiness>
-    
-      <mdBusiness name="gov.geoplatform.uasdm.bus.Site" label="Site" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
+
+      <object key="BIA" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="BIA" />
+        <attribute name="displayLabel" value="BIA" />
+      </object>
+
+      <object key="BLM" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="BLM" />
+        <attribute name="displayLabel" value="BLM" />
+      </object>
+
+      <object key="BOEM" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="BOEM" />
+        <attribute name="displayLabel" value="BOEM" />
+      </object>
+
+      <object key="BOR" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="BOR" />
+        <attribute name="displayLabel" value="BOR" />
+      </object>
+
+      <object key="BSEE" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="BSEE" />
+        <attribute name="displayLabel" value="BSEE" />
+      </object>
+
+      <object key="FWS" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="FWS" />
+        <attribute name="displayLabel" value="FWS" />
+      </object>
+
+      <object key="NPS" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="NPS" />
+        <attribute name="displayLabel" value="NPS" />
+      </object>
+
+      <object key="OAS" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="OAS" />
+        <attribute name="displayLabel" value="OAS" />
+      </object>
+
+      <object key="OSMRE" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="OSMRE" />
+        <attribute name="displayLabel" value="OSMRE" />
+      </object>
+
+      <object key="USGS" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="USGS" />
+        <attribute name="displayLabel" value="USGS" />
+      </object>
+
+      <object key="OTHER" type="gov.geoplatform.uasdm.bus.Bureau">
+        <attribute name="name" value="OTHER" />
+        <attribute name="displayLabel" value="Other" />
+      </object>
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.UasComponent" label="UAS Component" cacheAlgorithm="nothing" generateController="false" isAbstract="true">
+        <attributes>
+          <char name="name" required="true" label="Name" size="256" />
+          <char name="s3location" required="false" label="Name" size="4096" />
+          <char name="folderName" label="Folder Name" size="256" immutable="true" required="true" />
+          <text name="description" required="false" label="Description" />
+          <point name="geoPoint" dimension="2" srid="4326" required="false" label="Point" />
+        </attributes>
       </mdBusiness>
-      
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Site" label="Site" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
+        <attributes>
+          <reference name="bureau" label="Bureau" required="false" type="gov.geoplatform.uasdm.bus.Bureau" />
+          <char name="otherBureauTxt" required="false" label="Bureau Name" size="256" />
+        </attributes>
+      </mdBusiness>
+
       <mdBusiness name="gov.geoplatform.uasdm.bus.Project" label="Project" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
       </mdBusiness>
-           
+
       <mdBusiness name="gov.geoplatform.uasdm.bus.Mission" label="Mission" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
-<!-- 
-        <attributes>
-          <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " description="Flag indicating whether metadata XML file has been uploaded for the mission." />
-        </attributes>
- -->
+        <!-- <attributes> <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " description="Flag indicating whether metadata XML file has been uploaded for the mission." /> </attributes> -->
       </mdBusiness>
-      
-       <mdBusiness name="gov.geoplatform.uasdm.bus.Collection" label="Collection" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Collection" label="Collection" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
       </mdBusiness>
-      
-       <mdGraph name="gov.geoplatform.uasdm.bus.ComponentHasComponent" label="Component Has Component" cacheAlgorithm="nothing" isAbstract="true" composition="true">
+
+      <mdGraph name="gov.geoplatform.uasdm.bus.ComponentHasComponent" label="Component Has Component" cacheAlgorithm="nothing" isAbstract="true" composition="true">
         <parent cardinality="1" name="gov.geoplatform.uasdm.bus.UasComponent" method="Component" />
         <child cardinality="*" name="gov.geoplatform.uasdm.bus.UasComponent" method="Components" />
       </mdGraph>
-      
-      <mdGraph name="gov.geoplatform.uasdm.bus.SiteHasProjects" label="Site Has Projects" cacheAlgorithm="nothing"
-               extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
+
+      <mdGraph name="gov.geoplatform.uasdm.bus.SiteHasProjects" label="Site Has Projects" cacheAlgorithm="nothing" extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
         <parent cardinality="1" name="gov.geoplatform.uasdm.bus.Site" method="Site" />
         <child cardinality="*" name="gov.geoplatform.uasdm.bus.Project" method="Projects" />
       </mdGraph>
-      
-      <mdGraph name="gov.geoplatform.uasdm.bus.ProjectHasMission" label="Project Has Mission" cacheAlgorithm="nothing"
-               extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
+
+      <mdGraph name="gov.geoplatform.uasdm.bus.ProjectHasMission" label="Project Has Mission" cacheAlgorithm="nothing" extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
         <parent cardinality="1" name="gov.geoplatform.uasdm.bus.Project" method="Project" />
         <child cardinality="*" name="gov.geoplatform.uasdm.bus.Mission" method="Missions" />
       </mdGraph>
-      
-      <mdGraph name="gov.geoplatform.uasdm.bus.MissionHasCollection" label="Mission Has Collection" cacheAlgorithm="nothing"
-               extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
+
+      <mdGraph name="gov.geoplatform.uasdm.bus.MissionHasCollection" label="Mission Has Collection" cacheAlgorithm="nothing" extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
         <parent cardinality="1" name="gov.geoplatform.uasdm.bus.Mission" method="Mission" />
         <child cardinality="*" name="gov.geoplatform.uasdm.bus.Collection" method="Collections" />
       </mdGraph>
-      
+
     </create>
     <update></update>
   </doIt>
@@ -60,8 +121,8 @@
       <object key="gov.geoplatform.uasdm.bus.ComponentHasComponent" type="com.runwaysdk.system.metadata.MdGraph" />
 
 
-      <object key="gov.geoplatform.uasdm.bus.Collection" type="com.runwaysdk.system.metadata.MdBusiness" />   
-      <object key="gov.geoplatform.uasdm.bus.Mission" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.Collection" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.Mission" type="com.runwaysdk.system.metadata.MdBusiness" />
       <object key="gov.geoplatform.uasdm.bus.Project" type="com.runwaysdk.system.metadata.MdBusiness" />
       <object key="gov.geoplatform.uasdm.bus.Site" type="com.runwaysdk.system.metadata.MdBusiness" />
       <object key="gov.geoplatform.uasdm.bus.UasComponent" type="com.runwaysdk.system.metadata.MdBusiness" />
