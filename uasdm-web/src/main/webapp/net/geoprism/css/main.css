@@ -7,11 +7,11 @@
 /* 
  * Asset Management:
  * 
- * #6BA53A  - green
- * #7C868D  - grey
- * #D7BD0C  - dark purple
- * #007276  - light purple
- * #B6D7D8  - yellow  
+ * 7C868D - Green
+ * 7C868D - Dark  grey/blue
+ * D7BD0C - Yellow
+ * 007276 - Turquis
+ * B6D7D8 - Light turquis 
  */
 
 html, body{height:100%;}
@@ -123,7 +123,7 @@ button.btn.ui-button.ui-widget:hover{
 button.btn.ui-button.ui-widget:focus,
 button.btn.ui-button.ui-widget:active{
   padding:3px 17px;
-  border:2px solid #6BA53A;
+  border:2px solid #007276;
   box-shadow:none;
   -webkit-box-shadow:none;
   background:#bbb;
@@ -283,7 +283,7 @@ i {
 	position:relative;
 	margin-left:-1px;
 	padding:3px 17px 3px;
-	border-color:#6BA53A;
+	border-color:#007276;
 	border-width:2px;
 	background:#bbb;
 }
@@ -374,7 +374,7 @@ i {
 .submit-form .field-error input[type="text"]:focus,
 .submit-form .field-error input[type="text"]:active,
 .submit-form input[type="text"]:focus,
-.submit-form input[type="text"]:active{border-color:#6BA53A;}
+.submit-form input[type="text"]:active{border-color:#007276;}
 .submit-form .field-error input[type="text"]{
 	border-color:#e09999;
 	background:#f8f8f8;
@@ -448,7 +448,7 @@ i {
 	color:#333;
 /* 	background:#eee; */
 }
-.select-focus{border-color:#6BA53A;}
+.select-focus{border-color:#007276;}
 .select-disabled{
 	color:#d2d2d2;
 	border-color:#e4e4e4;
@@ -549,7 +549,7 @@ i {
 	border-radius:50%;
 	background:#fff;
 }
-.rad-focus{border-color:#6BA53A;}
+.rad-focus{border-color:#007276;}
 .rad-focus.rad-checked{border-color:#02789e;}
 .rad-disabled{
 	border-color:#dbdbdb;
@@ -570,10 +570,10 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 */
 .chk-checked{
     border-color:#02789e;
-    background: #6BA53A url(../images/sprite.png) no-repeat -43px -20px; /* IE fallback */
+    background: #007276 url(../images/sprite.png) no-repeat -43px -20px; /* IE fallback */
 	background: var(--theme-submit-button-color-hover) url(../images/sprite.png) no-repeat -43px -20px;
 }
-.chk-focus{border-color:#6BA53A;}
+.chk-focus{border-color:#007276;}
 .chk-focus.chk-checked{border-color:#02789e;}
 .chk-disabled{
 	border:1px solid #dbdbdb;
@@ -1075,7 +1075,7 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 /* 	outline:none; */
 /* } */
 
-/* .choice-form .data-block input[type="text"]:focus{border-color:#6BA53A;} */
+/* .choice-form .data-block input[type="text"]:focus{border-color:#007276;} */
 /* .choice-form .data-block ::-webkit-input-placeholder{color:#333;} */
 /* .choice-form .data-block :-ms-input-placeholder{color:#333;} */
 /* .choice-form .data-block :-moz-placeholder{color:#333;} */
@@ -1129,7 +1129,7 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 /* 	position:relative; */
 /* 	outline:none; */
 /* } */
-/* .row-holder .data-block input[type="text"]:focus{border-color:#6BA53A;} */
+/* .row-holder .data-block input[type="text"]:focus{border-color:#007276;} */
 /* .row-holder .data-block ::-webkit-input-placeholder{color:#333;} */
 /* .row-holder .data-block :-ms-input-placeholder{color:#333;} */
 /* .row-holder .data-block :-moz-placeholder{color:#333;} */
@@ -1307,7 +1307,7 @@ input :focus::-moz-placeholder{opacity:0 !important;}
 .modal-form .text input[type="text"]:-ms-input-placeholder{color:#333;}
 .modal-form .text input[type="text"]::-webkit-input-placeholder{color:#333;}
 .modal-form .text input[type="text"]:-moz-placeholder{color:#333;}
-.modal-form .text input[type="text"]:focus{border-color:#6BA53A;}
+.modal-form .text input[type="text"]:focus{border-color:#007276;}
 .modal-form .text input[type="text"]:disabled {
     color: #999;
 }
@@ -1338,7 +1338,7 @@ input :focus::-moz-placeholder{opacity:0 !important;}
 .modal-form .text input[type="textarea"]:-ms-input-placeholder{color:#333;}
 .modal-form .text input[type="textarea"]::-webkit-input-placeholder{color:#333;}
 .modal-form .text input[type="textarea"]:-moz-placeholder{color:#333;}
-.modal-form .text input[type="textarea"]:focus{border-color:#6BA53A;}
+.modal-form .text input[type="textarea"]:focus{border-color:#007276;}
 .modal-form .text input[type="textarea"]:disabled {
     color: #999;
 } */
@@ -1370,7 +1370,7 @@ input :focus::-moz-placeholder{opacity:0 !important;}
 .modal-form .text textarea:-ms-input-placeholder{color:#333;}
 .modal-form .text textarea::-webkit-input-placeholder{color:#333;}
 .modal-form .text textarea:-moz-placeholder{color:#333;}
-.modal-form .text textarea:focus{border-color:#6BA53A;}
+.modal-form .text textarea:focus{border-color:#007276;}
 .modal-form .text textarea:disabled {
     color: #999;
 }
@@ -1592,7 +1592,7 @@ input :focus::-moz-placeholder{opacity:0 !important;}
 .color-choice:focus,
 .color-choice:active{
 	background:#ddd;
-	border-color:#6BA53A;
+	border-color:#007276;
 }
 .color-choice:after{
 	content:'';
@@ -1703,11 +1703,11 @@ option[selected]{ font-weight:bold}
 
 
 .modal-form .select-box select:focus{
-	border-color: #6BA53A;
+	border-color: #007276;
 }
 
 .modal-form .select-holder select:focus{
-	border-color: #6BA53A;
+	border-color: #007276;
 }
 
 /* .select-method-select.select-area{ */
@@ -1864,7 +1864,7 @@ option[selected]{ font-weight:bold}
 }
 .btn-group.geobject-editor-tab-holder .btn.full-width-radio-button.active,
 .btn-group.geobject-editor-tab-holder .btn.full-width-radio-button:focus{
-    color: #6BA53A !important; /* IE fallback */
+    color: #007276 !important; /* IE fallback */
     color: var(--theme-button-color-hover) !important;
     box-shadow: none;
 }
@@ -2363,7 +2363,7 @@ i.fa.fa-cloud-upload{
 	float: none;
 }
 .list-table .fa:hover{
-	color: #6BA53A; /* IE fallback */
+	color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
 }
 /* .list-table .button-column .fa{
@@ -2623,13 +2623,13 @@ a.fa:hover,
 a.fa:focus, 
 i.clickable.fa:hover, 
 i.clickable.fa:focus {
-    color: #6BA53A; /* IE fallback */
+    color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
     cursor: pointer;
 }
 
 .fa.ico-edit:hover{
-    color: #6BA53A; /* IE fallback */
+    color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color-hover);
     cursor: pointer;
 }
@@ -2685,7 +2685,7 @@ li.list-group-item.active {
 .list-group-item.active, 
 .list-group-item.active:hover, 
 .list-group-item.active:focus {
-    border-color: #6BA53A; /* IE fallback */
+    border-color: #007276; /* IE fallback */
     border-color: var(--theme-submit-button-color);
 
     color: #767676; /* IE fallback */
@@ -2711,7 +2711,7 @@ input[type=button].btn.btn-primary,
 input[type=submit].btn.btn-primary,
 button.btn-primary, 
 button.btn.btn-primary {
-    color: #6BA53A; /* IE fallback */
+    color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
 
     background: #EDF4E8; /* IE fallback */
@@ -2728,7 +2728,7 @@ button.btn-primary:hover,
 button.btn.btn-primary:hover,
 button.btn-primary:active, 
 button.btn.btn-primary:active  {
-    color: #6BA53A; /* IE fallback */
+    color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
 
     border-color: lightgrey; /* IE fallback */
@@ -2762,7 +2762,7 @@ input[type=button].btn.btn-default:active,
 input[type=submit].btn.btn-default:active,
 button.btn-default:hover, 
 button.btn.btn-default:hover {
-    color: #6BA53A; /* IE fallback */
+    color: #007276; /* IE fallback */
     color: var(--theme-cancel-button-color-hover);
     background: #f8f8f8;
 }
@@ -2798,7 +2798,7 @@ input:focus,
 input.form-control:focus,
 input:active,
 input.form-control:active{
-    border-color: #6BA53A; /* IE fallback */
+    border-color: #007276; /* IE fallback */
     border-color: var(--theme-input-text-border-active);
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(107, 165, 66,.6);
@@ -2832,7 +2832,7 @@ input[type="text"]:-ms-input-placeholder{color:#333;}
 input[type="text"]::-webkit-input-placeholder{color:#333;}
 input[type="text"]:-moz-placeholder{color:#333;}
 /* input[type="text"]:focus{
-    border-color: #6BA53A; 
+    border-color: #007276; 
     border-color:var(--theme-input-text-border-active);
 } */
 input[type="text"]:disabled {
@@ -2861,7 +2861,7 @@ input[type="textarea"]{
 .modal-form .text input[type="textarea"]:-ms-input-placeholder{color:#333;}
 .modal-form .text input[type="textarea"]::-webkit-input-placeholder{color:#333;}
 .modal-form .text input[type="textarea"]:-moz-placeholder{color:#333;}
-.modal-form .text input[type="textarea"]:focus{border-color:#6BA53A;}
+.modal-form .text input[type="textarea"]:focus{border-color:#007276;}
 .modal-form .text input[type="textarea"]:disabled {
     color: #999;
 }
