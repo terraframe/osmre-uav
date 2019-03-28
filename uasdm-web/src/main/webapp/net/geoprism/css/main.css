@@ -348,6 +348,12 @@ i {
     border-color: #767676;
     border-color: var(--theme-input-text-border);
 }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color:#999;
+  opacity: 1; /* Firefox */
+}
+
 /* .submit-form input[type="password"]{
   float:left;
   width:135px;
@@ -360,6 +366,7 @@ i {
   border:1px solid #bbb;
   background:#eee;
 } */
+
 .submit-form ::-webkit-input-placeholder{color:red;}
 .submit-form :-ms-input-placeholder{color:#999;}
 .submit-form :-moz-placeholder{color:#999;}
