@@ -16,10 +16,10 @@
     </div>
     <div #uploader></div>
     <div>
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
       <button type="button" [ngClass]="{disabled : disabled}" class="btn btn-primary" (click)="handleSubmit($event)">
         <i class="icon-upload icon-white"></i> Upload
       </button>
-      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
     </div>
   </div>
 </form>

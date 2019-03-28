@@ -16,15 +16,15 @@
 
 <style>
 body {
-	background-color: #efe9e1
+  background-color: #efe9e1
 }
 </style>
 
 <script>
     window.acp = "<%=request.getContextPath()%>";
-	window.location.origin = window.location.protocol + "//"
-			+ window.location.hostname
-			+ (window.location.port ? ':' + window.location.port : '');
+  window.location.origin = window.location.protocol + "//"
+      + window.location.hostname
+      + (window.location.port ? ':' + window.location.port : '');
 </script>
 
 <!-- CSS imports -->
@@ -40,10 +40,10 @@ body {
 
 <!-- IE required polyfills, in this exact order -->
 
-<script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>
-<script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>
-<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>   --%>
-<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>   --%>
+<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script> -->
+<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script> -->
+  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>  
+  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>  
 
 
     <script type="text/template" id="qq-template">
@@ -113,7 +113,7 @@ body {
   <!--   <div> -->
   <uasdm-app> </uasdm-app>
 
-    <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>      
-<%--      <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>   --%>
+<!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
+     <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
 <!--   </div> -->
 </body>

@@ -119,11 +119,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     baseLayers: any[] = [{
         label: 'Outdoors',
-        id: 'outdoors-v11',
-        selected: true
+        id: 'outdoors-v11'
     }, {
         label: 'Satellite',
-        id: 'satellite-v9'
+        id: 'satellite-v9',
+        selected: true
     }, {
         label: 'Streets',
         id: 'streets-v11'
@@ -164,7 +164,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.map = new Map( {
             container: 'map',
-            style: 'mapbox://styles/mapbox/outdoors-v11',
+            style: 'mapbox://styles/mapbox/satellite-v9',
             zoom: 2,
             center: [-78.880453, 42.897852]
         } );
@@ -337,7 +337,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             $event.preventDefault();
             $event.stopPropagation();
         }
-        else if ( this.admin && node.data.type !== "folder" ) {
+        else if ( node.data.type !== "folder" ) {
             if ( node.data.type === "Site" ) {
                 node.data.childType = "Project"
             }
@@ -351,41 +351,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 node.data.childType = null
             }
 
-            let contextMenu = this.leafMenuComponent;
-
-            if ( node.data.type === 'Site' ) {
-                contextMenu = this.siteMenuComponent;
+            if ( node.data.type !== "Site" || this.admin ) {
+                this.contextMenuService.show.next( {
+                    contextMenu: this.nodeMenuComponent,
+                    event: $event,
+                    item: node,
+                } );
+                $event.preventDefault();
+                $event.stopPropagation();
             }
-            else if ( node.data.childType !== null ) {
-                contextMenu = this.nodeMenuComponent;
-            }
 
-
-            this.contextMenuService.show.next( {
-                contextMenu: contextMenu,
-                event: $event,
-                item: node,
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
         }
-        else if ( this.worker && node.data.type !== "folder" && ( node.data.type === "Project" || node.data.type === "Mission" ) ) {
-            if ( node.data.type === "Project" ) {
-                node.data.childType = "Mission"
-            }
-            else if ( node.data.type === "Mission" ) {
-                node.data.childType = "Collection"
-            }
-
-            this.contextMenuService.show.next( {
-                contextMenu: this.workerNodeMenu,
-                event: $event,
-                item: node,
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
-        }
-
     }
 
     handleCreate( parent: TreeNode ): void {
@@ -420,12 +396,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                         d.hasChildren = true;
                     }
 
-                    this.tree.treeModel.update();
+                    if ( this.tree ) {
+                        this.tree.treeModel.update();
+                    }
                 }
                 else {
                     this.nodes.push( entity );
 
-                    this.tree.treeModel.update();
+                    if ( this.tree ) {
+                        this.tree.treeModel.update();
+                    }
 
                     this.refresh( false );
                 }
@@ -579,7 +559,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
@@ -588,4 +567,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
+    /*
+     *  Context menu visibility functions
+     */
+    public canEdit = ( item: any ): boolean => {
+        if ( this.admin ) {
+            return true;
+        }
+        else if ( this.worker ) {
+            return ( item.data.type === "Mission" || item.data.type === "Collection" );
+        }
+
+        return false;
+    }
+
+    public canDelete = ( item: any ): boolean => {
+        if ( this.admin ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public canAddChild = ( item: any ): boolean => {
+        if ( this.admin && item.data.type !== "Collection" ) {
+            return true;
+        }
+        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public isSite = ( item: any ): boolean => {
+        return item.data.type === "Site" && this.canEdit( item );
+    }
 }

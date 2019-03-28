@@ -1,5 +1,8 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.text.DateFormat;
+import java.util.Locale;
+
 import org.json.JSONObject;
 
 import com.runwaysdk.query.OIterator;
@@ -16,13 +19,15 @@ public class WorkflowTask extends WorkflowTaskBase
 
   public JSONObject toJSON()
   {
+    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
+
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUpLoadId());
     obj.put("collection", this.getCollectionOid());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
-    obj.put("lastUpdateDate", this.getLastUpdateDate());
-    obj.put("createDate", this.getCreateDate());
+    obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
+    obj.put("createDate", format.format(this.getCreateDate()));
 
     return obj;
   }

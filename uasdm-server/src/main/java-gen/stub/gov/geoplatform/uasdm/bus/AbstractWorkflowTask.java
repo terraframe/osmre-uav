@@ -1,7 +1,9 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.text.DateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,6 +84,8 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase
 
   public JSONObject toJSON()
   {
+    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
+
     List<WorkflowAction> actions = this.getActions();
 
     JSONArray jActions = new JSONArray();
@@ -90,12 +94,12 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase
     {
       jActions.put(action.toJSON());
     }
-
+    
     JSONObject obj = new JSONObject();
     obj.put("oid", this.getOid());
     obj.put("label", this.getTaskLabel());
-    obj.put("createDate", this.getCreateDate());
-    obj.put("lastUpdatedDate", this.getLastUpdateDate());
+    obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("lastUpdatedDate", format.format(this.getLastUpdateDate()));
     obj.put("status", this.getStatus());
     obj.put("message", this.getMessage());
     obj.put("actions", jActions);
