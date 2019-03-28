@@ -4,35 +4,38 @@
 
 :root {
   /* 
-    Asset Management:
-    #6BA53A
-    #7C868D
-    #D7BD0C
-    #007276
+
+  Color Pallette
+    #7C868D - Green
+    #7C868D - Dark  grey/blue
+    #D7BD0C - Yellow
+    #007276 - Turquis
+    #B6D7D8 - Light turquis
   */
 
- --theme-primary-color: #D7BD0C;
- --theme-primary-color-hover: #007276;
+ --theme-primary-color: #7C868D;
+ --theme-primary-color-hover: #9dabb5;
 
- --theme-accent-color: #B6D7D8;
- --theme-accent-color-hover: #e5e4d2;
+ --theme-accent-color: #D7BD0C;
+ --theme-accent-color-hover: #ddd17a;
 
  --theme-alert-color: #e30000;
 
   /* Buttons */
  --theme-button-text-color: #767676;
  --theme-button-color: white;
- --theme-button-color-hover: #6BA53A;
+
+ --theme-button-color-hover: #007276;
  --theme-button-color-border: lightgrey;
  --theme-button-black: #767676;
 
  --theme-cancel-button-color: grey;
- --theme-cancel-button-color-hover: #6BA53A;
+ --theme-cancel-button-color-hover: #007276;
 
- --theme-submit-button-color: #6BA53A;
- --theme-submit-button-color-hover: #6BA53A;
- --theme-submit-button-color-light: #EDF4E8;
- --theme-submit-button-color-light-hover: #f4fcef;
+ --theme-submit-button-color: #007276;
+ --theme-submit-button-color-hover: #00adb3;
+ --theme-submit-button-color-light: #B6D7D8;
+ --theme-submit-button-color-light-hover: #deeded;
 
  --theme-alert-button-color: #e30000;
 

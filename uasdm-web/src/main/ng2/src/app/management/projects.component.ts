@@ -23,7 +23,7 @@ declare var acp: any;
 @Component( {
     selector: 'projects',
     templateUrl: './projects.component.html',
-    styles: []
+    styles: ['./projects.css']
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
 

@@ -12,7 +12,7 @@ body {
 }
 
 .map-view-port {
-  height: calc(100vh - 150px); 
+  height: calc(100vh - 144px); 
   width: 75vw;
 }
 
@@ -105,6 +105,12 @@ tree-node-expander{
 
 .qq-upload-status-text-selector.qq-upload-status-text {
   float: right;
+}
+
+button.create-site-btn {
+    margin-bottom: 10px;
+    margin-top: 10px;
+
 }
 
 .error-modal{
