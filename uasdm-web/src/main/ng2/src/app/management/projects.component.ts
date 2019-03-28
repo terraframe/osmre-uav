@@ -87,6 +87,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
 
     /*
+     * Template for worker only options
+     */
+    @ViewChild( 'workerNodeMenu' ) public workerNodeMenu: ContextMenuComponent;
+
+    /*
      * Template for object items
      */
     @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
@@ -110,6 +115,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     draw: MapboxDraw;
 
     admin: boolean = false;
+    worker: boolean = false;
 
     baseLayers: any[] = [{
         label: 'Outdoors',
@@ -139,6 +145,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this.admin = this.authService.isAdmin();
+        this.worker = this.authService.isWorker();
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
@@ -215,9 +222,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             "source": 'sites',
             "paint": {
                 "circle-radius": 10,
-                "circle-color": '#3bb2d0',
+                "circle-color": '#800000',
                 "circle-stroke-width": 2,
-                "circle-stroke-color": '#223b53'
+                "circle-stroke-color": '#FFFFFF'
             }
         } );
 
@@ -356,6 +363,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
             this.contextMenuService.show.next( {
                 contextMenu: contextMenu,
+                event: $event,
+                item: node,
+            } );
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
+        else if ( this.worker && node.data.type !== "folder" && ( node.data.type === "Project" || node.data.type === "Mission" ) ) {
+            if ( node.data.type === "Project" ) {
+                node.data.childType = "Mission"
+            }
+            else if ( node.data.type === "Mission" ) {
+                node.data.childType = "Collection"
+            }
+
+            this.contextMenuService.show.next( {
+                contextMenu: this.workerNodeMenu,
                 event: $event,
                 item: node,
             } );
@@ -517,14 +540,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
-    
-    highlight(match: any, query: string[] | string): string {
-        console.log(match);
-        
+
+    highlight( match: any, query: string[] | string ): string {
+        console.log( match );
+
         return 'Test';
     }
 
-    handleClick( $event: any): void {
+    handleClick( $event: any ): void {
         let result = $event.item;
         let id = result.hierarchy[result.hierarchy.length - 1].id;
 
