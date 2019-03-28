@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 @Component( {
     selector: 'error-modal',
     templateUrl: './error-modal.component.html',
-    styleUrls: []
+    styleUrls: ['./error-modal.css']
 } )
 export class ErrorModalComponent {
     /*
