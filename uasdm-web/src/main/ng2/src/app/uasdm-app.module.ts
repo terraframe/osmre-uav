@@ -7,6 +7,7 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -40,7 +41,8 @@ import { AdminGuardService } from './service/admin.guard.service';
         ModalModule.forRoot(),
         AlertModule.forRoot(),        
         BsDropdownModule.forRoot(),
-        TypeaheadModule.forRoot(),        
+        TypeaheadModule.forRoot(),
+        AccordionModule.forRoot()
     ],
     declarations: [
         UasdmAppComponent,

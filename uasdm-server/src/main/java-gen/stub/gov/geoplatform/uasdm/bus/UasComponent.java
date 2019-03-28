@@ -86,6 +86,16 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {
+    if (this.isModified(UasComponent.FOLDERNAME))
+    {
+      String name = this.getFolderName();
+
+      if (!isValidName(name))
+      {
+        throw new InvalidUasComponentNameException("The folder name field has an invalid character");
+      }
+    }
+
     boolean isNew = this.isNew();
 
     if (isNew)

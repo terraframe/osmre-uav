@@ -17,6 +17,7 @@ import 'file-saver';
 import 'ngx-bootstrap/modal';
 import 'ngx-bootstrap/dropdown';
 import 'ngx-bootstrap/alert';
+import 'ngx-bootstrap/accordion';
 
 // Tree Widget
 import 'angular-tree-component';
