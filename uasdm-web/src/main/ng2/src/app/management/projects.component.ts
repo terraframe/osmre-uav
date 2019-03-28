@@ -119,11 +119,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     baseLayers: any[] = [{
         label: 'Outdoors',
-        id: 'outdoors-v11',
-        selected: true
+        id: 'outdoors-v11'
     }, {
         label: 'Satellite',
-        id: 'satellite-v9'
+        id: 'satellite-v9',
+        selected: true
     }, {
         label: 'Streets',
         id: 'streets-v11'
@@ -164,7 +164,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.map = new Map( {
             container: 'map',
-            style: 'mapbox://styles/mapbox/outdoors-v11',
+            style: 'mapbox://styles/mapbox/satellite-v9',
             zoom: 2,
             center: [-78.880453, 42.897852]
         } );
@@ -420,12 +420,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                         d.hasChildren = true;
                     }
 
-                    this.tree.treeModel.update();
+                    if ( this.tree ) {
+                        this.tree.treeModel.update();
+                    }
                 }
                 else {
                     this.nodes.push( entity );
 
-                    this.tree.treeModel.update();
+                    if ( this.tree ) {
+                        this.tree.treeModel.update();
+                    }
 
                     this.refresh( false );
                 }

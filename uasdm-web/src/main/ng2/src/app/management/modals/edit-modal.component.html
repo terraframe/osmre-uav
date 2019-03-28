@@ -1,15 +1,16 @@
-<form #ngForm>
-  <div *ngIf="entity != null" class="modal-body ">
-    <div *ngIf="message != null" class="error-container">
-      <div class="label-holder">
-        <strong>Error</strong>
-      </div>
-      <div class="holder">
-        <div>
-          <p class="error-message">{{message}}</p>
-        </div>
+
+<div *ngIf="entity != null" class="modal-body ">
+  <div *ngIf="message != null" class="error-container">
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
       </div>
     </div>
+  </div>
+  <form #ngForm="ngForm">
     <div *ngFor="let attribute of attributes">
       <div *ngIf="attribute.condition == null || evaluate(attribute.condition)" class="form-group">
         <div *ngIf="attribute.type === 'text'">
@@ -31,8 +32,8 @@
       </div>
     </div>
     <div>
-      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()">Ok</button>
       <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()" [disabled]="!ngForm.valid">Ok</button>
     </div>
-  </div>
-</form>
+  </form>
+</div>

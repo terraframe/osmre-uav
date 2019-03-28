@@ -1,5 +1,6 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+<!-- 
     <create>
       <object key="gov.geoplatform.uasdm.bus.Site.Cottonwood" type="gov.geoplatform.uasdm.bus.Site">
         <attribute name="name" value="Cottonwood" />
@@ -7,6 +8,7 @@
         <attribute name="s3location" value="Cottonwood/" />
       </object>
     </create>
+ -->  
     <update></update>
   </doIt>
   <undoIt>
