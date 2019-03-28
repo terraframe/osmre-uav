@@ -40,10 +40,10 @@ body {
 
 <!-- IE required polyfills, in this exact order -->
 
-<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script> -->
-<!-- <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script> -->
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>  
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>  
+<script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>
+<script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>   --%>
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>   --%>
 
 
     <script type="text/template" id="qq-template">
@@ -113,7 +113,7 @@ body {
   <!--   <div> -->
   <uasdm-app> </uasdm-app>
 
-<!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
-     <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
+    <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>      
+<%--      <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>   --%>
 <!--   </div> -->
 </body>

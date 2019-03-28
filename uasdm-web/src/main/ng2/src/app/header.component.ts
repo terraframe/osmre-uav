@@ -10,7 +10,7 @@ declare var acp: any;
 
     selector: 'uasdm-header',
     templateUrl: './header.component.html',
-    styleUrls: []
+    styleUrls: ['./header.css']
 } )
 export class UasdmHeaderComponent {
     private context: string;
