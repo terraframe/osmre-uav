@@ -8,8 +8,8 @@ import 'rxjs/add/operator/finally';
 
 import { CookieService } from 'ngx-cookie-service';
 
-import { SiteEntity, Message, Task, AttributeType } from './management';
-import { EventService } from '../event/event.service';
+import { SiteEntity, Message, Task, AttributeType } from '../model/management';
+import { EventService } from './event.service';
 
 declare var acp: any;
 
@@ -275,5 +275,18 @@ export class ManagementService {
         return this.http
             .get( acp + '/project/search', { search: params } )
             .map( res => res.json() );
+    }
+
+    searchEntites( term: string ): Promise<any> {
+
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'term', term );
+
+        return this.http
+            .get( acp + '/project/search', { search: params } )
+            .toPromise()
+            .then( response => {
+                return response.json();
+            } )
     }
 }

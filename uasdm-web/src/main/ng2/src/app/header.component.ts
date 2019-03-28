@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { ManagementService } from './management/management.service';
-import { AuthService } from './auth/auth.service';
+import { ManagementService } from './service/management.service';
+import { AuthService } from './service/auth.service';
 
 
 declare var acp: any;

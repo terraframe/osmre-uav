@@ -6,7 +6,6 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
-import { EventService } from '../event/event.service';
 import { GeoJSONSource } from 'mapbox-gl';
 
 import * as mapboxgl from 'mapbox-gl';
@@ -16,7 +15,7 @@ declare var acp: any;
 @Injectable()
 export class MapService {
 
-    constructor( private http: Http, private eventService: EventService ) {
+    constructor( private http: Http ) {
         ( mapboxgl as any ).accessToken = 'pk.eyJ1IjoiZHozMTY0MjQiLCJhIjoiNzI3NmNkOTcyNWFlNGQxNzU2OTA1N2EzN2FkNWIwMTcifQ.NS8KWg47FzfLPlKY0JMNiQ';
     }
 

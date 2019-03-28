@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule, XHRBackend, RequestOptions, Http } from '@angular/http';
-import { ModalModule } from 'ngx-bootstrap/modal';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 
 import './rxjs-extensions';
-
 
 import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
@@ -22,12 +22,11 @@ import { ConfirmModalComponent } from './management/modals/confirm-modal.compone
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
-import { ManagementService } from './management/management.service';
+import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
-import { SearchService } from './management/search.service';
-import { EventService } from './event/event.service';
-import { AuthService } from './auth/auth.service';
-import { AdminGuard } from './auth/admin.guard';
+import { EventService } from './service/event.service';
+import { AuthService } from './service/auth.service';
+import { AdminGuardService } from './service/admin.guard.service';
 
 @NgModule( {
     imports: [
@@ -41,6 +40,7 @@ import { AdminGuard } from './auth/admin.guard';
         ModalModule.forRoot(),
         AlertModule.forRoot(),        
         BsDropdownModule.forRoot(),
+        TypeaheadModule.forRoot(),        
     ],
     declarations: [
         UasdmAppComponent,
@@ -56,12 +56,11 @@ import { AdminGuard } from './auth/admin.guard';
         UasdmHeaderComponent,
     ],
     providers: [
-        AdminGuard,
+        AdminGuardService,
         CookieService,
         AuthService,
         ManagementService,
         EventService,
-        SearchService,
         MapService
     ],
     bootstrap: [UasdmAppComponent],

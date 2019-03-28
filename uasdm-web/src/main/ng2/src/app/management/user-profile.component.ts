@@ -6,8 +6,8 @@ import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 import { MetadataModalComponent } from './modals/metadata-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
-import { Message, Task } from './management';
-import { ManagementService } from './management.service';
+import { Message, Task } from '../model/management';
+import { ManagementService } from '../service/management.service';
 
 @Component( {
     selector: 'user-profile',

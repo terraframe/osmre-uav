@@ -24,6 +24,11 @@
             <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
           </select>
         </div>
+        <div *ngIf="attribute.type === 'text-area'">
+          <label>{{attribute.label}}</label>
+          <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name" class="form-control" [required]="attribute.required">
+          </textarea>
+        </div>
       </div>
     </div>
     <div>

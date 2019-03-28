@@ -7,22 +7,23 @@ import { saveAs as importedSaveAs } from "file-saver";
 import { Map, LngLatBounds, NavigationControl } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 import { CreateModalComponent } from './modals/create-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
-import { SiteEntity } from './management';
-import { ManagementService } from './management.service';
+import { SiteEntity } from '../model/management';
+import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../service/auth.service';
 
 declare var acp: any;
 
 @Component( {
     selector: 'projects',
     templateUrl: './projects.component.html',
-    styleUrls: []
+    styles: []
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
 
@@ -90,9 +91,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
 
-    searchTerm$ = new Subject<string>();
-    searchTerm = "";
-    results: Object;
+    dataSource: Observable<any>;
+
+    search: string;
 
     /* 
      * Root nodes of the tree
@@ -111,6 +112,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     admin: boolean = false;
 
     baseLayers: any[] = [{
+        label: 'Outdoors',
+        id: 'outdoors-v11',
+        selected: true
+    }, {
+        label: 'Satellite',
+        id: 'satellite-v9'
+    }, {
         label: 'Streets',
         id: 'streets-v11'
     }, {
@@ -119,19 +127,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }, {
         label: 'Dark',
         id: 'dark-v10'
-    }, {
-        label: 'Outdoors',
-        id: 'outdoors-v11'
-    }, {
-        label: 'Satellite',
-        id: 'satellite-v9'
     }];
 
     constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
-        this.service.search( this.searchTerm$ )
-            .subscribe( results => {
-                this.results = results;
+        this.dataSource = Observable.create(( observer: any ) => {
+            this.service.searchEntites( this.search ).then( results => {
+                observer.next( results );
             } );
+        } );
     }
 
     ngOnInit(): void {
@@ -154,7 +157,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.map = new Map( {
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v9',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
             zoom: 2,
             center: [-78.880453, 42.897852]
         } );
@@ -505,10 +508,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     handleStyle( layer: any ): void {
+
+        this.baseLayers.forEach( baseLayer => {
+            baseLayer.selected = false;
+        } );
+
+        layer.selected = true;
+
         this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
+    
+    highlight(match: any, query: string[] | string): string {
+        console.log(match);
+        
+        return 'Test';
+    }
 
-    handleClick( $event: any, result: any ): void {
+    handleClick( $event: any): void {
+        let result = $event.item;
         let id = result.hierarchy[result.hierarchy.length - 1].id;
 
         if ( id != null ) {

@@ -8,7 +8,20 @@ body {
 }
 
 .tree {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 300px);
+}
+
+.map-view-port {
+  height: calc(100vh - 150px); 
+  width: 75vw;
+}
+
+.base-layer-panel{ 
+  position:absolute; 
+  top: 10px; 
+  left: 10px; 
+  z-index:2;
+  padding:5px;
 }
 
 .node-content-wrapper, .tree-children {

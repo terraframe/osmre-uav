@@ -1,0 +1,55 @@
+/* 
+ * Theme Config 
+ */
+
+:root {
+  /* 
+    Asset Management:
+    #6BA53A
+    #7C868D
+    #D7BD0C
+    #007276
+  */
+
+ --theme-primary-color: #D7BD0C;
+ --theme-primary-color-hover: #007276;
+
+ --theme-accent-color: #B6D7D8;
+ --theme-accent-color-hover: #e5e4d2;
+
+ --theme-alert-color: #e30000;
+
+  /* Buttons */
+ --theme-button-text-color: #767676;
+ --theme-button-color: white;
+ --theme-button-color-hover: #6BA53A;
+ --theme-button-color-border: lightgrey;
+ --theme-button-black: #767676;
+
+ --theme-cancel-button-color: grey;
+ --theme-cancel-button-color-hover: #6BA53A;
+
+ --theme-submit-button-color: #6BA53A;
+ --theme-submit-button-color-hover: #6BA53A;
+ --theme-submit-button-color-light: #EDF4E8;
+ --theme-submit-button-color-light-hover: #f4fcef;
+
+ --theme-alert-button-color: #e30000;
+
+  /* Text */
+ --theme-text-dark: #767676;
+ --theme-text-error: red;
+ --font-family-default: "Roboto";
+
+  /* Lists */
+ --theme-list-light: #CFCAD6;
+ --theme-list-medium: #9D94AC;
+ --theme-list-dark: #D7BD0C;
+
+  /* Inputs */
+ --theme-input-text-border: #767676;
+ --theme-input-text-border-active: #6BA53A;
+
+  /* Dimensions */
+ --theme-header-height: 144px;
+}

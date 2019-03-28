@@ -68,6 +68,7 @@
           <char name="name" required="true" label="Name" size="256" />
           <char name="s3location" required="false" label="Name" size="4096" />
           <char name="folderName" label="Folder Name" size="256" immutable="true" required="true" />
+          <text name="description" required="false" label="Description" />
           <point name="geoPoint" dimension="2" srid="4326" required="false" label="Point" />
         </attributes>
       </mdBusiness>

@@ -3,8 +3,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { SiteEntity, AttributeType, Condition } from '../management';
-import { ManagementService } from '../management.service';
+import { SiteEntity, AttributeType, Condition } from '../../model/management';
+import { ManagementService } from '../../service/management.service';
 
 
 @Component( {

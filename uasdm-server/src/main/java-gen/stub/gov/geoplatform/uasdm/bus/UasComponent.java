@@ -13,10 +13,8 @@ import java.util.regex.Pattern;
 
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.postgis.PGbox2d;
 
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -35,7 +33,6 @@ import com.amazonaws.services.s3.model.VersionListing;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.metadata.MdClassDAO;
@@ -188,7 +185,7 @@ public abstract class UasComponent extends UasComponentBase
       key += parent.getS3location();
     }
 
-    key += this.getName() + "/";
+    key += this.getFolderName() + "/";
 
     return key;
   }
@@ -418,6 +415,7 @@ public abstract class UasComponent extends UasComponentBase
     List<AttributeType> list = new LinkedList<AttributeType>();
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
 
     return list;
   }

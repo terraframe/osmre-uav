@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF;
+import com.runwaysdk.dataaccess.MdAttributeTextDAOIF;
 import com.runwaysdk.session.Session;
 
 public class AttributeType
@@ -100,6 +101,10 @@ public class AttributeType
     if (mdAttribute instanceof MdAttributeReferenceDAOIF)
     {
       attributeType = new AttributeListType();
+    }
+    else if (mdAttribute instanceof MdAttributeTextDAOIF)
+    {
+      attributeType = new AttributeTextType();
     }
 
     attributeType.setName(mdAttribute.definesAttribute());
