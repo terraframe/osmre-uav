@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -30,6 +32,7 @@ import org.xml.sax.SAXException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -77,6 +80,7 @@ public class SolrService
           SolrInputDocument document = new SolrInputDocument();
           document.setField(component.getSolrIdField(), component.getOid());
           document.setField(component.getSolrNameField(), component.getName());
+
           document.setField("key", key);
           document.setField("filename", name);
 
@@ -238,14 +242,14 @@ public class SolrService
 
           Iterator<SolrDocument> iterator = list.iterator();
 
-          if (iterator.hasNext())
+          while (iterator.hasNext())
           {
             SolrDocument document = iterator.next();
+            Object id = document.getFieldValue("id");
 
             SolrInputDocument iDocument = new SolrInputDocument();
-            iDocument.setField(component.getSolrIdField(), component.getOid());
-            iDocument.setField(component.getSolrNameField(), component.getName());
-            iDocument.setField("id", document.getFieldValue("id"));
+            iDocument.setField("id", id);
+            iDocument.setField(component.getSolrNameField(), partialUpdate(component.getName()));
 
             client.add(iDocument);
           }
@@ -264,6 +268,63 @@ public class SolrService
     }
   }
 
+  public static void updateComponent(UasComponent component)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      try
+      {
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+
+        try
+        {
+          SolrQuery query = new SolrQuery();
+          query.setQuery("oid:" + ClientUtils.escapeQueryChars(component.getOid()));
+          query.setFields("id");
+
+          QueryResponse response = client.query(query);
+          SolrDocumentList list = response.getResults();
+
+          Iterator<SolrDocument> iterator = list.iterator();
+
+          while (iterator.hasNext())
+          {
+            SolrDocument document = iterator.next();
+
+            SolrInputDocument iDocument = new SolrInputDocument();
+            iDocument.setField("id", document.getFieldValue("id"));
+            iDocument.setField(UasComponent.DESCRIPTION, partialUpdate(component.getDescription()));
+
+            if (component instanceof Site)
+            {
+              iDocument.setField(Site.BUREAU, partialUpdate( ( (Site) component ).getBureau().getName()));
+            }
+
+            client.add(iDocument);
+          }
+
+          client.commit();
+        }
+        finally
+        {
+          client.close();
+        }
+      }
+      catch (SolrServerException | IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+  }
+
+  public static Map<String, String> partialUpdate(String value)
+  {
+    Map<String, String> partialUpdate = new HashMap<String, String>();
+    partialUpdate.put("set", value);
+
+    return partialUpdate;
+  }
+
   public static void createDocument(List<UasComponent> ancestors, UasComponent component)
   {
     if (AppProperties.isSolrEnabled())
@@ -276,8 +337,15 @@ public class SolrService
         {
           SolrInputDocument iDocument = new SolrInputDocument();
           iDocument.setField("id", UUID.randomUUID().toString());
+          iDocument.setField("oid", component.getOid());
           iDocument.setField(component.getSolrIdField(), component.getOid());
           iDocument.setField(component.getSolrNameField(), component.getName());
+          iDocument.setField(UasComponent.DESCRIPTION, component.getDescription());
+
+          if (component instanceof Site)
+          {
+            iDocument.setField(Site.BUREAU, ( (Site) component ).getBureau().getName());
+          }
 
           for (UasComponent ancestor : ancestors)
           {

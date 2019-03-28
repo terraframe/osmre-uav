@@ -86,24 +86,6 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {
-
-    /*
-     * https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
-     * 
-     * Characters That Might Require Special Handling
-     */
-    boolean isNameModified = this.isModified(UasComponent.FOLDERNAME);
-
-    if (isNameModified)
-    {
-      String folderName = this.getFolderName();
-
-      if (!isValidName(folderName))
-      {
-        throw new InvalidUasComponentNameException("The name field has an invalid character");
-      }
-    }
-
     boolean isNew = this.isNew();
 
     if (isNew)
@@ -146,14 +128,38 @@ public abstract class UasComponent extends UasComponentBase
       this.addComponent(parent).apply();
     }
 
-    if (!isNew && isNameModified)
-    {
-      SolrService.updateName(this);
-    }
-    else if (isNew)
+    if (isNew)
     {
       SolrService.createDocument(this.getAncestors(), this);
     }
+  }
+
+  @Override
+  public void apply()
+  {
+    boolean isNameModified = this.isModified(UasComponent.NAME);
+    boolean needsUpdate = this.needsUpdate();
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (!isNew)
+    {
+      if (isNameModified)
+      {
+        SolrService.updateName(this);
+      }
+
+      if (needsUpdate)
+      {
+        SolrService.updateComponent(this);
+      }
+    }
+  }
+
+  protected boolean needsUpdate()
+  {
+    return this.isModified(UasComponent.DESCRIPTION);
   }
 
   public void delete()

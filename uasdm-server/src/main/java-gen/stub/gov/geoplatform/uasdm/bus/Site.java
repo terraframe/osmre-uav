@@ -60,6 +60,11 @@ public class Site extends SiteBase
     return this.addProjects((Project) uasComponent);
   }
 
+  protected boolean needsUpdate()
+  {
+    return this.isModified(Site.BUREAU);
+  }
+
   @Request
   public static EqCondition getBureauCondition()
   {
