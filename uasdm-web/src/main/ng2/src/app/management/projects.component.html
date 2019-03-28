@@ -9,7 +9,7 @@
       </div>    
       <div class="row-fluid">
         <div class="location-management-widget-section">
-          <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" />
+          <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10"  [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label" />
         </div>
         <div>
           <div class="list-group" *ngIf="results">
@@ -48,14 +48,14 @@
     <i class="fa fa-file"></i>
   </span>
   
-  {{ match.item.filename || match.item.hierarchy[match.item.hierarchy.length -1].label}}
+  {{ match.item.label}}
 
-  <div class="pull-right">
+  <span class="pull-right">
     <span *ngFor="let site of match.item.hierarchy; index as i">
       {{site.label}}
       <span *ngIf="i < (match.item.hierarchy.length -1)"> / </span>
     </span>
-  </div>
+  </span>
 </ng-template>
 
 <context-menu #nodeMenu>
