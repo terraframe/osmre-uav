@@ -351,41 +351,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 node.data.childType = null
             }
 
-            let contextMenu = this.leafMenuComponent;
-
-            if ( node.data.type === 'Site' ) {
-                contextMenu = this.siteMenuComponent;
-            }
-            else if ( node.data.childType !== null ) {
-                contextMenu = this.nodeMenuComponent;
-            }
-
-
             this.contextMenuService.show.next( {
-                contextMenu: contextMenu,
+                contextMenu: this.nodeMenuComponent,
                 event: $event,
                 item: node,
             } );
             $event.preventDefault();
             $event.stopPropagation();
         }
-        else if ( this.worker && node.data.type !== "folder" && ( node.data.type === "Project" || node.data.type === "Mission" ) ) {
-            if ( node.data.type === "Project" ) {
-                node.data.childType = "Mission"
-            }
-            else if ( node.data.type === "Mission" ) {
-                node.data.childType = "Collection"
-            }
-
-            this.contextMenuService.show.next( {
-                contextMenu: this.workerNodeMenu,
-                event: $event,
-                item: node,
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
-        }
-
     }
 
     handleCreate( parent: TreeNode ): void {
@@ -583,7 +556,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
@@ -592,4 +564,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
+    /*
+     *  Context menu visibility functions
+     */
+    public canEdit = ( item: any ): boolean => {
+        if ( this.admin ) {
+            return true;
+        }
+        else if ( this.worker ) {
+            return ( item.data.type === "Mission" || item.data.type === "Collection" );
+        }
+
+        return false;
+    }
+
+    public canDelete = ( item: any ): boolean => {
+        if ( this.admin ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public canAddChild = ( item: any ): boolean => {
+        if ( this.admin && item.data.type !== "Collection" ) {
+            return true;
+        }
+        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public isSite = ( item: any ): boolean => {
+        return item.data.type === "Site";
+    }
 }
