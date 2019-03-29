@@ -126,6 +126,7 @@ public class WorkflowService
       SiteItem item = new SiteItem();
       item.setValue(UasComponent.NAME, name);
       item.setValue(UasComponent.FOLDERNAME, name);
+      item.setValue(UasComponent.DESCRIPTION, "");
 
       item = new ProjectManagementService().applyWithParent(sessionId, item, missionId);
 
