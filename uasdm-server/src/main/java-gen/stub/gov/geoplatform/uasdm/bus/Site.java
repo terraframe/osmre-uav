@@ -30,6 +30,7 @@ public class Site extends SiteBase
 
     AttributeType otherAttributeType = AttributeType.create(this.getMdAttributeDAO(Site.OTHERBUREAUTXT));
     otherAttributeType.setCondition(Site.getBureauCondition());
+    otherAttributeType.setRequired(true);
 
     List<AttributeType> list = super.attributes();
     list.add(attributeType);

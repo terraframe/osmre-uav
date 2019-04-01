@@ -27,6 +27,8 @@ body {
       + (window.location.port ? ':' + window.location.port : '');
 </script>
 
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
 <!-- CSS imports -->
 <jwr:style src="/bundles/datatable.css" useRandomParam="false" />
 <jwr:style src="/bundles/main.css" useRandomParam="false" />
@@ -37,6 +39,7 @@ body {
 <jwr:script src="/bundles/localization.js" useRandomParam="false" />
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/net/geoprism/Localized.js.jsp"></script>
+
 
 <!-- IE required polyfills, in this exact order -->
 

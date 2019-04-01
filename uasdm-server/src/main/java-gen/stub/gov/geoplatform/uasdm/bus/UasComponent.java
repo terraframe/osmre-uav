@@ -92,7 +92,12 @@ public abstract class UasComponent extends UasComponentBase
 
       if (!isValidName(name))
       {
-        throw new InvalidUasComponentNameException("The folder name field has an invalid character");
+        MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+        MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
+
+        InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
+        ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
+        throw ex;
       }
     }
 
@@ -328,7 +333,11 @@ public abstract class UasComponent extends UasComponentBase
   {
     if (!isValidName(name))
     {
-      throw new InvalidUasComponentNameException("The folder name field has an invalid character");
+      MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+      MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.NAME);
+
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The component name has an invalid character");
+      ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
     }
     else if (isDuplicateFolderName(parentId, null, name))
     {

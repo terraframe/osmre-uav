@@ -23,7 +23,11 @@
       <div class="row">
         <div class="location-management-widget-section location-management-list-container">
           <div *ngIf="nodes.length > 0" class="tree">
-            <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"> <ng-template #treeNodeTemplate let-node let-index="index"> <span>{{ node.data.name }}</span> <i class="fa fa-folder" *ngIf="!isData(node)"></i> </ng-template> </tree-root>
+            <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"> 
+              <ng-template #treeNodeTemplate let-node let-index="index"> 
+                <span><i class="fa fa-folder" style="padding-right: 2px" *ngIf="!isData(node)"></i>{{ node.data.name }}</span>
+              </ng-template>
+            </tree-root>
           </div>
         </div>
       </div>
@@ -40,6 +44,9 @@
             </accordion-group>
           </accordion>        
         </article>
+        <div *ngIf="active" class="cancel-layer-panel mapboxgl-ctrl mapboxgl-ctrl-group">
+          <button (click)="cancelDraw()" class="mapboxgl-ctrl-icon "><i class="fa fa-times-circle"></i></button>
+        </div>
         <div id="map" class="map-view-port"></div>
       </div>
     </div>
@@ -64,17 +71,18 @@
     <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit
         {{item?.data.name}} 
     </ng-template>
-    <ng-template contextMenuItem let-item [visible]="isSite" (execute)="handleEditGeom($event.item)"> <i class="fa fa-globe" aria-hidden="true"></i>
-        Edit geometry for {{item?.data.name}} 
-    </ng-template>
-<!-- 
-    <ng-template contextMenuItem [visible]="canEdit" divider="true"></ng-template>
- -->    
-    <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item)"> <i class="fa fa-arrow-circle-down"></i>
-        Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template>
     <ng-template contextMenuItem let-item [visible]="canDelete" (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i>
         Delete {{item?.data.name}} 
     </ng-template>
+    <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item)"> <i class="fa fa-arrow-circle-down"></i>
+        Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template>
+    <ng-template contextMenuItem [visible]="isSite" divider="true"></ng-template>
+    <ng-template contextMenuItem let-item [visible]="canEditSite" (execute)="handleEditGeom($event.item)"> <i class="fa fa-globe" aria-hidden="true"></i>
+        Edit geometry for {{item?.data.name}} 
+    </ng-template>
+    <ng-template contextMenuItem let-item [visible]="isSite" (execute)="zoomToFeature($event.item)"> <i class="fa fa-search-plus"></i>
+        Zoom to feature
+    </ng-template> 
 </context-menu>
 <context-menu #objectMenu>
     <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> 

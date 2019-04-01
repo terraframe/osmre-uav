@@ -8,12 +8,12 @@ body {
 }
 
 .tree {
-  height: calc(100vh - 300px);
+  height: calc(100vh - 320px);
 }
 
 .map-view-port {
-  height: calc(100vh - 144px); 
-  width: 75vw;
+  height: calc(100vh - 150px); 
+  width: calc(75vw - 10px);
 }
 
 .base-layer-panel{ 
@@ -22,6 +22,20 @@ body {
   left: 10px; 
   z-index:2;
   padding:5px;
+}
+
+.site-explorer-list {
+  padding: 20px;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.cancel-layer-panel {
+  position:absolute; 
+  top: 110px; 
+  right: 7px; 
+  z-index:2;
 }
 
 .node-content-wrapper, .tree-children {

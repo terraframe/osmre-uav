@@ -6,6 +6,7 @@ import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 import { saveAs as importedSaveAs } from "file-saver";
 import { Map, LngLatBounds, NavigationControl } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
+import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
@@ -23,7 +24,7 @@ declare var acp: any;
 @Component( {
     selector: 'projects',
     templateUrl: './projects.component.html',
-    styles: ['./projects.css']
+    styles: []
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
 
@@ -56,6 +57,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 click: TREE_ACTIONS.TOGGLE_EXPANDED
             }
         },
+        animateExpand: true,
+        animateSpeed: 100,
+        animateAcceleration: 1.2,
         allowDrag: false,
         allowDrop: false
     };
@@ -96,8 +100,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
 
+    /* 
+     * Datasource to get search responses
+     */
     dataSource: Observable<any>;
 
+    /* 
+     * Model for text being searched
+     */
     search: string;
 
     /* 
@@ -110,13 +120,34 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     current: TreeNode;
 
+    /* 
+     * mapbox-gl map
+     */
     map: Map;
 
+    /* 
+     * Draw control
+     */
     draw: MapboxDraw;
 
+    /* 
+     * Flag denoting if the user is an admin
+     */
     admin: boolean = false;
+
+    /* 
+     * Flag denoting if the user is a worker
+     */
     worker: boolean = false;
 
+    /* 
+     * Flag denoting the draw control is active
+     */
+    active: boolean = false;
+
+    /* 
+     * List of base layers
+     */
     baseLayers: any[] = [{
         label: 'Outdoors',
         id: 'outdoors-v11'
@@ -190,10 +221,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.map.addControl( new NavigationControl() );
 
         if ( this.admin ) {
+            console.log(MapboxDraw);
+            
+            let modes = MapboxDraw.modes;
+            modes.static = StaticMode;
+
             this.draw = new MapboxDraw( {
+                modes: modes,
                 displayControlsDefault: false,
                 controls: {
-                    point: false
+                    static: true
                 }
             } );
 
@@ -300,6 +337,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         // Most be after the draw has been added to trigger a repaint of the map
         this.map.setFilter( "points" );
         this.map.setFilter( "points-label" );
+        this.active = false;
+    }
+
+    cancelDraw(): void {
+        this.draw.deleteAll();
+        this.draw.changeMode('static');
+
+        // Most be after the draw has been added to trigger a repaint of the map
+        this.map.setFilter( "points" );
+        this.map.setFilter( "points-label" );
+        this.active = false;        
     }
 
 
@@ -435,11 +483,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         else {
             this.draw.changeMode( 'draw_point', {} );
         }
+        
+        this.active = true;        
 
         // Most be after the draw has been added to trigger a repaint of the map
         this.map.setFilter( "points", ["==", "id", ""] );
         this.map.setFilter( "points-label", ["==", "id", ""] );
     }
+
+    zoomToFeature( node: TreeNode ): void {
+        if ( node.data.geometry != null ) {
+            this.map.flyTo( {
+                center: node.data.geometry.coordinates
+            } );
+        }
+    }
+
+
 
     handleEdit( node: TreeNode ): void {
         this.current = node;
@@ -600,7 +660,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         return false;
     }
 
-    public isSite = ( item: any ): boolean => {
+    public canEditSite = ( item: any ): boolean => {
         return item.data.type === "Site" && this.canEdit( item );
+    }
+
+    public isSite = ( item: any ): boolean => {
+        return item.data.type === "Site";
     }
 }
