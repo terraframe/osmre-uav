@@ -58,7 +58,7 @@ body {
                 <span class="qq-upload-drop-area-text-selector"></span>
             </div>
             <div class="buttons">
-                <div class="qq-upload-button-selector qq-upload-button">
+                <div class="qq-upload-button-selector qq-upload-button" #selectButton>
                     <div>Select file</div>
                 </div>
             </div>
@@ -109,12 +109,19 @@ body {
                 </div>
             </dialog>
         </div>
-    </script>
+    </script>    
 </head>
 
 <body>
   <!--   <div> -->
-  <uasdm-app> </uasdm-app>
+  <uasdm-app>
+    <div id="main" class="new-admin-design-main">
+      <div class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <div>Loading the app...</div>
+      </div>
+    </div>
+  </uasdm-app>
 
 <!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
      <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
