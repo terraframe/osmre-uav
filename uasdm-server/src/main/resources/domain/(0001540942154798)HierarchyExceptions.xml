@@ -21,6 +21,15 @@
           <text name="childName" label="Child Name" />
         </attributes>
       </mdException>
+      
+      <mdException name="gov.geoplatform.uasdm.bus.DuplicateSiteException" 
+                   label="Empty Layer Information" 
+                   description="Thrown when someone tries to create a site whose name conflicts with an existing site." 
+                   message="A site already exists with the folder name folderName">
+        <attributes>
+          <text name="folderName" label="Folder name" />
+        </attributes>
+      </mdException>      
     </create>
     <update></update>
   </doIt>

@@ -2,101 +2,120 @@
 
 <div id="app-container" class="container">
   <div *ngIf="message != null" class="error-container">
-      <div class="label-holder">
-        <strong>Error</strong>
-      </div>
-      <div class="holder">
-        <div>
-          <p class="error-message">{{message}}</p>
-        </div>
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
       </div>
     </div>
-  
-  
+  </div>
+
+
   <div *ngIf="sites.length > 0" class="row">
-    
-    <div class="col" *ngIf="existingTask && !currentTask">
-      <div class="panel panel-warning" style="margin: 30px 0 30px 0;">
-        <div class="panel-heading" style="font-size: 20px;">Partial Upload Detected</div>
+    <form #ngForm="ngForm">
+      <div class="col" *ngIf="existingTask && !currentTask">
+        <div class="panel panel-warning" style="margin: 30px 0 30px 0;">
+          <div class="panel-heading" style="font-size: 20px;">Partial Upload Detected</div>
           <div class="panel-body">
             <h4>A partial upload was detected. You can either cancel that partial upload or attempt to continue.</h4>
-            <h4><b>To continue an upload</b> please click the Continue Upload button and re-upload your file and we will try our best to continue where you left off.</h4>
-            
+            <h4>
+              <b>To continue an upload</b>
+              please click the Continue Upload button and re-upload your file and we will try our best to continue where you left off.
+            </h4>
+
             <hr>
             <button type="button" class="btn btn-danger" style="margin-top: 20px;" (click)="removeUpload($event)">
-              <i class="icon-upload icon-white"></i> Cancel Upload
+              <i class="icon-upload icon-white"></i>
+              Cancel Upload
             </button>
             <button type="button" class="btn btn-primary" style="margin-top: 20px;" (click)="showUploadPanel()">
-              <i class="icon-upload icon-white"></i> Continue Upload
+              <i class="icon-upload icon-white"></i>
+              Continue Upload
             </button>
           </div>
+        </div>
       </div>
-    </div>
-    
-    <div class="col" *ngIf="!disabled && !existingTask">
-      <div class="form-group">
-        <label for="site">Site:</label>
-        <select name="site" (change)="onSiteSelect($event.target.value)">
-          <option></option>
-          <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="project">Project:</label>
-        <select name="project" [attr.disabled]="values.site == null ? '' : null" (change)="onProjectSelect($event.target.value)">
-          <option></option>
-          <option *ngFor="let project of projects" [value]="project.id">{{project.name}}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="mission">Mission:</label>
-        <select name="mission" [attr.disabled]="values.project == null ? '' : null" (change)="onMissionSelect($event.target.value)">
-          <option></option>
-          <option *ngFor="let mission of missions" [value]="mission.id">{{mission.name}}</option>
-        </select>
-      </div>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
-          Create new collection
-        </label>
-      </div>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" (change)="handleChange()" [value]="false" [checked]="values.create==false" />
-          Add to existing collection
-        </label>
-      </div>
-      <div class="form-group" *ngIf="values.create === true">
-        <label for="nameInput">Name</label>
-        <input [(ngModel)]="values.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" required>
-      </div>
-      <div class="form-group" *ngIf="values.create === false">
-        <label for="collection">Collection:</label>
-        <select name="collection" [attr.disabled]="values.mission == null ? '' : null" (change)="onCollectionSelect($event.target.value)">
-          <option></option>
-          <option *ngFor="let collection of collections" [value]="collection.id">{{collection.name}}</option>
-        </select>
-      </div>
-    </div>
 
-    <div class="col" [hidden]="!uploadVisible">
-    
-      <div *ngIf="currentTask" class="panel panel-success" style="margin: 30px 0 30px 0;">
-        <div class="panel-heading" style="font-size: 20px;">Upload Details</div>
-          <div class="panel-body">
-            <h4>Message: <b> {{currentTask.message}} </b></h4>
-            <h4>Upload Started On: <b> {{currentTask.createDate}} </b></h4>
-            <h4>Last Updated: <b> {{currentTask.lastUpdatedDate}} </b></h4>
+      <div class="col" *ngIf="!disabled && !existingTask">
+        <div class="form-group">
+          <label for="site">Site:</label>
+          <select name="site" (change)="onSiteSelect($event.target.value)" [(ngModel)]="values.site" required>
+            <option></option>
+            <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="project">Project:</label>
+          <select name="project" [attr.disabled]="values.site == null ? '' : null" (change)="onProjectSelect($event.target.value)" [(ngModel)]="values.project" required>
+            <option></option>
+            <option *ngFor="let project of projects" [value]="project.id">{{project.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mission">Mission:</label>
+          <select name="mission" [attr.disabled]="values.project == null ? '' : null" (change)="onMissionSelect($event.target.value)" [(ngModel)]="values.mission" required>
+            <option></option>
+            <option *ngFor="let mission of missions" [value]="mission.id">{{mission.name}}</option>
+          </select>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
+            Create new collection
+          </label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" (change)="handleChange()" [value]="false" [checked]="values.create==false" />
+            Add to existing collection
+          </label>
+        </div>
+        <div class="form-group" *ngIf="values.create === true">
+          <label for="nameInput">Name</label>
+          <input [(ngModel)]="values.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" #nameField="ngModel" required forbiddenName>
+          <div class="error-container" *ngIf="nameField.errors && nameField.errors.forbiddenName">
+            Invalid name. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.        
           </div>
+        </div>
+        <div class="form-group" *ngIf="values.create === false">
+          <label for="collection">Collection:</label>
+          <select name="collection" [attr.disabled]="values.mission == null ? '' : null" (change)="onCollectionSelect($event.target.value)" [(ngModel)]="values.collection" required>
+            <option></option>
+            <option *ngFor="let collection of collections" [value]="collection.id">{{collection.name}}</option>
+          </select>
+        </div>
       </div>
-    
-      <div #uploader></div>
-      <button type="button btn btn-primary" [ngClass]="{disabled : ( (values.collection == null && values.name == null || disabled ) && !existingTask)}" class="btn btn-primary" style="margin-top: 20px;" (click)="handleUpload($event)">
-        <i class="icon-upload icon-white"></i> Upload
-      </button>
 
-    </div>
-    
+      <div class="col" [hidden]="!uploadVisible">
+
+        <div *ngIf="currentTask" class="panel panel-success" style="margin: 30px 0 30px 0;">
+          <div class="panel-heading" style="font-size: 20px;">Upload Details</div>
+          <div class="panel-body">
+            <h4>
+              Message:
+              <b> {{currentTask.message}} </b>
+            </h4>
+            <h4>
+              Upload Started On:
+              <b> {{currentTask.createDate}} </b>
+            </h4>
+            <h4>
+              Last Updated:
+              <b> {{currentTask.lastUpdatedDate}} </b>
+            </h4>
+          </div>
+        </div>
+
+        <div #uploader></div>
+        <button type="button btn btn-primary" [disabled]="!ngForm.valid || disabled" class="btn btn-primary" style="margin-top: 20px;" (click)="handleUpload($event)">
+          <i class="icon-upload icon-white"></i>
+          Upload
+        </button>
+
+      </div>
+    </form>
+
   </div>
 </div>

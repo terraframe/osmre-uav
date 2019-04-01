@@ -114,7 +114,7 @@ public abstract class UasComponent extends UasComponentBase
           DuplicateComponentException e = new DuplicateComponentException();
           e.setParentName(parent.getName());
           e.setChildComponentLabel(this.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
-          e.setChildName(this.getName());
+          e.setChildName(this.getFolderName());
 
           throw e;
         }
@@ -325,7 +325,6 @@ public abstract class UasComponent extends UasComponentBase
     {
       i.close();
     }
-
     return false;
   }
 

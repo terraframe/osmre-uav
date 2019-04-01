@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, Inject, ViewChild, ElementRef, KeyValueDiffers, DoCheck  } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, ViewChild, ElementRef, KeyValueDiffers, DoCheck, HostListener } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import 'rxjs/Rx';
-import {Observable} from 'rxjs/Rx';
+import { Observable } from 'rxjs/Rx';
 
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
@@ -59,33 +59,33 @@ export class UploadComponent implements OnInit {
     uploader = null as FineUploader;
 
     disabled: boolean = false;
-    
+
     taskStatusMessages: string[] = [];
-    
+
     currentTask: Task = null;
-    
+
     existingTask: boolean = false;
-    
+
     taskPolling: any;
-    
+
     pollingIsSet: boolean = false;
-    
+
     uploadVisible: boolean = true;
     selectedContinue: boolean = false;
 
     differ: any;
-    
+
     constructor( private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
-        this.differ = differs.find([]).create();
+        this.differ = differs.find( [] ).create();
     }
 
     ngDoCheck() {
 
-        if(this.uploader){
-          const change = this.differ.diff(this.uploader);
-          if(change){
-            this.setExistingTask();
-          }
+        if ( this.uploader ) {
+            const change = this.differ.diff( this.uploader );
+            if ( change ) {
+                this.setExistingTask();
+            }
         }
     }
 
@@ -125,74 +125,74 @@ export class UploadComponent implements OnInit {
                 validation: {
                     allowedExtensions: ['zip', 'tar.gz']
                 },
-                showMessage: function(message: string) {
-                	// 
+                showMessage: function( message: string ) {
+                    // 
                 },
                 callbacks: {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
                     },
-                    onProgress: function(id: any, name: any, uploadedBytes: any, totalBytes: any): void {
+                    onProgress: function( id: any, name: any, uploadedBytes: any, totalBytes: any ): void {
                     },
-                    onUploadChunk: function(id: any, name: any, chunkData: any): void {
+                    onUploadChunk: function( id: any, name: any, chunkData: any ): void {
                     },
-                    onUploadChunkSuccess: function(id: any, chunkData: any, responseJSON: any, xhr: any): void {
-                    	
-                    	if(responseJSON.message && responseJSON.message.currentTask && !that.currentTask){
-                    		that.currentTask = responseJSON.message.currentTask;
-                    	}
-                    	
-                    	if(that.currentTask && !that.pollingIsSet){
-                    		that.pollingIsSet = true;
-                    		
-                            that.taskPolling =Observable.interval(2000)
-                            .switchMap(() => {
-                              if(that.currentTask){
-                                return that.service.task(that.currentTask.oid);
-                              }
-                            }).map((data) => data)
-                            .subscribe((data) => {
-                                that.currentTask = data.task
-                            });
-                    	}
+                    onUploadChunkSuccess: function( id: any, chunkData: any, responseJSON: any, xhr: any ): void {
+
+                        if ( responseJSON.message && responseJSON.message.currentTask && !that.currentTask ) {
+                            that.currentTask = responseJSON.message.currentTask;
+                        }
+
+                        if ( that.currentTask && !that.pollingIsSet ) {
+                            that.pollingIsSet = true;
+
+                            that.taskPolling = Observable.interval( 2000 )
+                                .switchMap(() => {
+                                    if ( that.currentTask ) {
+                                        return that.service.task( that.currentTask.oid );
+                                    }
+                                } ).map(( data ) => data )
+                                .subscribe(( data ) => {
+                                    that.currentTask = data.task
+                                } );
+                        }
                     },
                     onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
                         that.disabled = false;
                         that.currentTask = null;
                         that.existingTask = false;
-                                            
-                        if(that.taskPolling){
+
+                        if ( that.taskPolling ) {
                             that.taskPolling.unsubscribe();
                             that.pollingIsSet = false;
                         }
-                        
+
                         this.clearStoredFiles();
                     },
-                    onCancel: function(id: number, name: string){
+                    onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
-                        
-                        if(that.currentTask && that.currentTask.uploadId){
-                            that.service.removeTask(that.currentTask.uploadId)
-                            .then(()=> {
-                                this.clearStoredFiles();
-                            })
-                            .catch(( err: any ) => {
-                                this.error( err.json() );
-                            } );
+
+                        if ( that.currentTask && that.currentTask.uploadId ) {
+                            that.service.removeTask( that.currentTask.uploadId )
+                                .then(() => {
+                                    this.clearStoredFiles();
+                                } )
+                                .catch(( err: any ) => {
+                                    this.error( err.json() );
+                                } );
                         }
 
                         that.disabled = false;
                         that.currentTask = null;
                         that.existingTask = false;
-                                                
-                        if(that.taskPolling){
+
+                        if ( that.taskPolling ) {
                             that.taskPolling.unsubscribe();
                             that.pollingIsSet = false;
                         }
-                            
+
                     },
-                    onError: function(id: number, errorReason: string, xhrOrXdr: string) {
-                    	that.error({message : xhrOrXdr});
+                    onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
+                        that.error( { message: xhrOrXdr } );
                     }
                 }
             };
@@ -201,13 +201,13 @@ export class UploadComponent implements OnInit {
 
         }
     }
-    
+
     ngAfterViewInit() {
-    	
+
     }
 
     ngOnInit(): void {
-        this.service.roots(null).then( sites => {
+        this.service.roots( null ).then( sites => {
             this.sites = sites;
 
         } ).catch(( err: any ) => {
@@ -215,16 +215,16 @@ export class UploadComponent implements OnInit {
         } );
     }
 
-    
+
     setExistingTask(): void {
-    	let resumable = this.uploader.getResumableFilesData() as any[];
-	      if(resumable.length > 0){
+        let resumable = this.uploader.getResumableFilesData() as any[];
+        if ( resumable.length > 0 ) {
             this.existingTask = true;
-            
-            if(!this.selectedContinue){
-              this.hideUploadPanel();
+
+            if ( !this.selectedContinue ) {
+                this.hideUploadPanel();
             }
-	      }
+        }
     }
 
     onSiteSelect( siteId: string ): void {
@@ -324,7 +324,7 @@ export class UploadComponent implements OnInit {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
         }
-        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask) {
+        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = "Name is required";
         }
@@ -334,50 +334,61 @@ export class UploadComponent implements OnInit {
         }
 
     }
-    
-    removeUpload(event:any): void {
-    	let that = this;
-    	
-    	this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+
+    removeUpload( event: any ): void {
+        let that = this;
+
+        this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
         } );
         this.bsModalRef.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
-//        this.bsModalRef.content.data = node;
+        //        this.bsModalRef.content.data = node;
 
         ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
-        	this.service.removeTask(this.uploader.getResumableFilesData()[0].uuid)
-            .then( () => {
-          	  //that.uploader.clearStoredFiles();
-          	  //that.uploader.cancelAll()
-          	  
-          	  // The above clearStoredFiles() and cancelAll() methods don't appear to work so 
-          	  // we are clearing localStorage manually.
-          	  localStorage.clear();
-          	  that.existingTask = false;
-          	  that.showUploadPanel();
+            this.service.removeTask( this.uploader.getResumableFilesData()[0].uuid )
+                .then(() => {
+                    //that.uploader.clearStoredFiles();
+                    //that.uploader.cancelAll()
 
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
-            } );
+                    // The above clearStoredFiles() and cancelAll() methods don't appear to work so 
+                    // we are clearing localStorage manually.
+                    localStorage.clear();
+                    that.existingTask = false;
+                    that.showUploadPanel();
+
+                } ).catch(( err: any ) => {
+                    this.error( err.json() );
+                } );
         } );
     }
-    
+
     hideUploadPanel(): void {
-    	this.uploadVisible = false;
+        this.uploadVisible = false;
     }
-    
+
     showUploadPanel(): void {
         this.uploadVisible = true;
         this.selectedContinue = true;
     }
-    
+
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
             this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+        }
+    }
+
+    public canDeactivate(): boolean {
+        return this.disabled;
+    }
+
+    @HostListener( 'window:beforeunload', ['$event'] )
+    unloadNotification( $event: any ) {
+        if ( this.disabled ) {
+            $event.returnValue = 'An upload is currently in progress. Are you sure you want to leave?';
         }
     }
 }

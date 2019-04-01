@@ -23,11 +23,14 @@ import { ConfirmModalComponent } from './management/modals/confirm-modal.compone
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
+import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
+
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
 import { EventService } from './service/event.service';
 import { AuthService } from './service/auth.service';
 import { AdminGuardService } from './service/admin.guard.service';
+import { CanDeactivateGuard } from './service/can.deactivate.guard.service';
 
 @NgModule( {
     imports: [
@@ -56,9 +59,11 @@ import { AdminGuardService } from './service/admin.guard.service';
         // Routing components
         routedComponents,
         UasdmHeaderComponent,
+        ForbiddenNameDirective
     ],
     providers: [
         AdminGuardService,
+        CanDeactivateGuardService,
         CookieService,
         AuthService,
         ManagementService,
