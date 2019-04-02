@@ -2463,9 +2463,13 @@ i.fa.fa-cloud-upload{
     padding: 46px 0 46px 0;
     float: left;
 }
+
 .navbar-default .navbar-header > a > img {
-    height: 50px;
-    margin-right: 20px;
+  margin-left: 50px;
+  width: 120px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .nav.navbar-nav.navbar-right {

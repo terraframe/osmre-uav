@@ -16,24 +16,24 @@ import { ManagementService } from '../service/management.service';
 } )
 export class UserProfileComponent implements OnInit {
 
-    private userName: string = "";
-    private totalTaskCount: number = 0;
-    private totalActionsCount: number = 0;
+    userName: string = "";
+    totalTaskCount: number = 0;
+    totalActionsCount: number = 0;
 
     /*
      * Reference to the modal current showing
      */
-    private bsModalRef: BsModalRef;
+    bsModalRef: BsModalRef;
 
     /*
      * List of messages
      */
-    private messages: Message[];
+    messages: Message[];
 
     /*
      * List of tasks
      */
-    private tasks: Task[];
+    tasks: Task[];
 
     constructor( private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) { }
 

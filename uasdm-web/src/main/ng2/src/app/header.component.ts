@@ -13,9 +13,9 @@ declare var acp: any;
     styleUrls: ['./header.css']
 } )
 export class UasdmHeaderComponent {
-    private context: string;
-    private userName: string = "";
-    private admin: boolean = false;
+    context: string;
+    userName: string = "";
+    admin: boolean = false;
 
 	@Input() title: string;
 

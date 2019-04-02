@@ -1,18 +1,6 @@
 <uasdm-header [title]="'Data Upload'"></uasdm-header>
 
 <div id="app-container" class="container">
-  <div *ngIf="message != null" class="error-container">
-    <div class="label-holder">
-      <strong>Error</strong>
-    </div>
-    <div class="holder">
-      <div>
-        <p class="error-message">{{message}}</p>
-      </div>
-    </div>
-  </div>
-
-
   <div *ngIf="sites.length > 0" class="row">
     <form #ngForm="ngForm">
       <div class="col" *ngIf="existingTask && !currentTask">
@@ -60,6 +48,7 @@
             <option *ngFor="let mission of missions" [value]="mission.id">{{mission.name}}</option>
           </select>
         </div>
+<!-- 
         <div class="form-check">
           <label class="form-check-label">
             <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
@@ -79,7 +68,8 @@
             Invalid name. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.        
           </div>
         </div>
-        <div class="form-group" *ngIf="values.create === false">
+ -->        
+        <div class="form-group">
           <label for="collection">Collection:</label>
           <select name="collection" [attr.disabled]="values.mission == null ? '' : null" (change)="onCollectionSelect($event.target.value)" [(ngModel)]="values.collection" required>
             <option></option>

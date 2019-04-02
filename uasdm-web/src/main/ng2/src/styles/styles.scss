@@ -7,6 +7,14 @@ body {
   overflow-y: auto;
 }
 
+#logo {
+    margin-left: 50px;
+    width: 160px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 .tree {
   height: calc(100vh - 320px);
 }
