@@ -116,8 +116,7 @@ body {
         align-items: center;
         height: 100vh;
 
-        color: white;
-        text-transform: uppercase;
+        color: #7C868D;
         font-family: -apple-system,
           BlinkMacSystemFont,
           "Segoe UI",
@@ -127,12 +126,12 @@ body {
           Cantarell,
           Helvetica,
           sans-serif;
-        font-size: 2.5em;
+        font-size: 1.5em;
         text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
       }
       
       body {
-        background: #7C868D;
+        background: white;
         margin: 0;
         padding: 0;
       }
@@ -159,13 +158,13 @@ body {
     Loading application data<span class="d">.</span><span class="d d-2">.</span><span class="d d-3">.</span>
   </uasdm-app>
 
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>  
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor.chunk.js"></script>  
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>    
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>  
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>   --%>
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor.chunk.js"></script>   --%>
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>     --%>
+<%--   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>   --%>
 
-<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>   -->
-<!--   <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>   -->
-<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>     -->
-<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>   -->
+  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>  
+  <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>  
+  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>    
+  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>  
 </body>

@@ -583,10 +583,10 @@ public abstract class UasComponent extends UasComponentBase
 
     // Extent of the continental United States
     JSONArray bboxArr = new JSONArray();
-    bboxArr.put(-124.848974);
-    bboxArr.put(-66.885444);
-    bboxArr.put(24.396308);
-    bboxArr.put(49.384358);
+    bboxArr.put(-125.0011);
+    bboxArr.put(24.9493);
+    bboxArr.put(-66.9326);
+    bboxArr.put(49.5904);
 
     return bboxArr;
   }
