@@ -115,12 +115,54 @@ body {
 <body>
   <!--   <div> -->
   <uasdm-app>
-    <div id="main" class="new-admin-design-main">
-      <div class="text-center">
-        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-        <div>Loading the app...</div>
-      </div>
-    </div>
+    <style>
+      uasdm-app {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+
+        color: white;
+        text-transform: uppercase;
+        font-family: -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Oxygen-Sans,
+          Ubuntu,
+          Cantarell,
+          Helvetica,
+          sans-serif;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      }
+      
+      body {
+        background: #7C868D;
+        margin: 0;
+        padding: 0;
+      }
+
+      @keyframes dots {
+        50% {
+          transform: translateY(-.4rem);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      .d {
+       animation: dots 1.5s ease-out infinite;
+      }
+      .d-2 {
+        animation-delay: .5s;
+      }
+      .d-3 {
+        animation-delay: 1s;
+      }
+    </style>
+    Loading application<span class="d">.</span><span class="d d-2">.</span><span class="d d-3">.</span>
   </uasdm-app>
 
 <!--     <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>       -->
