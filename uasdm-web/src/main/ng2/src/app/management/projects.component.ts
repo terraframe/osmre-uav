@@ -221,8 +221,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.map.addControl( new NavigationControl() );
 
         if ( this.admin ) {
-            console.log(MapboxDraw);
-            
             let modes = MapboxDraw.modes;
             modes.static = StaticMode;
 
@@ -342,12 +340,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     cancelDraw(): void {
         this.draw.deleteAll();
-        this.draw.changeMode('static');
+        this.draw.changeMode( 'static' );
 
         // Most be after the draw has been added to trigger a repaint of the map
         this.map.setFilter( "points" );
         this.map.setFilter( "points-label" );
-        this.active = false;        
+        this.active = false;
     }
 
 
@@ -483,8 +481,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         else {
             this.draw.changeMode( 'draw_point', {} );
         }
-        
-        this.active = true;        
+
+        this.active = true;
 
         // Most be after the draw has been added to trigger a repaint of the map
         this.map.setFilter( "points", ["==", "id", ""] );
@@ -565,9 +563,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
 
     handleDownload( node: TreeNode ): void {
-        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
-            importedSaveAs( blob, node.data.name );
-        } );
+        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
+        
+        //        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
+        //            importedSaveAs( blob, node.data.name );
+        //        } );
     }
 
     handleStyle( layer: any ): void {
