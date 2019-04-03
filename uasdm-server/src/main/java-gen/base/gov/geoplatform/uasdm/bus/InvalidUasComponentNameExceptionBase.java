@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 282068917)
+@com.runwaysdk.business.ClassSignature(hash = 876407578)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,8 +11,9 @@ package gov.geoplatform.uasdm.bus;
 public abstract class InvalidUasComponentNameExceptionBase extends com.runwaysdk.business.SmartException
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.InvalidUasComponentNameException";
+  public static java.lang.String ATTRIBUTENAME = "attributeName";
   public static java.lang.String OID = "oid";
-  private static final long serialVersionUID = 282068917;
+  private static final long serialVersionUID = 876407578;
   
   public InvalidUasComponentNameExceptionBase()
   {
@@ -32,6 +33,34 @@ public abstract class InvalidUasComponentNameExceptionBase extends com.runwaysdk
   public InvalidUasComponentNameExceptionBase(java.lang.Throwable cause)
   {
     super(cause);
+  }
+  
+  public String getAttributeName()
+  {
+    return getValue(ATTRIBUTENAME);
+  }
+  
+  public void validateAttributeName()
+  {
+    this.validateAttribute(ATTRIBUTENAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getAttributeNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.InvalidUasComponentNameException.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(ATTRIBUTENAME);
+  }
+  
+  public void setAttributeName(String value)
+  {
+    if(value == null)
+    {
+      setValue(ATTRIBUTENAME, "");
+    }
+    else
+    {
+      setValue(ATTRIBUTENAME, value);
+    }
   }
   
   public String getOid()
@@ -58,6 +87,7 @@ public abstract class InvalidUasComponentNameExceptionBase extends com.runwaysdk
   public java.lang.String localize(java.util.Locale locale)
   {
     java.lang.String message = super.localize(locale);
+    message = replace(message, "{attributeName}", this.getAttributeName());
     message = replace(message, "{oid}", this.getOid());
     return message;
   }

@@ -16,7 +16,7 @@ declare var acp: any;
 export class MapService {
 
     constructor( private http: Http ) {
-        ( mapboxgl as any ).accessToken = 'pk.eyJ1IjoiZHozMTY0MjQiLCJhIjoiNzI3NmNkOTcyNWFlNGQxNzU2OTA1N2EzN2FkNWIwMTcifQ.NS8KWg47FzfLPlKY0JMNiQ';
+        ( mapboxgl as any ).accessToken = 'pk.eyJ1IjoianVzdGlubGV3aXMiLCJhIjoiY2l0YnlpdWRkMDlkNjJ5bzZuMTR3MHZ3YyJ9.Ad0fQd8onRSYR9QZP6VyUw';
     }
 
     features(): Promise<{ features: GeoJSONSource, bbox: number[] }> {

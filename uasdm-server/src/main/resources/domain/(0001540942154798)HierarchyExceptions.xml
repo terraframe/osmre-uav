@@ -4,7 +4,10 @@
       <mdException name="gov.geoplatform.uasdm.bus.InvalidUasComponentNameException" 
                    label="Invalid Name" 
                    description="Thrown when a user enters an invalid name for a Project, Mission, etc." 
-                   message="Invalid name. No spaces or special characters such as &lt;, &gt;, -, +, =, !, @, #, $, %, ^, &amp;, *, ?,/, \ or apostrophes are allowed.">
+                   message="Invalid {attributeName}. No spaces or special characters such as &lt;, &gt;, -, +, =, !, @, #, $, %, ^, &amp;, *, ?,/, \ or apostrophes are allowed.">
+          <attributes>
+            <text name="attributeName" required="false" label="Attribute Name" />
+          </attributes>                   
       </mdException>
     
     
@@ -18,6 +21,15 @@
           <text name="childName" label="Child Name" />
         </attributes>
       </mdException>
+      
+      <mdException name="gov.geoplatform.uasdm.bus.DuplicateSiteException" 
+                   label="Empty Layer Information" 
+                   description="Thrown when someone tries to create a site whose name conflicts with an existing site." 
+                   message="A site already exists with the folder name folderName">
+        <attributes>
+          <text name="folderName" label="Folder name" />
+        </attributes>
+      </mdException>      
     </create>
     <update></update>
   </doIt>

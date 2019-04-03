@@ -86,6 +86,21 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {
+    if (this.isModified(UasComponent.FOLDERNAME))
+    {
+      String name = this.getFolderName();
+
+      if (!isValidName(name))
+      {
+        MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+        MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
+
+        InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
+        ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
+        throw ex;
+      }
+    }
+
     boolean isNew = this.isNew();
 
     if (isNew)
@@ -99,7 +114,7 @@ public abstract class UasComponent extends UasComponentBase
           DuplicateComponentException e = new DuplicateComponentException();
           e.setParentName(parent.getName());
           e.setChildComponentLabel(this.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
-          e.setChildName(this.getName());
+          e.setChildName(this.getFolderName());
 
           throw e;
         }
@@ -310,7 +325,6 @@ public abstract class UasComponent extends UasComponentBase
     {
       i.close();
     }
-
     return false;
   }
 
@@ -318,7 +332,11 @@ public abstract class UasComponent extends UasComponentBase
   {
     if (!isValidName(name))
     {
-      throw new InvalidUasComponentNameException("The folder name field has an invalid character");
+      MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
+      MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.NAME);
+
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The component name has an invalid character");
+      ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
     }
     else if (isDuplicateFolderName(parentId, null, name))
     {
@@ -565,10 +583,10 @@ public abstract class UasComponent extends UasComponentBase
 
     // Extent of the continental United States
     JSONArray bboxArr = new JSONArray();
-    bboxArr.put(-124.848974);
-    bboxArr.put(-66.885444);
-    bboxArr.put(24.396308);
-    bboxArr.put(49.384358);
+    bboxArr.put(-125.0011);
+    bboxArr.put(24.9493);
+    bboxArr.put(-66.9326);
+    bboxArr.put(49.5904);
 
     return bboxArr;
   }

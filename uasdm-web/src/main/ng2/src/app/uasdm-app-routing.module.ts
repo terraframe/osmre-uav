@@ -8,6 +8,7 @@ import { UploadComponent } from './management/upload.component';
 import { UserProfileComponent } from './management/user-profile.component';
 
 import { AdminGuardService } from './service/admin.guard.service';
+import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 
 const routes: Routes = [
     {
@@ -21,7 +22,8 @@ const routes: Routes = [
     },
     {
         path: 'upload',
-        component: UploadComponent
+        component: UploadComponent,
+        canDeactivate: [CanDeactivateGuardService]
     },
     {
         path: 'tasks',

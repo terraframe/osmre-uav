@@ -14,6 +14,7 @@
           </a>    
 
           <ul *dropdownMenu class="dropdown-menu">
+            <li *ngIf="admin" role="menuitem"><a class="dropdown-item" href="{{context}}/prism/home#/admin">Administration</a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/tasks" routerLinkActive="active">Manage Your Tasks</a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/upload" routerLinkActive="active">Upload Data</a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/viewer" routerLinkActive="active">Site Viewer</a></li>

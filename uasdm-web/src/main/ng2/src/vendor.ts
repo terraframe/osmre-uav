@@ -17,6 +17,7 @@ import 'file-saver';
 import 'ngx-bootstrap/modal';
 import 'ngx-bootstrap/dropdown';
 import 'ngx-bootstrap/alert';
+import 'ngx-bootstrap/accordion';
 
 // Tree Widget
 import 'angular-tree-component';
@@ -30,6 +31,7 @@ import 'ngx-cookie-service';
 // Mapbox
 import 'mapbox-gl';
 import '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw-static-mode';
 
 // Other vendors for example jQuery, Lodash or Bootstrap
 // You can import js, ts, css, sass, ...

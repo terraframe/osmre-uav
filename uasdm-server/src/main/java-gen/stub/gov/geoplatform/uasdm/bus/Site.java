@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.bus;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
@@ -23,6 +24,20 @@ public class Site extends SiteBase
   }
 
   @Override
+  public void applyWithParent(UasComponent parent)
+  {
+    if (this.isNew() && isDuplicateSiteFolderName(this.getOid(), this.getFolderName()))
+    {
+      DuplicateSiteException e = new DuplicateSiteException();
+      e.setFolderName(this.getFolderName());
+
+      throw e;
+    }
+
+    super.applyWithParent(parent);
+  }
+
+  @Override
   public List<AttributeType> attributes()
   {
     AttributeListType attributeType = (AttributeListType) AttributeType.create(this.getMdAttributeDAO(Site.BUREAU));
@@ -30,6 +45,7 @@ public class Site extends SiteBase
 
     AttributeType otherAttributeType = AttributeType.create(this.getMdAttributeDAO(Site.OTHERBUREAUTXT));
     otherAttributeType.setCondition(Site.getBureauCondition());
+    otherAttributeType.setRequired(true);
 
     List<AttributeType> list = super.attributes();
     list.add(attributeType);
@@ -87,6 +103,34 @@ public class Site extends SiteBase
     }
 
     return options;
+  }
+
+  public static boolean isDuplicateSiteFolderName(String oid, String folderName)
+  {
+    QueryFactory qf = new QueryFactory();
+    SiteQuery query = new SiteQuery(qf);
+
+    query.WHERE(query.getFolderName().EQ(folderName));
+
+    if (oid != null)
+    {
+      query.AND(query.getOid().NE(oid));
+    }
+
+    OIterator<? extends UasComponent> i = query.getIterator();
+
+    try
+    {
+      if (i.hasNext())
+      {
+        return true;
+      }
+    }
+    finally
+    {
+      i.close();
+    }
+    return false;
   }
 
 }
