@@ -563,11 +563,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
 
     handleDownload( node: TreeNode ): void {
-        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
+//        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
         
-        //        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
-        //            importedSaveAs( blob, node.data.name );
-        //        } );
+        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
+            importedSaveAs( blob, node.data.name );
+        } );
     }
 
     handleStyle( layer: any ): void {
