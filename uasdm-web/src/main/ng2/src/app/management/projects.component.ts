@@ -1,4 +1,11 @@
 import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition,
+} from '@angular/animations';
 import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -11,6 +18,7 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { CreateModalComponent } from './modals/create-modal.component';
+import { ImagePreviewModalComponent } from './modals/image-preview-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
@@ -24,14 +32,20 @@ declare var acp: any;
 @Component( {
     selector: 'projects',
     templateUrl: './projects.component.html',
-    styles: []
+    styles: [],
+    animations: [
+        trigger('fadeIn', [
+            transition(':enter', [
+                style({ opacity: '0' }),
+                animate('.25s ease-out', style({ opacity: '1' })),
+            ]),
+        ])
+    ]
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
 
-    /*
-     * Reference to the modal current showing
-     */
-    private bsModalRef: BsModalRef;
+    images: SiteEntity[] = [];
+    showImagePanel = false;
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
@@ -39,7 +53,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     options = {
         getChildren: ( node: TreeNode ) => {
             if ( node.data.type === "folder" ) {
-                return this.service.getItems( node.data.component, node.data.name );
+                return this.service.getItems( node.data.component, node.data.name )
+                // return []; // preventing the 'Loading...' message
             }
             else if ( node.data.type === "object" ) {
                 // Do nothing there are no children
@@ -54,12 +69,37 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 contextMenu: ( tree: any, node: any, $event: any ) => {
                     this.handleOnMenu( node, $event );
                 },
-                click: TREE_ACTIONS.TOGGLE_EXPANDED
+                click:  ( tree: any, node: any, $event: any ) => {
+
+                    // clear any existing images
+                    this.images = [];
+
+                    if (node.data.type === "folder") {
+node.toggleExpanded();
+                        // open the panel immediatly
+                        this.showImagePanel = true;
+
+                        this.service.getItems(node.data.component, node.data.name)
+                            .then(items => {
+                                this.images = items; // not yet handling different types of files
+                            }).catch((err: any) => {
+                                this.error(err.json());
+                            });
+                    }
+                    else {
+                        node.toggleExpanded();
+
+                        this.images = [];
+
+                        this.showImagePanel = false;
+                    }
+
+                }
             }
         },
         animateExpand: true,
-        animateSpeed: 100,
-        animateAcceleration: 1.2,
+        animateSpeed: 5000,
+        animateAcceleration: 1,
         allowDrag: false,
         allowDrop: false
     };
@@ -166,6 +206,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         id: 'dark-v10'
     }];
 
+    /*
+     * Reference to the modal current showing
+    */
+    private bsModalRef: BsModalRef;
+
     constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
         this.dataSource = Observable.create(( observer: any ) => {
             this.service.searchEntites( this.search ).then( results => {
@@ -195,7 +240,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.map = new Map( {
             container: 'map',
-            style: 'mapbox://styles/mapbox/satellite-v9',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
             zoom: 2,
             center: [-78.880453, 42.897852]
         } );
@@ -531,6 +576,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         } );
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.data.name + ']';
         this.bsModalRef.content.data = node;
+        this.bsModalRef.content.type = 'DANGER';
 
         ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
             this.remove( data );
@@ -564,11 +610,39 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     handleDownload( node: TreeNode ): void {
 //        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
-        
+
         this.service.download( node.data.component, node.data.key ).subscribe( blob => {
             importedSaveAs( blob, node.data.name );
         } );
     }
+    
+    imageToShow: any; //TODO: move
+
+    createImageFromBlob(image: Blob) {
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.imageToShow = reader.result;
+        }, false);
+
+        if (image) {
+            reader.readAsDataURL(image);
+        }
+    }
+
+    getThumbnail(): void {
+
+        // this.isImageLoading = true;
+        this.service.download("97c693dd-0cc1-499f-ab8b-c0336d0005bf", "test/Project/Mission/Collection/raw/DJI_0570.jpeg").subscribe(blob => {
+            this.createImageFromBlob(blob);
+            // this.isImageLoading = false;
+        }, error => {
+            // this.isImageLoading = false;
+            console.log(error);
+        });
+
+    }
+
+
 
     handleStyle( layer: any ): void {
 
@@ -617,6 +691,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 } );
             }
         }
+    }
+
+    previewImage(event, image): void {
+        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'image-preview-modal'
+            } );
+            this.bsModalRef.content.image = image;
+            this.bsModalRef.content.src = event.target.src;
     }
 
     error( err: any ): void {

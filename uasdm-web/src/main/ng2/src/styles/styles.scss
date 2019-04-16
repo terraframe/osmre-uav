@@ -16,12 +16,13 @@ body {
 }
 
 .tree {
-  height: calc(100vh - 320px);
+  height: calc(100vh - 291px);
 }
 
 .map-view-port {
-  height: calc(100vh - 150px); 
-  width: calc(75vw - 10px);
+  height: calc(100vh - 144px); 
+//   width: calc(75vw - 10px);
+//   margin: 0;
 }
 
 .base-layer-panel{ 
@@ -144,4 +145,74 @@ button.create-site-btn {
 }
 .error-modal button {
     float: right;
+}
+
+#image-panel {
+    position: absolute;
+    width: 100%;
+    background: rgba(255,255,255,.9);
+    z-index: 999;
+    bottom: 0;
+    border-top: solid 1px lightgrey;
+    // text-align: right;
+}
+
+#image-list-container {
+    overflow-y: auto;
+    height: 300px;
+    border-top: solid 1px lightgrey;
+}
+#image-list-container > .list-group {
+    margin: 0;
+}
+#image-list-container .list-group .list-group-item {
+    background-color: rgba(255,255,255,.5);
+}
+
+.image-thumbnail {
+    width: 300px;
+    height: 150px;
+    border-right: 2px solid lightgrey;
+}
+
+.media {
+    padding-left: 15px;
+}
+.media:first-child {
+    margin-top: 15px;
+}
+
+.media .media-body {
+    vertical-align: middle;
+}
+
+.image-preview {
+    width: 100%;
+    max-width: 900px;
+    // height: 450px;
+}
+
+.image-preview-modal {
+    // width: 90%;
+    // height: 90%;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%) !important;
+}
+.image-preview-modal > .modal-content {
+    width: 100%;
+    // height: 100%;
+}
+
+.image-preview-container {
+    text-align: right;
+}
+
+.image-preview-container > .fa.fa-times.btn.btn-close {
+        margin-right: -15px;
+    margin-top: -15px;
+}
+
+.image-container {
+    // margin-top: 20px;
 }

@@ -1,0 +1,25 @@
+<div *ngIf="image != null" class="modal-body">
+    <div *ngIf="message != null" class="error-container">
+        <div class="label-holder">
+            <strong>Error</strong>
+        </div>
+        <div class="holder">
+            <div>
+                <p class="error-message">{{message}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-preview-container">
+        <i class="fa fa-times btn btn-close" (click)="bsModalRef.hide()"></i>
+        <div class="image-container">
+            <img class="image-preview img-responsive center-block" src="{{src}}" alt="Image">
+        </div>
+    </div>
+
+    <!-- <form #ngForm="ngForm">
+    <div class="btn-holder" style="text-align: right;">
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+    </div>
+  </form> -->
+</div>

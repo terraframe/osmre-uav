@@ -4,36 +4,50 @@
 
   <div class="row">
     <div class="col-md-3 lw-inner-col" id="location-explorer-list">
-      <form class="submit-form">
-        <div class="row">
-          <div class="location-management-widget-section">
-                        <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="search"
-                            [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
-                            [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
+        <form class="submit-form">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="location-management-widget-section">
+                        <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="search" [typeaheadAsync]="true"
+                            [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10"
+                            [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
                             [ngModelOptions]="{standalone: true}" />
-          </div>
-        </div>
-        <div *ngIf="admin" class="row">
-          <button (click)="handleCreate()" class="btn btn-primary create-site-btn pull-right">Create new site</button>
-        </div>
-      </form>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="admin" class="row">
+                <div class="col-md-12">
+                    <button (click)="handleCreate()" class="btn btn-primary create-site-btn pull-right">Create new
+                        site</button>
+                </div>
+            </div>
+        </form>
 
       <!-- <hr> -->
 
-      <div class="row">
-        <div class="location-management-widget-section location-management-list-container">
-          <div *ngIf="nodes.length > 0" class="tree">
-            <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()"> 
-              <ng-template #treeNodeTemplate let-node let-index="index"> 
-                <span><i class="fa fa-folder" style="padding-right: 2px" *ngIf="!isData(node)"></i>{{ node.data.name }}</span>
-              </ng-template>
-            </tree-root>
-          </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="location-management-widget-section location-management-list-container">
+                <div *ngIf="nodes.length > 0" class="tree">
+                    <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()">
+                        <ng-template #treeNodeTemplate let-node let-index="index">
+                            <span>
+                                <i *ngIf="node.data.type === 'Site'" class="fa fa-map-marker" style="padding-right: 2px"></i>
+                                <i *ngIf="node.data.type === 'Project'" class="fa fa-folder" style="padding-right: 2px"></i>
+                                <i *ngIf="node.data.type === 'Mission'" class="fa fa-plane" style="padding-right: 2px"></i>
+                                <i *ngIf="node.data.type === 'Collection'" class="fa fa-image" style="padding-right: 2px"></i>
+                                {{ node.data.name }}
+                            </span>
+                        </ng-template>
+                    </tree-root>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
     </div>
     <div class="col-md-9" id="site-explorer-map">
       <div class="row">
+
         <article class="base-layer-panel">
           <accordion>
             <accordion-group heading="Base Layer">
@@ -44,27 +58,68 @@
             </accordion-group>
           </accordion>        
         </article>
+
         <div *ngIf="active" class="cancel-layer-panel mapboxgl-ctrl mapboxgl-ctrl-group">
           <button (click)="cancelDraw()" class="mapboxgl-ctrl-icon "><i class="fa fa-times-circle"></i></button>
         </div>
+        
+        <div id="image-panel" *ngIf="showImagePanel">
+            <i class="fa fa-times btn btn-close" (click)="showImagePanel = !showImagePanel"></i>
+            <div id="image-list-container">
+                <!-- <div class="list-group"> -->
+                    <!-- {"component":"97c693dd-0cc1-499f-ab8b-c0336d0005bf","name":"DJI_0570.jpeg","id":"97c693dd-0cc1-499f-ab8b-c0336d0005bf-test/Project/Mission/Collection/raw/DJI_0570.jpeg","type":"object","key":"test/Project/Mission/Collection/raw/DJI_0570.jpeg"} -->
+                    <!-- <li *ngFor="let image of images" type="button" class="list-group-item"> -->
+                        <!-- {{image.name}} -->
+
+                              <!-- <img src="{{acp}}/nav/dashboard-thumbnail?dashboardId={{ctrl.dashboards[ctrl.ids[$index]].dashboardId}}" 
+                            onError="if (this.src != '{{acp}}/net/geoprism/images/dashboard_icon_small.png') this.src = '${pageContext.request.contextPath}/net/geoprism/images/dashboard_icon_small.png';" 
+                            alt="Image">
+                            -->
+
+                            <!-- <img [src]="handleThumbnail(item)" alt="Image"> -->
+
+                        <!-- <img class="img-thumbnail" src="data:image/png;base64,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" alt="Image"> -->
+                    <!-- </li> -->
+                <!-- </div> -->
+
+                <ul class="media-list">
+                    <li class="media" *ngFor="let image of images" @fadeIn>
+                        <div class="media-left">
+                            <a [routerLink]="" (click)="previewImage($event, image)">
+                                <img class="image-thumbnail"
+                                    src="data:image/png;base64,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"
+                                    alt="Image">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">{{image.name}}</h4>
+                            <!-- {{image.id}} -->
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <div id="map" class="map-view-port"></div>
       </div>
     </div>
   </div>
 </div>
 
-<ng-template #bsItemTemplate let-match="match" let-query="query"> <span *ngIf="match.item.filename == null">
-  <i class="fa fa-folder-open"></i>
-</span> <span *ngIf="match.item.filename != null">
-  <i class="fa fa-file"></i>
-</span> {{ match.item.label}}
+<ng-template #bsItemTemplate let-match="match" let-query="query">
+    <span *ngIf="match.item.filename == null">
+        <i class="fa fa-folder-open"></i>
+    </span>
+    <span *ngIf="match.item.filename != null">
+        <i class="fa fa-file"></i>
+    </span> {{ match.item.label}}
 
-<div class="pull-right">
-  <span *ngFor="let site of match.item.hierarchy; index as i">
-    {{site.label}}
-    <span *ngIf="i < (match.item.hierarchy.length -1)"> / </span>
-  </span>
-</div>
+    <div class="pull-right">
+        <span *ngFor="let site of match.item.hierarchy; index as i">
+            {{site.label}}
+            <span *ngIf="i < (match.item.hierarchy.length -1)"> / </span>
+        </span>
+    </div>
 </ng-template>
 
 <context-menu #nodeMenu>
@@ -84,8 +139,11 @@
         Zoom to feature
     </ng-template> 
 </context-menu>
+
 <context-menu #objectMenu>
     <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> 
       <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data.name}}
+
+		              
     </ng-template>
 </context-menu>

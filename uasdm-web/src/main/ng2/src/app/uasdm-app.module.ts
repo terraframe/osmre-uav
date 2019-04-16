@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule, XHRBackend, RequestOptions, Http } from '@angular/http';
 import { TreeModule } from 'angular-tree-component';
@@ -22,6 +23,7 @@ import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
+import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 
 import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
 
@@ -35,6 +37,7 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
 @NgModule( {
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         FormsModule,
         HttpModule,
         UasdmAppRoutingModule,
@@ -55,6 +58,7 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         MetadataModalComponent,
         ErrorModalComponent,
         LoadingBarComponent,
+        ImagePreviewModalComponent,
 
         // Routing components
         routedComponents,
@@ -71,6 +75,6 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         MapService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]
+    entryComponents: [EditModalComponent, CreateModalComponent, ImagePreviewModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]
 } )
 export class UasdmAppModule { }
