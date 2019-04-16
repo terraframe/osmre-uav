@@ -167,4 +167,5 @@ body {
   <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>  
   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>    
   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>  
+  
 </body>

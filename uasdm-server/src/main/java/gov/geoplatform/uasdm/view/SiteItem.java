@@ -207,7 +207,11 @@ public class SiteItem implements TreeComponent
     {
       try
       {
-        item.setGeometry(new GeometryJSON().readPoint(object.getString(GEOMETRY)));
+        Object oGeom = object.get(GEOMETRY);
+        
+        String sGeom = oGeom.toString();
+        
+        item.setGeometry(new GeometryJSON().readPoint(sGeom));
       }
       catch (IOException e)
       {

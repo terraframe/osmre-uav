@@ -376,8 +376,10 @@ public abstract class UasComponent extends UasComponentBase
       while (objIter.hasNext())
       {
         S3ObjectSummary summary = objIter.next();
+        
+        String summaryKey = summary.getKey();
 
-        if (!summary.getKey().endsWith("/"))
+        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
         {
           objects.add(SiteObject.create(this, key, summary));
         }
