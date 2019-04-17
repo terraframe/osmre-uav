@@ -621,7 +621,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
 
     handleDownload( node: TreeNode ): void {
-        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
+        window.location = acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key;
 
         //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
         //    importedSaveAs( blob, node.data.name );
