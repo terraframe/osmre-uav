@@ -73,30 +73,43 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 },
                 click:  ( tree: any, node: any, $event: any ) => {
 
-                    // clear any existing images
-                    this.images = [];
-
                     if (node.data.type === "folder") {
 
+                        // clear any existing images
+                        this.images = [];
+
                         node.toggleExpanded();
+                        this.showImagePanel = false;
 
-                        // open the panel immediatly
-                        this.showImagePanel = true;
+                        if (!node.isCollapsed) {
 
-                        this.service.getItems(node.data.component, node.data.name)
-                            .then(items => {
-                                //this.images = [items[0]]; // not yet handling different types of files
-                                this.images = items;
-                                
-                                console.log("about to loop over images", this.images);
-                                for (var i = 0; i < this.images.length; ++i)
-                                { 
-                                  this.getThumbnail(this.images[i]);
-                                }
+                            // open the panel immediatly
+                            this.showImagePanel = true;
 
-                            }).catch((err: any) => {
-                                this.error(err.json());
-                            });
+                            this.service.getItems(node.data.component, node.data.name)
+                                .then(items => {
+                                    //this.images = [items[0]]; // not yet handling different types of files
+
+                                    this.images = items;
+
+                                    for (let i = 0; i < this.images.length; ++i) {
+                                        let image = this.images[i];
+
+                                        if(image.name.toLowerCase().indexOf(".png") !== -1 || image.name.toLowerCase().indexOf(".jpg") !== -1 || 
+                                            image.name.toLowerCase().indexOf(".jpeg") !== -1 || image.name.toLowerCase().indexOf(".tif") !== -1 ||
+                                            image.name.toLowerCase().indexOf(".tiff") !== -1) {
+
+                                            this.getThumbnail(image);
+                                        }
+                                    }
+
+                                }).catch((err: any) => {
+                                    this.error(err.json());
+                                });
+                        }
+                    }
+                    else if (node.data.type === "object") {
+                        // clicked on raw file. do nothing.
                     }
                     else {
                         node.toggleExpanded();
@@ -202,20 +215,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     baseLayers: any[] = [{
         label: 'Outdoors',
-        id: 'outdoors-v11'
+        id: 'outdoors-v11',
+        selected: true
     }, {
         label: 'Satellite',
-        id: 'satellite-v9',
-        selected: true
+        id: 'satellite-v9'
     }, {
         label: 'Streets',
         id: 'streets-v11'
-    }, {
-        label: 'Light',
-        id: 'light-v10'
-    }, {
-        label: 'Dark',
-        id: 'dark-v10'
     }];
 
     /*
@@ -633,7 +640,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         let reader = new FileReader();
         reader.addEventListener("load", () => {
             // this.imageToShow = reader.result;
-            console.log("Adding binary for image", imageData);
             this.thumbnails[imageData.key] = reader.result;
         }, false);
 

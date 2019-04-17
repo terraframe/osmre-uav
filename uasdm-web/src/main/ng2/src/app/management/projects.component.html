@@ -50,10 +50,10 @@
 
         <article class="base-layer-panel">
           <accordion>
-            <accordion-group heading="Base Layer">
+            <accordion-group heading="Base Maps">
               <div class="row-form" *ngFor="let baseLayer of baseLayers">
-                <input type='radio' name='rtoggle' [value]='baseLayer.id' [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
-                <label>{{baseLayer.label}}</label>
+                <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id' [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
+                <label class="layer-toggle-label">{{baseLayer.label}}</label>
               </div>        
             </accordion-group>
           </accordion>        
@@ -64,7 +64,9 @@
         </div>
         
         <div id="image-panel" *ngIf="showImagePanel">
-            <i class="fa fa-times btn btn-close" (click)="showImagePanel = !showImagePanel"></i>
+            <div style="text-align: right;">
+                <i class="fa fa-times btn btn-close" (click)="showImagePanel = !showImagePanel"></i>
+            </div>
             <div id="image-list-container">
                 <!-- <div class="list-group"> -->
                     <!-- {"component":"97c693dd-0cc1-499f-ab8b-c0336d0005bf","name":"DJI_0570.jpeg","id":"97c693dd-0cc1-499f-ab8b-c0336d0005bf-test/Project/Mission/Collection/raw/DJI_0570.jpeg","type":"object","key":"test/Project/Mission/Collection/raw/DJI_0570.jpeg"} -->
@@ -86,9 +88,7 @@
                     <li class="media" *ngFor="let image of images" @fadeIn>
                         <div class="media-left">
                             <a [routerLink]="" (click)="previewImage($event, image)">
-                                <img class="image-thumbnail"
-                                    [src]="thumbnails[image.key] | safeHtml"
-                                    alt="Image">
+                                <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" alt="Image">
                             </a>
                         </div>
                         <div class="media-body">

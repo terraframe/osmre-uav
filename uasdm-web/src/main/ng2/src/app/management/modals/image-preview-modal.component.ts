@@ -14,13 +14,16 @@ export class ImagePreviewModalComponent implements OnInit {
     message: string = null;
     open: boolean = true;
     src: any;
+    loading: boolean = false;
     imageToShow: any;
     @Input() image: any;
 
     constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
     ngOnInit(): void {
-        this.getImage(this.image);
+        setTimeout(()=>{ 
+            this.getImage(this.image);
+        }, 0);
     }
 
     createImageFromBlob(image: Blob) {
@@ -36,9 +39,13 @@ export class ImagePreviewModalComponent implements OnInit {
 
     getImage(image: any): void {
 
+        this.loading = true;
+
         this.service.download(image.component, image.key, false).subscribe(blob => {
             this.createImageFromBlob(blob);
+            this.loading = false;
         }, error => {
+            this.loading = false;
             console.log(error);
         });
     }
