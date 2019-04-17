@@ -46,7 +46,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     images: any[] = [];
     showImagePanel = false;
-    imageToShow: any;
+    // imageToShow: any;
+    thumbnails: any = {};
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
@@ -84,9 +85,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
                         this.service.getItems(node.data.component, node.data.name)
                             .then(items => {
-                                this.images = [items[0]]; // not yet handling different types of files
-
-                                this.getThumbnail(this.images[0]) // HACK
+                                //this.images = [items[0]]; // not yet handling different types of files
+                                this.images = items;
+                                
+                                console.log("about to loop over images", this.images);
+                                for (var i = 0; i < this.images.length; ++i)
+                                { 
+                                  this.getThumbnail(this.images[i]);
+                                }
 
                             }).catch((err: any) => {
                                 this.error(err.json());
@@ -623,10 +629,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
 
-    createImageFromBlob(image: Blob) {
+    createImageFromBlob(image: Blob, imageData: any) {
         let reader = new FileReader();
         reader.addEventListener("load", () => {
-            this.imageToShow = reader.result;
+            // this.imageToShow = reader.result;
+            console.log("Adding binary for image", imageData);
+            this.thumbnails[imageData.key] = reader.result;
         }, false);
 
         if (image) {
@@ -641,7 +649,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         let thumbKey: string = rootPath + "/thumbnails/" + fileName;
 
         this.service.download(image.component, thumbKey, false).subscribe(blob => {
-            this.createImageFromBlob(blob);
+            this.createImageFromBlob(blob, image);
         }, error => {
             console.log(error);
         });

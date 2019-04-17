@@ -87,7 +87,7 @@
                         <div class="media-left">
                             <a [routerLink]="" (click)="previewImage($event, image)">
                                 <img class="image-thumbnail"
-                                    [src]="imageToShow | safeHtml"
+                                    [src]="thumbnails[image.key] | safeHtml"
                                     alt="Image">
                             </a>
                         </div>
