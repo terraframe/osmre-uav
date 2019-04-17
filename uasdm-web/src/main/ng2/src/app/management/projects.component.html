@@ -86,9 +86,7 @@
                     <li class="media" *ngFor="let image of images" @fadeIn>
                         <div class="media-left">
                             <a [routerLink]="" (click)="previewImage($event, image)">
-                                <img class="image-thumbnail"
-                                    [src]="thumbnails[image.key] | safeHtml"
-                                    alt="Image">
+                                <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" alt="Image">
                             </a>
                         </div>
                         <div class="media-body">

@@ -13,7 +13,8 @@
     <div class="image-preview-container">
         <i class="fa fa-times btn btn-close" (click)="bsModalRef.hide()"></i>
         <div class="image-container">
-            <img class="image-preview img-responsive center-block" [src]="imageToShow | safeHtml" alt="Image">
+            <p *ngIf="loading" style="text-align: left;">Loading image...</p>
+            <img *ngIf="!loading" class="image-preview img-responsive center-block" [src]="imageToShow | safeHtml" alt="Image">
         </div>
     </div>
 
