@@ -216,3 +216,23 @@ button.create-site-btn {
 .image-container {
     // margin-top: 20px;
 }
+
+.layer-toggle-input{
+    line-height: 20px;
+    height: 20px;
+    margin: 0 !important;
+    cursor: pointer;
+}
+.layer-toggle-label {
+    display: inline-block;
+    max-width: 100%;
+    margin: 0;
+    font-weight: 700;
+    width: 60px;
+    line-height: 20px;
+    float: right;
+}
+
+.panel-group {
+    margin-bottom: 0;
+}

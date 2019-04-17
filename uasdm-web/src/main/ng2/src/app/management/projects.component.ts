@@ -215,20 +215,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     baseLayers: any[] = [{
         label: 'Outdoors',
-        id: 'outdoors-v11'
+        id: 'outdoors-v11',
+        selected: true
     }, {
         label: 'Satellite',
-        id: 'satellite-v9',
-        selected: true
+        id: 'satellite-v9'
     }, {
         label: 'Streets',
         id: 'streets-v11'
-    }, {
-        label: 'Light',
-        id: 'light-v10'
-    }, {
-        label: 'Dark',
-        id: 'dark-v10'
     }];
 
     /*
