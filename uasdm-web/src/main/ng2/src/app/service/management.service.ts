@@ -244,7 +244,7 @@ export class ManagementService {
             } )
     }
 
-    download( id: string, key: string ): Observable<Blob> {
+    download( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
 
         let params: URLSearchParams = new URLSearchParams();
         params.set( 'id', id );
@@ -252,11 +252,15 @@ export class ManagementService {
 
         let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
 
-        this.eventService.start();
+        if(useSpinner){
+          this.eventService.start();
+        }
 
         return this.http.get( acp + '/project/download', options )
             .finally(() => {
-                this.eventService.complete();
+                if(useSpinner){
+                  this.eventService.complete();
+                }
             } )
             .map( res => res.blob() )
     }

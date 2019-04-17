@@ -26,6 +26,7 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 
 import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe'
 
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
@@ -63,7 +64,8 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         // Routing components
         routedComponents,
         UasdmHeaderComponent,
-        ForbiddenNameDirective
+        ForbiddenNameDirective,
+        SafeHtmlPipe
     ],
     providers: [
         AdminGuardService,

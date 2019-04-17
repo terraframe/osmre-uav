@@ -13,12 +13,35 @@ export class ImagePreviewModalComponent implements OnInit {
 
     message: string = null;
     open: boolean = true;
+    src: any;
+    imageToShow: any;
     @Input() image: any;
-    @Input() src: string = "";
 
     constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.getImage(this.image);
+    }
+
+    createImageFromBlob(image: Blob) {
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.imageToShow = reader.result;
+        }, false);
+
+        if (image) {
+            reader.readAsDataURL(image);
+        }
+    }
+
+    getImage(image: any): void {
+
+        this.service.download(image.component, image.key, false).subscribe(blob => {
+            this.createImageFromBlob(blob);
+        }, error => {
+            console.log(error);
+        });
+    }
 
     close(): void {
         this.open = false;

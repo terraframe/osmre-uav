@@ -13,7 +13,7 @@
     <div class="image-preview-container">
         <i class="fa fa-times btn btn-close" (click)="bsModalRef.hide()"></i>
         <div class="image-container">
-            <img class="image-preview img-responsive center-block" src="{{src}}" alt="Image">
+            <img class="image-preview img-responsive center-block" [src]="imageToShow | safeHtml" alt="Image">
         </div>
     </div>
 

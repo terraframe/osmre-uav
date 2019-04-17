@@ -44,8 +44,9 @@ declare var acp: any;
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
 
-    images: SiteEntity[] = [];
+    images: any[] = [];
     showImagePanel = false;
+    imageToShow: any;
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
@@ -75,13 +76,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                     this.images = [];
 
                     if (node.data.type === "folder") {
-node.toggleExpanded();
+
+                        node.toggleExpanded();
+
                         // open the panel immediatly
                         this.showImagePanel = true;
 
                         this.service.getItems(node.data.component, node.data.name)
                             .then(items => {
-                                this.images = items; // not yet handling different types of files
+                                this.images = [items[0]]; // not yet handling different types of files
+
+                                this.getThumbnail(this.images[0]) // HACK
+
                             }).catch((err: any) => {
                                 this.error(err.json());
                             });
@@ -611,12 +617,11 @@ node.toggleExpanded();
     handleDownload( node: TreeNode ): void {
 //        window.open(acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key, '_blank');
 
-        this.service.download( node.data.component, node.data.key ).subscribe( blob => {
+        this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
             importedSaveAs( blob, node.data.name );
         } );
     }
-    
-    imageToShow: any; //TODO: move
+
 
     createImageFromBlob(image: Blob) {
         let reader = new FileReader();
@@ -629,17 +634,17 @@ node.toggleExpanded();
         }
     }
 
-    getThumbnail(): void {
+    getThumbnail(image: any): void {
 
-        // this.isImageLoading = true;
-        this.service.download("97c693dd-0cc1-499f-ab8b-c0336d0005bf", "test/Project/Mission/Collection/raw/DJI_0570.jpeg").subscribe(blob => {
+        let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
+        let fileName: string = /[^/]*$/.exec(image.key)[0];
+        let thumbKey: string = rootPath + "/thumbnails/" + fileName;
+
+        this.service.download(image.component, thumbKey, false).subscribe(blob => {
             this.createImageFromBlob(blob);
-            // this.isImageLoading = false;
         }, error => {
-            // this.isImageLoading = false;
             console.log(error);
         });
-
     }
 
 
