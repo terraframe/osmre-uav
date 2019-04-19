@@ -87,7 +87,7 @@
                 <ul class="media-list">
                     <li class="media" *ngFor="let image of images" @fadeIn>
                         <div class="media-left">
-                            <a [routerLink]="" (click)="previewImage($event, image)">
+                            <a [routerLink]="" [contextMenu]="imageMenu" [contextMenuSubject]="image" (click)="previewImage($event, image)">
                                 <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" alt="Image">
                             </a>
                         </div>
@@ -143,7 +143,12 @@
 <context-menu #objectMenu>
     <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> 
       <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data.name}}
-
-		              
     </ng-template>
 </context-menu>
+
+<context-menu #imageMenu>
+    <ng-template contextMenuItem let-item (execute)="handleImageDownload($event.item)"> 
+      <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data}}
+    </ng-template>
+</context-menu>
+

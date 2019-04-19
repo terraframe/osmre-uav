@@ -165,6 +165,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      */
     @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
 
+    /*
+     * Template for image items
+     */
+    @ViewChild( 'imageMenu' ) public imageMenuComponent: ContextMenuComponent;
+
     /* 
      * Datasource to get search responses
      */
@@ -432,6 +437,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
+
     handleOnUpdateData(): void {
         //        this.tree.treeModel.expandAll();
     }
@@ -628,7 +634,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
 
     handleDownload( node: TreeNode ): void {
-        window.location = acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key;
+        window.location.href = acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key;
+
+        //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
+        //    importedSaveAs( blob, node.data.name );
+        //} );
+    }
+
+    handleImageDownload( image: any ): void {
+        window.location.href = acp + '/project/download?id=' + image.component +"&key=" + image.key;
 
         //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
         //    importedSaveAs( blob, node.data.name );
