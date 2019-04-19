@@ -148,7 +148,7 @@
 
 <context-menu #imageMenu>
     <ng-template contextMenuItem let-item (execute)="handleImageDownload($event.item)"> 
-      <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data}}
+      <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.name}}
     </ng-template>
 </context-menu>
 
