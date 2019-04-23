@@ -20,11 +20,6 @@
 # This script will start a local docker instance that you can use for testing and development
 # Run it with sudo
 
-
-### Sensitive information (you need to put the values in here yourself) ###
-#export AWS_ACCESS_KEY_ID=XXXXXX && export AWS_SECRET_ACCESS_KEY=XXXXXX
-
-
 docker rm -f $(docker ps -a -q --filter=name=solr)
 
 set -e
@@ -34,16 +29,8 @@ BASEDIR=$(dirname "$0")
 
 
 # Install preqreqs (assumes you're on Ubuntu!)
-apt-get -y install tesseract-ocr libgdal-java
-
-# Install Teigha
-#pip install --upgrade --user awscli
-#aws s3 cp s3://aip.geoprism.net/deployment-resources/Teigha.Java_lnxX64_4.4dll.tar.gz /tmp/staging/teigha/Teigha.Java_lnxX64_4.4dll.tar.gz
-#tar -xvzf /tmp/staging/teigha/Teigha.Java_lnxX64_4.4dll.tar.gz -C /tmp/staging/teigha
-#mkdir -p /usr/lib/jni
-#mv /tmp/staging/teigha/bin/lnxX64_4.4dll/* /usr/lib/jni/
-#rm -r /tmp/staging/teigha
-#export LD_LIBRARY_PATH="/usr/lib/jni"
+#apt-get -y update
+#apt-get -y install tesseract-ocr libgdal-java
 
 
 docker run -d -p 8983:8983 --name solr solr:6.6.5
