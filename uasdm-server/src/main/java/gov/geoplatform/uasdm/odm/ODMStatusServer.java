@@ -213,7 +213,7 @@ public class ODMStatusServer
           {
             task.appLock();
             task.setStatus(resp.getStatus().getLabel());
-            task.setMessage(resp.getError()); // TODO : Test
+            task.setMessage(resp.getStatusError()); // TODO : Test
             task.apply();
             
             it.remove();

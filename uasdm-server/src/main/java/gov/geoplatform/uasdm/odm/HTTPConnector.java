@@ -34,8 +34,6 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -53,7 +51,6 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.slf4j.Logger;
@@ -236,7 +233,7 @@ public class HTTPConnector
     }
     catch (ConnectException e)
     {
-      throw new HttpConnectionException(e);
+      throw new UnreachableHostException(e);
     }
     catch (HttpException e)
     {

@@ -43,5 +43,12 @@ public class InfoResponse extends ODMResponse
     
     return ODMStatus.getByCode(status.getInt("code"));
   }
+  
+  public String getStatusError()
+  {
+    JSONObject status = http.getJSONObject().getJSONObject("status");
+    
+    return status.getString("errorMessage");
+  }
 
 }
