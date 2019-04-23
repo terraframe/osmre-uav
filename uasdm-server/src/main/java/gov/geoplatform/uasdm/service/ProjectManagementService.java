@@ -27,17 +27,20 @@ import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.Converter;
-import gov.geoplatform.uasdm.view.TreeComponent;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.TreeComponent;
+import net.geoprism.GeoprismUser;
 
 public class ProjectManagementService
 {
 
-  final Logger log = LoggerFactory.getLogger(ProjectManagementService.class);
+  final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
   @Request(RequestType.SESSION)
   public List<TreeComponent> getChildren(String sessionId, String parentid)
@@ -252,7 +255,14 @@ public class ProjectManagementService
   {
     WorkflowTask wfTask = WorkflowTask.getTaskByUploadId(uploadId);
 
-    wfTask.delete();
+    if (wfTask != null)
+    {
+      wfTask.delete();
+    }
+    else
+    {
+      logger.error("Attempt to delete task with id [" + uploadId + "] which does not exist.");
+    }
   }
 
   @Request(RequestType.SESSION)
@@ -273,12 +283,27 @@ public class ProjectManagementService
       task.setStatus("Complete");
       task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
       task.apply();
+      
+      startODMProcessing(infile, task);
     }
     finally
     {
       FileUtils.deleteQuietly(infile);
     }
-
+  }
+  
+  private void startODMProcessing(File infile, WorkflowTask uploadTask)
+  {
+    ODMProcessingTask task = new ODMProcessingTask();
+    task.setUpLoadId(uploadTask.getUpLoadId());
+    task.setCollectionId(uploadTask.getCollectionOid());
+    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setTaskLabel("Orthorectification Processing (ODM)");
+    task.setMessage("Your images are submitted for processing. Check back later for updates.");
+    task.apply();
+    
+    task.initiate(infile);
   }
 
   @Request(RequestType.SESSION)

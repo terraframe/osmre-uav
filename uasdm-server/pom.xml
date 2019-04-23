@@ -23,6 +23,11 @@
 
 
 	<dependencies>
+	  <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.8</version>
+    </dependency>
 		<dependency>
 			<groupId>net.geoprism</groupId>
 			<artifactId>geoprism-server</artifactId>
