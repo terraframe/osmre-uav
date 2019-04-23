@@ -599,9 +599,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             backdrop: true,
             ignoreBackdropClick: true,
         } );
-        this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.data.name + ']';
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.data.name + ']?';
         this.bsModalRef.content.data = node;
         this.bsModalRef.content.type = 'DANGER';
+        this.bsModalRef.content.submitText = 'Delete';
 
         ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
             this.remove( data );
