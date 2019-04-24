@@ -39,6 +39,15 @@ public class ODMFacade
     System.out.println(resp.getResponse());
   }
   
+  public static TaskOutputResponse taskOutput(String uuid)
+  {
+    initialize();
+    
+    HTTPResponse resp = connector.httpGet("task/" + uuid + "/output", new NameValuePair[] {});
+    
+    return new TaskOutputResponse(resp);
+  }
+  
   public static NewResponse taskNew(File images)
   {
     initialize();
@@ -46,8 +55,6 @@ public class ODMFacade
     try
     {
       HTTPResponse resp = connector.postAsMultipart("task/new", new Part[] {new FilePart("images", images, "application/octet-stream", "UTF-8")});
-      
-      System.out.println("New response [" + resp.getResponse() + "].");
       
       return new NewResponse(resp);
     }

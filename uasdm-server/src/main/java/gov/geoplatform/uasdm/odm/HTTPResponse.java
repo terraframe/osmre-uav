@@ -51,6 +51,25 @@ public class HTTPResponse
     this.statusCode = statusCode;
   }
   
+  public boolean isJSONArray()
+  {
+    if (this.response != null && this.response.length() > 0)
+    {
+      try
+      {
+        new JSONArray(response);
+        
+        return true;
+      }
+      catch(JSONException e)
+      {
+        
+      }
+    }
+    
+    return false;
+  }
+  
   public boolean isJSONObject()
   {
     if (this.response != null && this.response.length() > 0)

@@ -1,7 +1,10 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Locale;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +17,15 @@ public class ODMProcessingTask extends ODMProcessingTaskBase
   public ODMProcessingTask()
   {
     super();
+  }
+  
+  @Override
+  public JSONObject toJSON()
+  {
+    JSONObject obj = super.toJSON();
+    obj.put("odmOutput", this.getOdmOutput());
+
+    return obj;
   }
 
   public void initiate(File images)

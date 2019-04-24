@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1095514369)
+@com.runwaysdk.business.ClassSignature(hash = 914653116)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,12 +11,41 @@ package gov.geoplatform.uasdm.odm;
 public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.WorkflowTask
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMProcessingTask";
+  public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
-  private static final long serialVersionUID = 1095514369;
+  private static final long serialVersionUID = 914653116;
   
   public ODMProcessingTaskBase()
   {
     super();
+  }
+  
+  public String getOdmOutput()
+  {
+    return getValue(ODMOUTPUT);
+  }
+  
+  public void validateOdmOutput()
+  {
+    this.validateAttribute(ODMOUTPUT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getOdmOutputMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(ODMOUTPUT);
+  }
+  
+  public void setOdmOutput(String value)
+  {
+    if(value == null)
+    {
+      setValue(ODMOUTPUT, "");
+    }
+    else
+    {
+      setValue(ODMOUTPUT, value);
+    }
   }
   
   public String getOdmUUID()

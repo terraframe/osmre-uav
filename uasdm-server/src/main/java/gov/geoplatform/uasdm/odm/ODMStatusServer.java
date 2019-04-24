@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,7 +214,8 @@ public class ODMStatusServer
           {
             task.appLock();
             task.setStatus(resp.getStatus().getLabel());
-            task.setMessage(resp.getStatusError()); // TODO : Test
+            task.setMessage(resp.getStatusError());
+            addOutputToTask(task);
             task.apply();
             
             it.remove();
@@ -231,11 +233,35 @@ public class ODMStatusServer
             task.appLock();
             task.setStatus(resp.getStatus().getLabel());
             task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
+            addOutputToTask(task);
             task.apply();
             
             it.remove();
           }
         }
+      }
+    }
+    
+    private void addOutputToTask(ODMProcessingTask task)
+    {
+      TaskOutputResponse resp = ODMFacade.taskOutput(task.getOdmUUID());
+      
+      if (resp.hasOutput())
+      {
+        JSONArray output = resp.getOutput();
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < output.length(); ++i)
+        {
+          sb.append(output.getString(i));
+          
+          if (i > 0)
+          {
+            sb.append("&#13;&#10;");
+          }
+        }
+        
+        task.setOdmOutput(sb.toString());
       }
     }
   }
