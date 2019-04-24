@@ -91,7 +91,7 @@
                         <hr>
                         
                         <h4 *ngIf="task.odmOutput != null">Output:</h4>
-                        <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;">{{task.odmOutput}}</textarea>
+                        <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;" [innerHTML]="task.odmOutput"></textarea>
                         
                         <h4>Actions:</h4>
                         <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
