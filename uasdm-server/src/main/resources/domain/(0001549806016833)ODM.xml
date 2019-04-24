@@ -22,7 +22,8 @@
       
       <mdBusiness name="gov.geoplatform.uasdm.odm.ODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
         <attributes>
-         <char name="odmUUID" size="64"/>
+         <char name="odmUUID" size="64" label="UUID"/>
+         <text name="odmOutput" label="output" />
         </attributes>
       </mdBusiness>
     </create>
@@ -30,7 +31,7 @@
   </doIt>
   <undoIt>
     <delete>
-      <object key="gov.geoplatform.uasdm.odm.HttpConnectionException" type="com.runwaysdk.system.metadata.MdException"/>
+      <object key="gov.geoplatform.uasdm.odm.UnreachableHostException" type="com.runwaysdk.system.metadata.MdException"/>
       <object key="gov.geoplatform.uasdm.odm.ODMProcessingTask" type="com.runwaysdk.system.metadata.MdBusiness"/>
     </delete>
   </undoIt>
