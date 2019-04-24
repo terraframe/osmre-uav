@@ -93,8 +93,10 @@ export class UserProfileComponent implements OnInit {
             backdrop: true,
             ignoreBackdropClick: true,
         } );
-        this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + ']';
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + '?';
         this.bsModalRef.content.data = task;
+        this.bsModalRef.content.type = 'DANGER';
+        this.bsModalRef.content.submitText = 'Delete';
 
         ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( task => {
             this.deleteTask( task );

@@ -59,21 +59,17 @@ export class UploadComponent implements OnInit {
     uploader = null as FineUploader;
 
     disabled: boolean = false;
-
     taskStatusMessages: string[] = [];
-
     currentTask: Task = null;
-
     existingTask: boolean = false;
-
     taskPolling: any;
-
     pollingIsSet: boolean = false;
-
     uploadVisible: boolean = true;
     selectedContinue: boolean = false;
-
+    uploadCounter: string = "00:00:00";
+    uplodeCounterInterfal: any;
     differ: any;
+    showFileSelectPanel: boolean = false;
 
     constructor( private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -131,6 +127,10 @@ export class UploadComponent implements OnInit {
                 callbacks: {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
+
+                        document.getElementById("select-file-button").className = document.getElementById("select-file-button").className + " hidden";
+
+                        that.countUpload(that);
                     },
                     onProgress: function( id: any, name: any, uploadedBytes: any, totalBytes: any ): void {
                     },
@@ -167,6 +167,10 @@ export class UploadComponent implements OnInit {
                         }
 
                         this.clearStoredFiles();
+
+                        document.getElementById("select-file-button").classList.remove("hidden");
+
+                        clearInterval(that.uplodeCounterInterfal);
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
@@ -189,6 +193,10 @@ export class UploadComponent implements OnInit {
                             that.taskPolling.unsubscribe();
                             that.pollingIsSet = false;
                         }
+
+                        document.getElementById("select-file-button").classList.remove("hidden");
+
+                        clearInterval(that.uplodeCounterInterfal);
 
                     },
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
@@ -313,6 +321,13 @@ export class UploadComponent implements OnInit {
 
     onCollectionSelect( collectionId: string ): void {
         this.values.collection = collectionId;
+
+        if(collectionId && collectionId.trim().length > 0){
+            this.showFileSelectPanel = true;
+        }
+        else {
+            this.showFileSelectPanel = false
+        }
     }
 
     handleUpload(): void {
@@ -344,7 +359,8 @@ export class UploadComponent implements OnInit {
             ignoreBackdropClick: true,
         } );
         this.bsModalRef.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
-        //        this.bsModalRef.content.data = node;
+        this.bsModalRef.content.type = 'DANGER';
+        this.bsModalRef.content.submitText = 'Cancel Upload';
 
         ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
             this.service.removeTask( this.uploader.getResumableFilesData()[0].uuid )
@@ -371,6 +387,27 @@ export class UploadComponent implements OnInit {
     showUploadPanel(): void {
         this.uploadVisible = true;
         this.selectedContinue = true;
+    }
+
+    countUpload(thisRef: any): void {
+        let ct = 0;
+
+
+        function incrementSeconds() {
+            ct += 1;
+
+            let hours = Math.floor(ct / 3600)
+            let minutes = Math.floor((ct % 3600) / 60);
+            let seconds = Math.floor(ct % 60);
+
+            let hoursStr = minutes < 10 ? "0" + hours : hours;
+            let minutesStr = minutes < 10 ? "0" + minutes : minutes;
+            let secondsStr = seconds < 10 ? "0" + seconds : seconds;
+
+            thisRef.uploadCounter = hoursStr + ":" + minutesStr + ":" + secondsStr;
+        }
+
+        thisRef.uplodeCounterInterfal = setInterval(incrementSeconds, 1000);
     }
 
     error( err: any ): void {
