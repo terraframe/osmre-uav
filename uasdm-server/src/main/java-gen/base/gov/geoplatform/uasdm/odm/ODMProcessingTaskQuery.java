@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 683100600)
+@com.runwaysdk.business.ClassSignature(hash = -1828892635)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public String getClassType()
   {
     return gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getOdmOutput()
+  {
+    return getOdmOutput(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getOdmUUID()
   {
@@ -87,6 +104,9 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public interface ODMProcessingTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getOdmOutput();
+    public com.runwaysdk.query.SelectableChar getOdmOutput(String alias);
+    public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOdmUUID();
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias);
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias, String displayLabel);
@@ -125,6 +145,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
       return this.NE(oDMProcessingTask.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getOdmOutput()
+  {
+    return getOdmOutput(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getOdmUUID()
   {
     return getOdmUUID(null);
@@ -151,6 +188,9 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public interface ODMProcessingTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getOdmOutput();
+    public com.runwaysdk.query.SelectableChar getOdmOutput(String alias);
+    public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOdmUUID();
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias);
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias, String displayLabel);
@@ -237,6 +277,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getOdmOutput()
+  {
+    return getOdmOutput(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.ODMOUTPUT, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getOdmUUID()
   {

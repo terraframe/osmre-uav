@@ -65,18 +65,19 @@
                         <a data-toggle="collapse" href="#collapse{{i}}">
                           <ul class="list-inline" style="margin: 0;">
                             <li>{{task.label}}</li>
-                            <li *ngIf="task.status !== 'Complete'" class="pull-right" style="color:green;"><b>{{task.status}}...</b> Last Update: <b>{{task.lastUpdateDate}}</b></li>
-                            <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey;"> Uploaded On: <b>{{task.lastUpdateDate}}</b></li>
+                            <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:red;"> <b>{{task.lastUpdateDate}}</b></li>
+                            <li *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="pull-right" style="color:green;"><b>{{task.status}}...</b> Last Update: <b>{{task.lastUpdateDate}}</b></li>
+                            <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey;"> <b>{{task.lastUpdateDate}}</b></li>
                           </ul>
                         </a>
                       </h4>
                     </div>
                     <div id="collapse{{i}}" class="panel-collapse collapse">
-                      <div *ngIf="task.status !== 'Complete'" class="panel-body">
+                      <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="panel-body">
                         <h3>{{task.message}}</h3>
                         <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
                       </div>
-                      <div *ngIf="task.status === 'Complete'" class="panel-body">
+                      <div *ngIf="task.status === 'Complete' || task.status === 'Failed'" class="panel-body">
                         <ul class="list-unstyled" style="margin: 0;">
                           <li>Created on: <b>{{task.createDate}}</b></li>
                           <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
@@ -88,6 +89,9 @@
                         <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
                         </div>
                         <hr>
+                        
+                        <h4 *ngIf="task.odmOutput != null">Output:</h4>
+                        <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;">{{task.odmOutput}}</textarea>
                         
                         <h4>Actions:</h4>
                         <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
