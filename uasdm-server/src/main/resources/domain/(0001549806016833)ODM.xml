@@ -17,13 +17,19 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-      <mdException name="gov.geoplatform.uasdm.odm.UnreachableHostException" message="Could not connect the odm server. Please contact your server administrator.">
+      <mdException name="gov.geoplatform.uasdm.odm.UnreachableHostException" message="Could not connect to the odm server. Please contact your server administrator.">
       </mdException>
       
       <mdBusiness name="gov.geoplatform.uasdm.odm.ODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
         <attributes>
          <char name="odmUUID" size="64" label="UUID"/>
          <text name="odmOutput" label="output" />
+        </attributes>
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMUploadTask" label="ODM Upload" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <attributes>
+         <char name="odmUUID" size="64" label="UUID"/>
         </attributes>
       </mdBusiness>
     </create>

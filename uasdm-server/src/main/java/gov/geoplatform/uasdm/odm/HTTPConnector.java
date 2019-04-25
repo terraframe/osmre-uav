@@ -34,6 +34,7 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
