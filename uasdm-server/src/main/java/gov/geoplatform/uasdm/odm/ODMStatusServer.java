@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +102,10 @@ public class ODMStatusServer
     
     for (Thread t : uploadThreads)
     {
-      t.interrupt();
+      if (t != null)
+      {
+        t.interrupt();
+      }
     }
   }
   
@@ -344,7 +348,7 @@ public class ODMStatusServer
       uploadTask.setGeoprismUser(task.getGeoprismUser());
       uploadTask.setOdmUUID(task.getOdmUUID());
       uploadTask.setStatus(ODMStatus.RUNNING.getLabel());
-      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts");
+      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts [" + task.getCollection().getName() + "].");
       uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Check back later for updates.");
       uploadTask.apply();
       
@@ -405,7 +409,14 @@ public class ODMStatusServer
     @Override
     public void run()
     {
-      runInRequest();
+      try
+      {
+        runInRequest();
+      }
+      finally
+      {
+        uploadThreads.remove(this);
+      }
     }
     
     @Request
@@ -422,7 +433,7 @@ public class ODMStatusServer
       }
       catch (Throwable t)
       {
-        t.printStackTrace();
+        logger.error("Error occurred while uploading S3 files for " + task.getOdmUUID(), t);
         
         task.lock();
         task.setStatus(ODMStatus.FAILED.getLabel());
@@ -431,19 +442,37 @@ public class ODMStatusServer
       }
     }
     
+    private List<ODMFolderProcessingConfig> buildProcessingConfig()
+    {
+      List<ODMFolderProcessingConfig> processingConfigs = new ArrayList<ODMFolderProcessingConfig>();
+      
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_dem", Collection.DEM, new String[] {"dsm.tif", "dtm.tif"}));
+      
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", Collection.PTCLOUD, new String[] {"odm_georeferenced_model.laz"}));
+      
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", Collection.ORTHO, new String[] {"odm_orthophoto.png", "odm_orthophoto.tif"}));
+      
+      return processingConfigs;
+    }
+    
 //    @Transaction
     public void runInTrans() throws ZipException
     {
-      HashMap<String, String> destMap = new HashMap<String, String>();
-      destMap.put("potree_pointcloud", Collection.PTCLOUD);
-      destMap.put("odm_orthophoto", Collection.ORTHO);
-      destMap.put("odm_dem", Collection.DEM);
+      List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
       
+      /**
+       * Upload the full all.zip file to S3 for archive purposes.
+       */
+      uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName());
+      
+      /**
+       * Unzip the ODM all.zip file and selectively upload files that interest us to S3.
+       */
       try
       {
         new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
         
-        for (String zipSubFolder : destMap.keySet())
+        for (ODMFolderProcessingConfig config : processingConfigs)
         {
           if (Thread.interrupted())
           {
@@ -451,17 +480,24 @@ public class ODMStatusServer
             return;
           }
           
-          String collectionSubFolderName = destMap.get(zipSubFolder);
-          
-          File parentDir = new File(unzippedParentFolder, zipSubFolder);
+          File parentDir = new File(unzippedParentFolder, config.odmFolderName);
           
           if (parentDir.exists())
           {
-            uploadAllChildren(parentDir, collectionSubFolderName);
+            processChildren(parentDir, config.s3FolderName, config);
           }
-          else
+//          else
+//          {
+//            task.createAction("ODM did not produce any " + config.s3FolderName + " files.", "error");
+//          }
+          
+          List<String> unprocessed = config.getUnprocessedFiles();
+          if (unprocessed.size() > 0)
           {
-            task.createAction("ODM did not produce any " + collectionSubFolderName + " files.", "error");
+            for (String name : unprocessed)
+            {
+              task.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+            }
           }
         }
       }
@@ -472,7 +508,7 @@ public class ODMStatusServer
       }
     }
 
-    private void uploadAllChildren(File parentDir, String s3KeyPrefix)
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config)
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
@@ -485,77 +521,121 @@ public class ODMStatusServer
         
         String name = child.getName();
         
-        if (!child.isDirectory() && UasComponent.isValidName(name))
+        if (!child.isDirectory() && UasComponent.isValidName(name) && config.shouldProcessFile(child))
         {
-          String key = task.getCollection().getS3location() + s3KeyPrefix + "/" + name;
+          String key = task.getCollection().getS3location() + s3FolderPrefix + "/" + name;
   
-          try
-          {
-            TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
-  
-            try
-            {
-              Upload myUpload = tx.upload(AppProperties.getBucketName(), key, child);
-  
-              if (myUpload.isDone() == false)
-              {
-                logger.info("Source: " + child.getAbsolutePath());
-                logger.info("Destination: " + myUpload.getDescription());
-                
-                task.lock();
-                task.setMessage(myUpload.getDescription());
-                task.apply();
-              }
-  
-              myUpload.addProgressListener(new ProgressListener()
-              {
-                int count = 0;
-  
-                @Override
-                public void progressChanged(ProgressEvent progressEvent)
-                {
-                  if (count % 2000 == 0)
-                  {
-                    long total = myUpload.getProgress().getTotalBytesToTransfer();
-                    long current = myUpload.getProgress().getBytesTransferred();
-  
-                    logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-  
-                    count = 0;
-                  }
-  
-                  count++;
-                }
-              });
-  
-              myUpload.waitForCompletion();
-            }
-            finally
-            {
-              tx.shutdownNow();
-            }
-  
-            // TODO : Solr?
-//                SolrService.updateOrCreateDocument(ancestors, this, key, name);
-          }
-          catch (InterruptedException e)
-          {
-            return;
-          }
-          catch (Exception e)
-          {
-            task.createAction(e.getMessage(), "error");
-            logger.error(e.getMessage());
-          }
+          uploadFileToS3(child, key);
         }
         else if (child.isDirectory())
         {
-          uploadAllChildren(child, s3KeyPrefix + "/" + child.getName());
+          processChildren(child, s3FolderPrefix + "/" + child.getName(), config);
         }
-        else
+      }
+    }
+
+    private void uploadFileToS3(File child, String key)
+    {
+      try
+      {
+        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+ 
+        try
         {
-          task.createAction("The filename [" + name + "] is invalid", "error");
+          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, child);
+ 
+          if (myUpload.isDone() == false)
+          {
+            logger.info("Source: " + child.getAbsolutePath());
+            logger.info("Destination: " + myUpload.getDescription());
+            
+            task.lock();
+            task.setMessage(myUpload.getDescription());
+            task.apply();
+          }
+ 
+          myUpload.addProgressListener(new ProgressListener()
+          {
+            int count = 0;
+ 
+            @Override
+            public void progressChanged(ProgressEvent progressEvent)
+            {
+              if (count % 2000 == 0)
+              {
+                long total = myUpload.getProgress().getTotalBytesToTransfer();
+                long current = myUpload.getProgress().getBytesTransferred();
+ 
+                logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+ 
+                count = 0;
+              }
+ 
+              count++;
+            }
+          });
+ 
+          myUpload.waitForCompletion();
         }
+        finally
+        {
+          tx.shutdownNow();
+        }
+ 
+        // TODO : Solr?
+//                SolrService.updateOrCreateDocument(ancestors, this, key, name);
+      }
+      catch (Exception e)
+      {
+        task.createAction(e.getMessage(), "error");
+        logger.error("Exception occured while uploading [" + key + "].", e);
+      }
+    }
+    
+    
+    
+    private class ODMFolderProcessingConfig
+    {
+      private String odmFolderName;
+      
+      private String s3FolderName;
+      
+      private String[] mandatoryFiles;
+      
+      private ArrayList<String> processedFiles;
+      
+      protected ODMFolderProcessingConfig(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
+      {
+        this.odmFolderName = odmFolderName;
+        this.s3FolderName = s3FolderName;
+        this.mandatoryFiles = mandatoryFiles;
+        this.processedFiles = new ArrayList<String>();
+      }
+      
+      protected boolean shouldProcessFile(File file)
+      {
+        if (ArrayUtils.contains(mandatoryFiles, file.getName()))
+        {
+          processedFiles.add(file.getName());
+          return true;
+        }
+        
+        return false;
+      }
+      
+      protected List<String> getUnprocessedFiles()
+      {
+        ArrayList<String> unprocessed = new ArrayList<String>();
+        
+        for (String file : mandatoryFiles)
+        {
+          if (!processedFiles.contains(file))
+          {
+            unprocessed.add(file);
+          }
+        }
+        
+        return unprocessed;
       }
     }
   }
