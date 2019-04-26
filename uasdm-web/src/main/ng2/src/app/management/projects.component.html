@@ -1,4 +1,6 @@
-<uasdm-header [title]="'Site Viewer'"></uasdm-header>
+<div id="navigator-header-container">
+    <uasdm-header [title]="'Site Viewer'"></uasdm-header>
+</div>
 
 <div id="app-container" class="container-fluid">
 
@@ -27,7 +29,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="location-management-widget-section location-management-list-container">
+            <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container">
                 <div *ngIf="nodes.length > 0" class="tree">
                     <tree-root [nodes]="nodes" [options]="options" (updateData)="handleOnUpdateData()">
                         <ng-template #treeNodeTemplate let-node let-index="index">

@@ -16,11 +16,11 @@ body {
 }
 
 .tree {
-  height: calc(100vh - 291px);
+  height: calc(100vh - 197px);
 }
 
 .map-view-port {
-  height: calc(100vh - 144px); 
+  height: calc(100vh - 50px); 
 //   width: calc(75vw - 10px);
 //   margin: 0;
 }
@@ -35,7 +35,7 @@ body {
 
 .site-explorer-list {
   padding: 20px;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 106px);
   overflow-y: auto;
   overflow-x: hidden;
 }

@@ -96,6 +96,11 @@
                             </option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="outFileName">Output File Name:</label>
+                        <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control" placeholder="Output File Name..." />
+                    </div>
                 </div>
 
                 <div class="" [hidden]="!uploadVisible">

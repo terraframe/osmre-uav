@@ -126,7 +126,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         animateSpeed: 5000,
         animateAcceleration: 1,
         allowDrag: false,
-        allowDrop: false
+        allowDrop: false,
+        scrollContainer: document.getElementById('hierarchy-tree-container')
     };
 
     /*

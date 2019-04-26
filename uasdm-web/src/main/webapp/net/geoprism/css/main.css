@@ -1183,6 +1183,10 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 	opacity:0.9;
 }
 
+.modal-title-container {
+    padding: 15px 0 20px 0;
+}
+
 /* .modal .modal-dialog .modal-content .modal-body */
 .modal-dialog{
 	width:1000px;
@@ -1656,7 +1660,7 @@ select:-moz-focusring {
     text-shadow: 0 0 0 #000;
 }
 select{
-	float:left;
+	/* float:left; */
 	width:100%;
 	font-size:12px;
 	line-height:15px;
@@ -1866,7 +1870,7 @@ option[selected]{ font-weight:bold}
     border-color: var(--theme-button-color-border);
 }
 .btn-group.geobject-editor-tab-holder .btn.full-width-radio-button:active{
-    background: #EDF4E8 !important; /* IE fallback */
+    background: #B6D7D8 !important; /* IE fallback */
     background: var(--theme-submit-button-color-light) !important;
 }
 .btn-group.geobject-editor-tab-holder .btn.full-width-radio-button.active,
@@ -2468,7 +2472,8 @@ i.fa.fa-cloud-upload{
 
 .navbar-default .navbar-header > a > img {
   margin-left: 50px;
-  width: 120px;
+  /* width: 120px; */
+  height: 80%;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2534,6 +2539,54 @@ i.fa.fa-cloud-upload{
     color:white;
 }
 
+.user-indicator > p {
+    margin: 0;
+    margin-right: 20px;
+    line-height: 144px;
+}
+
+
+/* Navigator navbar */
+
+#navigator-header-container .navbar.navbar-default {
+    background-color: #D7BD0C; /* IE fallback */
+    background-color: var(--theme-primary-color);
+    height: 50px;
+    border-radius: 0;
+    border: none;
+    margin-bottom: 0;
+}
+
+#navigator-header-container .nav.navbar-nav.navbar-right .dropdown .dropdown-toggle .glyphicon.glyphicon-menu-hamburger {
+    line-height: 50px;
+}
+
+#navigator-header-container .navbar-header {
+    padding: inherit;
+    float: left;
+}
+
+#navigator-header-container .dropdown-toggle {
+    line-height: 50px !important; 
+    padding: 0 !important; 
+}
+
+#navigator-header-container .navbar-default .navbar-header > a:first-child.navbar-brand {
+    line-height: 50px;
+    padding: 0;
+    margin-left: 20px;
+}
+
+#navigator-header-container .dropdown-toggle {
+    line-height: 50px !important; 
+    padding: 0 !important; 
+}
+
+#navigator-header-container .user-indicator > p {
+    margin: 0;
+    margin-right: 20px;
+    line-height: 50px;
+}
 
 
 /* .navbar-default {
@@ -2707,7 +2760,8 @@ li.list-group-item.active {
 
 input[type=button],
 input[type=submit],
-button.btn {
+button.btn,
+.btn {
     min-width: 104px;
     height: 40px;
 }
@@ -2716,18 +2770,22 @@ input[type=button]:active,
 input[type=submit]:focus,
 input[type=submit]:active,
 button.btn:focus, 
-button.btn:active {
+button.btn:active,
+.btn:focus, 
+.btn:active {
     outline: 0 !important;
     box-shadow: none;
 }
 input[type=button].btn.btn-primary, 
 input[type=submit].btn.btn-primary,
 button.btn-primary, 
-button.btn.btn-primary {
+button.btn.btn-primary,
+.btn-primary, 
+.btn.btn-primary {
     color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
 
-    background: #EDF4E8; /* IE fallback */
+    background: #B6D7D8; /* IE fallback */
     background: var(--theme-submit-button-color-light);
 
     border-color: lightgrey; /* IE fallback */
@@ -2740,7 +2798,9 @@ input[type=submit].btn.btn-primary:active,
 button.btn-primary:hover, 
 button.btn.btn-primary:hover,
 button.btn-primary:active, 
-button.btn.btn-primary:active  {
+button.btn.btn-primary:active,
+.btn-primary:hover, 
+.btn-primary:active   {
     color: #007276; /* IE fallback */
     color: var(--theme-submit-button-color);
 
@@ -2753,14 +2813,16 @@ button.btn.btn-primary:active  {
 input[type=button].btn.btn-primary:disabled, 
 input[type=submit].btn.btn-primary:disabled,
 button.btn-primary:disabled, 
-button.btn.btn-primary:disabled  {
-    background: #EDF4E8; /* IE fallback */
+button.btn.btn-primary:disabled,
+.btn-primary:disabled  {
+    background: #B6D7D8; /* IE fallback */
     background: var(--theme-submit-button-color-light);
 }
 
 input[type=button].btn.btn-default, 
 input[type=submit].btn.btn-default,
-button.btn.btn-default {
+button.btn.btn-default,
+.btn.btn-default {
     background: white;
 
     color: grey; /* IE fallback */
@@ -2774,11 +2836,39 @@ input[type=submit].btn.btn-default:hover,
 input[type=button].btn.btn-default:active, 
 input[type=submit].btn.btn-default:active,
 button.btn-default:hover, 
-button.btn.btn-default:hover {
+button.btn.btn-default:hover,
+.btn-default:hover {
     color: #007276; /* IE fallback */
     color: var(--theme-cancel-button-color-hover);
     background: #f8f8f8;
 }
+
+/* Fine Uploader Style Overrides */
+.qq-uploader{
+    min-height: auto !important;
+}
+.qq-btn {
+    box-shadow: none !important;
+}
+.qq-upload-button {
+    display: inline-block !important;
+    width: 110px !important;
+    margin-bottom: 10px !important;
+    padding: 6px 12px !important;
+    text-align: center !important;
+    float: left !important;
+    background: #B6D7D8 !important;
+    color: #007276 !important;
+    border-radius: 4px !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+}
+.qq-uploader:before {
+    font-size: 150% !important;
+    top: 35% !important;
+}
+/* End Fine Uploader Style Overrides */
+
 
 i.fa.fa-sitemap{
   font-size: 20px;
@@ -2884,7 +2974,7 @@ a.navbar-brand {
 }
 
 .form-group label {
-    line-height: 40px;
+    /* line-height: 40px; */
 }
 
 .modal-body .form-group select {

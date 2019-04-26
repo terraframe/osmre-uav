@@ -28,6 +28,7 @@ export class UploadForm {
     collection: string;
     create: boolean;
     name: string;
+    outFileName: string;
 }
 
 export class Action {

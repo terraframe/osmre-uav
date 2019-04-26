@@ -9,6 +9,11 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-title-container">
+      <h3>Add a {{entity.type}} to thi</h3>
+  </div>
+
   <form #ngForm="ngForm">
     <div *ngFor="let attribute of attributes">
       <div *ngIf="attribute.condition == null || evaluate(attribute.condition)" class="form-group">
