@@ -1,20 +1,10 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import net.geoprism.EmailSetting;
-import net.geoprism.email.InvalidEmailSettings;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -30,6 +20,17 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.service.SolrService;
+import net.geoprism.EmailSetting;
+import net.geoprism.email.InvalidEmailSettings;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
 {
@@ -86,7 +87,7 @@ public class ODMStatusServer
     
     statusThread = new ODMStatusThread("ODM Status Server");
     
-    populateActiveTasks();
+    restartRunningJobs();
     
     statusThread.start();
   }
@@ -134,9 +135,11 @@ public class ODMStatusServer
         logger.error("Unable to send email of unknown task status [" + task.getStatus() + "].");
       }
     }
-    catch (InvalidEmailSettings e)
+    catch (Throwable t)
     {
-      logger.error("Problem sending email for task [" + task.getTaskLabel() + "] with status [" + task.getStatus() + "].", e);
+      logger.error("Problem sending email for task [" + task.getTaskLabel() + "] with status [" + task.getStatus() + "].", t);
+      
+      task.createAction("Problem occured while sending email. " + t.getLocalizedMessage(), "error");
     }
   }
   
@@ -150,50 +153,45 @@ public class ODMStatusServer
     statusThread.addTask(task);
   }
   
-  private static void populateActiveTasks()
+  private static void restartRunningJobs()
   {
-    /**
-     * Queue processing tasks
-     */
-    ODMProcessingTaskQuery query = new ODMProcessingTaskQuery(new QueryFactory());
-    query.WHERE(query.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(query.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(query.getStatus().EQ(ODMStatus.NEW.getLabel()))));
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(query.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(query.getStatus().EQ(ODMStatus.NEW.getLabel())).OR(query.getStatus().EQ("Processing"))));
 
-    OIterator<? extends ODMProcessingTask> it = query.getIterator();
+    OIterator<? extends WorkflowTask> it = query.getIterator();
 
     try
     {
       while (it.hasNext())
       {
-        statusThread.addTask(it.next());
+        WorkflowTask task = it.next();
+        
+        if (task instanceof ODMProcessingTask)
+        {
+          ODMProcessingTask processingTask = (ODMProcessingTask) task;
+          
+          statusThread.addTask(processingTask);
+        }
+        else if (task instanceof ODMUploadTask)
+        {
+          ODMUploadTask uploadTask = (ODMUploadTask) task;
+          
+          S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
+          uploadThreads.add(thread);
+          thread.start();
+        }
+        else
+        {
+          task.appLock();
+          task.setStatus(ODMStatus.FAILED.getLabel());
+          task.setMessage("The server was shut down while the task was running.");
+          task.apply();
+        }
       }
     }
     finally
     {
       it.close();
-    }
-    
-    /**
-     * Restart any uploads that were in progress
-     */
-    ODMUploadTaskQuery uploadQuery = new ODMUploadTaskQuery(new QueryFactory());
-    uploadQuery.WHERE(uploadQuery.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(uploadQuery.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(uploadQuery.getStatus().EQ(ODMStatus.NEW.getLabel()))));
-
-    OIterator<? extends ODMUploadTask> it2 = uploadQuery.getIterator();
-
-    try
-    {
-      while (it2.hasNext())
-      {
-        ODMUploadTask uploadTask = it2.next();
-        
-        S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
-        uploadThreads.add(thread);
-        thread.start();
-      }
-    }
-    finally
-    {
-      it2.close();
     }
   }
   
@@ -563,9 +561,13 @@ public class ODMStatusServer
         
         if (!child.isDirectory() && UasComponent.isValidName(name) && config.shouldProcessFile(child))
         {
-          String key = task.getCollection().getS3location() + s3FolderPrefix + "/" + name;
+          Collection col = task.getCollection();
+          
+          String key = col.getS3location() + s3FolderPrefix + "/" + name;
   
           uploadFileToS3(child, key);
+          
+          SolrService.updateOrCreateDocument(col.getAncestors(), col, key, name);
         }
         else if (child.isDirectory())
         {
@@ -621,9 +623,6 @@ public class ODMStatusServer
         {
           tx.shutdownNow();
         }
- 
-        // TODO : Solr?
-//                SolrService.updateOrCreateDocument(ancestors, this, key, name);
       }
       catch (Exception e)
       {
