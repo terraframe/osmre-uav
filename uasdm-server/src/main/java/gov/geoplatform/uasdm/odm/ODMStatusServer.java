@@ -1,11 +1,20 @@
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import net.geoprism.EmailSetting;
+import net.geoprism.email.InvalidEmailSettings;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -18,18 +27,9 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
 {
@@ -106,6 +106,37 @@ public class ODMStatusServer
       {
         t.interrupt();
       }
+    }
+  }
+  
+  private static void sendEmail(WorkflowTask task)
+  {
+    try
+    {
+      if (task.getStatus().equals(ODMStatus.FAILED.getLabel()))
+      {
+        final String subject = "Orthorectification Processing Failed";
+        
+        final String body = "The orthorectification processing for your collection [" + task.getCollection().getName() + "] has failed. " + task.getMessage();
+        
+        EmailSetting.sendEmail(subject, body, new String[]{task.getGeoprismUser().getEmail()});
+      }
+      else if (task.getStatus().equals(ODMStatus.COMPLETED.getLabel()))
+      {
+        final String subject = "Orthorectification Processing Completed";
+        
+        final String body = "The orthorectification processing for your collection [" + task.getCollection().getName() + "] has completed. Log into the UASDM again to see the results.";
+        
+        EmailSetting.sendEmail(subject, body, new String[]{task.getGeoprismUser().getEmail()});
+      }
+      else
+      {
+        logger.error("Unable to send email of unknown task status [" + task.getStatus() + "].");
+      }
+    }
+    catch (InvalidEmailSettings e)
+    {
+      logger.error("Problem sending email for task [" + task.getTaskLabel() + "] with status [" + task.getStatus() + "].", e);
     }
   }
   
@@ -202,9 +233,14 @@ public class ODMStatusServer
           
           runInRequest();
         }
-        catch (InterruptedException e)
+        catch (Throwable t)
         {
-          return;
+          if (t instanceof InterruptedException)
+          {
+            return;
+          }
+          
+          logger.error("ODM status server encountered an error!", t);
         }
       }
     }
@@ -251,6 +287,8 @@ public class ODMStatusServer
           
           it.remove();
           
+          sendEmail(task);
+          
 //          throw ex;
           continue;
         }
@@ -262,6 +300,8 @@ public class ODMStatusServer
           task.apply();
           
           it.remove();
+          
+          sendEmail(task);
         }
         else if (!resp.hasError() && resp.getHTTPResponse().isError())
         {
@@ -315,6 +355,8 @@ public class ODMStatusServer
             task.apply();
             
             it.remove();
+            
+            sendEmail(task);
           }
           else if (resp.getStatus().equals(ODMStatus.COMPLETED))
           {
@@ -369,11 +411,7 @@ public class ODMStatusServer
         for (int i = 0; i < output.length(); ++i)
         {
           sb.append(output.getString(i));
-          
-          if (i > 0)
-          {
-            sb.append("&#13;&#10;");
-          }
+          sb.append("&#13;&#10;");
         }
         
         task.setOdmOutput(sb.toString());
@@ -430,6 +468,8 @@ public class ODMStatusServer
         task.setStatus(ODMStatus.COMPLETED.getLabel());
         task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
         task.apply();
+        
+        ODMStatusServer.sendEmail(task);
       }
       catch (Throwable t)
       {
