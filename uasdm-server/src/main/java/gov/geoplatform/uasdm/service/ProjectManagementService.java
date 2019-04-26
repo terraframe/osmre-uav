@@ -1,26 +1,5 @@
 package gov.geoplatform.uasdm.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.amazonaws.services.s3.model.S3Object;
-import com.runwaysdk.controller.MultipartFileParameter;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.session.Request;
-import com.runwaysdk.session.RequestType;
-
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.Site;
@@ -35,7 +14,36 @@ import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import net.geoprism.GeoprismUser;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.runwaysdk.controller.MultipartFileParameter;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
 
 public class ProjectManagementService
 {
@@ -223,6 +231,66 @@ public class ProjectManagementService
 
     return Converter.toSiteItem(uasComponent, true);
   }
+  
+  @Request(RequestType.SESSION)
+  public void runOrtho(String sessionId, String id)
+  {
+    Collection collection = (Collection) UasComponent.get(id);
+    
+    File zip;
+    try
+    {
+      zip = File.createTempFile("raw-" + id, ".zip");
+      
+      try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
+      {
+        downloadAll(sessionId, id, Collection.RAW, ostream);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+    
+    ODMProcessingTask task = new ODMProcessingTask();
+    task.setUpLoadId(id);
+    task.setCollectionId(collection.getOid());
+    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
+    task.setMessage("Your images are submitted for processing. Check back later for updates.");
+    task.apply();
+    
+    task.initiate(zip);
+  }
+  
+  @Request(RequestType.SESSION)
+  public void downloadAll(String sessionId, String id, String key, OutputStream out)
+  {
+    List<SiteObject> items = getObjects(id, key);
+    
+    try (ZipOutputStream zos = new ZipOutputStream(out))
+    {
+      for (SiteObject item : items)
+      {
+        S3Object s3Obj = download(sessionId, id, item.getKey());
+        
+        try (S3ObjectInputStream istream = s3Obj.getObjectContent())
+        {
+          zos.putNextEntry(new ZipEntry(item.getName()));
+
+          IOUtils.copy(istream, zos);
+
+          zos.closeEntry();
+        }
+      }
+      
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
 
   @Request(RequestType.SESSION)
   public SiteItem update(String sessionId, SiteItem siteItem)
@@ -299,7 +367,7 @@ public class ProjectManagementService
     task.setCollectionId(uploadTask.getCollectionOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM)");
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setMessage("Your images are submitted for processing. Check back later for updates.");
     task.apply();
     

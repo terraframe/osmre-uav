@@ -81,6 +81,25 @@ export class ManagementService {
                 return response.json() as { item: SiteEntity, attributes: AttributeType[] };
             } )
     }
+    
+    runOrtho( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+
+      let headers = new Headers( {
+          'Content-Type': 'application/json'
+      } );
+
+      this.eventService.start();
+
+      return this.http
+          .post( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
+          .finally(() => {
+              this.eventService.complete();
+          } )
+          .toPromise()
+          .then( response => {
+              return response.json() as { item: SiteEntity, attributes: AttributeType[] };
+          } )
+  }
 
     update( entity: SiteEntity ): Promise<SiteEntity> {
 
@@ -264,6 +283,27 @@ export class ManagementService {
             } )
             .map( res => res.blob() )
     }
+    
+    downloadAll( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
+
+      let params: URLSearchParams = new URLSearchParams();
+      params.set( 'id', id );
+      params.set( 'key', key );
+
+      let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
+
+      if(useSpinner){
+        this.eventService.start();
+      }
+
+      return this.http.get( acp + '/project/download-all', options )
+          .finally(() => {
+              if(useSpinner){
+                this.eventService.complete();
+              }
+          } )
+          .map( res => res.blob() )
+  }
 
     search( terms: Observable<string> ) {
         return terms.debounceTime( 400 )

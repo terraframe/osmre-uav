@@ -145,22 +145,22 @@ public class Collection extends CollectionBase
     }
   }
 
-  private String buildRawKey()
+  public String buildRawKey()
   {
     return this.getS3location() + RAW + "/";
   }
 
-  private String buildPointCloudKey()
+  public String buildPointCloudKey()
   {
     return this.getS3location() + PTCLOUD + "/";
   }
 
-  private String buildDemKey()
+  public String buildDemKey()
   {
     return this.getS3location() + DEM + "/";
   }
 
-  private String buildOrthoKey()
+  public String buildOrthoKey()
   {
     return this.getS3location() + ORTHO + "/";
   }

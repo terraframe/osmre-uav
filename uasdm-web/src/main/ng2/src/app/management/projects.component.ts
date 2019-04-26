@@ -145,6 +145,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      * Template for tree node menu
      */
     @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
+    
+    /*
+     * Template for folder node menu
+     */
+    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
 
     /*
      * Template for site items
@@ -479,6 +484,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             }
 
         }
+        else
+        {
+          this.contextMenuService.show.next( {
+            contextMenu: this.folderMenuComponent,
+            event: $event,
+            item: node
+          } );
+          $event.preventDefault();
+          $event.stopPropagation();
+        }
     }
 
     handleCreate( parent: TreeNode ): void {
@@ -593,7 +608,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             this.error( err.json() );
         } );
     }
+    
+    handleRunOrtho( node: TreeNode ): void {
+      this.current = node;
 
+      let data = node.data;
+
+      this.service.runOrtho( data.id ).then( data => {
+        alert("Your ortho task is running."); // TODO : Handle this better
+      } ).catch(( err: any ) => {
+          this.error( err.json() );
+      } );
+    }
+    
+    handleDownloadAll( node: TreeNode ): void {
+      this.current = node;
+
+      let data = node.data;
+
+      window.location.href = acp + '/project/download-all?id=' + node.data.component +"&key=" + node.data.name;
+      
+//      this.service.downloadAll( data.id ).then( data => {
+//        
+//      } ).catch(( err: any ) => {
+//          this.error( err.json() );
+//      } );
+    }
+    
     handleDelete( node: TreeNode ): void {
         this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
             animated: true,
@@ -760,6 +801,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         return false;
     }
+    
+    public canRunOrtho = ( item: any ): boolean => {
+      if (item.data.type !== "Collection")
+      {
+        return false;
+      }
+      
+      return true;
+      
+      // TODO : If we don't have raw images uploaded then they can't run ortho
+      
+      // TODO : Different roles?
+//      if ( this.admin ) {
+//        return true;
+//      }
+//
+//      return false;
+  }
 
     public canDelete = ( item: any ): boolean => {
         if ( this.admin ) {
