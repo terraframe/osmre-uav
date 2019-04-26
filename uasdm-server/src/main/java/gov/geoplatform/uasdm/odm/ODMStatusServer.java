@@ -327,7 +327,7 @@ public class ODMStatusServer
                 TimeUnit.MINUTES.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))
             );
             
-            task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime);
+            task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
             task.apply();
           }
           else if (resp.getStatus().equals(ODMStatus.QUEUED))

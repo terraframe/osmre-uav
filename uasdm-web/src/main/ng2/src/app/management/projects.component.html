@@ -123,6 +123,9 @@
 </ng-template>
 
 <context-menu #nodeMenu>
+    <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-edit"></i>
+        Re-run Orthorectification Processing
+    </ng-template>
     <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit
         {{item?.data.name}} 
     </ng-template>
@@ -149,6 +152,12 @@
 <context-menu #imageMenu>
     <ng-template contextMenuItem let-item (execute)="handleImageDownload($event.item)"> 
       <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.name}}
+    </ng-template>
+</context-menu>
+
+<context-menu #folderMenu>
+    <ng-template contextMenuItem let-item (execute)="handleDownloadAll($event.item)"> 
+      <i class="fa fa-download" aria-hidden="true"></i> Download All Files
     </ng-template>
 </context-menu>
 

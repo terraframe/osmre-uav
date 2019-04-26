@@ -1,5 +1,14 @@
 package gov.geoplatform.uasdm;
 
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.TreeComponent;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,18 +20,12 @@ import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
+import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
-
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.WorkflowService;
-import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.QueryResult;
-import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.TreeComponent;
 
 @Controller(url = "project")
 public class ProjectManagementController
@@ -79,6 +82,25 @@ public class ProjectManagementController
     SiteItem result = this.service.applyWithParent(request.getSessionId(), item, parentId);
 
     return new RestBodyResponse(result.toJSON());
+  }
+  
+  @Endpoint(url = "download-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadAll(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  {
+    // Ideally I should be able to write these bytes directly to the ServletOutputStream but we'll be dumb and waste memory with InputStreams because its supported by Runway mvc.
+    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+    
+    this.service.downloadAll(request.getSessionId(), id, key, bao);
+
+    return new InputStreamResponse(new ByteArrayInputStream(bao.toByteArray()), "application/zip");
+  }
+  
+  @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  {
+    this.service.runOrtho(request.getSessionId(), id);
+
+    return new RestResponse();
   }
 
   @Endpoint(url = "edit", method = ServletMethod.POST, error = ErrorSerialization.JSON)
