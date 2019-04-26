@@ -11,7 +11,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 import { saveAs as importedSaveAs } from "file-saver";
-import { Map, LngLatBounds, NavigationControl } from 'mapbox-gl';
+import { Map, LngLatBounds, NavigationControl, ImageSource } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Subject } from 'rxjs/Subject';
@@ -90,18 +90,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                                 .then(items => {
                                     //this.images = [items[0]]; // not yet handling different types of files
 
-                                    this.images = items;
+                                    // this.images = items;
 
-                                    for (let i = 0; i < this.images.length; ++i) {
-                                        let image = this.images[i];
+                                    for (let i = 0; i < items.length; ++i) {
+                                        let item = items[i];
 
-                                        if(image.name.toLowerCase().indexOf(".png") !== -1 || image.name.toLowerCase().indexOf(".jpg") !== -1 || 
-                                            image.name.toLowerCase().indexOf(".jpeg") !== -1 || image.name.toLowerCase().indexOf(".tif") !== -1 ||
-                                            image.name.toLowerCase().indexOf(".tiff") !== -1) {
-
-                                            this.getThumbnail(image);
+                                        if(item.name.toLowerCase().indexOf(".png") !== -1 || item.name.toLowerCase().indexOf(".jpg") !== -1 || 
+                                            item.name.toLowerCase().indexOf(".jpeg") !== -1 || item.name.toLowerCase().indexOf(".tif") !== -1 ||
+                                            item.name.toLowerCase().indexOf(".tiff") !== -1) {
+                                            
+                                            this.images.push(item);
                                         }
                                     }
+
+                                    this.images.forEach(image => {
+                                        this.getThumbnail(image);
+                                    })
 
                                 }).catch((err: any) => {
                                     this.error(err.json());
@@ -769,7 +773,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    previewImage(event, image): void {
+    previewImage(event:any, image:any): void {
         this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
                 animated: true,
                 backdrop: true,
@@ -778,6 +782,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             } );
             this.bsModalRef.content.image = image;
             this.bsModalRef.content.src = event.target.src;
+    }
+
+    getDefaultImgURL(event: any): void {
+        event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
     error( err: any ): void {

@@ -4,7 +4,11 @@
     <div *ngIf="sites.length === 0" class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-            <h4 style="margin-top: 50px;">There are no Sites added to the system. Add a Site, Project, Mission, and Collection using the <a routerlink="/viewer" routerlinkactive="active" href="#/viewer">Site Viewer</a> before uploading data to.</h4>
+            <h4 style="margin-top: 50px;">
+                There are no Sites added to the system. Add a Site, Project, Mission, and Collection using the 
+                <a routerlink="/viewer" routerlinkactive="active" href="#/viewer">Site Viewer</a> 
+                before uploading data to.
+            </h4>
         </div>
         <div class="col-md-2"></div>
     </div>
@@ -39,6 +43,23 @@
                             </button>
                         </div>
                     </div>
+                </div> <!-- End existing task panel -->
+
+                <div *ngIf="showTaskFinishedNotification" class="panel panel-success" style="margin: 30px 0 30px 0;">
+                    <div class="panel-heading" style="font-size: 20px;">
+                        Upload Details
+                        <i class="fa fa-times btn btn-close pull-right" style="min-width:20px;padding:0;line-height: 27px;" (click)="showTaskFinishedNotification = false"></i>
+                    </div>
+                    <div class="panel-body">
+                        <h4>
+                            Status:
+                            <b> Upload successfully completed </b>
+                        </h4>
+                        <h4>
+                            Message:
+                            <b> Your uploaded data is being processed into final image products. </b>
+                        </h4>
+                    </div>
                 </div>
 
                 <div style="margin-top: 30px;" class="" *ngIf="!disabled && !existingTask">
@@ -67,26 +88,26 @@
                         </select>
                     </div>
                     <!-- 
-        <div class="form-check">
-          <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
-            Create new collection
-          </label>
-        </div>
-        <div class="form-check">
-          <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" (change)="handleChange()" [value]="false" [checked]="values.create==false" />
-            Add to existing collection
-          </label>
-        </div>
-        <div class="form-group" *ngIf="values.create === true">
-          <label for="nameInput">Name</label>
-          <input [(ngModel)]="values.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" #nameField="ngModel" required forbiddenName>
-          <div class="error-container" *ngIf="nameField.errors && nameField.errors.forbiddenName">
-            Invalid name. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.        
-          </div>
-        </div>
- -->
+                            <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="radioopt" [(ngModel)]="values.create" [value]="true" (change)="handleChange()" [checked]="values.create==true" />
+                                Create new collection
+                            </label>
+                            </div>
+                            <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="radioopt" value="false" [(ngModel)]="values.create" (change)="handleChange()" [value]="false" [checked]="values.create==false" />
+                                Add to existing collection
+                            </label>
+                            </div>
+                            <div class="form-group" *ngIf="values.create === true">
+                            <label for="nameInput">Name</label>
+                            <input [(ngModel)]="values.name" name="name" type="input" class="form-control" id="nameInput" placeholder="Name" #nameField="ngModel" required forbiddenName>
+                            <div class="error-container" *ngIf="nameField.errors && nameField.errors.forbiddenName">
+                                Invalid name. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.        
+                            </div>
+                            </div>
+                    -->
                     <div class="form-group">
                         <label for="collection">Collection:</label>
                         <select name="collection" [attr.disabled]="values.mission == null ? '' : null"
@@ -103,9 +124,9 @@
                     </div>
                 </div>
 
+                <!-- Current upload indicator -->
                 <div class="" [hidden]="!uploadVisible">
-
-                    <div *ngIf="currentTask" class="panel panel-success" style="margin: 30px 0 30px 0;">
+                    <div *ngIf="currentTask" class="panel panel-warning" style="margin: 30px 0 30px 0;">
                         <div class="panel-heading" style="font-size: 20px;">Upload Details</div>
                         <div class="panel-body">
                             <h4>
@@ -138,8 +159,7 @@
                         <i class="icon-upload icon-white"></i>
                         Upload
                     </button>
-
-                </div>
+                </div> <!-- End current upload indicator -->
             </form>
 
         </div>
