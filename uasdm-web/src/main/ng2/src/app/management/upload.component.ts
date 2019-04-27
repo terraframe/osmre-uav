@@ -70,6 +70,7 @@ export class UploadComponent implements OnInit {
     uplodeCounterInterfal: any;
     differ: any;
     showFileSelectPanel: boolean = false;
+    showTaskFinishedNotification: boolean = false;
 
     constructor( private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -171,6 +172,11 @@ export class UploadComponent implements OnInit {
                         document.getElementById("select-file-button").classList.remove("hidden");
 
                         clearInterval(that.uplodeCounterInterfal);
+
+                        that.showTaskFinishedNotification = true;
+                        // setTimeout(() => {
+                        //     that.showTaskFinishedNotification = false;
+                        // }, 5000);
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
