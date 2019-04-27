@@ -19,6 +19,7 @@ import org.json.JSONWriter;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
@@ -397,6 +398,18 @@ public abstract class UasComponent extends UasComponentBase
         break;
       }
     }
+  }
+  
+  public void delete(String key)
+  {
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    String bucketName = AppProperties.getBucketName();
+
+    DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
+
+    client.deleteObject(request);
+    
+    SolrService.deleteDocument(this, key);
   }
 
   public S3Object download(String key)

@@ -215,6 +215,22 @@ export class ManagementService {
             } )
             .toPromise()
     }
+    
+    removeObject( componentId: string, key: string ): Promise<Response> {
+
+        let headers = new Headers( {
+            'Content-Type': 'application/json'
+        } );
+
+        this.eventService.start();
+
+        return this.http
+            .post( acp + '/project/removeObject', JSON.stringify( { id: componentId, key: key } ), { headers: headers } )
+            .finally(() => {
+                this.eventService.complete();
+            } )
+            .toPromise()
+    }
 
     removeTask( uploadId: string ): Promise<Response> {
 

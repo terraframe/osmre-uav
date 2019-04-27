@@ -317,6 +317,14 @@ public class ProjectManagementService
 
     uasComponent.delete();
   }
+  
+  @Request(RequestType.SESSION)
+  public void removeObject(String sessionId, String id, String key)
+  {
+    UasComponent uasComponent = UasComponent.get(id);
+
+    uasComponent.delete(key);
+  }
 
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)

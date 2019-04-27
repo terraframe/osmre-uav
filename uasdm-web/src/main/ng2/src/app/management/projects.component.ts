@@ -652,6 +652,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     remove( node: TreeNode ): void {
+      console.log("Remove on, ", node);
+      console.log("id is", node.data.id);
+    
+      if ( node.data.type === "object" )
+      {
+        this.service.removeObject( node.data.component, node.data.key ).then( response => {
+            let parent = node.parent;
+            let children = parent.data.children;
+
+            console.log("children = ", parent.data.children);
+            parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
+
+            if ( parent.data.children.length === 0 ) {
+                parent.data.hasChildren = false;
+            }
+
+            this.tree.treeModel.update();
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
+        } );
+      }
+      else
+      {
         this.service.remove( node.data.id ).then( response => {
             if ( node.data.type !== 'Site' ) {
                 let parent = node.parent;
@@ -673,6 +696,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+      }
     }
 
 

@@ -63,6 +63,34 @@ public class SolrService
       }
     }
   }
+  
+  public static void deleteDocument(UasComponent component, String key)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      SolrDocument existing = SolrService.find(component, key);
+      
+      try
+      {
+        HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
+        
+        try
+        {
+          client.deleteById((String) existing.getFieldValue("id"));
+          
+          client.commit();
+        }
+        finally
+        {
+          client.close();
+        }
+      }
+      catch (SolrServerException | IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+  }
 
   public static void updateOrCreateDocument(List<UasComponent> ancestors, UasComponent component, String key, String name)
   {
@@ -70,11 +98,11 @@ public class SolrService
     {
 
       SolrDocument existing = SolrService.find(component, key);
-
+      
       try
       {
         HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
-
+        
         try
         {
           SolrInputDocument document = new SolrInputDocument();

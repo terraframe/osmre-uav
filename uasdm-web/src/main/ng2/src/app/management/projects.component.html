@@ -149,8 +149,12 @@
     <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> 
       <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data.name}}
     </ng-template>
+    <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)"> 
+      <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}}
+    </ng-template>
 </context-menu>
 
+<!-- TODO : Is this used? -->
 <context-menu #imageMenu>
     <ng-template contextMenuItem let-item (execute)="handleImageDownload($event.item)"> 
       <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.name}}
