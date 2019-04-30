@@ -73,7 +73,7 @@ public class ProjectManagementController
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
   }
-
+  
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {
@@ -99,6 +99,14 @@ public class ProjectManagementController
   public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
     this.service.runOrtho(request.getSessionId(), id);
+
+    return new RestResponse();
+  }
+  
+  @Endpoint(url = "submitMetadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "json") String json)
+  {
+    this.service.submitMetadata(request.getSessionId(), json);
 
     return new RestResponse();
   }
