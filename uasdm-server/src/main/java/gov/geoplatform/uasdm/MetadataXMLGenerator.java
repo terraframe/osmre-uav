@@ -117,7 +117,7 @@ public class MetadataXMLGenerator
     
     JSONObject sensor = json.getJSONObject("sensor");
     e = dom.createElement("Sensor");
-    e.setAttribute("name", sensor.getString("sensor"));
+    e.setAttribute("name", sensor.getString("name"));
     e.setAttribute("type", sensor.getString("type"));
     e.setAttribute("model", sensor.getString("model"));
     e.setAttribute("wavelength", sensor.getString("wavelength"));

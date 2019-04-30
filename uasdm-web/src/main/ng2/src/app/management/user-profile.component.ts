@@ -74,14 +74,21 @@ export class UserProfileComponent implements OnInit {
         } );
         this.bsModalRef.content.collectionId = message.collectionId;
 
-        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( () => {
-            // Remove the message
-            const index = this.messages.indexOf( message );
-            
+        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( (collectionId) => {
+           console.log(this.messages)
 
-            if ( index > -1 ) {
-                this.messages.splice( index, 1 );
-            }
+           let index = -1;
+           for(let i=0; i<this.messages.length; i++){
+               let msg = this.messages[i];
+               if(msg.collectionId === collectionId){
+                   index = i;
+               }
+           }
+
+           if(index >= 0){
+               this.messages.splice(index, 1);
+           }
+
         } );
 
     }

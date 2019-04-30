@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 
-//use Fine Uploader UI for traditional endpoints
-import { FineUploader, UIOptions } from 'fine-uploader';
+import { ManagementService } from '../../service/management.service';
+
 
 declare var acp: string;
 
@@ -23,28 +23,29 @@ export class MetadataModalComponent implements OnInit {
     disabled: boolean = false;
 
     metaObject: any = {
+        collectionId: "",
         agency:{
             name:"Department of Interior",
-            shortName: "TODO",
-            fieldCenter: "TODO"
+            shortName: "",
+            fieldCenter: ""
         },
         pointOfContact: {
             name:"",
             email:""
         },
-        project: {
-            name:"",
-            shortName:"",
-            description:""
-        },
-        mission: {
-            name:"",
-            description:""
-        },
-        collect: {
-            name:"",
-            description:""
-        },
+        // project: {
+        //     name:"",
+        //     shortName:"",
+        //     description:""
+        // },
+        // mission: {
+        //     name:"",
+        //     description:""
+        // },
+        // collect: {
+        //     name:"",
+        //     description:""
+        // },
         platform: {
             name: "TODO",
             class:"",
@@ -74,70 +75,24 @@ export class MetadataModalComponent implements OnInit {
      */
     public onMetadataChange: Subject<string>;
 
-
-    /*
-     * FineUploader for uploading large files
-     */
-    // uploader = null as FineUploader;
-
-    constructor( public bsModalRef: BsModalRef ) { }
+    constructor( public bsModalRef: BsModalRef, private service: ManagementService ) { }
 
     ngOnInit(): void {
         this.onMetadataChange = new Subject();
     }
 
-    // @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
-
-    //     const that = this;
-
-    //     if ( elem != null && this.uploader == null ) {
-
-    //         let uiOptions: UIOptions = {
-    //             debug: false,
-    //             autoUpload: false,
-    //             multiple: false,
-    //             element: elem.nativeElement,
-    //             template: 'qq-template',
-    //             request: {
-    //                 endpoint: acp + "/file/metadata",
-    //                 forceMultipart: true
-    //             },
-    //             retry: {
-    //                 enableAuto: false
-    //             },
-    //             validation: {
-    //                 allowedExtensions: ['xml']
-    //             },
-    //             callbacks: {
-    //                 onUpload: function( id: any, name: any ): void {
-    //                     that.disabled = true;
-    //                 },
-    //                 onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
-    //                     that.disabled = false;
-
-    //                     if ( responseJSON.success ) {
-    //                         that.onMetadataChange.next();
-    //                         that.bsModalRef.hide()                            
-    //                     }
-    //                 },
-    //                 onError: function( id: any, name: any, errorReason: any, xhrOrXdr: any ): void {
-    //                     that.disabled = false;
-    //                     that.message = ( errorReason );
-    //                 }
-
-    //             }
-
-    //         };
-
-    //         // this.uploader = new FineUploader( uiOptions );
-    //     }
-    // }
 
     handleSubmit(): void {
-        // this.uploader.setParams( { missionId: this.missionId } );
-        // this.uploader.uploadStoredFiles();
+        
+        this.metaObject.collectionId = this.collectionId;
 
-        console.log(this.metaObject);
+        this.service.submitCollectionMetadata(this.metaObject).then(() => {
+            this.bsModalRef.hide();
+            this.onMetadataChange.next( this.collectionId );
+        } )
+        .catch(( err: any ) => {
+            this.error( err.json() );
+        } );
     }
 
     error( err: any ): void {

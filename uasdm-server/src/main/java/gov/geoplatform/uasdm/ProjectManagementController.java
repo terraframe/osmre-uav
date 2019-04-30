@@ -103,7 +103,7 @@ public class ProjectManagementController
     return new RestResponse();
   }
   
-  @Endpoint(url = "submitMetadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  @Endpoint(url = "submit-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "json") String json)
   {
     this.service.submitMetadata(request.getSessionId(), json);

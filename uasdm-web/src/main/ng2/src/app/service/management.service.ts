@@ -349,4 +349,20 @@ export class ManagementService {
                 return response.json();
             } )
     }
+
+    submitCollectionMetadata( metaObj: string ): Promise<Response> {
+
+        let headers = new Headers( {
+            'Content-Type': 'application/json'
+        } );
+
+        this.eventService.start();
+
+        return this.http
+            .post( acp + '/project/submit-metadata', JSON.stringify( { json: metaObj } ), { headers: headers } )
+            .finally(() => {
+                this.eventService.complete();
+            } )
+            .toPromise()
+    }
 }
