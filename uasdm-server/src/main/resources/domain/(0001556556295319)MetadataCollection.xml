@@ -1,7 +1,7 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" publish="false" >
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" exported="false" publish="false" >
 	      <attributes>
 	        <reference name="collection" type="gov.geoplatform.uasdm.bus.Collection"/>
 	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
@@ -10,7 +10,7 @@
       </mdBusiness>
     </create>
     <update>
-      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask">
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" >
         <create>
 	        <attributes>
 	          <char name="workflowType" size="64" />
@@ -24,9 +24,7 @@
           </attributes>
         </create>
       </mdBusiness>
-      <!--
       <object key="gov.geoplatform.uasdm.bus.Mission.metadataUploaded" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
-      -->
     </update>
     <permissions>
       <role roleName="geoprism.admin.Administrator">
