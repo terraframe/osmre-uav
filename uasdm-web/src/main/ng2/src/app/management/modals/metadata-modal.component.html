@@ -1,62 +1,65 @@
-<form>
+<div class="modal-header text-center">
+    <h2>Collection Metadata</h2>
+</div>
 
-    <div class="modal-header">
-        <h2>Metadata file upload</h2>
-    </div>
-    <div class="modal-body">
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form #ngForm="ngForm">
+            <div class="modal-body">
 
-        <div *ngIf="message != null" class="error-container">
-            <div class="label-holder">
-                <strong>Error</strong>
-            </div>
-            <div class="holder">
-                <div>
-                    <p class="error-message">{{message}}</p>
+                <div *ngIf="message != null" class="error-container">
+                    <div class="label-holder">
+                        <strong>Error</strong>
+                    </div>
+                    <div class="holder">
+                        <div>
+                            <p class="error-message">{{message}}</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
 
-        <div class="panel panel-default">
-            <div class="panel-heading">Agency</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="agency.name">Name</label>
-                    <input type="text" name="agency.name" [(ngModel)]="metaObject.agency.name" [maxlength]="50"
-                        [required]="true" [disabled]="true" />
+                <div class="panel panel-default">
+                    <div class="panel-heading">Agency</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="agency.name">Name</label>
+                            <input type="text" name="agency.name" [(ngModel)]="metaObject.agency.name" [maxlength]="50"
+                                [required]="true" [disabled]="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="agency.shortName">Short Name</label>
+                            <input type="text" name="agency.shortName" [(ngModel)]="metaObject.agency.shortName"
+                                [maxlength]="30" [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="agency.fieldCenter">Field Center</label>
+                            <input type="text" name="agency.fieldCenter" [(ngModel)]="metaObject.agency.fieldCenter"
+                                [maxlength]="45" [required]="true" [disabled]="false" />
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="agency.shortName">Short Name</label>
-                    <input type="text" name="agency.shortName" [(ngModel)]="metaObject.agency.shortName"
-                        [maxlength]="30" [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="agency.fieldCenter">Field Center</label>
-                    <input type="text" name="agency.fieldCenter" [(ngModel)]="metaObject.agency.fieldCenter"
-                        [maxlength]="45" [required]="true" [disabled]="false" />
-                </div>
-            </div>
-        </div>
 
 
-        <div class="panel panel-default">
-            <div class="panel-heading">Point Of Contact</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="pointOfContact.name">Name</label>
-                    <input type="text" name="pointOfContact.name" [(ngModel)]="metaObject.pointOfContact.name"
-                        [maxlength]="100" [required]="false" [disabled]="false" />
+                <div class="panel panel-default">
+                    <div class="panel-heading">Point Of Contact</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="pointOfContact.name">Name</label>
+                            <input type="text" name="pointOfContact.name" [(ngModel)]="metaObject.pointOfContact.name"
+                                [maxlength]="100" [required]="false" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="pointOfContact.email">Email</label>
+                            <input type="text" name="pointOfContact.email" [(ngModel)]="metaObject.pointOfContact.email"
+                                [maxlength]="255" [required]="false" [disabled]="false" />
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="pointOfContact.email">Email</label>
-                    <input type="text" name="pointOfContact.email" [(ngModel)]="metaObject.pointOfContact.email"
-                        [maxlength]="255" [required]="false" [disabled]="false" />
-                </div>
-            </div>
-        </div>
 
 
-        <!-- <div class="panel panel-default">
+                <!-- <div class="panel panel-default">
             <div class="panel-heading">Project</div>
             <div class="panel-body">
                 <div class="form-group">
@@ -78,7 +81,7 @@
             </div>
         </div> -->
 
-        <!-- <div class="panel panel-default">
+                <!-- <div class="panel panel-default">
             <div class="panel-heading">Mission</div>
             <div class="panel-body">
                 <div class="form-group">
@@ -96,7 +99,7 @@
         </div> -->
 
 
-        <!-- <div class="panel panel-default">
+                <!-- <div class="panel panel-default">
             <div class="panel-heading">Collect</div>
             <div class="panel-body">
                 <div class="form-group">
@@ -114,123 +117,131 @@
         </div> -->
 
 
-        <div class="panel panel-default">
-            <div class="panel-heading">Platform</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="platform.name">Name</label>
-                    <select [(ngModel)]="metaObject.platform.name" name="platform.name" type="input"
-                        class="form-control" [required]="true" [disabled]="false">
-                        <option></option>
-                        <option>TODO</option>
-                        <!-- <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option> -->
-                    </select>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Platform</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="platform.name">Name</label>
+                            <select [(ngModel)]="metaObject.platform.name" name="platform.name" type="input" class=""
+                                [required]="true" [disabled]="false">
+                                <option></option>
+                                <option>Falcon Fixed Wing</option>
+                                <!-- <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option> -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="platform.class">Class</label>
+                            <input type="text" name="platform.class" [(ngModel)]="metaObject.platform.class"
+                                [maxlength]="20" [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="platform.type">Type</label>
+                            <select [(ngModel)]="metaObject.platform.type" name="platform.type" type="input" class=""
+                                [required]="true" [disabled]="false">
+                                <option></option>
+                                <option>Fixed Wing</option>
+                                <!-- <option>Natural Color (RGB)</option>
+                                <option>Multi-band (4+)</option>
+                                <option>Thermal</option> -->
+                                <!-- <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option> -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="platform.serialNumber">Serial Number</label>
+                            <input type="text" name="platform.serialNumber"
+                                [(ngModel)]="metaObject.platform.serialNumber" OnlyNumber="true" [maxlength]="50"
+                                [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="platform.faaIdNumber">FAA Id Number</label>
+                            <input type="text" name="platform.faaIdNumber" [(ngModel)]="metaObject.platform.faaIdNumber"
+                                OnlyNumber="true" [maxlength]="30" [required]="true" [disabled]="false" />
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="platform.class">Class</label>
-                    <input type="text" name="platform.class" [(ngModel)]="metaObject.platform.class" [maxlength]="20"
-                        [required]="true" [disabled]="false" />
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Sensor</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="sensor.name">Name</label>
+                            <input type="text" name="sensor.name" [(ngModel)]="metaObject.sensor.name" [maxlength]="50"
+                                [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.type">Type</label>
+                            <input type="text" name="sensor.type" [(ngModel)]="metaObject.sensor.type" [maxlength]="20"
+                                [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.model">Model</label>
+                            <input type="text" name="sensor.model" [(ngModel)]="metaObject.sensor.model"
+                                [maxlength]="20" [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.wavelength">Wave Length</label>
+                            <input type="text" name="sensor.wavelength" [(ngModel)]="metaObject.sensor.wavelength"
+                                [maxlength]="15" [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.imageWidth">Image Width</label>
+                            <input type="text" name="sensor.imageWidth" [(ngModel)]="metaObject.sensor.imageWidth"
+                                [required]="true" [disabled]="true" OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.imageHeight">Image Height</label>
+                            <input type="text" name="sensor.imageHeight" [(ngModel)]="metaObject.sensor.imageHeight"
+                                [required]="true" [disabled]="true" OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Width</label>
+                            <input type="text" name="sensor.sensorWidth" [(ngModel)]="metaObject.sensor.sensorWidth"
+                                [required]="true" [disabled]="false" OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorHeight">Sensor Height</label>
+                            <input type="text" name="sensor.sensorHeight" [(ngModel)]="metaObject.sensor.sensorHeight"
+                                [required]="true" [disabled]="false" OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
+                            <input type="text" name="sensor.pixelSizeWidth"
+                                [(ngModel)]="metaObject.sensor.pixelSizeWidth" [required]="true" [disabled]="false"
+                                OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.pixelSizeHeight">Pixel Size Height</label>
+                            <input type="text" name="sensor.pixelSizeHeight"
+                                [(ngModel)]="metaObject.sensor.pixelSizeHeight" [required]="true" [disabled]="false"
+                                OnlyNumber="true" />
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="platform.type">Type</label>
-                    <select [(ngModel)]="metaObject.platform.type" name="platform.type" type="input"
-                        class="form-control" [required]="true" [disabled]="false">
-                        <option></option>
-                        <option>Natural Color (RGB)</option>
-                        <option>Multi-band (4+)</option>
-                        <option>Thermal</option>
-                        <!-- <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option> -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="platform.serialNumber">Serial Number</label>
-                    <input type="text" name="platform.serialNumber" [(ngModel)]="metaObject.platform.serialNumber"
-                        OnlyNumber="true" [maxlength]="50" [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="platform.faaIdNumber">FAA Id Number</label>
-                    <input type="text" name="platform.faaIdNumber" [(ngModel)]="metaObject.platform.faaIdNumber"
-                        OnlyNumber="true" [maxlength]="30" [required]="true" [disabled]="false" />
+
+                <!-- <div class="panel panel-default">
+                    <div class="panel-heading">Upload</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="upload.dataType">Name</label>
+                            <input type="text" name="upload.dataType" [(ngModel)]="metaObject.upload.dataType"
+                                [maxlength]="50" [required]="true" [disabled]="true" />
+                        </div>
+                    </div>
+                </div> -->
+
+
+
+                <!-- <div #uploader></div> -->
+                <div>
+                    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
+                    <button type="button" [disabled]="!ngForm.valid" class="btn btn-primary"
+                        (click)="handleSubmit()">
+                        <i class="icon-upload icon-white"></i> Submit
+                    </button>
                 </div>
             </div>
-        </div>
-
-
-        <div class="panel panel-default">
-            <div class="panel-heading">Sensor</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="sensor.name">Name</label>
-                    <input type="text" name="sensor.name" [(ngModel)]="metaObject.sensor.name" [maxlength]="50"
-                        [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.type">Type</label>
-                    <input type="text" name="sensor.type" [(ngModel)]="metaObject.sensor.type" [maxlength]="20"
-                        [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.model">Model</label>
-                    <input type="text" name="sensor.model" [(ngModel)]="metaObject.sensor.model" [maxlength]="20"
-                        [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.wavelength">Wave Length</label>
-                    <input type="text" name="sensor.wavelength" [(ngModel)]="metaObject.sensor.wavelength"
-                        [maxlength]="15" [required]="true" [disabled]="false" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.imageWidth">Image Width</label>
-                    <input type="text" name="sensor.imageWidth" [(ngModel)]="metaObject.sensor.imageWidth"
-                        [required]="true" [disabled]="true" OnlyNumber="true" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.imageHeight">Image Height</label>
-                    <input type="text" name="sensor.imageHeight" [(ngModel)]="metaObject.sensor.imageHeight"
-                        [required]="true" [disabled]="true" OnlyNumber="true" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.sensorWidth">Sensor Width</label>
-                    <input type="text" name="sensor.sensorWidth" [(ngModel)]="metaObject.sensor.sensorWidth"
-                        [required]="true" [disabled]="false" OnlyNumber="true" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.sensorHeight">Sensor Height</label>
-                    <input type="text" name="sensor.sensorHeight" [(ngModel)]="metaObject.sensor.sensorHeight"
-                        [required]="true" [disabled]="false" OnlyNumber="true" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
-                    <input type="text" name="sensor.pixelSizeWidth" [(ngModel)]="metaObject.sensor.pixelSizeWidth"
-                        [required]="true" [disabled]="false" OnlyNumber="true" />
-                </div>
-                <div class="form-group">
-                    <label for="sensor.pixelSizeHeight">Pixel Size Height</label>
-                    <input type="text" name="sensor.pixelSizeHeight" [(ngModel)]="metaObject.sensor.pixelSizeHeight"
-                        [required]="true" [disabled]="false" OnlyNumber="true" />
-                </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">Upload</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="upload.dataType">Name</label>
-                    <input type="text" name="upload.dataType" [(ngModel)]="metaObject.upload.dataType" [maxlength]="50"
-                        [required]="true" [disabled]="true" />
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- <div #uploader></div> -->
-        <div>
-            <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
-            <button type="button" [ngClass]="{disabled : disabled}" class="btn btn-primary" (click)="handleSubmit()">
-                <i class="icon-upload icon-white"></i> Submit
-            </button>
-        </div>
+        </form>
     </div>
-</form>
+    <div class="col-md-2"></div>
+</div>

@@ -24,8 +24,8 @@
           
           <ul class="list-group">
             <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Tasks</strong></span> {{totalTaskCount}}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Actions</strong></span> {{totalActionsCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Uploads</strong></span> {{totalTaskCount}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Actions To Do</strong></span> {{totalActionsCount}}</li>
           </ul> 
                
           <div class="panel panel-default">
@@ -49,14 +49,20 @@
 <!--               </div> -->
               <div class="tab-pane active" id="tasks">
                 
-                <h2>Your Tasks</h2>
+                <div *ngIf="messages && messages.length > 0">
+                    <h3>Remaining Tasks</h3>
+                
+                    <hr>
+                    <a href="#" *ngFor="let message of messages">
+                        <alert type="danger" (click)="handleMessage(message)" >
+                            {{message.message}}
+                        </alert>
+                    </a>
+                </div>
+
+                <h3>Uploads</h3>
                 
                 <hr>
-                <a href="#" *ngFor="let message of messages">
-                  <alert type="danger" (click)="handleMessage(message)" >
-                    {{message.message}}
-                  </alert>
-                </a>
                                 
                 <div class="panel-group">
                   <div *ngFor="let task of tasks; let i=index" class="panel panel-default">

@@ -174,9 +174,6 @@ export class UploadComponent implements OnInit {
                         clearInterval(that.uplodeCounterInterfal);
 
                         that.showTaskFinishedNotification = true;
-                        // setTimeout(() => {
-                        //     that.showTaskFinishedNotification = false;
-                        // }, 5000);
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
@@ -203,6 +200,8 @@ export class UploadComponent implements OnInit {
                         document.getElementById("select-file-button").classList.remove("hidden");
 
                         clearInterval(that.uplodeCounterInterfal);
+
+                        that.showTaskFinishedNotification = false;
 
                     },
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
