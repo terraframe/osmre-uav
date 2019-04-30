@@ -14,9 +14,9 @@ declare var acp: string;
 } )
 export class MetadataModalComponent implements OnInit {
     /*
-     * missionId for the metadata
+     * collectionId for the metadata
      */
-    missionId: string;
+    collectionId: string;
 
     message: string = null;
 

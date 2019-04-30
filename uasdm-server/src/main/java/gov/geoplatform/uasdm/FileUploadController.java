@@ -312,44 +312,44 @@ public class FileUploadController
     }
   }
 
-  @Endpoint(url = "metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF metadata(ClientRequestIF clientRequest, ServletRequestIF request, @RequestParamter(name = "missionId") String missionId, @RequestParamter(name = "values") Map<String, ParameterValue> values)
-  {
-
-    try
-    {
-      MultipartFileParameter file = this.getFile(values);
-
-      if (file != null)
-      {
-        this.pService.uploadMetadata(clientRequest.getSessionId(), missionId, file);
-
-        return writeResponse(null, false, false, false, null);
-      }
-      else
-      {
-        throw new RuntimeException("File is required");
-      }
-    }
-    catch (Exception e)
-    {
-      return this.writeResponse(e.getMessage(), false, false, false, null);
-    }
-  }
-
-  private MultipartFileParameter getFile(Map<String, ParameterValue> values)
-  {
-    Set<Entry<String, ParameterValue>> entries = values.entrySet();
-
-    for (Entry<String, ParameterValue> entry : entries)
-    {
-      if (entry.getValue() instanceof MultipartFileParameter)
-      {
-        return (MultipartFileParameter) entry.getValue();
-      }
-    }
-
-    return null;
-  }
+//  @Endpoint(url = "metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+//  public ResponseIF metadata(ClientRequestIF clientRequest, ServletRequestIF request, @RequestParamter(name = "missionId") String missionId, @RequestParamter(name = "values") Map<String, ParameterValue> values)
+//  {
+//
+//    try
+//    {
+//      MultipartFileParameter file = this.getFile(values);
+//
+//      if (file != null)
+//      {
+//        this.pService.uploadMetadata(clientRequest.getSessionId(), missionId, file);
+//
+//        return writeResponse(null, false, false, false, null);
+//      }
+//      else
+//      {
+//        throw new RuntimeException("File is required");
+//      }
+//    }
+//    catch (Exception e)
+//    {
+//      return this.writeResponse(e.getMessage(), false, false, false, null);
+//    }
+//  }
+//
+//  private MultipartFileParameter getFile(Map<String, ParameterValue> values)
+//  {
+//    Set<Entry<String, ParameterValue>> entries = values.entrySet();
+//
+//    for (Entry<String, ParameterValue> entry : entries)
+//    {
+//      if (entry.getValue() instanceof MultipartFileParameter)
+//      {
+//        return (MultipartFileParameter) entry.getValue();
+//      }
+//    }
+//
+//    return null;
+//  }
 
 }

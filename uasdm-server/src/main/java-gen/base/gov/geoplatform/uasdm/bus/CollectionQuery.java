@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1860730420)
+@com.runwaysdk.business.ClassSignature(hash = -550047406)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.Collection.CLASS;
+  }
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
+
   }
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
@@ -186,6 +203,9 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public interface CollectionQueryReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Collection collection);
 
@@ -245,6 +265,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
       return this.NE(collection.getOid());
     }
 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
+
+  }
 
   public com.runwaysdk.query.Condition mission()
   {
@@ -370,6 +407,9 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public interface CollectionQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
+    public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.Collection ... collection);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.Collection ... collection);
@@ -453,6 +493,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
+  {
+    return getMetadataUploaded(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
+
   }
   }
 }

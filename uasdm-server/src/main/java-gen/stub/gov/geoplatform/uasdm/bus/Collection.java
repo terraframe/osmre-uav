@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -15,9 +18,13 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
@@ -27,10 +34,12 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.GeoprismUser;
 
 public class Collection extends CollectionBase
 {
@@ -79,7 +88,62 @@ public class Collection extends CollectionBase
   {
     return this.addMission((Mission) uasComponent);
   }
+  
+  public static java.util.Collection<Collection> getMissingMetadata()
+  {
+    java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
 
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+
+    if (singleActor != null)
+    {
+      QueryFactory qf = new QueryFactory();
+
+      CollectionQuery cQ = new CollectionQuery(qf);
+
+      CollectionUploadEventQuery eQ = new CollectionUploadEventQuery(qf);
+
+      // Get Events created by the current user
+      eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
+
+      // Get Collections associated with those tasks
+      cQ.WHERE(cQ.getOid().EQ(eQ.getCollection().getOid()));
+
+      // Get the Missions of those Collections;
+      cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
+
+      OIterator<? extends Collection> i = cQ.getIterator();
+
+      for (Collection collection : i)
+      {
+        collectionList.add(collection);
+      }
+    }
+
+    return collectionList;
+  }
+  
+  private JSONObject toMetadataMessage()
+  {
+    JSONObject object = new JSONObject();
+    object.put("collectionId", this.getOid());
+    object.put("message", "Metadata missing for collection [" + this.getName() + "]");
+
+    return object;
+  }
+  
+  public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)
+  {
+    JSONArray messages = new JSONArray();
+
+    for (Collection collection : collections)
+    {
+      messages.put(collection.toMetadataMessage());
+    }
+
+    return messages;
+  }
+  
   /**
    * Creates the object and builds the relationship with the parent.
    * 

@@ -144,11 +144,11 @@ public class WorkflowService
   public JSONObject getTasks(String sessionId)
   {
     List<AbstractWorkflowTask> tasks = AbstractWorkflowTask.getUserTasks();
-    List<Mission> missions = Mission.getMissingMetadata();
+    java.util.Collection<Collection> missions = Collection.getMissingMetadata();
 
     JSONObject response = new JSONObject();
     response.put("tasks", AbstractWorkflowTask.serialize(tasks));
-    response.put("messages", Mission.toMetadataMessage(missions));
+    response.put("messages", Collection.toMetadataMessage(missions));
 
     return response;
   }
@@ -156,9 +156,9 @@ public class WorkflowService
   @Request(RequestType.SESSION)
   public JSONArray getMissingMetadata(String sessionId)
   {
-    List<Mission> missions = Mission.getMissingMetadata();
+    java.util.Collection<Collection> missions = Collection.getMissingMetadata();
 
-    return Mission.toMetadataMessage(missions);
+    return Collection.toMetadataMessage(missions);
   }
 
   @Request(RequestType.SESSION)

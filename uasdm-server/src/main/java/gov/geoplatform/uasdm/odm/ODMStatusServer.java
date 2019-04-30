@@ -12,23 +12,17 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.service.SolrService;
 import net.geoprism.EmailSetting;
-import net.geoprism.email.InvalidEmailSettings;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -501,7 +495,7 @@ public class ODMStatusServer
       /**
        * Upload the full all.zip file to S3 for archive purposes.
        */
-      uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName());
+      Util.uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), task);
       
       /**
        * Unzip the ODM all.zip file and selectively upload files that interest us to S3.
@@ -565,7 +559,7 @@ public class ODMStatusServer
           
           String key = col.getS3location() + s3FolderPrefix + "/" + name;
   
-          uploadFileToS3(child, key);
+          Util.uploadFileToS3(child, key, task);
           
           SolrService.updateOrCreateDocument(col.getAncestors(), col, key, name);
         }
@@ -576,63 +570,6 @@ public class ODMStatusServer
       }
     }
 
-    private void uploadFileToS3(File child, String key)
-    {
-      try
-      {
-        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
- 
-        try
-        {
-          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, child);
- 
-          if (myUpload.isDone() == false)
-          {
-            logger.info("Source: " + child.getAbsolutePath());
-            logger.info("Destination: " + myUpload.getDescription());
-            
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
-          }
- 
-          myUpload.addProgressListener(new ProgressListener()
-          {
-            int count = 0;
- 
-            @Override
-            public void progressChanged(ProgressEvent progressEvent)
-            {
-              if (count % 2000 == 0)
-              {
-                long total = myUpload.getProgress().getTotalBytesToTransfer();
-                long current = myUpload.getProgress().getBytesTransferred();
- 
-                logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
- 
-                count = 0;
-              }
- 
-              count++;
-            }
-          });
- 
-          myUpload.waitForCompletion();
-        }
-        finally
-        {
-          tx.shutdownNow();
-        }
-      }
-      catch (Exception e)
-      {
-        task.createAction(e.getMessage(), "error");
-        logger.error("Exception occured while uploading [" + key + "].", e);
-      }
-    }
-    
-    
-    
     private class ODMFolderProcessingConfig
     {
       private String odmFolderName;
