@@ -28,6 +28,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.Mission;
@@ -377,19 +378,11 @@ public class ProjectManagementService
       UasComponent.validateFolderName(missionId, folderName);
     }
   }
-
+  
   @Request(RequestType.SESSION)
-  public void uploadMetadata(String sessionId, String json)
+  public void submitMetadata(String sessionId, String json)
   {
-//    try (InputStream istream = file.getInputStream())
-//    {
-//      Collection collection = Collection.get(collectionId);
-//      collection.uploadMetadata(file.getFilename(), istream);
-//    }
-//    catch (IOException e)
-//    {
-//      throw new ProgrammingErrorException(e);
-//    }
+    new MetadataXMLGenerator(json).generateAndUpload();
   }
 
   @Request(RequestType.SESSION)

@@ -35,19 +35,11 @@ public class MetadataXMLGenerator
   
   private Document dom;
   
+  private JSONObject json;
+  
   private Collection collection;
   
-  public static void main(String[] args)
-  {
-    mainInReq();
-  }
-  @Request
-  public static void mainInReq()
-  {
-    new MetadataXMLGenerator(Collection.get("d2de46eb-14be-4f81-a153-54342f0005bf")).generateAndUpload("{}");
-  }
-  
-  public MetadataXMLGenerator(Collection collection)
+  public MetadataXMLGenerator(String json)
   {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = null;
@@ -64,14 +56,19 @@ public class MetadataXMLGenerator
     this.dom = builder.newDocument();
     this.dom.setStrictErrorChecking(false);
     this.dom.setXmlStandalone(true);
-    this.collection = collection; 
+    parseJson(json);
   }
   
-  public void generate(String sJson, OutputStream out)
+  private void parseJson(String sJson)
   {
-    List<UasComponent> ancestors = this.collection.getAncestors();
+    json = new JSONObject(sJson);
     
-    JSONObject oJson = new JSONObject(sJson);
+    this.collection = Collection.get(json.getString("collectionId")); // TODO
+  }
+  
+  public void generate(OutputStream out)
+  {
+    List<UasComponent> ancestors = collection.getAncestors();
     
     Element e = null;
     
@@ -103,8 +100,8 @@ public class MetadataXMLGenerator
     root.appendChild(e);
     
     e = dom.createElement("Collect");
-    e.setAttribute("name", this.collection.getName());
-    e.setAttribute("description", this.collection.getDescription());
+    e.setAttribute("name", collection.getName());
+    e.setAttribute("description", collection.getDescription());
     root.appendChild(e);
     
     // TODO
@@ -151,7 +148,7 @@ public class MetadataXMLGenerator
     }
   }
   
-  public void generateAndUpload(String sJson)
+  public void generateAndUpload()
   {
     File temp = null;
     try
@@ -172,7 +169,7 @@ public class MetadataXMLGenerator
     
     try (FileOutputStream fos = new FileOutputStream(temp))
     {
-      this.generate(sJson, fos);
+      this.generate(fos);
     }
     catch (IOException e)
     {
