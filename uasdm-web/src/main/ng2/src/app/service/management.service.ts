@@ -88,12 +88,12 @@ export class ManagementService {
           'Content-Type': 'application/json'
       } );
 
-      this.eventService.start();
+    //   this.eventService.start();
 
       return this.http
           .post( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
           .finally(() => {
-              this.eventService.complete();
+            //   this.eventService.complete();
           } )
           .toPromise()
           .then( response => {

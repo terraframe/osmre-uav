@@ -21,6 +21,7 @@ import { CreateModalComponent } from './modals/create-modal.component';
 import { ImagePreviewModalComponent } from './modals/image-preview-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { NotificationModalComponent } from './modals/notification-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from '../model/management';
 import { ManagementService } from '../service/management.service';
@@ -534,6 +535,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
                     if ( this.tree ) {
                         this.tree.treeModel.update();
+                        this.tree.treeModel.getNodeById(d.id).setActiveAndVisible().expand();
                     }
                 }
                 else {
@@ -618,8 +620,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
       let data = node.data;
 
+      this.bsModalRef = this.modalService.show( NotificationModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        class: 'modal-dialog-centered'
+      } );
+      this.bsModalRef.content.message = "Your ortho task is running for ["+ data.folderName + "]. You can view the current process and results on your taks page.";
+      this.bsModalRef.content.submitText = 'OK';
+
       this.service.runOrtho( data.id ).then( data => {
-        alert("Your ortho task is running."); // TODO : Handle this better
+        // Nothing
       } ).catch(( err: any ) => {
           this.error( err.json() );
       } );
@@ -656,16 +667,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     remove( node: TreeNode ): void {
-      console.log("Remove on, ", node);
-      console.log("id is", node.data.id);
-    
       if ( node.data.type === "object" )
       {
         this.service.removeObject( node.data.component, node.data.key ).then( response => {
             let parent = node.parent;
             let children = parent.data.children;
 
-            console.log("children = ", parent.data.children);
             parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
 
             if ( parent.data.children.length === 0 ) {

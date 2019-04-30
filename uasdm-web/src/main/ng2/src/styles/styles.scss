@@ -237,6 +237,7 @@ button.create-site-btn {
     margin-bottom: 0;
 }
 
-// .panel-heading:hover {
-//     background-color: #e0e0e0;
-// }
+.panel-heading.clickable:hover {
+    background-color: #e0e0e0;
+}
+

@@ -22,6 +22,53 @@ export class MetadataModalComponent implements OnInit {
 
     disabled: boolean = false;
 
+    metaObject: any = {
+        agency:{
+            name:"Department of Interior",
+            shortName: "TODO",
+            fieldCenter: "TODO"
+        },
+        pointOfContact: {
+            name:"",
+            email:""
+        },
+        project: {
+            name:"",
+            shortName:"",
+            description:""
+        },
+        mission: {
+            name:"",
+            description:""
+        },
+        collect: {
+            name:"",
+            description:""
+        },
+        platform: {
+            name: "TODO",
+            class:"",
+            type:"TODO",
+            serialNumber:"",
+            faaIdNumber:""
+        },
+        sensor: {
+            name:"",
+            type:"",
+            model:"",
+            wavelength:"",
+            imageWidth:"",
+            imageHeight:"",
+            sensorWidth:"",
+            sensorHeight:"",
+            pixelSizeWidth:"",
+            pixelSizeHeight:""
+        },
+        upload: {
+            dataType:"raw"
+        }
+    };
+
     /*
      * Observable subject called when metadata upload is successful
      */
@@ -31,7 +78,7 @@ export class MetadataModalComponent implements OnInit {
     /*
      * FineUploader for uploading large files
      */
-    uploader = null as FineUploader;
+    // uploader = null as FineUploader;
 
     constructor( public bsModalRef: BsModalRef ) { }
 
@@ -39,56 +86,58 @@ export class MetadataModalComponent implements OnInit {
         this.onMetadataChange = new Subject();
     }
 
-    @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
+    // @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
 
-        const that = this;
+    //     const that = this;
 
-        if ( elem != null && this.uploader == null ) {
+    //     if ( elem != null && this.uploader == null ) {
 
-            let uiOptions: UIOptions = {
-                debug: false,
-                autoUpload: false,
-                multiple: false,
-                element: elem.nativeElement,
-                template: 'qq-template',
-                request: {
-                    endpoint: acp + "/file/metadata",
-                    forceMultipart: true
-                },
-                retry: {
-                    enableAuto: false
-                },
-                validation: {
-                    allowedExtensions: ['xml']
-                },
-                callbacks: {
-                    onUpload: function( id: any, name: any ): void {
-                        that.disabled = true;
-                    },
-                    onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
-                        that.disabled = false;
+    //         let uiOptions: UIOptions = {
+    //             debug: false,
+    //             autoUpload: false,
+    //             multiple: false,
+    //             element: elem.nativeElement,
+    //             template: 'qq-template',
+    //             request: {
+    //                 endpoint: acp + "/file/metadata",
+    //                 forceMultipart: true
+    //             },
+    //             retry: {
+    //                 enableAuto: false
+    //             },
+    //             validation: {
+    //                 allowedExtensions: ['xml']
+    //             },
+    //             callbacks: {
+    //                 onUpload: function( id: any, name: any ): void {
+    //                     that.disabled = true;
+    //                 },
+    //                 onComplete: function( id: any, name: any, responseJSON: any, xhrOrXdr: any ): void {
+    //                     that.disabled = false;
 
-                        if ( responseJSON.success ) {
-                            that.onMetadataChange.next();
-                            that.bsModalRef.hide()                            
-                        }
-                    },
-                    onError: function( id: any, name: any, errorReason: any, xhrOrXdr: any ): void {
-                        that.disabled = false;
-                        that.message = ( errorReason );
-                    }
+    //                     if ( responseJSON.success ) {
+    //                         that.onMetadataChange.next();
+    //                         that.bsModalRef.hide()                            
+    //                     }
+    //                 },
+    //                 onError: function( id: any, name: any, errorReason: any, xhrOrXdr: any ): void {
+    //                     that.disabled = false;
+    //                     that.message = ( errorReason );
+    //                 }
 
-                }
+    //             }
 
-            };
+    //         };
 
-            this.uploader = new FineUploader( uiOptions );
-        }
-    }
+    //         // this.uploader = new FineUploader( uiOptions );
+    //     }
+    // }
 
     handleSubmit(): void {
-        this.uploader.setParams( { missionId: this.missionId } );
-        this.uploader.uploadStoredFiles();
+        // this.uploader.setParams( { missionId: this.missionId } );
+        // this.uploader.uploadStoredFiles();
+
+        console.log(this.metaObject);
     }
 
     error( err: any ): void {

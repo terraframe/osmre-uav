@@ -111,7 +111,7 @@
 </ng-template>
 
 <context-menu #nodeMenu>
-    <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-edit"></i>
+    <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-repeat"></i>
         Re-run Orthorectification Processing
     </ng-template>
     <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit

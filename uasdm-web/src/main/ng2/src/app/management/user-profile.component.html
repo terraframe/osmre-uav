@@ -60,12 +60,12 @@
                                 
                 <div class="panel-group">
                   <div *ngFor="let task of tasks; let i=index" class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="panel-heading clickable">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" href="#collapse{{i}}">
                           <ul class="list-inline" style="margin: 0;">
                             <li>{{task.label}}</li>
-                            <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:red;"> <b>{{task.lastUpdateDate}}</b></li>
+                            <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:#e30000;"> <b>{{task.lastUpdateDate}}</b></li>
                             <li *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="pull-right" style="color:green;"><b>{{task.status}}...</b> Last Update: <b>{{task.lastUpdateDate}}</b></li>
                             <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey;"> <b>{{task.lastUpdateDate}}</b></li>
                           </ul>

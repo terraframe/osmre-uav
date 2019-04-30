@@ -24,9 +24,12 @@ import { ConfirmModalComponent } from './management/modals/confirm-modal.compone
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
+import { NotificationModalComponent } from './management/modals/notification-modal.component';
 
 import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
+import { OnlyNumber } from './management/directives/number-only.directive';
+
 
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
@@ -56,6 +59,7 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         EditModalComponent,
         CreateModalComponent,
         ConfirmModalComponent,
+        NotificationModalComponent,
         MetadataModalComponent,
         ErrorModalComponent,
         LoadingBarComponent,
@@ -65,7 +69,8 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         routedComponents,
         UasdmHeaderComponent,
         ForbiddenNameDirective,
-        SafeHtmlPipe
+        SafeHtmlPipe,
+        OnlyNumber
     ],
     providers: [
         AdminGuardService,
@@ -77,6 +82,6 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         MapService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent, ImagePreviewModalComponent, ConfirmModalComponent, MetadataModalComponent, ErrorModalComponent]
+    entryComponents: [EditModalComponent, CreateModalComponent, ImagePreviewModalComponent, ConfirmModalComponent, NotificationModalComponent, MetadataModalComponent, ErrorModalComponent]
 } )
 export class UasdmAppModule { }
