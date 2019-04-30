@@ -63,7 +63,7 @@ public class MetadataXMLGenerator
   {
     json = new JSONObject(sJson);
     
-    this.collection = Collection.get(json.getString("collectionId")); // TODO
+    this.collection = Collection.get(json.getString("collectionId"));
   }
   
   public void generate(OutputStream out)
@@ -75,25 +75,27 @@ public class MetadataXMLGenerator
     Element root = dom.createElement("rootEl");
     dom.appendChild(root);
     
+    JSONObject agency = json.getJSONObject("agency");
     e = dom.createElement("Agency");
     e.setAttribute("name", "Department of Interior");
-    e.setAttribute("shortName", "TBD"); // TODO
-    e.setAttribute("fieldCenter", "TBD"); // TODO
+    e.setAttribute("shortName", agency.getString("shortName"));
+    e.setAttribute("fieldCenter", agency.getString("fieldCenter"));
     root.appendChild(e);
     
+    JSONObject pointOfContact = json.getJSONObject("pointOfContact");
     e = dom.createElement("PointOfContact");
-    e.setAttribute("name", ""); // TODO
-    e.setAttribute("email", ""); // TODO
+    e.setAttribute("name", pointOfContact.getString("name"));
+    e.setAttribute("email", pointOfContact.getString("email"));
     root.appendChild(e);
     
-    UasComponent proj = ancestors.get(1); // TODO
+    UasComponent proj = ancestors.get(1);
     e = dom.createElement("Project");
     e.setAttribute("name", proj.getName());
     e.setAttribute("shortName", proj.getName());
     e.setAttribute("description", proj.getDescription());
     root.appendChild(e);
     
-    UasComponent mission = ancestors.get(0); // TODO
+    UasComponent mission = ancestors.get(0);
     e = dom.createElement("Mission");
     e.setAttribute("name", mission.getName());
     e.setAttribute("description", mission.getDescription());
@@ -104,27 +106,27 @@ public class MetadataXMLGenerator
     e.setAttribute("description", collection.getDescription());
     root.appendChild(e);
     
-    // TODO
+    JSONObject platform = json.getJSONObject("platform");
     e = dom.createElement("Platform");
-    e.setAttribute("name", "");
-    e.setAttribute("class", "");
-    e.setAttribute("type", "");
-    e.setAttribute("serialNumber", "");
-    e.setAttribute("faaIdNumber", "");
+    e.setAttribute("name", platform.getString("name"));
+    e.setAttribute("class", platform.getString("class"));
+    e.setAttribute("type", platform.getString("type"));
+    e.setAttribute("serialNumber", platform.getString("serialNumber"));
+    e.setAttribute("faaIdNumber", platform.getString("faaIdNumber"));
     root.appendChild(e);
     
-    // TODO
+    JSONObject sensor = json.getJSONObject("sensor");
     e = dom.createElement("Sensor");
-    e.setAttribute("name", "");
-    e.setAttribute("type", "");
-    e.setAttribute("model", "");
-    e.setAttribute("wavelength", "");
-    e.setAttribute("imageWidth", "");
-    e.setAttribute("imageHeight", "");
-    e.setAttribute("sensorWidth", "");
-    e.setAttribute("sensorHeight", "");
-    e.setAttribute("pixelSizeWidth", "");
-    e.setAttribute("pixelSizeHeight", "");
+    e.setAttribute("name", sensor.getString("sensor"));
+    e.setAttribute("type", sensor.getString("type"));
+    e.setAttribute("model", sensor.getString("model"));
+    e.setAttribute("wavelength", sensor.getString("wavelength"));
+    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
+    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
+    e.setAttribute("sensorWidth", sensor.getString("sensorWidth"));
+    e.setAttribute("sensorHeight", sensor.getString("sensorHeight"));
+    e.setAttribute("pixelSizeWidth", sensor.getString("pixelSizeWidth"));
+    e.setAttribute("pixelSizeHeight", sensor.getString("pixelSizeHeight"));
     root.appendChild(e);
     
     e = dom.createElement("Upload");
