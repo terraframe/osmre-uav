@@ -50,6 +50,6 @@ export class Task {
 }
 
 export class Message {
-    missionId: string;
+    collectionId: string;
     message: string;
 }

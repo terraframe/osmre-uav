@@ -14,9 +14,9 @@ declare var acp: string;
 } )
 export class MetadataModalComponent implements OnInit {
     /*
-     * missionId for the metadata
+     * collectionId for the metadata
      */
-    missionId: string;
+    collectionId: string;
 
     message: string = null;
 
@@ -87,7 +87,7 @@ export class MetadataModalComponent implements OnInit {
     }
 
     handleSubmit(): void {
-        this.uploader.setParams( { missionId: this.missionId } );
+        this.uploader.setParams( { collectionId: this.collectionId } );
         this.uploader.uploadStoredFiles();
     }
 

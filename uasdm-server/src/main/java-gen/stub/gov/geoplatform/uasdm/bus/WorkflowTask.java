@@ -11,7 +11,9 @@ import com.runwaysdk.query.QueryFactory;
 public class WorkflowTask extends WorkflowTaskBase
 {
   private static final long serialVersionUID = 1976980729;
-
+  
+  public static final String NEEDS_METADATA = "NEEDS_METADATA";
+  
   public WorkflowTask()
   {
     super();

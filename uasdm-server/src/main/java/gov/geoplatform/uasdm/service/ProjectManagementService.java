@@ -1,20 +1,5 @@
 package gov.geoplatform.uasdm.service;
 
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Mission;
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.SiteQuery;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.odm.ODMProcessingTask;
-import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.Converter;
-import gov.geoplatform.uasdm.view.QueryResult;
-import gov.geoplatform.uasdm.view.RequestParser;
-import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.SiteObject;
-import gov.geoplatform.uasdm.view.TreeComponent;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import net.geoprism.GeoprismUser;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -44,6 +27,24 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
+import gov.geoplatform.uasdm.bus.Mission;
+import gov.geoplatform.uasdm.bus.Site;
+import gov.geoplatform.uasdm.bus.SiteQuery;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.TreeComponent;
+import net.geoprism.GeoprismUser;
 
 public class ProjectManagementService
 {
@@ -347,20 +348,14 @@ public class ProjectManagementService
     try
     {
       WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
-      task.lock();
-      task.setStatus("Processing");
-      task.setMessage("Processing archived files");
-      task.apply();
-
-      Collection collection = task.getCollection();
-      collection.uploadArchive(task, infile);
-
-      task.lock();
-      task.setStatus("Complete");
-      task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
-      task.apply();
       
-      startODMProcessing(infile, task);
+      CollectionUploadEvent event = new CollectionUploadEvent();
+      event.setGeoprismUser(task.getGeoprismUser());
+      event.setUploadId(task.getUpLoadId());
+      event.setCollection(task.getCollection());
+      event.apply();
+      
+      event.handleUploadFinish(parser, infile);
     }
     finally
     {
@@ -368,20 +363,6 @@ public class ProjectManagementService
     }
   }
   
-  private void startODMProcessing(File infile, WorkflowTask uploadTask)
-  {
-    ODMProcessingTask task = new ODMProcessingTask();
-    task.setUpLoadId(uploadTask.getUpLoadId());
-    task.setCollectionId(uploadTask.getCollectionOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-    task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
-    task.setMessage("Your images are submitted for processing. Check back later for updates.");
-    task.apply();
-    
-    task.initiate(infile);
-  }
-
   @Request(RequestType.SESSION)
   public void validate(String sessionId, RequestParser parser)
   {
@@ -398,17 +379,17 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void uploadMetadata(String sessionId, String missionId, MultipartFileParameter file)
+  public void uploadMetadata(String sessionId, String json)
   {
-    try (InputStream istream = file.getInputStream())
-    {
-      Mission mission = Mission.get(missionId);
-      mission.uploadMetadata(file.getFilename(), istream);
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
+//    try (InputStream istream = file.getInputStream())
+//    {
+//      Collection collection = Collection.get(collectionId);
+//      collection.uploadMetadata(file.getFilename(), istream);
+//    }
+//    catch (IOException e)
+//    {
+//      throw new ProgrammingErrorException(e);
+//    }
   }
 
   @Request(RequestType.SESSION)

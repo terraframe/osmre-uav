@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1575146380)
+@com.runwaysdk.business.ClassSignature(hash = 2047149341)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -13,7 +13,8 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
   public static java.lang.String COLLECTION = "collection";
   public static java.lang.String UPLOADID = "upLoadId";
-  private static final long serialVersionUID = 1575146380;
+  public static java.lang.String WORKFLOWTYPE = "workflowType";
+  private static final long serialVersionUID = 2047149341;
   
   public WorkflowTaskBase()
   {
@@ -97,6 +98,34 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
     else
     {
       setValue(UPLOADID, value);
+    }
+  }
+  
+  public String getWorkflowType()
+  {
+    return getValue(WORKFLOWTYPE);
+  }
+  
+  public void validateWorkflowType()
+  {
+    this.validateAttribute(WORKFLOWTYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getWorkflowTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(WORKFLOWTYPE);
+  }
+  
+  public void setWorkflowType(String value)
+  {
+    if(value == null)
+    {
+      setValue(WORKFLOWTYPE, "");
+    }
+    else
+    {
+      setValue(WORKFLOWTYPE, value);
     }
   }
   

@@ -72,7 +72,7 @@ export class UserProfileComponent implements OnInit {
             ignoreBackdropClick: true,
             'class': 'upload-modal'
         } );
-        this.bsModalRef.content.missionId = message.missionId;
+        this.bsModalRef.content.collectionId = message.collectionId;
 
         ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe( () => {
             // Remove the message

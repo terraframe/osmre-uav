@@ -1,0 +1,55 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" publish="false" >
+	      <attributes>
+	        <reference name="collection" type="gov.geoplatform.uasdm.bus.Collection"/>
+	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
+	        <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
+	      </attributes>
+      </mdBusiness>
+    </create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <create>
+	        <attributes>
+	          <char name="workflowType" size="64" />
+	        </attributes>
+        </create>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Collection">
+        <create>
+          <attributes>
+            <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " defaultValue="false" description="Flag indicating whether metadata XML file has been uploaded for the collection." />
+          </attributes>
+        </create>
+      </mdBusiness>
+      <!--
+      <object key="gov.geoplatform.uasdm.bus.Mission.metadataUploaded" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
+      -->
+    </update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionUploadEvent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionUploadEvent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.CollectionUploadEvent" type="com.runwaysdk.system.metadata.MdBusiness"/>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.workflowType" type="com.runwaysdk.system.metadata.MdAttributeCharacter"/>
+      <object key="gov.geoplatform.uasdm.bus.Collection.metadataUploaded" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
+    </delete>
+  </undoIt>
+</version>

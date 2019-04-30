@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1026180989)
+@com.runwaysdk.business.ClassSignature(hash = -212910010)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -78,6 +78,23 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractWorkfl
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADID, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
+
+  }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();
@@ -130,6 +147,9 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractWorkfl
     public com.runwaysdk.query.SelectableChar getUpLoadId();
     public com.runwaysdk.query.SelectableChar getUpLoadId(String alias);
     public com.runwaysdk.query.SelectableChar getUpLoadId(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getWorkflowType();
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias);
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.WorkflowTask workflowTask);
 
@@ -199,6 +219,23 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractWorkfl
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADID, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
+
+  }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();
@@ -228,6 +265,9 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractWorkfl
     public com.runwaysdk.query.SelectableChar getUpLoadId();
     public com.runwaysdk.query.SelectableChar getUpLoadId(String alias);
     public com.runwaysdk.query.SelectableChar getUpLoadId(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getWorkflowType();
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias);
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
@@ -344,6 +384,23 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractWorkfl
   public com.runwaysdk.query.SelectableChar getUpLoadId(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADID, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
 
   }
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
