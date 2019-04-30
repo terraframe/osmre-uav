@@ -239,9 +239,20 @@ public class ProjectManagementService
   {
     Collection collection = (Collection) UasComponent.get(id);
     
+    ODMProcessingTask task = new ODMProcessingTask();
+    task.setUpLoadId(id);
+    task.setCollectionId(collection.getOid());
+    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
+    task.setMessage("Your images are submitted for processing. Check back later for updates.");
+    task.apply();
+    
     File zip;
     try
     {
+      logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
+      
       zip = File.createTempFile("raw-" + id, ".zip");
       
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
@@ -253,15 +264,6 @@ public class ProjectManagementService
     {
       throw new ProgrammingErrorException(e);
     }
-    
-    ODMProcessingTask task = new ODMProcessingTask();
-    task.setUpLoadId(id);
-    task.setCollectionId(collection.getOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-    task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
-    task.setMessage("Your images are submitted for processing. Check back later for updates.");
-    task.apply();
     
     task.initiate(zip);
   }

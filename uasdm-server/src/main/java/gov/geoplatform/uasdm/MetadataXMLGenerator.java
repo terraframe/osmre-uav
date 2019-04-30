@@ -1,11 +1,9 @@
 package gov.geoplatform.uasdm;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,11 +22,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.session.Request;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
 {
@@ -178,8 +176,15 @@ public class MetadataXMLGenerator
       throw new ProgrammingErrorException(e);
     }
     
+    String fileName = this.collection.getName() + "_uasmetadata.xml";
     String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + "_uasmetadata.xml";
     Util.uploadFileToS3(temp, key, null);
+    
+    SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
+    
+    this.collection.appLock();
+    this.collection.setMetadataUploaded(true);
+    this.collection.apply();
   }
   
 }
