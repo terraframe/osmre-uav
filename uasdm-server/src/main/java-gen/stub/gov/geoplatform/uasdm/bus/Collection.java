@@ -144,69 +144,6 @@ public class Collection extends CollectionBase
     return messages;
   }
   
-  public void uploadMetadata(String name, InputStream istream)
-  {
-    if (name.endsWith("_uasmeta.xml") && isValidName(name))
-    {
-      List<UasComponent> ancestors = this.getAncestors();
-
-//      String key = this.buildAccessibleSupportKey() + name;
-      String key = name;
-
-      File temp = null;
-
-      try
-      {
-        temp = File.createTempFile("metadata", "xml");
-
-        try (FileOutputStream ostream = new FileOutputStream(temp))
-        {
-          IOUtils.copy(istream, ostream);
-        }
-
-        try
-        {
-          TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
-
-          try
-          {
-            Upload myUpload = tx.upload(AppProperties.getBucketName(), key, temp);
-            myUpload.waitForCompletion();
-
-            this.lock();
-            this.setMetadataUploaded(true);
-            this.apply();
-          }
-          finally
-          {
-            tx.shutdownNow();
-          }
-
-          SolrService.updateOrCreateMetadataDocument(ancestors, this, key, name, temp);
-        }
-        catch (AmazonClientException | InterruptedException e)
-        {
-          throw new ProgrammingErrorException(e);
-        }
-      }
-      catch (IOException e)
-      {
-        throw new ProgrammingErrorException(e);
-      }
-      finally
-      {
-        if (temp != null)
-        {
-          FileUtils.deleteQuietly(temp);
-        }
-      }
-    }
-    else
-    {
-      throw new InvalidMetadataFilenameException("The name field has an invalid character");
-    }
-  }
-
   /**
    * Creates the object and builds the relationship with the parent.
    * 
