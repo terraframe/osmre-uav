@@ -302,6 +302,8 @@ public class ODMStatusServer
           task.setMessage("The job encountered an unspecified error.");
           task.apply();
           
+          task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+          
           it.remove();
         }
         else
