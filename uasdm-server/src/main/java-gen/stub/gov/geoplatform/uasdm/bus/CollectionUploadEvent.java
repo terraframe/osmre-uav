@@ -56,6 +56,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   
   private void calculateImageSize(File zip, Collection collection)
   {
+    final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
     File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
     
     try
@@ -66,8 +67,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       
       for (File file : files)
       {
-        String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
-        String ext = FilenameUtils.getExtension(file.getName());
+        String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
         if (ArrayUtils.contains(formats, ext))
         {
           BufferedImage bimg = ImageIO.read(file);
@@ -78,6 +78,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           collection.setImageHeight(height);
           collection.setImageWidth(width);
           collection.apply();
+          
+          return;
         }
       }
     }
