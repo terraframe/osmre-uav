@@ -47,7 +47,7 @@ exports.handler = function(event, context, callback) {
         return;
     }
     var imageType = typeMatch[1].toLowerCase();
-    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff'];
+    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff', 'tif'];
     if (imageType.indexOf(imageType) == -1) {
         callback('Unsupported image type: ${imageType}');
         return;

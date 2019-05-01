@@ -52,4 +52,6 @@ export class Task {
 export class Message {
     collectionId: string;
     message: string;
+    imageWidth: string;
+    imageHeight: string;
 }

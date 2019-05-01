@@ -21,6 +21,8 @@
         <create>
           <attributes>
             <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " defaultValue="false" description="Flag indicating whether metadata XML file has been uploaded for the collection." />
+            <integer name="imageHeight" required="false" />
+            <integer name="imageWidth" required="false" />
           </attributes>
         </create>
       </mdBusiness>

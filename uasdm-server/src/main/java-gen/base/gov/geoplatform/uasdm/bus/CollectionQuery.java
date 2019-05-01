@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -550047406)
+@com.runwaysdk.business.ClassSignature(hash = -1698646073)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,40 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.Collection.CLASS;
+  }
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
   {
@@ -203,6 +237,12 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public interface CollectionQueryReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableInteger getImageHeight();
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getImageWidth();
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
@@ -265,6 +305,40 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
       return this.NE(collection.getOid());
     }
 
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
   {
     return getMetadataUploaded(null);
@@ -407,6 +481,12 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public interface CollectionQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableInteger getImageHeight();
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getImageWidth();
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
@@ -493,6 +573,40 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Collection.IMAGEWIDTH, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableBoolean getMetadataUploaded()
   {

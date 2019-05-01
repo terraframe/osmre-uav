@@ -1,14 +1,28 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.RequestParser;
 import net.geoprism.GeoprismUser;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
+  private static final Logger logger = LoggerFactory.getLogger(CollectionUploadEvent.class);
+  
   private static final long serialVersionUID = -285847093;
   
   public CollectionUploadEvent()
@@ -35,7 +49,46 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     
     startODMProcessing(infile, task);
     
+    calculateImageSize(infile, collection);
+    
 //    handleMetadataWorkflow(task);
+  }
+  
+  private void calculateImageSize(File zip, Collection collection)
+  {
+    File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
+    
+    try
+    {
+      new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+      
+      File[] files = parentFolder.listFiles();
+      
+      for (File file : files)
+      {
+        String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
+        String ext = FilenameUtils.getExtension(file.getName());
+        if (ArrayUtils.contains(formats, ext))
+        {
+          BufferedImage bimg = ImageIO.read(file);
+          int width          = bimg.getWidth();
+          int height         = bimg.getHeight();
+          
+          collection.appLock();
+          collection.setImageHeight(height);
+          collection.setImageWidth(width);
+          collection.apply();
+        }
+      }
+    }
+    catch (Throwable e)
+    {
+      logger.error("Error occurred while calculating the image size.", e);
+    }
+    finally
+    {
+      FileUtils.deleteQuietly(parentFolder);
+    }
   }
   
   private void startODMProcessing(File infile, WorkflowTask uploadTask)

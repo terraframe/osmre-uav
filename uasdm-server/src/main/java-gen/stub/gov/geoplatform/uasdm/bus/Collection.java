@@ -128,6 +128,15 @@ public class Collection extends CollectionBase
     JSONObject object = new JSONObject();
     object.put("collectionId", this.getOid());
     object.put("message", "Metadata missing for collection [" + this.getName() + "]");
+    
+    if (this.getImageHeight() != null)
+    {
+      object.put("imageHeight", this.getImageHeight());
+    }
+    if (this.getImageWidth() != null)
+    {
+      object.put("imageWidth", this.getImageWidth());
+    }
 
     return object;
   }

@@ -21,6 +21,10 @@ export class MetadataModalComponent implements OnInit {
     message: string = null;
 
     disabled: boolean = false;
+    
+    imageHeight: string;
+    
+    imageWidth: string;
 
     metaObject: any = {
         collectionId: "",
@@ -85,6 +89,8 @@ export class MetadataModalComponent implements OnInit {
     handleSubmit(): void {
         
         this.metaObject.collectionId = this.collectionId;
+        this.metaObject.imageWidth = this.imageWidth;
+        this.metaObject.imageHeight = this.imageHeight;
 
         this.service.submitCollectionMetadata(this.metaObject).then(() => {
             this.bsModalRef.hide();

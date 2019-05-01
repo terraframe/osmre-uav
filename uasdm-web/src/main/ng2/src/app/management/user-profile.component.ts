@@ -99,6 +99,8 @@ export class UserProfileComponent implements OnInit {
             'class': 'upload-modal'
         });
         this.bsModalRef.content.collectionId = message.collectionId;
+        this.bsModalRef.content.imageHeight = message.imageHeight;
+        this.bsModalRef.content.imageWidth = message.imageWidth;
 
         (<MetadataModalComponent>this.bsModalRef.content).onMetadataChange.subscribe((collectionId) => {
             console.log(this.messages)
