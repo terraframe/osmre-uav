@@ -49,7 +49,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     
     startODMProcessing(infile, task);
     
-    calculateImageSize(infile, collection);
+//    calculateImageSize(infile, collection);
     
 //    handleMetadataWorkflow(task);
   }
