@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1767056522)
+@com.runwaysdk.business.ClassSignature(hash = -1525877418)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -55,6 +55,43 @@ public  class ODMUploadTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTaskQ
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ODMUploadTask.ODMUUID, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask()
+  {
+    return getProcessingTask(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK);
+
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK);
+
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK)) 
+    {
+       return new gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
    * on this query object. 
@@ -90,6 +127,9 @@ public  class ODMUploadTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTaskQ
     public com.runwaysdk.query.SelectableChar getOdmUUID();
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias);
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask();
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias);
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.odm.ODMUploadTask oDMUploadTask);
 
@@ -142,6 +182,37 @@ public  class ODMUploadTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTaskQ
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.ODMUUID, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask()
+  {
+    return getProcessingTask(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias)
+  {
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK,  alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK)) 
+    {
+       return new gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   }
 
 /**
@@ -154,6 +225,9 @@ public  class ODMUploadTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTaskQ
     public com.runwaysdk.query.SelectableChar getOdmUUID();
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias);
     public com.runwaysdk.query.SelectableChar getOdmUUID(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask();
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias);
+    public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.odm.ODMUploadTask ... oDMUploadTask);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.odm.ODMUploadTask ... oDMUploadTask);
@@ -255,5 +329,36 @@ public  class ODMUploadTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTaskQ
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.ODMUUID, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask()
+  {
+    return getProcessingTask(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias)
+  {
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF getProcessingTask(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReferenceIF)this.get(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK,  alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.odm.ODMUploadTask.PROCESSINGTASK)) 
+    {
+       return new gov.geoplatform.uasdm.odm.ODMProcessingTaskQuery.ODMProcessingTaskQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   }
 }

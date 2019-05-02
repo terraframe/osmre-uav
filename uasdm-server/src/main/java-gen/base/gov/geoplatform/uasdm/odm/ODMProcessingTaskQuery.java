@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1828892635)
+@com.runwaysdk.business.ClassSignature(hash = 1179333051)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public String getClassType()
   {
     return gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getFilePrefix()
+  {
+    return getFilePrefix(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getOdmOutput()
   {
@@ -104,6 +121,9 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public interface ODMProcessingTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getFilePrefix();
+    public com.runwaysdk.query.SelectableChar getFilePrefix(String alias);
+    public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOdmOutput();
     public com.runwaysdk.query.SelectableChar getOdmOutput(String alias);
     public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel);
@@ -145,6 +165,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
       return this.NE(oDMProcessingTask.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getFilePrefix()
+  {
+    return getFilePrefix(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getOdmOutput()
   {
     return getOdmOutput(null);
@@ -188,6 +225,9 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
   public interface ODMProcessingTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getFilePrefix();
+    public com.runwaysdk.query.SelectableChar getFilePrefix(String alias);
+    public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOdmOutput();
     public com.runwaysdk.query.SelectableChar getOdmOutput(String alias);
     public com.runwaysdk.query.SelectableChar getOdmOutput(String alias, String displayLabel);
@@ -277,6 +317,23 @@ public  class ODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowT
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getFilePrefix()
+  {
+    return getFilePrefix(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ODMProcessingTask.FILEPREFIX, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getOdmOutput()
   {

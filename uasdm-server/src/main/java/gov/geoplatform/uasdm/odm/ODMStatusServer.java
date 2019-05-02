@@ -384,6 +384,7 @@ public class ODMStatusServer
       uploadTask.setGeoprismUser(task.getGeoprismUser());
       uploadTask.setOdmUUID(task.getOdmUUID());
       uploadTask.setStatus(ODMStatus.RUNNING.getLabel());
+      uploadTask.setProcessingTask(task);
       uploadTask.setTaskLabel("Uploading Orthorectification Artifacts [" + task.getCollection().getName() + "].");
       uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Check back later for updates.");
       uploadTask.apply();
@@ -415,7 +416,7 @@ public class ODMStatusServer
   
   private static class S3ResultsUploadThread extends Thread
   {
-    private ODMUploadTask task;
+    private ODMUploadTask uploadTask;
     
     private File zip;
     
@@ -425,7 +426,7 @@ public class ODMStatusServer
     {
       super(name);
       
-      this.task = uploadTask;
+      this.uploadTask = uploadTask;
       zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
       unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
     }
@@ -458,21 +459,21 @@ public class ODMStatusServer
       {
         runInTrans();
         
-        task.lock();
-        task.setStatus(ODMStatus.COMPLETED.getLabel());
-        task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
-        task.apply();
+        uploadTask.lock();
+        uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
+        uploadTask.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
+        uploadTask.apply();
         
-        ODMStatusServer.sendEmail(task);
+        ODMStatusServer.sendEmail(uploadTask);
       }
       catch (Throwable t)
       {
-        logger.error("Error occurred while uploading S3 files for " + task.getOdmUUID(), t);
+        logger.error("Error occurred while uploading S3 files for " + uploadTask.getOdmUUID(), t);
         
-        task.lock();
-        task.setStatus(ODMStatus.FAILED.getLabel());
-        task.setMessage("The upload failed. " + t.getLocalizedMessage());
-        task.apply();
+        uploadTask.lock();
+        uploadTask.setStatus(ODMStatus.FAILED.getLabel());
+        uploadTask.setMessage("The upload failed. " + t.getLocalizedMessage());
+        uploadTask.apply();
       }
     }
     
@@ -497,7 +498,9 @@ public class ODMStatusServer
       /**
        * Upload the full all.zip file to S3 for archive purposes.
        */
-      Util.uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), task);
+      Util.uploadFileToS3(zip, uploadTask.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), uploadTask);
+      
+      String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
       
       /**
        * Unzip the ODM all.zip file and selectively upload files that interest us to S3.
@@ -518,7 +521,7 @@ public class ODMStatusServer
           
           if (parentDir.exists())
           {
-            processChildren(parentDir, config.s3FolderName, config);
+            processChildren(parentDir, config.s3FolderName, config, filePrefix);
           }
 //          else
 //          {
@@ -530,7 +533,7 @@ public class ODMStatusServer
           {
             for (String name : unprocessed)
             {
-              task.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+              uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
             }
           }
         }
@@ -542,7 +545,7 @@ public class ODMStatusServer
       }
     }
 
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config)
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix)
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
@@ -555,19 +558,24 @@ public class ODMStatusServer
         
         String name = child.getName();
         
+        if (filePrefix != null && filePrefix.length() > 0)
+        {
+          name = filePrefix + "_" + name;
+        }
+        
         if (!child.isDirectory() && UasComponent.isValidName(name) && config.shouldProcessFile(child))
         {
-          Collection col = task.getCollection();
+          Collection col = uploadTask.getCollection();
           
           String key = col.getS3location() + s3FolderPrefix + "/" + name;
   
-          Util.uploadFileToS3(child, key, task);
+          Util.uploadFileToS3(child, key, uploadTask);
           
           SolrService.updateOrCreateDocument(col.getAncestors(), col, key, name);
         }
         else if (child.isDirectory())
         {
-          processChildren(child, s3FolderPrefix + "/" + child.getName(), config);
+          processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix);
         }
       }
     }

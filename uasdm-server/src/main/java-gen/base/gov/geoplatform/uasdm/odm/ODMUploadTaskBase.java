@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = -900915117)
+@com.runwaysdk.business.ClassSignature(hash = -1852847443)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,7 +12,8 @@ public abstract class ODMUploadTaskBase extends gov.geoplatform.uasdm.bus.Workfl
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMUploadTask";
   public static java.lang.String ODMUUID = "odmUUID";
-  private static final long serialVersionUID = -900915117;
+  public static java.lang.String PROCESSINGTASK = "processingTask";
+  private static final long serialVersionUID = -1852847443;
   
   public ODMUploadTaskBase()
   {
@@ -44,6 +45,58 @@ public abstract class ODMUploadTaskBase extends gov.geoplatform.uasdm.bus.Workfl
     else
     {
       setValue(ODMUUID, value);
+    }
+  }
+  
+  public gov.geoplatform.uasdm.odm.ODMProcessingTask getProcessingTask()
+  {
+    if (getValue(PROCESSINGTASK).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return gov.geoplatform.uasdm.odm.ODMProcessingTask.get(getValue(PROCESSINGTASK));
+    }
+  }
+  
+  public String getProcessingTaskOid()
+  {
+    return getValue(PROCESSINGTASK);
+  }
+  
+  public void validateProcessingTask()
+  {
+    this.validateAttribute(PROCESSINGTASK);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getProcessingTaskMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.odm.ODMUploadTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(PROCESSINGTASK);
+  }
+  
+  public void setProcessingTask(gov.geoplatform.uasdm.odm.ODMProcessingTask value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSINGTASK, "");
+    }
+    else
+    {
+      setValue(PROCESSINGTASK, value.getOid());
+    }
+  }
+  
+  public void setProcessingTaskId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(PROCESSINGTASK, "");
+    }
+    else
+    {
+      setValue(PROCESSINGTASK, oid);
     }
   }
   
