@@ -70,7 +70,7 @@ export class UploadComponent implements OnInit {
     uplodeCounterInterfal: any;
     differ: any;
     showFileSelectPanel: boolean = false;
-    showTaskFinishedNotification: boolean = false;
+    taskFinishedNotifications: any[] = [];
 
     constructor( private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -173,7 +173,11 @@ export class UploadComponent implements OnInit {
 
                         clearInterval(that.uplodeCounterInterfal);
 
-                        that.showTaskFinishedNotification = true;
+                        that.taskFinishedNotifications.push(
+                            {
+                                'id':id
+                            }
+                        )
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
@@ -200,9 +204,6 @@ export class UploadComponent implements OnInit {
                         document.getElementById("select-file-button").classList.remove("hidden");
 
                         clearInterval(that.uplodeCounterInterfal);
-
-                        that.showTaskFinishedNotification = false;
-
                     },
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
                         that.error( { message: xhrOrXdr } );
@@ -226,6 +227,18 @@ export class UploadComponent implements OnInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+    }
+
+    closeTaskFinishedNotification(id: string): void {
+        // iterate in reverse to allow splice while avoiding the reindex
+        // from affecting any of the next items in the array.
+        let i = this.taskFinishedNotifications.length;
+        while(i--) {
+            let note = this.taskFinishedNotifications[i];
+            if(id === note.id){
+                this.taskFinishedNotifications.splice(i, 1);
+            }
+        }
     }
 
 

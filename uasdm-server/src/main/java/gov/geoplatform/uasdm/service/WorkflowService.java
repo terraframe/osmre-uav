@@ -44,7 +44,7 @@ public class WorkflowService
       task.setUpLoadId(parser.getUuid());
       task.setCollection(collection);
       task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-      task.setTaskLabel("Upload of file [" + parser.getOriginalFilename() + "] to collection [" + collection.getName() + "]");
+      task.setTaskLabel("UAV data upload for collection [" + collection.getName() + "]");
     }
     else
     {

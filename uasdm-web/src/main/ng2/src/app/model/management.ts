@@ -42,11 +42,13 @@ export class Task {
     oid: string;
     label: string;
     createDate: string;
+    lastUpdateDate: string;
     lastUpdatedDate: string;
     status: string;
     message: string;
     actions: Action[];
     uploadId: string;
+    odmOutput: string;
 }
 
 export class Message {

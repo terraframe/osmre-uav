@@ -385,8 +385,9 @@ public class ODMStatusServer
       uploadTask.setOdmUUID(task.getOdmUUID());
       uploadTask.setStatus(ODMStatus.RUNNING.getLabel());
       uploadTask.setProcessingTask(task);
-      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts [" + task.getCollection().getName() + "].");
-      uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Check back later for updates.");
+//      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+      uploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getCollection().getName() + "]");
+      uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getCollection().getName() + "']. Check back later for updates.");
       uploadTask.apply();
       
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
