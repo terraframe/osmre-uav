@@ -129,7 +129,7 @@ export class UploadComponent implements OnInit {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
 
-                        document.getElementById("select-file-button").className = document.getElementById("select-file-button").className + " hidden";
+                        // document.getElementById("select-file-button").className = document.getElementById("select-file-button").className + " hidden";
 
                         that.countUpload(that);
                     },
@@ -169,7 +169,7 @@ export class UploadComponent implements OnInit {
 
                         this.clearStoredFiles();
 
-                        document.getElementById("select-file-button").classList.remove("hidden");
+                        // document.getElementById("select-file-button").classList.remove("hidden");
 
                         clearInterval(that.uplodeCounterInterfal);
 
@@ -201,7 +201,7 @@ export class UploadComponent implements OnInit {
                             that.pollingIsSet = false;
                         }
 
-                        document.getElementById("select-file-button").classList.remove("hidden");
+                        // document.getElementById("select-file-button").classList.remove("hidden");
 
                         clearInterval(that.uplodeCounterInterfal);
                     },
