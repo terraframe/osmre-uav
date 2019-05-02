@@ -47,7 +47,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
     
-    startODMProcessing(infile, task);
+    startODMProcessing(infile, task, parser);
     
 //    calculateImageSize(infile, collection);
     
@@ -93,7 +93,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
   
-  private void startODMProcessing(File infile, WorkflowTask uploadTask)
+  private void startODMProcessing(File infile, WorkflowTask uploadTask, RequestParser parser)
   {
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUpLoadId(uploadTask.getUpLoadId());
@@ -103,6 +103,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setTaskLabel("UAV data orthorectification for collection [" + task.getCollection().getName() + "]");
     task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setFilePrefix(parser.getCustomParams().get("outFileName"));
     task.apply();
     
     task.initiate(infile);

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 914653116)
+@com.runwaysdk.business.ClassSignature(hash = 1264909444)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,13 +11,42 @@ package gov.geoplatform.uasdm.odm;
 public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.WorkflowTask
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMProcessingTask";
+  public static java.lang.String FILEPREFIX = "filePrefix";
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
-  private static final long serialVersionUID = 914653116;
+  private static final long serialVersionUID = 1264909444;
   
   public ODMProcessingTaskBase()
   {
     super();
+  }
+  
+  public String getFilePrefix()
+  {
+    return getValue(FILEPREFIX);
+  }
+  
+  public void validateFilePrefix()
+  {
+    this.validateAttribute(FILEPREFIX);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getFilePrefixMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(FILEPREFIX);
+  }
+  
+  public void setFilePrefix(String value)
+  {
+    if(value == null)
+    {
+      setValue(FILEPREFIX, "");
+    }
+    else
+    {
+      setValue(FILEPREFIX, value);
+    }
   }
   
   public String getOdmOutput()

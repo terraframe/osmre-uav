@@ -1,0 +1,26 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMUploadTask">
+        <create>
+          <attributes>
+            <reference name="processingTask" type="gov.geoplatform.uasdm.odm.ODMProcessingTask" />
+          </attributes>
+        </create>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMProcessingTask">
+        <create>
+          <attributes>
+            <char name="filePrefix" label="filePrefix" size="300"/>
+          </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.odm.ODMProcessingTask.filePrefix" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </undoIt>
+</version>
