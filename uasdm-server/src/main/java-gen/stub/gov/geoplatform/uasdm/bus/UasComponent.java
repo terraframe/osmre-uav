@@ -243,7 +243,9 @@ public abstract class UasComponent extends UasComponentBase
 
       while (objIter.hasNext())
       {
-        client.deleteObject(bucketName, objIter.next().getKey());
+        S3ObjectSummary sumObj = objIter.next();
+        String delKey = sumObj.getKey();
+        client.deleteObject(bucketName, delKey);
       }
 
       // If the bucket contains many objects, the listObjects() call
@@ -262,7 +264,7 @@ public abstract class UasComponent extends UasComponentBase
     }
 
     // Delete all object versions (required for versioned buckets).
-    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withKeyMarker(key));
+    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withPrefix(key));
     while (true)
     {
       Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
