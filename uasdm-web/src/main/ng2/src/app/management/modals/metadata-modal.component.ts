@@ -28,11 +28,11 @@ export class MetadataModalComponent implements OnInit {
 
     metaObject: any = {
         collectionId: "",
-        agency:{
-            name:"Department of Interior",
-            shortName: "",
-            fieldCenter: ""
-        },
+        // agency:{
+        //     name:"Department of Interior",
+        //     shortName: "",
+        //     fieldCenter: ""
+        // },
         pointOfContact: {
             name:"",
             email:""
@@ -51,9 +51,9 @@ export class MetadataModalComponent implements OnInit {
         //     description:""
         // },
         platform: {
-            name: "TODO",
+            name: "Falcon Fixed Wing",
             class:"",
-            type:"TODO",
+            type:"Fixed Wing",
             serialNumber:"",
             faaIdNumber:""
         },
@@ -62,8 +62,8 @@ export class MetadataModalComponent implements OnInit {
             type:"",
             model:"",
             wavelength:"",
-            imageWidth:"",
-            imageHeight:"",
+            // imageWidth:"",
+            // imageHeight:"",
             sensorWidth:"",
             sensorHeight:"",
             pixelSizeWidth:"",

@@ -384,8 +384,9 @@ public class ODMStatusServer
       uploadTask.setGeoprismUser(task.getGeoprismUser());
       uploadTask.setOdmUUID(task.getOdmUUID());
       uploadTask.setStatus(ODMStatus.RUNNING.getLabel());
-      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts [" + task.getCollection().getName() + "].");
-      uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Check back later for updates.");
+//      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+      uploadTask.setTaskLabel("UAV data orthorectification for collection [" + task.getCollection().getName() + "]");
+      uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getCollection().getName() + "']. Check back later for updates.");
       uploadTask.apply();
       
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
@@ -460,6 +461,7 @@ public class ODMStatusServer
         
         task.lock();
         task.setStatus(ODMStatus.COMPLETED.getLabel());
+//        task.setTaskLabel("Successful Upload");
         task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
         task.apply();
         
@@ -471,6 +473,7 @@ public class ODMStatusServer
         
         task.lock();
         task.setStatus(ODMStatus.FAILED.getLabel());
+//        task.setTaskLabel("Failed Upload");
         task.setMessage("The upload failed. " + t.getLocalizedMessage());
         task.apply();
       }

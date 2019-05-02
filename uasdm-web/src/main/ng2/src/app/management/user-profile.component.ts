@@ -44,32 +44,32 @@ export class UserProfileComponent implements OnInit {
 
     constructor(http: Http, private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService) {
 
-        // this.taskPolling = Observable.interval(5000)
-        //     .switchMap(() => http.get(acp + '/project/tasks')).map((data) => data.json())
-        //     .subscribe((data) => {
-        //         this.setData(data);
-        //     });
+        this.taskPolling = Observable.interval(5000)
+            .switchMap(() => http.get(acp + '/project/tasks')).map((data) => data.json())
+            .subscribe((data) => {
+                this.updateTaskData(data);
+            });
     }
 
     ngOnInit(): void {
         this.userName = this.managementService.getCurrentUser();
         this.managementService.tasks().then(data => {
 
-            this.setData(data);
+            this.setTaskData(data);
 
         }).catch((err: any) => {
             this.error(err.json());
         });
     }
 
-    ngOnDestro(): void {
+    ngOnDestroy(): void {
 
-        // if (this.taskPolling) {
-        //     this.taskPolling.unsubscribe();
-        // }
+        if (this.taskPolling) {
+            this.taskPolling.unsubscribe();
+        }
     }
 
-    setData(data: any): void {
+    setTaskData(data: any): void {
         this.messages = data.messages;
 
         this.totalTaskCount = data.tasks.length;
@@ -79,6 +79,51 @@ export class UserProfileComponent implements OnInit {
         this.tasks = data.tasks.sort((a: any, b: any) =>
             new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
         );
+    }
+
+    updateTaskData(data: any): void {
+        this.messages = data.messages;
+
+        this.totalTaskCount = data.tasks.length;
+
+        this.totalActionsCount = this.getTotalActionsCount(data.tasks);
+
+        // Update existing tasks
+        for(let i=0; i< data.tasks.length; i++){
+            let newTask = data.tasks[i];
+
+            for(let i2=0; i2<this.tasks.length; i2++){
+                let existingTask = this.tasks[i2];
+                if(existingTask.oid === newTask.oid){
+                    if(existingTask.label !== newTask.label){
+                        existingTask.label = newTask.label;
+                    }
+                    if(existingTask.lastUpdateDate !== newTask.lastUpdateDate){
+                        existingTask.lastUpdateDate = newTask.lastUpdateDate;
+                    }
+                    if(existingTask.lastUpdatedDate !== newTask.lastUpdatedDate){
+                        existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
+                    }
+                    if(existingTask.message !== newTask.message){
+                        existingTask.message = newTask.message;
+                    }
+                    if(existingTask.status !== newTask.status){
+                        existingTask.status = newTask.status;
+                    }
+                    if(existingTask.odmOutput !== newTask.odmOutput){
+                        existingTask.odmOutput = newTask.odmOutput;
+                    }
+                }
+            }
+        }
+
+        // Add new tasks
+        let newTasks = data.tasks.filter(o => !this.tasks.find(o2 => o.oid === o2.oid));
+        if(newTasks && newTasks.length > 0){
+            newTasks.forEach((tsk) => {
+                this.tasks.unshift(tsk);
+            })
+        }
     }
 
 
@@ -103,7 +148,6 @@ export class UserProfileComponent implements OnInit {
         this.bsModalRef.content.imageWidth = message.imageWidth;
 
         (<MetadataModalComponent>this.bsModalRef.content).onMetadataChange.subscribe((collectionId) => {
-            console.log(this.messages)
 
             let index = -1;
             for (let i = 0; i < this.messages.length; i++) {

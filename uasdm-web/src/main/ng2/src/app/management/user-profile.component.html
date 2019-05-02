@@ -24,7 +24,7 @@
           
           <ul class="list-group">
             <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Total Uploads</strong></span> {{totalTaskCount}}</li>
+            <!-- <li class="list-group-item text-right"><span class="pull-left"><strong>Total Tasks</strong></span> {{totalTaskCount}}</li> -->
             <li class="list-group-item text-right"><span class="pull-left"><strong>Actions To Do</strong></span> {{totalActionsCount}}</li>
           </ul> 
                
@@ -70,17 +70,22 @@
                       <h4 class="panel-title">
                         <a data-toggle="collapse" href="#collapse{{i}}">
                           <ul class="list-inline" style="margin: 0;">
-                            <li>{{task.label}}</li>
-                            <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:#e30000;"> <b>{{task.lastUpdateDate}}</b></li>
-                            <li *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="pull-right" style="color:green;"><b>{{task.status}}...</b> Last Update: <b>{{task.lastUpdateDate}}</b></li>
-                            <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey;"> <b>{{task.lastUpdateDate}}</b></li>
+                            <li style="max-width: 80%;">{{task.label}}</li>
+                            <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:#e30000; max-width: 20%;"> <b>{{task.status}}</b></li>
+                            <li *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="pull-right" style="color:green; max-width: 20%;"><b>{{task.status}}...</b></li>
+                            <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey; max-width: 20%;"> <b>{{task.status}}</b></li>
                           </ul>
                         </a>
                       </h4>
                     </div>
                     <div id="collapse{{i}}" class="panel-collapse collapse">
                       <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="panel-body">
-                        <h3>{{task.message}}</h3>
+                        <ul class="list-unstyled" style="margin: 0;">
+                          <!-- <li>Created on: <b>{{task.createDate}}</b></li> -->
+                          <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
+                          <li>Status: <b>{{task.status}}</b></li>
+                          <li>Message: <b>{{task.message}}</b></li>
+                        </ul>
                         <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
                       </div>
                       <div *ngIf="task.status === 'Complete' || task.status === 'Failed'" class="panel-body">

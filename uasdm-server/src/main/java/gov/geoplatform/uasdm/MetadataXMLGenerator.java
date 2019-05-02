@@ -73,12 +73,12 @@ public class MetadataXMLGenerator
     Element root = dom.createElement("rootEl");
     dom.appendChild(root);
     
-    JSONObject agency = json.getJSONObject("agency");
-    e = dom.createElement("Agency");
-    e.setAttribute("name", "Department of Interior");
-    e.setAttribute("shortName", agency.getString("shortName"));
-    e.setAttribute("fieldCenter", agency.getString("fieldCenter"));
-    root.appendChild(e);
+//    JSONObject agency = json.getJSONObject("agency");
+//    e = dom.createElement("Agency");
+//    e.setAttribute("name", "Department of Interior");
+//    e.setAttribute("shortName", agency.getString("shortName"));
+//    e.setAttribute("fieldCenter", agency.getString("fieldCenter"));
+//    root.appendChild(e);
     
     JSONObject pointOfContact = json.getJSONObject("pointOfContact");
     e = dom.createElement("PointOfContact");
@@ -119,8 +119,8 @@ public class MetadataXMLGenerator
     e.setAttribute("type", sensor.getString("type"));
     e.setAttribute("model", sensor.getString("model"));
     e.setAttribute("wavelength", sensor.getString("wavelength"));
-    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
-    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
+//    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
+//    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
     e.setAttribute("sensorWidth", sensor.getString("sensorWidth"));
     e.setAttribute("sensorHeight", sensor.getString("sensorHeight"));
     e.setAttribute("pixelSizeWidth", sensor.getString("pixelSizeWidth"));
