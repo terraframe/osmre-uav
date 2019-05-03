@@ -11,6 +11,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
 
@@ -33,6 +34,18 @@ public class ODMFacade
     }
   }
   
+  public static void main(String[] args)
+  {
+    mainInReq();
+  }
+  @Request
+  public static void mainInReq()
+  {
+    TaskRemoveResponse resp = ODMFacade.taskRemove("a4eb86d5-cd26-4395-8275-942e3ae2e240");
+    
+    System.out.println(resp.isSuccess() + " : " + resp.getHTTPResponse().getStatusCode() + " : " + resp.getHTTPResponse().getResponse());
+  }
+  
 //  public static void options()
 //  {
 //    initialize();
@@ -49,6 +62,15 @@ public class ODMFacade
     HTTPResponse resp = connector.httpGet("task/" + uuid + "/output", new NameValuePair[] {});
     
     return new TaskOutputResponse(resp);
+  }
+  
+  public static TaskRemoveResponse taskRemove(String uuid)
+  {
+    initialize();
+    
+    HTTPResponse resp = connector.httpPost("task/remove", "{\"uuid\":\"" + uuid + "\"}");
+    
+    return new TaskRemoveResponse(resp);
   }
   
   public static File taskDownload(String uuid)

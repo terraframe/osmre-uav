@@ -189,6 +189,27 @@ public class ODMStatusServer
     }
   }
   
+  private static void removeFromOdm(WorkflowTask task, String uuid)
+  {
+    try
+    {
+      TaskRemoveResponse resp = ODMFacade.taskRemove(uuid);
+      
+      if (!resp.isSuccess())
+      {
+        int code = resp.getHTTPResponse().getStatusCode();
+        logger.error("Error occurred while removing task [" + uuid + "] [" + task.getTaskLabel() + "] from ODM. ODM returned status code [" + code + "]. " + code);
+        task.createAction("Error occurred while cleaning up data from ODM. ODM returned status code [" + code + "].", "error");
+      }
+    }
+    catch(Throwable t)
+    {
+      logger.error("Error occurred while removing task [" + uuid + "] [" + task.getTaskLabel() + "] from ODM.", t);
+      
+      task.createAction("Problem occured while cleaning up data from ODM. " + t.getLocalizedMessage(), "error");
+    }
+  }
+  
   private static class ODMStatusThread extends Thread
   {
     /**
@@ -339,6 +360,8 @@ public class ODMStatusServer
             task.apply();
             
             it.remove();
+            
+            // TODO : Remove from ODM?
           }
           else if (resp.getStatus().equals(ODMStatus.FAILED))
           {
@@ -351,6 +374,8 @@ public class ODMStatusServer
             it.remove();
             
             sendEmail(task);
+            
+            removeFromOdm(task, task.getOdmUUID());
           }
           else if (resp.getStatus().equals(ODMStatus.COMPLETED))
           {
@@ -543,6 +568,7 @@ public class ODMStatusServer
       {
         FileUtils.deleteQuietly(zip);
         FileUtils.deleteQuietly(unzippedParentFolder);
+        removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
       }
     }
 
