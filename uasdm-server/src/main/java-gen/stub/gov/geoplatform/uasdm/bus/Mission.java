@@ -85,7 +85,7 @@ public class Mission extends MissionBase
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildAccessibleSupportKey());
+      this.deleteS3Folder(this.buildAccessibleSupportKey(), ACCESSIBLE_SUPPORT);
     }
   }
 

@@ -5,11 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -18,13 +16,11 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
@@ -40,6 +36,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.GeoprismUser;
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Collection extends CollectionBase
 {
@@ -88,7 +85,7 @@ public class Collection extends CollectionBase
   {
     return this.addMission((Mission) uasComponent);
   }
-  
+
   public static java.util.Collection<Collection> getMissingMetadata()
   {
     java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
@@ -122,13 +119,13 @@ public class Collection extends CollectionBase
 
     return collectionList;
   }
-  
+
   private JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
     object.put("collectionId", this.getOid());
     object.put("message", "Metadata missing for collection [" + this.getName() + "]");
-    
+
     if (this.getImageHeight() != null)
     {
       object.put("imageHeight", this.getImageHeight());
@@ -140,7 +137,7 @@ public class Collection extends CollectionBase
 
     return object;
   }
-  
+
   public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)
   {
     JSONArray messages = new JSONArray();
@@ -152,7 +149,7 @@ public class Collection extends CollectionBase
 
     return messages;
   }
-  
+
   /**
    * Creates the object and builds the relationship with the parent.
    * 
@@ -191,14 +188,38 @@ public class Collection extends CollectionBase
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildRawKey());
+      this.deleteS3Folder(this.buildRawKey(), RAW);
 
-      this.deleteS3Folder(this.buildPointCloudKey());
+      this.deleteS3Folder(this.buildPointCloudKey(), PTCLOUD);
 
-      this.deleteS3Folder(this.buildDemKey());
+      this.deleteS3Folder(this.buildDemKey(), DEM);
 
-      this.deleteS3Folder(this.buildOrthoKey());
+      this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
     }
+  }
+
+  protected void deleteS3Object(String key)
+  {
+    if (key.endsWith(".tif"))
+    {
+      String[] paths = key.split("/");
+      if (paths.length > 1)
+      {
+        if (paths[paths.length - 2].startsWith(ORTHO))
+        {
+          String storeName = this.getStoreName(key);
+
+          this.removeCoverageStore(storeName);
+        }
+      }
+
+    }
+  }
+
+  protected void removeCoverageStore(String storeName)
+  {
+    GeoserverFacade.forceRemoveLayer(storeName);
+    GeoserverFacade.removeCoverageStore(storeName);
   }
 
   public List<WorkflowTask> getTasks()
@@ -376,7 +397,7 @@ public class Collection extends CollectionBase
             this.log.info("Transfer: " + myUpload.getDescription());
             this.log.info(" - State: " + myUpload.getState());
             this.log.info(" - Progress: " + myUpload.getProgress().getBytesTransferred());
-            
+
             task.lock();
             task.setMessage(myUpload.getDescription());
             task.apply();
@@ -469,5 +490,69 @@ public class Collection extends CollectionBase
     }
 
     return objects;
+  }
+
+  @Override
+  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  {
+    super.getSiteObjects(folder, objects);
+
+    if (folder.equals(ORTHO))
+    {
+      for (SiteObject object : objects)
+      {
+        String key = object.getKey();
+
+        if (key.endsWith(".tif"))
+        {
+          String storeName = this.getStoreName(key);
+
+          if (GeoserverFacade.layerExists(storeName))
+          {
+            object.setImageKey(storeName);
+          }
+        }
+      }
+    }
+  }
+
+  public void createImageServices()
+  {
+    try
+    {
+      LinkedList<SiteObject> objects = new LinkedList<SiteObject>();
+
+      this.getSiteObjects(ORTHO, objects);
+
+      for (SiteObject object : objects)
+      {
+        String key = object.getKey();
+
+        if (key.endsWith(".tif"))
+        {
+          String storeName = this.getStoreName(key);
+
+          if (GeoserverFacade.layerExists(storeName))
+          {
+            this.removeCoverageStore(storeName);
+          }
+
+          String url = "s3://" + AppProperties.getBucketName() + "/" + key + "?useAnon=false&awsRegion=" + AppProperties.getBucketRegion();
+          GeoserverFacade.publishS3GeoTIFF(storeName, url);
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  private String getStoreName(String key)
+  {
+    /*
+     * There will only be a single orth tiff per collections so just use the oid
+     */
+    return this.getOid();
   }
 }

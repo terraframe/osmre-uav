@@ -463,6 +463,9 @@ public class ODMStatusServer
         task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
         task.apply();
         
+        // Create image services
+        task.getCollection().createImageServices();
+        
         ODMStatusServer.sendEmail(task);
       }
       catch (Throwable t)
