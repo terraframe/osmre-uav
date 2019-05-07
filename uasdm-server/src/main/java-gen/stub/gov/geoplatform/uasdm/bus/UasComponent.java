@@ -214,7 +214,8 @@ public abstract class UasComponent extends UasComponentBase
 
   protected void createS3Folder(String key)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client();
 
     // create meta-data for your folder and set content-length to 0
     ObjectMetadata metadata = new ObjectMetadata();
@@ -231,10 +232,11 @@ public abstract class UasComponent extends UasComponentBase
 
   protected void deleteS3Folder(String key, String folderName)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client();
 
     String bucketName = AppProperties.getBucketName();
-    
+
     ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
 
     ObjectListing objectListing = client.listObjects(listObjectsRequest);
@@ -373,7 +375,8 @@ public abstract class UasComponent extends UasComponentBase
   {
     String key = this.getS3location() + folder;
 
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client();
 
     String bucketName = AppProperties.getBucketName();
 
@@ -413,7 +416,8 @@ public abstract class UasComponent extends UasComponentBase
 
   public void delete(String key)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client();
     String bucketName = AppProperties.getBucketName();
 
     DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
@@ -425,7 +429,8 @@ public abstract class UasComponent extends UasComponentBase
 
   public S3Object download(String key)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+//  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client();
     String bucketName = AppProperties.getBucketName();
 
     GetObjectRequest request = new GetObjectRequest(bucketName, key);
