@@ -1193,8 +1193,17 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 	margin:0 auto 30px;
 	background:none;
 	border-radius:0;
-	box-shadow:none;
+    box-shadow:none;
+    
+    /* vertical-align:middle; */
 }
+
+/* .modal.fade {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+} */
+
 .modal-content{
 	background: white;
     border: 1px solid #aaa;
@@ -1690,8 +1699,8 @@ select{
 	background-repeat: no-repeat;
 	height: 40px !important;
 	background-position:
-	    calc(100% - 10px) calc(1em + 1px), 
-	    calc(100% - 3px) calc(1em + 1px), 
+	    calc(100% - 10px) calc(15px + 1px), 
+	    calc(100% - 3px) calc(15px + 1px), 
 	    100% 0;
 }
 select:focus,
