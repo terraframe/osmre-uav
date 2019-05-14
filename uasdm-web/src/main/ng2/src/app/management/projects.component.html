@@ -14,7 +14,8 @@
                                 [typeaheadAsync]="true" [typeahead]="dataSource"
                                 (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10"
                                 [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
-                                [ngModelOptions]="{standalone: true}" />
+                                [ngModelOptions]="{standalone: true}"
+                                (keydown.enter)="$event.preventDefault()" />
                         </div>
                     </div>
                 </div>
