@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,6 +26,10 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -218,6 +224,7 @@ public class Collection extends CollectionBase
 
   protected void removeCoverageStore(String storeName)
   {
+    GeoserverFacade.removeStyle(storeName);
     GeoserverFacade.forceRemoveLayer(storeName);
     GeoserverFacade.removeCoverageStore(storeName);
   }
@@ -515,6 +522,31 @@ public class Collection extends CollectionBase
       }
     }
   }
+  
+  public File download(String key, String storeName)
+  {
+    try
+    {
+    //AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+      AmazonS3 client = new AmazonS3Client();
+      
+      String bucketName = AppProperties.getBucketName();
+  //    String bucketName = "";
+      
+      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+      
+      S3Object s3Obj = client.getObject(request);
+      
+      File temp = Files.createTempFile("geotiff-" + storeName, ".tif").toFile();
+      IOUtils.copy(s3Obj.getObjectContent(), new FileOutputStream(temp));
+      
+      return temp;
+    }
+    catch (Throwable t)
+    {
+      throw new ProgrammingErrorException(t);
+    }
+  }
 
   public void createImageServices()
   {
@@ -536,9 +568,10 @@ public class Collection extends CollectionBase
           {
             this.removeCoverageStore(storeName);
           }
+          
+          File geotiff = download(key, storeName);
 
-          String url = "s3://" + AppProperties.getBucketName() + "/" + key + "?useAnon=false&awsRegion=" + AppProperties.getBucketRegion();
-          GeoserverFacade.publishS3GeoTIFF(storeName, url);
+          GeoserverFacade.publishGeoTiff(storeName, geotiff);
         }
       }
     }

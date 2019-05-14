@@ -39,38 +39,37 @@ public class ODMStatusServer
   /**
    * !Test code!
    */
-//  public static void main(String[] args)
-//  {
-//    mainInReq();
-//  }
-//  
-//  @Request
-//  private static void mainInReq()
-//  {
-//    ODMProcessingTaskQuery query = new ODMProcessingTaskQuery(new QueryFactory());
-//    
-//    query.WHERE(query.getOdmUUID().EQ("68719e1d-0be3-4e6f-8063-878a83335eb3"));
-//    
-//    OIterator<? extends ODMProcessingTask> it = query.getIterator();
-//    
-//    ODMProcessingTask task = it.next();
-//    
-//    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task);
-//    thread.setfolder(new File("/home/rich/dev/data/odm/aukerman/all-dem-reduced"));
-//    thread.start();
-//    
-//    while (!Thread.interrupted())
-//    {
-//      try
-//      {
-//        Thread.sleep(1000);
-//      }
-//      catch (InterruptedException e)
-//      {
-//        return;
-//      }
-//    }
-//  }
+  public static void main(String[] args)
+  {
+    mainInReq();
+  }
+  
+  @Request
+  private static void mainInReq()
+  {
+    ODMUploadTaskQuery query = new ODMUploadTaskQuery(new QueryFactory());
+    
+    query.WHERE(query.getOid().EQ("d2aeebb8-e0fe-4486-b184-e07ebf0005d3"));
+    
+    OIterator<? extends ODMUploadTask> it = query.getIterator();
+    
+    ODMUploadTask task = it.next();
+    
+    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task, new File("/home/rich/dev/data/odm/aukerman/all-output-dem.zip"), true);
+    thread.start();
+    
+    while (!Thread.interrupted())
+    {
+      try
+      {
+        Thread.sleep(1000);
+      }
+      catch (InterruptedException e)
+      {
+        return;
+      }
+    }
+  }
   
   public synchronized static void startup()
   {
@@ -421,21 +420,25 @@ public class ODMStatusServer
     
     private File unzippedParentFolder;
     
+    private Boolean isTest = false;
+    
     protected S3ResultsUploadThread(String name, ODMUploadTask uploadTask)
     {
       super(name);
       
       this.task = uploadTask;
-      zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
+      this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
+      this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
     }
     
-    /**
-     * Useful for testing with a zip not directly fetched from ODM.
-     */
-    private void setfolder(File folder)
+    protected S3ResultsUploadThread(String name, ODMUploadTask uploadTask, File zip, Boolean isTest)
     {
-      this.unzippedParentFolder = folder;
+      super(name);
+      
+      this.task = uploadTask;
+      this.zip = zip;
+      this.isTest = isTest;
+      unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
     }
     
     @Override
@@ -500,7 +503,10 @@ public class ODMStatusServer
       /**
        * Upload the full all.zip file to S3 for archive purposes.
        */
-      Util.uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), task);
+      if (!isTest)
+      {
+        Util.uploadFileToS3(zip, task.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), task);
+      }
       
       /**
        * Unzip the ODM all.zip file and selectively upload files that interest us to S3.
@@ -523,10 +529,6 @@ public class ODMStatusServer
           {
             processChildren(parentDir, config.s3FolderName, config);
           }
-//          else
-//          {
-//            task.createAction("ODM did not produce any " + config.s3FolderName + " files.", "error");
-//          }
           
           List<String> unprocessed = config.getUnprocessedFiles();
           if (unprocessed.size() > 0)
@@ -540,7 +542,10 @@ public class ODMStatusServer
       }
       finally
       {
-        FileUtils.deleteQuietly(zip);
+        if (!isTest)
+        {
+          FileUtils.deleteQuietly(zip);
+        }
         FileUtils.deleteQuietly(unzippedParentFolder);
       }
     }
@@ -564,7 +569,10 @@ public class ODMStatusServer
           
           String key = col.getS3location() + s3FolderPrefix + "/" + name;
   
-          Util.uploadFileToS3(child, key, task);
+          if (!isTest)
+          {
+            Util.uploadFileToS3(child, key, task);
+          }
           
           SolrService.updateOrCreateDocument(col.getAncestors(), col, key, name);
         }
