@@ -527,11 +527,9 @@ public class Collection extends CollectionBase
   {
     try
     {
-    //AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-      AmazonS3 client = new AmazonS3Client();
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
       
       String bucketName = AppProperties.getBucketName();
-  //    String bucketName = "";
       
       GetObjectRequest request = new GetObjectRequest(bucketName, key);
       
