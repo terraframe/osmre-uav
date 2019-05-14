@@ -49,47 +49,50 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     
     startODMProcessing(infile, task);
     
-//    calculateImageSize(infile, collection);
+    calculateImageSize(infile, collection);
     
 //    handleMetadataWorkflow(task);
   }
   
   private void calculateImageSize(File zip, Collection collection)
   {
-    final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
-    File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
-    
     try
     {
-      new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+      final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
+      File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
       
-      File[] files = parentFolder.listFiles();
-      
-      for (File file : files)
+      try
       {
-        String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
-        if (ArrayUtils.contains(formats, ext))
+        new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+        
+        File[] files = parentFolder.listFiles();
+        
+        for (File file : files)
         {
-          BufferedImage bimg = ImageIO.read(file);
-          int width          = bimg.getWidth();
-          int height         = bimg.getHeight();
-          
-          collection.appLock();
-          collection.setImageHeight(height);
-          collection.setImageWidth(width);
-          collection.apply();
-          
-          return;
+          String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
+          if (ArrayUtils.contains(formats, ext))
+          {
+            BufferedImage bimg = ImageIO.read(file);
+            int width          = bimg.getWidth();
+            int height         = bimg.getHeight();
+            
+            collection.appLock();
+            collection.setImageHeight(height);
+            collection.setImageWidth(width);
+            collection.apply();
+            
+            return;
+          }
         }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(parentFolder);
       }
     }
     catch (Throwable e)
     {
       logger.error("Error occurred while calculating the image size.", e);
-    }
-    finally
-    {
-      FileUtils.deleteQuietly(parentFolder);
     }
   }
   

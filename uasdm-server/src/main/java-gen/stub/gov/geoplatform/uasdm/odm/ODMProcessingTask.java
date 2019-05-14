@@ -30,44 +30,48 @@ public class ODMProcessingTask extends ODMProcessingTaskBase
 
   public void initiate(File images)
   {
-    NewResponse resp = ODMFacade.taskNew(images);
-    
-    if (resp.getHTTPResponse().isUnreachableHost())
+    try
     {
-      String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
-      logger.error(msg);
-      UnreachableHostException ex = new UnreachableHostException(msg);
+      NewResponse resp = ODMFacade.taskNew(images);
+      
+      if (resp.getHTTPResponse().isUnreachableHost())
+      {
+        String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
+        throw new UnreachableHostException(msg);
+      }
+      else if (resp.hasError())
+      {
+        this.appLock();
+        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setMessage(resp.getError());
+        this.apply();
+      }
+      else if (!resp.hasError() && resp.getHTTPResponse().isError())
+      {
+        this.appLock();
+        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setMessage("The job encountered an unspecified error.");
+        this.apply();
+      }
+      else
+      {
+        this.appLock();
+        this.setStatus(ODMStatus.RUNNING.getLabel());
+        this.setOdmUUID(resp.getUUID());
+        this.setMessage("Your images are being processed. Check back later for updates.");
+        this.apply();
+        
+        ODMStatusServer.addTask(this);
+      }
+    }
+    catch (Throwable t)
+    {
+      logger.error("Error occurred while initiating ODM Processing.", t);
       
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage(ex.getLocalizedMessage());
+      this.setMessage(t.getLocalizedMessage());
       this.apply();
-      
-      throw ex;
-    }
-    else if (resp.hasError())
-    {
-      this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage(resp.getError());
-      this.apply();
-    }
-    else if (!resp.hasError() && resp.getHTTPResponse().isError())
-    {
-      this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage("The job encountered an unspecified error.");
-      this.apply();
-    }
-    else
-    {
-      this.appLock();
-      this.setStatus(ODMStatus.RUNNING.getLabel());
-      this.setOdmUUID(resp.getUUID());
-      this.setMessage("Your images are being processed. Check back later for updates.");
-      this.apply();
-      
-      ODMStatusServer.addTask(this);
     }
   }
 }
