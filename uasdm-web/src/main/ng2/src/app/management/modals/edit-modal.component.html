@@ -34,9 +34,7 @@
 
     <div class="form-group" *ngIf="entity.type === 'Collection'">
         <label>Privilege </label>
-        {{entity.ownerName}}
-        --
-        {{userName}}
+        
         <select style="padding:6px 10px;font-size:14px;" [(ngModel)]="entity.privilegeType" name="collection-privilege" type="input" [required]="true" 
         [disabled]="admin === 'false' || entity.ownerName !== userName">
             <option value="OWNER">Owner</option>
