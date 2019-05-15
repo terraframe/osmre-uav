@@ -21,6 +21,8 @@ public class SiteObject implements TreeComponent
 
   public static final String OBJECT    = "object";
 
+  public static final String IMAGE_KEY = "imageKey";
+
   private String             id;
 
   private String             name;
@@ -30,6 +32,8 @@ public class SiteObject implements TreeComponent
   private String             key;
 
   private String             type;
+
+  private String             imageKey;
 
   public String getId()
   {
@@ -81,6 +85,16 @@ public class SiteObject implements TreeComponent
     this.type = type;
   }
 
+  public String getImageKey()
+  {
+    return imageKey;
+  }
+
+  public void setImageKey(String imageKey)
+  {
+    this.imageKey = imageKey;
+  }
+
   @Override
   public void addChild(TreeComponent child)
   {
@@ -99,6 +113,11 @@ public class SiteObject implements TreeComponent
     if (this.type.equals(SiteObject.FOLDER))
     {
       json.put(SiteItem.HAS_CHILDREN, true);
+    }
+
+    if (this.imageKey != null)
+    {
+      json.put(SiteObject.IMAGE_KEY, this.imageKey);
     }
 
     return json;

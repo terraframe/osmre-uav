@@ -193,25 +193,25 @@ public class UploadArchiveTest
     Assert.assertEquals(0, actions.size());
   }
 
-  @Test
-  @Request
-  public void testUploadMetadata() throws FileNotFoundException, IOException
-  {
-    Mission mission = Mission.get(missionId1);
-
-    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
-    {
-      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
-    }
-
-    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
-    {
-      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
-    }
-
-    List<QueryResult> results = SolrService.query(mission.getName());
-
-    Assert.assertEquals(3, results.size());
-  }
-
+//  @Test
+//  @Request
+//  public void testUploadMetadata() throws FileNotFoundException, IOException
+//  {
+//    Mission mission = Mission.get(missionId1);
+//
+//    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
+//    {
+//      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
+//    }
+//
+//    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
+//    {
+//      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
+//    }
+//
+//    List<QueryResult> results = SolrService.query(mission.getName());
+//
+//    Assert.assertEquals(3, results.size());
+//  }
+//
 }

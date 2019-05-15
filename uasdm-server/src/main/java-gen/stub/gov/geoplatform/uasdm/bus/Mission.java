@@ -40,6 +40,10 @@ public class Mission extends MissionBase
 
   public Collection createChild()
   {
+    Collection collection = new Collection();
+    
+    collection.addPrivilegeType(AllPrivilegeType.OWNER);
+    
     return new Collection();
   }
 
@@ -85,7 +89,7 @@ public class Mission extends MissionBase
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildAccessibleSupportKey());
+      this.deleteS3Folder(this.buildAccessibleSupportKey(), ACCESSIBLE_SUPPORT);
     }
   }
 
