@@ -39,37 +39,37 @@ public class ODMStatusServer
   /**
    * !Test code!
    */
-  public static void main(String[] args)
-  {
-    mainInReq();
-  }
-  
-  @Request
-  private static void mainInReq()
-  {
-    ODMUploadTaskQuery query = new ODMUploadTaskQuery(new QueryFactory());
-    
-    query.WHERE(query.getOid().EQ("d2aeebb8-e0fe-4486-b184-e07ebf0005d3"));
-    
-    OIterator<? extends ODMUploadTask> it = query.getIterator();
-    
-    ODMUploadTask task = it.next();
-    
-    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task, new File("/home/rich/dev/data/odm/aukerman/all-output-dem.zip"), true);
-    thread.start();
-    
-    while (!Thread.interrupted())
-    {
-      try
-      {
-        Thread.sleep(1000);
-      }
-      catch (InterruptedException e)
-      {
-        return;
-      }
-    }
-  }
+//  public static void main(String[] args)
+//  {
+//    mainInReq();
+//  }
+//  
+//  @Request
+//  private static void mainInReq()
+//  {
+//    ODMUploadTaskQuery query = new ODMUploadTaskQuery(new QueryFactory());
+//    
+//    query.WHERE(query.getOid().EQ("d2aeebb8-e0fe-4486-b184-e07ebf0005d3"));
+//    
+//    OIterator<? extends ODMUploadTask> it = query.getIterator();
+//    
+//    ODMUploadTask task = it.next();
+//    
+//    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task, new File("/home/rich/dev/data/odm/aukerman/all-output-dem.zip"), true);
+//    thread.start();
+//    
+//    while (!Thread.interrupted())
+//    {
+//      try
+//      {
+//        Thread.sleep(1000);
+//      }
+//      catch (InterruptedException e)
+//      {
+//        return;
+//      }
+//    }
+//  }
   
   public synchronized static void startup()
   {
@@ -79,6 +79,7 @@ public class ODMStatusServer
     }
     
     statusThread = new ODMStatusThread("ODM Status Server");
+    statusThread.setDaemon(true);
     
     restartRunningJobs();
     
@@ -170,6 +171,7 @@ public class ODMStatusServer
           ODMUploadTask uploadTask = (ODMUploadTask) task;
           
           S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
+          thread.setDaemon(true);
           uploadThreads.add(thread);
           thread.start();
         }
