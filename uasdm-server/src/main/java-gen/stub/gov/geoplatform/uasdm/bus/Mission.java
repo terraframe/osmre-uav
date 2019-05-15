@@ -40,6 +40,10 @@ public class Mission extends MissionBase
 
   public Collection createChild()
   {
+    Collection collection = new Collection();
+    
+    collection.addPrivilegeType(AllPrivilegeType.OWNER);
+    
     return new Collection();
   }
 

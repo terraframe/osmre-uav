@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -343225131)
+@com.runwaysdk.business.ClassSignature(hash = -1507023348)
 public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Collection";
-  private static final long serialVersionUID = -343225131;
+  private static final long serialVersionUID = -1507023348;
   
   protected CollectionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -25,6 +25,167 @@ public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasCom
   protected java.lang.String getDeclaredType()
   {
     return CLASS;
+  }
+  
+  public static java.lang.String IMAGEHEIGHT = "imageHeight";
+  public static java.lang.String IMAGEWIDTH = "imageWidth";
+  public static java.lang.String METADATAUPLOADED = "metadataUploaded";
+  public static java.lang.String PRIVILEGETYPE = "privilegeType";
+  public Integer getImageHeight()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(IMAGEHEIGHT));
+  }
+  
+  public void setImageHeight(Integer value)
+  {
+    if(value == null)
+    {
+      setValue(IMAGEHEIGHT, "");
+    }
+    else
+    {
+      setValue(IMAGEHEIGHT, java.lang.Integer.toString(value));
+    }
+  }
+  
+  public boolean isImageHeightWritable()
+  {
+    return isWritable(IMAGEHEIGHT);
+  }
+  
+  public boolean isImageHeightReadable()
+  {
+    return isReadable(IMAGEHEIGHT);
+  }
+  
+  public boolean isImageHeightModified()
+  {
+    return isModified(IMAGEHEIGHT);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getImageHeightMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(IMAGEHEIGHT).getAttributeMdDTO();
+  }
+  
+  public Integer getImageWidth()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(IMAGEWIDTH));
+  }
+  
+  public void setImageWidth(Integer value)
+  {
+    if(value == null)
+    {
+      setValue(IMAGEWIDTH, "");
+    }
+    else
+    {
+      setValue(IMAGEWIDTH, java.lang.Integer.toString(value));
+    }
+  }
+  
+  public boolean isImageWidthWritable()
+  {
+    return isWritable(IMAGEWIDTH);
+  }
+  
+  public boolean isImageWidthReadable()
+  {
+    return isReadable(IMAGEWIDTH);
+  }
+  
+  public boolean isImageWidthModified()
+  {
+    return isModified(IMAGEWIDTH);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getImageWidthMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(IMAGEWIDTH).getAttributeMdDTO();
+  }
+  
+  public Boolean getMetadataUploaded()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(METADATAUPLOADED));
+  }
+  
+  public void setMetadataUploaded(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(METADATAUPLOADED, "");
+    }
+    else
+    {
+      setValue(METADATAUPLOADED, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isMetadataUploadedWritable()
+  {
+    return isWritable(METADATAUPLOADED);
+  }
+  
+  public boolean isMetadataUploadedReadable()
+  {
+    return isReadable(METADATAUPLOADED);
+  }
+  
+  public boolean isMetadataUploadedModified()
+  {
+    return isModified(METADATAUPLOADED);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getMetadataUploadedMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(METADATAUPLOADED).getAttributeMdDTO();
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO> getPrivilegeType()
+  {
+    return (java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO>) com.runwaysdk.transport.conversion.ConversionFacade.convertEnumDTOsFromEnumNames(getRequest(), gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO.CLASS, getEnumNames(PRIVILEGETYPE));
+  }
+  
+  public java.util.List<String> getPrivilegeTypeEnumNames()
+  {
+    return getEnumNames(PRIVILEGETYPE);
+  }
+  
+  public void addPrivilegeType(gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO enumDTO)
+  {
+    addEnumItem(PRIVILEGETYPE, enumDTO.toString());
+  }
+  
+  public void removePrivilegeType(gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO enumDTO)
+  {
+    removeEnumItem(PRIVILEGETYPE, enumDTO.toString());
+  }
+  
+  public void clearPrivilegeType()
+  {
+    clearEnum(PRIVILEGETYPE);
+  }
+  
+  public boolean isPrivilegeTypeWritable()
+  {
+    return isWritable(PRIVILEGETYPE);
+  }
+  
+  public boolean isPrivilegeTypeReadable()
+  {
+    return isReadable(PRIVILEGETYPE);
+  }
+  
+  public boolean isPrivilegeTypeModified()
+  {
+    return isModified(PRIVILEGETYPE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeEnumerationMdDTO getPrivilegeTypeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeEnumerationMdDTO) getAttributeDTO(PRIVILEGETYPE).getAttributeMdDTO();
   }
   
   @SuppressWarnings("unchecked")

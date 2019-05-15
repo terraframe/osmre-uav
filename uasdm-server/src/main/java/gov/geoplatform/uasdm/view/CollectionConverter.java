@@ -1,7 +1,9 @@
 package gov.geoplatform.uasdm.view;
 
+import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import net.geoprism.GeoprismUser;
 
 public class CollectionConverter extends Converter
 {
@@ -13,17 +15,58 @@ public class CollectionConverter extends Converter
   @Override
   protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
   {
-    return super.convert(siteItem, uasComponent);
+    Collection collection = (Collection)super.convert(siteItem, uasComponent);
+    
+    AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType());
+    
+    collection.addPrivilegeType(privilegeType);
+    
+    return collection;
   }
 
   @Override
   protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
   {
-    return super.convert(uasComponent, metadata, hasChildren);
+    SiteItem siteItem = super.convert(uasComponent, metadata, hasChildren);
+    
+    Collection collection = (Collection)uasComponent;
+    
+    if (collection.getPrivilegeType().size() > 0)
+    {
+      AllPrivilegeType privilegeType = collection.getPrivilegeType().get(0);
+      siteItem.setPrivilegeType(privilegeType.name());
+    }
+    else
+    {
+      collection.addPrivilegeType(AllPrivilegeType.OWNER);
+      siteItem.setPrivilegeType(AllPrivilegeType.OWNER.name());
+    }
+    
+    if (collection.getOwner() instanceof GeoprismUser)
+    {
+      GeoprismUser user = (GeoprismUser)collection.getOwner();
+      
+      String firstName = user.getFirstName();
+      String lastName = user.getLastName();
+      String phoneNumber = user.getPhoneNumber();
+      String emailAddress = user.getEmail();
+      
+      siteItem.setOwnerName(firstName+" "+lastName);
+      siteItem.setOwnerPhone(phoneNumber);
+      siteItem.setOwnerEmail(emailAddress);
+    }
+    
+    return siteItem;
   }
 
   protected Collection convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
-    return (Collection) super.convertNew(uasComponent, siteItem);
+    Collection collection = (Collection)super.convertNew(uasComponent, siteItem);
+    
+    AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType());
+    
+    collection.addPrivilegeType(privilegeType);
+    
+    return collection;
   }
 }
