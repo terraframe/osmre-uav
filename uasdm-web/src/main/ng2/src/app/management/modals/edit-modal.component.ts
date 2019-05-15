@@ -21,6 +21,8 @@ export class EditModalComponent implements OnInit {
     attributes: AttributeType[];
 
     message: string = null;
+    
+    userName: string = "";
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
@@ -31,6 +33,8 @@ export class EditModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
+
+        this.userName = this.service.getCurrentUser();
     }
 
     handleOnSubmit(): void {

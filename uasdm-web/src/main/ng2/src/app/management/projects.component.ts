@@ -57,7 +57,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     options = {
         getChildren: ( node: TreeNode ) => {
             if ( node.data.type === "folder" ) {
-                return this.service.getItems( node.data.component, node.data.name )
+                return this.service.getItems( node.data.component, node.data.name );
                 // return []; // preventing the 'Loading...' message
             }
             else if ( node.data.type === "object" ) {

@@ -38,7 +38,9 @@ public class CollectionConverter extends Converter
     }
     else
     {
+      collection.lock();
       collection.addPrivilegeType(AllPrivilegeType.OWNER);
+      collection.unlock();
       siteItem.setPrivilegeType(AllPrivilegeType.OWNER.name());
     }
     
@@ -48,10 +50,11 @@ public class CollectionConverter extends Converter
       
       String firstName = user.getFirstName();
       String lastName = user.getLastName();
+      String userName = user.getUsername();
       String phoneNumber = user.getPhoneNumber();
       String emailAddress = user.getEmail();
       
-      siteItem.setOwnerName(firstName+" "+lastName);
+      siteItem.setOwnerName(userName);
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
     }
