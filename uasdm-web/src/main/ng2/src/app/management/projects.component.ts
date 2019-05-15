@@ -49,6 +49,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     showImagePanel = false;
     // imageToShow: any;
     thumbnails: any = {};
+    userName: string = "";
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
@@ -254,6 +255,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
+        this.userName = this.service.getCurrentUser();
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;

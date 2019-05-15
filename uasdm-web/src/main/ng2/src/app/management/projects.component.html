@@ -44,9 +44,15 @@
                                             style="padding-right: 2px"></i>
                                         <i *ngIf="node.data.type === 'Mission'" class="fa fa-plane"
                                             style="padding-right: 2px"></i>
-                                        <i *ngIf="node.data.type === 'Collection'" class="fa fa-image"
+                                        <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName)" class="fa fa-image"
                                             style="padding-right: 2px"></i>
-                                        {{ node.data.name }}
+                                        
+                                        <span *ngIf="node.data.type !== 'Collection'">
+                                            {{ node.data.name }}
+                                        </span>
+                                        <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName)">
+                                            {{ node.data.name }}
+                                        </span>
                                     </span>
                                 </ng-template>
                             </tree-root>
