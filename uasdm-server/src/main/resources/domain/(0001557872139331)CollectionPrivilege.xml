@@ -1,0 +1,45 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <enumerationMaster name="gov.geoplatform.uasdm.bus.PrivilegeType" label="Aggregation Type">
+      </enumerationMaster>
+
+      <object key="OWNER" type="gov.geoplatform.uasdm.bus.PrivilegeType">
+        <attribute name="enumName" value="OWNER" />
+        <attributeStruct name="displayLabel">
+          <attribute name="defaultLocale" value="Owner" />
+        </attributeStruct>
+      </object>
+
+      <object key="AGENCY" type="gov.geoplatform.uasdm.bus.PrivilegeType">
+        <attribute name="enumName" value="AGENCY" />
+        <attributeStruct name="displayLabel">
+          <attribute name="defaultLocale" value="Agency" />
+        </attributeStruct>
+      </object>
+
+      <object key="PUBLIC" type="gov.geoplatform.uasdm.bus.PrivilegeType">
+        <attribute name="enumName" value="PUBLIC" />
+        <attributeStruct name="displayLabel">
+          <attribute name="defaultLocale" value="Public" />
+        </attributeStruct>
+      </object>
+
+      <mdEnumeration name="gov.geoplatform.uasdm.bus.AllPrivilegeType" type="gov.geoplatform.uasdm.bus.PrivilegeType" label="All Privilege Type">
+        <includeAll></includeAll>
+      </mdEnumeration>
+    </create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Collection">
+        <create>
+          <attributes>
+            <enumeration name="privilegeType" selectMultiple="false" label="Privilege Type" required="false" type="gov.geoplatform.uasdm.bus.AllPrivilegeType" defaultValueKey="OWNER" />
+          </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
