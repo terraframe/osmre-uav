@@ -1,10 +1,10 @@
 import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
 import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
+    trigger,
+    state,
+    style,
+    animate,
+    transition,
 } from '@angular/animations';
 import { TreeNode, TreeComponent, TREE_ACTIONS } from 'angular-tree-component';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -35,12 +35,12 @@ declare var acp: any;
     templateUrl: './projects.component.html',
     styles: [],
     animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: '0' }),
-                animate('.25s ease-out', style({ opacity: '1' })),
-            ]),
-        ])
+        trigger( 'fadeIn', [
+            transition( ':enter', [
+                style( { opacity: '0' } ),
+                animate( '.25s ease-out', style( { opacity: '1' } ) ),
+            ] ),
+        ] )
     ]
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit {
@@ -49,6 +49,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     showImagePanel = false;
     // imageToShow: any;
     thumbnails: any = {};
+    userName: string = "";
 
     /* 
      * Options to configure the tree widget, including the functions for getting children and showing the context menu
@@ -56,7 +57,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     options = {
         getChildren: ( node: TreeNode ) => {
             if ( node.data.type === "folder" ) {
-                return this.service.getItems( node.data.component, node.data.name )
+                return this.service.getItems( node.data.component, node.data.name );
                 // return []; // preventing the 'Loading...' message
             }
             else if ( node.data.type === "object" ) {
@@ -72,9 +73,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 contextMenu: ( tree: any, node: any, $event: any ) => {
                     this.handleOnMenu( node, $event );
                 },
-                click:  ( tree: any, node: any, $event: any ) => {
+                click: ( tree: any, node: any, $event: any ) => {
 
-                    if (node.data.type === "folder") {
+                    if ( node.data.type === "folder" ) {
 
                         // clear any existing images
                         this.images = [];
@@ -82,38 +83,38 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                         node.toggleExpanded();
                         this.showImagePanel = false;
 
-                        if (!node.isCollapsed) {
+                        if ( !node.isCollapsed ) {
 
                             // open the panel immediatly
                             this.showImagePanel = true;
 
-                            this.service.getItems(node.data.component, node.data.name)
-                                .then(items => {
+                            this.service.getItems( node.data.component, node.data.name )
+                                .then( items => {
                                     //this.images = [items[0]]; // not yet handling different types of files
 
                                     // this.images = items;
 
-                                    for (let i = 0; i < items.length; ++i) {
+                                    for ( let i = 0; i < items.length; ++i ) {
                                         let item = items[i];
 
-                                        if(item.name.toLowerCase().indexOf(".png") !== -1 || item.name.toLowerCase().indexOf(".jpg") !== -1 || 
-                                            item.name.toLowerCase().indexOf(".jpeg") !== -1 || item.name.toLowerCase().indexOf(".tif") !== -1 ||
-                                            item.name.toLowerCase().indexOf(".tiff") !== -1) {
-                                            
-                                            this.images.push(item);
+                                        if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
+                                            item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
+                                            item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
+
+                                            this.images.push( item );
                                         }
                                     }
 
-                                    this.images.forEach(image => {
-                                        this.getThumbnail(image);
-                                    })
+                                    this.images.forEach( image => {
+                                        this.getThumbnail( image );
+                                    } )
 
-                                }).catch((err: any) => {
-                                    this.error(err.json());
-                                });
+                                } ).catch(( err: any ) => {
+                                    this.error( err.json() );
+                                } );
                         }
                     }
-                    else if (node.data.type === "object") {
+                    else if ( node.data.type === "object" ) {
                         // clicked on raw file. do nothing.
                     }
                     else {
@@ -132,7 +133,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         animateAcceleration: 1,
         allowDrag: false,
         allowDrop: false,
-        scrollContainer: document.getElementById('hierarchy-tree-container')
+        scrollContainer: document.getElementById( 'hierarchy-tree-container' )
     };
 
     /*
@@ -150,7 +151,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      * Template for tree node menu
      */
     @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
-    
+
     /*
      * Template for folder node menu
      */
@@ -175,11 +176,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
      * Template for object items
      */
     @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
-
-    /*
-     * Template for image items
-     */
-    @ViewChild( 'imageMenu' ) public imageMenuComponent: ContextMenuComponent;
 
     /* 
      * Datasource to get search responses
@@ -241,6 +237,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         id: 'streets-v11'
     }];
 
+    layers: any[] = [];
+
     /*
      * Reference to the modal current showing
     */
@@ -257,6 +255,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
+        this.userName = this.service.getCurrentUser();
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
@@ -360,6 +359,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 "text-anchor": "top",
                 "text-size": 12,
             }
+        } );
+
+        this.layers.forEach( imageKey => {
+            this.addImageLayer( imageKey );
         } );
     }
 
@@ -489,15 +492,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             }
 
         }
-        else
-        {
-          this.contextMenuService.show.next( {
-            contextMenu: this.folderMenuComponent,
-            event: $event,
-            item: node
-          } );
-          $event.preventDefault();
-          $event.stopPropagation();
+        else {
+            this.contextMenuService.show.next( {
+                contextMenu: this.folderMenuComponent,
+                event: $event,
+                item: node
+            } );
+            $event.preventDefault();
+            $event.stopPropagation();
         }
     }
 
@@ -535,7 +537,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
                     if ( this.tree ) {
                         this.tree.treeModel.update();
-                        this.tree.treeModel.getNodeById(d.id).setActiveAndVisible().expand();
+                        this.tree.treeModel.getNodeById( d.id ).setActiveAndVisible().expand();
                     }
                 }
                 else {
@@ -589,8 +591,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-
-
     handleEdit( node: TreeNode ): void {
         this.current = node;
 
@@ -614,42 +614,42 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             this.error( err.json() );
         } );
     }
-    
+
     handleRunOrtho( node: TreeNode ): void {
-      this.current = node;
+        this.current = node;
 
-      let data = node.data;
+        let data = node.data;
 
-      this.bsModalRef = this.modalService.show( NotificationModalComponent, {
-        animated: true,
-        backdrop: true,
-        ignoreBackdropClick: true,
-        class: 'modal-dialog-centered'
-      } );
-      this.bsModalRef.content.message = "Your ortho task is running for ["+ data.folderName + "]. You can view the current process and results on your taks page.";
-      this.bsModalRef.content.submitText = 'OK';
+        this.bsModalRef = this.modalService.show( NotificationModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            class: 'modal-dialog-centered'
+        } );
+        this.bsModalRef.content.message = "Your ortho task is running for [" + data.folderName + "]. You can view the current process and results on your taks page.";
+        this.bsModalRef.content.submitText = 'OK';
 
-      this.service.runOrtho( data.id ).then( data => {
-        // Nothing
-      } ).catch(( err: any ) => {
-          this.error( err.json() );
-      } );
+        this.service.runOrtho( data.id ).then( data => {
+            // Nothing
+        } ).catch(( err: any ) => {
+            this.error( err.json() );
+        } );
     }
-    
+
     handleDownloadAll( node: TreeNode ): void {
-      this.current = node;
+        this.current = node;
 
-      let data = node.data;
+        let data = node.data;
 
-      window.location.href = acp + '/project/download-all?id=' + node.data.component +"&key=" + node.data.name;
-      
-//      this.service.downloadAll( data.id ).then( data => {
-//        
-//      } ).catch(( err: any ) => {
-//          this.error( err.json() );
-//      } );
+        window.location.href = acp + '/project/download-all?id=' + node.data.component + "&key=" + node.data.name;
+
+        //      this.service.downloadAll( data.id ).then( data => {
+        //        
+        //      } ).catch(( err: any ) => {
+        //          this.error( err.json() );
+        //      } );
     }
-    
+
     handleDelete( node: TreeNode ): void {
         this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
             animated: true,
@@ -667,27 +667,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     remove( node: TreeNode ): void {
-      if ( node.data.type === "object" )
-      {
-        this.service.removeObject( node.data.component, node.data.key ).then( response => {
-            let parent = node.parent;
-            let children = parent.data.children;
-
-            parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
-
-            if ( parent.data.children.length === 0 ) {
-                parent.data.hasChildren = false;
-            }
-
-            this.tree.treeModel.update();
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
-        } );
-      }
-      else
-      {
-        this.service.remove( node.data.id ).then( response => {
-            if ( node.data.type !== 'Site' ) {
+        if ( node.data.type === "object" ) {
+            this.service.removeObject( node.data.component, node.data.key ).then( response => {
                 let parent = node.parent;
                 let children = parent.data.children;
 
@@ -696,23 +677,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 if ( parent.data.children.length === 0 ) {
                     parent.data.hasChildren = false;
                 }
-            }
-            else {
-                this.nodes = this.nodes.filter(( n: any ) => n.id !== node.data.id );
 
-                this.refresh( false );
-            }
+                this.tree.treeModel.update();
+            } ).catch(( err: any ) => {
+                this.error( err.json() );
+            } );
+        }
+        else {
+            this.service.remove( node.data.id ).then( response => {
+                if ( node.data.type !== 'Site' ) {
+                    let parent = node.parent;
+                    let children = parent.data.children;
 
-            this.tree.treeModel.update();
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
-        } );
-      }
+                    parent.data.children = children.filter(( n: any ) => n.id !== node.data.id );
+
+                    if ( parent.data.children.length === 0 ) {
+                        parent.data.hasChildren = false;
+                    }
+                }
+                else {
+                    this.nodes = this.nodes.filter(( n: any ) => n.id !== node.data.id );
+
+                    this.refresh( false );
+                }
+
+                this.tree.treeModel.update();
+            } ).catch(( err: any ) => {
+                this.error( err.json() );
+            } );
+        }
     }
 
 
     handleDownload( node: TreeNode ): void {
-        window.location.href = acp + '/project/download?id=' + node.data.component +"&key=" + node.data.key;
+        window.location.href = acp + '/project/download?id=' + node.data.component + "&key=" + node.data.key;
 
         //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
         //    importedSaveAs( blob, node.data.name );
@@ -720,7 +718,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     handleImageDownload( image: any ): void {
-        window.location.href = acp + '/project/download?id=' + image.component +"&key=" + image.key;
+        window.location.href = acp + '/project/download?id=' + image.component + "&key=" + image.key;
 
         //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
         //    importedSaveAs( blob, node.data.name );
@@ -728,29 +726,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
 
-    createImageFromBlob(image: Blob, imageData: any) {
+    createImageFromBlob( image: Blob, imageData: any ) {
         let reader = new FileReader();
-        reader.addEventListener("load", () => {
+        reader.addEventListener( "load", () => {
             // this.imageToShow = reader.result;
             this.thumbnails[imageData.key] = reader.result;
-        }, false);
+        }, false );
 
-        if (image) {
-            reader.readAsDataURL(image);
+        if ( image ) {
+            reader.readAsDataURL( image );
         }
     }
 
-    getThumbnail(image: any): void {
+    getThumbnail( image: any ): void {
 
-        let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
-        let fileName: string = /[^/]*$/.exec(image.key)[0];
+        let rootPath: string = image.key.substr( 0, image.key.lastIndexOf( "/" ) );
+        let fileName: string = /[^/]*$/.exec( image.key )[0];
         let thumbKey: string = rootPath + "/thumbnails/" + fileName;
 
-        this.service.download(image.component, thumbKey, false).subscribe(blob => {
-            this.createImageFromBlob(blob, image);
+        this.service.download( image.component, thumbKey, false ).subscribe( blob => {
+            this.createImageFromBlob( blob, image );
         }, error => {
-            console.log(error);
-        });
+            console.log( error );
+        } );
     }
 
 
@@ -804,18 +802,68 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    previewImage(event:any, image:any): void {
-        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-                animated: true,
-                backdrop: true,
-                ignoreBackdropClick: true,
-                'class': 'image-preview-modal'
-            } );
-            this.bsModalRef.content.image = image;
-            this.bsModalRef.content.src = event.target.src;
+    handleMapImage( node: TreeNode ): void {
+
+        const imageKey = node.data.imageKey;
+
+        if ( this.map.getLayer( imageKey ) != null ) {
+            this.map.removeLayer( imageKey );
+            this.map.removeSource( imageKey );
+
+            var index = this.layers.indexOf( imageKey );
+            if ( index !== -1 ) {
+                this.layers.splice( index, 1 );
+            }
+        }
+        else {
+            this.addImageLayer( imageKey );
+
+            this.layers.push( imageKey );
+        }
     }
 
-    getDefaultImgURL(event: any): void {
+    addImageLayer( imageKey: string ) {
+        const workspace = encodeURI( 'uasdm' );
+        const layerName = encodeURI( workspace + ':' + imageKey );
+
+        this.map.addLayer( {
+            'id': imageKey,
+            'type': 'raster',
+            'source': {
+                'type': 'raster',
+                'tiles': [
+                    '/geoserver/' + workspace + '/wms?layers=' + layerName + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256'
+                ],
+                'tileSize': 256
+            },
+            'paint': {}
+        }, "points" );
+    }
+
+    handleGoto(): void {
+
+        //    -111.12439336274211
+        //    39.32066259372583
+        //    -111.12342302258116
+        // 39.32107716199166
+
+        var bounds = new LngLatBounds( [-111.12439336274211, 39.32066259372583, -111.12342302258116, 39.32107716199166] );
+
+        this.map.fitBounds( bounds );
+    }
+
+    previewImage( event: any, image: any ): void {
+        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            'class': 'image-preview-modal'
+        } );
+        this.bsModalRef.content.image = image;
+        this.bsModalRef.content.src = event.target.src;
+    }
+
+    getDefaultImgURL( event: any ): void {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
@@ -840,24 +888,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         return false;
     }
-    
+
     public canRunOrtho = ( item: any ): boolean => {
-      if (item.data.type !== "Collection")
-      {
-        return false;
-      }
-      
-      return true;
-      
-      // TODO : If we don't have raw images uploaded then they can't run ortho
-      
-      // TODO : Different roles?
-//      if ( this.admin ) {
-//        return true;
-//      }
-//
-//      return false;
-  }
+        if ( item.data.type !== "Collection" ) {
+            return false;
+        }
+
+        return true;
+
+        // TODO : If we don't have raw images uploaded then they can't run ortho
+
+        // TODO : Different roles?
+        //      if ( this.admin ) {
+        //        return true;
+        //      }
+        //
+        //      return false;
+    }
 
     public canDelete = ( item: any ): boolean => {
         if ( this.admin ) {
@@ -880,6 +927,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public canEditSite = ( item: any ): boolean => {
         return item.data.type === "Site" && this.canEdit( item );
+    }
+
+    public hasMapImage = ( item: any ): boolean => {
+        return ( item.data.imageKey != null );
     }
 
     public isSite = ( item: any ): boolean => {

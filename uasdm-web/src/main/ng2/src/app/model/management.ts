@@ -19,6 +19,10 @@ export class SiteEntity {
     type: string;
     geometry: any;
     hasChildren: boolean;
+    ownerName: string;
+    ownerPhone: string;
+    ownerEmail: string;
+    privilegeType: string;
 }
 
 export class UploadForm {

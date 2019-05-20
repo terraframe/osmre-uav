@@ -184,7 +184,7 @@ public abstract class UasComponent extends UasComponentBase
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.getS3location());
+      this.deleteS3Folder(this.getS3location(), null);
     }
 
     SolrService.deleteDocuments(this);
@@ -214,7 +214,7 @@ public abstract class UasComponent extends UasComponentBase
 
   protected void createS3Folder(String key)
   {
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     // create meta-data for your folder and set content-length to 0
     ObjectMetadata metadata = new ObjectMetadata();
@@ -229,13 +229,15 @@ public abstract class UasComponent extends UasComponentBase
     client.putObject(putObjectRequest);
   }
 
-  protected void deleteS3Folder(String key)
+  protected void deleteS3Folder(String key, String folderName)
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     String bucketName = AppProperties.getBucketName();
 
-    ObjectListing objectListing = client.listObjects(bucketName, key);
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+    ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
     while (true)
     {
@@ -243,9 +245,11 @@ public abstract class UasComponent extends UasComponentBase
 
       while (objIter.hasNext())
       {
-        S3ObjectSummary sumObj = objIter.next();
-        String delKey = sumObj.getKey();
-        client.deleteObject(bucketName, delKey);
+        String objectKey = objIter.next().getKey();
+
+        client.deleteObject(bucketName, objectKey);
+
+        this.deleteS3Object(objectKey);
       }
 
       // If the bucket contains many objects, the listObjects() call
@@ -287,6 +291,11 @@ public abstract class UasComponent extends UasComponentBase
     DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
+  }
+
+  protected void deleteS3Object(String objectKey)
+  {
+
   }
 
   public static boolean isValidName(String name)
@@ -364,7 +373,7 @@ public abstract class UasComponent extends UasComponentBase
   {
     String key = this.getS3location() + folder;
 
-    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     String bucketName = AppProperties.getBucketName();
 
@@ -379,7 +388,7 @@ public abstract class UasComponent extends UasComponentBase
       while (objIter.hasNext())
       {
         S3ObjectSummary summary = objIter.next();
-        
+
         String summaryKey = summary.getKey();
 
         if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
@@ -401,7 +410,7 @@ public abstract class UasComponent extends UasComponentBase
       }
     }
   }
-  
+
   public void delete(String key)
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
@@ -410,7 +419,7 @@ public abstract class UasComponent extends UasComponentBase
     DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
 
     client.deleteObject(request);
-    
+
     SolrService.deleteDocument(this, key);
   }
 

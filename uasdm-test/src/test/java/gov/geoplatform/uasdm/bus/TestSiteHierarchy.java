@@ -410,39 +410,39 @@ public class TestSiteHierarchy
   @Request(RequestType.SESSION)
   private void checkMetadata(String sessionId, String collectionId)
   {
-
-    SingleActor singleActor = GeoprismUser.getCurrentUser();
-
-    WorkflowTask workflowTask = new WorkflowTask();
-    workflowTask.setGeoprismUserId(singleActor.getOid());
-    workflowTask.setStatus("Test Status");
-    workflowTask.setTaskLabel("Test Task");
-    workflowTask.setUpLoadId("123");
-    workflowTask.setCollectionId(collectionId);
-    workflowTask.apply();
-
-    try
-    {
-      List<Mission> missionList = Mission.getMissingMetadata();
-
-      // System.out.println("Missions that need metadata.");
-      // System.out.println("----------------------------");
-
-      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() > 0);
-      for (Mission mission : missionList)
-      {
-        mission.lock();
-        mission.setMetadataUploaded(true);
-        mission.apply();
-      }
-
-      missionList = Mission.getMissingMetadata();
-      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() == 0);
-    }
-    finally
-    {
-      workflowTask.delete();
-    }
+//
+//    SingleActor singleActor = GeoprismUser.getCurrentUser();
+//
+//    WorkflowTask workflowTask = new WorkflowTask();
+//    workflowTask.setGeoprismUserId(singleActor.getOid());
+//    workflowTask.setStatus("Test Status");
+//    workflowTask.setTaskLabel("Test Task");
+//    workflowTask.setUpLoadId("123");
+//    workflowTask.setCollectionId(collectionId);
+//    workflowTask.apply();
+//
+//    try
+//    {
+//      List<Mission> missionList = Mission.getMissingMetadata();
+//
+//      // System.out.println("Missions that need metadata.");
+//      // System.out.println("----------------------------");
+//
+//      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() > 0);
+//      for (Mission mission : missionList)
+//      {
+//        mission.lock();
+//        mission.setMetadataUploaded(true);
+//        mission.apply();
+//      }
+//
+//      missionList = Mission.getMissingMetadata();
+//      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() == 0);
+//    }
+//    finally
+//    {
+//      workflowTask.delete();
+//    }
   }
 
   // @Test

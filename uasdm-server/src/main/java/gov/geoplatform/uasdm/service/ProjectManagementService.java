@@ -360,6 +360,10 @@ public class ProjectManagementService
       
       event.handleUploadFinish(parser, infile);
     }
+    catch (Throwable t)
+    {
+      logger.error("Error occurred in 'handleUploadFinish'.", t);
+    }
     finally
     {
       FileUtils.deleteQuietly(infile);

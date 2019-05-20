@@ -21,8 +21,11 @@
                 </div>
                 <div *ngIf="admin" class="row">
                     <div class="col-md-12">
-                        <button (click)="handleCreate()" class="btn btn-primary create-site-btn pull-right">Create new
-                            site</button>
+                        <button (click)="handleCreate()" class="btn btn-primary create-site-btn pull-right">Create new site</button>
+<!-- 
+                        <button (click)="handleGoto()" class="btn btn-primary create-site-btn pull-right">View map image</button>
+               -->
+                        
                     </div>
                 </div>
             </form>
@@ -43,9 +46,15 @@
                                             style="padding-right: 2px"></i>
                                         <i *ngIf="node.data.type === 'Mission'" class="fa fa-plane"
                                             style="padding-right: 2px"></i>
-                                        <i *ngIf="node.data.type === 'Collection'" class="fa fa-image"
+                                        <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType === 'AGENCY' || node.data.privilegeType === 'PUBLIC')" class="fa fa-image"
                                             style="padding-right: 2px"></i>
-                                        {{ node.data.name }}
+                                        
+                                        <span *ngIf="node.data.type !== 'Collection'">
+                                            {{ node.data.name }}
+                                        </span>
+                                        <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType === 'AGENCY' || node.data.privilegeType === 'PUBLIC')">
+                                            {{ node.data.name }}
+                                        </span>
                                     </span>
                                 </ng-template>
                             </tree-root>
@@ -154,13 +163,9 @@
     <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)">
         <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}}
     </ng-template>
-</context-menu>
-
-<!-- TODO : Is this used? -->
-<context-menu #imageMenu>
-    <ng-template contextMenuItem let-item (execute)="handleImageDownload($event.item)">
-        <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.name}}
-    </ng-template>
+    <ng-template contextMenuItem let-item [visible]="hasMapImage" (execute)="handleMapImage($event.item)"> 
+        <i class="fa fa-search-plus"></i>Toggle on map
+    </ng-template>        
 </context-menu>
 
 <context-menu #folderMenu>
