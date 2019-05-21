@@ -5,7 +5,7 @@
 <div id="app-container" class="container-fluid">
 
     <div class="row">
-        <div class="col-md-3 lw-inner-col" id="location-explorer-list">
+        <div class="col-md-3 lw-inner-col" id="location-explorer-list" style="overflow: visible;">
             <form class="submit-form">
                 <div class="row">
                     <div class="col-md-12">
@@ -46,15 +46,22 @@
                                             style="padding-right: 2px"></i>
                                         <i *ngIf="node.data.type === 'Mission'" class="fa fa-plane"
                                             style="padding-right: 2px"></i>
-                                        <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType === 'AGENCY' || node.data.privilegeType === 'PUBLIC')" class="fa fa-image"
-                                            style="padding-right: 2px"></i>
+
+                                        <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')" class="fa fa-image"
+                                            style="padding-right: 2px;"></i>
+                                        <i *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" class="fa fa-image"
+                                            style="padding-right: 2px; color: #999;"></i>
                                         
                                         <span *ngIf="node.data.type !== 'Collection'">
                                             {{ node.data.name }}
                                         </span>
-                                        <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType === 'AGENCY' || node.data.privilegeType === 'PUBLIC')">
+                                        <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')">
                                             {{ node.data.name }}
                                         </span>
+                                        <span *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" style="color: #999;">
+                                            {{ node.data.name }}
+                                        </span>
+
                                     </span>
                                 </ng-template>
                             </tree-root>
@@ -119,14 +126,15 @@
     </span>
     <span *ngIf="match.item.filename != null">
         <i class="fa fa-file"></i>
-    </span> {{ match.item.label}}
+    </span> 
 
-    <div class="pull-right">
+    <span>
         <span *ngFor="let site of match.item.hierarchy; index as i">
-            {{site.label}}
-            <span *ngIf="i < (match.item.hierarchy.length -1)"> / </span>
+            {{site.label}} /
+            <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
         </span>
-    </div>
+    </span>
+    <b>{{ match.item.label}}</b>
 </ng-template>
 
 <context-menu #nodeMenu>

@@ -43,7 +43,6 @@ export class ManagementService {
             .get( acp + '/project/items', { search: params } )
             .toPromise()
             .then( response => {
-                console.log(JSON.stringify(response.json()))
                 return response.json() as SiteEntity[];
             } )
     }

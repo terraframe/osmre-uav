@@ -76,53 +76,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 click: ( tree: any, node: any, $event: any ) => {
 
                     if ( node.data.type === "folder" ) {
-
-                        // clear any existing images
-                        this.images = [];
-
-                        node.toggleExpanded();
-                        this.showImagePanel = false;
-
-                        if ( !node.isCollapsed ) {
-
-                            // open the panel immediatly
-                            this.showImagePanel = true;
-
-                            this.service.getItems( node.data.component, node.data.name )
-                                .then( items => {
-                                    //this.images = [items[0]]; // not yet handling different types of files
-
-                                    // this.images = items;
-
-                                    for ( let i = 0; i < items.length; ++i ) {
-                                        let item = items[i];
-
-                                        if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
-                                            item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
-                                            item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
-
-                                            this.images.push( item );
-                                        }
-                                    }
-
-                                    this.images.forEach( image => {
-                                        this.getThumbnail( image );
-                                    } )
-
-                                } ).catch(( err: any ) => {
-                                    this.error( err.json() );
-                                } );
-                        }
+                        this.toggleDirectory(node);
                     }
                     else if ( node.data.type === "object" ) {
                         // clicked on raw file. do nothing.
                     }
                     else {
-                        node.toggleExpanded();
 
-                        this.images = [];
+                        if(node.data.type === "Collection" && (this.admin || node.data.ownerName === this.userName || node.data.privilegeType !== 'OWNER') ) {
+                            // toggleExpanded() callse the getChildren() method above
+                            node.toggleExpanded();
+                            
+                            this.images = [];
 
-                        this.showImagePanel = false;
+                            this.showImagePanel = false;
+                        }
+                        else if(node.data.type !== "Collection"){
+                            // toggleExpanded() callse the getChildren() method above
+                            node.toggleExpanded();
+                            
+                            this.images = [];
+
+                            this.showImagePanel = false;
+                        }
                     }
 
                 }
@@ -448,6 +424,45 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
         else {
             return true;
+        }
+    }
+
+    toggleDirectory(node: TreeNode): void {
+        // clear any existing images
+        this.images = [];
+
+        node.toggleExpanded();
+        this.showImagePanel = false;
+
+        if (!node.isCollapsed) {
+
+            // open the panel immediatly
+            this.showImagePanel = true;
+
+            this.service.getItems(node.data.component, node.data.name)
+                .then(items => {
+                    //this.images = [items[0]]; // not yet handling different types of files
+
+                    // this.images = items;
+
+                    for (let i = 0; i < items.length; ++i) {
+                        let item = items[i];
+
+                        if (item.name.toLowerCase().indexOf(".png") !== -1 || item.name.toLowerCase().indexOf(".jpg") !== -1 ||
+                            item.name.toLowerCase().indexOf(".jpeg") !== -1 || item.name.toLowerCase().indexOf(".tif") !== -1 ||
+                            item.name.toLowerCase().indexOf(".tiff") !== -1) {
+
+                            this.images.push(item);
+                        }
+                    }
+
+                    this.images.forEach(image => {
+                        this.getThumbnail(image);
+                    })
+
+                }).catch((err: any) => {
+                    this.error(err.json());
+                });
         }
     }
 
