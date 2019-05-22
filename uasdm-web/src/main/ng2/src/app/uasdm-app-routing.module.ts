@@ -10,12 +10,24 @@ import { UserProfileComponent } from './management/user-profile.component';
 import { AdminGuardService } from './service/admin.guard.service';
 import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 
+import { LoginComponent } from './authentication/login.component'
+import { ForgotPasswordComponent } from './forgotpassword/forgotpassword.component'
+import { ForgotPasswordCompleteComponent } from './forgotpassword-complete/forgotpassword-complete.component'
+import { AuthGuard } from './authentication/auth.guard';
+import { HubComponent } from './hub/hub.component';
+
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/tasks',
+        redirectTo: '/menu',
         pathMatch: 'full'
     },
+    {
+	    path: 'menu',
+	    component: HubComponent,
+	    canActivate: [ AuthGuard ],
+	    data: { title: 'login.header' }    
+	},
     {
         path: 'viewer',
         component: ProjectsComponent
@@ -28,7 +40,21 @@ const routes: Routes = [
     {
         path: 'tasks',
         component: UserProfileComponent
-    }
+    },
+    {
+	    path: 'login',
+	    component: LoginComponent,
+	    data: { title: 'login.title' }    
+	},
+	{
+	    path: 'forgotpassword',
+	    component: ForgotPasswordComponent,
+	    data: { title: 'useraccounts.title' }                
+	},
+	{
+	    path: 'forgotpassword-complete/:token',
+	    component: ForgotPasswordCompleteComponent
+	}
 ];
 
 @NgModule( {
@@ -38,4 +64,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent];
+export const routedComponents = [ProjectsComponent, UploadComponent, UserProfileComponent, LoginComponent, HubComponent, ForgotPasswordComponent, ForgotPasswordCompleteComponent];

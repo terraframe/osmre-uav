@@ -42,7 +42,7 @@
     <profile>
       <id>ng2-dev</id>
       <properties>
-        <local.host>http://localhost:8080</local.host>
+        <local.host>https://localhost:8080</local.host>
       </properties>
     </profile>  
     <profile>
@@ -154,6 +154,43 @@
 
     <plugins>
       <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>maven-replacer-plugin</artifactId>
+        <version>1.4.1</version>
+        <executions>
+          <execution>
+            <id>replace-prism.jsp</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+            <inherited>false</inherited>
+            <configuration>
+              <file>src/main/webapp/WEB-INF/net/geoprism/prism/prism.jsp</file>
+              <outputFile>target/uasdm/WEB-INF/net/geoprism/prism/prism.jsp</outputFile>
+              <regex>false</regex>
+              <token>$local.host$</token>
+              <value>${local.host}</value>
+            </configuration>
+          </execution>
+          <execution>
+            <id>replace-admin.jsp</id>          
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+            <inherited>false</inherited>
+            <configuration>
+              <file>src/main/webapp/WEB-INF/net/geoprism/prism/admin.jsp</file>
+              <outputFile>target/uasdm/WEB-INF/net/geoprism/prism/admin.jsp</outputFile>
+              <regex>false</regex>
+              <token>$local.host$</token>
+              <value>${local.host}</value>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.6</version>
@@ -198,6 +235,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.4</version>
         <configuration>
+          <warSourceExcludes>**/prism.jsp,**/admin.jsp</warSourceExcludes>
           <packagingExcludes>
             <!-- Exclude all jars provided by tomcat -->
             **/catalina*.jar,
@@ -215,6 +253,8 @@
               <artifactId>geoprism-web</artifactId>
               <excludes>
                 <exclude>WEB-INF/lib/aspectjtools*.jar</exclude>
+                <exclude>WEB-INF/net/geoprism/prism/prism.jsp</exclude>
+                <exclude>WEB-INF/net/geoprism/prism/admin.jsp</exclude>
               </excludes>
             </overlay>
           </overlays>

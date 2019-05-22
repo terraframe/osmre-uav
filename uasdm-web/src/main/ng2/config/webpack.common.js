@@ -10,17 +10,26 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
   },
   node: {
 	    fs: "empty"
   },
   module: {
     rules: [
+//    	{
+//            test: /\.ts$/,
+//            loaders: [
+//            'ng-router-loader',        	
+//            {
+//              loader: 'awesome-typescript-loader',
+//              options: { configFileName: helpers.root('tsconfig.json') }
+//            } , 'angular2-template-loader']
+//          },
       {
           test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
           loader: '@ngtools/webpack'
-      },      
+      },
       {
         test: /\.html$/,
         loader: 'html-loader'

@@ -31,7 +31,8 @@
 		"ngx-cookie-service": "^1.0.10",
 		"rxjs": "5.5.0",
 		"web-animations-js": "^2.3.1",
-		"zone.js": "^0.8.5"
+		"zone.js": "^0.8.5",
+		"geoprism": "file:../ng2-lib"
 	},
 	"devDependencies": {
 		"@angular/compiler": "~5.2.11",
