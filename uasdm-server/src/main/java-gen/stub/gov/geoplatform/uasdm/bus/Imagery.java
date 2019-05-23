@@ -54,7 +54,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
   /**
    * Returns null, as a Imagery cannot have a child.
    */
-  public UasComponent createChild()
+  @Override
+  public UasComponent createDefaultChild()
   {
     // TODO throw exception.
     return null;

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.system.metadata.MdBusiness;
 
 public class Project extends ProjectBase
 {
@@ -14,11 +15,47 @@ public class Project extends ProjectBase
     super();
   }
 
-  public Mission createChild()
+  @Override
+  public Mission createDefaultChild()
+  {
+    return this.createMission();
+  }
+  
+  public Mission createMission()
   {
     return new Mission();
   }
-
+ 
+  public Imagery createImagery()
+  {
+    return new Imagery();
+  }
+  
+  
+  /**
+   * Create the child of the given type.
+   * 
+   * @param return the child of the given type. It assumes the type is valid. It is the type name of the
+   * Runway {@link MdBusiness}.
+   * 
+   * @return a new {@link UasComponent} of the correct type.
+   */
+  @Override
+  public UasComponent createChild(String typeName)
+  {
+    MdBusiness imageryMdBusiness = MdBusiness.getMdBusiness(Imagery.CLASS);
+    
+    if (typeName.equals(imageryMdBusiness.getTypeName()))
+    {
+      return this.createImagery();
+    }
+    else
+    {
+      return this.createDefaultChild();
+    }
+      
+  }
+  
   @Override
   public String getSolrIdField()
   {
@@ -33,7 +70,14 @@ public class Project extends ProjectBase
 
   public ComponentHasComponent addComponent(gov.geoplatform.uasdm.bus.UasComponent uasComponent)
   {
-    return this.addSite((Site) uasComponent);
+    if (uasComponent instanceof Imagery)
+    {
+      return this.addImagery((Imagery)uasComponent);
+    }
+    else
+    {
+      return this.addSite((Site) uasComponent);
+    }
   }
 
   /**

@@ -66,7 +66,8 @@ public class Site extends SiteBase
     return "siteName";
   }
 
-  public Project createChild()
+  @Override
+  public Project createDefaultChild()
   {
     return new Project();
   }

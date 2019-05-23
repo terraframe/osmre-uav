@@ -38,7 +38,8 @@ public class Mission extends MissionBase
     super();
   }
 
-  public Collection createChild()
+  @Override
+  public Collection createDefaultChild()
   {
     Collection collection = new Collection();
     

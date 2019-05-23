@@ -33,7 +33,8 @@ public class Collection extends CollectionBase implements ImageryComponent
   /**
    * Returns null, as a Collection cannot have a child.
    */
-  public UasComponent createChild()
+  @Override
+  public UasComponent createDefaultChild()
   {
     // TODO throw exception.
 

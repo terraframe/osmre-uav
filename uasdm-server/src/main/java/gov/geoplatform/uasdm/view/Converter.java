@@ -47,7 +47,7 @@ public abstract class Converter
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
 
-    if (uasComponent instanceof Collection || uasComponent instanceof Mission || hasChildren)
+    if (uasComponent instanceof Collection || uasComponent instanceof Mission || uasComponent instanceof Imagery || hasChildren)
     {
       /*
        * Collection and Mission always have children because of the image and
@@ -140,7 +140,7 @@ public abstract class Converter
    */
   public static UasComponent toNewUasComponent(UasComponent parent, SiteItem siteItem)
   {
-    UasComponent newChild = parent != null ? parent.createChild() : new Site();
+    UasComponent newChild = parent != null ? parent.createChild(siteItem.getType()) : new Site();
 
     if (newChild != null)
     {

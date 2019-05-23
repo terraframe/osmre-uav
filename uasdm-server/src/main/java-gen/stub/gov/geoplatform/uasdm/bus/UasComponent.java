@@ -1,5 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.geoprism.JSONStringImpl;
 
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
@@ -41,14 +48,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -60,13 +62,25 @@ public abstract class UasComponent extends UasComponentBase
   }
 
   /**
-   * For the POC, each type has only one child type. Use polymorphism to return
-   * the correct type.
+   * There will be a default child type for each node.
    * 
    * @return a new {@link UasComponent} of the correct type.
    */
-  public abstract UasComponent createChild();
+  public abstract UasComponent createDefaultChild();
 
+  /**
+   * Create the child of the given type.
+   * 
+   * @param return the child of the given type. It assumes the type is valid. It is the type name of the
+   * Runway {@link MdBusiness}.
+   * 
+   * @return a new {@link UasComponent} of the correct type.
+   */
+  public UasComponent createChild(String typeName)
+  {
+    return this.createDefaultChild();
+  }
+  
   /**
    * @return The name of the solr field for the components id.
    */
@@ -221,7 +235,7 @@ public abstract class UasComponent extends UasComponentBase
 
   protected void createS3Folder(String key)
   {
-  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     // create meta-data for your folder and set content-length to 0
     ObjectMetadata metadata = new ObjectMetadata();
