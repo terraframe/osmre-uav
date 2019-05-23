@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 294038863)
+@com.runwaysdk.business.ClassSignature(hash = -1626953304)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -179,6 +179,122 @@ public  class ProjectQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   }
 
 
+  public com.runwaysdk.query.Condition imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.getBusinessQuery().isParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.getBusinessQuery().isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.getBusinessQuery().isParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.getBusinessQuery().isParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.getBusinessQuery().isParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.getBusinessQuery().isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.getBusinessQuery().isParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.getBusinessQuery().isParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.getBusinessQuery().isNotParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.getBusinessQuery().isNotParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.getBusinessQuery().isNotParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.getBusinessQuery().isNotParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+
   public com.runwaysdk.query.Condition missions()
   {
     com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
@@ -308,6 +424,20 @@ public  class ProjectQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
     public com.runwaysdk.query.BasicCondition NE(gov.geoplatform.uasdm.bus.Project project);
 
 
+  public com.runwaysdk.query.Condition imagery();
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery);
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery();
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery);
+
+
   public com.runwaysdk.query.Condition missions();
 
   public com.runwaysdk.query.Condition missions(gov.geoplatform.uasdm.bus.MissionQuery missionQuery);
@@ -320,6 +450,20 @@ public  class ProjectQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public com.runwaysdk.query.Condition SUBSELECT_missions(gov.geoplatform.uasdm.bus.MissionQuery missionQuery);
 
   public com.runwaysdk.query.Condition SUBSELECT_missions(gov.geoplatform.uasdm.bus.MissionQuery missionQuery, gov.geoplatform.uasdm.bus.ProjectHasMissionQuery projectHasMissionQuery);
+
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery();
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery);
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery();
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery);
 
 
   public com.runwaysdk.query.Condition NOT_IN_missions();
@@ -390,6 +534,64 @@ public  class ProjectQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
     }
 
 
+  public com.runwaysdk.query.Condition imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.isParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.isParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.isParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.isParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.isParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.isParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+
   public com.runwaysdk.query.Condition missions()
   {
     com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
@@ -445,6 +647,64 @@ public  class ProjectQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   {
     projectHasMissionQuery.AND(projectHasMissionQuery.hasChild(missionQuery));
     return this.isParentIn_SUBSELECT(projectHasMissionQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.isNotParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+
+    return this.isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.isNotParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    return this.isNotParentIn_SUBSELECT(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.isNotParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(imageryQuery));
+
+    return this.isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.isNotParentIn(projectHasImageryQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_imagery(gov.geoplatform.uasdm.bus.ImageryQuery imageryQuery, gov.geoplatform.uasdm.bus.ProjectHasImageryQuery projectHasImageryQuery)
+  {
+    projectHasImageryQuery.AND(projectHasImageryQuery.hasChild(imageryQuery));
+    return this.isNotParentIn_SUBSELECT(projectHasImageryQuery);
   }
 
 

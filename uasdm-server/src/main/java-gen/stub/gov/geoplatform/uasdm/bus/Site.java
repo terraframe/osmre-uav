@@ -133,4 +133,9 @@ public class Site extends SiteBase
     return false;
   }
 
+  @Override
+  public List<AbstractWorkflowTask> getTasks()
+  {
+    return new LinkedList<AbstractWorkflowTask>();
+  }
 }

@@ -180,6 +180,13 @@ public abstract class UasComponent extends UasComponentBase
 
   public void delete()
   {
+    List<AbstractWorkflowTask> tasks = this.getTasks();
+
+    for (AbstractWorkflowTask task : tasks)
+    {
+      task.delete();
+    }
+    
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -373,7 +380,7 @@ public abstract class UasComponent extends UasComponentBase
   {
     String key = this.getS3location() + folder;
 
-  AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     String bucketName = AppProperties.getBucketName();
 
@@ -616,4 +623,12 @@ public abstract class UasComponent extends UasComponentBase
 
     return bboxArr;
   }
+  
+  /**
+   * Returns tasks associated with this item.
+   * 
+   * @return tasks associated with this item.
+   */
+  public abstract List<AbstractWorkflowTask> getTasks();
+
 }

@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.view;
 
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.Site;
@@ -185,6 +186,10 @@ public abstract class Converter
     else if (uasComponent instanceof Collection)
     {
       return new CollectionConverter();
+    }
+    else if (uasComponent instanceof Imagery)
+    {
+      return new ImageryConverter();
     }
     else
     {

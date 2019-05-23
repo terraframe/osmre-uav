@@ -137,4 +137,10 @@ public class Mission extends MissionBase
 
     return objects;
   }
+  
+  @Override
+  public List<AbstractWorkflowTask> getTasks()
+  {
+    return new LinkedList<AbstractWorkflowTask>();
+  }
 }

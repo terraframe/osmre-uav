@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 204673880)
+@com.runwaysdk.business.ClassSignature(hash = -1222044431)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ProjectBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Project";
-  private static final long serialVersionUID = 204673880;
+  private static final long serialVersionUID = -1222044431;
   
   public ProjectBase()
   {
@@ -28,6 +28,49 @@ public abstract class ProjectBase extends gov.geoplatform.uasdm.bus.UasComponent
     ProjectQuery query = new ProjectQuery(new com.runwaysdk.query.QueryFactory());
     com.runwaysdk.business.Entity.getAllInstances(query, sortAttribute, ascending, pageSize, pageNumber);
     return query;
+  }
+  
+  public gov.geoplatform.uasdm.bus.ProjectHasImagery addImagery(gov.geoplatform.uasdm.bus.Imagery imagery)
+  {
+    return (gov.geoplatform.uasdm.bus.ProjectHasImagery) addChild(imagery, gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+  }
+  
+  public void removeImagery(gov.geoplatform.uasdm.bus.Imagery imagery)
+  {
+    removeAllChildren(imagery, gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.Imagery> getAllImagery()
+  {
+    return (com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.Imagery>) getChildren(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.ProjectHasImagery> getAllImageryRel()
+  {
+    return (com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.ProjectHasImagery>) getChildRelationships(gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public gov.geoplatform.uasdm.bus.ProjectHasImagery getImageryRel(gov.geoplatform.uasdm.bus.Imagery imagery)
+  {
+    com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.ProjectHasImagery> iterator = (com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.bus.ProjectHasImagery>) getRelationshipsWithChild(imagery, gov.geoplatform.uasdm.bus.ProjectHasImagery.CLASS);
+    try
+    {
+      if (iterator.hasNext())
+      {
+        return iterator.next();
+      }
+      else
+      {
+        return null;
+      }
+    }
+    finally
+    {
+      iterator.close();
+    }
   }
   
   public gov.geoplatform.uasdm.bus.ProjectHasMission addMissions(gov.geoplatform.uasdm.bus.Mission mission)

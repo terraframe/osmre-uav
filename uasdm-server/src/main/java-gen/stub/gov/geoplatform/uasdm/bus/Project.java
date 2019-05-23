@@ -1,5 +1,8 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
 public class Project extends ProjectBase
@@ -47,4 +50,9 @@ public class Project extends ProjectBase
     super.applyWithParent(parent);
   }
 
+  @Override
+  public List<AbstractWorkflowTask> getTasks()
+  {
+    return new LinkedList<AbstractWorkflowTask>();
+  }
 }
