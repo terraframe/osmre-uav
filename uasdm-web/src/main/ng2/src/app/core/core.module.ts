@@ -35,7 +35,7 @@ import { EventService, IdService, BasicService} from './service/core.service';
 import { LocalizationService } from './service/localization.service';
 import { EventHttpService } from './service/event-http.service';
 
-import { CookieService } from 'angular2-cookie/services/cookies.service';
+import { CookieService } from 'ngx-cookie-service';
 
 import { AuthService } from './authentication/auth.service';
 

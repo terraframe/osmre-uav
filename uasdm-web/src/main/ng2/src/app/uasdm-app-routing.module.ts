@@ -16,10 +16,17 @@ import { ForgotPasswordCompleteComponent } from './forgotpassword-complete/forgo
 import { AuthGuard } from './authentication/auth.guard';
 import { HubComponent } from './hub/hub.component';
 
+// TODO : Can't dynamically load the Admin Module due to a chunking error
+import { AccountsComponent } from './admin/account/accounts.component';
+import { AccountComponent, AccountResolver } from './admin/account/account.component';
+import { SystemLogoComponent } from './admin/logo/system-logo.component';
+import { SystemLogosComponent } from './admin/logo/system-logos.component';
+import { EmailComponent } from './admin/email/email.component';
+
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/menu',
+        redirectTo: '/tasks',
         pathMatch: 'full'
     },
     {
@@ -54,7 +61,42 @@ const routes: Routes = [
 	{
 	    path: 'forgotpassword-complete/:token',
 	    component: ForgotPasswordCompleteComponent
-	}
+	},
+//	{
+//    path: 'admin',
+//    canActivate: [ AdminGuardService ],
+//    loadChildren: './admin/admin.module#AdminModule'    
+//  }
+	{
+    path: 'admin/logos',
+    component: SystemLogosComponent,
+    data: { title: 'System_Configuration' }                
+  },
+  {
+    path: 'admin/logo/:oid',
+    component: SystemLogoComponent,
+    data: { title: 'System_Configuration' }            
+    
+  },
+  {
+    path: 'admin/email',
+    component: EmailComponent,
+    data: { title: 'System_Configuration' }            
+    
+  },
+	{
+    path: 'admin/accounts',
+    component: AccountsComponent,    
+    data: { title: 'useraccounts.title' }                
+  },
+  {
+    path: 'admin/account/:oid',
+    component: AccountComponent,
+    resolve: {
+      account: AccountResolver
+    },        
+    data: { title: 'account.title' }              
+  }
 ];
 
 @NgModule( {

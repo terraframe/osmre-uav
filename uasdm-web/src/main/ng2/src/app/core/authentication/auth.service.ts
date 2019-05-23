@@ -18,7 +18,7 @@
 ///
 import { Injectable } from '@angular/core';
 
-import { CookieService } from 'angular2-cookie/core';
+import { CookieService } from 'ngx-cookie-service';
 import { User } from './user';
 
 @Injectable()

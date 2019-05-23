@@ -55,6 +55,8 @@ import { AdminGuard } from './authentication/admin.guard';
 import { HubHeaderComponent } from './hub/hub-header.component';
 import { LoginHeaderComponent } from './authentication/login-header.component';
 
+import { AdminModule } from './admin/admin.module';
+
 @NgModule( {
     imports: [
         BrowserModule,
@@ -71,7 +73,8 @@ import { LoginHeaderComponent } from './authentication/login-header.component';
         BsDropdownModule.forRoot(),
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
-        PasswordStrengthBarModule
+        PasswordStrengthBarModule,
+        AdminModule
     ],
     declarations: [
         UasdmAppComponent,
@@ -102,6 +105,7 @@ import { LoginHeaderComponent } from './authentication/login-header.component';
         EventService,
         MapService,
         SessionService,
+        ProfileService,
         ForgotPasswordService,
 	    ForgotPasswordCompleteService,
 	    HubService,
