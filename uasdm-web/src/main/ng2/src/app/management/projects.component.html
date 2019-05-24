@@ -49,7 +49,7 @@
 
                                         <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')" class="fa fa-image"
                                             style="padding-right: 2px;"></i>
-                                        <i *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" class="fa fa-image"
+                                        <i *ngIf="node.data.type === 'Collection' && !admin && node.data.ownerName !== userName && node.data.privilegeType === 'OWNER'" class="fa fa-image"
                                             style="padding-right: 2px; color: #999;"></i>
                                         
                                         <span *ngIf="node.data.type !== 'Collection'">
@@ -58,7 +58,7 @@
                                         <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')">
                                             {{ node.data.name }}
                                         </span>
-                                        <span *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" style="color: #999;">
+                                        <span *ngIf="node.data.type === 'Collection' && !admin && node.data.ownerName !== userName && node.data.privilegeType === 'OWNER'" style="color: #999;">
                                             {{ node.data.name }}
                                         </span>
 
