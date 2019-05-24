@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.view;
 
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.Site;
@@ -46,7 +47,7 @@ public abstract class Converter
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
 
-    if (uasComponent instanceof Collection || uasComponent instanceof Mission || hasChildren)
+    if (uasComponent instanceof Collection || uasComponent instanceof Mission || uasComponent instanceof Imagery || hasChildren)
     {
       /*
        * Collection and Mission always have children because of the image and
@@ -139,7 +140,7 @@ public abstract class Converter
    */
   public static UasComponent toNewUasComponent(UasComponent parent, SiteItem siteItem)
   {
-    UasComponent newChild = parent != null ? parent.createChild() : new Site();
+    UasComponent newChild = parent != null ? parent.createChild(siteItem.getType()) : new Site();
 
     if (newChild != null)
     {
@@ -185,6 +186,10 @@ public abstract class Converter
     else if (uasComponent instanceof Collection)
     {
       return new CollectionConverter();
+    }
+    else if (uasComponent instanceof Imagery)
+    {
+      return new ImageryConverter();
     }
     else
     {

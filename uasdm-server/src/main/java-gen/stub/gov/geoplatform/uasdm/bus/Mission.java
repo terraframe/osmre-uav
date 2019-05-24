@@ -38,7 +38,8 @@ public class Mission extends MissionBase
     super();
   }
 
-  public Collection createChild()
+  @Override
+  public Collection createDefaultChild()
   {
     Collection collection = new Collection();
     
@@ -136,5 +137,11 @@ public class Mission extends MissionBase
     }
 
     return objects;
+  }
+  
+  @Override
+  public List<AbstractWorkflowTask> getTasks()
+  {
+    return new LinkedList<AbstractWorkflowTask>();
   }
 }
