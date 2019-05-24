@@ -38,8 +38,8 @@ public class CollectionConverter extends Converter
     {
       GeoprismUser user = (GeoprismUser)collection.getOwner();
       
-      String firstName = user.getFirstName();
-      String lastName = user.getLastName();
+//      String firstName = user.getFirstName();
+//      String lastName = user.getLastName();
       String userName = user.getUsername();
       String phoneNumber = user.getPhoneNumber();
       String emailAddress = user.getEmail();

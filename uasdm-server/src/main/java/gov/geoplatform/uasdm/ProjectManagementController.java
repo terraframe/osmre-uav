@@ -63,10 +63,21 @@ public class ProjectManagementController
     return new RestBodyResponse(SiteItem.serialize(roots));
   }
 
-  @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
+  @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF newDefaultChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
   {
-    SiteItem item = this.service.newChild(request.getSessionId(), parentId);
+    SiteItem item = this.service.newDefaultChild(request.getSessionId(), parentId);
+
+    RestResponse response = new RestResponse();
+    response.set("item", item.toJSON());
+    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
+    return response;
+  }
+  
+  @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF newChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId, @RequestParamter(name = "type") String childType)
+  {
+    SiteItem item = this.service.newChild(request.getSessionId(), parentId, childType);
 
     RestResponse response = new RestResponse();
     response.set("item", item.toJSON());

@@ -171,13 +171,44 @@ public class ProjectManagementService
    * @return
    */
   @Request(RequestType.SESSION)
-  public SiteItem newChild(String sessionId, String parentId)
+  public SiteItem newDefaultChild(String sessionId, String parentId)
   {
     if (parentId != null)
     {
       UasComponent uasComponent = UasComponent.get(parentId);
 
-      UasComponent childUasComponent = uasComponent.createChild();
+      UasComponent childUasComponent = uasComponent.createDefaultChild();
+
+      if (childUasComponent != null)
+      {
+        return Converter.toSiteItem(childUasComponent, true);
+      }
+      else
+      {
+        return null;
+      }
+    }
+    else
+    {
+      return Converter.toSiteItem(new Site(), true);
+    }
+  }
+  
+  /**
+   * Should this method return null if the given parent has no children?
+   * 
+   * @param sessionId
+   * @param parentId
+   * @return
+   */
+  @Request(RequestType.SESSION)
+  public SiteItem newChild(String sessionId, String parentId, String childType)
+  {
+    if (parentId != null)
+    {
+      UasComponent uasComponent = UasComponent.get(parentId);
+
+      UasComponent childUasComponent = uasComponent.createChild(childType);
 
       if (childUasComponent != null)
       {
