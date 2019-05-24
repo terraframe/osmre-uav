@@ -244,7 +244,7 @@ public class ProjectManagementService
     task.setCollectionId(collection.getOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-//    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.apply();
     

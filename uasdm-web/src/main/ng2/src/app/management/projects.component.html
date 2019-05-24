@@ -142,6 +142,7 @@
             class="fa fa-repeat"></i>
         Re-run Orthorectification Processing
     </ng-template>
+
     <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i
             class="fa fa-edit"></i> Edit
         {{item?.data.name}}
@@ -152,7 +153,15 @@
     </ng-template>
     <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item)"> <i
             class="fa fa-arrow-circle-down"></i>
-        Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template>
+        Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} 
+    </ng-template>
+
+    <!-- <ng-template contextMenuItem [visible]="isCollection" divider="true"></ng-template>
+    <ng-template contextMenuItem let-item [visible]="isCollection" (execute)="handleUploadFile($event.item)"> 
+        <i style="font-size:18px; padding:0; width:auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i>
+        Upload a file
+    </ng-template> -->
+
     <ng-template contextMenuItem [visible]="isSite" divider="true"></ng-template>
     <ng-template contextMenuItem let-item [visible]="canEditSite" (execute)="handleEditGeom($event.item)"> <i
             class="fa fa-globe" aria-hidden="true"></i>

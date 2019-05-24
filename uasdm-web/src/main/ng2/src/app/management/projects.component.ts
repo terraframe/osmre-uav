@@ -21,6 +21,7 @@ import { CreateModalComponent } from './modals/create-modal.component';
 import { ImagePreviewModalComponent } from './modals/image-preview-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { UploadModalComponent } from './modals/upload-modal.component';
 import { NotificationModalComponent } from './modals/notification-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from '../model/management';
@@ -518,6 +519,35 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
+
+    handleUploadFile(item: any): void {
+
+        let collection = item.data;
+        let mission = item.parent.data;
+        let project = item.parent.parent.data;
+        let site = item.parent.parent.parent.data;
+        let hierarchy = {"collection":collection, "mission":mission, "project":project, "site":site}
+
+        // this.service.edit( data.id ).then( data => {
+            this.bsModalRef = this.modalService.show( UploadModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'upload-modal'
+            } );
+            this.bsModalRef.content.setHierarchy = hierarchy;
+            // this.bsModalRef.content.attributes = data.attributes;
+
+            // ( <UploadModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
+            //     // Do something
+            //     this.current.data = entity;
+            // } );
+        // } ).catch(( err: any ) => {
+        //     this.error( err.json() );
+        // } );
+    }
+
+
     handleCreate( parent: TreeNode ): void {
         this.current = parent;
 
@@ -616,7 +646,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
-                'class': 'upload-modal'
+                'class': 'edit-modal'
             } );
             this.bsModalRef.content.entity = data.item;
             this.bsModalRef.content.attributes = data.attributes;
@@ -950,5 +980,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public isSite = ( item: any ): boolean => {
         return item.data.type === "Site";
+    }
+
+    public isCollection = ( item: any ): boolean => {
+        return item.data.type === "Collection";
     }
 }

@@ -255,7 +255,7 @@ public class SiteItem implements TreeComponent
     // OWNER_NAME
     // OWNER_PHONE
     // OWNER_EMAIL
-    if(item.getType() == "Collection")
+    if(item.getType().equals("Collection"))
     {
       item.setPrivilegeType(object.getString(PRIVILEGE_TYPE));
     }

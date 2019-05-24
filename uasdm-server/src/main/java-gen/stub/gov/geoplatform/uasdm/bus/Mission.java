@@ -42,9 +42,9 @@ public class Mission extends MissionBase
   {
     Collection collection = new Collection();
     
-    collection.addPrivilegeType(AllPrivilegeType.OWNER);
+    collection.addPrivilegeType(AllPrivilegeType.AGENCY);
     
-    return new Collection();
+    return collection;
   }
 
   @Override

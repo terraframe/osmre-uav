@@ -2480,7 +2480,7 @@ i.fa.fa-cloud-upload{
 }
 
 .navbar-default .navbar-header > a > img {
-  margin-left: 50px;
+  /* margin-left: 50px; */
   /* width: 120px; */
   height: 80%;
   position: absolute;
