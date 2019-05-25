@@ -18,6 +18,8 @@ import { HubComponent } from './hub/hub.component';
 
 // TODO : Can't dynamically load the Admin Module due to a chunking error
 import { AccountsComponent } from './admin/account/accounts.component';
+import { AccountInviteComponent } from './admin/account/account-invite.component';
+import { AccountInviteCompleteComponent } from './admin/account/account-invite-complete.component';
 import { AccountComponent, AccountResolver } from './admin/account/account.component';
 import { SystemLogoComponent } from './admin/logo/system-logo.component';
 import { SystemLogosComponent } from './admin/logo/system-logos.component';
@@ -95,6 +97,16 @@ const routes: Routes = [
     resolve: {
       account: AccountResolver
     },        
+    data: { title: 'account.title' }              
+  },
+  {
+    path: 'admin/invite',
+    component: AccountInviteComponent,    
+    data: { title: 'account.title' }              
+  },
+  {
+    path: 'admin/invite-complete/:token',
+    component: AccountInviteCompleteComponent,
     data: { title: 'account.title' }              
   }
 ];

@@ -25,7 +25,7 @@ import 'rxjs/add/operator/toPromise';
 import { EventService, BasicService } from '../../core/service/core.service';
 import { EventHttpService } from '../../core/service/event-http.service';
 
-import { Account, User, PageResult } from './account';
+import { Account, User, PageResult, UserInvite } from './account';
 
 declare var acp: any;
 
@@ -116,6 +116,32 @@ export class AccountService extends BasicService {
     .post(acp + '/account/unlock', JSON.stringify({oid:oid}), {headers: headers})
     .toPromise()
     .catch(this.handleError.bind(this));      
+  }
+  
+  inviteUser(invite:UserInvite, roleIds:string[]): Promise<Response>
+  {
+    let headers = new Headers({
+      'Content-Type': 'application/json'
+    });  
+    
+    console.log("Submitting to inviteUser : ", JSON.stringify({invite: invite, roleIds: roleIds}));
+    
+    return this.ehttp
+    .post(acp + '/uasdm-account/inviteUser', JSON.stringify({invite: invite, roleIds: roleIds}), {headers: headers})
+    .toPromise()
+    .catch(this.handleError.bind(this));
+  }
+  
+  inviteComplete(user:User, token:string): Promise<Response>
+  {
+    let headers = new Headers({
+      'Content-Type': 'application/json'
+    });  
+    
+    return this.ehttp
+    .post(acp + '/uasdm-account/inviteComplete', JSON.stringify({user: user, token: token}), {headers: headers})
+    .toPromise()
+    .catch(this.handleError.bind(this));
   }
   
 }

@@ -17,6 +17,11 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
+export class UserInvite {
+  email: string;
+  groups:Group[];
+}
+
 export class User {
   oid: string;
   username: string;

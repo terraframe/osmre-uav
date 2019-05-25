@@ -89,5 +89,10 @@ public class AppProperties
   {
     return Singleton.getProps().getInteger("chunk.expire.time");
   }
+  
+  public static Integer getInviteUserTokenExpireTime()
+  {
+    return Singleton.getProps().getInteger("invite.user.token.expire.time", 72);
+  }
 
 }

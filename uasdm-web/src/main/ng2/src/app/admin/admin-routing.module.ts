@@ -32,6 +32,9 @@ import { UniversalTreeComponent } from './universaltree/universaltree.component'
 import { ClassifierTreeComponent } from './classifiertree/classifiertree.component';
 import { BrowserComponent } from './browser/browser.component';
 
+import { AccountInviteComponent } from './account/account-invite.component';
+import { AccountInviteCompleteComponent } from './account/account-invite-complete.component';
+
 declare var acp: any;
 
 const routes: Routes = [
@@ -88,7 +91,17 @@ const routes: Routes = [
     resolve: {
       account: AccountResolver
     },        
-    data: { title: 'account.title' }              
+    data: { title: 'account.title' }
+  },
+  {
+    path: 'invite',
+    component: AccountInviteComponent,    
+    data: { }
+  },
+  {
+    path: 'invite-complete',
+    component: AccountInviteCompleteComponent,    
+    data: { }
   }
 ];
 
@@ -99,4 +112,4 @@ const routes: Routes = [
 })
 export class AdminRoutingModule { }
 
-export const routedComponents = [SystemLogosComponent, SystemLogoComponent, EmailComponent, AccountsComponent, AccountComponent, GeoTreeComponent, UniversalTreeComponent, ClassifierTreeComponent, BrowserComponent];
+export const routedComponents = [SystemLogosComponent, SystemLogoComponent, EmailComponent, AccountsComponent, AccountComponent, AccountInviteComponent, AccountInviteCompleteComponent, GeoTreeComponent, UniversalTreeComponent, ClassifierTreeComponent, BrowserComponent];

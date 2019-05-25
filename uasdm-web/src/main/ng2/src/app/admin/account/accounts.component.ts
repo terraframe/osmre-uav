@@ -66,4 +66,8 @@ export class AccountsComponent implements OnInit {
       this.res = res;	
     });	  	  
   }  
+  
+  inviteUsers(): void {
+    this.router.navigate(['/admin/invite']);	  
+  }
 }
