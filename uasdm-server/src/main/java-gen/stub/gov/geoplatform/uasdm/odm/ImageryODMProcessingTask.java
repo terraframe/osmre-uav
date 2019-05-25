@@ -6,20 +6,20 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
+public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
-  private static final long serialVersionUID = -90821820;
+  private static final long serialVersionUID = -897837399;
   
-  private static Logger logger = LoggerFactory.getLogger(ODMStatusServer.class);
+  final Logger               log              = LoggerFactory.getLogger(ImageryODMProcessingTask.class);
   
-  public ODMProcessingTask()
+  public ImageryODMProcessingTask()
   {
     super();
   }
   
   public String getImageryComponentOid()
   {
-    return this.getCollectionOid();
+    return this.getImageryOid();
   }
   
   @Override
@@ -69,7 +69,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     }
     catch (Throwable t)
     {
-      logger.error("Error occurred while initiating ODM Processing.", t);
+      log.error("Error occurred while initiating ODM Processing.", t);
       
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());

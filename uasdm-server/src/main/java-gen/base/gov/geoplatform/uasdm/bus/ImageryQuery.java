@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1697573698)
+@com.runwaysdk.business.ClassSignature(hash = 1424926621)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,40 @@ public  class ImageryQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.Imagery.CLASS;
+  }
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, displayLabel);
+
   }
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
@@ -186,6 +220,12 @@ public  class ImageryQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface ImageryQueryReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableInteger getImageHeight();
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getImageWidth();
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Imagery imagery);
 
@@ -245,6 +285,40 @@ public  class ImageryQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
       return this.NE(imagery.getOid());
     }
 
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, displayLabel);
+
+  }
 
   public com.runwaysdk.query.Condition project()
   {
@@ -370,6 +444,12 @@ public  class ImageryQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
   public interface ImageryQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableInteger getImageHeight();
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getImageWidth();
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias);
+    public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.Imagery ... imagery);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.Imagery ... imagery);
@@ -453,6 +533,40 @@ public  class ImageryQuery extends gov.geoplatform.uasdm.bus.UasComponentQuery
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableInteger getImageHeight()
+  {
+    return getImageHeight(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageHeight(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEHEIGHT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getImageWidth()
+  {
+    return getImageWidth(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableInteger getImageWidth(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.Imagery.IMAGEWIDTH, alias, displayLabel);
+
   }
   }
 }

@@ -14,7 +14,7 @@ import com.runwaysdk.query.QueryFactory;
 
 import net.geoprism.GeoprismUser;
 
-public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase
+public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF
 {
   private static final long serialVersionUID = 227492042;
 
@@ -81,7 +81,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase
       iterator.close();
     }
   }
-
+  
   public JSONObject toJSON()
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
@@ -118,4 +118,16 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase
 
     return array;
   }
+  
+  
+  /**
+   * Returns a label of a component associated with this task.
+   * 
+   * @return label of a component associated with this task.
+   */
+  public String getComponentLabel()
+  {
+    return "";
+  }
+  
 }

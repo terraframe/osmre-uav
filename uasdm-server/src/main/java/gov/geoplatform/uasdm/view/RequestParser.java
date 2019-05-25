@@ -30,6 +30,8 @@ public class RequestParser
   private static String       METHOD_PARAM         = "_method";
 
   private static String       GENERATE_ERROR_PARAM = "generateError";
+  
+  private static String       UAS_COMPONENT_OID    = "uasComponentOid";
 
   private String              filename;
 
@@ -52,6 +54,8 @@ public class RequestParser
   private Map<String, String> customParams         = new HashMap<>();
 
   private Boolean             resume;
+  
+  private String              uasComponentOid;
 
   private RequestParser()
   {
@@ -125,6 +129,11 @@ public class RequestParser
   {
     return uuid;
   }
+  
+  public String getUasComponentOid()
+  {
+    return uasComponentOid;
+  }
 
   public String getOriginalFilename()
   {
@@ -176,6 +185,11 @@ public class RequestParser
     {
       requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
     }
+    
+    if (requestParser.uasComponentOid == null)
+    {
+      requestParser.uasComponentOid = multipartUploadParser.getParams().get(UAS_COMPONENT_OID);
+    }
 
     if (requestParser.originalFilename == null)
     {
@@ -225,6 +239,11 @@ public class RequestParser
     {
       requestParser.uuid = req.getParameter(UUID_PARAM);
     }
+    
+    if (requestParser.uasComponentOid == null)
+    {
+      requestParser.uasComponentOid = req.getParameter(UAS_COMPONENT_OID);
+    }
 
     if (requestParser.method == null)
     {
@@ -265,6 +284,10 @@ public class RequestParser
       if (key.equals(UUID_PARAM))
       {
         requestParser.uuid = value;
+      }
+      else if (key.equals(UAS_COMPONENT_OID))
+      {
+        requestParser.uasComponentOid = value;
       }
       else if (key.equals(METHOD_PARAM))
       {

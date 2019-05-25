@@ -178,18 +178,18 @@ public class Imagery extends ImageryBase implements ImageryComponent
     return this.getS3location() + ORTHO + "/";
   }
 
-  public void uploadArchive(WorkflowTask task, File archive)
+  public void uploadArchive(AbstractWorkflowTask task, File archive)
   {
     Imagery.uploadArchive(task, archive, this);
   }
   
-  public void uploadZipArchive(WorkflowTask task, File archive)
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive)
   {
     Imagery.uploadZipArchive(task, archive, this);
   }
 
 
-  public static void uploadArchive(WorkflowTask task, File archive, ImageryComponent imageryComponent)
+  public static void uploadArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
   {
     String extension = FilenameUtils.getExtension(archive.getName());
 
@@ -203,7 +203,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
   
-  protected static void uploadZipArchive(WorkflowTask task, File archive, ImageryComponent imageryComponent)
+  protected static void uploadZipArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
@@ -244,7 +244,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
   
-  private static void uploadTarGzArchive(WorkflowTask task, File archive, ImageryComponent imageryComponent)
+  private static void uploadTarGzArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
@@ -308,7 +308,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
   
   @Transaction
-  private static void uploadFile(WorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
+  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
   {
     if (isValidName(name))
     {

@@ -1,4 +1,6 @@
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.UasComponent;
 
 import com.runwaysdk.session.Request;
 
@@ -10,7 +12,11 @@ public class Sandbox
     
     System.out.println("Happy Testing!");
     
-    test();
+    UasComponent uasComponent = null;
+    
+    System.out.println(uasComponent instanceof Imagery);
+    
+//    test();
     
 //    createFolder();
     

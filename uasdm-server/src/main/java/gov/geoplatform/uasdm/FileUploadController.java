@@ -1,5 +1,10 @@
 package gov.geoplatform.uasdm;
 
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.MultipartUploadParser;
+import gov.geoplatform.uasdm.view.RequestParser;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -22,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.SmartExceptionDTO;
 import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ParameterValue;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
@@ -33,12 +35,6 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
-
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.WorkflowService;
-import gov.geoplatform.uasdm.view.MultipartUploadParser;
-import gov.geoplatform.uasdm.view.RequestParser;
 
 @Controller(url = "file")
 public class FileUploadController
@@ -107,7 +103,7 @@ public class FileUploadController
         }
 
         if (requestParser.isFirst() || requestParser.isResume())
-        {
+        {          
           taskMessage = this.wService.createUploadTask(clientRequest.getSessionId(), requestParser);
         }
 

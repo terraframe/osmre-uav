@@ -48,7 +48,7 @@ public class CollectionPrivilegeMigration
           logger.info("Setting default value for privilege type of collection [" + col.getName() + "].");
           
           col.appLock();
-          col.addPrivilegeType(AllPrivilegeType.OWNER);
+          col.addPrivilegeType(AllPrivilegeType.AGENCY);
           col.lock();
         }
       }

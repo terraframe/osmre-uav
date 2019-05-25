@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
-public class WorkflowTask extends WorkflowTaskBase
+public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
   private static final long serialVersionUID = 1976980729;
   
@@ -54,5 +54,21 @@ public class WorkflowTask extends WorkflowTaskBase
     }
 
     return null;
+  }
+  
+  /**
+   * Returns a label of a component associated with this task.
+   * 
+   * @return label of a component associated with this task.
+   */
+  public String getComponentLabel()
+  {
+    return this.getCollection().getName();
+  }
+  
+  
+  public ImageryComponent getImageryComponent()
+  {
+    return this.getCollection();
   }
 }
