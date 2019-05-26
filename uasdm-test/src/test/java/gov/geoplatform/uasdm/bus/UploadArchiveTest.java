@@ -1,10 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
+
+import net.geoprism.GeoprismUser;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -20,20 +21,15 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.QueryResult;
-import net.geoprism.GeoprismUser;
-
 public class UploadArchiveTest
 {
-  private static ProjectManagementService service;
-
-  private static String                   siteId;
-
-  private static String                   projectId1;
-
-  private static String                   missionId1;
+//  private static ProjectManagementService service;
+//
+//  private static String                   siteId;
+//
+//  private static String                   projectId1;
+//
+//  private static String                   missionId1;
 
   private static String                   collectionId1;
 
@@ -60,7 +56,7 @@ public class UploadArchiveTest
   {
     createSiteHierarchyTransaction();
 
-    service = new ProjectManagementService();
+//    service = new ProjectManagementService();
   }
 
   @Transaction
@@ -93,14 +89,14 @@ public class UploadArchiveTest
     site.setFolderName("Site_Unit_Test");
     site.applyWithParent(null);
     // System.out.println("S3: "+site.getS3location());
-    siteId = site.getOid();
+//    siteId = site.getOid();
 
     Project project1 = new Project();
     project1.setName("Project1");
     project1.setFolderName("Project1");
     project1.applyWithParent(site);
     // System.out.println("S3: "+project1.getS3location());
-    projectId1 = project1.getOid();
+//    projectId1 = project1.getOid();
 
     Project project2 = new Project();
     project2.setName("Project2");
@@ -112,7 +108,7 @@ public class UploadArchiveTest
     mission1.setFolderName("Mission1");
     mission1.applyWithParent(project1);
     // System.out.println("S3: "+mission1.getS3location());
-    missionId1 = mission1.getOid();
+//    missionId1 = mission1.getOid();
 
     Collection collection1 = new Collection();
     collection1.setName("Collection1");

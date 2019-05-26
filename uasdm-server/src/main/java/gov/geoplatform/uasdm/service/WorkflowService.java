@@ -1,7 +1,19 @@
 package gov.geoplatform.uasdm.service;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.SiteItem;
+
 import java.util.List;
 import java.util.Map;
+
+import net.geoprism.GeoprismUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,15 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
-
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Mission;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.view.RequestParser;
-import gov.geoplatform.uasdm.view.SiteItem;
-import net.geoprism.GeoprismUser;
 
 public class WorkflowService
 {
@@ -34,17 +37,39 @@ public class WorkflowService
   @Transaction
   public JSONObject createUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
-    WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
+    
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
 
     if (task == null)
     {
-      Collection collection = this.getCollection(sessionId, parser);
+      
+      if (uasComponent instanceof Imagery)
+      {
+//        Imagery imagery = getImagery(sessionId, parser);
+        Imagery imagery = (Imagery) uasComponent;
+        
+        ImageryWorkflowTask imageryWorkflowTask = new ImageryWorkflowTask();
+        imageryWorkflowTask.setUpLoadId(parser.getUuid());
+        imageryWorkflowTask.setImagery(imagery);
+        imageryWorkflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+        imageryWorkflowTask.setTaskLabel("UAV data upload for imagery [" + imagery.getName() + "]");
+        
+        task = imageryWorkflowTask;
+      }
+      else
+      {
+//        Collection collection = this.getCollection(sessionId, parser);
+        Collection collection = (Collection) uasComponent;
 
-      task = new WorkflowTask();
-      task.setUpLoadId(parser.getUuid());
-      task.setCollection(collection);
-      task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-      task.setTaskLabel("UAV data upload for collection [" + collection.getName() + "]");
+        WorkflowTask workflowTask = new WorkflowTask();
+        workflowTask.setUpLoadId(parser.getUuid());
+        workflowTask.setCollection(collection);
+        workflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+        workflowTask.setTaskLabel("UAV data upload for collection [" + collection.getName() + "]");
+        
+        task = workflowTask;
+      }
     }
     else
     {
@@ -74,7 +99,9 @@ public class WorkflowService
   @Transaction
   public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
-    WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
+    
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
 
     if (task != null)
     {
@@ -101,7 +128,9 @@ public class WorkflowService
   @Transaction
   public void errorUploadTaskInTransaction(String sessionId, RequestParser parser, String message)
   {
-    WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
+    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
+    
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
 
     if (task != null)
     {
@@ -112,6 +141,7 @@ public class WorkflowService
     }
   }
 
+  
   // Determine if a collection needs to be created
   public Collection getCollection(String sessionId, RequestParser parser)
   {
@@ -137,6 +167,34 @@ public class WorkflowService
       String collectionId = params.get("collection");
 
       return Collection.get(collectionId);
+    }
+  }
+  
+  // Determine if a Imagery needs to be created
+  public Imagery getImagery(String sessionId, RequestParser parser)
+  {
+    Map<String, String> params = parser.getCustomParams();
+    Boolean createCollection = new Boolean(params.get("create"));
+
+    if (createCollection)
+    {
+      String projectId = params.get("project");
+      String name = params.get("name");
+
+      SiteItem item = new SiteItem();
+      item.setValue(UasComponent.NAME, name);
+      item.setValue(UasComponent.FOLDERNAME, name);
+      item.setValue(UasComponent.DESCRIPTION, "");
+
+      item = new ProjectManagementService().applyWithParent(sessionId, item, projectId);
+
+      return Imagery.get(item.getId());
+    }
+    else
+    {
+      String imageryId = params.get("imagery");
+
+      return Imagery.get(imageryId);
     }
   }
 
@@ -165,7 +223,7 @@ public class WorkflowService
   public JSONObject getTask(String sessionId, String id)
   {
     JSONObject response = new JSONObject();
-    response.put("task", WorkflowTask.get(id).toJSON());
+    response.put("task", AbstractWorkflowTask.get(id).toJSON());
 
     return response;
   }

@@ -45,7 +45,7 @@ public class CollectionConverter extends Converter
     if (collection.getOwner() instanceof GeoprismUser)
     {
       GeoprismUser user = (GeoprismUser)collection.getOwner();
-      
+
 //      String firstName = user.getFirstName();
 //      String lastName = user.getLastName();
       String userName = user.getUsername();

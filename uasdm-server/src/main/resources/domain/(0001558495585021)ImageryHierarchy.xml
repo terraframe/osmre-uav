@@ -15,8 +15,6 @@
           <reference name="imagery" label="Imagery" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.Imagery" indexType="non-unique index" />
         </attributes>
       </mdBusiness>
-      
-      
     </create>
     <update></update>
   </doIt>

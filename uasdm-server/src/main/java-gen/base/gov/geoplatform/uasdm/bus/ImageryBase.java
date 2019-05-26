@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1757814827)
+@com.runwaysdk.business.ClassSignature(hash = -1534076186)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,11 +11,69 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ImageryBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Imagery";
-  private static final long serialVersionUID = -1757814827;
+  public static java.lang.String IMAGEHEIGHT = "imageHeight";
+  public static java.lang.String IMAGEWIDTH = "imageWidth";
+  private static final long serialVersionUID = -1534076186;
   
   public ImageryBase()
   {
     super();
+  }
+  
+  public Integer getImageHeight()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(IMAGEHEIGHT));
+  }
+  
+  public void validateImageHeight()
+  {
+    this.validateAttribute(IMAGEHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getImageHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Imagery.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(IMAGEHEIGHT);
+  }
+  
+  public void setImageHeight(Integer value)
+  {
+    if(value == null)
+    {
+      setValue(IMAGEHEIGHT, "");
+    }
+    else
+    {
+      setValue(IMAGEHEIGHT, java.lang.Integer.toString(value));
+    }
+  }
+  
+  public Integer getImageWidth()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(IMAGEWIDTH));
+  }
+  
+  public void validateImageWidth()
+  {
+    this.validateAttribute(IMAGEWIDTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getImageWidthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Imagery.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(IMAGEWIDTH);
+  }
+  
+  public void setImageWidth(Integer value)
+  {
+    if(value == null)
+    {
+      setValue(IMAGEWIDTH, "");
+    }
+    else
+    {
+      setValue(IMAGEWIDTH, java.lang.Integer.toString(value));
+    }
   }
   
   protected String getDeclaredType()

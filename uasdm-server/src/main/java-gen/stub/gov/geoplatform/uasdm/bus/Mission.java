@@ -1,31 +1,13 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.system.SingleActor;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.GeoprismUser;
 
 public class Mission extends MissionBase
 {

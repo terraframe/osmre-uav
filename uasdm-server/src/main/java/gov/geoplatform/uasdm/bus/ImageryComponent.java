@@ -5,7 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-
+/**
+ * Assumes that this is implemented ONLY by {@link UasComponent}
+ * 
+ * @author nathan
+ *
+ */
 public interface ImageryComponent
 {
   public static final int    BUFFER_SIZE      = 1024;
@@ -21,9 +26,9 @@ public interface ImageryComponent
   public static final String GEOREF           = "georef";
 
   
-  public void uploadArchive(WorkflowTask task, File archive);
+  public void uploadArchive(AbstractWorkflowTask task, File archive);
   
-  public void uploadZipArchive(WorkflowTask task, File archive);
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive);
   
   public Logger getLog();
   
@@ -34,4 +39,10 @@ public interface ImageryComponent
   public UasComponent getUasComponent();
 
   public String getStoreName(String key);
+  
+  public void createImageServices();
+  
+  public String getS3location();
+  
+  public String getName();
 }
