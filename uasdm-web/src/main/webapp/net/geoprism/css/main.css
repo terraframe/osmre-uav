@@ -2583,7 +2583,7 @@ i.fa.fa-cloud-upload{
 #navigator-header-container .navbar-default .navbar-header > a:first-child.navbar-brand {
     line-height: 50px;
     padding: 0;
-    margin-left: 20px;
+    margin-left: 0;
 }
 
 #navigator-header-container .dropdown-toggle {

@@ -85,17 +85,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                     else {
 
                         if(node.data.type === "Collection" && (this.admin || node.data.ownerName === this.userName || node.data.privilegeType !== 'OWNER') ) {
-                            // toggleExpanded() callse the getChildren() method above
+                            // toggleExpanded() calls the getChildren() method above
                             node.toggleExpanded();
-                            
+
                             this.images = [];
 
                             this.showImagePanel = false;
                         }
                         else if(node.data.type !== "Collection"){
-                            // toggleExpanded() callse the getChildren() method above
+                            // toggleExpanded() calls the getChildren() method above
                             node.toggleExpanded();
-                            
+
                             this.images = [];
 
                             this.showImagePanel = false;
@@ -243,11 +243,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
 
-        setTimeout(() => {
-            if ( this.tree ) {
-                this.tree.treeModel.expandAll();
-            }
-        }, 1000 );
+        // setTimeout(() => {
+        //     if ( this.tree ) {
+        //         this.tree.treeModel.expandAll();
+        //     }
+        // }, 1000 );
 
         this.map = new Map( {
             container: 'map',
@@ -548,12 +548,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
 
-    handleCreate( parent: TreeNode ): void {
+    handleCreate( parent: TreeNode, type: string ): void {
         this.current = parent;
 
         let parentId = parent != null ? parent.data.id : null;
 
-        this.service.newChild( parentId ).then( data => {
+        this.service.newChild( parentId, type ).then( data => {
             this.bsModalRef = this.modalService.show( CreateModalComponent, {
                 animated: true,
                 backdrop: true,
@@ -970,6 +970,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         return false;
     }
 
+    public canCreateImageDir(item: any): boolean {
+        return item.data.type === 'Project';
+    }
+
     public canEditSite = ( item: any ): boolean => {
         return item.data.type === "Site" && this.canEdit( item );
     }
@@ -982,7 +986,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         return item.data.type === "Site";
     }
 
-    public isCollection = ( item: any ): boolean => {
-        return item.data.type === "Collection";
+    public isImageDir = ( item: any ): boolean => {
+        return item.data.type === "Imagery";
     }
 }

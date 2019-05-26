@@ -367,10 +367,12 @@ export class UploadModalComponent implements OnInit {
         }
         else {
 
-            // this.values.collection = this.values.collection.id;
-            // this.values.mission = this.values.mission.id;
-            // this.values.project = this.values.project.id;
-            // this.values.site = this.values.site.id;
+            
+            if(this.values.collection){
+                this.values.uasComponentOid = this.values.collection;
+            }else if(this.values.image){
+                this.values.uasComponentOid = this.values.image;
+            }
 
             this.uploader.setParams( this.values );
             this.uploader.uploadStoredFiles();

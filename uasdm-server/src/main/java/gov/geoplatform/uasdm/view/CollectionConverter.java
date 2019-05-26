@@ -31,8 +31,16 @@ public class CollectionConverter extends Converter
     
     Collection collection = (Collection)uasComponent;
     
-    AllPrivilegeType privilegeType = collection.getPrivilegeType().get(0);
-    siteItem.setPrivilegeType(privilegeType.name());
+    if (collection.getPrivilegeType().size() > 0)
+    {
+      AllPrivilegeType privilegeType = collection.getPrivilegeType().get(0);
+      siteItem.setPrivilegeType(privilegeType.name());
+    }
+    else
+    {
+      siteItem.setPrivilegeType(AllPrivilegeType.AGENCY.name());
+    }
+    
     
     if (collection.getOwner() instanceof GeoprismUser)
     {

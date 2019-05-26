@@ -33,6 +33,8 @@ export class UploadForm {
     create: boolean;
     name: string;
     outFileName: string;
+    uasComponentOid: string;
+    image: string;
 }
 
 export class Action {

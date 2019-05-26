@@ -1,15 +1,15 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-      <mdBusiness name="gov.geoplatform.uasdm.bus.Imagery" label="Imagery" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false" publish="false">
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Imagery" label="Imagery" extends="gov.geoplatform.uasdm.bus.UasComponent" cacheAlgorithm="nothing" generateController="false">
       </mdBusiness>
       
-      <mdGraph name="gov.geoplatform.uasdm.bus.ProjectHasImagery" label="Project Has Imagery" cacheAlgorithm="nothing" extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true" publish="false">
+      <mdGraph name="gov.geoplatform.uasdm.bus.ProjectHasImagery" label="Project Has Imagery" cacheAlgorithm="nothing" extends="gov.geoplatform.uasdm.bus.ComponentHasComponent" composition="true">
         <parent cardinality="1" name="gov.geoplatform.uasdm.bus.Project" method="Project" />
         <child cardinality="*" name="gov.geoplatform.uasdm.bus.Imagery" method="Imagery" />
       </mdGraph>
       
-      <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryWorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  publish="false">
+      <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryWorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true">
         <attributes>
           <char name="upLoadId"  required="true" label="Upload ID" size="256" />
           <reference name="imagery" label="Imagery" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.Imagery" indexType="non-unique index" />
