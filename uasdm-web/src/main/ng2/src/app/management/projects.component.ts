@@ -998,21 +998,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public canUpload = ( item: any ): boolean => {
-        if(item.data.name === "raw"){
-            return true;
+        // Only allow direct uploads on Imagery child nodes
+        if(item.parent.data.type !== "Collection"){
+            if(item.data.name === "raw"){
+                return true;
+            }
+            else if(item.data.name === "georef"){
+                return true;
+            }
+            else if(item.data.name === "ortho"){
+                return true;
+            }
+            // else if(item.data.type === "Collection"){
+            //     return true;
+            // }
+            // else if(item.data.type === "Imagery"){
+            //     return true;
+            // }
         }
-        else if(item.data.name === "georef"){
-            return true;
-        }
-        else if(item.data.name === "ortho"){
-            return true;
-        }
-        // else if(item.data.type === "Collection"){
-        //     return true;
-        // }
-        // else if(item.data.type === "Imagery"){
-        //     return true;
-        // }
 
         return false;
     }
