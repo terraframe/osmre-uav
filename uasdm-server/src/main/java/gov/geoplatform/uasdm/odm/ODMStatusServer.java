@@ -413,17 +413,19 @@ public class ODMStatusServer
 
       if (task instanceof ImageryODMProcessingTask)
       {
-        ImageryODMUploadTask odmUploadTask = new ImageryODMUploadTask();
-        odmUploadTask.setUpLoadId(task.getUpLoadId());
-        odmUploadTask.setImageryId(task.getImageryComponentOid());
-        odmUploadTask.setGeoprismUser(task.getGeoprismUser());
-        odmUploadTask.setOdmUUID(task.getOdmUUID());
-        odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
-        odmUploadTask.setProcessingTask(task);
-//        uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
-        odmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
-        odmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
-        odmUploadTask.apply(); 
+        ImageryODMUploadTask imageryOdmUploadTask = new ImageryODMUploadTask();
+        imageryOdmUploadTask.setUpLoadId(task.getUpLoadId());
+        imageryOdmUploadTask.setImageryId(task.getImageryComponentOid());
+        imageryOdmUploadTask.setGeoprismUser(task.getGeoprismUser());
+        imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
+        imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
+        imageryOdmUploadTask.setProcessingTask(task);
+//        imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        imageryOdmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
+        imageryOdmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
+        imageryOdmUploadTask.apply(); 
+        
+        uploadTask = imageryOdmUploadTask;
       }
       else
       {        
@@ -441,9 +443,7 @@ public class ODMStatusServer
         
         uploadTask = odmUploadTask;
       }
-      
 
-      
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
       uploadThreads.add(thread);
       thread.start();
