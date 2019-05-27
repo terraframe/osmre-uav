@@ -382,7 +382,7 @@ export class UploadModalComponent implements OnInit {
             }
 
             if(this.clickedItem && this.clickedItem.data){
-                this.values.uploadTarget = this.clickedItem.data.type
+                this.values.uploadTarget = this.clickedItem.data.name
             }
 
             this.uploader.setParams( this.values );

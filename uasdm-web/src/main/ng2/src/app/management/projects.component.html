@@ -196,5 +196,11 @@
     <ng-template contextMenuItem let-item (execute)="handleDownloadAll($event.item)">
         <i class="fa fa-download" aria-hidden="true"></i> Download All Files
     </ng-template>
+
+    <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template>
+    <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> 
+        <i style="font-size:18px; padding:0; width:auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i>
+        Upload a file
+    </ng-template>
 </context-menu>
 

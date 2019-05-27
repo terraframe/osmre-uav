@@ -998,12 +998,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public canUpload = ( item: any ): boolean => {
-        if(item.data.type === "Collection"){
+        if(item.data.name === "raw"){
             return true;
         }
-        else if(item.data.type === "Imagery"){
+        else if(item.data.name === "ortho"){
             return true;
         }
+        // else if(item.data.type === "Collection"){
+        //     return true;
+        // }
+        // else if(item.data.type === "Imagery"){
+        //     return true;
+        // }
 
         return false;
     }
