@@ -370,7 +370,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
     else
     {
-      task.createAction("The filename [" + name + "] is invalid", "error");
+      task.createAction("The filename [" + name + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &amp;, *, ?,/, \\ or apostrophes are allowed.", "error");
     }
   }
 
