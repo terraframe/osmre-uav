@@ -230,7 +230,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
           }
 
           // Upload the file to S3
-          uploadFile(task, ancestors, imageryComponent.buildRawKey(), uploadTarget, entry.getName(), tmp, imageryComponent);
+          uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), entry.getName(), tmp, imageryComponent);
         }
         finally
         {
@@ -290,7 +290,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
               }
 
               // Upload the file to S3
-              uploadFile(task, ancestors, imageryComponent.buildRawKey(), uploadTarget, entry.getName(), tmp, imageryComponent);
+              uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), entry.getName(), tmp, imageryComponent);
             }
             finally
             {
@@ -310,20 +310,11 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
   
   @Transaction
-  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String uploadTarget, String name, File tmp, ImageryComponent imageryComponent)
+  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
   {
     if (isValidName(name))
     {
-      String key;
-      
-      if (uploadTarget != null && !uploadTarget.trim().equals(""))
-      {
-        key = keySuffix + "/" + uploadTarget + "/" +name;
-      }
-      else
-      {
-        key = keySuffix + name;
-      }
+      String key = keySuffix + name;
 
       try
       {
