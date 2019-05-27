@@ -66,7 +66,11 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setFilePrefix(parser.getCustomParams().get("outFileName"));
     task.apply();
     
-    task.initiate(infile);
+    // Only initialize an ortho job if imagery has been uploaded to the raw folder.
+    if (parser.getUploadTarget() != null && parser.getUploadTarget().equals(ImageryComponent.RAW))
+    {
+      task.initiate(infile);
+    }
   }
   
   private void calculateImageSize(File zip, Imagery imagery)
