@@ -14,7 +14,7 @@
     <div class="confirm-modal ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable com-runwaysdk-ui-factory-jquery-Dialog com-runwaysdk-ui-factory-runway-Widget ui-dialog-buttons" tabindex="-1" role="dialog">
 
 
-    <div *ngIf="sites.length > 0" class="row">
+    <div *ngIf="hierarchy" class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <form #ngForm="ngForm">
@@ -67,62 +67,21 @@
 
                 <div style="margin-top: 30px;" class="" *ngIf="!disabled && !existingTask">
                     
-                    <div class="form-group">
-                        <label for="site">Site:</label>
+                    <div *ngFor="let key of objectKeys(hierarchy).slice().reverse()" class="form-group">
+                        <label for="hierarchy[key].type">{{hierarchy[key].typeLabel}}:</label>
                         <!-- <input [(ngModel)]="values.site" name="site" type="input" class="form-control" disabled="true" /> -->
 
-                        <select *ngIf="importedValues" name="site" [(ngModel)]="hierarchy.site" disabled="true" required>
-                            <option [value]="hierarchy.site">{{hierarchy.site.name}}</option>
-                        </select>
+                        <!-- NOTE: this is for display only and so should not ever be enabled because the ngModel points to 
+                        data that is not persisted  -->
+                        <select *ngIf="importedValues" name="hierarchy[key].type" [(ngModel)]="hierarchy.type" disabled="true" required>
+                            <option [value]="hierarchy.type">{{hierarchy[key].name}}</option>
+                        </select> 
 
-                        <select *ngIf="!importedValues" name="site" (change)="onSiteSelect($event.target.value)" [(ngModel)]="values.site"
+                        <!-- <select *ngIf="!importedValues" name="site" (change)="onSiteSelect($event.target.value)" [(ngModel)]="values.site"
                             required>
                             <option></option>
                             <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="project">Project:</label>
-                        <!-- <input [(ngModel)]="values.project" name="project" type="input" class="form-control" disabled="true" /> -->
-
-                        <select *ngIf="importedValues" name="project" [(ngModel)]="hierarchy.project.id" disabled="true" required>
-                            <option [value]="hierarchy.project.id">{{hierarchy.project.name}}</option>
-                        </select>
-
-                        <select *ngIf="!importedValues" name="project" [attr.disabled]="values.site == null ? '' : null"
-                            (change)="onProjectSelect($event.target.value)" [(ngModel)]="values.project" required>
-                            <option></option>
-                            <option *ngFor="let project of projects" [value]="project.id">{{project.name}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mission">Mission:</label>
-                        <!-- <input [(ngModel)]="values.mission" name="mission" type="input" class="form-control" disabled="true" /> -->
-
-                        <select *ngIf="importedValues" name="mission" [(ngModel)]="hierarchy.mission" disabled="true" required>
-                            <option [value]="hierarchy.mission">{{hierarchy.mission.name}}</option>
-                        </select>
-
-                        <select *ngIf="!importedValues" name="mission" [attr.disabled]="values.project == null ? '' : null"
-                            (change)="onMissionSelect($event.target.value)" [(ngModel)]="values.mission" required>
-                            <option></option>
-                            <option *ngFor="let mission of missions" [value]="mission.id">{{mission.name}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="collection">Collection:</label>
-                        <!-- <input [(ngModel)]="values.collection" name="collection" type="input" class="form-control" disabled="true" /> -->
-
-                        <select *ngIf="importedValues" name="collection" [(ngModel)]="hierarchy.collection" disabled="true" required>
-                            <option [value]="hierarchy.collection">{{hierarchy.collection.name}}</option>
-                        </select>
-
-                        <select *ngIf="!importedValues" name="collection" [attr.disabled]="values.mission == null ? '' : null"
-                            (change)="onCollectionSelect($event.target.value)" [(ngModel)]="values.collection" required>
-                            <option></option>
-                            <option *ngFor="let collection of collections" [value]="collection.id">{{collection.name}}
-                            </option>
-                        </select>
+                        </select> -->
                     </div>
 
                     <div class="form-group">

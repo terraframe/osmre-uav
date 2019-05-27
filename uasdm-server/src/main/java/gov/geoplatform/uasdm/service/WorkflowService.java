@@ -46,8 +46,8 @@ public class WorkflowService
       
       if (uasComponent instanceof Imagery)
       {
-//        Imagery imagery = getImagery(sessionId, parser);
-        Imagery imagery = (Imagery) uasComponent;
+//        Imagery imagery = this.getImagery(sessionId, parser);
+        Imagery imagery = (Imagery)uasComponent;
         
         ImageryWorkflowTask imageryWorkflowTask = new ImageryWorkflowTask();
         imageryWorkflowTask.setUpLoadId(parser.getUuid());
@@ -141,62 +141,62 @@ public class WorkflowService
     }
   }
 
-  
-  // Determine if a collection needs to be created
-  public Collection getCollection(String sessionId, RequestParser parser)
-  {
-    Map<String, String> params = parser.getCustomParams();
-    Boolean createCollection = new Boolean(params.get("create"));
-
-    if (createCollection)
-    {
-      String missionId = params.get("mission");
-      String name = params.get("name");
-
-      SiteItem item = new SiteItem();
-      item.setValue(UasComponent.NAME, name);
-      item.setValue(UasComponent.FOLDERNAME, name);
-      item.setValue(UasComponent.DESCRIPTION, "");
-
-      item = new ProjectManagementService().applyWithParent(sessionId, item, missionId);
-
-      return Collection.get(item.getId());
-    }
-    else
-    {
-      String collectionId = params.get("collection");
-
-      return Collection.get(collectionId);
-    }
-  }
-  
-  // Determine if a Imagery needs to be created
-  public Imagery getImagery(String sessionId, RequestParser parser)
-  {
-    Map<String, String> params = parser.getCustomParams();
-    Boolean createCollection = new Boolean(params.get("create"));
-
-    if (createCollection)
-    {
-      String projectId = params.get("project");
-      String name = params.get("name");
-
-      SiteItem item = new SiteItem();
-      item.setValue(UasComponent.NAME, name);
-      item.setValue(UasComponent.FOLDERNAME, name);
-      item.setValue(UasComponent.DESCRIPTION, "");
-
-      item = new ProjectManagementService().applyWithParent(sessionId, item, projectId);
-
-      return Imagery.get(item.getId());
-    }
-    else
-    {
-      String imageryId = params.get("imagery");
-
-      return Imagery.get(imageryId);
-    }
-  }
+// Heads up: Clean up    
+//  // Determine if a collection needs to be created
+//  public Collection getCollection(String sessionId, RequestParser parser)
+//  {
+//    Map<String, String> params = parser.getCustomParams();
+//    Boolean createCollection = new Boolean(params.get("create"));
+//
+//    if (createCollection)
+//    {
+//      String missionId = params.get("mission");
+//      String name = params.get("name");
+//
+//      SiteItem item = new SiteItem();
+//      item.setValue(UasComponent.NAME, name);
+//      item.setValue(UasComponent.FOLDERNAME, name);
+//      item.setValue(UasComponent.DESCRIPTION, "");
+//
+//      item = new ProjectManagementService().applyWithParent(sessionId, item, missionId);
+//
+//      return Collection.get(item.getId());
+//    }
+//    else
+//    {
+//      String collectionId = params.get("collection");
+//
+//      return Collection.get(collectionId);
+//    }
+//  }
+// 
+//  // Determine if a Imagery needs to be created
+//  public Imagery getImagery(String sessionId, RequestParser parser)
+//  {
+//    Map<String, String> params = parser.getCustomParams();
+//    Boolean createCollection = new Boolean(params.get("create"));
+//
+//    if (createCollection)
+//    {
+//      String projectId = params.get("project");
+//      String name = params.get("name");
+//
+//      SiteItem item = new SiteItem();
+//      item.setValue(UasComponent.NAME, name);
+//      item.setValue(UasComponent.FOLDERNAME, name);
+//      item.setValue(UasComponent.DESCRIPTION, "");
+//
+//      item = new ProjectManagementService().applyWithParent(sessionId, item, projectId);
+//
+//      return Imagery.get(item.getId());
+//    }
+//    else
+//    {
+//      String imageryId = params.get("imagery");
+//
+//      return Imagery.get(imageryId);
+//    }
+//  }
 
   @Request(RequestType.SESSION)
   public JSONObject getTasks(String sessionId)

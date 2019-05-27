@@ -22,14 +22,21 @@ declare var acp: string;
     styleUrls: []
 } )
 export class UploadModalComponent implements OnInit {
+    objectKeys = Object.keys;
 
-    @Input()
+    @Input() clickedItem: any;
+
+    @Input() 
     set setHierarchy(data: any) {
         this.hierarchy = data;
-        this.values.site = data.site.id;
-        this.values.project = data.project.id;
-        this.values.mission = data.mission.id;
-        this.values.collection = data.collection.id;
+
+        for (let property in this.hierarchy) {
+            if (this.hierarchy.hasOwnProperty(property)) {
+                console.log(property)
+                this.values[property] = this.hierarchy[property];
+            }
+        }
+
         this.importedValues = true;
     };
 
@@ -41,22 +48,22 @@ export class UploadModalComponent implements OnInit {
     /* 
      * List of sites
      */
-    sites = [] as SiteEntity[];
+    // sites = [] as SiteEntity[];
 
     /* 
      * List of projects
      */
-    projects = [] as SiteEntity[];
+    // projects = [] as SiteEntity[];
 
     /* 
      * List of missions
      */
-    missions = [] as SiteEntity[];
+    // missions = [] as SiteEntity[];
 
     /* 
      * List of collections
      */
-    collections = [] as SiteEntity[];
+    // collections = [] as SiteEntity[];
 
     /* 
      * Form values
@@ -210,6 +217,7 @@ export class UploadModalComponent implements OnInit {
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
                         that.error( { message: xhrOrXdr } );
                     }
+                    
                 }
             };
 
@@ -223,12 +231,12 @@ export class UploadModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.service.roots( null ).then( sites => {
-            this.sites = sites;
+        // this.service.roots( null ).then( sites => {
+        //     this.sites = sites;
 
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
-        } );
+        // } ).catch(( err: any ) => {
+        //     this.error( err.json() );
+        // } );
     }
 
     close():void {
@@ -259,124 +267,127 @@ export class UploadModalComponent implements OnInit {
         }
     }
 
-    onSiteSelect( siteId: string ): void {
-        this.values.site = siteId;
+    // onSiteSelect( siteId: string ): void {
+    //     this.values.site = siteId;
 
-        if ( siteId != null && siteId.length > 0 ) {
+    //     if ( siteId != null && siteId.length > 0 ) {
 
-            // Reset select options
-            this.projects = [] as SiteEntity[];
-            this.missions = [] as SiteEntity[];
-            this.collections = [] as SiteEntity[];
+    //         // Reset select options
+    //         this.projects = [] as SiteEntity[];
+    //         this.missions = [] as SiteEntity[];
+    //         this.collections = [] as SiteEntity[];
 
-            // Reset form values
-            this.values.project = null;
-            this.values.mission = null;
-            this.values.collection = null;
+    //         // Reset form values
+    //         this.values.project = null;
+    //         this.values.mission = null;
+    //         this.values.collection = null;
 
-            this.service.getChildren( this.values.site ).then( projects => {
-                this.projects = projects;
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
-            } );
-        }
-    }
+    //         this.service.getChildren( this.values.site ).then( projects => {
+    //             this.projects = projects;
+    //         } ).catch(( err: any ) => {
+    //             this.error( err.json() );
+    //         } );
+    //     }
+    // }
 
-    onProjectSelect( projectId: string ): void {
-        this.values.project = projectId;
+    // onProjectSelect( projectId: string ): void {
+    //     this.values.project = projectId;
 
-        // Reset select options
-        this.missions = [] as SiteEntity[];
-        this.collections = [] as SiteEntity[];
+    //     // Reset select options
+    //     this.missions = [] as SiteEntity[];
+    //     this.collections = [] as SiteEntity[];
 
-        // Reset form values
-        this.values.mission = null;
-        this.values.collection = null;
+    //     // Reset form values
+    //     this.values.mission = null;
+    //     this.values.collection = null;
 
-        if ( projectId != null && projectId.length > 0 ) {
-            this.service.getChildren( this.values.project ).then( missions => {
-                this.missions = missions;
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
-            } );
-        }
-    }
+    //     if ( projectId != null && projectId.length > 0 ) {
+    //         this.service.getChildren( this.values.project ).then( missions => {
+    //             this.missions = missions;
+    //         } ).catch(( err: any ) => {
+    //             this.error( err.json() );
+    //         } );
+    //     }
+    // }
 
-    onMissionSelect( missionId: string ): void {
-        this.values.mission = missionId;
+    // onMissionSelect( missionId: string ): void {
+    //     this.values.mission = missionId;
 
-        // Reset select options
-        this.collections = [] as SiteEntity[];
+    //     // Reset select options
+    //     this.collections = [] as SiteEntity[];
 
-        // Reset form values
-        this.values.collection = null;
-        this.values.name = null;
+    //     // Reset form values
+    //     this.values.collection = null;
+    //     this.values.name = null;
 
-        if ( missionId != null && missionId.length > 0 && !this.values.create ) {
+    //     if ( missionId != null && missionId.length > 0 && !this.values.create ) {
 
-            this.service.getChildren( this.values.mission ).then( collections => {
-                this.collections = collections;
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
-            } );
-        }
-    }
+    //         this.service.getChildren( this.values.mission ).then( collections => {
+    //             this.collections = collections;
+    //         } ).catch(( err: any ) => {
+    //             this.error( err.json() );
+    //         } );
+    //     }
+    // }
 
-    handleChange(): void {
+    // handleChange(): void {
 
-        // Reset select options
-        this.collections = [] as SiteEntity[];
+    //     // Reset select options
+    //     this.collections = [] as SiteEntity[];
 
-        // Reset form values
-        this.values.collection = null;
-        this.values.name = null;
+    //     // Reset form values
+    //     this.values.collection = null;
+    //     this.values.name = null;
 
-        if ( this.values.mission != null && this.values.mission.length > 0 && !this.values.create ) {
+    //     if ( this.values.mission != null && this.values.mission.length > 0 && !this.values.create ) {
 
-            this.service.getChildren( this.values.mission ).then( collections => {
-                this.collections = collections;
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
-            } );
-        }
-    }
+    //         this.service.getChildren( this.values.mission ).then( collections => {
+    //             this.collections = collections;
+    //         } ).catch(( err: any ) => {
+    //             this.error( err.json() );
+    //         } );
+    //     }
+    // }
 
-    onCollectionSelect( collectionId: string ): void {
-        this.values.collection = collectionId;
+    // onCollectionSelect( collectionId: string ): void {
+    //     this.values.collection = collectionId;
 
-        if(collectionId && collectionId.trim().length > 0){
-            this.showFileSelectPanel = true;
-        }
-        else {
-            this.showFileSelectPanel = false
-        }
-    }
+    //     if(collectionId && collectionId.trim().length > 0){
+    //         this.showFileSelectPanel = true;
+    //     }
+    //     else {
+    //         this.showFileSelectPanel = false
+    //     }
+    // }
 
     handleUpload(): void {
 
         /*
          * Validate form values before uploading
          */
-        if ( !this.values.create && this.values.collection == null && !this.existingTask ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
-        }
-        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = "Name is required";
-        }
-        else {
+        // if ( !this.values.create && this.values.imagery == null && !this.existingTask ) {
+        //     this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+        //     this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
+        // }
+        // else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
+        //     this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+        //     this.bsModalRef.content.message = "Name is required";
+        // }
+        // else {
 
-            
             if(this.values.collection){
-                this.values.uasComponentOid = this.values.collection;
-            }else if(this.values.image){
-                this.values.uasComponentOid = this.values.image;
+                this.values.uasComponentOid = this.values.collection.id;
+            }else if(this.values.imagery){
+                this.values.uasComponentOid = this.values.imagery.id;
+            }
+
+            if(this.clickedItem && this.clickedItem.data){
+                this.values.uploadTarget = this.clickedItem.data.type
             }
 
             this.uploader.setParams( this.values );
             this.uploader.uploadStoredFiles();
-        }
+        // }
 
     }
 

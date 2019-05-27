@@ -76,7 +76,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 },
                 click: ( tree: any, node: any, $event: any ) => {
 
-                    if ( node.data.type === "folder" ) {
+                    if ( node.data.type === "folder" && node.data.name !== "accessible_support") {
                         this.toggleDirectory(node);
                     }
                     else if ( node.data.type === "object" ) {
@@ -423,6 +423,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         else if ( node.data.type === "Collection" ) {
             return false;
         }
+        else if ( node.data.type === "Imagery" ) {
+            return false;
+        }
         else {
             return true;
         }
@@ -496,6 +499,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             else if ( node.data.type === "Collection" ) {
                 node.data.childType = null
             }
+            else if ( node.data.type === "Imagery" ) {
+                node.data.childType = null
+            }
 
             if ( node.data.type !== "Site" || this.admin ) {
                 this.contextMenuService.show.next( {
@@ -522,29 +528,26 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     handleUploadFile(item: any): void {
 
-        let collection = item.data;
-        let mission = item.parent.data;
-        let project = item.parent.parent.data;
-        let site = item.parent.parent.parent.data;
-        let hierarchy = {"collection":collection, "mission":mission, "project":project, "site":site}
+        let hierarchy = {};
 
-        // this.service.edit( data.id ).then( data => {
-            this.bsModalRef = this.modalService.show( UploadModalComponent, {
+        function getParent(item){
+            hierarchy[item.data.type.toLowerCase()] = item.data;
+
+            if(item.parent && item.parent.data.type){
+                return getParent(item.parent);
+            }
+        }
+
+        getParent(item);
+
+        this.bsModalRef = this.modalService.show( UploadModalComponent, {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
-            } );
-            this.bsModalRef.content.setHierarchy = hierarchy;
-            // this.bsModalRef.content.attributes = data.attributes;
-
-            // ( <UploadModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
-            //     // Do something
-            //     this.current.data = entity;
-            // } );
-        // } ).catch(( err: any ) => {
-        //     this.error( err.json() );
-        // } );
+        } );
+        this.bsModalRef.content.setHierarchy = hierarchy;
+        this.bsModalRef.content.clickedItem = item;
     }
 
 
@@ -988,5 +991,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public isImageDir = ( item: any ): boolean => {
         return item.data.type === "Imagery";
+    }
+
+    public isCollection = ( item: any ): boolean => {
+        return item.data.type === "Collection";
+    }
+
+    public canUpload = ( item: any ): boolean => {
+        if(item.data.type === "Collection"){
+            return true;
+        }
+        else if(item.data.type === "Imagery"){
+            return true;
+        }
+
+        return false;
     }
 }
