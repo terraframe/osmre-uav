@@ -212,15 +212,16 @@ public class Collection extends CollectionBase implements ImageryComponent
     return this.getS3location() + ORTHO + "/";
   }
 
-  public void uploadArchive(AbstractWorkflowTask task, File archive)
+  @Override
+  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    Imagery.uploadArchive(task, archive, this);
+    Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
-
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive)
+  @Override
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    Imagery.uploadZipArchive(task, archive, this);
+    Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
 
