@@ -4,6 +4,7 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
+import gov.geoplatform.uasdm.bus.ImageryComponent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
@@ -289,7 +290,7 @@ public class ProjectManagementService
       
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
       {
-        downloadAll(sessionId, id, Collection.RAW, ostream);
+        downloadAll(sessionId, id, ImageryComponent.RAW, ostream);
       }
     }
     catch (IOException e)
