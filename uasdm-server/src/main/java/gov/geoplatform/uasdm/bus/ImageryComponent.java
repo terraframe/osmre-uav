@@ -46,6 +46,13 @@ public interface ImageryComponent
   
   public String getName();
   
+  /**
+   * If the @param uploadTarget is null or blank, then return the raw key.
+   * 
+   * @param uploadTarget
+   * 
+   * @return S3 upload key or the raw upload key 
+   */
   public default String buildUploadKey(String uploadTarget)
   {
     if (uploadTarget != null && !uploadTarget.trim().equals(""))
