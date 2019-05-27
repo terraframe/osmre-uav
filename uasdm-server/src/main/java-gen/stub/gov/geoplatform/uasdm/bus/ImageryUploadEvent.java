@@ -48,7 +48,11 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
     
-    startODMProcessing(infile, task, parser);
+    // Only initialize an ortho job if imagery has been uploaded to the raw folder.
+    if (parser.getUploadTarget() != null && parser.getUploadTarget().equals(ImageryComponent.RAW))
+    {
+      startODMProcessing(infile, task, parser);
+    }
     
     calculateImageSize(infile, imagery);
   }
@@ -66,11 +70,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setFilePrefix(parser.getCustomParams().get("outFileName"));
     task.apply();
     
-    // Only initialize an ortho job if imagery has been uploaded to the raw folder.
-    if (parser.getUploadTarget() != null && parser.getUploadTarget().equals(ImageryComponent.RAW))
-    {
-      task.initiate(infile);
-    }
+    task.initiate(infile);
   }
   
   private void calculateImageSize(File zip, Imagery imagery)
