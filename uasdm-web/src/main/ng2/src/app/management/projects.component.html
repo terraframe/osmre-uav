@@ -93,7 +93,7 @@
                             class="fa fa-times-circle"></i></button>
                 </div>
 
-                <div id="image-panel" *ngIf="showImagePanel">
+                <div id="image-panel" *ngIf="showImagePanel && images.length > 0">
                     <div style="text-align: right;">
                         <i class="fa fa-times btn btn-close" style="min-width:10px;padding:10px 10px;" (click)="showImagePanel = !showImagePanel"></i>
                     </div>
@@ -200,7 +200,7 @@
     <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template>
     <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> 
         <i style="font-size:18px; padding:0; width:auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i>
-        Upload a file
+        Upload data
     </ng-template>
 </context-menu>
 

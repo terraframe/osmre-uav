@@ -2852,6 +2852,17 @@ button.btn.btn-default:hover,
     background: #f8f8f8;
 }
 
+button.btn-default:disabled:hover, 
+button.btn.btn-default:disabled:hover, 
+.btn-default:disabled:hover{
+    background: white;
+    color: grey;
+    color: var(--theme-cancel-button-color);
+    border-color: lightgrey;
+    border-color: var(--theme-button-color-border);
+    cursor: auto;
+}
+
 /* Fine Uploader Style Overrides */
 .qq-uploader{
     min-height: auto !important;

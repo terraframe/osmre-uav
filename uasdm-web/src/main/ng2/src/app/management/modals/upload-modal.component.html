@@ -12,11 +12,71 @@
     </div> -->
 
     <div class="confirm-modal ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable com-runwaysdk-ui-factory-jquery-Dialog com-runwaysdk-ui-factory-runway-Widget ui-dialog-buttons" tabindex="-1" role="dialog">
-
+    
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="label-holder">
+                <strong style="color:#8c0000;">Error</strong>
+            </div>
+            <div class="holder">
+                <div>
+                    <p class="error-message">{{message}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
 
     <div *ngIf="hierarchy" class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
+
+            <div>
+                <h2>Uploading to {{clickedItem.data.name}}</h2>
+                <div *ngIf="clickedItem.data.name === 'georef'">
+                    <h4><b>Purpose:</b> Store metadata about files and process</h4>
+                    <p>
+                        Uploading to georef supports the uploading of text files that serve as metadata about the files and/or process of the data associated with this project or site. 
+                    </p>
+
+                    <h4>Requirements:</h4>
+                    <ol>
+                        <li>Only .zip or .tar.gz files are accepted.</li>
+                        <li>File names must have no spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes.</li>
+                    </ol>
+                </div>
+                <div *ngIf="clickedItem.data.name === 'ortho'">
+                    <h4><b>Purpose:</b> Store mosaic imagery and/or supporting imagery</h4>
+                    <p>
+                        Uploading to ortho supports the direct uploading of image data that was created external to the UASDM platform. The ortho directory also contains mosaic imagery outputs from orthorectification process triggered by an upload to the raw directory.
+                    </p>
+
+                    <h4>Requirements:</h4>
+                    <ol>
+                        <li>Only .zip or .tar.gz files are accepted.</li>
+                        <li>File names must have no spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes.</li>
+                    </ol>
+
+                    <h4><b>Tip:</b> For large uploads set your computer to NOT go to sleep or hibernate from inactivity.</h4>
+                </div>
+                <div *ngIf="clickedItem.data.name === 'raw'">
+                    <h4><b>Purpose:</b> Store raw UAV imagery and any metadata associated with the raw files</h4>
+                    <p>
+                        Uploading to raw supports the direct uploading of raw UAV image data.
+                    </p>
+
+                    <h4>Requirements:</h4>
+                    <ol>
+                        <li>Only .zip or .tar.gz files are accepted.</li>
+                        <li>File names must have no spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes.</li>
+                        <li>Image files must contain location metadata in the EXIF headers to ensure complete orthorectification processing.</li>
+                    </ol>
+
+                     <h4><b>Tip:</b> For large uploads set your computer to NOT go to sleep or hibernate from inactivity.</h4>
+                </div>
+            </div>
+
             <form #ngForm="ngForm">
 
                 <!-- Existing task panel -->
@@ -60,7 +120,7 @@
                         </h4>
                         <h4>
                             Message:
-                            <b> Your uploaded data is being processed into final image products. </b>
+                            <b> {{note.message}} </b>
                         </h4>
                     </div>
                 </div> <!-- End task finished upload notification -->
@@ -68,7 +128,7 @@
                 <div style="margin-top: 30px;" class="" *ngIf="!disabled && !existingTask">
                     
                     <div *ngFor="let key of objectKeys(hierarchy).slice().reverse()" class="form-group">
-                        <label for="hierarchy[key].type">{{hierarchy[key].typeLabel}}:</label>
+                        <label for="hierarchy[key].type">{{hierarchy[key].type}}:</label>
                         <!-- <input [(ngModel)]="values.site" name="site" type="input" class="form-control" disabled="true" /> -->
 
                         <!-- NOTE: this is for display only and so should not ever be enabled because the ngModel points to 

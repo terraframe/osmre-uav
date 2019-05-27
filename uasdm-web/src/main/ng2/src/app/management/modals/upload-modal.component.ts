@@ -32,7 +32,6 @@ export class UploadModalComponent implements OnInit {
 
         for (let property in this.hierarchy) {
             if (this.hierarchy.hasOwnProperty(property)) {
-                console.log(property)
                 this.values[property] = this.hierarchy[property];
             }
         }
@@ -43,6 +42,8 @@ export class UploadModalComponent implements OnInit {
     hierarchy: any;
 
     importedValues: boolean = false;
+
+    message: string = "";
 
 
     /* 
@@ -147,6 +148,10 @@ export class UploadModalComponent implements OnInit {
                         that.disabled = true;
 
                         that.countUpload(that);
+
+                        if(that.message && that.message.length > 0){
+                            that.message = "";
+                        }
                     },
                     onProgress: function( id: any, name: any, uploadedBytes: any, totalBytes: any ): void {
                     },
@@ -187,7 +192,18 @@ export class UploadModalComponent implements OnInit {
                         clearInterval(that.uplodeCounterInterfal);
 
                         if(responseJSON.success){
-                            that.taskFinishedNotifications.push({'id':id})
+                            let notificationMsg = "";
+                            if(that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef"){
+                                notificationMsg = "Your upload has finished and can be viewed in the Site Navigator.";
+                            }
+                            else{
+                                notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
+                            }
+
+                            that.taskFinishedNotifications.push({
+                                'id':id,
+                                "message": notificationMsg
+                            })
                         }
                     },
                     onCancel: function( id: number, name: string ) {
@@ -365,15 +381,15 @@ export class UploadModalComponent implements OnInit {
         /*
          * Validate form values before uploading
          */
-        // if ( !this.values.create && this.values.imagery == null && !this.existingTask ) {
-        //     this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-        //     this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
-        // }
-        // else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
-        //     this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-        //     this.bsModalRef.content.message = "Name is required";
-        // }
-        // else {
+        if ( !this.values.create && !this.importedValues && this.values.imagery == null && !this.existingTask ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
+        }
+        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = "Name is required";
+        }
+        else {
 
             if(this.values.collection){
                 this.values.uasComponentOid = this.values.collection.id;
@@ -387,7 +403,7 @@ export class UploadModalComponent implements OnInit {
 
             this.uploader.setParams( this.values );
             this.uploader.uploadStoredFiles();
-        // }
+        }
 
     }
 
@@ -453,8 +469,10 @@ export class UploadModalComponent implements OnInit {
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            // this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            // this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+
+            this.message = ( err.localizedMessage || err.message );
         }
     }
 
