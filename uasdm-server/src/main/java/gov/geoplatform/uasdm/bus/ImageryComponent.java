@@ -45,4 +45,16 @@ public interface ImageryComponent
   public String getS3location();
   
   public String getName();
+  
+  public default String buildUploadKey(String uploadTarget)
+  {
+    if (uploadTarget != null && !uploadTarget.trim().equals(""))
+    {
+      return this.getS3location() + uploadTarget + "/";
+    }
+    else
+    {
+      return this.buildRawKey();
+    }
+  }
 }
