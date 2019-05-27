@@ -178,32 +178,34 @@ public class Imagery extends ImageryBase implements ImageryComponent
     return this.getS3location() + ORTHO + "/";
   }
 
-  public void uploadArchive(AbstractWorkflowTask task, File archive)
+  @Override
+  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    Imagery.uploadArchive(task, archive, this);
+    Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
-  
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive)
+
+  @Override  
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    Imagery.uploadZipArchive(task, archive, this);
+    Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
 
-  public static void uploadArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
+  public static void uploadArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     String extension = FilenameUtils.getExtension(archive.getName());
 
     if (extension.equalsIgnoreCase("zip"))
     {
-      uploadZipArchive(task, archive, imageryComponent);
+      uploadZipArchive(task, archive, imageryComponent, uploadTarget);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      uploadTarGzArchive(task, archive, imageryComponent);
+      uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
     }
   }
   
-  protected static void uploadZipArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
+  protected static void uploadZipArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
@@ -228,7 +230,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
           }
 
           // Upload the file to S3
-          uploadFile(task, ancestors, imageryComponent.buildRawKey(), entry.getName(), tmp, imageryComponent);
+          uploadFile(task, ancestors, imageryComponent.buildRawKey(), uploadTarget, entry.getName(), tmp, imageryComponent);
         }
         finally
         {
@@ -244,7 +246,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
   
-  private static void uploadTarGzArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent)
+  private static void uploadTarGzArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
@@ -288,7 +290,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
               }
 
               // Upload the file to S3
-              uploadFile(task, ancestors, imageryComponent.buildRawKey(), entry.getName(), tmp, imageryComponent);
+              uploadFile(task, ancestors, imageryComponent.buildRawKey(), uploadTarget, entry.getName(), tmp, imageryComponent);
             }
             finally
             {
@@ -308,11 +310,20 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
   
   @Transaction
-  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
+  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String uploadTarget, String name, File tmp, ImageryComponent imageryComponent)
   {
     if (isValidName(name))
     {
-      String key = keySuffix + name;
+      String key;
+      
+      if (uploadTarget != null && !uploadTarget.trim().equals(""))
+      {
+        key = keySuffix + "/" + uploadTarget + "/" +name;
+      }
+      else
+      {
+        key = keySuffix + name;
+      }
 
       try
       {

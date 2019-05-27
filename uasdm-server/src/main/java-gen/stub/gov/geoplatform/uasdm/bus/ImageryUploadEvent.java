@@ -41,7 +41,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.apply();
 
     Imagery imagery = task.getImagery();
-    imagery.uploadArchive(task, infile);
+    imagery.uploadArchive(task, infile, parser.getUploadTarget());
 
     task.lock();
     task.setStatus("Complete");

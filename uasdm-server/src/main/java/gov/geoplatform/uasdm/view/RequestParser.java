@@ -32,6 +32,8 @@ public class RequestParser
   private static String       GENERATE_ERROR_PARAM = "generateError";
   
   private static String       UAS_COMPONENT_OID    = "uasComponentOid";
+  
+  private static String       UPLOAD_TARGET        = "uploadTarget";
 
   private String              filename;
 
@@ -56,6 +58,8 @@ public class RequestParser
   private Boolean             resume;
   
   private String              uasComponentOid;
+  
+  private String              uploadTarget;
 
   private RequestParser()
   {
@@ -134,6 +138,11 @@ public class RequestParser
   {
     return uasComponentOid;
   }
+  
+  public String getUploadTarget()
+  {
+    return uploadTarget;
+  }
 
   public String getOriginalFilename()
   {
@@ -191,6 +200,11 @@ public class RequestParser
       requestParser.uasComponentOid = multipartUploadParser.getParams().get(UAS_COMPONENT_OID);
     }
 
+    if (requestParser.uploadTarget == null)
+    {
+      requestParser.uploadTarget = multipartUploadParser.getParams().get(UPLOAD_TARGET);
+    }
+    
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -244,6 +258,11 @@ public class RequestParser
     {
       requestParser.uasComponentOid = req.getParameter(UAS_COMPONENT_OID);
     }
+    
+    if (requestParser.uploadTarget == null)
+    {
+      requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);
+    }
 
     if (requestParser.method == null)
     {
@@ -288,6 +307,10 @@ public class RequestParser
       else if (key.equals(UAS_COMPONENT_OID))
       {
         requestParser.uasComponentOid = value;
+      }
+      else if (key.equals(UPLOAD_TARGET))
+      {
+        requestParser.uploadTarget = value;
       }
       else if (key.equals(METHOD_PARAM))
       {

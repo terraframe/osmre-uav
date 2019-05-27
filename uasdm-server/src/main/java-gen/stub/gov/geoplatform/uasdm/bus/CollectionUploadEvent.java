@@ -39,7 +39,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     Collection collection = task.getCollection();
-    collection.uploadArchive(task, infile);
+    collection.uploadArchive(task, infile, parser.getUploadTarget());
 
     task.lock();
     task.setStatus("Complete");
