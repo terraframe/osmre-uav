@@ -1,10 +1,21 @@
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.Imagery;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -76,5 +87,60 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       this.setMessage(t.getLocalizedMessage());
       this.apply();
     }
+  }
+  
+  /** 
+   * Writes the ODM output to a log file on S3, if supported by the individual task implementation.
+   * 
+   * @param odmOutput
+   */
+  public void writeODMtoS3(JSONArray odmOutput)
+  {
+    Imagery imagery = this.getImagery();
+    
+    StringBuilder sb = new StringBuilder();
+    
+    for (int i = 0; i < odmOutput.length(); ++i)
+    {
+      sb.append(odmOutput.getString(i));
+      sb.append("\n");
+    }
+    
+    try
+    {
+      File file = File.createTempFile(imagery.getName(), ".txt");
+      try
+      {
+        BufferedWriter writer = null;
+        try 
+        {
+          writer = new BufferedWriter(new FileWriter(file));
+          writer.write(sb.toString());
+        } 
+        finally 
+        {
+          if (writer != null)
+          {
+            writer.flush();
+            writer.close();
+          }
+        }
+        
+        String geoRefLocation = imagery.buildGeoRefKey();
+
+        Util.uploadFileToS3(file, geoRefLocation + "/" + imagery.getName(), this);
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(file);
+      }
+    }
+    catch (IOException e)
+    {
+     throw new ProgrammingErrorException(e);
+    }
+    
+    
+
   }
 }
