@@ -1,9 +1,5 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,17 +34,22 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.gis.geoserver.GeoserverFacade;
+
 public class Imagery extends ImageryBase implements ImageryComponent
 {
   private static final long serialVersionUID = -134374478;
-  
-  final Logger               log              = LoggerFactory.getLogger(Imagery.class);
-  
+
+  final Logger              log              = LoggerFactory.getLogger(Imagery.class);
+
   public Imagery()
   {
     super();
   }
-  
+
   /**
    * Returns null, as a Imagery cannot have a child.
    */
@@ -60,25 +59,25 @@ public class Imagery extends ImageryBase implements ImageryComponent
     // TODO throw exception.
     return null;
   }
-  
+
   @Override
   public String getSolrIdField()
   {
     return "imageryId";
   }
-  
+
   @Override
   public String getSolrNameField()
   {
     return "imageryName";
   }
-  
+
   @Override
   public ComponentHasComponent addComponent(UasComponent uasComponent)
   {
     return this.addProject((Project) uasComponent);
   }
-  
+
   /**
    * Creates the object and builds the relationship with the parent.
    * 
@@ -101,7 +100,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
       this.createS3Folder(this.buildOrthoKey());
     }
   }
-  
+
   public void delete()
   {
     super.delete();
@@ -115,12 +114,12 @@ public class Imagery extends ImageryBase implements ImageryComponent
       this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
     }
   }
-  
+
   protected void deleteS3Object(String key)
   {
     Imagery.deleteS3Object(key, this);
   }
-  
+
   protected static void deleteS3Object(String key, ImageryComponent imageryComponent)
   {
     if (key.endsWith(".tif"))
@@ -137,14 +136,14 @@ public class Imagery extends ImageryBase implements ImageryComponent
       }
     }
   }
-  
+
   protected static void removeCoverageStore(String storeName)
   {
     GeoserverFacade.removeStyle(storeName);
     GeoserverFacade.forceRemoveLayer(storeName);
     GeoserverFacade.removeCoverageStore(storeName);
   }
-  
+
   @Override
   public List<AbstractWorkflowTask> getTasks()
   {
@@ -162,17 +161,17 @@ public class Imagery extends ImageryBase implements ImageryComponent
       iterator.close();
     }
   }
-  
+
   public String buildRawKey()
   {
     return this.getS3location() + RAW + "/";
   }
-  
+
   public String buildGeoRefKey()
   {
     return this.getS3location() + GEOREF + "/";
   }
-  
+
   public String buildOrthoKey()
   {
     return this.getS3location() + ORTHO + "/";
@@ -184,12 +183,11 @@ public class Imagery extends ImageryBase implements ImageryComponent
     Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
-  @Override  
+  @Override
   public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
     Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
-
 
   public static void uploadArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
@@ -204,7 +202,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
       uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
     }
   }
-  
+
   protected static void uploadZipArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
@@ -245,7 +243,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   private static void uploadTarGzArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
@@ -308,7 +306,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   @Transaction
   private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
   {
@@ -376,7 +374,6 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
 
-  
   @Override
   public List<SiteObject> getSiteObjects(String folder)
   {
@@ -416,7 +413,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
     return objects;
   }
-  
+
   @Override
   protected void getSiteObjects(String folder, List<SiteObject> objects)
   {
@@ -424,7 +421,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
     Imagery.getSiteObjects(folder, objects, this);
   }
-  
+
   protected static void getSiteObjects(String folder, List<SiteObject> objects, ImageryComponent imageryComponent)
   {
     if (folder.equals(ORTHO))
@@ -445,22 +442,22 @@ public class Imagery extends ImageryBase implements ImageryComponent
       }
     }
   }
-  
+
   public static File download(String key, String storeName)
   {
     try
     {
       AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-      
+
       String bucketName = AppProperties.getBucketName();
-      
+
       GetObjectRequest request = new GetObjectRequest(bucketName, key);
-      
+
       S3Object s3Obj = client.getObject(request);
-      
+
       File temp = Files.createTempFile("geotiff-" + storeName, ".tif").toFile();
       IOUtils.copy(s3Obj.getObjectContent(), new FileOutputStream(temp));
-      
+
       return temp;
     }
     catch (Throwable t)
@@ -468,17 +465,17 @@ public class Imagery extends ImageryBase implements ImageryComponent
       throw new ProgrammingErrorException(t);
     }
   }
-  
+
   public void createImageServices()
   {
     Imagery.createImageServices(this);
   }
-  
+
   public static void createImageServices(ImageryComponent imageryComponent)
   {
     try
     {
-      LinkedList<SiteObject> objects = new LinkedList<SiteObject>();
+      List<SiteObject> objects = imageryComponent.getSiteObjects(ORTHO);
 
       Imagery.getSiteObjects(ORTHO, objects, imageryComponent);
 
@@ -494,7 +491,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
           {
             Imagery.removeCoverageStore(storeName);
           }
-          
+
           File geotiff = Imagery.download(key, storeName);
 
           GeoserverFacade.publishGeoTiff(storeName, geotiff);
@@ -506,26 +503,22 @@ public class Imagery extends ImageryBase implements ImageryComponent
       throw new ProgrammingErrorException(e);
     }
   }
-  
-  
+
   public String getStoreName(String key)
   {
-    /*
-     * There will only be a single orth tiff per collections so just use the oid
-     */
-    return this.getOid();
+    String baseName = FilenameUtils.getBaseName(key);
+
+    return this.getOid() + "-" + baseName;
   }
-  
+
   public Imagery getUasComponent()
   {
     return this;
   }
-  
+
   public Logger getLog()
   {
     return this.log;
   }
-  
 
-  
 }
