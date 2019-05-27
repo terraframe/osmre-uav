@@ -45,7 +45,7 @@ public class Project extends ProjectBase
   {
     MdBusiness imageryMdBusiness = MdBusiness.getMdBusiness(Imagery.CLASS);
     
-    if (typeName.equals(imageryMdBusiness.getTypeName()))
+    if (typeName != null && typeName.equals(imageryMdBusiness.getTypeName()))
     {
       return this.createImagery();
     }
