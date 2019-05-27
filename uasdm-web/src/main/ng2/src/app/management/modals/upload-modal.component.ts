@@ -4,6 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Rx';
+import { Subject } from 'rxjs/Subject';
 
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
@@ -89,6 +90,8 @@ export class UploadModalComponent implements OnInit {
     differ: any;
     showFileSelectPanel: boolean = false;
     taskFinishedNotifications: any[] = [];
+
+    public onUploadComplete: Subject<any>;
 
     constructor( public bsModalRef: BsModalRef, private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -205,6 +208,8 @@ export class UploadModalComponent implements OnInit {
                                 "message": notificationMsg
                             })
                         }
+
+                        that.onUploadComplete.next( that.clickedItem );
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
@@ -247,6 +252,9 @@ export class UploadModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
+
+        this.onUploadComplete = new Subject();
+
         // this.service.roots( null ).then( sites => {
         //     this.sites = sites;
 

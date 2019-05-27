@@ -548,6 +548,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         } );
         this.bsModalRef.content.setHierarchy = hierarchy;
         this.bsModalRef.content.clickedItem = item;
+
+        let that = this;
+        this.bsModalRef.content.onUploadComplete.subscribe( node => {
+            // that.service.getItems( node.data.component, node.data.name )
+            // .then(data => {
+            //     // TODO: update tree node children
+            // })
+        });
+
     }
 
 
