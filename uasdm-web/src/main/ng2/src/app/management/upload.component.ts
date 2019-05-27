@@ -339,6 +339,7 @@ export class UploadComponent implements OnInit {
 
     onCollectionSelect( collectionId: string ): void {
         this.values.collection = collectionId;
+        this.values.uasComponentOid = collectionId;
 
         if(collectionId && collectionId.trim().length > 0){
             this.showFileSelectPanel = true;
