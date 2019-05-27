@@ -963,7 +963,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public canAddChild = ( item: any ): boolean => {
-        if ( this.admin && item.data.type !== "Collection" ) {
+        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
             return true;
         }
         else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
@@ -999,6 +999,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public canUpload = ( item: any ): boolean => {
         if(item.data.name === "raw"){
+            return true;
+        }
+        else if(item.data.name === "georef"){
             return true;
         }
         else if(item.data.name === "ortho"){
