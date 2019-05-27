@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.geoprism.GeoprismUser;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ import com.runwaysdk.system.SingleActor;
 
 public class Collection extends CollectionBase implements ImageryComponent
 {
-  private static final long  serialVersionUID = 1371809368;
+  private static final long serialVersionUID = 1371809368;
 
-  final Logger               log              = LoggerFactory.getLogger(Collection.class);
+  final Logger              log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -224,7 +225,6 @@ public class Collection extends CollectionBase implements ImageryComponent
     Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
-
   @Override
   public List<SiteObject> getSiteObjects(String folder)
   {
@@ -288,17 +288,16 @@ public class Collection extends CollectionBase implements ImageryComponent
 
   public String getStoreName(String key)
   {
-    /*
-     * There will only be a single orth tiff per collections so just use the oid
-     */
-    return this.getOid();
+    String baseName = FilenameUtils.getBaseName(key);
+
+    return this.getOid() + "-" + baseName;
   }
-  
+
   public Collection getUasComponent()
   {
     return this;
   }
-  
+
   public Logger getLog()
   {
     return this.log;
