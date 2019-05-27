@@ -60,7 +60,7 @@ public class WorkflowService
       else
       {
 //        Collection collection = this.getCollection(sessionId, parser);
-        Collection collection = (Collection)uasComponent;
+        Collection collection = (Collection) uasComponent;
 
         WorkflowTask workflowTask = new WorkflowTask();
         workflowTask.setUpLoadId(parser.getUuid());

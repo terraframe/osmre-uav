@@ -38,11 +38,9 @@ public class CollectionConverter extends Converter
     }
     else
     {
-      collection.lock();
-      collection.addPrivilegeType(AllPrivilegeType.AGENCY);
-      collection.unlock();
       siteItem.setPrivilegeType(AllPrivilegeType.AGENCY.name());
     }
+    
     
     if (collection.getOwner() instanceof GeoprismUser)
     {
@@ -65,13 +63,13 @@ public class CollectionConverter extends Converter
   protected Collection convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
     Collection collection = (Collection)super.convertNew(uasComponent, siteItem);
-    
+
     if (siteItem.getPrivilegeType() != null && !siteItem.getPrivilegeType().trim().equals(""))
     {
       AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType().trim().toUpperCase());
       collection.addPrivilegeType(privilegeType);
     }
-    
+
     return collection;
   }
 }

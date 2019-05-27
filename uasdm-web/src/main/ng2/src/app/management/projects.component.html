@@ -49,8 +49,11 @@
 
                                         <i *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')" class="fa fa-image"
                                             style="padding-right: 2px;"></i>
-                                        <i *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" class="fa fa-image"
+                                        <i *ngIf="node.data.type === 'Collection' && !admin && node.data.ownerName !== userName && node.data.privilegeType === 'OWNER'" class="fa fa-image"
                                             style="padding-right: 2px; color: #999;"></i>
+
+                                        <i *ngIf="node.data.type === 'Imagery'" class="fa fa-file"
+                                            style="padding-right: 2px"></i>
                                         
                                         <span *ngIf="node.data.type !== 'Collection'">
                                             {{ node.data.name }}
@@ -58,7 +61,7 @@
                                         <span *ngIf="node.data.type === 'Collection' && (admin || node.data.ownerName === userName || node.data.privilegeType !== 'OWNER')">
                                             {{ node.data.name }}
                                         </span>
-                                        <span *ngIf="node.data.type === 'Collection' && (!admin || node.data.ownerName !== userName) && (node.data.privilegeType === 'OWNER')" style="color: #999;">
+                                        <span *ngIf="node.data.type === 'Collection' && !admin && node.data.ownerName !== userName && node.data.privilegeType === 'OWNER'" style="color: #999;">
                                             {{ node.data.name }}
                                         </span>
 
@@ -75,7 +78,7 @@
 
                 <article class="base-layer-panel">
                     <accordion>
-                        <accordion-group heading="Base Maps">
+                        <accordion-group heading="Base Maps" style="border:none;">
                             <div class="row-form" *ngFor="let baseLayer of baseLayers">
                                 <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id'
                                     [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
@@ -142,6 +145,7 @@
             class="fa fa-repeat"></i>
         Re-run Orthorectification Processing
     </ng-template>
+
     <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i
             class="fa fa-edit"></i> Edit
         {{item?.data.name}}
@@ -150,9 +154,21 @@
             class="fa fa-trash" aria-hidden="true"></i>
         Delete {{item?.data.name}}
     </ng-template>
-    <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item)"> <i
+    <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item, '')"> 
+        <i class="fa fa-arrow-circle-down"></i>
+        Add a {{item?.data.childType?.toLowerCase()}} to {{item?.data.name}}
+    </ng-template> 
+    <ng-template contextMenuItem let-item [visible]="canAddChild && canCreateImageDir" (execute)="handleCreate($event.item, 'Imagery')"> <i
             class="fa fa-arrow-circle-down"></i>
-        Add a {{item?.data.childType.toLowerCase()}} to {{item?.data.name}} </ng-template>
+        Add an image directory to {{item?.data.name}} 
+    </ng-template>
+
+    <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template>
+    <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> 
+        <i style="font-size:18px; padding:0; width:auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i>
+        Upload a file
+    </ng-template>
+
     <ng-template contextMenuItem [visible]="isSite" divider="true"></ng-template>
     <ng-template contextMenuItem let-item [visible]="canEditSite" (execute)="handleEditGeom($event.item)"> <i
             class="fa fa-globe" aria-hidden="true"></i>
@@ -179,6 +195,12 @@
 <context-menu #folderMenu>
     <ng-template contextMenuItem let-item (execute)="handleDownloadAll($event.item)">
         <i class="fa fa-download" aria-hidden="true"></i> Download All Files
+    </ng-template>
+
+    <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template>
+    <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> 
+        <i style="font-size:18px; padding:0; width:auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i>
+        Upload a file
     </ng-template>
 </context-menu>
 
