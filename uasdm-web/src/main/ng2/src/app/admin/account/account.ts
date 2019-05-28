@@ -19,6 +19,7 @@
 
 export class UserInvite {
   email: string;
+  bureau: string;
   groups:Group[];
   bureaus:{value:string, label:string}[];
 }
@@ -31,6 +32,7 @@ export class User {
   lastName: string;
   email: string;
   phoneNumber: string;
+  bureau: string;
   inactive: boolean;
   newInstance: boolean;
 }

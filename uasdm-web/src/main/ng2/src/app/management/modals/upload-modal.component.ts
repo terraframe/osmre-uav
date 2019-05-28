@@ -13,7 +13,7 @@ import { ErrorModalComponent } from './error-modal.component';
 import { SiteEntity, UploadForm, Task } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 
-import { ConfirmModalComponent } from './confirm-modal.component';
+import { BasicConfirmModalComponent } from './basic-confirm-modal.component';
 
 declare var acp: string;
 
@@ -418,7 +418,7 @@ export class UploadModalComponent implements OnInit {
     removeUpload( event: any ): void {
         let that = this;
 
-        this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
@@ -427,7 +427,7 @@ export class UploadModalComponent implements OnInit {
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Cancel Upload';
 
-        ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
+        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
             this.service.removeTask( this.uploader.getResumableFilesData()[0].uuid )
                 .then(() => {
                     //that.uploader.clearStoredFiles();

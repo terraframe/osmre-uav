@@ -66,11 +66,13 @@ public class UASDMAccountController
   public ResponseIF newInvite(ClientRequestIF request) throws JSONException
   {
     RoleViewDTO[] roles = RoleViewDTO.getRoles(request, null);
+    JSONObject user = new JSONObject();
+    user.put("newInstance", true);
 
     JSONArray groups = this.createRoleMap(roles);
 
     RestResponse response = new RestResponse();
-    response.set("user", new JSONObject());
+    response.set("user", user);
     response.set("groups", groups);
     response.set("bureaus", this.service.getBureaus(request.getSessionId()));
 
