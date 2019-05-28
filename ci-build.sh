@@ -18,6 +18,7 @@ export M2_HOME=/usr/local/apache-maven
 export M2=$M2_HOME/bin 
 export PATH=$M2:$PATH
 export ANSIBLE_HOST_KEY_CHECKING=false
+export NODE_OPTIONS=--max_old_space_size=1500
 
 
 if [ "$build_artifact" == "true" ]; then
@@ -34,10 +35,10 @@ if [ "$build_artifact" == "true" ]; then
 #npm run build
 cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
 [ -e ./node_modules ] && rm -r node_modules
-#npm install
+npm install
 #npm install typings
 #typings install lodash
-#npm run build
+npm run build
 
 :
 : ----------------------------------

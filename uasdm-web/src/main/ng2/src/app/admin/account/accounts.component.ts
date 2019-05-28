@@ -64,6 +64,8 @@ export class AccountsComponent implements OnInit {
   onPageChange(pageNumber:number): void {
     this.service.page(pageNumber).then(res => {
       this.res = res;	
+
+      this.p = pageNumber;
     });	  	  
   }  
   

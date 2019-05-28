@@ -58,6 +58,8 @@ import { LoginHeaderComponent } from './authentication/login-header.component';
 
 import { AdminModule } from './admin/admin.module';
 
+import { NgxPaginationModule } from 'ngx-pagination';
+
 @NgModule( {
     imports: [
         BrowserModule,
@@ -75,7 +77,8 @@ import { AdminModule } from './admin/admin.module';
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
         PasswordStrengthBarModule,
-        AdminModule
+        AdminModule,
+        NgxPaginationModule
     ],
     declarations: [
         UasdmAppComponent,
