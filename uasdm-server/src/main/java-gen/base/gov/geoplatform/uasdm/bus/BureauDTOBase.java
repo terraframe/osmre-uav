@@ -1,12 +1,12 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 668863528)
-public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessDTO
+@com.runwaysdk.business.ClassSignature(hash = 1996913067)
+public abstract class BureauDTOBase extends com.runwaysdk.business.BusinessDTO
 {
-  public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
-  private static final long serialVersionUID = 668863528;
+  public final static String CLASS = "gov.geoplatform.uasdm.bus.Bureau";
+  private static final long serialVersionUID = 1996913067;
   
-  protected UserInviteDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected BureauDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(clientRequest);
   }
@@ -17,7 +17,7 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
   * @param businessDTO The BusinessDTO to duplicate
   * @param clientRequest The clientRequest this DTO should use to communicate with the server.
   */
-  protected UserInviteDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected BureauDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(businessDTO, clientRequest);
   }
@@ -27,72 +27,20 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     return CLASS;
   }
   
-  public static java.lang.String BUREAU = "bureau";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String EMAIL = "email";
+  public static java.lang.String DISPLAYLABEL = "displayLabel";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
-  public static java.lang.String ROLEIDS = "roleIds";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String STARTTIME = "startTime";
-  public static java.lang.String TOKEN = "token";
   public static java.lang.String TYPE = "type";
-  public gov.geoplatform.uasdm.bus.BureauDTO getBureau()
-  {
-    if(getValue(BUREAU) == null || getValue(BUREAU).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.BureauDTO.get(getRequest(), getValue(BUREAU));
-    }
-  }
-  
-  public String getBureauOid()
-  {
-    return getValue(BUREAU);
-  }
-  
-  public void setBureau(gov.geoplatform.uasdm.bus.BureauDTO value)
-  {
-    if(value == null)
-    {
-      setValue(BUREAU, "");
-    }
-    else
-    {
-      setValue(BUREAU, value.getOid());
-    }
-  }
-  
-  public boolean isBureauWritable()
-  {
-    return isWritable(BUREAU);
-  }
-  
-  public boolean isBureauReadable()
-  {
-    return isReadable(BUREAU);
-  }
-  
-  public boolean isBureauModified()
-  {
-    return isModified(BUREAU);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getBureauMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(BUREAU).getAttributeMdDTO();
-  }
-  
   public java.util.Date getCreateDate()
   {
     return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(CREATEDATE));
@@ -155,41 +103,41 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(CREATEDBY).getAttributeMdDTO();
   }
   
-  public String getEmail()
+  public String getDisplayLabel()
   {
-    return getValue(EMAIL);
+    return getValue(DISPLAYLABEL);
   }
   
-  public void setEmail(String value)
+  public void setDisplayLabel(String value)
   {
     if(value == null)
     {
-      setValue(EMAIL, "");
+      setValue(DISPLAYLABEL, "");
     }
     else
     {
-      setValue(EMAIL, value);
+      setValue(DISPLAYLABEL, value);
     }
   }
   
-  public boolean isEmailWritable()
+  public boolean isDisplayLabelWritable()
   {
-    return isWritable(EMAIL);
+    return isWritable(DISPLAYLABEL);
   }
   
-  public boolean isEmailReadable()
+  public boolean isDisplayLabelReadable()
   {
-    return isReadable(EMAIL);
+    return isReadable(DISPLAYLABEL);
   }
   
-  public boolean isEmailModified()
+  public boolean isDisplayLabelModified()
   {
-    return isModified(EMAIL);
+    return isModified(DISPLAYLABEL);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getEmailMd()
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getDisplayLabelMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(EMAIL).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(DISPLAYLABEL).getAttributeMdDTO();
   }
   
   public com.runwaysdk.system.metadata.MdDomainDTO getEntityDomain()
@@ -377,6 +325,43 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
   }
   
+  public String getName()
+  {
+    return getValue(NAME);
+  }
+  
+  public void setName(String value)
+  {
+    if(value == null)
+    {
+      setValue(NAME, "");
+    }
+    else
+    {
+      setValue(NAME, value);
+    }
+  }
+  
+  public boolean isNameWritable()
+  {
+    return isWritable(NAME);
+  }
+  
+  public boolean isNameReadable()
+  {
+    return isReadable(NAME);
+  }
+  
+  public boolean isNameModified()
+  {
+    return isModified(NAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(NAME).getAttributeMdDTO();
+  }
+  
   public com.runwaysdk.system.ActorDTO getOwner()
   {
     if(getValue(OWNER) == null || getValue(OWNER).trim().equals(""))
@@ -424,43 +409,6 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
-  }
-  
-  public String getRoleIds()
-  {
-    return getValue(ROLEIDS);
-  }
-  
-  public void setRoleIds(String value)
-  {
-    if(value == null)
-    {
-      setValue(ROLEIDS, "");
-    }
-    else
-    {
-      setValue(ROLEIDS, value);
-    }
-  }
-  
-  public boolean isRoleIdsWritable()
-  {
-    return isWritable(ROLEIDS);
-  }
-  
-  public boolean isRoleIdsReadable()
-  {
-    return isReadable(ROLEIDS);
-  }
-  
-  public boolean isRoleIdsModified()
-  {
-    return isModified(ROLEIDS);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getRoleIdsMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(ROLEIDS).getAttributeMdDTO();
   }
   
   public Long getSeq()
@@ -513,109 +461,11 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SITEMASTER).getAttributeMdDTO();
   }
   
-  public java.util.Date getStartTime()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(STARTTIME));
-  }
-  
-  public void setStartTime(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(STARTTIME, "");
-    }
-    else
-    {
-      setValue(STARTTIME, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
-    }
-  }
-  
-  public boolean isStartTimeWritable()
-  {
-    return isWritable(STARTTIME);
-  }
-  
-  public boolean isStartTimeReadable()
-  {
-    return isReadable(STARTTIME);
-  }
-  
-  public boolean isStartTimeModified()
-  {
-    return isModified(STARTTIME);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO getStartTimeMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO) getAttributeDTO(STARTTIME).getAttributeMdDTO();
-  }
-  
-  public String getToken()
-  {
-    return getValue(TOKEN);
-  }
-  
-  public void setToken(String value)
-  {
-    if(value == null)
-    {
-      setValue(TOKEN, "");
-    }
-    else
-    {
-      setValue(TOKEN, value);
-    }
-  }
-  
-  public boolean isTokenWritable()
-  {
-    return isWritable(TOKEN);
-  }
-  
-  public boolean isTokenReadable()
-  {
-    return isReadable(TOKEN);
-  }
-  
-  public boolean isTokenModified()
-  {
-    return isModified(TOKEN);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getTokenMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(TOKEN).getAttributeMdDTO();
-  }
-  
-  public static final void complete(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String token, net.geoprism.GeoprismUserDTO user)
-  {
-    String[] _declaredTypes = new String[]{"java.lang.String", "net.geoprism.GeoprismUser"};
-    Object[] _parameters = new Object[]{token, user};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "complete", _declaredTypes);
-    clientRequest.invokeMethod(_metadata, null, _parameters);
-  }
-  
-  public static final void initiate(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String invite, java.lang.String serverUrl, java.lang.String roleIds)
-  {
-    String[] _declaredTypes = new String[]{"java.lang.String", "java.lang.String", "java.lang.String"};
-    Object[] _parameters = new Object[]{invite, serverUrl, roleIds};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "initiate", _declaredTypes);
-    clientRequest.invokeMethod(_metadata, null, _parameters);
-  }
-  
-  public static final net.geoprism.GeoprismUserDTO newUserInst(com.runwaysdk.constants.ClientRequestIF clientRequest)
-  {
-    String[] _declaredTypes = new String[]{};
-    Object[] _parameters = new Object[]{};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "newUserInst", _declaredTypes);
-    return (net.geoprism.GeoprismUserDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
-  }
-  
-  public static gov.geoplatform.uasdm.UserInviteDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
+  public static gov.geoplatform.uasdm.bus.BureauDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
   {
     com.runwaysdk.business.EntityDTO dto = (com.runwaysdk.business.EntityDTO)clientRequest.get(oid);
     
-    return (gov.geoplatform.uasdm.UserInviteDTO) dto;
+    return (gov.geoplatform.uasdm.bus.BureauDTO) dto;
   }
   
   public void apply()
@@ -634,9 +484,9 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     getRequest().delete(this.getOid());
   }
   
-  public static gov.geoplatform.uasdm.UserInviteQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
+  public static gov.geoplatform.uasdm.bus.BureauQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
   {
-    return (gov.geoplatform.uasdm.UserInviteQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.UserInviteDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
+    return (gov.geoplatform.uasdm.bus.BureauQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.bus.BureauDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
   }
   
   public void lock()
@@ -644,12 +494,12 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     getRequest().lock(this);
   }
   
-  public static gov.geoplatform.uasdm.UserInviteDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.BureauDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "lock", _declaredTypes);
-    return (gov.geoplatform.uasdm.UserInviteDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.BureauDTO.CLASS, "lock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.BureauDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
   public void unlock()
@@ -657,12 +507,12 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     getRequest().unlock(this);
   }
   
-  public static gov.geoplatform.uasdm.UserInviteDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.BureauDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "unlock", _declaredTypes);
-    return (gov.geoplatform.uasdm.UserInviteDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.BureauDTO.CLASS, "unlock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.BureauDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
 }

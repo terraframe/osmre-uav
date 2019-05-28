@@ -20,6 +20,7 @@
 export class UserInvite {
   email: string;
   groups:Group[];
+  bureaus:{value:string, label:string}[];
 }
 
 export class User {
@@ -48,6 +49,7 @@ export class Group {
 export class Account {
   user:User;
   groups:Group[];
+  bureaus:{value:string, label:string}[];
   changePassword:boolean;
 }
 

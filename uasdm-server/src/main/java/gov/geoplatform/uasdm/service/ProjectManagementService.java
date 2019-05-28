@@ -1,5 +1,31 @@
 package gov.geoplatform.uasdm.service;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
+
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
@@ -20,34 +46,7 @@ import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import net.geoprism.GeoprismUser;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.session.Request;
-import com.runwaysdk.session.RequestType;
 
 public class ProjectManagementService
 {
@@ -195,7 +194,7 @@ public class ProjectManagementService
       return Converter.toSiteItem(new Site(), true);
     }
   }
-  
+
   /**
    * Should this method return null if the given parent has no children?
    * 
@@ -266,12 +265,12 @@ public class ProjectManagementService
 
     return Converter.toSiteItem(uasComponent, true);
   }
-  
+
   @Request(RequestType.SESSION)
   public void runOrtho(String sessionId, String id)
   {
     Collection collection = (Collection) UasComponent.get(id);
-    
+
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUpLoadId(id);
     task.setCollectionId(collection.getOid());
@@ -280,14 +279,14 @@ public class ProjectManagementService
     task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.apply();
-    
+
     File zip;
     try
     {
       logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
-      
+
       zip = File.createTempFile("raw-" + id, ".zip");
-      
+
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
       {
         downloadAll(sessionId, id, ImageryComponent.RAW, ostream);
@@ -297,21 +296,21 @@ public class ProjectManagementService
     {
       throw new ProgrammingErrorException(e);
     }
-    
+
     task.initiate(zip);
   }
-  
+
   @Request(RequestType.SESSION)
   public void downloadAll(String sessionId, String id, String key, OutputStream out)
   {
     List<SiteObject> items = getObjects(id, key);
-    
+
     try (ZipOutputStream zos = new ZipOutputStream(out))
     {
       for (SiteObject item : items)
       {
         S3Object s3Obj = download(sessionId, id, item.getKey());
-        
+
         try (S3ObjectInputStream istream = s3Obj.getObjectContent())
         {
           zos.putNextEntry(new ZipEntry(item.getName()));
@@ -321,7 +320,7 @@ public class ProjectManagementService
           zos.closeEntry();
         }
       }
-      
+
     }
     catch (IOException e)
     {
@@ -354,7 +353,7 @@ public class ProjectManagementService
 
     uasComponent.delete();
   }
-  
+
   @Request(RequestType.SESSION)
   public void removeObject(String sessionId, String id, String key)
   {
@@ -375,7 +374,7 @@ public class ProjectManagementService
     else
     {
       ImageryWorkflowTask iwfTask = ImageryWorkflowTask.getTaskByUploadId(uploadId);
-      
+
       if (iwfTask != null)
       {
         iwfTask.delete();
@@ -391,33 +390,33 @@ public class ProjectManagementService
   public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
   {
     UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
-    
+
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
-    
+
     try
     {
       if (task instanceof ImageryWorkflowTask)
       {
-        ImageryWorkflowTask imageryWorkflowTask = (ImageryWorkflowTask)task;
-        
+        ImageryWorkflowTask imageryWorkflowTask = (ImageryWorkflowTask) task;
+
         ImageryUploadEvent event = new ImageryUploadEvent();
         event.setGeoprismUser(imageryWorkflowTask.getGeoprismUser());
         event.setUploadId(imageryWorkflowTask.getUpLoadId());
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
-        
+
         event.handleUploadFinish(parser, infile);
       }
       else
       {
-        WorkflowTask collectionWorkflowTask = (WorkflowTask)task;
-        
+        WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
+
         CollectionUploadEvent event = new CollectionUploadEvent();
         event.setGeoprismUser(collectionWorkflowTask.getGeoprismUser());
         event.setUploadId(collectionWorkflowTask.getUpLoadId());
         event.setCollection(collectionWorkflowTask.getCollection());
         event.apply();
-        
+
         event.handleUploadFinish(parser, infile);
       }
     }
@@ -430,7 +429,7 @@ public class ProjectManagementService
       FileUtils.deleteQuietly(infile);
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public void validate(String sessionId, RequestParser parser)
   {
@@ -445,7 +444,7 @@ public class ProjectManagementService
       UasComponent.validateFolderName(missionId, folderName);
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public void submitMetadata(String sessionId, String json)
   {
@@ -515,4 +514,22 @@ public class ProjectManagementService
   {
     return UasComponent.bbox();
   }
+
+//  public void logLoginAttempt(String sessionId, String username)
+//  {
+//    if (sessionId != null)
+//    {
+//      logSuccessfulLogin(sessionId);
+//    }
+//    else
+//    {
+//      // log invalid attempt??
+//    }
+//  }
+//
+//  @Request(RequestType.SESSION)
+//  public void logSuccessfulLogin(String sessionId)
+//  {
+//    SessionEvent.createLoginEvent();
+//  }
 }

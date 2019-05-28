@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 467602694)
+@com.runwaysdk.business.ClassSignature(hash = -1302217304)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,6 +11,7 @@ package gov.geoplatform.uasdm;
 public abstract class UserInviteBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
+  public static java.lang.String BUREAU = "bureau";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String EMAIL = "email";
@@ -27,11 +28,63 @@ public abstract class UserInviteBase extends com.runwaysdk.business.Business
   public static java.lang.String STARTTIME = "startTime";
   public static java.lang.String TOKEN = "token";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 467602694;
+  private static final long serialVersionUID = -1302217304;
   
   public UserInviteBase()
   {
     super();
+  }
+  
+  public gov.geoplatform.uasdm.bus.Bureau getBureau()
+  {
+    if (getValue(BUREAU).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return gov.geoplatform.uasdm.bus.Bureau.get(getValue(BUREAU));
+    }
+  }
+  
+  public String getBureauOid()
+  {
+    return getValue(BUREAU);
+  }
+  
+  public void validateBureau()
+  {
+    this.validateAttribute(BUREAU);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getBureauMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.UserInvite.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(BUREAU);
+  }
+  
+  public void setBureau(gov.geoplatform.uasdm.bus.Bureau value)
+  {
+    if(value == null)
+    {
+      setValue(BUREAU, "");
+    }
+    else
+    {
+      setValue(BUREAU, value.getOid());
+    }
+  }
+  
+  public void setBureauId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(BUREAU, "");
+    }
+    else
+    {
+      setValue(BUREAU, oid);
+    }
   }
   
   public java.util.Date getCreateDate()

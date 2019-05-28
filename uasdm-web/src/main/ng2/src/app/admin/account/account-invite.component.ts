@@ -47,12 +47,13 @@ export class AccountInviteComponent implements OnInit {
   ngOnInit(): void {
     this.invite = new UserInvite();
     
-    this.service.newInstance().catch((error:any) => {
+    this.service.newInvite().catch((error:any) => {
       this.eventService.onError(error); 
     
       return Promise.reject(error);
     }).then((account:Account) => {
       this.invite.groups = account.groups;
+      this.invite.bureaus = account.bureaus;
     });
   }
   
