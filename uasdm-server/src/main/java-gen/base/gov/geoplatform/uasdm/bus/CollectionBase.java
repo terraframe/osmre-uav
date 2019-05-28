@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -788129392)
+@com.runwaysdk.business.ClassSignature(hash = 1057314700)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -14,7 +14,8 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  private static final long serialVersionUID = -788129392;
+  public static java.lang.String PRIVILEGETYPE = "privilegeType";
+  private static final long serialVersionUID = 1057314700;
   
   public CollectionBase()
   {
@@ -103,6 +104,44 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
     {
       setValue(METADATAUPLOADED, java.lang.Boolean.toString(value));
     }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeType> getPrivilegeType()
+  {
+    return (java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeType>) getEnumValues(PRIVILEGETYPE);
+  }
+  
+  public void addPrivilegeType(gov.geoplatform.uasdm.bus.AllPrivilegeType value)
+  {
+    if(value != null)
+    {
+      addEnumItem(PRIVILEGETYPE, value.getOid());
+    }
+  }
+  
+  public void removePrivilegeType(gov.geoplatform.uasdm.bus.AllPrivilegeType value)
+  {
+    if(value != null)
+    {
+      removeEnumItem(PRIVILEGETYPE, value.getOid());
+    }
+  }
+  
+  public void clearPrivilegeType()
+  {
+    clearEnum(PRIVILEGETYPE);
+  }
+  
+  public void validatePrivilegeType()
+  {
+    this.validateAttribute(PRIVILEGETYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF getPrivilegeTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF)mdClassIF.definesAttribute(PRIVILEGETYPE);
   }
   
   protected String getDeclaredType()

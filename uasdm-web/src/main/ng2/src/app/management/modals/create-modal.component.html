@@ -23,7 +23,7 @@
         </div>
         <div *ngIf="attribute.type === 'list'">
           <label>{{attribute.label}}</label>
-          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [required]="attribute.required">
+          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" [required]="attribute.required">
             <option></option>
             <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
           </select>

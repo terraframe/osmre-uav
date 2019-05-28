@@ -1,5 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.geoprism.JSONStringImpl;
 
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
@@ -41,14 +48,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -60,13 +62,25 @@ public abstract class UasComponent extends UasComponentBase
   }
 
   /**
-   * For the POC, each type has only one child type. Use polymorphism to return
-   * the correct type.
+   * There will be a default child type for each node.
    * 
    * @return a new {@link UasComponent} of the correct type.
    */
-  public abstract UasComponent createChild();
+  public abstract UasComponent createDefaultChild();
 
+  /**
+   * Create the child of the given type.
+   * 
+   * @param return the child of the given type. It assumes the type is valid. It is the type name of the
+   * Runway {@link MdBusiness}.
+   * 
+   * @return a new {@link UasComponent} of the correct type.
+   */
+  public UasComponent createChild(String typeName)
+  {
+    return this.createDefaultChild();
+  }
+  
   /**
    * @return The name of the solr field for the components id.
    */
@@ -180,11 +194,18 @@ public abstract class UasComponent extends UasComponentBase
 
   public void delete()
   {
+    List<AbstractWorkflowTask> tasks = this.getTasks();
+
+    for (AbstractWorkflowTask task : tasks)
+    {
+      task.delete();
+    }
+    
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.getS3location());
+      this.deleteS3Folder(this.getS3location(), null);
     }
 
     SolrService.deleteDocuments(this);
@@ -229,13 +250,15 @@ public abstract class UasComponent extends UasComponentBase
     client.putObject(putObjectRequest);
   }
 
-  protected void deleteS3Folder(String key)
+  protected void deleteS3Folder(String key, String folderName)
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
 
     String bucketName = AppProperties.getBucketName();
 
-    ObjectListing objectListing = client.listObjects(bucketName, key);
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+    ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
     while (true)
     {
@@ -243,9 +266,11 @@ public abstract class UasComponent extends UasComponentBase
 
       while (objIter.hasNext())
       {
-        S3ObjectSummary sumObj = objIter.next();
-        String delKey = sumObj.getKey();
-        client.deleteObject(bucketName, delKey);
+        String objectKey = objIter.next().getKey();
+
+        client.deleteObject(bucketName, objectKey);
+
+        this.deleteS3Object(objectKey);
       }
 
       // If the bucket contains many objects, the listObjects() call
@@ -287,6 +312,11 @@ public abstract class UasComponent extends UasComponentBase
     DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
+  }
+
+  protected void deleteS3Object(String objectKey)
+  {
+
   }
 
   public static boolean isValidName(String name)
@@ -379,7 +409,7 @@ public abstract class UasComponent extends UasComponentBase
       while (objIter.hasNext())
       {
         S3ObjectSummary summary = objIter.next();
-        
+
         String summaryKey = summary.getKey();
 
         if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
@@ -401,7 +431,7 @@ public abstract class UasComponent extends UasComponentBase
       }
     }
   }
-  
+
   public void delete(String key)
   {
     AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
@@ -410,7 +440,7 @@ public abstract class UasComponent extends UasComponentBase
     DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
 
     client.deleteObject(request);
-    
+
     SolrService.deleteDocument(this, key);
   }
 
@@ -607,4 +637,12 @@ public abstract class UasComponent extends UasComponentBase
 
     return bboxArr;
   }
+  
+  /**
+   * Returns tasks associated with this item.
+   * 
+   * @return tasks associated with this item.
+   */
+  public abstract List<AbstractWorkflowTask> getTasks();
+
 }

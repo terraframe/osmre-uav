@@ -1,5 +1,8 @@
 package gov.geoplatform.uasdm;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.odm.ODMStatusServer;
+
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -11,14 +14,11 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.odm.ODMStatusServer;
-
 public class Util
 {
   private static Logger logger = LoggerFactory.getLogger(ODMStatusServer.class);
   
-  public static void uploadFileToS3(File child, String key, WorkflowTask task)
+  public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
   {
     try
     {

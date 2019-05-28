@@ -30,6 +30,10 @@ public class RequestParser
   private static String       METHOD_PARAM         = "_method";
 
   private static String       GENERATE_ERROR_PARAM = "generateError";
+  
+  private static String       UAS_COMPONENT_OID    = "uasComponentOid";
+  
+  private static String       UPLOAD_TARGET        = "uploadTarget";
 
   private String              filename;
 
@@ -52,6 +56,10 @@ public class RequestParser
   private Map<String, String> customParams         = new HashMap<>();
 
   private Boolean             resume;
+  
+  private String              uasComponentOid;
+  
+  private String              uploadTarget;
 
   private RequestParser()
   {
@@ -125,6 +133,16 @@ public class RequestParser
   {
     return uuid;
   }
+  
+  public String getUasComponentOid()
+  {
+    return uasComponentOid;
+  }
+  
+  public String getUploadTarget()
+  {
+    return uploadTarget;
+  }
 
   public String getOriginalFilename()
   {
@@ -176,7 +194,17 @@ public class RequestParser
     {
       requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
     }
+    
+    if (requestParser.uasComponentOid == null)
+    {
+      requestParser.uasComponentOid = multipartUploadParser.getParams().get(UAS_COMPONENT_OID);
+    }
 
+    if (requestParser.uploadTarget == null)
+    {
+      requestParser.uploadTarget = multipartUploadParser.getParams().get(UPLOAD_TARGET);
+    }
+    
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -225,6 +253,16 @@ public class RequestParser
     {
       requestParser.uuid = req.getParameter(UUID_PARAM);
     }
+    
+    if (requestParser.uasComponentOid == null)
+    {
+      requestParser.uasComponentOid = req.getParameter(UAS_COMPONENT_OID);
+    }
+    
+    if (requestParser.uploadTarget == null)
+    {
+      requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);
+    }
 
     if (requestParser.method == null)
     {
@@ -265,6 +303,14 @@ public class RequestParser
       if (key.equals(UUID_PARAM))
       {
         requestParser.uuid = value;
+      }
+      else if (key.equals(UAS_COMPONENT_OID))
+      {
+        requestParser.uasComponentOid = value;
+      }
+      else if (key.equals(UPLOAD_TARGET))
+      {
+        requestParser.uploadTarget = value;
       }
       else if (key.equals(METHOD_PARAM))
       {

@@ -124,6 +124,8 @@
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
     <field name="oid" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="imageryId" type="string" indexed="true" stored="false" multiValued="false" />	
+    <field name="imageryName" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="collectionId" type="string" indexed="true" stored="false" multiValued="false" />	
     <field name="collectionName" type="string" indexed="true" stored="true" multiValued="false" />	
     <field name="missionId" type="string" indexed="true" stored="false" multiValued="false" />	
@@ -139,6 +141,7 @@
     <field name="key" type="string" indexed="true" stored="true" multiValued="false" />		
     <field name="content" type="text_general" indexed="true" stored="false" multiValued="false"/>	
 	
+	<copyField source="imageryName" dest="_text_"/>
 	<copyField source="collectionName" dest="_text_"/>
 	<copyField source="missionName" dest="_text_"/>
 	<copyField source="projectName" dest="_text_"/>

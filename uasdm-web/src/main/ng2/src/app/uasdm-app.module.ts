@@ -22,9 +22,9 @@ import { MetadataModalComponent } from './management/modals/metadata-modal.compo
 import { UasdmHeaderComponent } from './header.component';
 import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
-import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 import { NotificationModalComponent } from './management/modals/notification-modal.component';
+import { UploadModalComponent } from './management/modals/upload-modal.component';
 
 import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
@@ -38,12 +38,33 @@ import { AuthService } from './service/auth.service';
 import { AdminGuardService } from './service/admin.guard.service';
 import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
 
+
+import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
+
+import { CoreModule } from './core/core.module';
+
+import { SessionService } from './authentication/session.service';
+import { ProfileService } from './profile/profile.service';
+import { ProfileComponent } from './profile/profile.component';
+
+import { HubService } from './hub/hub.service';
+import { ForgotPasswordService } from './forgotpassword/forgotpassword.service';
+import { ForgotPasswordCompleteService } from './forgotpassword-complete/forgotpassword-complete.service';
+import { AuthGuard } from './authentication/auth.guard';
+import { AdminGuard } from './authentication/admin.guard';
+
+import { HubHeaderComponent } from './hub/hub-header.component';
+import { LoginHeaderComponent } from './authentication/login-header.component';
+
+import { AdminModule } from './admin/admin.module';
+
 @NgModule( {
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
         FormsModule,
         HttpModule,
+        CoreModule,
         UasdmAppRoutingModule,
         ReactiveFormsModule,
         TreeModule.forRoot(),
@@ -52,7 +73,9 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         AlertModule.forRoot(),        
         BsDropdownModule.forRoot(),
         TypeaheadModule.forRoot(),
-        AccordionModule.forRoot()
+        AccordionModule.forRoot(),
+        PasswordStrengthBarModule,
+        AdminModule
     ],
     declarations: [
         UasdmAppComponent,
@@ -62,8 +85,11 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         NotificationModalComponent,
         MetadataModalComponent,
         ErrorModalComponent,
-        LoadingBarComponent,
         ImagePreviewModalComponent,
+        HubHeaderComponent,
+    	LoginHeaderComponent,
+    	ProfileComponent,
+        UploadModalComponent,
 
         // Routing components
         routedComponents,
@@ -79,9 +105,28 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
         AuthService,
         ManagementService,
         EventService,
-        MapService
+        MapService,
+        SessionService,
+        ProfileService,
+        ForgotPasswordService,
+	    ForgotPasswordCompleteService,
+	    HubService,
+	    AuthGuard,
+	    AdminGuard
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [EditModalComponent, CreateModalComponent, ImagePreviewModalComponent, ConfirmModalComponent, NotificationModalComponent, MetadataModalComponent, ErrorModalComponent]
+    entryComponents: [
+      UploadModalComponent,
+      EditModalComponent,
+      CreateModalComponent,
+      ImagePreviewModalComponent,
+      ConfirmModalComponent,
+      NotificationModalComponent,
+      MetadataModalComponent,
+      ErrorModalComponent,
+      HubHeaderComponent,
+      LoginHeaderComponent,
+      ProfileComponent
+    ]
 } )
 export class UasdmAppModule { }

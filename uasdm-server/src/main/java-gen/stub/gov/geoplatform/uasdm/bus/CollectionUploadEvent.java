@@ -1,23 +1,22 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.view.RequestParser;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import net.geoprism.GeoprismUser;
+import net.lingala.zip4j.core.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gov.geoplatform.uasdm.odm.ODMProcessingTask;
-import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.RequestParser;
-import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
@@ -40,7 +39,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     Collection collection = task.getCollection();
-    collection.uploadArchive(task, infile);
+    collection.uploadArchive(task, infile, parser.getUploadTarget());
 
     task.lock();
     task.setStatus("Complete");
@@ -49,48 +48,9 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     
     startODMProcessing(infile, task, parser);
     
-//    calculateImageSize(infile, collection);
+    calculateImageSize(infile, collection);
     
 //    handleMetadataWorkflow(task);
-  }
-  
-  private void calculateImageSize(File zip, Collection collection)
-  {
-    final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
-    File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
-    
-    try
-    {
-      new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
-      
-      File[] files = parentFolder.listFiles();
-      
-      for (File file : files)
-      {
-        String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
-        if (ArrayUtils.contains(formats, ext))
-        {
-          BufferedImage bimg = ImageIO.read(file);
-          int width          = bimg.getWidth();
-          int height         = bimg.getHeight();
-          
-          collection.appLock();
-          collection.setImageHeight(height);
-          collection.setImageWidth(width);
-          collection.apply();
-          
-          return;
-        }
-      }
-    }
-    catch (Throwable e)
-    {
-      logger.error("Error occurred while calculating the image size.", e);
-    }
-    finally
-    {
-      FileUtils.deleteQuietly(parentFolder);
-    }
   }
   
   private void startODMProcessing(File infile, WorkflowTask uploadTask, RequestParser parser)
@@ -107,6 +67,47 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
     
     task.initiate(infile);
+  }
+  
+  private void calculateImageSize(File zip, Collection collection)
+  {
+    try
+    {
+      File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
+      
+      try
+      {
+        new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+        
+        File[] files = parentFolder.listFiles();
+        
+        for (File file : files)
+        {
+          String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
+          if (ArrayUtils.contains(ImageryUploadEvent.formats, ext))
+          {
+            BufferedImage bimg = ImageIO.read(file);
+            int width          = bimg.getWidth();
+            int height         = bimg.getHeight();
+            
+            collection.appLock();
+            collection.setImageHeight(height);
+            collection.setImageWidth(width);
+            collection.apply();
+            
+            return;
+          }
+        }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(parentFolder);
+      }
+    }
+    catch (Throwable e)
+    {
+      logger.error("Error occurred while calculating the image size.", e);
+    }
   }
   
 //  private void handleMetadataWorkflow(WorkflowTask uploadTask)

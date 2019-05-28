@@ -1,10 +1,23 @@
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.ImageryComponent;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.service.SolrService;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import net.geoprism.EmailSetting;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -15,16 +28,6 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
-
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
-import gov.geoplatform.uasdm.service.SolrService;
-import net.geoprism.EmailSetting;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
 {
@@ -47,16 +50,15 @@ public class ODMStatusServer
 //  @Request
 //  private static void mainInReq()
 //  {
-//    ODMProcessingTaskQuery query = new ODMProcessingTaskQuery(new QueryFactory());
+//    ODMUploadTaskQuery query = new ODMUploadTaskQuery(new QueryFactory());
 //    
-//    query.WHERE(query.getOdmUUID().EQ("68719e1d-0be3-4e6f-8063-878a83335eb3"));
+//    query.WHERE(query.getOid().EQ("d2aeebb8-e0fe-4486-b184-e07ebf0005d3"));
 //    
-//    OIterator<? extends ODMProcessingTask> it = query.getIterator();
+//    OIterator<? extends ODMUploadTask> it = query.getIterator();
 //    
-//    ODMProcessingTask task = it.next();
+//    ODMUploadTask task = it.next();
 //    
-//    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task);
-//    thread.setfolder(new File("/home/rich/dev/data/odm/aukerman/all-dem-reduced"));
+//    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task, new File("/home/rich/dev/data/odm/aukerman/all-output-dem.zip"), true);
 //    thread.start();
 //    
 //    while (!Thread.interrupted())
@@ -80,6 +82,7 @@ public class ODMStatusServer
     }
     
     statusThread = new ODMStatusThread("ODM Status Server");
+    statusThread.setDaemon(true);
     
     restartRunningJobs();
     
@@ -103,8 +106,9 @@ public class ODMStatusServer
       }
     }
   }
-  
-  private static void sendEmail(WorkflowTask task)
+  // ODMProcessingTaskIF
+  // AbstractWorkflowTask
+  private static void sendEmail(AbstractWorkflowTaskIF task)
   {
     try
     {
@@ -112,15 +116,15 @@ public class ODMStatusServer
       {
         final String subject = "Orthorectification Processing Failed";
         
-        final String body = "The orthorectification processing for your collection [" + task.getCollection().getName() + "] has failed. " + task.getMessage();
+        final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has failed. " + task.getMessage();
         
         EmailSetting.sendEmail(subject, body, new String[]{task.getGeoprismUser().getEmail()});
       }
       else if (task.getStatus().equals(ODMStatus.COMPLETED.getLabel()))
       {
         final String subject = "Orthorectification Processing Completed";
-        
-        final String body = "The orthorectification processing for your collection [" + task.getCollection().getName() + "] has completed. Log into the UASDM again to see the results.";
+
+        final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
         
         EmailSetting.sendEmail(subject, body, new String[]{task.getGeoprismUser().getEmail()});
       }
@@ -142,27 +146,28 @@ public class ODMStatusServer
    * 
    * @param task
    */
-  public static void addTask(ODMProcessingTask task)
+  public static void addTask(ODMProcessingTaskIF task)
   {
     statusThread.addTask(task);
   }
   
   private static void restartRunningJobs()
   {
-    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    AbstractWorkflowTaskQuery query = new AbstractWorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(query.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(query.getStatus().EQ(ODMStatus.NEW.getLabel())).OR(query.getStatus().EQ("Processing"))));
 
-    OIterator<? extends WorkflowTask> it = query.getIterator();
+    OIterator<? extends AbstractWorkflowTask> it = query.getIterator();
 
     try
     {
       while (it.hasNext())
       {
-        WorkflowTask task = it.next();
+        AbstractWorkflowTask task = it.next();
         
-        if (task instanceof ODMProcessingTask)
+        // Heads up: Imagery
+        if (task instanceof ODMProcessingTaskIF)
         {
-          ODMProcessingTask processingTask = (ODMProcessingTask) task;
+          ODMProcessingTaskIF processingTask = (ODMProcessingTaskIF) task;
           
           statusThread.addTask(processingTask);
         }
@@ -171,6 +176,7 @@ public class ODMStatusServer
           ODMUploadTask uploadTask = (ODMUploadTask) task;
           
           S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
+          thread.setDaemon(true);
           uploadThreads.add(thread);
           thread.start();
         }
@@ -188,8 +194,8 @@ public class ODMStatusServer
       it.close();
     }
   }
-  
-  private static void removeFromOdm(WorkflowTask task, String uuid)
+
+  private static void removeFromOdm(AbstractWorkflowTaskIF task, String uuid)
   {
     try
     {
@@ -215,19 +221,19 @@ public class ODMStatusServer
     /**
      * A list of tasks that require status updates.
      */
-    private List<ODMProcessingTask> activeTasks = new ArrayList<ODMProcessingTask>();
+    private List<ODMProcessingTaskIF> activeTasks = new ArrayList<ODMProcessingTaskIF>();
     
     /**
      * A way to add additional tasks that require status updates to our list.
      */
-    private List<ODMProcessingTask> pendingTasks = new ArrayList<ODMProcessingTask>();
+    private List<ODMProcessingTaskIF> pendingTasks = new ArrayList<ODMProcessingTaskIF>();
     
     protected ODMStatusThread(String name)
     {
       super(name);
     }
     
-    protected void addTask(ODMProcessingTask task)
+    protected void addTask(ODMProcessingTaskIF task)
     {
       synchronized(pendingTasks)
       {
@@ -273,7 +279,7 @@ public class ODMStatusServer
         pendingTasks.clear();
       }
       
-      Iterator<ODMProcessingTask> it = activeTasks.iterator();
+      Iterator<ODMProcessingTaskIF> it = activeTasks.iterator();
       
       while(it.hasNext())
       {
@@ -283,7 +289,7 @@ public class ODMStatusServer
           return;
         }
         
-        ODMProcessingTask task = it.next();
+        ODMProcessingTaskIF task = it.next();
         
         InfoResponse resp = ODMFacade.taskInfo(task.getOdmUUID());
         
@@ -401,26 +407,49 @@ public class ODMStatusServer
       }
     }
     
-    private void uploadResultsToS3(ODMProcessingTask task)
+    private void uploadResultsToS3(ODMProcessingTaskIF task)
     {
-      ODMUploadTask uploadTask = new ODMUploadTask();
-      uploadTask.setUpLoadId(task.getUpLoadId());
-      uploadTask.setCollectionId(task.getCollectionOid());
-      uploadTask.setGeoprismUser(task.getGeoprismUser());
-      uploadTask.setOdmUUID(task.getOdmUUID());
-      uploadTask.setStatus(ODMStatus.RUNNING.getLabel());
-      uploadTask.setProcessingTask(task);
-//      uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
-      uploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getCollection().getName() + "]");
-      uploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getCollection().getName() + "']. Check back later for updates.");
-      uploadTask.apply();
-      
+      ODMUploadTaskIF uploadTask = null;
+
+      if (task instanceof ImageryODMProcessingTask)
+      {
+        ImageryODMUploadTask imageryOdmUploadTask = new ImageryODMUploadTask();
+        imageryOdmUploadTask.setUpLoadId(task.getUpLoadId());
+        imageryOdmUploadTask.setImageryId(task.getImageryComponentOid());
+        imageryOdmUploadTask.setGeoprismUser(task.getGeoprismUser());
+        imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
+        imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
+        imageryOdmUploadTask.setProcessingTask(task);
+//        imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        imageryOdmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
+        imageryOdmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
+        imageryOdmUploadTask.apply(); 
+        
+        uploadTask = imageryOdmUploadTask;
+      }
+      else
+      {        
+        ODMUploadTask odmUploadTask = new ODMUploadTask();
+        odmUploadTask.setUpLoadId(task.getUpLoadId());
+        odmUploadTask.setCollectionId(task.getImageryComponentOid());
+        odmUploadTask.setGeoprismUser(task.getGeoprismUser());
+        odmUploadTask.setOdmUUID(task.getOdmUUID());
+        odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
+        odmUploadTask.setProcessingTask(task);
+//        uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        odmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
+        odmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
+        odmUploadTask.apply();
+        
+        uploadTask = odmUploadTask;
+      }
+
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
       uploadThreads.add(thread);
       thread.start();
     }
     
-    private void addOutputToTask(ODMProcessingTask task)
+    private void addOutputToTask(ODMProcessingTaskIF task)
     {
       TaskOutputResponse resp = ODMFacade.taskOutput(task.getOdmUUID());
       
@@ -436,33 +465,39 @@ public class ODMStatusServer
         }
         
         task.setOdmOutput(sb.toString());
+        
+        task.writeODMtoS3(output);
       }
     }
   }
   
   private static class S3ResultsUploadThread extends Thread
   {
-    private ODMUploadTask uploadTask;
+    private ODMUploadTaskIF uploadTask;
     
     private File zip;
     
     private File unzippedParentFolder;
     
-    protected S3ResultsUploadThread(String name, ODMUploadTask uploadTask)
+    private Boolean isTest = false;
+    
+    protected S3ResultsUploadThread(String name, ODMUploadTaskIF uploadTask)
     {
       super(name);
       
       this.uploadTask = uploadTask;
-      zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
+      this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
+      this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
     }
     
-    /**
-     * Useful for testing with a zip not directly fetched from ODM.
-     */
-    private void setfolder(File folder)
+    protected S3ResultsUploadThread(String name, ODMUploadTask uploadTask, File zip, Boolean isTest)
     {
-      this.unzippedParentFolder = folder;
+      super(name);
+      
+      this.uploadTask = uploadTask;
+      this.zip = zip;
+      this.isTest = isTest;
+      unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
     }
     
     @Override
@@ -489,6 +524,9 @@ public class ODMStatusServer
         uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
         uploadTask.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
         uploadTask.apply();
+        
+        // Create image services
+        uploadTask.getImageryComponent().createImageServices();
         
         ODMStatusServer.sendEmail(uploadTask);
       }
@@ -524,7 +562,10 @@ public class ODMStatusServer
       /**
        * Upload the full all.zip file to S3 for archive purposes.
        */
-      Util.uploadFileToS3(zip, uploadTask.getCollection().getS3location() + "odm_all" + "/" + zip.getName(), uploadTask);
+      if (!isTest)
+      {
+        Util.uploadFileToS3(zip, uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName(), uploadTask);
+      }
       
       String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
       
@@ -549,10 +590,6 @@ public class ODMStatusServer
           {
             processChildren(parentDir, config.s3FolderName, config, filePrefix);
           }
-//          else
-//          {
-//            task.createAction("ODM did not produce any " + config.s3FolderName + " files.", "error");
-//          }
           
           List<String> unprocessed = config.getUnprocessedFiles();
           if (unprocessed.size() > 0)
@@ -566,7 +603,10 @@ public class ODMStatusServer
       }
       finally
       {
-        FileUtils.deleteQuietly(zip);
+        if (!isTest)
+        {
+          FileUtils.deleteQuietly(zip);
+        }
         FileUtils.deleteQuietly(unzippedParentFolder);
         removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
       }
@@ -592,13 +632,16 @@ public class ODMStatusServer
         
         if (!child.isDirectory() && UasComponent.isValidName(name) && config.shouldProcessFile(child))
         {
-          Collection col = uploadTask.getCollection();
+          ImageryComponent ic = uploadTask.getImageryComponent();
           
-          String key = col.getS3location() + s3FolderPrefix + "/" + name;
+          String key = ic.getS3location() + s3FolderPrefix + "/" + name;
   
-          Util.uploadFileToS3(child, key, uploadTask);
+          if (!isTest)
+          {
+            Util.uploadFileToS3(child, key, uploadTask);
+          }
           
-          SolrService.updateOrCreateDocument(col.getAncestors(), col, key, name);
+          SolrService.updateOrCreateDocument(ic.getAncestors(), (UasComponent)ic, key, name);
         }
         else if (child.isDirectory())
         {

@@ -31,6 +31,19 @@
         </div>
       </div>
     </div>
+
+    <div class="form-group" *ngIf="entity.type === 'Collection'">
+        <label>Privilege </label>
+        
+        <select style="padding:6px 10px;font-size:14px;" [(ngModel)]="entity.privilegeType" name="collection-privilege" type="input" [required]="true" 
+        [disabled]="admin === 'false' || entity.ownerName !== userName">
+            <option value="OWNER">Owner</option>
+            <option value="AGENCY">Agency</option>
+            <option value="PUBLIC">Public</option>
+        </select>
+
+    </div>
+
     <div class="btn-holder" style="text-align: right;">
       <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Cancel</button>
       <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()" [disabled]="!ngForm.valid">Ok</button>

@@ -18,23 +18,39 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SiteItem implements TreeComponent
 {
-  public static String        ID           = "id";
+  public static String        ID             = "id";
 
-  public static String        TYPE         = "type";
+  public static String        TYPE           = "type";
 
-  public static String        TYPE_LABEL   = "typeLabel";
+  public static String        TYPE_LABEL     = "typeLabel";
+  
+  public static String        OWNER_NAME     = "ownerName";
+  
+  public static String        OWNER_PHONE    = "ownerPhone";
+  
+  public static String        OWNER_EMAIL    = "ownerEmail";
+  
+  public static String        PRIVILEGE_TYPE = "privilegeType";
 
-  public static String        HAS_CHILDREN = "hasChildren";
+  public static String        HAS_CHILDREN   = "hasChildren";
 
-  public static String        CHILDREN     = "children";
+  public static String        CHILDREN       = "children";
 
-  public static String        GEOMETRY     = "geometry";
-
+  public static String        GEOMETRY       = "geometry";
+  
   private String              id;
 
   private String              type;
 
   private String              typeLabel;
+  
+  private String              ownerName;
+
+  private String              ownerPhone;
+
+  private String              ownerEmail;
+
+  private String              privilegeType;
 
   private Geometry            geometry;
 
@@ -80,6 +96,46 @@ public class SiteItem implements TreeComponent
   public void setTypeLabel(String typeLabel)
   {
     this.typeLabel = typeLabel;
+  }
+
+  public String getOwnerName()
+  {
+    return ownerName;
+  }
+
+  public void setOwnerName(String ownerName)
+  {
+    this.ownerName = ownerName;
+  }
+  
+  public String getOwnerPhone()
+  {
+    return ownerPhone;
+  }
+
+  public void setOwnerPhone(String ownerPhone)
+  {
+    this.ownerPhone = ownerPhone;
+  }
+
+  public String getOwnerEmail()
+  {
+    return ownerEmail;
+  }
+
+  public void setOwnerEmail(String ownerEmail)
+  {
+    this.ownerEmail = ownerEmail;
+  }
+
+  public String getPrivilegeType()
+  {
+    return privilegeType;
+  }
+
+  public void setPrivilegeType(String privilegeType)
+  {
+    this.privilegeType = privilegeType;
   }
 
   public Boolean getHasChildren()
@@ -143,6 +199,10 @@ public class SiteItem implements TreeComponent
       obj.put(TYPE, this.type);
       obj.put(TYPE_LABEL, this.typeLabel);
       obj.put(HAS_CHILDREN, this.hasChildren);
+      obj.put(OWNER_NAME, this.getOwnerName());
+      obj.put(OWNER_PHONE, this.getOwnerPhone());
+      obj.put(OWNER_EMAIL, this.getOwnerEmail());
+      obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
 
       for (Entry<String, Object> entry : entries)
       {
@@ -190,6 +250,16 @@ public class SiteItem implements TreeComponent
     item.setType(object.getString(TYPE));
     item.setTypeLabel(object.getString(TYPE_LABEL));
     item.setHasChildren(object.getBoolean(HAS_CHILDREN));
+    
+    // These fields are not set on the object, but rather are properties of the owner itself.
+    // OWNER_NAME
+    // OWNER_PHONE
+    // OWNER_EMAIL
+    if(item.getType().equals("Collection"))
+    {
+      item.setPrivilegeType(object.getString(PRIVILEGE_TYPE));
+    }
+    
 
     Iterator<String> keys = object.keys();
 

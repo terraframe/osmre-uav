@@ -1,13 +1,8 @@
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.UasComponent;
 
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.runwaysdk.session.Request;
 
 public class Sandbox
 {
@@ -16,6 +11,12 @@ public class Sandbox
 //    GeoprismPatcher.main(args);
     
     System.out.println("Happy Testing!");
+    
+    UasComponent uasComponent = null;
+    
+    System.out.println(uasComponent instanceof Imagery);
+    
+//    test();
     
 //    createFolder();
     
@@ -100,6 +101,14 @@ public class Sandbox
 //    int successfulDeletes = delObjRes.getDeletedObjects().size();
 //    System.out.println(successfulDeletes + " objects successfully deleted.");
 //  }
+  
+  @Request
+  private static void test()
+  {
+    Bureau bureau = Bureau.getByKey("OSMRE");
+    
+    bureau.printAttributes();
+  }
 }
 
 

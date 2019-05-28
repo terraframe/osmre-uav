@@ -39,6 +39,7 @@
     <delete>
       <object key="gov.geoplatform.uasdm.odm.UnreachableHostException" type="com.runwaysdk.system.metadata.MdException"/>
       <object key="gov.geoplatform.uasdm.odm.ODMProcessingTask" type="com.runwaysdk.system.metadata.MdBusiness"/>
+      <object key="gov.geoplatform.uasdm.odm.ODMUploadTask" type="com.runwaysdk.system.metadata.MdBusiness"/>
     </delete>
   </undoIt>
 </version>

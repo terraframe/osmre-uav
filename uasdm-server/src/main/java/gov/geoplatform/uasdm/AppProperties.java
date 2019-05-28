@@ -45,21 +45,26 @@ public class AppProperties
     return Singleton.getProps().getString("bucket.name");
   }
 
+  public static String getBucketRegion()
+  {
+    return Singleton.getProps().getString("bucket.region");
+  }
+
   public static String getOdmUrl()
   {
     return Singleton.getProps().getString("odm.url");
   }
-  
+
   public static String getOdmUsername()
   {
     return Singleton.getProps().getString("odm.username");
   }
-  
+
   public static String getOdmPassword()
   {
     return Singleton.getProps().getString("odm.password");
   }
-  
+
   public static String getSolrUrl()
   {
     return Singleton.getProps().getString("solr.url");
@@ -83,6 +88,11 @@ public class AppProperties
   public static Integer getChunkExpireTime()
   {
     return Singleton.getProps().getInteger("chunk.expire.time");
+  }
+  
+  public static Integer getInviteUserTokenExpireTime()
+  {
+    return Singleton.getProps().getInteger("invite.user.token.expire.time", 72);
   }
 
 }

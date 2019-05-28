@@ -1,61 +1,30 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.BufferedOutputStream;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
+import net.geoprism.GeoprismUser;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.SingleActor;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.GeoprismUser;
-
-public class Collection extends CollectionBase
+public class Collection extends CollectionBase implements ImageryComponent
 {
-  private static final long  serialVersionUID = 1371809368;
+  private static final long serialVersionUID = 1371809368;
 
-  public static final int    BUFFER_SIZE      = 1024;
-
-  public static final String RAW              = "raw";
-
-  public static final String PTCLOUD          = "ptcloud";
-
-  public static final String DEM              = "dem";
-
-  public static final String ORTHO            = "ortho";
-
-  final Logger               log              = LoggerFactory.getLogger(Collection.class);
+  final Logger              log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -65,7 +34,8 @@ public class Collection extends CollectionBase
   /**
    * Returns null, as a Collection cannot have a child.
    */
-  public UasComponent createChild()
+  @Override
+  public UasComponent createDefaultChild()
   {
     // TODO throw exception.
 
@@ -88,7 +58,7 @@ public class Collection extends CollectionBase
   {
     return this.addMission((Mission) uasComponent);
   }
-  
+
   public static java.util.Collection<Collection> getMissingMetadata()
   {
     java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
@@ -122,13 +92,13 @@ public class Collection extends CollectionBase
 
     return collectionList;
   }
-  
+
   private JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
     object.put("collectionId", this.getOid());
     object.put("message", "Metadata missing for collection [" + this.getName() + "]");
-    
+
     if (this.getImageHeight() != null)
     {
       object.put("imageHeight", this.getImageHeight());
@@ -140,7 +110,7 @@ public class Collection extends CollectionBase
 
     return object;
   }
-  
+
   public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)
   {
     JSONArray messages = new JSONArray();
@@ -152,7 +122,7 @@ public class Collection extends CollectionBase
 
     return messages;
   }
-  
+
   /**
    * Creates the object and builds the relationship with the parent.
    * 
@@ -180,9 +150,9 @@ public class Collection extends CollectionBase
 
   public void delete()
   {
-    List<WorkflowTask> tasks = this.getTasks();
+    List<AbstractWorkflowTask> tasks = this.getTasks();
 
-    for (WorkflowTask task : tasks)
+    for (AbstractWorkflowTask task : tasks)
     {
       task.delete();
     }
@@ -191,17 +161,22 @@ public class Collection extends CollectionBase
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildRawKey());
+      this.deleteS3Folder(this.buildRawKey(), RAW);
 
-      this.deleteS3Folder(this.buildPointCloudKey());
+      this.deleteS3Folder(this.buildPointCloudKey(), PTCLOUD);
 
-      this.deleteS3Folder(this.buildDemKey());
+      this.deleteS3Folder(this.buildDemKey(), DEM);
 
-      this.deleteS3Folder(this.buildOrthoKey());
+      this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
     }
   }
 
-  public List<WorkflowTask> getTasks()
+  protected void deleteS3Object(String key)
+  {
+    Imagery.deleteS3Object(key, this);
+  }
+
+  public List<AbstractWorkflowTask> getTasks()
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(this));
@@ -210,7 +185,7 @@ public class Collection extends CollectionBase
 
     try
     {
-      return new LinkedList<WorkflowTask>(iterator.getAll());
+      return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
     }
     finally
     {
@@ -238,189 +213,16 @@ public class Collection extends CollectionBase
     return this.getS3location() + ORTHO + "/";
   }
 
-  public void uploadArchive(WorkflowTask task, File archive)
+  @Override
+  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    String extension = FilenameUtils.getExtension(archive.getName());
-
-    if (extension.equalsIgnoreCase("zip"))
-    {
-      this.uploadZipArchive(task, archive);
-    }
-    else if (extension.equalsIgnoreCase("gz"))
-    {
-      this.uploadTarGzArchive(task, archive);
-    }
+    Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
-  private void uploadTarGzArchive(WorkflowTask task, File archive)
+  @Override
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
-    List<UasComponent> ancestors = this.getAncestors();
-
-    byte data[] = new byte[BUFFER_SIZE];
-
-    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
-    {
-      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
-      {
-        TarArchiveEntry entry;
-
-        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
-        {
-          /** If the entry is a directory, create the directory. **/
-          if (entry.isDirectory())
-          {
-            File f = new File(entry.getName());
-            boolean created = f.mkdir();
-            if (!created)
-            {
-              System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n", f.getAbsolutePath());
-            }
-          }
-          else
-          {
-            File tmp = File.createTempFile("raw", "tmp");
-
-            try
-            {
-              try (FileOutputStream fos = new FileOutputStream(tmp))
-              {
-                int count;
-
-                try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE))
-                {
-                  while ( ( count = tarIn.read(data, 0, BUFFER_SIZE) ) != -1)
-                  {
-                    dest.write(data, 0, count);
-                  }
-                }
-              }
-
-              // Upload the file to S3
-              this.uploadFile(task, ancestors, this.buildRawKey(), entry.getName(), tmp);
-            }
-            finally
-            {
-              FileUtils.deleteQuietly(tmp);
-            }
-
-          }
-        }
-      }
-    }
-    catch (IOException e)
-    {
-      task.createAction(e.getMessage(), "error");
-
-      throw new ProgrammingErrorException(e);
-    }
-  }
-
-  public void uploadZipArchive(WorkflowTask task, File archive)
-  {
-    List<UasComponent> ancestors = this.getAncestors();
-
-    byte[] buffer = new byte[BUFFER_SIZE];
-
-    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
-    {
-      ZipEntry entry;
-      while ( ( entry = zis.getNextEntry() ) != null)
-      {
-        File tmp = File.createTempFile("raw", "tmp");
-
-        try
-        {
-          try (FileOutputStream fos = new FileOutputStream(tmp))
-          {
-            int len;
-            while ( ( len = zis.read(buffer) ) > 0)
-            {
-              fos.write(buffer, 0, len);
-            }
-          }
-
-          // Upload the file to S3
-          this.uploadFile(task, ancestors, this.buildRawKey(), entry.getName(), tmp);
-        }
-        finally
-        {
-          FileUtils.deleteQuietly(tmp);
-        }
-      }
-    }
-    catch (IOException e)
-    {
-      task.createAction(e.getMessage(), "error");
-
-      throw new ProgrammingErrorException(e);
-    }
-  }
-
-  @Transaction
-  private void uploadFile(WorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp)
-  {
-    if (isValidName(name))
-    {
-      String key = keySuffix + name;
-
-      try
-      {
-        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
-
-        try
-        {
-          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
-
-          if (myUpload.isDone() == false)
-          {
-            this.log.info("Transfer: " + myUpload.getDescription());
-            this.log.info(" - State: " + myUpload.getState());
-            this.log.info(" - Progress: " + myUpload.getProgress().getBytesTransferred());
-            
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
-          }
-
-          myUpload.addProgressListener(new ProgressListener()
-          {
-            int count = 0;
-
-            @Override
-            public void progressChanged(ProgressEvent progressEvent)
-            {
-              if (count % 2000 == 0)
-              {
-                long total = myUpload.getProgress().getTotalBytesToTransfer();
-                long current = myUpload.getProgress().getBytesTransferred();
-
-                log.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-                count = 0;
-              }
-
-              count++;
-            }
-          });
-
-          myUpload.waitForCompletion();
-        }
-        finally
-        {
-          tx.shutdownNow();
-        }
-
-        SolrService.updateOrCreateDocument(ancestors, this, key, name);
-      }
-      catch (Exception e)
-      {
-        task.createAction(e.getMessage(), "error");
-      }
-    }
-    else
-    {
-      task.createAction("The filename [" + name + "] is invalid", "error");
-    }
+    Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
   @Override
@@ -469,5 +271,35 @@ public class Collection extends CollectionBase
     }
 
     return objects;
+  }
+
+  @Override
+  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  {
+    super.getSiteObjects(folder, objects);
+
+    Imagery.getSiteObjects(folder, objects, this);
+  }
+
+  public void createImageServices()
+  {
+    Imagery.createImageServices(this);
+  }
+
+  public String getStoreName(String key)
+  {
+    String baseName = FilenameUtils.getBaseName(key);
+
+    return this.getOid() + "-" + baseName;
+  }
+
+  public Collection getUasComponent()
+  {
+    return this;
+  }
+
+  public Logger getLog()
+  {
+    return this.log;
   }
 }
