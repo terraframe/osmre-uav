@@ -74,7 +74,7 @@ export class AccountService extends BasicService {
     .post(acp + '/uasdm-account/newInstance', JSON.stringify({}), {headers: headers})
     .toPromise()
     .then((response: any) => {
-      return response.json() as Account;
+      return response.json() as User;
     })
     .catch(this.handleError.bind(this));      
   }
