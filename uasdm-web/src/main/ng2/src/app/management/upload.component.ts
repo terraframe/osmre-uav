@@ -291,7 +291,9 @@ export class UploadComponent implements OnInit {
 
         if ( projectId != null && projectId.length > 0 ) {
             this.service.getChildren( this.values.project ).then( missions => {
-                this.missions = missions;
+                this.missions = missions.filter(mission => {
+                    return mission.type === 'Mission';
+                });
             } ).catch(( err: any ) => {
                 this.error( err.json() );
             } );

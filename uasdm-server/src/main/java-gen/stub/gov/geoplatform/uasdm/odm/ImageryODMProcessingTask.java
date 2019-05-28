@@ -20,19 +20,19 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
   private static final long serialVersionUID = -897837399;
-  
-  final Logger               log              = LoggerFactory.getLogger(ImageryODMProcessingTask.class);
-  
+
+  final Logger              log              = LoggerFactory.getLogger(ImageryODMProcessingTask.class);
+
   public ImageryODMProcessingTask()
   {
     super();
   }
-  
+
   public String getImageryComponentOid()
   {
     return this.getImageryOid();
   }
-  
+
   @Override
   public JSONObject toJSON()
   {
@@ -47,7 +47,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     try
     {
       NewResponse resp = ODMFacade.taskNew(images);
-      
+
       if (resp.getHTTPResponse().isUnreachableHost())
       {
         String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
@@ -74,50 +74,51 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setOdmUUID(resp.getUUID());
         this.setMessage("Your images are being processed. Check back later for updates.");
         this.apply();
-        
+
         ODMStatusServer.addTask(this);
       }
     }
     catch (Throwable t)
     {
       log.error("Error occurred while initiating ODM Processing.", t);
-      
+
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(t.getLocalizedMessage());
       this.apply();
     }
   }
-  
-  /** 
-   * Writes the ODM output to a log file on S3, if supported by the individual task implementation.
+
+  /**
+   * Writes the ODM output to a log file on S3, if supported by the individual
+   * task implementation.
    * 
    * @param odmOutput
    */
   public void writeODMtoS3(JSONArray odmOutput)
   {
     Imagery imagery = this.getImagery();
-    
+
     StringBuilder sb = new StringBuilder();
-    
+
     for (int i = 0; i < odmOutput.length(); ++i)
     {
       sb.append(odmOutput.getString(i));
       sb.append("\n");
     }
-    
+
     try
     {
       File file = File.createTempFile(imagery.getName(), ".txt");
       try
       {
         BufferedWriter writer = null;
-        try 
+        try
         {
           writer = new BufferedWriter(new FileWriter(file));
           writer.write(sb.toString());
-        } 
-        finally 
+        }
+        finally
         {
           if (writer != null)
           {
@@ -125,10 +126,10 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
             writer.close();
           }
         }
-        
+
         String geoRefLocation = imagery.buildGeoRefKey();
 
-        Util.uploadFileToS3(file, geoRefLocation + "/" + imagery.getName(), this);
+        Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", this);
       }
       finally
       {
@@ -137,10 +138,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     }
     catch (IOException e)
     {
-     throw new ProgrammingErrorException(e);
+      throw new ProgrammingErrorException(e);
     }
-    
-    
 
   }
 }
