@@ -1,5 +1,9 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +15,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.geoprism.gis.geoserver.GeoserverFacade;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -20,9 +26,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
+import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -33,11 +40,6 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Imagery extends ImageryBase implements ImageryComponent
 {
@@ -316,7 +318,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
       try
       {
-        TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+        TransferManager tx = new TransferManager(new StaticCredentialsProvider(awsCreds));
 
         try
         {
@@ -447,7 +450,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
   {
     try
     {
-      AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
+      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+      AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
 
       String bucketName = AppProperties.getBucketName();
 
