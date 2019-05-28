@@ -34,10 +34,10 @@ if [ "$build_artifact" == "true" ]; then
 #npm run build
 cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
 [ -e ./node_modules ] && rm -r node_modules
-#npm install
+npm install
 #npm install typings
 #typings install lodash
-#npm run build
+npm run build
 
 :
 : ----------------------------------
