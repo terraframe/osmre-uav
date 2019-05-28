@@ -2480,7 +2480,7 @@ i.fa.fa-cloud-upload{
 }
 
 .navbar-default .navbar-header > a > img {
-  margin-left: 50px;
+  /* margin-left: 50px; */
   /* width: 120px; */
   height: 80%;
   position: absolute;
@@ -2583,7 +2583,7 @@ i.fa.fa-cloud-upload{
 #navigator-header-container .navbar-default .navbar-header > a:first-child.navbar-brand {
     line-height: 50px;
     padding: 0;
-    margin-left: 20px;
+    margin-left: 0;
 }
 
 #navigator-header-container .dropdown-toggle {
@@ -2852,6 +2852,17 @@ button.btn.btn-default:hover,
     background: #f8f8f8;
 }
 
+button.btn-default:disabled:hover, 
+button.btn.btn-default:disabled:hover, 
+.btn-default:disabled:hover{
+    background: white;
+    color: grey;
+    color: var(--theme-cancel-button-color);
+    border-color: lightgrey;
+    border-color: var(--theme-button-color-border);
+    cursor: auto;
+}
+
 /* Fine Uploader Style Overrides */
 .qq-uploader{
     min-height: auto !important;
@@ -2909,9 +2920,11 @@ input.form-control {
 input:focus,
 input.form-control:focus,
 input:active,
-input.form-control:active{
-    border-color: #007276; /* IE fallback */
-    border-color: var(--theme-input-text-border-active);
+input.form-control:active,
+.form-control:focus,
+.form-control:active{
+    border-color: #007276 !important; /* IE fallback */
+    border-color: var(--theme-input-text-border-active) !important;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(107, 165, 66,.6);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(107, 165, 66,.6);

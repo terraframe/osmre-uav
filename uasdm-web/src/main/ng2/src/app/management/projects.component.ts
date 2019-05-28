@@ -21,6 +21,7 @@ import { CreateModalComponent } from './modals/create-modal.component';
 import { ImagePreviewModalComponent } from './modals/image-preview-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
 import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { UploadModalComponent } from './modals/upload-modal.component';
 import { NotificationModalComponent } from './modals/notification-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from '../model/management';
@@ -75,54 +76,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 },
                 click: ( tree: any, node: any, $event: any ) => {
 
-                    if ( node.data.type === "folder" ) {
-
-                        // clear any existing images
-                        this.images = [];
-
-                        node.toggleExpanded();
-                        this.showImagePanel = false;
-
-                        if ( !node.isCollapsed ) {
-
-                            // open the panel immediatly
-                            this.showImagePanel = true;
-
-                            this.service.getItems( node.data.component, node.data.name )
-                                .then( items => {
-                                    //this.images = [items[0]]; // not yet handling different types of files
-
-                                    // this.images = items;
-
-                                    for ( let i = 0; i < items.length; ++i ) {
-                                        let item = items[i];
-
-                                        if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
-                                            item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
-                                            item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
-
-                                            this.images.push( item );
-                                        }
-                                    }
-
-                                    this.images.forEach( image => {
-                                        this.getThumbnail( image );
-                                    } )
-
-                                } ).catch(( err: any ) => {
-                                    this.error( err.json() );
-                                } );
-                        }
+                    if ( node.data.type === "folder" && node.data.name !== "accessible_support") {
+                        this.toggleDirectory(node);
                     }
                     else if ( node.data.type === "object" ) {
                         // clicked on raw file. do nothing.
                     }
                     else {
-                        node.toggleExpanded();
 
-                        this.images = [];
+                        if(node.data.type === "Collection" && (this.admin || node.data.ownerName === this.userName || node.data.privilegeType !== 'OWNER') ) {
+                            // toggleExpanded() calls the getChildren() method above
+                            node.toggleExpanded();
 
-                        this.showImagePanel = false;
+                            this.images = [];
+
+                            this.showImagePanel = false;
+                        }
+                        else if(node.data.type !== "Collection"){
+                            // toggleExpanded() calls the getChildren() method above
+                            node.toggleExpanded();
+
+                            this.images = [];
+
+                            this.showImagePanel = false;
+                        }
                     }
 
                 }
@@ -266,11 +243,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
 
-        setTimeout(() => {
-            if ( this.tree ) {
-                this.tree.treeModel.expandAll();
-            }
-        }, 1000 );
+        // setTimeout(() => {
+        //     if ( this.tree ) {
+        //         this.tree.treeModel.expandAll();
+        //     }
+        // }, 1000 );
 
         this.map = new Map( {
             container: 'map',
@@ -446,8 +423,50 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         else if ( node.data.type === "Collection" ) {
             return false;
         }
+        else if ( node.data.type === "Imagery" ) {
+            return false;
+        }
         else {
             return true;
+        }
+    }
+
+    toggleDirectory(node: TreeNode): void {
+        // clear any existing images
+        this.images = [];
+
+        node.toggleExpanded();
+        this.showImagePanel = false;
+
+        if (!node.isCollapsed) {
+
+            // open the panel immediatly
+            this.showImagePanel = true;
+
+            this.service.getItems(node.data.component, node.data.name)
+                .then(items => {
+                    //this.images = [items[0]]; // not yet handling different types of files
+
+                    // this.images = items;
+
+                    for (let i = 0; i < items.length; ++i) {
+                        let item = items[i];
+
+                        if (item.name.toLowerCase().indexOf(".png") !== -1 || item.name.toLowerCase().indexOf(".jpg") !== -1 ||
+                            item.name.toLowerCase().indexOf(".jpeg") !== -1 || item.name.toLowerCase().indexOf(".tif") !== -1 ||
+                            item.name.toLowerCase().indexOf(".tiff") !== -1) {
+
+                            this.images.push(item);
+                        }
+                    }
+
+                    this.images.forEach(image => {
+                        this.getThumbnail(image);
+                    })
+
+                }).catch((err: any) => {
+                    this.error(err.json());
+                });
         }
     }
 
@@ -480,6 +499,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             else if ( node.data.type === "Collection" ) {
                 node.data.childType = null
             }
+            else if ( node.data.type === "Imagery" ) {
+                node.data.childType = null
+            }
 
             if ( node.data.type !== "Site" || this.admin ) {
                 this.contextMenuService.show.next( {
@@ -503,12 +525,47 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    handleCreate( parent: TreeNode ): void {
+
+    handleUploadFile(item: any): void {
+
+        let hierarchy = {};
+
+        function getParent(item){
+            hierarchy[item.data.type.toLowerCase()] = item.data;
+
+            if(item.parent && item.parent.data.type){
+                return getParent(item.parent);
+            }
+        }
+
+        getParent(item);
+
+        this.bsModalRef = this.modalService.show( UploadModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'upload-modal'
+        } );
+        this.bsModalRef.content.setHierarchy = hierarchy;
+        this.bsModalRef.content.clickedItem = item;
+
+        let that = this;
+        this.bsModalRef.content.onUploadComplete.subscribe( node => {
+            // that.service.getItems( node.data.component, node.data.name )
+            // .then(data => {
+            //     // TODO: update tree node children
+            // })
+        });
+
+    }
+
+
+    handleCreate( parent: TreeNode, type: string ): void {
         this.current = parent;
 
         let parentId = parent != null ? parent.data.id : null;
 
-        this.service.newChild( parentId ).then( data => {
+        this.service.newChild( parentId, type ).then( data => {
             this.bsModalRef = this.modalService.show( CreateModalComponent, {
                 animated: true,
                 backdrop: true,
@@ -601,7 +658,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
-                'class': 'upload-modal'
+                'class': 'edit-modal'
             } );
             this.bsModalRef.content.entity = data.item;
             this.bsModalRef.content.attributes = data.attributes;
@@ -915,7 +972,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public canAddChild = ( item: any ): boolean => {
-        if ( this.admin && item.data.type !== "Collection" ) {
+        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
             return true;
         }
         else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
@@ -923,6 +980,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         }
 
         return false;
+    }
+
+    public canCreateImageDir(item: any): boolean {
+        return item.data.type === 'Project';
     }
 
     public canEditSite = ( item: any ): boolean => {
@@ -935,5 +996,36 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public isSite = ( item: any ): boolean => {
         return item.data.type === "Site";
+    }
+
+    public isImageDir = ( item: any ): boolean => {
+        return item.data.type === "Imagery";
+    }
+
+    public isCollection = ( item: any ): boolean => {
+        return item.data.type === "Collection";
+    }
+
+    public canUpload = ( item: any ): boolean => {
+        // Only allow direct uploads on Imagery child nodes
+        if(item.parent.data.type !== "Collection"){
+            if(item.data.name === "raw"){
+                return true;
+            }
+            else if(item.data.name === "georef"){
+                return true;
+            }
+            else if(item.data.name === "ortho"){
+                return true;
+            }
+            // else if(item.data.type === "Collection"){
+            //     return true;
+            // }
+            // else if(item.data.type === "Imagery"){
+            //     return true;
+            // }
+        }
+
+        return false;
     }
 }

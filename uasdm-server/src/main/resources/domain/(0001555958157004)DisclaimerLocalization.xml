@@ -1,0 +1,38 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+
+      <createOrUpdate>
+
+  	    <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.page.title">
+	      <attribute name="storeTag" value="UIText" />
+	      <attribute name="storeKey" value="login.page.title" />
+	      <attributeStruct name="storeValue">
+	        <attribute name="defaultLocale" value="UAS Data Manager" />
+	      </attributeStruct>
+	    </object>
+
+  	    <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.page.app.disclaimer.notice">
+	      <attribute name="storeTag" value="UIText" />
+	      <attribute name="storeKey" value="login.page.app.disclaimer.notice" />
+	      <attributeStruct name="storeValue">
+	        <attribute name="defaultLocale" value="WARNING TO USERS OF THIS SYSTEM" />
+	      </attributeStruct>
+	    </object>
+
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.page.app.disclaimer.body">
+	      <attribute name="storeTag" value="UIText" />
+	      <attribute name="storeKey" value="login.page.app.disclaimer.body" />
+	      <attributeStruct name="storeValue">
+	        <attribute name="defaultLocale" value="This computer system, including all related equipment, networks, and network devices (including Internet access), is provided by the Department of the Interior (DOI) in accordance with the agency policy for official use and limited personal use. All agency computer systems may be monitored for all lawful purposes, including but not limited to, ensuring that use is authorized, for management of the system, to facilitate protection against unauthorized access, and to verify security procedures, survivability and operational security. Any information on this computer system may be examined, recorded, copied and used for authorized purposes at any time. All information, including personal information, placed or sent over this system may be monitored, and users of this system are reminded that such monitoring does occur. Therefore, there should be no expectation of privacy with respect to use of this system. By logging into this agency computer system, you acknowledge and consent to the monitoring of this system. Evidence of your use, authorized or unauthorized, collected during monitoring may be used for civil, criminal, administrative, or other adverse action. Unauthorized or illegal use may subject you to prosecution." />
+	      </attributeStruct>
+	    </object>
+
+    </createOrUpdate>
+
+    <create></create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

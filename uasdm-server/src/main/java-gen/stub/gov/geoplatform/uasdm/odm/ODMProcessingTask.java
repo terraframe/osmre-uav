@@ -1,14 +1,13 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ODMProcessingTask extends ODMProcessingTaskBase
+public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
   private static final long serialVersionUID = -90821820;
   
@@ -17,6 +16,11 @@ public class ODMProcessingTask extends ODMProcessingTaskBase
   public ODMProcessingTask()
   {
     super();
+  }
+  
+  public String getImageryComponentOid()
+  {
+    return this.getCollectionOid();
   }
   
   @Override
@@ -73,5 +77,13 @@ public class ODMProcessingTask extends ODMProcessingTaskBase
       this.setMessage(t.getLocalizedMessage());
       this.apply();
     }
+  }
+  
+  /** 
+   * Writes the ODM output to a log file on S3, if supported by the individual task implementation.
+   */
+  public void writeODMtoS3(JSONArray odmOutput)
+  {
+    // do nothing, as this does not pertain to Collections
   }
 }

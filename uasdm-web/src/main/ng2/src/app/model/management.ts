@@ -25,14 +25,30 @@ export class SiteEntity {
     privilegeType: string;
 }
 
-export class UploadForm {
+export class CollectionHierarchy {
     site: string;
     project: string;
     mission: string;
     collection: string;
+}
+
+export class ImageHierarchy {
+    site: string;
+    project: string;
+    image: string;
+}
+
+export class UploadForm {
     create: boolean;
     name: string;
     outFileName: string;
+    uasComponentOid: string;
+    site: string;
+    project: string;
+    mission: string;
+    collection: any;
+    imagery: any;
+    uploadTarget: string;
 }
 
 export class Action {

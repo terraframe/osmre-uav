@@ -76,6 +76,7 @@ ln -s $WORKSPACE/geoprism-cloud/ansible/uasdm.yml ./uasdm.yml
 
 sudo chmod 400 ../permissions/uasdm/rich.rowlands.id_rsa
 sudo chmod 400 ../permissions/RichardsMacbook.pem
+sudo chmod 400 ../permissions/nps/richard.rowlands.pem
 pip install boto
 
 ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml

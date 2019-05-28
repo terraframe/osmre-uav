@@ -291,7 +291,9 @@ export class UploadComponent implements OnInit {
 
         if ( projectId != null && projectId.length > 0 ) {
             this.service.getChildren( this.values.project ).then( missions => {
-                this.missions = missions;
+                this.missions = missions.filter(mission => {
+                    return mission.type === 'Mission';
+                });
             } ).catch(( err: any ) => {
                 this.error( err.json() );
             } );
@@ -339,6 +341,7 @@ export class UploadComponent implements OnInit {
 
     onCollectionSelect( collectionId: string ): void {
         this.values.collection = collectionId;
+        this.values.uasComponentOid = collectionId;
 
         if(collectionId && collectionId.trim().length > 0){
             this.showFileSelectPanel = true;

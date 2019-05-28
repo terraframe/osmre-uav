@@ -38,18 +38,16 @@ public class CollectionConverter extends Converter
     }
     else
     {
-      collection.lock();
-      collection.addPrivilegeType(AllPrivilegeType.OWNER);
-      collection.unlock();
-      siteItem.setPrivilegeType(AllPrivilegeType.OWNER.name());
+      siteItem.setPrivilegeType(AllPrivilegeType.AGENCY.name());
     }
+    
     
     if (collection.getOwner() instanceof GeoprismUser)
     {
       GeoprismUser user = (GeoprismUser)collection.getOwner();
-      
-      String firstName = user.getFirstName();
-      String lastName = user.getLastName();
+
+//      String firstName = user.getFirstName();
+//      String lastName = user.getLastName();
       String userName = user.getUsername();
       String phoneNumber = user.getPhoneNumber();
       String emailAddress = user.getEmail();
@@ -65,11 +63,13 @@ public class CollectionConverter extends Converter
   protected Collection convertNew(UasComponent uasComponent, SiteItem siteItem)
   {
     Collection collection = (Collection)super.convertNew(uasComponent, siteItem);
-    
-    AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType());
-    
-    collection.addPrivilegeType(privilegeType);
-    
+
+    if (siteItem.getPrivilegeType() != null && !siteItem.getPrivilegeType().trim().equals(""))
+    {
+      AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType().trim().toUpperCase());
+      collection.addPrivilegeType(privilegeType);
+    }
+
     return collection;
   }
 }

@@ -24,6 +24,7 @@ import { ConfirmModalComponent } from './management/modals/confirm-modal.compone
 import { ErrorModalComponent } from './management/modals/error-modal.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 import { NotificationModalComponent } from './management/modals/notification-modal.component';
+import { UploadModalComponent } from './management/modals/upload-modal.component';
 
 import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
@@ -88,6 +89,7 @@ import { AdminModule } from './admin/admin.module';
         HubHeaderComponent,
     	LoginHeaderComponent,
     	ProfileComponent,
+        UploadModalComponent,
 
         // Routing components
         routedComponents,
@@ -114,6 +116,7 @@ import { AdminModule } from './admin/admin.module';
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: [
+      UploadModalComponent,
       EditModalComponent,
       CreateModalComponent,
       ImagePreviewModalComponent,

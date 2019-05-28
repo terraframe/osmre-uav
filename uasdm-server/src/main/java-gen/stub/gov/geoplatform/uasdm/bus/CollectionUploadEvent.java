@@ -1,23 +1,22 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.view.RequestParser;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import net.geoprism.GeoprismUser;
+import net.lingala.zip4j.core.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gov.geoplatform.uasdm.odm.ODMProcessingTask;
-import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.RequestParser;
-import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
@@ -40,7 +39,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     Collection collection = task.getCollection();
-    collection.uploadArchive(task, infile);
+    collection.uploadArchive(task, infile, parser.getUploadTarget());
 
     task.lock();
     task.setStatus("Complete");
@@ -54,11 +53,26 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    handleMetadataWorkflow(task);
   }
   
+  private void startODMProcessing(File infile, WorkflowTask uploadTask, RequestParser parser)
+  {
+    ODMProcessingTask task = new ODMProcessingTask();
+    task.setUpLoadId(uploadTask.getUpLoadId());
+    task.setCollectionId(uploadTask.getCollectionOid());
+    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+//    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
+    task.setTaskLabel("UAV data orthorectification for collection [" + task.getCollection().getName() + "]");
+    task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setFilePrefix(parser.getCustomParams().get("outFileName"));
+    task.apply();
+    
+    task.initiate(infile);
+  }
+  
   private void calculateImageSize(File zip, Collection collection)
   {
     try
     {
-      final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
       File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
       
       try
@@ -70,7 +84,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
         for (File file : files)
         {
           String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
-          if (ArrayUtils.contains(formats, ext))
+          if (ArrayUtils.contains(ImageryUploadEvent.formats, ext))
           {
             BufferedImage bimg = ImageIO.read(file);
             int width          = bimg.getWidth();
@@ -94,22 +108,6 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       logger.error("Error occurred while calculating the image size.", e);
     }
-  }
-  
-  private void startODMProcessing(File infile, WorkflowTask uploadTask, RequestParser parser)
-  {
-    ODMProcessingTask task = new ODMProcessingTask();
-    task.setUpLoadId(uploadTask.getUpLoadId());
-    task.setCollectionId(uploadTask.getCollectionOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-    task.setStatus(ODMStatus.RUNNING.getLabel());
-//    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
-    task.setTaskLabel("UAV data orthorectification for collection [" + task.getCollection().getName() + "]");
-    task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilePrefix(parser.getCustomParams().get("outFileName"));
-    task.apply();
-    
-    task.initiate(infile);
   }
   
 //  private void handleMetadataWorkflow(WorkflowTask uploadTask)

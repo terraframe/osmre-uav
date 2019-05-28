@@ -120,7 +120,9 @@ export class ManagementService {
             } )
     }
 
-    newChild( parentId: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+    newChild( parentId: string, type: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+
+        let url = '/project/new-default-child';
 
         let headers = new Headers( {
             'Content-Type': 'application/json'
@@ -132,11 +134,18 @@ export class ManagementService {
             params.parentId = parentId;
         }
 
+        if(type){
+            params.type = type;
+
+            url = '/project/new-child';
+        }
+        
+
         this.eventService.start();
 
 
         return this.http
-            .post( acp + '/project/new-child', JSON.stringify( params ), { headers: headers } )
+            .post( acp + url, JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
