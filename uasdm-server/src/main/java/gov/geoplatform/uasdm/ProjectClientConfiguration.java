@@ -38,6 +38,7 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
     Set<String> endpoints = super.getPublicEndpoints();
     endpoints.add("uasdm-account/inviteComplete");
     endpoints.add("project/management");
+    endpoints.add("uasdm-account/newInstance");
     return endpoints;
   }
 

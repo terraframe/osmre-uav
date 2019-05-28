@@ -8,6 +8,8 @@
           <dateTime name="startTime" label="time" required="true" />
           <text name="roleIds" label="roleIds" required="false" />
         </attributes>
+        <mdMethod name="newUserInst" label="newUserInst" static="true" returnType="net.geoprism.GeoprismUser">
+        </mdMethod>
         <mdMethod name="initiate" label="initate" static="true" returnType="void">
           <mdParameter name="invite" label="invite" order="0" type="java.lang.String"/>
           <mdParameter name="serverUrl" label="serverUrl" order="1" type="java.lang.String"/>
@@ -24,6 +26,13 @@
     </create>
     <update></update>
     <permissions>
+      <method methodName="newUserInst" type="gov.geoplatform.uasdm.UserInvite">
+        <grant>
+          <mdBusinessPermission type="net.geoprism.GeoprismUser">
+            <operation name="CREATE" />
+          </mdBusinessPermission>
+        </grant>
+      </method>
       <method methodName="initiate" type="gov.geoplatform.uasdm.UserInvite">
         <grant>
           <mdBusinessPermission type="gov.geoplatform.uasdm.UserInvite">
@@ -62,6 +71,12 @@
             <mdMethodPermission methodName="complete">  
               <operation name="EXECUTE" />
             </mdMethodPermission>
+            <mdMethodPermission methodName="newUserInst">  
+              <operation name="EXECUTE" />
+            </mdMethodPermission>
+          </mdBusinessPermission>
+          <mdBusinessPermission type="net.geoprism.GeoprismUser">
+            <operation name="CREATE" />
           </mdBusinessPermission>
         </grant>
       </role>

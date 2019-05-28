@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1554758810)
+@com.runwaysdk.business.ClassSignature(hash = -1754219642)
 public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
-  private static final long serialVersionUID = -1554758810;
+  private static final long serialVersionUID = -1754219642;
   
   protected UserInviteDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -551,6 +551,14 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
     Object[] _parameters = new Object[]{invite, serverUrl, roleIds};
     com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "initiate", _declaredTypes);
     clientRequest.invokeMethod(_metadata, null, _parameters);
+  }
+  
+  public static final net.geoprism.GeoprismUserDTO newUserInst(com.runwaysdk.constants.ClientRequestIF clientRequest)
+  {
+    String[] _declaredTypes = new String[]{};
+    Object[] _parameters = new Object[]{};
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.UserInviteDTO.CLASS, "newUserInst", _declaredTypes);
+    return (net.geoprism.GeoprismUserDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
   public static gov.geoplatform.uasdm.UserInviteDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)

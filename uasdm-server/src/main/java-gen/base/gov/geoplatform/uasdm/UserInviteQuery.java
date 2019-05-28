@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 909087261)
+@com.runwaysdk.business.ClassSignature(hash = -956095633)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN

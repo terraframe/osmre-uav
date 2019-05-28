@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -911973914)
+@com.runwaysdk.business.ClassSignature(hash = 467602694)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -27,7 +27,7 @@ public abstract class UserInviteBase extends com.runwaysdk.business.Business
   public static java.lang.String STARTTIME = "startTime";
   public static java.lang.String TOKEN = "token";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -911973914;
+  private static final long serialVersionUID = 467602694;
   
   public UserInviteBase()
   {
@@ -487,6 +487,12 @@ public abstract class UserInviteBase extends com.runwaysdk.business.Business
   }
   
   public static void initiate(java.lang.String invite, java.lang.String serverUrl, java.lang.String roleIds)
+  {
+    String msg = "This method should never be invoked.  It should be overwritten in gov.geoplatform.uasdm.UserInvite.java";
+    throw new com.runwaysdk.dataaccess.metadata.ForbiddenMethodException(msg);
+  }
+  
+  public static net.geoprism.GeoprismUser newUserInst()
   {
     String msg = "This method should never be invoked.  It should be overwritten in gov.geoplatform.uasdm.UserInvite.java";
     throw new com.runwaysdk.dataaccess.metadata.ForbiddenMethodException(msg);

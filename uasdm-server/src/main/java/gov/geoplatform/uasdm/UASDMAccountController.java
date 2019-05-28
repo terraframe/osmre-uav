@@ -35,6 +35,7 @@ import com.runwaysdk.mvc.ErrorSerialization;
 import com.runwaysdk.mvc.ParseType;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
+import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.request.ServletRequestIF;
 
@@ -64,6 +65,14 @@ public class UASDMAccountController
     response.set("groups", groups);
 
     return response;
+  }
+  
+  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF newInstance(ClientRequestIF request) throws JSONException
+  {
+    GeoprismUserDTO user = UserInviteDTO.newUserInst(request);
+
+    return new RestBodyResponse(user);
   }
   
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)

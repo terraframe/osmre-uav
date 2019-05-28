@@ -64,6 +64,21 @@ export class AccountService extends BasicService {
       .catch(this.handleError.bind(this));      
   }
   
+  uasdmNewInstance(): Promise<User> {
+    
+    let headers = new Headers({
+      'Content-Type': 'application/json'
+    });  
+    
+    return this.ehttp
+    .post(acp + '/uasdm-account/newInstance', JSON.stringify({}), {headers: headers})
+    .toPromise()
+    .then((response: any) => {
+      return response.json() as Account;
+    })
+    .catch(this.handleError.bind(this));      
+  }
+  
   newInstance(): Promise<Account> {
     
     let headers = new Headers({

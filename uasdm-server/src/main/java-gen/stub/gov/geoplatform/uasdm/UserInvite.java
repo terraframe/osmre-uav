@@ -16,7 +16,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import net.geoprism.EmailSetting;
-import net.geoprism.GeoprismProperties;
+import net.geoprism.GeoprismUser;
 
 public class UserInvite extends UserInviteBase
 {
@@ -29,6 +29,14 @@ public class UserInvite extends UserInviteBase
   public UserInvite()
   {
     super();
+  }
+  
+  /**
+   * This is done for permissions reasons. Runway is throwing an exception when we try to create a UserDTO on the client and so we're bypassing it this way.
+   */
+  public static net.geoprism.GeoprismUser newUserInst()
+  {
+    return new GeoprismUser();
   }
   
   /**

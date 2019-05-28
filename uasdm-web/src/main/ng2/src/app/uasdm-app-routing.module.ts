@@ -28,6 +28,7 @@ import { EmailComponent } from './admin/email/email.component';
 const routes: Routes = [
     {
         path: '',
+        canActivate: [ AuthGuard ],
         redirectTo: '/tasks',
         pathMatch: 'full'
     },
@@ -39,6 +40,7 @@ const routes: Routes = [
 	},
     {
         path: 'viewer',
+        canActivate: [ AuthGuard ],
         component: ProjectsComponent
     },
     {
@@ -48,6 +50,7 @@ const routes: Routes = [
     },
     {
         path: 'tasks',
+        canActivate: [ AuthGuard ],
         component: UserProfileComponent
     },
     {
@@ -71,23 +74,27 @@ const routes: Routes = [
 //  }
 	{
     path: 'admin/logos',
+    canActivate: [ AuthGuard ],
     component: SystemLogosComponent,
     data: { title: 'System_Configuration' }                
   },
   {
     path: 'admin/logo/:oid',
+    canActivate: [ AuthGuard ],
     component: SystemLogoComponent,
     data: { title: 'System_Configuration' }            
     
   },
   {
     path: 'admin/email',
+    canActivate: [ AuthGuard ],
     component: EmailComponent,
     data: { title: 'System_Configuration' }            
     
   },
 	{
     path: 'admin/accounts',
+    canActivate: [ AuthGuard ],
     component: AccountsComponent,    
     data: { title: 'useraccounts.title' }                
   },
@@ -97,6 +104,7 @@ const routes: Routes = [
     resolve: {
       account: AccountResolver
     },        
+    canActivate: [ AuthGuard ],
     data: { title: 'account.title' }              
   },
   {

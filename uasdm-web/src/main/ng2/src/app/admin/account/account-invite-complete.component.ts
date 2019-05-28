@@ -29,6 +29,8 @@ import { Account, User } from './account';
 import { EventService } from '../../core/service/core.service';
 import { AccountService } from './account.service';
 
+declare let acp: string;
+
 @Component({
   selector: 'account-invite-complete',
   templateUrl: './account-invite-complete.component.html',
@@ -47,12 +49,12 @@ export class AccountInviteCompleteComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.service.newInstance().catch((error:any) => {
+    this.service.uasdmNewInstance().catch((error:any) => {
       this.eventService.onError(error); 
     
       return Promise.reject(error);
-    }).then((account:Account) => {
-      this.user = account.user;
+    }).then((user:User) => {
+      this.user = user;
     });
     this.sub = this.route.params.subscribe(params => {
        this.token = params['token'];
@@ -60,12 +62,12 @@ export class AccountInviteCompleteComponent implements OnInit {
   }
   
   cancel(): void {
-    this.location.back();		
+    window.location.href = acp;
   } 
   
   onSubmit(): void {
     this.service.inviteComplete(this.user, this.token).then(response => {
-      this.location.back();
+      window.location.href = acp;
     });
   }  
 }
