@@ -94,5 +94,10 @@ public class AppProperties
   {
     return Singleton.getProps().getInteger("invite.user.token.expire.time", 72);
   }
+  
+  public static String getDeploymentType()
+  {
+    return Singleton.getProps().getString("deployment.type", "osmre");
+  }
 
 }
