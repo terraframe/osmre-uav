@@ -91,19 +91,7 @@ public class Site extends SiteBase
   @Request
   public static List<Option> getBureauOptions()
   {
-    List<Option> options = new LinkedList<Option>();
-
-    BureauQuery query = new BureauQuery(new QueryFactory());
-    query.ORDER_BY_ASC(query.getDisplayLabel());
-
-    List<? extends Bureau> bureaus = query.getIterator().getAll();
-
-    for (Bureau bureau : bureaus)
-    {
-      options.add(new Option(bureau.getOid(), bureau.getDisplayLabel()));
-    }
-
-    return options;
+    return Bureau.getOptions();
   }
 
   public static boolean isDuplicateSiteFolderName(String oid, String folderName)
