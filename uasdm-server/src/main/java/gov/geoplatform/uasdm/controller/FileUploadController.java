@@ -1,5 +1,6 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.controller;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.MultipartUploadParser;

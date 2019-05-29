@@ -41,7 +41,7 @@ export class AccountService extends BasicService {
     params.set('number', p.toString());
     
     return this.ehttp
-      .get(acp + '/account/page', {search: params})
+      .get(acp + '/uasdm-account/page', {search: params})
       .toPromise()
       .then(response => {
         return response.json() as PageResult;
@@ -56,7 +56,7 @@ export class AccountService extends BasicService {
     });  
   
     return this.ehttp
-      .post(acp + '/account/edit', JSON.stringify({oid:oid}), {headers: headers})
+      .post(acp + '/uasdm-account/edit', JSON.stringify({oid:oid}), {headers: headers})
       .toPromise()
       .then((response: any) => {
         return response.json() as Account;
@@ -79,14 +79,14 @@ export class AccountService extends BasicService {
     .catch(this.handleError.bind(this));      
   }
   
-  newInstance(): Promise<Account> {
+  newInvite(): Promise<Account> {
     
     let headers = new Headers({
       'Content-Type': 'application/json'
     });  
     
     return this.ehttp
-    .post(acp + '/account/newInstance', JSON.stringify({}), {headers: headers})
+    .post(acp + '/uasdm-account/newInvite', JSON.stringify({}), {headers: headers})
     .toPromise()
     .then((response: any) => {
       return response.json() as Account;
@@ -101,7 +101,7 @@ export class AccountService extends BasicService {
     });  
     
     return this.ehttp
-    .post(acp + '/account/remove', JSON.stringify({oid:oid}), {headers: headers})
+    .post(acp + '/uasdm-account/remove', JSON.stringify({oid:oid}), {headers: headers})
     .toPromise()
     .catch(this.handleError.bind(this));      
   }
@@ -113,7 +113,7 @@ export class AccountService extends BasicService {
     });  
     
     return this.ehttp
-    .post(acp + '/account/apply', JSON.stringify({account:user, roleIds:roleIds}), {headers: headers})
+    .post(acp + '/uasdm-account/apply', JSON.stringify({account:user, roleIds:roleIds}), {headers: headers})
     .toPromise()
     .then((response: any) => {
       return response.json() as User;
@@ -128,7 +128,7 @@ export class AccountService extends BasicService {
     });  
     
     return this.ehttp
-    .post(acp + '/account/unlock', JSON.stringify({oid:oid}), {headers: headers})
+    .post(acp + '/uasdm-account/unlock', JSON.stringify({oid:oid}), {headers: headers})
     .toPromise()
     .catch(this.handleError.bind(this));      
   }

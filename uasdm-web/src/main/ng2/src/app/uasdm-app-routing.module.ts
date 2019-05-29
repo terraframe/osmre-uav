@@ -25,6 +25,8 @@ import { SystemLogoComponent } from './admin/logo/system-logo.component';
 import { SystemLogosComponent } from './admin/logo/system-logos.component';
 import { EmailComponent } from './admin/email/email.component';
 
+import { SystemInfoComponent } from './admin/system/system-info.component';
+
 const routes: Routes = [
     {
         path: '',
@@ -115,6 +117,11 @@ const routes: Routes = [
     path: 'admin/invite-complete/:token',
     component: AccountInviteCompleteComponent,
     data: { title: 'account.title' }              
+  },
+  {
+    path: 'admin/system-info',
+    component: SystemInfoComponent,
+    data: { }
   }
 ];
 

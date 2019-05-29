@@ -31,6 +31,9 @@
                         <th class="label-column">
                             <localize key='account.email'></localize>
                         </th>
+                        <th class="label-column">
+                            Bureau
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +49,7 @@
                         <td class="label-column lastname-col"> {{ account.lastName }} </td>
                         <td class="label-column phone-col"> {{ account.phoneNumber | phone }} </td>
                         <td class="label-column email-col"> {{ account.email }} </td>
+                        <td class="label-column bureau-col"> {{ account.bureau }} </td>
                     </tr>
                     <tr>
                         <td class="button-column">
@@ -55,7 +59,7 @@
 
                 </tbody>
             </table>
-            <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+            <pagination-controls (pageChange)="onPageChange($event)" maxSize="10"></pagination-controls>
         </div>
     </div>
 </div>

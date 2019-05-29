@@ -57,6 +57,19 @@
               </div>                                          
             </div>
           </div>          
+          <div class="row-holder">
+            <div class="label-holder">
+              <label>Bureau</label>
+            </div>          
+            <div class="holder" >
+              <span class="select">
+                <select [(ngModel)]="account.user.bureau" name="bureau">
+                  <option></option>
+                  <option *ngFor="let option of account.bureaus" [value]="option.value">{{option.label}}</option>
+                </select>
+              </span>
+            </div>
+          </div>          
           <div class="heading">
             <h3><localize key="account.info.heading"></localize></h3>
           </div>      

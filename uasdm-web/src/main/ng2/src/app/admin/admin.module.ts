@@ -30,6 +30,7 @@ import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 
 import { CoreModule } from '../core/core.module';
 
+import { SystemInfoComponent } from './system/system-info.component';
 import { SystemLogoService } from './logo/system-logo.service';
 import { EmailService } from './email/email.service';
 import { AccountService } from './account/account.service';
@@ -57,6 +58,7 @@ import { AdminHeaderComponent } from './admin-header.component';
   declarations: [
 	// Global components
     AdminHeaderComponent,
+    SystemInfoComponent,
     routedComponents
   ],
   providers: [

@@ -17,47 +17,21 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-export class UserInvite {
-  email: string;
-  bureau: string;
-  groups:Group[];
-  bureaus:{value:string, label:string}[];
-}
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
 
-export class User {
-  oid: string;
-  username: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  bureau: string;
-  inactive: boolean;
-  newInstance: boolean;
-}
+declare let acp: string;
 
-export class Role {
-  roleId:string;
-  displayLabel:string;
-  assigned:boolean;
-}
+@Component({
+  selector: 'system-info',
+  templateUrl: './system-info.component.html',
+  styles: ['./system-info.css']
+})
+export class SystemInfoComponent implements OnInit {
 
-export class Group {
-  name:string;
-  roles:Role[];
-}
+  constructor() { }
 
-export class Account {
-  user:User;
-  groups:Group[];
-  bureaus:{value:string, label:string}[];
-  changePassword:boolean;
-}
+  ngOnInit(): void {
+  }
 
-export class PageResult {
-  count: number;
-  pageNumber: number;
-  pageSize: number;
-  resultSet: User[];
 }

@@ -1,0 +1,84 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.UserInfo" publish="true">
+        <attributes>
+          <reference name="geoprismUser" label="user" required="true" type="net.geoprism.GeoprismUser" />
+          <reference name="bureau" label="Bureau" required="false" type="gov.geoplatform.uasdm.bus.Bureau" />
+        </attributes>
+      </mdBusiness>    
+    </create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.UserInvite">
+        <create>
+          <attributes>
+            <reference name="bureau" label="Bureau" required="false" type="gov.geoplatform.uasdm.bus.Bureau" />
+          </attributes>
+        </create>
+      </mdBusiness>    
+    </update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="ALL" />
+          </mdBusinessPermission>          
+        </grant>
+      </role>      
+      <role roleName="OWNER">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+            <operation name="WRITE" />
+            <operation name="WRITE_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+        </grant>
+      </role>     
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+        </grant>
+      </role>    
+      <role roleName="geoprism.DecisionMaker">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+        </grant>
+      </role>    
+      
+      <method methodName="newUserInst" type="gov.geoplatform.uasdm.UserInvite">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="CREATE" />
+          </mdBusinessPermission>
+        </grant>
+      </method>
+      <method methodName="initiate" type="gov.geoplatform.uasdm.UserInvite">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </method>
+      <method methodName="complete" type="gov.geoplatform.uasdm.UserInvite">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </method>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.UserInfo" type="com.runwaysdk.system.metadata.MdBusiness"/>
+      <object key="gov.geoplatform.uasdm.UserInvite.bureau" type="com.runwaysdk.system.metadata.MdAttribute"/>
+    </delete>
+  </undoIt>
+</version>
