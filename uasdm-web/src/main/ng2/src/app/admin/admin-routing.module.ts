@@ -22,6 +22,7 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
+import { SystemInfoComponent } from './system/system-info.component';
 import { EmailComponent } from './email/email.component';
 import { SystemLogoComponent } from './logo/system-logo.component';
 import { SystemLogosComponent } from './logo/system-logos.component';
@@ -101,6 +102,11 @@ const routes: Routes = [
   {
     path: 'invite-complete',
     component: AccountInviteCompleteComponent,    
+    data: { }
+  },
+  {
+    path: 'system-info',
+    component: SystemInfoComponent,
     data: { }
   }
 ];
