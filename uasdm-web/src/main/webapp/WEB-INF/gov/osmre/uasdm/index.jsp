@@ -3,6 +3,9 @@
 <%@ taglib uri="/WEB-INF/tlds/geoprism.tld" prefix="gdb"%>
 <%@ taglib uri="http://jawr.net/tags" prefix="jwr"%>
 
+<%@ page import="gov.geoplatform.uasdm.AppProperties" %> 
+
+
 <!DOCTYPE html>
 
 <head>
@@ -25,6 +28,8 @@ body {
   window.location.origin = window.location.protocol + "//"
       + window.location.hostname
       + (window.location.port ? ':' + window.location.port : '');
+  
+  window.gpAppType = "<%=AppProperties.getDeploymentType()%>";
 </script>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -163,11 +168,9 @@ body {
   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>
   <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>
 
-<!-- 
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>  
-  <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>  
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>    
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>
-  -->
+<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>   -->
+<!--   <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>   -->
+<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>     -->
+<!--   <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script> -->
   
 </body>
