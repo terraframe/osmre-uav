@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,5 +77,13 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setMessage(t.getLocalizedMessage());
       this.apply();
     }
+  }
+  
+  /** 
+   * Writes the ODM output to a log file on S3, if supported by the individual task implementation.
+   */
+  public void writeODMtoS3(JSONArray odmOutput)
+  {
+    // do nothing, as this does not pertain to Collections
   }
 }

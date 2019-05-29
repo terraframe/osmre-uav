@@ -89,5 +89,25 @@ public class AppProperties
   {
     return Singleton.getProps().getInteger("chunk.expire.time");
   }
+  
+  public static Integer getInviteUserTokenExpireTime()
+  {
+    return Singleton.getProps().getInteger("invite.user.token.expire.time", 72);
+  }
+  
+  public static String getDeploymentType()
+  {
+    return Singleton.getProps().getString("deployment.type", "osmre");
+  }
+  
+  public static String getS3AccessKey()
+  {
+    return Singleton.getProps().getString("s3.accessKey");
+  }
+  
+  public static String getS3SecretKey()
+  {
+    return Singleton.getProps().getString("s3.secretKey");
+  }
 
 }

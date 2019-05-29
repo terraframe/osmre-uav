@@ -465,6 +465,8 @@ public class ODMStatusServer
         }
         
         task.setOdmOutput(sb.toString());
+        
+        task.writeODMtoS3(output);
       }
     }
   }

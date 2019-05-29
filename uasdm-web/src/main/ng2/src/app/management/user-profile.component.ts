@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Rx';
 
 import { MetadataModalComponent } from './modals/metadata-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
-import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { BasicConfirmModalComponent } from './modals/basic-confirm-modal.component';
 import { Message, Task } from '../model/management';
 import { ManagementService } from '../service/management.service';
 
@@ -167,7 +167,7 @@ export class UserProfileComponent implements OnInit {
 
     removeTask(task: Task): void {
 
-        this.bsModalRef = this.modalService.show(ConfirmModalComponent, {
+        this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
@@ -177,7 +177,7 @@ export class UserProfileComponent implements OnInit {
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
 
-        (<ConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(task => {
+        (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(task => {
             this.deleteTask(task);
         });
 

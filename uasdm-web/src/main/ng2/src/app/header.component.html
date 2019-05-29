@@ -3,7 +3,7 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="{{context}}/prism/home#/menu" title="Home"><img [src]="context + '/logo/view?id=logo'" /></a>
+        <a class="navbar-brand" href="{{context}}/project/management#/menu" title="Home"><img [src]="context + '/logo/view?id=logo'" /></a>
         <!-- <p class="navbar-brand" style="margin: 0;" >{{title}}</p> -->
       </div>
           
@@ -14,7 +14,8 @@
           </a>    
 
           <ul *dropdownMenu class="dropdown-menu">
-            <li *ngIf="admin" role="menuitem"><a class="dropdown-item" href="{{context}}/prism/home#/admin">Administration</a></li>
+            <li *ngIf="admin" role="menuitem"><a class="dropdown-item" routerLink="/admin/accounts">Administration</a></li>
+            <li role="menuitem"><a id="account-btn" class="user-command-link link-active" (click)="account()"><localize key="userDashboards.account"></localize></a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/tasks" routerLinkActive="active">Workflow Tasks</a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/upload" routerLinkActive="active">Collection Upload</a></li>
             <li role="menuitem"><a class="dropdown-item" routerLink="/viewer" routerLinkActive="active">Site Viewer</a></li>

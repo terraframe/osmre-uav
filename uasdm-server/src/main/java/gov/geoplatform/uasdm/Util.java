@@ -8,9 +8,10 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
+import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 
@@ -22,7 +23,8 @@ public class Util
   {
     try
     {
-      TransferManager tx = new TransferManager(new ClasspathPropertiesFileCredentialsProvider());
+      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+      TransferManager tx = new TransferManager(new StaticCredentialsProvider(awsCreds));
 
       try
       {
