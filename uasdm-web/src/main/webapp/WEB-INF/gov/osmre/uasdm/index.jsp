@@ -32,6 +32,7 @@ body {
 <!-- CSS imports -->
 <jwr:style src="/bundles/datatable.css" useRandomParam="false" />
 <jwr:style src="/bundles/main.css" useRandomParam="false" />
+<jwr:style src="/bundles/administration.css" useRandomParam="false" />
 
 <!-- Default imports -->
 <jwr:script src="/bundles/runway.js" useRandomParam="false" />
@@ -157,17 +158,10 @@ body {
     </style>
     Loading application data<span class="d">.</span><span class="d d-2">.</span><span class="d d-3">.</span>
   </uasdm-app>
-
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-polyfills.js"></script>
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor.chunk.js"></script>
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-vendor.js"></script>
-  <script type="text/javascript" src="${pageContext.request.contextPath}/dist/uasdm-app.js"></script>
-
-<!-- 
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-polyfills.js"></script>  
-  <script type="text/javascript" src="https://localhost:8080/dist/vendor.chunk.js"></script>  
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-vendor.js"></script>    
-  <script type="text/javascript" src="https://localhost:8080/dist/uasdm-app.js"></script>
-  -->
+  
+  <script type="text/javascript" src="$local.host$/dist/uasdm-polyfills.js"></script>  
+  <script type="text/javascript" src="$local.host$/dist/vendor.chunk.js"></script>  
+  <script type="text/javascript" src="$local.host$/dist/uasdm-vendor.js"></script>    
+  <script type="text/javascript" src="$local.host$/dist/uasdm-app.js"></script>
   
 </body>

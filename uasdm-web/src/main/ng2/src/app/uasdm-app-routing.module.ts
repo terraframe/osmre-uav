@@ -34,9 +34,8 @@ const routes: Routes = [
     },
     {
 	    path: 'menu',
-	    component: HubComponent,
 	    canActivate: [ AuthGuard ],
-	    data: { title: 'login.header' }    
+	    redirectTo: '/tasks',
 	},
     {
         path: 'viewer',

@@ -48,11 +48,11 @@
           <hr>          
           <div class="row-holder">
             <div class="label-holder">
-              <label><localize key="profilename"></localize></label>
+              <label><localize key="account.username"></localize></label>
             </div>          
             <div class="holder" >
               <span class="text">
-                <input type="text" [(ngModel)]="profile.username" name="username" required>
+                <input [disabled]="profile.username === 'admin'" type="text" [(ngModel)]="profile.username" name="username" required>
               </span>
             </div>
           </div>
