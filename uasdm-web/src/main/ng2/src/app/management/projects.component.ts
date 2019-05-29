@@ -30,6 +30,7 @@ import { MapService } from '../service/map.service';
 import { AuthService } from '../service/auth.service';
 
 declare var acp: any;
+declare var gpAppType: any;
 
 @Component( {
     selector: 'projects',
