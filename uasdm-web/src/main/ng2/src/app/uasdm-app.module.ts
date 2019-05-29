@@ -22,6 +22,7 @@ import { MetadataModalComponent } from './management/modals/metadata-modal.compo
 import { UasdmHeaderComponent } from './header.component';
 import { BasicConfirmModalComponent } from './management/modals/basic-confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
+import { BasicLoadingBarComponent } from './basic-loading-bar/basic-loading-bar.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 import { NotificationModalComponent } from './management/modals/notification-modal.component';
 import { UploadModalComponent } from './management/modals/upload-modal.component';
@@ -88,6 +89,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
         NotificationModalComponent,
         MetadataModalComponent,
         ErrorModalComponent,
+        BasicLoadingBarComponent,
         ImagePreviewModalComponent,
         HubHeaderComponent,
     	LoginHeaderComponent,
