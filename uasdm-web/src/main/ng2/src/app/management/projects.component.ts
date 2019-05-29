@@ -240,6 +240,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         } ).catch(( err: any ) => {
             this.error( err.json() );
         } );
+
     }
 
     ngAfterViewInit() {
@@ -984,7 +985,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     public canCreateImageDir(item: any): boolean {
-        return item.data.type === 'Project';
+        if(gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project'){
+            return true;
+        }
     }
 
     public canEditSite = ( item: any ): boolean => {
@@ -1009,7 +1012,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
     public canUpload = ( item: any ): boolean => {
         // Only allow direct uploads on Imagery child nodes
-        if(item.parent.data.type !== "Collection"){
+        if(gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection"){
             if(item.data.name === "raw"){
                 return true;
             }

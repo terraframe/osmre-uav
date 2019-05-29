@@ -158,6 +158,7 @@
         <i class="fa fa-arrow-circle-down"></i>
         Add a {{item?.data.childType?.toLowerCase()}} to {{item?.data.name}}
     </ng-template> 
+    
     <ng-template contextMenuItem let-item [visible]="canAddChild && canCreateImageDir" (execute)="handleCreate($event.item, 'Imagery')"> <i
             class="fa fa-arrow-circle-down"></i>
         Add an image directory to {{item?.data.name}} 
