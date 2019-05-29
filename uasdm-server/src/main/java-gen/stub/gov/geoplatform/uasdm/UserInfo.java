@@ -180,12 +180,13 @@ public class UserInfo extends UserInfoBase
     result.put(GeoprismUser.LASTNAME, user.getLastName());
     result.put(GeoprismUser.PHONENUMBER, user.getPhoneNumber());
     result.put(GeoprismUser.EMAIL, user.getEmail());
+    result.put(GeoprismUser.INACTIVE, user.getInactive());
 
     if (info != null)
     {
       result.put(UserInfo.BUREAU, info.getBureauOid());
     }
-    
+
     result.put("newInstance", user.isNew());
 
     return result;
@@ -211,6 +212,11 @@ public class UserInfo extends UserInfoBase
     user.setLastName(account.getString(GeoprismUser.LASTNAME));
     user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
     user.setEmail(account.getString(GeoprismUser.EMAIL));
+
+    if (account.has(GeoprismUser.INACTIVE))
+    {
+      user.setInactive(account.getBoolean(GeoprismUser.INACTIVE));
+    }
 
     if (account.has(GeoprismUser.PASSWORD))
     {
