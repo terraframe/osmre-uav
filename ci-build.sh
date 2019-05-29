@@ -18,7 +18,8 @@ export M2_HOME=/usr/local/apache-maven
 export M2=$M2_HOME/bin 
 export PATH=$M2:$PATH
 export ANSIBLE_HOST_KEY_CHECKING=false
-export NODE_OPTIONS=--max_old_space_size=1500
+export NODE_OPTIONS="--max_old_space_size=1500"
+echo $NODE_OPTIONS
 
 
 if [ "$build_artifact" == "true" ]; then
