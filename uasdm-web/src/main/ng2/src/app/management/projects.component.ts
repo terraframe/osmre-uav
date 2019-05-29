@@ -20,7 +20,7 @@ import { Observable } from 'rxjs/Observable';
 import { CreateModalComponent } from './modals/create-modal.component';
 import { ImagePreviewModalComponent } from './modals/image-preview-modal.component';
 import { EditModalComponent } from './modals/edit-modal.component';
-import { ConfirmModalComponent } from './modals/confirm-modal.component';
+import { BasicConfirmModalComponent } from './modals/basic-confirm-modal.component';
 import { UploadModalComponent } from './modals/upload-modal.component';
 import { NotificationModalComponent } from './modals/notification-modal.component';
 import { ErrorModalComponent } from './modals/error-modal.component';
@@ -709,7 +709,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
 
     handleDelete( node: TreeNode ): void {
-        this.bsModalRef = this.modalService.show( ConfirmModalComponent, {
+        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
@@ -719,7 +719,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
 
-        ( <ConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
+        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
             this.remove( data );
         } );
     }

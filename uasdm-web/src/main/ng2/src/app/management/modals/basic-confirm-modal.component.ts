@@ -4,11 +4,11 @@ import { Subject } from 'rxjs/Subject';
 import { ModalTypes } from './modal';
 
 @Component( {
-    selector: 'confirm-modal',
-    templateUrl: './confirm-modal.component.html',
+    selector: 'basic-confirm-modal',
+    templateUrl: './basic-confirm-modal.component.html',
     styleUrls: []
 } )
-export class ConfirmModalComponent {
+export class BasicConfirmModalComponent {
     /*
      * Message
      */

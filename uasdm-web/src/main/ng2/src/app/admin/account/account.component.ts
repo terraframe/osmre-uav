@@ -37,7 +37,7 @@ export class AccountResolver implements Resolve<Account> {
 	let oid = route.params['oid'];
 	
 	if(oid === 'NEW') {
-      return this.accountService.newInstance().catch((error:any) => {
+      return this.accountService.newInvite().catch((error:any) => {
         this.eventService.onError(error); 
         
         return Promise.reject(error);

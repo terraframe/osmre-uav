@@ -20,8 +20,9 @@ import { EditModalComponent } from './management/modals/edit-modal.component';
 import { CreateModalComponent } from './management/modals/create-modal.component';
 import { MetadataModalComponent } from './management/modals/metadata-modal.component';
 import { UasdmHeaderComponent } from './header.component';
-import { ConfirmModalComponent } from './management/modals/confirm-modal.component';
+import { BasicConfirmModalComponent } from './management/modals/basic-confirm-modal.component';
 import { ErrorModalComponent } from './management/modals/error-modal.component';
+import { BasicLoadingBarComponent } from './basic-loading-bar/basic-loading-bar.component';
 import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
 import { NotificationModalComponent } from './management/modals/notification-modal.component';
 import { UploadModalComponent } from './management/modals/upload-modal.component';
@@ -84,10 +85,11 @@ import { NgxPaginationModule } from 'ngx-pagination';
         UasdmAppComponent,
         EditModalComponent,
         CreateModalComponent,
-        ConfirmModalComponent,
+        BasicConfirmModalComponent,
         NotificationModalComponent,
         MetadataModalComponent,
         ErrorModalComponent,
+        BasicLoadingBarComponent,
         ImagePreviewModalComponent,
         HubHeaderComponent,
     	LoginHeaderComponent,
@@ -123,7 +125,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
       EditModalComponent,
       CreateModalComponent,
       ImagePreviewModalComponent,
-      ConfirmModalComponent,
+      BasicConfirmModalComponent,
       NotificationModalComponent,
       MetadataModalComponent,
       ErrorModalComponent,

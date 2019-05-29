@@ -185,6 +185,8 @@ public class UserInfo extends UserInfoBase
     {
       result.put(UserInfo.BUREAU, info.getBureauOid());
     }
+    
+    result.put("newInstance", user.isNew());
 
     return result;
   }
