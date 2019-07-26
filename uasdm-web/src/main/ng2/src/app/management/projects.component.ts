@@ -685,7 +685,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             ignoreBackdropClick: true,
             class: 'modal-dialog-centered'
         } );
-        this.bsModalRef.content.message = "Your ortho task is running for [" + data.folderName + "]. You can view the current process and results on your taks page.";
+        this.bsModalRef.content.message = "Your ortho task is running for [" + data.folderName + "]. You can view the current process and results on your tasks page.";
         this.bsModalRef.content.submitText = 'OK';
 
         this.service.runOrtho( data.id ).then( data => {
