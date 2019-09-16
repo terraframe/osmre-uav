@@ -29,6 +29,17 @@ import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 import { AuthService } from '../service/auth.service';
 
+import proj4 from 'proj4';
+
+// Binding proj4 to window was needed because the proj4 lib does not export in the standard
+// way which doesn't work when adding it to the constructor. This is not ideal but the alternative 
+// is to modify the proj4 source which is a less ideal solution.
+declare global {
+    interface Window { proj4: any; }
+}
+window.proj4 = proj4;
+// end
+
 declare var acp: any;
 declare var gpAppType: any;
 
@@ -222,7 +233,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     */
     private bsModalRef: BsModalRef;
 
-    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
+    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, 
+        private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
         this.dataSource = Observable.create(( observer: any ) => {
             this.service.searchEntites( this.search ).then( results => {
                 observer.next( results );
@@ -258,6 +270,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
             center: [-78.880453, 42.897852]
         } );
 
+
         this.map.on( 'load', () => {
             this.initMap();
         } );
@@ -277,6 +290,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         // Add zoom and rotation controls to the map.
         this.map.addControl( new NavigationControl() );
+
+        this.map.on('mousemove', function(e) {
+            // e.point is the x, y coordinates of the mousemove event relative
+            // to the top-left corner of the map.
+            // e.lngLat is the longitude, latitude geographical position of the event
+            let coord = e.lngLat.wrap();
+            
+            // EPSG:3857 = WGS 84 / Pseudo-Mercator
+            // EPSG:4326 WGS 84 
+            // let coord4326 = window.proj4(window.proj4.defs('EPSG:3857'), window.proj4.defs('EPSG:4326'), [coord.lng, coord.lat]);
+            // let text = "Long: " + coord4326[0] + " Lat: " + coord4326[1];
+
+            let text = "Lat: " + coord.lat + " Long: " + coord.lng;
+            let mousemovePanel = document.getElementById("mousemove-panel");
+            mousemovePanel.textContent = text;
+        });
+
+        // MapboxGL doesn't have a good way to detect when moving off the map
+        let sidebar = document.getElementById("location-explorer-list");
+        sidebar.addEventListener("mouseenter", function() {
+            let mousemovePanel = document.getElementById("mousemove-panel");
+            mousemovePanel.textContent = "";
+        });
 
         if ( this.admin ) {
             let modes = MapboxDraw.modes;

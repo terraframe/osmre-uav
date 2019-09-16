@@ -12,7 +12,8 @@
 		],
 		"noImplicitAny": false,
 		"suppressImplicitAnyIndexErrors": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
 		"node_modules/*"
