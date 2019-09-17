@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -13,6 +14,7 @@ import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,8 +74,9 @@ public abstract class UasComponent extends UasComponentBase
   /**
    * Create the child of the given type.
    * 
-   * @param return the child of the given type. It assumes the type is valid. It is the type name of the
-   * Runway {@link MdBusiness}.
+   * @param return
+   *          the child of the given type. It assumes the type is valid. It is
+   *          the type name of the Runway {@link MdBusiness}.
    * 
    * @return a new {@link UasComponent} of the correct type.
    */
@@ -81,7 +84,7 @@ public abstract class UasComponent extends UasComponentBase
   {
     return this.createDefaultChild();
   }
-  
+
   /**
    * @return The name of the solr field for the components id.
    */
@@ -102,6 +105,13 @@ public abstract class UasComponent extends UasComponentBase
   @Transaction
   public void applyWithParent(UasComponent parent)
   {
+    boolean isNew = this.isNew();
+
+    if (isNew)
+    {
+      this.setFolderName(UUID.randomUUID().toString().replaceAll("-", ""));
+    }
+
     if (this.isModified(UasComponent.FOLDERNAME))
     {
       String name = this.getFolderName();
@@ -116,8 +126,6 @@ public abstract class UasComponent extends UasComponentBase
         throw ex;
       }
     }
-
-    boolean isNew = this.isNew();
 
     if (isNew)
     {
@@ -201,7 +209,7 @@ public abstract class UasComponent extends UasComponentBase
     {
       task.delete();
     }
-    
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -491,7 +499,7 @@ public abstract class UasComponent extends UasComponentBase
   {
     List<AttributeType> list = new LinkedList<AttributeType>();
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
-    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME), true, new AdminCondition()));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
 
     return list;
@@ -643,7 +651,7 @@ public abstract class UasComponent extends UasComponentBase
 
     return bboxArr;
   }
-  
+
   /**
    * Returns tasks associated with this item.
    * 

@@ -27,7 +27,7 @@ import { ErrorModalComponent } from './modals/error-modal.component';
 import { SiteEntity } from '../model/management';
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
-import { AuthService } from '../service/auth.service';
+import { AuthService } from '../core/authentication/auth.service';
 
 import proj4 from 'proj4';
 

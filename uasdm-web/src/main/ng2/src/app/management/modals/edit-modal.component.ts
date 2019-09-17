@@ -21,7 +21,7 @@ export class EditModalComponent implements OnInit {
     attributes: AttributeType[];
 
     message: string = null;
-    
+
     userName: string = "";
 
     /*
@@ -50,12 +50,7 @@ export class EditModalComponent implements OnInit {
     }
 
     evaluate( condition: Condition ): boolean {
-
-        if ( condition != null && condition.type === 'eq' ) {
-            return ( this.entity[condition.name] === condition.value );
-        }
-
-        return false;
+        return this.service.evaluate( condition, this.entity );
     }
 
     error( err: any ): void {

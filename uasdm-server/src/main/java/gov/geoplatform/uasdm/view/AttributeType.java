@@ -20,6 +20,8 @@ public class AttributeType
 
   private Boolean   immutable;
 
+  private Boolean   readOnly;
+
   private Condition condition;
 
   public String getName()
@@ -77,6 +79,16 @@ public class AttributeType
     this.condition = condition;
   }
 
+  public Boolean getReadOnly()
+  {
+    return readOnly;
+  }
+
+  public void setReadOnly(Boolean readOnly)
+  {
+    this.readOnly = readOnly;
+  }
+
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
@@ -85,6 +97,7 @@ public class AttributeType
     object.put("required", required);
     object.put("immutable", immutable);
     object.put("type", this.getType());
+    object.put("readonly", this.getReadOnly());
 
     if (this.condition != null)
     {
@@ -95,6 +108,11 @@ public class AttributeType
   }
 
   public static AttributeType create(MdAttributeConcreteDAOIF mdAttribute)
+  {
+    return AttributeType.create(mdAttribute, false, null);
+  }
+
+  public static AttributeType create(MdAttributeConcreteDAOIF mdAttribute, boolean readOnly, Condition condition)
   {
     AttributeType attributeType = new AttributeType();
 
@@ -111,6 +129,13 @@ public class AttributeType
     attributeType.setLabel(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
     attributeType.setImmutable(mdAttribute.isImmutable());
     attributeType.setRequired(mdAttribute.isRequired());
+    attributeType.setReadOnly(readOnly);
+
+    if (condition != null)
+    {
+      attributeType.setCondition(condition);
+    }
+
     return attributeType;
   }
 

@@ -35,7 +35,6 @@ import { OnlyNumber } from './management/directives/number-only.directive';
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
 import { EventService } from './service/event.service';
-import { AuthService } from './service/auth.service';
 import { AdminGuardService } from './service/admin.guard.service';
 import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
 
@@ -107,7 +106,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
         AdminGuardService,
         CanDeactivateGuardService,
         CookieService,
-        AuthService,
         ManagementService,
         EventService,
         MapService,

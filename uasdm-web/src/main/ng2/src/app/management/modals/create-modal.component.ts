@@ -47,12 +47,7 @@ export class CreateModalComponent implements OnInit {
     }
 
     evaluate( condition: Condition ): boolean {
-
-        if ( condition != null && condition.type === 'eq' ) {
-            return ( this.entity[condition.name] === condition.value );
-        }
-
-        return false;
+        return this.service.evaluate(condition, this.entity);
     }
 
     error( err: any ): void {

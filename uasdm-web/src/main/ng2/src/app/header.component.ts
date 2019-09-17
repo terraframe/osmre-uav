@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
-import { ManagementService } from './service/management.service';
-import { AuthService } from './service/auth.service';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ProfileService } from './profile/profile.service';
 import { ProfileComponent } from './profile/profile.component';
+
+import { ManagementService } from './service/management.service';
+import { AuthService } from './core/authentication/auth.service';
+
 
 declare var acp: any;
 
@@ -17,15 +18,15 @@ declare var acp: any;
     styleUrls: ['./header.css']
 } )
 export class UasdmHeaderComponent {
-  context: string;
-  userName: string = "";
-  admin: boolean = false;
-  bsModalRef: BsModalRef;
+    context: string;
+    userName: string = "";
+    admin: boolean = false;
+    bsModalRef: BsModalRef;
 
-	@Input() title: string;
+    @Input() title: string;
 
 
-    constructor( private managementService: ManagementService, private authService: AuthService, private modalService: BsModalService, private profileService:ProfileService ) {
+    constructor( private managementService: ManagementService, private authService: AuthService, private modalService: BsModalService, private profileService: ProfileService ) {
         this.context = acp;
     }
 
@@ -34,12 +35,12 @@ export class UasdmHeaderComponent {
         this.userName = this.managementService.getCurrentUser();
         this.admin = this.authService.isAdmin();
     }
-    
-    account():void{
-      this.profileService.get().then(profile => {
-        this.bsModalRef = this.modalService.show(ProfileComponent, {backdrop: 'static', class: 'gray modal-lg'});
-        this.bsModalRef.content.profile = profile;
-      });
+
+    account(): void {
+        this.profileService.get().then( profile => {
+            this.bsModalRef = this.modalService.show( ProfileComponent, { backdrop: 'static', class: 'gray modal-lg' } );
+            this.bsModalRef.content.profile = profile;
+        } );
     }
 
 }

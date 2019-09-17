@@ -210,8 +210,12 @@ public class UserInfo extends UserInfoBase
     user.setUsername(account.getString(GeoprismUser.USERNAME));
     user.setFirstName(account.getString(GeoprismUser.FIRSTNAME));
     user.setLastName(account.getString(GeoprismUser.LASTNAME));
-    user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
     user.setEmail(account.getString(GeoprismUser.EMAIL));
+
+    if (account.has(GeoprismUser.PHONENUMBER))
+    {
+      user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
+    }
 
     if (account.has(GeoprismUser.INACTIVE))
     {

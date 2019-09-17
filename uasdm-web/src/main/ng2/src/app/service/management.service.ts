@@ -6,9 +6,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
-import { CookieService } from 'ngx-cookie-service';
-
-import { SiteEntity, Message, Task, AttributeType } from '../model/management';
+import { AuthService } from '../core/authentication/auth.service';
+import { SiteEntity, Message, Task, AttributeType, Condition } from '../model/management';
 import { EventService } from './event.service';
 
 declare var acp: any;
@@ -16,7 +15,7 @@ declare var acp: any;
 @Injectable()
 export class ManagementService {
 
-    constructor( private http: Http, private eventService: EventService, private cookieService: CookieService ) { }
+    constructor( private http: Http, private eventService: EventService, private authService: AuthService ) { }
 
     getChildren( id: string ): Promise<SiteEntity[]> {
         let params: URLSearchParams = new URLSearchParams();
@@ -81,25 +80,25 @@ export class ManagementService {
                 return response.json() as { item: SiteEntity, attributes: AttributeType[] };
             } )
     }
-    
+
     runOrtho( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-      let headers = new Headers( {
-          'Content-Type': 'application/json'
-      } );
+        let headers = new Headers( {
+            'Content-Type': 'application/json'
+        } );
 
-    //   this.eventService.start();
+        //   this.eventService.start();
 
-      return this.http
-          .post( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
-          .finally(() => {
-            //   this.eventService.complete();
-          } )
-          .toPromise()
-          .then( response => {
-              return response.json() as { item: SiteEntity, attributes: AttributeType[] };
-          } )
-  }
+        return this.http
+            .post( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
+            .finally(() => {
+                //   this.eventService.complete();
+            } )
+            .toPromise()
+            .then( response => {
+                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
+            } )
+    }
 
     update( entity: SiteEntity ): Promise<SiteEntity> {
 
@@ -134,12 +133,12 @@ export class ManagementService {
             params.parentId = parentId;
         }
 
-        if(type){
+        if ( type ) {
             params.type = type;
 
             url = '/project/new-child';
         }
-        
+
 
         this.eventService.start();
 
@@ -185,28 +184,28 @@ export class ManagementService {
     }
 
     getCurrentUser(): string {
-        let userName: string = "admin";
+        //        let userName: string = "admin";
+        //
+        //        if ( this.cookieService.check( "user" ) ) {
+        //            let cookieData: string = this.cookieService.get( "user" )
+        //            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+        //            userName = cookieDataJSON.userName;
+        //        }
+        //        else {
+        //            console.log( 'Check fails for the existence of the cookie' )
+        //
+        //            let cookieData: string = this.cookieService.get( "user" )
+        //
+        //            if ( cookieData != null ) {
+        //                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+        //                userName = cookieDataJSON.userName;
+        //            }
+        //            else {
+        //                console.log( 'Unable to get cookie' );
+        //            }
+        //        }
 
-        if ( this.cookieService.check( "user" ) ) {
-            let cookieData: string = this.cookieService.get( "user" )
-            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-            userName = cookieDataJSON.userName;
-        }
-        else {
-            console.log( 'Check fails for the existence of the cookie' )
-
-            let cookieData: string = this.cookieService.get( "user" )
-
-            if ( cookieData != null ) {
-                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-                userName = cookieDataJSON.userName;
-            }
-            else {
-                console.log( 'Unable to get cookie' );
-            }
-        }
-
-        return userName;
+        return this.authService.getUserName();
     }
 
     remove( id: string ): Promise<Response> {
@@ -224,7 +223,7 @@ export class ManagementService {
             } )
             .toPromise()
     }
-    
+
     removeObject( componentId: string, key: string ): Promise<Response> {
 
         let headers = new Headers( {
@@ -296,39 +295,39 @@ export class ManagementService {
 
         let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
 
-        if(useSpinner){
-          this.eventService.start();
+        if ( useSpinner ) {
+            this.eventService.start();
         }
 
         return this.http.get( acp + '/project/download', options )
             .finally(() => {
-                if(useSpinner){
-                  this.eventService.complete();
+                if ( useSpinner ) {
+                    this.eventService.complete();
                 }
             } )
             .map( res => res.blob() )
     }
-    
+
     downloadAll( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
 
-      let params: URLSearchParams = new URLSearchParams();
-      params.set( 'id', id );
-      params.set( 'key', key );
+        let params: URLSearchParams = new URLSearchParams();
+        params.set( 'id', id );
+        params.set( 'key', key );
 
-      let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
+        let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
 
-      if(useSpinner){
-        this.eventService.start();
-      }
+        if ( useSpinner ) {
+            this.eventService.start();
+        }
 
-      return this.http.get( acp + '/project/download-all', options )
-          .finally(() => {
-              if(useSpinner){
-                this.eventService.complete();
-              }
-          } )
-          .map( res => res.blob() )
-  }
+        return this.http.get( acp + '/project/download-all', options )
+            .finally(() => {
+                if ( useSpinner ) {
+                    this.eventService.complete();
+                }
+            } )
+            .map( res => res.blob() )
+    }
 
     search( terms: Observable<string> ) {
         return terms.debounceTime( 400 )
@@ -373,5 +372,16 @@ export class ManagementService {
                 this.eventService.complete();
             } )
             .toPromise()
+    }
+
+    evaluate( condition: Condition, entity: SiteEntity ): boolean {
+        if ( condition != null && condition.type === 'eq' ) {
+            return ( entity[condition.name] === condition.value );
+        }
+        else if ( condition != null && condition.type === 'admin' ) {
+            return this.authService.isAdmin();
+        }
+
+        return false;
     }
 }
