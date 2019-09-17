@@ -23,37 +23,50 @@ import { User } from './user';
 
 @Injectable()
 export class AuthService {
-  private user:User = {
-    loggedIn:false,
-    username:'',
-    roles:[]
-  };
+    private user: User = {
+        loggedIn: false,
+        username: '',
+        roles: []
+    };
 
-  constructor(private service:CookieService) {
-    let cookie = service.get('user');
-    
-    if(cookie != null && cookie.length > 0) {
-      this.user = JSON.parse(JSON.parse(cookie)) as User;      
-    }        
-  }
-  
-  setUser(user:User):void {
-    this.user = user;    
-  }
-  
-  removeUser():void {
-    this.user = {
-      loggedIn:false,
-      username:'',
-      roles:[]
-    };	  
-  }
-  
-  isLoggedIn():boolean {
-    return this.user.loggedIn;
-  }
-  
-  isAdmin():boolean {
-    return this.user.roles.indexOf("geoprism.admin.Administrator") !== -1;
-  }  
+    constructor( private service: CookieService ) {
+        let cookie = service.get( 'user' );
+
+        if ( this.service.check( "user" ) ) {
+            let cookieData: string = this.service.get( "user" )
+            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+
+            this.user.username = cookieDataJSON.userName;
+            this.user.roles = cookieDataJSON.roles;
+            this.user.loggedIn = true;
+        }
+    }
+
+    setUser( user: User ): void {
+        this.user = user;
+    }
+
+    removeUser(): void {
+        this.user = {
+            loggedIn: false,
+            username: '',
+            roles: []
+        };
+    }
+
+    getUserName(): string {
+        return this.user.username;
+    }
+
+    isLoggedIn(): boolean {
+        return this.user.loggedIn;
+    }
+
+    isAdmin(): boolean {
+        return this.user.roles.indexOf( "geoprism.admin.Administrator" ) !== -1;
+    }
+
+    isWorker(): boolean {
+        return this.isAdmin() || this.user.roles.indexOf( "geoprism.admin.DashboardBuilder" ) !== -1;
+    }
 }

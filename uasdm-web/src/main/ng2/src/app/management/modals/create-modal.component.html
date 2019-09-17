@@ -16,7 +16,7 @@
 
   <form #ngForm="ngForm">
     <div *ngFor="let attribute of attributes">
-      <div *ngIf="attribute.condition == null || evaluate(attribute.condition)" class="form-group">
+      <div *ngIf="!attribute.readonly && (attribute.condition == null || evaluate(attribute.condition))" class="form-group">
         <div *ngIf="attribute.type === 'text'">
           <label>{{attribute.label}}</label>
           <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [placeholder]="attribute.label" [required]="attribute.required" />

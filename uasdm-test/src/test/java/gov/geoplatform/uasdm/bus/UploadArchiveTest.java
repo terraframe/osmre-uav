@@ -1,11 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-
-import java.io.File;
 import java.util.List;
-
-import net.geoprism.GeoprismUser;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -20,6 +15,8 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+
+import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
 {
@@ -182,7 +179,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    collection.uploadArchive(task, new File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.tar.gz"));
+//    collection.uploadArchive(task, new File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.tar.gz"));
 
     List<WorkflowAction> actions = task.getActions();
 
