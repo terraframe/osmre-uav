@@ -16,59 +16,76 @@
 /// You should have received a copy of the GNU Lesser General Public
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
-
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule} from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
 import { CustomFormsModule } from 'ng2-validation'
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { ModalModule } from 'ngx-bootstrap/modal'
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 
-import { CoreModule } from '../core/core.module';
+import { SystemLogoService } from './service/system-logo.service';
+import { EmailService } from './service/email.service';
+import { AccountService } from './service/account.service';
 
-import { SystemInfoComponent } from './system/system-info.component';
-import { SystemLogoService } from './logo/system-logo.service';
-import { EmailService } from './email/email.service';
-import { AccountService } from './account/account.service';
-import { GeoTreeService } from './geotree/geotree.service';
-import { UniversalTreeService } from './universaltree/universaltree.service';
-import { ClassifierTreeService } from './classifiertree/classifiertree.service';
-import { BrowserService } from './browser/browser.service';
-import { AdminRoutingModule, routedComponents } from './admin-routing.module';
- 
-import { AdminHeaderComponent } from './admin-header.component';
+import { AdminHeaderComponent } from './component/admin-header/admin-header.component';
+import { AccountsComponent } from './component/account/accounts.component';
+import { AccountInviteComponent } from './component/account/account-invite.component';
+import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
+import { AccountComponent, AccountResolver } from './component/account/account.component';
+import { SystemLogoComponent } from './component/logo/system-logo.component';
+import { SystemLogosComponent } from './component/logo/system-logos.component';
+import { EmailComponent } from './component/email/email.component';
+import { SystemInfoComponent } from './component/system/system-info.component';
 
-@NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    FileUploadModule,
-    BsDropdownModule.forRoot(),
-    ModalModule.forRoot(),    
-    CustomFormsModule,
-    NgxPaginationModule,    
-    PasswordStrengthBarModule,
-    AdminRoutingModule,
-    CoreModule
-  ],
-  declarations: [
-	// Global components
-    AdminHeaderComponent,
-    SystemInfoComponent,
-    routedComponents
-  ],
-  providers: [
-    SystemLogoService,
-    EmailService,
-    AccountService,
-    GeoTreeService,
-    UniversalTreeService,
-    ClassifierTreeService,
-    BrowserService
-  ]
-})
+import { AdminRoutingModule } from './admin-routing.module';
+
+import { SharedModule } from '../shared/shared.module';
+
+import '../rxjs-extensions';
+
+@NgModule( {
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        ReactiveFormsModule,
+        FileUploadModule,
+        NgxPaginationModule,
+        PasswordStrengthBarModule,
+        CustomFormsModule,
+//        ModalModule,
+        AlertModule,
+        BsDropdownModule,
+        TypeaheadModule,
+        AccordionModule,        
+        SharedModule,
+        AdminRoutingModule
+    ],
+    declarations: [
+        AdminHeaderComponent,
+        SystemLogoComponent,
+        SystemLogosComponent,
+        AccountsComponent,
+        AccountInviteComponent,
+        AccountInviteCompleteComponent,
+        AccountComponent,
+        SystemLogoComponent,
+        SystemLogosComponent,
+        EmailComponent,
+        SystemInfoComponent
+    ],
+    providers: [
+        SystemLogoService,
+        EmailService,
+        AccountService
+    ]
+} )
 export class AdminModule { }

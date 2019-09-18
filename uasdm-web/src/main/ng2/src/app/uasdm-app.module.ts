@@ -11,125 +11,57 @@ import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
+import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 
 import './rxjs-extensions';
 
 import { UasdmAppComponent } from './uasdm-app.component';
 import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.module';
-import { EditModalComponent } from './management/modals/edit-modal.component';
-import { CreateModalComponent } from './management/modals/create-modal.component';
-import { MetadataModalComponent } from './management/modals/metadata-modal.component';
-import { UasdmHeaderComponent } from './header.component';
-import { BasicConfirmModalComponent } from './management/modals/basic-confirm-modal.component';
-import { ErrorModalComponent } from './management/modals/error-modal.component';
-import { BasicLoadingBarComponent } from './basic-loading-bar/basic-loading-bar.component';
-import { ImagePreviewModalComponent } from './management/modals/image-preview-modal.component';
-import { NotificationModalComponent } from './management/modals/notification-modal.component';
-import { UploadModalComponent } from './management/modals/upload-modal.component';
 
-import { ForbiddenNameDirective } from './management/directives/forbidden-name.directive';
-import { SafeHtmlPipe } from './pipes/safe-html.pipe'
-import { OnlyNumber } from './management/directives/number-only.directive';
+import { HubService } from './core/service/hub.service';
+import { ForgotPasswordService } from './core/service/forgotpassword.service';
+import { ForgotPasswordCompleteService } from './core/service/forgotpassword-complete.service';
 
-
-import { ManagementService } from './service/management.service';
-import { MapService } from './service/map.service';
-import { EventService } from './service/event.service';
-import { AdminGuardService } from './service/admin.guard.service';
-import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
-
-
-import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
-
-import { CoreModule } from './core/core.module';
-
-import { SessionService } from './authentication/session.service';
-import { ProfileService } from './profile/profile.service';
-import { ProfileComponent } from './profile/profile.component';
-
-import { HubService } from './hub/hub.service';
-import { ForgotPasswordService } from './forgotpassword/forgotpassword.service';
-import { ForgotPasswordCompleteService } from './forgotpassword-complete/forgotpassword-complete.service';
-import { AuthGuard } from './authentication/auth.guard';
-import { AdminGuard } from './authentication/admin.guard';
-
-import { HubHeaderComponent } from './hub/hub-header.component';
-import { LoginHeaderComponent } from './authentication/login-header.component';
-
-import { AdminModule } from './admin/admin.module';
+import { HubHeaderComponent } from './core/component/hub/hub-header.component';
+import { LoginHeaderComponent } from './core/component/login/login-header.component';
 
 import { NgxPaginationModule } from 'ngx-pagination';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule( {
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
         FormsModule,
-        HttpModule,
-        CoreModule,
-        UasdmAppRoutingModule,
         ReactiveFormsModule,
+        HttpModule,
+        UasdmAppRoutingModule,
         TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
-        ModalModule.forRoot(),
-        AlertModule.forRoot(),        
+//        ModalModule.forRoot(),
+        AlertModule.forRoot(),
         BsDropdownModule.forRoot(),
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
-        PasswordStrengthBarModule,
-        AdminModule,
-        NgxPaginationModule
+        NgxPaginationModule,
+        PasswordStrengthBarModule,        
+        SharedModule.forRoot()
     ],
     declarations: [
         UasdmAppComponent,
-        EditModalComponent,
-        CreateModalComponent,
-        BasicConfirmModalComponent,
-        NotificationModalComponent,
-        MetadataModalComponent,
-        ErrorModalComponent,
-        BasicLoadingBarComponent,
-        ImagePreviewModalComponent,
         HubHeaderComponent,
-    	LoginHeaderComponent,
-    	ProfileComponent,
-        UploadModalComponent,
+        LoginHeaderComponent,
 
         // Routing components
-        routedComponents,
-        UasdmHeaderComponent,
-        ForbiddenNameDirective,
-        SafeHtmlPipe,
-        OnlyNumber
+        routedComponents
     ],
     providers: [
-        AdminGuardService,
-        CanDeactivateGuardService,
         CookieService,
-        ManagementService,
-        EventService,
-        MapService,
-        SessionService,
-        ProfileService,
         ForgotPasswordService,
-	    ForgotPasswordCompleteService,
-	    HubService,
-	    AuthGuard,
-	    AdminGuard
+        ForgotPasswordCompleteService,
+        HubService
     ],
     bootstrap: [UasdmAppComponent],
-    entryComponents: [
-      UploadModalComponent,
-      EditModalComponent,
-      CreateModalComponent,
-      ImagePreviewModalComponent,
-      BasicConfirmModalComponent,
-      NotificationModalComponent,
-      MetadataModalComponent,
-      ErrorModalComponent,
-      HubHeaderComponent,
-      LoginHeaderComponent,
-      ProfileComponent
-    ]
+    entryComponents: []
 } )
 export class UasdmAppModule { }
