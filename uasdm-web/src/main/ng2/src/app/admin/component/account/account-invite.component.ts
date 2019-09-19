@@ -18,6 +18,7 @@
 ///
 
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
@@ -57,8 +58,8 @@ export class AccountInviteComponent implements OnInit {
         this.service.newInvite().then(( account: Account ) => {
             this.invite.groups = account.groups;
             this.invite.bureaus = account.bureaus;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -83,17 +84,17 @@ export class AccountInviteComponent implements OnInit {
 
         this.service.inviteUser( this.invite, roleIds ).then( response => {
             this.location.back();
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 }

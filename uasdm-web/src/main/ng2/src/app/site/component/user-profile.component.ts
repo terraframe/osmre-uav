@@ -3,7 +3,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 
-import { Http } from '@angular/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Rx';
 
@@ -15,11 +15,11 @@ import { ManagementService } from '../service/management.service';
 
 declare var acp: any;
 
-@Component({
+@Component( {
     selector: 'user-profile',
     templateUrl: './user-profile.component.html',
     styleUrls: ['./user-profile.css']
-})
+} )
 export class UserProfileComponent implements OnInit {
 
     userName: string = "";
@@ -42,75 +42,75 @@ export class UserProfileComponent implements OnInit {
      */
     tasks: Task[];
 
-    constructor(http: Http, private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService) {
+    constructor( http: HttpClient, private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
 
-        this.taskPolling = Observable.interval(5000)
-            .switchMap(() => http.get(acp + '/project/tasks')).map((data) => data.json())
-            .subscribe((data) => {
-                this.updateTaskData(data);
-            });
+        this.taskPolling = Observable.interval( 5000 )
+            .switchMap(() => http.get<any>( acp + '/project/tasks' ) )
+            .subscribe(( data ) => {
+                this.updateTaskData( data );
+            } );
     }
 
     ngOnInit(): void {
         this.userName = this.managementService.getCurrentUser();
-        this.managementService.tasks().then(data => {
+        this.managementService.tasks().then( data => {
 
-            this.setTaskData(data);
+            this.setTaskData( data );
 
-        }).catch((err: any) => {
-            this.error(err.json());
-        });
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
     }
 
     ngOnDestroy(): void {
 
-        if (this.taskPolling) {
+        if ( this.taskPolling ) {
             this.taskPolling.unsubscribe();
         }
     }
 
-    setTaskData(data: any): void {
+    setTaskData( data: any ): void {
         this.messages = data.messages;
 
         this.totalTaskCount = data.tasks.length;
 
-        this.totalActionsCount = this.getTotalActionsCount(data.tasks);
+        this.totalActionsCount = this.getTotalActionsCount( data.tasks );
 
-        this.tasks = data.tasks.sort((a: any, b: any) =>
-            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+        this.tasks = data.tasks.sort(( a: any, b: any ) =>
+            new Date( b.lastUpdatedDate ).getTime() - new Date( a.lastUpdatedDate ).getTime()
         );
     }
 
-    updateTaskData(data: any): void {
+    updateTaskData( data: any ): void {
         this.messages = data.messages;
 
         this.totalTaskCount = data.tasks.length;
 
-        this.totalActionsCount = this.getTotalActionsCount(data.tasks);
+        this.totalActionsCount = this.getTotalActionsCount( data.tasks );
 
         // Update existing tasks
-        for(let i=0; i< data.tasks.length; i++){
+        for ( let i = 0; i < data.tasks.length; i++ ) {
             let newTask = data.tasks[i];
 
-            for(let i2=0; i2<this.tasks.length; i2++){
+            for ( let i2 = 0; i2 < this.tasks.length; i2++ ) {
                 let existingTask = this.tasks[i2];
-                if(existingTask.oid === newTask.oid){
-                    if(existingTask.label !== newTask.label){
+                if ( existingTask.oid === newTask.oid ) {
+                    if ( existingTask.label !== newTask.label ) {
                         existingTask.label = newTask.label;
                     }
-                    if(existingTask.lastUpdateDate !== newTask.lastUpdateDate){
+                    if ( existingTask.lastUpdateDate !== newTask.lastUpdateDate ) {
                         existingTask.lastUpdateDate = newTask.lastUpdateDate;
                     }
-                    if(existingTask.lastUpdatedDate !== newTask.lastUpdatedDate){
+                    if ( existingTask.lastUpdatedDate !== newTask.lastUpdatedDate ) {
                         existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
                     }
-                    if(existingTask.message !== newTask.message){
+                    if ( existingTask.message !== newTask.message ) {
                         existingTask.message = newTask.message;
                     }
-                    if(existingTask.status !== newTask.status){
+                    if ( existingTask.status !== newTask.status ) {
                         existingTask.status = newTask.status;
                     }
-                    if(existingTask.odmOutput !== newTask.odmOutput){
+                    if ( existingTask.odmOutput !== newTask.odmOutput ) {
                         existingTask.odmOutput = newTask.odmOutput;
                     }
                 }
@@ -118,117 +118,117 @@ export class UserProfileComponent implements OnInit {
         }
 
         // Add new tasks
-        let newTasks = data.tasks.filter(o => !this.tasks.find(o2 => o.oid === o2.oid));
-        if(newTasks && newTasks.length > 0){
-            newTasks.forEach((tsk) => {
-                this.tasks.unshift(tsk);
-            })
+        let newTasks = data.tasks.filter( o => !this.tasks.find( o2 => o.oid === o2.oid ) );
+        if ( newTasks && newTasks.length > 0 ) {
+            newTasks.forEach(( tsk ) => {
+                this.tasks.unshift( tsk );
+            } )
         }
     }
 
 
-    getTotalActionsCount(tasks: Task[]) {
+    getTotalActionsCount( tasks: Task[] ) {
         let count = 0;
-        tasks.forEach((task) => {
+        tasks.forEach(( task ) => {
             count = count + task.actions.length;
-        })
+        } )
 
         return count
     }
 
-    handleMessage(message: Message): void {
-        this.bsModalRef = this.modalService.show(MetadataModalComponent, {
+    handleMessage( message: Message ): void {
+        this.bsModalRef = this.modalService.show( MetadataModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
             'class': 'upload-modal'
-        });
+        } );
         this.bsModalRef.content.collectionId = message.collectionId;
         this.bsModalRef.content.imageHeight = message.imageHeight;
         this.bsModalRef.content.imageWidth = message.imageWidth;
 
-        (<MetadataModalComponent>this.bsModalRef.content).onMetadataChange.subscribe((collectionId) => {
+        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe(( collectionId ) => {
 
             let index = -1;
-            for (let i = 0; i < this.messages.length; i++) {
+            for ( let i = 0; i < this.messages.length; i++ ) {
                 let msg = this.messages[i];
-                if (msg.collectionId === collectionId) {
+                if ( msg.collectionId === collectionId ) {
                     index = i;
                 }
             }
 
-            if (index >= 0) {
-                this.messages.splice(index, 1);
+            if ( index >= 0 ) {
+                this.messages.splice( index, 1 );
             }
 
-        });
+        } );
 
     }
 
-    removeTask(task: Task): void {
+    removeTask( task: Task ): void {
 
-        this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
+        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        });
+        } );
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + '?';
         this.bsModalRef.content.data = task;
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
 
-        (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(task => {
-            this.deleteTask(task);
-        });
+        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( task => {
+            this.deleteTask( task );
+        } );
 
     }
 
-    deleteTask(task: Task) {
-        this.managementService.removeTask(task.uploadId)
+    deleteTask( task: Task ) {
+        this.managementService.removeTask( task.uploadId )
             .then(() => {
                 let pos = null;
-                for (let i = 0; i < this.tasks.length; i++) {
+                for ( let i = 0; i < this.tasks.length; i++ ) {
                     let thisTask = this.tasks[i];
 
-                    if (thisTask.uploadId === task.uploadId) {
+                    if ( thisTask.uploadId === task.uploadId ) {
                         pos = i;
                         break;
                     }
                 }
 
-                if (pos !== null) {
-                    this.tasks.splice(pos, 1);
+                if ( pos !== null ) {
+                    this.tasks.splice( pos, 1 );
                 }
 
                 this.getMissingMetadata();
 
                 this.totalTaskCount = this.tasks.length;
 
-                this.totalActionsCount = this.getTotalActionsCount(this.tasks);
+                this.totalActionsCount = this.getTotalActionsCount( this.tasks );
 
-            })
-            .catch((err: any) => {
-                this.error(err.json());
-            });
+            } )
+            .catch(( err: HttpErrorResponse ) => {
+                this.error( err );
+            } );
     }
 
     getMissingMetadata(): void {
 
         this.managementService.getMissingMetadata()
-            .then(messages => {
+            .then( messages => {
                 this.messages = messages;
-            })
-            .catch((err: any) => {
-                this.error(err.json());
-            });
+            } )
+            .catch(( err: HttpErrorResponse ) => {
+                this.error( err );
+            } );
 
     }
 
-    error(err: any): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
-        if (err !== null) {
-            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
-            this.bsModalRef.content.message = (err.localizedMessage || err.message);
+        if ( err !== null ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
 
     }

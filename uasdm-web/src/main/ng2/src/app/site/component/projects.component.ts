@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
     trigger,
     state,
@@ -235,8 +236,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
 
     }
@@ -408,8 +409,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 this.current.data = node;
 
                 this.refresh( false );
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
+            } ).catch(( err: HttpErrorResponse ) => {
+                this.error( err );
             } );
         }
 
@@ -487,8 +488,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                         this.getThumbnail( image );
                     } )
 
-                } ).catch(( err: any ) => {
-                    this.error( err.json() );
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
                 } );
         }
     }
@@ -630,8 +631,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                     this.refresh( false );
                 }
             } );
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -690,8 +691,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 // Do something
                 this.current.data = entity;
             } );
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -711,8 +712,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         this.service.runOrtho( data.id ).then( data => {
             // Nothing
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -725,8 +726,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         //      this.service.downloadAll( data.id ).then( data => {
         //        
-        //      } ).catch(( err: any ) => {
-        //          this.error( err.json() );
+        //      } ).catch(( err: HttpErrorResponse ) => {
+        //          this.error( err );
         //      } );
     }
 
@@ -759,8 +760,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
+            } ).catch(( err: HttpErrorResponse ) => {
+                this.error( err );
             } );
         }
         else {
@@ -782,8 +783,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: any ) => {
-                this.error( err.json() );
+            } ).catch(( err: HttpErrorResponse ) => {
+                this.error( err );
             } );
         }
     }
@@ -875,8 +876,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                         }, 20 );
                     }
 
-                } ).catch(( err: any ) => {
-                    this.error( err.json() );
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
                 } );
             }
         }
@@ -947,11 +948,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 

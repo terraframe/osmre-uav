@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
@@ -41,8 +42,8 @@ export class CreateModalComponent implements OnInit {
         this.service.applyWithParent( this.entity, this.parentId ).then( data => {
             this.onNodeChange.next( data );
             this.bsModalRef.hide();
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -50,10 +51,10 @@ export class CreateModalComponent implements OnInit {
         return this.service.evaluate(condition, this.entity);
     }
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
-            this.message = ( err.localizedMessage || err.message );
+            this.message = ( err.error.localizedMessage || err.error.message || err.message );
 
             console.log( this.message );
         }

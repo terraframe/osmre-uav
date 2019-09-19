@@ -18,6 +18,7 @@
 ///
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -55,8 +56,8 @@ export class AccountsComponent implements OnInit {
     ngOnInit(): void {
         this.service.page( this.p ).then( res => {
             this.res = res;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -79,8 +80,8 @@ export class AccountsComponent implements OnInit {
     remove( user: User ): void {
         this.service.remove( user.oid ).then( response => {
             this.res.resultSet = this.res.resultSet.filter( h => h.oid !== user.oid );
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -97,8 +98,8 @@ export class AccountsComponent implements OnInit {
             this.res = res;
 
             this.p = pageNumber;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -106,11 +107,11 @@ export class AccountsComponent implements OnInit {
         this.router.navigate( ['/admin/invite'] );
     }
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 }

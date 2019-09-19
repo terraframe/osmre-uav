@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -28,21 +28,21 @@ declare var acp: any;
 
 @Injectable()
 export class ForgotPasswordCompleteService {
-  
-  constructor(private http: HttpClient, private eventService: EventService) {}
-  
-  complete(newPassword:string, token:string): Promise<void> {
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });  
-    
-    this.eventService.start();
-  
-    return this.http
-      .post<void>(acp + '/forgotpassword/complete', JSON.stringify({newPassword:newPassword,token:token}), {headers: headers})
-      .finally(() => {
-        this.eventService.complete();
-      } )
-      .toPromise();
-  }  
+
+    constructor( private http: HttpClient, private eventService: EventService ) { }
+
+    complete( newPassword: string, token: string ): Promise<void> {
+        let headers = new HttpHeaders( {
+            'Content-Type': 'application/json'
+        } );
+
+        this.eventService.start();
+
+        return this.http
+            .post<void>( acp + '/forgotpassword/complete', JSON.stringify( { newPassword: newPassword, token: token } ), { headers: headers } )
+            .finally(() => {
+                this.eventService.complete();
+            } )
+            .toPromise();
+    }
 }

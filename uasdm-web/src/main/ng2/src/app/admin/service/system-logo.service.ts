@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
@@ -32,33 +32,33 @@ declare var acp: any;
 @Injectable()
 export class SystemLogoService {
 
-    constructor( private eventService: EventService, private http: Http ) { }
+    constructor( private eventService: EventService, private http: HttpClient ) { }
 
     getIcons(): Promise<SystemLogo[]> {
 
         this.eventService.start();
 
         return this.http
-            .get( acp + '/logo/getAll' )
+            .get<{ icons: SystemLogo[] }>( acp + '/logo/getAll' )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
             .then( response => {
-                return response.json().icons as SystemLogo[];
+                return response.icons;
             } )
     }
 
-    remove( oid: string ): Promise<Response> {
+    remove( oid: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/logo/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( acp + '/logo/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )

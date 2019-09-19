@@ -18,6 +18,7 @@
 ///
 
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -59,8 +60,8 @@ export class AccountInviteCompleteComponent implements OnInit {
     ngOnInit(): void {
         this.service.uasdmNewInstance().then(( user: User ) => {
             this.user = user;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
 
         this.sub = this.route.params.subscribe( params => {
@@ -78,11 +79,11 @@ export class AccountInviteCompleteComponent implements OnInit {
         } );
     }
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 

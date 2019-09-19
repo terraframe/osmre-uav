@@ -18,6 +18,7 @@
 ///
 
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -56,8 +57,8 @@ export class EmailComponent implements OnInit {
     ngOnInit(): void {
         this.service.getInstance().then( email => {
             this.email = email;
-        } ).catch(( err: any ) => {
-            this.error( err.json() );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
         } );
     }
 
@@ -70,16 +71,16 @@ export class EmailComponent implements OnInit {
             .then( email => {
                 this.location.back();
             } )
-            .catch(( err: any ) => {
-                this.error( err.json() );
+            .catch(( err: HttpErrorResponse ) => {
+                this.error( err );
             } );
     }
 
-    error( err: any ): void {
+    error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 }

@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
@@ -33,49 +33,48 @@ declare var acp: any;
 @Injectable()
 export class SessionService {
 
-    constructor( private eventService: EventService, private http: Http, private authService: AuthService ) {
+    constructor( private eventService: EventService, private http: HttpClient, private authService: AuthService ) {
     }
 
     login( username: string, password: string ): Promise<User> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/session/login', JSON.stringify( { username: username, password: password } ), { headers: headers } )
+            .post<User>( acp + '/session/login', JSON.stringify( { username: username, password: password } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                let user = response.json() as User;
+            .then(( user: User ) => {
                 this.authService.setUser( user );
 
                 return user;
             } )
     }
 
-    logout(): Promise<Response> {
+    logout(): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/session/logout', { headers: headers } )
+            .post<void>( acp + '/session/logout', { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
+            .then(() => {
                 this.authService.setUser( null );
 
-                return response;
+                return;
             } )
     }
 }

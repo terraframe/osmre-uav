@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams, RequestOptions, ResponseContentType } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import 'rxjs/add/operator/map';
@@ -15,115 +15,97 @@ declare var acp: any;
 @Injectable()
 export class ManagementService {
 
-    constructor( private http: Http, private eventService: EventService, private authService: AuthService ) { }
+    constructor( private http: HttpClient, private eventService: EventService, private authService: AuthService ) { }
 
     getChildren( id: string ): Promise<SiteEntity[]> {
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'id', id );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
 
 
         return this.http
-            .get( acp + '/project/get-children', { search: params } )
+            .get<SiteEntity[]>( acp + '/project/get-children', { params: params } )
             .toPromise()
-            .then( response => {
-                return response.json() as SiteEntity[];
-            } )
     }
 
     getItems( id: string, key: string ): Promise<SiteEntity[]> {
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'id', id );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
 
         if ( key != null ) {
-            params.set( 'key', key );
+            params = params.set( 'key', key );
         }
 
         return this.http
-            .get( acp + '/project/items', { search: params } )
+            .get<SiteEntity[]>( acp + '/project/items', { params: params } )
             .toPromise()
-            .then( response => {
-                return response.json() as SiteEntity[];
-            } )
     }
 
     roots( id: string ): Promise<SiteEntity[]> {
-        let params: URLSearchParams = new URLSearchParams();
+        let params: HttpParams = new HttpParams();
 
         if ( id != null ) {
-            params.set( 'id', id );
+            params = params.set( 'id', id );
         }
 
 
         return this.http
-            .get( acp + '/project/roots', { search: params } )
+            .get<SiteEntity[]>( acp + '/project/roots', { params: params } )
             .toPromise()
-            .then( response => {
-                return response.json() as SiteEntity[];
-            } )
     }
 
     edit( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/edit', JSON.stringify( { id: id } ), { headers: headers } )
+            .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/edit', JSON.stringify( { id: id } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
-            } )
     }
 
     runOrtho( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         //   this.eventService.start();
 
         return this.http
-            .post( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
+            .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
             .finally(() => {
                 //   this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
-            } )
     }
 
     update( entity: SiteEntity ): Promise<SiteEntity> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/update', JSON.stringify( { entity: entity } ), { headers: headers } )
+            .post<SiteEntity>( acp + '/project/update', JSON.stringify( { entity: entity } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as SiteEntity;
-            } )
     }
 
     newChild( parentId: string, type: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
         let url = '/project/new-default-child';
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
@@ -144,21 +126,18 @@ export class ManagementService {
 
 
         return this.http
-            .post( acp + url, JSON.stringify( params ), { headers: headers } )
+            .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + url, JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as { item: SiteEntity, attributes: AttributeType[] };
-            } )
     }
 
 
 
     applyWithParent( entity: SiteEntity, parentId: string ): Promise<SiteEntity> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
@@ -173,14 +152,11 @@ export class ManagementService {
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/apply-with-parent', JSON.stringify( params ), { headers: headers } )
+            .post<SiteEntity>( acp + '/project/apply-with-parent', JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as SiteEntity;
-            } )
     }
 
     getCurrentUser(): string {
@@ -208,48 +184,48 @@ export class ManagementService {
         return this.authService.getUserName();
     }
 
-    remove( id: string ): Promise<Response> {
+    remove( id: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/remove', JSON.stringify( { id: id } ), { headers: headers } )
+            .post<void>( acp + '/project/remove', JSON.stringify( { id: id } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
     }
 
-    removeObject( componentId: string, key: string ): Promise<Response> {
+    removeObject( componentId: string, key: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/removeObject', JSON.stringify( { id: componentId, key: key } ), { headers: headers } )
+            .post<void>( acp + '/project/removeObject', JSON.stringify( { id: componentId, key: key } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
     }
 
-    removeTask( uploadId: string ): Promise<Response> {
+    removeTask( uploadId: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/remove-task', JSON.stringify( { uploadId: uploadId } ), { headers: headers } )
+            .post<void>( acp + '/project/remove-task', JSON.stringify( { uploadId: uploadId } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
@@ -258,75 +234,60 @@ export class ManagementService {
 
     tasks(): Promise<{ messages: Message[], tasks: Task[] }> {
         return this.http
-            .get( acp + '/project/tasks' )
+            .get<{ messages: Message[], tasks: Task[] }>( acp + '/project/tasks' )
             .toPromise()
-            .then( response => {
-                return response.json() as { messages: Message[], tasks: Task[] };
-            } )
     }
 
     task( id: string ): Promise<{ messages: Message[], task: Task }> {
 
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'id', id );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
 
         return this.http
-            .get( acp + '/project/task', { params: params } )
+            .get<{ messages: Message[], task: Task }>( acp + '/project/task', { params: params } )
             .toPromise()
-            .then( response => {
-                return response.json() as { messages: Message[], task: Task };
-            } )
     }
 
     getMissingMetadata(): Promise<Message[]> {
         return this.http
-            .get( acp + '/project/missing-metadata' )
+            .get<Message[]>( acp + '/project/missing-metadata' )
             .toPromise()
-            .then( response => {
-                return response.json() as Message[];
-            } )
     }
 
     download( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
 
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'id', id );
-        params.set( 'key', key );
-
-        let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
+        params = params.set( 'key', key );
 
         if ( useSpinner ) {
             this.eventService.start();
         }
 
-        return this.http.get( acp + '/project/download', options )
+        return this.http.get<Blob>( acp + '/project/download', { params: params, responseType: 'blob' as 'json' } )
             .finally(() => {
                 if ( useSpinner ) {
                     this.eventService.complete();
                 }
             } )
-            .map( res => res.blob() )
     }
 
     downloadAll( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
 
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'id', id );
-        params.set( 'key', key );
-
-        let options = new RequestOptions( { responseType: ResponseContentType.Blob, search: params } );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
+        params = params.set( 'key', key );
 
         if ( useSpinner ) {
             this.eventService.start();
         }
 
-        return this.http.get( acp + '/project/download-all', options )
+        return this.http.get<Blob>( acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' } )
             .finally(() => {
                 if ( useSpinner ) {
                     this.eventService.complete();
                 }
             } )
-            .map( res => res.blob() )
     }
 
     search( terms: Observable<string> ) {
@@ -335,39 +296,35 @@ export class ManagementService {
             .switchMap( term => this.searchEntries( term ) );
     }
 
-    searchEntries( term: string ) {
+    searchEntries( term: string ): Observable<string> {
 
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'term', term );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'term', term );
 
         return this.http
-            .get( acp + '/project/search', { search: params } )
-            .map( res => res.json() );
+            .get<string>( acp + '/project/search', { params: params } )
     }
 
     searchEntites( term: string ): Promise<any> {
 
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'term', term );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'term', term );
 
         return this.http
-            .get( acp + '/project/search', { search: params } )
+            .get( acp + '/project/search', { params: params } )
             .toPromise()
-            .then( response => {
-                return response.json();
-            } )
     }
 
-    submitCollectionMetadata( metaObj: string ): Promise<Response> {
+    submitCollectionMetadata( metaObj: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/project/submit-metadata', JSON.stringify( { json: metaObj } ), { headers: headers } )
+            .post<void>( acp + '/project/submit-metadata', JSON.stringify( { json: metaObj } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )

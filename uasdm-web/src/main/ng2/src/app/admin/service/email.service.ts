@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
@@ -32,38 +32,32 @@ declare var acp: any;
 @Injectable()
 export class EmailService {
 
-    constructor( private eventService: EventService, private http: Http ) { }
+    constructor( private eventService: EventService, private http: HttpClient ) { }
 
     getInstance(): Promise<Email> {
 
         this.eventService.start();
 
         return this.http
-            .get( acp + '/email/getInstance' )
+            .get<Email>( acp + '/email/getInstance' )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as Email;
-            } )
     }
 
     apply( email: Email ): Promise<Email> {
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/email/apply', JSON.stringify( { setting: email } ), { headers: headers } )
+            .post<Email>( acp + '/email/apply', JSON.stringify( { setting: email } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as Email;
-            } )
     }
 }

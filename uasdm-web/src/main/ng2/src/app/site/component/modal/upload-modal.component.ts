@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, AfterViewInit, Inject, ViewChild, ElementRef, KeyValueDiffers, DoCheck, HostListener } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
@@ -28,12 +28,12 @@ export class UploadModalComponent implements OnInit {
 
     @Input() clickedItem: any;
 
-    @Input() 
-    set setHierarchy(data: any) {
+    @Input()
+    set setHierarchy( data: any ) {
         this.hierarchy = data;
 
-        for (let property in this.hierarchy) {
-            if (this.hierarchy.hasOwnProperty(property)) {
+        for ( let property in this.hierarchy ) {
+            if ( this.hierarchy.hasOwnProperty( property ) ) {
                 this.values[property] = this.hierarchy[property];
             }
         }
@@ -151,9 +151,9 @@ export class UploadModalComponent implements OnInit {
                     onUpload: function( id: any, name: any ): void {
                         that.disabled = true;
 
-                        that.countUpload(that);
+                        that.countUpload( that );
 
-                        if(that.message && that.message.length > 0){
+                        if ( that.message && that.message.length > 0 ) {
                             that.message = "";
                         }
                     },
@@ -193,21 +193,21 @@ export class UploadModalComponent implements OnInit {
 
                         this.clearStoredFiles();
 
-                        clearInterval(that.uplodeCounterInterfal);
+                        clearInterval( that.uplodeCounterInterfal );
 
-                        if(responseJSON.success){
+                        if ( responseJSON.success ) {
                             let notificationMsg = "";
-                            if(that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef"){
+                            if ( that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef" ) {
                                 notificationMsg = "Your upload has finished and can be viewed in the Site Navigator.";
                             }
-                            else{
+                            else {
                                 notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
                             }
 
-                            that.taskFinishedNotifications.push({
-                                'id':id,
+                            that.taskFinishedNotifications.push( {
+                                'id': id,
                                 "message": notificationMsg
-                            })
+                            } )
                         }
 
                         that.onUploadComplete.next( that.clickedItem );
@@ -220,8 +220,8 @@ export class UploadModalComponent implements OnInit {
                                 .then(() => {
                                     this.clearStoredFiles();
                                 } )
-                                .catch(( err: any ) => {
-                                    this.error( err.json() );
+                                .catch(( err: HttpErrorResponse ) => {
+                                    this.error( err );
                                 } );
                         }
 
@@ -234,12 +234,12 @@ export class UploadModalComponent implements OnInit {
                             that.pollingIsSet = false;
                         }
 
-                        clearInterval(that.uplodeCounterInterfal);
+                        clearInterval( that.uplodeCounterInterfal );
                     },
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
-                        that.error( { message: xhrOrXdr } );
+                        that.error( { error: { message: xhrOrXdr } } );
                     }
-                    
+
                 }
             };
 
@@ -259,23 +259,23 @@ export class UploadModalComponent implements OnInit {
         // this.service.roots( null ).then( sites => {
         //     this.sites = sites;
 
-        // } ).catch(( err: any ) => {
-        //     this.error( err.json() );
+        // } ).catch(( err: HttpErrorResponse ) => {
+        //     this.error( err );
         // } );
     }
 
-    close():void {
+    close(): void {
         this.bsModalRef.hide();
     }
 
-    closeTaskFinishedNotification(id: string): void {
+    closeTaskFinishedNotification( id: string ): void {
         // iterate in reverse to allow splice while avoiding the reindex
         // from affecting any of the next items in the array.
         let i = this.taskFinishedNotifications.length;
-        while(i--) {
+        while ( i-- ) {
             let note = this.taskFinishedNotifications[i];
-            if(id === note.id){
-                this.taskFinishedNotifications.splice(i, 1);
+            if ( id === note.id ) {
+                this.taskFinishedNotifications.splice( i, 1 );
             }
         }
     }
@@ -309,8 +309,8 @@ export class UploadModalComponent implements OnInit {
 
     //         this.service.getChildren( this.values.site ).then( projects => {
     //             this.projects = projects;
-    //         } ).catch(( err: any ) => {
-    //             this.error( err.json() );
+    //         } ).catch(( err: HttpErrorResponse ) => {
+    //             this.error( err );
     //         } );
     //     }
     // }
@@ -329,8 +329,8 @@ export class UploadModalComponent implements OnInit {
     //     if ( projectId != null && projectId.length > 0 ) {
     //         this.service.getChildren( this.values.project ).then( missions => {
     //             this.missions = missions;
-    //         } ).catch(( err: any ) => {
-    //             this.error( err.json() );
+    //         } ).catch(( err: HttpErrorResponse ) => {
+    //             this.error( err );
     //         } );
     //     }
     // }
@@ -349,8 +349,8 @@ export class UploadModalComponent implements OnInit {
 
     //         this.service.getChildren( this.values.mission ).then( collections => {
     //             this.collections = collections;
-    //         } ).catch(( err: any ) => {
-    //             this.error( err.json() );
+    //         } ).catch(( err: HttpErrorResponse ) => {
+    //             this.error( err );
     //         } );
     //     }
     // }
@@ -368,8 +368,8 @@ export class UploadModalComponent implements OnInit {
 
     //         this.service.getChildren( this.values.mission ).then( collections => {
     //             this.collections = collections;
-    //         } ).catch(( err: any ) => {
-    //             this.error( err.json() );
+    //         } ).catch(( err: HttpErrorResponse ) => {
+    //             this.error( err );
     //         } );
     //     }
     // }
@@ -400,13 +400,13 @@ export class UploadModalComponent implements OnInit {
         }
         else {
 
-            if(this.values.collection){
+            if ( this.values.collection ) {
                 this.values.uasComponentOid = this.values.collection.id;
-            }else if(this.values.imagery){
+            } else if ( this.values.imagery ) {
                 this.values.uasComponentOid = this.values.imagery.id;
             }
 
-            if(this.clickedItem && this.clickedItem.data){
+            if ( this.clickedItem && this.clickedItem.data ) {
                 this.values.uploadTarget = this.clickedItem.data.name
             }
 
@@ -440,8 +440,8 @@ export class UploadModalComponent implements OnInit {
                     that.existingTask = false;
                     that.showUploadPanel();
 
-                } ).catch(( err: any ) => {
-                    this.error( err.json() );
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
                 } );
         } );
     }
@@ -455,15 +455,15 @@ export class UploadModalComponent implements OnInit {
         this.selectedContinue = true;
     }
 
-    countUpload(thisRef: any): void {
+    countUpload( thisRef: any ): void {
         let ct = 0;
 
         function incrementSeconds() {
             ct += 1;
 
-            let hours = Math.floor(ct / 3600)
-            let minutes = Math.floor((ct % 3600) / 60);
-            let seconds = Math.floor(ct % 60);
+            let hours = Math.floor( ct / 3600 )
+            let minutes = Math.floor(( ct % 3600 ) / 60 );
+            let seconds = Math.floor( ct % 60 );
 
             let hoursStr = minutes < 10 ? "0" + hours : hours;
             let minutesStr = minutes < 10 ? "0" + minutes : minutes;
@@ -472,16 +472,16 @@ export class UploadModalComponent implements OnInit {
             thisRef.uploadCounter = hoursStr + ":" + minutesStr + ":" + secondsStr;
         }
 
-        thisRef.uplodeCounterInterfal = setInterval(incrementSeconds, 1000);
+        thisRef.uplodeCounterInterfal = setInterval( incrementSeconds, 1000 );
     }
 
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
             // this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            // this.bsModalRef.content.message = ( err.localizedMessage || err.message );
+            // this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
 
-            this.message = ( err.localizedMessage || err.message );
+            this.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }
 

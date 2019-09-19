@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule, XHRBackend, RequestOptions, Http } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -22,6 +22,9 @@ import { HubService } from './core/service/hub.service';
 import { ForgotPasswordService } from './core/service/forgotpassword.service';
 import { ForgotPasswordCompleteService } from './core/service/forgotpassword-complete.service';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpErrorInterceptor } from './core/service/http-error.interceptor';
+
 import { HubHeaderComponent } from './core/component/hub/hub-header.component';
 import { LoginHeaderComponent } from './core/component/login/login-header.component';
 
@@ -34,17 +37,17 @@ import { SharedModule } from './shared/shared.module';
         BrowserAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
-        HttpModule,
+        HttpClientModule,
         UasdmAppRoutingModule,
         TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
-//        ModalModule.forRoot(),
+        //        ModalModule.forRoot(),
         AlertModule.forRoot(),
         BsDropdownModule.forRoot(),
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
         NgxPaginationModule,
-        PasswordStrengthBarModule,        
+        PasswordStrengthBarModule,
         SharedModule.forRoot()
     ],
     declarations: [
@@ -56,6 +59,11 @@ import { SharedModule } from './shared/shared.module';
         routedComponents
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorInterceptor,
+            multi: true
+        },
         CookieService,
         ForgotPasswordService,
         ForgotPasswordCompleteService,

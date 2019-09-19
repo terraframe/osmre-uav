@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, URLSearchParams } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
@@ -32,66 +32,57 @@ declare var acp: any;
 @Injectable()
 export class AccountService {
 
-    constructor( private eventService: EventService, private http: Http ) { }
+    constructor( private eventService: EventService, private http: HttpClient ) { }
 
     page( p: number ): Promise<PageResult> {
-        let params: URLSearchParams = new URLSearchParams();
-        params.set( 'number', p.toString() );
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'number', p.toString() );
 
         this.eventService.start();
 
         return this.http
-            .get( acp + '/uasdm-account/page', { search: params } )
+            .get<PageResult>( acp + '/uasdm-account/page', { params: params } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then( response => {
-                return response.json() as PageResult;
-            } )
     }
 
     edit( oid: string ): Promise<Account> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/edit', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<Account>( acp + '/uasdm-account/edit', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as Account;
-            } )
     }
 
     uasdmNewInstance(): Promise<User> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/newInstance', JSON.stringify( {} ), { headers: headers } )
+            .post<User>( acp + '/uasdm-account/newInstance', JSON.stringify( {} ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as User;
-            } )
     }
 
     newInvite(): Promise<Account> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
@@ -108,16 +99,16 @@ export class AccountService {
             } )
     }
 
-    remove( oid: string ): Promise<Response> {
+    remove( oid: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( acp + '/uasdm-account/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
@@ -126,41 +117,38 @@ export class AccountService {
 
     apply( user: User, roleIds: string[] ): Promise<User> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/apply', JSON.stringify( { account: user, roleIds: roleIds } ), { headers: headers } )
+            .post<User>( acp + '/uasdm-account/apply', JSON.stringify( { account: user, roleIds: roleIds } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as User;
-            } )
     }
 
-    unlock( oid: string ): Promise<Response> {
+    unlock( oid: string ): Promise<void> {
 
-        let headers = new Headers( {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( acp + '/uasdm-account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
     }
 
-    inviteUser( invite: UserInvite, roleIds: string[] ): Promise<Response> {
-        let headers = new Headers( {
+    inviteUser( invite: UserInvite, roleIds: string[] ): Promise<void> {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
@@ -169,22 +157,22 @@ export class AccountService {
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/inviteUser', JSON.stringify( { invite: invite, roleIds: roleIds } ), { headers: headers } )
+            .post<void>( acp + '/uasdm-account/inviteUser', JSON.stringify( { invite: invite, roleIds: roleIds } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
     }
 
-    inviteComplete( user: User, token: string ): Promise<Response> {
-        let headers = new Headers( {
+    inviteComplete( user: User, token: string ): Promise<void> {
+        let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
         } );
 
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/inviteComplete', JSON.stringify( { user: user, token: token } ), { headers: headers } )
+            .post<void>( acp + '/uasdm-account/inviteComplete', JSON.stringify( { user: user, token: token } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
