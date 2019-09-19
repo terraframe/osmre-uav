@@ -1,0 +1,42 @@
+<div class="new-admin-design-main">
+	<admin-header></admin-header>
+
+	<div id="app-container" class="container-fluid">
+
+		<h2>Platforms</h2>
+
+		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+		
+		<div class="list-table-wrapper">
+			<table id="manage-platforms-table"
+				class="list-table table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th></th>
+						<th class="label-column">Name</th>
+						<th class="label-column">Label</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let platform of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
+						class="fade-ngRepeat-item">
+						<td class="button-column">
+						  <a class="fa fa-pencil ico-edit" (click)="edit(platform, $event)" title="Edit platform"></a>
+						  <a class="fa fa-trash-o ico-remove" (click)="onClickRemove(platform, $event)" title="Remove platform"></a>
+					    </td>
+						<td class="label-column">{{ platform.name }}</td>
+						<td class="label-column">{{ platform.displayLabel }}</td>
+					</tr>
+					<tr>
+						<td class="button-column">
+						  <a class="fa fa-plus" (click)="newInstance()" title="Add new platform"></a>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+		
+		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+	</div>
+</div>

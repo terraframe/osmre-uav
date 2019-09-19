@@ -18,46 +18,46 @@
 ///
 
 export class UserInvite {
-  email: string;
-  bureau: string;
-  groups:Group[];
-  bureaus:{value:string, label:string}[];
+    email: string;
+    bureau: string;
+    groups: Group[];
+    bureaus: { value: string, label: string }[];
 }
 
 export class User {
-  oid: string;
-  username: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  bureau: string;
-  inactive: boolean;
-  newInstance: boolean;
+    oid: string;
+    username: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    bureau: string;
+    inactive: boolean;
+    newInstance: boolean;
 }
 
 export class Role {
-  roleId:string;
-  displayLabel:string;
-  assigned:boolean;
+    roleId: string;
+    displayLabel: string;
+    assigned: boolean;
 }
 
 export class Group {
-  name:string;
-  roles:Role[];
+    name: string;
+    roles: Role[];
 }
 
 export class Account {
-  user:User;
-  groups:Group[];
-  bureaus:{value:string, label:string}[];
-  changePassword:boolean;
+    user: User;
+    groups: Group[];
+    bureaus: { value: string, label: string }[];
+    changePassword: boolean;
 }
 
-export class PageResult {
-  count: number;
-  pageNumber: number;
-  pageSize: number;
-  resultSet: User[];
+export class PageResult<T> {
+    count: number;
+    pageNumber: number;
+    pageSize: number;
+    resultSet: T[];
 }

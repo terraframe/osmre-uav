@@ -34,6 +34,8 @@ import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 import { SystemLogoService } from './service/system-logo.service';
 import { EmailService } from './service/email.service';
 import { AccountService } from './service/account.service';
+import { SensorService } from './service/sensor.service';
+import { PlatformService } from './service/platform.service';
 
 import { AdminHeaderComponent } from './component/admin-header/admin-header.component';
 import { AccountsComponent } from './component/account/accounts.component';
@@ -44,6 +46,10 @@ import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
+import { SensorsComponent } from './component/sensor/sensors.component';
+import { SensorComponent } from './component/sensor/sensor.component';
+import { PlatformsComponent } from './component/platform/platforms.component';
+import { PlatformComponent } from './component/platform/platform.component';
 
 import { AdminRoutingModule } from './admin-routing.module';
 
@@ -61,11 +67,11 @@ import '../rxjs-extensions';
         NgxPaginationModule,
         PasswordStrengthBarModule,
         CustomFormsModule,
-//        ModalModule,
+        //        ModalModule,
         AlertModule,
         BsDropdownModule,
         TypeaheadModule,
-        AccordionModule,        
+        AccordionModule,
         SharedModule,
         AdminRoutingModule
     ],
@@ -80,12 +86,22 @@ import '../rxjs-extensions';
         SystemLogoComponent,
         SystemLogosComponent,
         EmailComponent,
-        SystemInfoComponent
+        SystemInfoComponent,
+        SensorComponent,
+        SensorsComponent,
+        PlatformComponent,
+        PlatformsComponent,
     ],
     providers: [
         SystemLogoService,
         EmailService,
-        AccountService
+        AccountService,
+        SensorService,
+        PlatformService
+    ],
+    entryComponents: [
+        SensorComponent,
+        PlatformComponent
     ]
 } )
 export class AdminModule { }

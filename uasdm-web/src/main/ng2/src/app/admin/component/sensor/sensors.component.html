@@ -1,0 +1,42 @@
+<div class="new-admin-design-main">
+	<admin-header></admin-header>
+
+	<div id="app-container" class="container-fluid">
+
+		<h2>Sensors</h2>
+
+		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+		
+		<div class="list-table-wrapper">
+			<table id="manage-sensors-table"
+				class="list-table table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th></th>
+						<th class="label-column">Name</th>
+						<th class="label-column">Label</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let sensor of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
+						class="fade-ngRepeat-item">
+						<td class="button-column">
+						  <a class="fa fa-pencil ico-edit" (click)="edit(sensor, $event)" title="Edit sensor"></a>
+						  <a class="fa fa-trash-o ico-remove" (click)="onClickRemove(sensor, $event)" title="Remove sensor"></a>
+					    </td>
+						<td class="label-column">{{ sensor.name }}</td>
+						<td class="label-column">{{ sensor.displayLabel }}</td>
+					</tr>
+					<tr>
+						<td class="button-column">
+						  <a class="fa fa-plus" (click)="newInstance()" title="Add new sensor"></a>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+		
+		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+	</div>
+</div>

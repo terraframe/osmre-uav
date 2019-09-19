@@ -34,14 +34,14 @@ export class AccountService {
 
     constructor( private eventService: EventService, private http: HttpClient ) { }
 
-    page( p: number ): Promise<PageResult> {
+    page( p: number ): Promise<PageResult<User>> {
         let params: HttpParams = new HttpParams();
         params = params.set( 'number', p.toString() );
 
         this.eventService.start();
 
         return this.http
-            .get<PageResult>( acp + '/uasdm-account/page', { params: params } )
+            .get<PageResult<User>>( acp + '/uasdm-account/page', { params: params } )
             .finally(() => {
                 this.eventService.complete();
             } )
