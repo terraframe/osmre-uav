@@ -21,7 +21,7 @@ public class PlatformService
   }
 
   @Request(RequestType.SESSION)
-  public JSONArray getAll(String sessionId, Integer pageNumber)
+  public JSONArray getAll(String sessionId)
   {
     JSONArray array = new JSONArray();
 

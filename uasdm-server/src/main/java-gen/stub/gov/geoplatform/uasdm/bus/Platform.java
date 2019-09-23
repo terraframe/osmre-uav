@@ -8,11 +8,18 @@ public class Platform extends PlatformBase
 {
   private static final long serialVersionUID = 1790259303;
 
+  public String             OTHER            = "OTHER";
+
   private static String     NEW_INSTANCE     = "newInstance";
 
   public Platform()
   {
     super();
+  }
+
+  public boolean isOther()
+  {
+    return this.getName().equals(OTHER);
   }
 
   public JSONObject toJSON()
@@ -54,4 +61,5 @@ public class Platform extends PlatformBase
 
     return platform;
   }
+
 }

@@ -1,7 +1,9 @@
 package gov.geoplatform.uasdm.controller;
 
 import gov.geoplatform.uasdm.S3GetResponse;
+import gov.geoplatform.uasdm.service.PlatformService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.SensorService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -64,6 +66,16 @@ public class ProjectManagementController
     return new RestBodyResponse(SiteItem.serialize(roots));
   }
 
+  @Endpoint(url = "metadata-options", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getMetadataOptions(ClientRequestIF request)
+  {
+    RestResponse response = new RestResponse();
+    response.set("sensors", new SensorService().getAll(request.getSessionId()));
+    response.set("platforms", new PlatformService().getAll(request.getSessionId()));
+
+    return response;
+  }
+
   @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF newDefaultChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
   {
@@ -74,7 +86,7 @@ public class ProjectManagementController
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
   }
-  
+
   @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF newChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId, @RequestParamter(name = "type") String childType)
   {
@@ -85,7 +97,7 @@ public class ProjectManagementController
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
   }
-  
+
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {
@@ -95,18 +107,20 @@ public class ProjectManagementController
 
     return new RestBodyResponse(result.toJSON());
   }
-  
+
   @Endpoint(url = "download-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF downloadAll(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
-    // Ideally I should be able to write these bytes directly to the ServletOutputStream but we'll be dumb and waste memory with InputStreams because its supported by Runway mvc.
+    // Ideally I should be able to write these bytes directly to the
+    // ServletOutputStream but we'll be dumb and waste memory with InputStreams
+    // because its supported by Runway mvc.
     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-    
+
     this.service.downloadAll(request.getSessionId(), id, key, bao);
 
     return new InputStreamResponse(new ByteArrayInputStream(bao.toByteArray()), "application/zip");
   }
-  
+
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
@@ -114,7 +128,7 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "submit-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "json") String json)
   {
@@ -151,7 +165,7 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "removeObject", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF removeObject(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {

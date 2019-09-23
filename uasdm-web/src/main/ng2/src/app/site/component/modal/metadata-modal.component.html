@@ -122,12 +122,15 @@
                     <div class="panel-body">
                         <div class="form-group">
                             <label for="platform.name">Name</label>
-                            <select [(ngModel)]="metaObject.platform.name" name="platform.name" type="input" class=""
-                                [required]="true" [disabled]="false">
+                            <select [(ngModel)]="metaObject.platform.name" name="platform.name" type="input" class="" required>                               
                                 <option></option>
-                                <option>Falcon Fixed Wing</option>
-                                <!-- <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option> -->
+                                <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.displayLabel}}</option>
                             </select>
+                        </div>
+                        <div class="form-group" *ngIf="metaObject.platform.name === otherPlatformId">
+                            <label for="platform.class">Other name</label>
+                            <input type="text" name="platform.otherName" [(ngModel)]="metaObject.platform.otherName"
+                                maxlength="20" required />
                         </div>
                         <div class="form-group">
                             <label for="platform.class">Class</label>
@@ -167,8 +170,15 @@
                     <div class="panel-body">
                         <div class="form-group">
                             <label for="sensor.name">Name</label>
-                            <input type="text" name="sensor.name" [(ngModel)]="metaObject.sensor.name" [maxlength]="50"
-                                [required]="true" [disabled]="false" />
+                            <select [(ngModel)]="metaObject.sensor.name" name="sensor.name" type="input" class="" required>                               
+                                <option></option>
+                                <option *ngFor="let sensor of sensors" [value]="sensor.oid">{{sensor.displayLabel}}</option>
+                            </select>
+                        </div>                    
+                        <div class="form-group" *ngIf="metaObject.sensor.name === otherSensorId">
+                            <label for="sensor.class">Other name</label>
+                            <input type="text" name="sensor.otherName" [(ngModel)]="metaObject.sensor.otherName"
+                                maxlength="20" required />
                         </div>
                         <div class="form-group">
                             <label for="sensor.type">Type</label>

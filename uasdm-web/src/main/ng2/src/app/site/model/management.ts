@@ -4,6 +4,12 @@ export class Condition {
     type: string;
 }
 
+export class Option {
+    name: string;
+    displayLabel: string;
+    oid: string;
+}
+
 export class AttributeType {
     name: string;
     label: string;

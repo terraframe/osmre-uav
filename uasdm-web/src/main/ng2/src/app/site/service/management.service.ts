@@ -7,7 +7,7 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
 import { AuthService } from '../../shared/service/auth.service';
-import { SiteEntity, Message, Task, AttributeType, Condition } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, Option } from '../model/management';
 import { EventService } from '../../shared/service/event.service';
 
 declare var acp: any;
@@ -341,4 +341,14 @@ export class ManagementService {
 
         return false;
     }
+
+    getMetadataOptions(): Promise<{ sensors: Option[], platforms: Option[] }> {
+        let params: HttpParams = new HttpParams();
+
+        return this.http
+            .get<{ sensors: Option[], platforms: Option[] }>( acp + '/project/metadata-options', { params: params } )
+            .toPromise()
+    }
+
+
 }

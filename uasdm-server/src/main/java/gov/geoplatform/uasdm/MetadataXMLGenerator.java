@@ -25,18 +25,20 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Platform;
+import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
 {
-  
-  private Document dom;
-  
+
+  private Document   dom;
+
   private JSONObject json;
-  
+
   private Collection collection;
-  
+
   public MetadataXMLGenerator(String json)
   {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -56,69 +58,78 @@ public class MetadataXMLGenerator
     this.dom.setXmlStandalone(true);
     parseJson(json);
   }
-  
+
   private void parseJson(String sJson)
   {
     json = new JSONObject(sJson);
-    
+
     this.collection = Collection.get(json.getString("collectionId"));
   }
-  
+
   public void generate(OutputStream out)
   {
     List<UasComponent> ancestors = collection.getAncestors();
-    
+
     Element e = null;
-    
+
     Element root = dom.createElement("rootEl");
     dom.appendChild(root);
-    
+
 //    JSONObject agency = json.getJSONObject("agency");
     e = dom.createElement("Agency");
     e.setAttribute("name", "Department of Interior");
     e.setAttribute("shortName", "");
     e.setAttribute("fieldCenter", "");
     root.appendChild(e);
-    
+
     JSONObject pointOfContact = json.getJSONObject("pointOfContact");
     e = dom.createElement("PointOfContact");
     e.setAttribute("name", pointOfContact.getString("name"));
     e.setAttribute("email", pointOfContact.getString("email"));
     root.appendChild(e);
-    
+
     UasComponent proj = ancestors.get(1);
     e = dom.createElement("Project");
     e.setAttribute("name", proj.getName());
     e.setAttribute("shortName", proj.getName());
     e.setAttribute("description", proj.getDescription());
     root.appendChild(e);
-    
+
     UasComponent mission = ancestors.get(0);
     e = dom.createElement("Mission");
     e.setAttribute("name", mission.getName());
     e.setAttribute("description", mission.getDescription());
     root.appendChild(e);
-    
+
     e = dom.createElement("Collect");
     e.setAttribute("name", collection.getName());
     e.setAttribute("description", collection.getDescription());
     root.appendChild(e);
-    
-    JSONObject platform = json.getJSONObject("platform");
+
+    JSONObject jPlatform = json.getJSONObject("platform");
+    String platformId = jPlatform.getString("name");
+    Platform platform = Platform.get(platformId);
+
+    String platformName = platform.isOther() ? jPlatform.getString("otherName") : platform.getDisplayLabel();
     e = dom.createElement("Platform");
-    e.setAttribute("name", platform.getString("name"));
-    e.setAttribute("class", platform.getString("class"));
-    e.setAttribute("type", platform.getString("type"));
-    e.setAttribute("serialNumber", platform.getString("serialNumber"));
-    e.setAttribute("faaIdNumber", platform.getString("faaIdNumber"));
+    e.setAttribute("name", platformName);
+    e.setAttribute("class", jPlatform.getString("class"));
+    e.setAttribute("type", jPlatform.getString("type"));
+    e.setAttribute("serialNumber", jPlatform.getString("serialNumber"));
+    e.setAttribute("faaIdNumber", jPlatform.getString("faaIdNumber"));
     root.appendChild(e);
-    
-    JSONObject sensor = json.getJSONObject("sensor");
+
+    JSONObject jSensor = json.getJSONObject("sensor");
+    String sensorId = jSensor.getString("name");
+    Sensor sensor = Sensor.get(sensorId);
+
+    String sensorName = sensor.isOther() ? jSensor.getString("otherName") : sensor.getDisplayLabel();
+
     e = dom.createElement("Sensor");
-    e.setAttribute("name", sensor.getString("name"));
-    e.setAttribute("type", sensor.getString("type"));
-    e.setAttribute("model", sensor.getString("model"));
-    e.setAttribute("wavelength", sensor.getString("wavelength"));
+    e.setAttribute("name", sensorName);
+    e.setAttribute("type", jSensor.getString("type"));
+    e.setAttribute("model", jSensor.getString("model"));
+    e.setAttribute("wavelength", jSensor.getString("wavelength"));
 //    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
 //    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
     Integer width = collection.getImageWidth();
@@ -139,16 +150,16 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("imageHeight", "");
     }
-    e.setAttribute("sensorWidth", sensor.getString("sensorWidth"));
-    e.setAttribute("sensorHeight", sensor.getString("sensorHeight"));
-    e.setAttribute("pixelSizeWidth", sensor.getString("pixelSizeWidth"));
-    e.setAttribute("pixelSizeHeight", sensor.getString("pixelSizeHeight"));
+    e.setAttribute("sensorWidth", jSensor.getString("sensorWidth"));
+    e.setAttribute("sensorHeight", jSensor.getString("sensorHeight"));
+    e.setAttribute("pixelSizeWidth", jSensor.getString("pixelSizeWidth"));
+    e.setAttribute("pixelSizeHeight", jSensor.getString("pixelSizeHeight"));
     root.appendChild(e);
-    
+
     e = dom.createElement("Upload");
     e.setAttribute("dataType", "raw");
     root.appendChild(e);
-    
+
     try
     {
       Transformer tr = TransformerFactory.newInstance().newTransformer();
@@ -161,11 +172,13 @@ public class MetadataXMLGenerator
       // send DOM to file
       tr.transform(new DOMSource(dom), new StreamResult(out));
 
-    } catch (TransformerException te) {
-        System.out.println(te.getMessage());
+    }
+    catch (TransformerException te)
+    {
+      System.out.println(te.getMessage());
     }
   }
-  
+
   public void generateAndUpload()
   {
     File temp = null;
@@ -184,7 +197,7 @@ public class MetadataXMLGenerator
         FileUtils.deleteQuietly(temp);
       }
     }
-    
+
     try (FileOutputStream fos = new FileOutputStream(temp))
     {
       this.generate(fos);
@@ -193,16 +206,16 @@ public class MetadataXMLGenerator
     {
       throw new ProgrammingErrorException(e);
     }
-    
+
     String fileName = this.collection.getName() + "_uasmetadata.xml";
     String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + "_uasmetadata.xml";
     Util.uploadFileToS3(temp, key, null);
-    
+
     SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
-    
+
     this.collection.appLock();
     this.collection.setMetadataUploaded(true);
     this.collection.apply();
   }
-  
+
 }

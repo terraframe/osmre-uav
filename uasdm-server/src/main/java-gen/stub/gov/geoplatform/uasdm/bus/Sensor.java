@@ -8,11 +8,18 @@ public class Sensor extends SensorBase
 {
   private static final long serialVersionUID = -1299753426;
 
+  public String             OTHER            = "OTHER";
+
   private static String     NEW_INSTANCE     = "newInstance";
 
   public Sensor()
   {
     super();
+  }
+
+  public boolean isOther()
+  {
+    return this.getName().equals(OTHER);
   }
 
   public JSONObject toJSON()

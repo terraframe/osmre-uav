@@ -5,6 +5,8 @@ import { Subject } from 'rxjs/Subject';
 
 import { ManagementService } from '../../service/management.service';
 
+import { Option } from '../../model/management';
+
 
 declare var acp: string;
 
@@ -22,9 +24,9 @@ export class MetadataModalComponent implements OnInit {
     message: string = null;
 
     disabled: boolean = false;
-    
+
     // imageHeight: string;
-    
+
     // imageWidth: string;
 
     metaObject: any = {
@@ -35,8 +37,8 @@ export class MetadataModalComponent implements OnInit {
         //     fieldCenter: ""
         // },
         pointOfContact: {
-            name:"",
-            email:""
+            name: "",
+            email: ""
         },
         // project: {
         //     name:"",
@@ -52,26 +54,28 @@ export class MetadataModalComponent implements OnInit {
         //     description:""
         // },
         platform: {
-            name: "Falcon Fixed Wing",
-            class:"",
-            type:"Fixed Wing",
-            serialNumber:"",
-            faaIdNumber:""
+            name: "",
+            otherName: "Falcon Fixed Wing",
+            class: "",
+            type: "Fixed Wing",
+            serialNumber: "",
+            faaIdNumber: ""
         },
         sensor: {
-            name:"",
-            type:"",
-            model:"",
-            wavelength:"",
+            name: "",
+            otherName: "",
+            type: "",
+            model: "",
+            wavelength: "",
             // imageWidth:"",
             // imageHeight:"",
-            sensorWidth:"",
-            sensorHeight:"",
-            pixelSizeWidth:"",
-            pixelSizeHeight:""
+            sensorWidth: "",
+            sensorHeight: "",
+            pixelSizeWidth: "",
+            pixelSizeHeight: ""
         },
         upload: {
-            dataType:"raw"
+            dataType: "raw"
         }
     };
 
@@ -80,26 +84,51 @@ export class MetadataModalComponent implements OnInit {
      */
     public onMetadataChange: Subject<string>;
 
+    sensors: Option[] = [];
+    platforms: Option[] = [];
+
+    otherSensorId: string = "";
+    otherPlatformId: string = "";
+
     constructor( public bsModalRef: BsModalRef, private service: ManagementService ) { }
 
     ngOnInit(): void {
         this.onMetadataChange = new Subject();
+
+        this.service.getMetadataOptions().then(( options ) => {
+            this.sensors = options.sensors;
+            this.platforms = options.platforms;
+
+            this.sensors.forEach( sensor => {
+                if ( sensor.name === 'OTHER' ) {
+                    this.otherSensorId = sensor.oid;
+                }
+            } );
+
+            this.platforms.forEach( platform => {
+                if ( platform.name === 'OTHER' ) {
+                    this.otherPlatformId = platform.oid;
+                }
+            } );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
     }
 
 
     handleSubmit(): void {
-        
+
         this.metaObject.collectionId = this.collectionId;
         // this.metaObject.imageWidth = this.imageWidth;
         // this.metaObject.imageHeight = this.imageHeight;
 
-        this.service.submitCollectionMetadata(this.metaObject).then(() => {
+        this.service.submitCollectionMetadata( this.metaObject ).then(() => {
             this.bsModalRef.hide();
             this.onMetadataChange.next( this.collectionId );
         } )
-        .catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
+            .catch(( err: HttpErrorResponse ) => {
+                this.error( err );
+            } );
     }
 
     error( err: HttpErrorResponse ): void {
