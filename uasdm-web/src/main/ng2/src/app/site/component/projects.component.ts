@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
     trigger,
@@ -25,9 +25,8 @@ import { AuthService } from '../../shared/service/auth.service';
 
 import { SiteEntity } from '../model/management';
 
-import { CreateModalComponent } from './modal/create-modal.component';
+import { EntityModalComponent } from './modal/entity-modal.component';
 import { ImagePreviewModalComponent } from './modal/image-preview-modal.component';
-import { EditModalComponent } from './modal/edit-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
 
 import { ManagementService } from '../service/management.service';
@@ -49,7 +48,7 @@ declare var gpAppType: any;
         ] )
     ]
 } )
-export class ProjectsComponent implements OnInit, AfterViewInit {
+export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     images: any[] = [];
     showImagePanel = false;
@@ -233,13 +232,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
         this.userName = this.service.getCurrentUser();
+        
+        console.log(this.admin);
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
         } ).catch(( err: HttpErrorResponse ) => {
             this.error( err );
         } );
+    }
 
+    ngOnDestroy(): void {
+        this.map.remove();
     }
 
     ngAfterViewInit() {
@@ -277,28 +281,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         // Add zoom and rotation controls to the map.
         this.map.addControl( new NavigationControl() );
 
-        this.map.on('mousemove', function(e) {
+        this.map.on( 'mousemove', function( e ) {
             // e.point is the x, y coordinates of the mousemove event relative
             // to the top-left corner of the map.
             // e.lngLat is the longitude, latitude geographical position of the event
             let coord = e.lngLat.wrap();
-            
+
             // EPSG:3857 = WGS 84 / Pseudo-Mercator
             // EPSG:4326 WGS 84 
             // let coord4326 = window.proj4(window.proj4.defs('EPSG:3857'), window.proj4.defs('EPSG:4326'), [coord.lng, coord.lat]);
             // let text = "Long: " + coord4326[0] + " Lat: " + coord4326[1];
 
             let text = "Lat: " + coord.lat + " Long: " + coord.lng;
-            let mousemovePanel = document.getElementById("mousemove-panel");
+            let mousemovePanel = document.getElementById( "mousemove-panel" );
             mousemovePanel.textContent = text;
-        });
+        } );
 
         // MapboxGL doesn't have a good way to detect when moving off the map
-        let sidebar = document.getElementById("location-explorer-list");
-        sidebar.addEventListener("mouseenter", function() {
-            let mousemovePanel = document.getElementById("mousemove-panel");
+        let sidebar = document.getElementById( "location-explorer-list" );
+        sidebar.addEventListener( "mouseenter", function() {
+            let mousemovePanel = document.getElementById( "mousemove-panel" );
             mousemovePanel.textContent = "";
-        });
+        } );
 
         if ( this.admin ) {
             let modes = MapboxDraw.modes;
@@ -590,12 +594,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         let parentId = parent != null ? parent.data.id : null;
 
         this.service.newChild( parentId, type ).then( data => {
-            this.bsModalRef = this.modalService.show( CreateModalComponent, {
+            this.bsModalRef = this.modalService.show( EntityModalComponent, {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
+            this.bsModalRef.content.newInstance = true;
+            this.bsModalRef.content.admin = this.admin;
             this.bsModalRef.content.entity = data.item;
             this.bsModalRef.content.attributes = data.attributes;
 
@@ -678,19 +684,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         let data = node.data;
 
         this.service.edit( data.id ).then( data => {
-            this.bsModalRef = this.modalService.show( EditModalComponent, {
+            this.bsModalRef = this.modalService.show( EntityModalComponent, {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'edit-modal'
             } );
+            this.bsModalRef.content.newInstance = false;
+            this.bsModalRef.content.admin = this.admin;
             this.bsModalRef.content.entity = data.item;
             this.bsModalRef.content.attributes = data.attributes;
-
-            ( <EditModalComponent>this.bsModalRef.content ).onNodeChange.subscribe( entity => {
+            this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Do something
                 this.current.data = entity;
             } );
+            
         } ).catch(( err: HttpErrorResponse ) => {
             this.error( err );
         } );

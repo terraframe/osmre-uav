@@ -11,8 +11,8 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 
-import { EditModalComponent } from './component/modal/edit-modal.component';
-import { CreateModalComponent } from './component/modal/create-modal.component';
+import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
+import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
@@ -41,7 +41,7 @@ import '../rxjs-extensions';
         NgxPaginationModule,
         TreeModule,
         ContextMenuModule,
-//        ModalModule.forRoot(),
+        //        ModalModule.forRoot(),
         AlertModule,
         BsDropdownModule,
         TypeaheadModule,
@@ -50,8 +50,8 @@ import '../rxjs-extensions';
         SiteRoutingModule
     ],
     declarations: [
-        EditModalComponent,
-        CreateModalComponent,
+        MapAttributeComponent,
+        EntityModalComponent,
         MetadataModalComponent,
         ImagePreviewModalComponent,
         UploadModalComponent,
@@ -68,8 +68,7 @@ import '../rxjs-extensions';
     ],
     entryComponents: [
         UploadModalComponent,
-        EditModalComponent,
-        CreateModalComponent,
+        EntityModalComponent,
         ImagePreviewModalComponent,
         MetadataModalComponent
     ]

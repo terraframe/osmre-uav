@@ -7,23 +7,27 @@ import { TreeNode } from 'angular-tree-component';
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 
+
 @Component( {
-    selector: 'edit-modal',
-    templateUrl: './edit-modal.component.html',
+    selector: 'entity-modal',
+    templateUrl: './entity-modal.component.html',
     styleUrls: []
 } )
-export class EditModalComponent implements OnInit {
-
+export class EntityModalComponent implements OnInit {
     /*
-     * Domain object being updated
+     * parent id of the node being created
      */
+    parentId: string;
+
     entity: SiteEntity;
 
     attributes: AttributeType[];
 
-    message: string = null;
+    admin: boolean = false;
 
-    userName: string = "";
+    newInstance: boolean = false;
+
+    message: string = null;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
@@ -34,20 +38,28 @@ export class EditModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
-
-        this.userName = this.service.getCurrentUser();
     }
 
     handleOnSubmit(): void {
         this.message = null;
 
-        this.service.update( this.entity ).then( node => {
-            this.onNodeChange.next( node );
+        if ( this.newInstance ) {
+            this.service.applyWithParent( this.entity, this.parentId ).then( data => {
+                this.onNodeChange.next( data );
+                this.bsModalRef.hide();
+            } ).catch(( err: HttpErrorResponse ) => {
+                this.error( err );
+            } );
+        }
+        else {
+            this.service.update( this.entity ).then( node => {
+                this.onNodeChange.next( node );
 
-            this.bsModalRef.hide();
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
+                this.bsModalRef.hide();
+            } ).catch(( err: HttpErrorResponse ) => {
+                this.error( err );
+            } );
+        }
     }
 
     evaluate( condition: Condition ): boolean {
@@ -58,8 +70,9 @@ export class EditModalComponent implements OnInit {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
+
+            console.log( this.message );
         }
     }
-
 
 }

@@ -50,6 +50,7 @@ public class Site extends SiteBase
     List<AttributeType> list = super.attributes();
     list.add(attributeType);
     list.add(otherAttributeType);
+    list.add(AttributeType.create(this.getMdAttributeDAO(Site.GEOPOINT)));
 
     return list;
   }
