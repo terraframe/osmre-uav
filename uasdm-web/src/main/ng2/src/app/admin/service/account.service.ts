@@ -89,14 +89,11 @@ export class AccountService {
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/newInvite', JSON.stringify( {} ), { headers: headers } )
+            .post<Account>( acp + '/uasdm-account/newInvite', JSON.stringify( {} ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as Account;
-            } )
     }
 
     remove( oid: string ): Promise<void> {
