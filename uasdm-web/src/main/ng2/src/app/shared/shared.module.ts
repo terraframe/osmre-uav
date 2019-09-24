@@ -15,7 +15,6 @@ import { UasdmHeaderComponent } from './component/header/header.component';
 import { ProgressBarComponent } from './component/progress-bar/progress-bar.component';
 import { LocalizeComponent } from './component/localize/localize.component';
 import { LoadingBarComponent } from './component/loading-bar/loading-bar.component';
-import { MessageComponent } from './component/message/message.component';
 import { BooleanFieldComponent } from './component/boolean-field/boolean-field.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { ErrorModalComponent } from './component/modal/error-modal.component';
@@ -59,7 +58,6 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         NotificationModalComponent,
         ErrorModalComponent,
         LocalizeComponent,
-        MessageComponent,
         BooleanFieldComponent,
         KeysPipe,
         LocalizePipe,
@@ -76,7 +74,6 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         ErrorModalComponent,
         BooleanFieldComponent,
         LocalizeComponent,
-        MessageComponent,
         KeysPipe,
         LocalizePipe,
         PhonePipe,
