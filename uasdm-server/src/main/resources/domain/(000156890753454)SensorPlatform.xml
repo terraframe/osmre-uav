@@ -1,0 +1,49 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version_gis.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Sensor" label="Sensor" generateController="false">
+        <attributes>
+          <char name="name" required="false" label="Name" size="4096" immutable="true" indexType="unique index" />
+          <char name="displayLabel" required="false" label="Label" size="4096" />
+        </attributes>
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Platform" label="Platform" generateController="false">
+        <attributes>
+          <char name="name" required="false" label="Name" size="4096" immutable="true" indexType="unique index" />
+          <char name="displayLabel" required="false" label="Label" size="4096" />
+        </attributes>
+      </mdBusiness>
+    </create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Sensor">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Platform">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Sensor">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Platform">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.Sensor" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.Platform" type="com.runwaysdk.system.metadata.MdBusiness" />
+    </delete>
+  </undoIt>
+</version>
