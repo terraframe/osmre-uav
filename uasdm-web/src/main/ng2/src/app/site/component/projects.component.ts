@@ -688,10 +688,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Do something
                 this.current.data = entity;
+
+                if ( entity.type === 'Site' ) {
+                    this.refresh( false );
+                }
             } );
-
-            this.refresh( false );
-
         } );
     }
 
