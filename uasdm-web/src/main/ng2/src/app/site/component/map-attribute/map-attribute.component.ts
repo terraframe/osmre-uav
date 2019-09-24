@@ -182,9 +182,13 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     refreshCoordinateFromInput(): void {
         if ( this.coordinate.longitude != null && this.coordinate.latitude != null ) {
+            console.log( this.site.geometry );
+
+            if ( this.site.geometry == null ) {
+                this.site.geometry = { type: 'Point' };
+            }
+
             this.site.geometry.coordinates = [this.coordinate.longitude, this.coordinate.latitude];
-            
-            console.log(this.site);
 
             var ids = this.draw.set( {
                 type: 'FeatureCollection',
@@ -198,6 +202,8 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
                     geometry: this.site.geometry
                 }]
             } );
+
+            this.draw.changeMode( 'simple_select', { featureIds: ids } );
         }
     }
 

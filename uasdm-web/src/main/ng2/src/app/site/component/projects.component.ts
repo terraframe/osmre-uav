@@ -699,6 +699,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.current.data = entity;
             } );
             
+            this.refresh( false );            
+            
         } ).catch(( err: HttpErrorResponse ) => {
             this.error( err );
         } );
