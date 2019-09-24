@@ -5,7 +5,6 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 import { LocalizationService } from '../../../shared/service/localization.service';
 
 import { PageResult } from '../../model/account';
@@ -40,16 +39,12 @@ export class SensorsComponent implements OnInit {
     ngOnInit(): void {
         this.service.page( 1 ).then( res => {
             this.res = res;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
     remove( sensor: Sensor ): void {
         this.service.remove( sensor.oid ).then( response => {
             this.res.resultSet = this.res.resultSet.filter( h => h.oid !== sensor.oid );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -70,16 +65,12 @@ export class SensorsComponent implements OnInit {
     edit( sensor: Sensor ): void {
         this.service.edit( sensor.oid ).then( res => {
             this.showModal( res, false );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
     newInstance(): void {
         this.service.newInstance().then( res => {
             this.showModal( res, true );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -102,18 +93,6 @@ export class SensorsComponent implements OnInit {
     onPageChange( pageNumber: number ): void {
         this.service.page( pageNumber ).then( res => {
             this.res = res;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
-    }
-
-    public error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            // TODO: add error modal
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
-
     }
 }

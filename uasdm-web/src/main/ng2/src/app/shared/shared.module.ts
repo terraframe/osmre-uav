@@ -1,6 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
@@ -22,7 +23,6 @@ import { ErrorModalComponent } from './component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from './component/modal/basic-confirm-modal.component';
 import { NotificationModalComponent } from './component/modal/notification-modal.component';
 
-
 import { LocalizePipe } from './pipe/localize.pipe';
 import { KeysPipe } from './pipe/keys.pipe';
 import { PhonePipe } from './pipe/phone.pipe';
@@ -36,7 +36,7 @@ import { AuthService } from './service/auth.service';
 import { ProfileService } from './service/profile.service';
 import { SessionService } from './service/session.service';
 import { AdminGuardService, AuthGuard } from './service/guard.service';
-
+import { HttpBackendClient } from './service/http-backend-client.service';
 
 @NgModule( {
     imports: [
@@ -44,6 +44,7 @@ import { AdminGuardService, AuthGuard } from './service/guard.service';
         RouterModule, 
         FormsModule,
         ProgressbarModule,
+        HttpClientModule,
         PasswordStrengthBarModule,
         ModalModule.forRoot(),
         AlertModule,
@@ -105,7 +106,8 @@ export class SharedModule {
                 EventService,
                 ProgressService,
                 AdminGuardService,
-                AuthGuard
+                AuthGuard,
+                HttpBackendClient
             ]
         };
     }

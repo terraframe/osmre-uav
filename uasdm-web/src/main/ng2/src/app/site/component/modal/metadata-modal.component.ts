@@ -125,18 +125,15 @@ export class MetadataModalComponent implements OnInit {
         this.service.submitCollectionMetadata( this.metaObject ).then(() => {
             this.bsModalRef.hide();
             this.onMetadataChange.next( this.collectionId );
-        } )
-            .catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
     }
 
     error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
         }
     }
 }

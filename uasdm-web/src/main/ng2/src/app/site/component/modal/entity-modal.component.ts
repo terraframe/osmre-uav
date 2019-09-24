@@ -70,8 +70,6 @@ export class EntityModalComponent implements OnInit {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
         }
     }
 

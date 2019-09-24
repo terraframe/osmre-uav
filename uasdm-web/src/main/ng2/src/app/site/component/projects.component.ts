@@ -19,7 +19,6 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
-import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
 import { NotificationModalComponent } from '../../shared/component/modal/notification-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
 
@@ -232,13 +231,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
         this.userName = this.service.getCurrentUser();
-        
-        console.log(this.admin);
+
+        console.log( this.admin );
 
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -413,8 +410,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.current.data = node;
 
                 this.refresh( false );
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
 
@@ -492,8 +487,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.getThumbnail( image );
                     } )
 
-                } ).catch(( err: HttpErrorResponse ) => {
-                    this.error( err );
                 } );
         }
     }
@@ -637,8 +630,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.refresh( false );
                 }
             } );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -698,11 +689,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Do something
                 this.current.data = entity;
             } );
-            
-            this.refresh( false );            
-            
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
+
+            this.refresh( false );
+
         } );
     }
 
@@ -722,8 +711,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.service.runOrtho( data.id ).then( data => {
             // Nothing
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -770,8 +757,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
         else {
@@ -793,8 +778,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
     }
@@ -886,8 +869,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                         }, 20 );
                     }
 
-                } ).catch(( err: HttpErrorResponse ) => {
-                    this.error( err );
                 } );
             }
         }
@@ -956,14 +937,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     getDefaultImgURL( event: any ): void {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 
     /*

@@ -27,42 +27,41 @@ import 'rxjs/add/operator/switchMap';
 import { ForgotPasswordCompleteService } from '../../service/forgotpassword-complete.service';
 
 
-@Component({
-  templateUrl: './forgotpassword-complete.component.html',
-  styleUrls: ['./forgotpassword-complete.component.css']
-})
+@Component( {
+    templateUrl: './forgotpassword-complete.component.html',
+    styleUrls: ['./forgotpassword-complete.component.css']
+} )
 export class ForgotPasswordCompleteComponent implements OnInit {
-  newPassword: string;
-  token: string;
-  passwordIsReset: boolean = false;
-  private sub: any;
+    newPassword: string;
+    token: string;
+    passwordIsReset: boolean = false;
+    private sub: any;
 
-  constructor(
-    private service: ForgotPasswordCompleteService,
-    private router: Router,      
-    private route: ActivatedRoute,
-    private location: Location) {
-  }
-  
-  ngOnInit() {
-    this.sub = this.route.params.subscribe(params => {
-       this.token = params['token'];
-    });
-  }
+    constructor(
+        private service: ForgotPasswordCompleteService,
+        private router: Router,
+        private route: ActivatedRoute,
+        private location: Location ) {
+    }
 
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
-  
-  
-  cancel(): void {    
-    this.router.navigate(['/']);
-  } 
-  
-  onSubmit(): void {
-    this.service.complete(this.newPassword, this.token)
-      .then(response => {
-        this.passwordIsReset = true;
-      });
-  }  
+    ngOnInit() {
+        this.sub = this.route.params.subscribe( params => {
+            this.token = params['token'];
+        } );
+    }
+
+    ngOnDestroy() {
+        this.sub.unsubscribe();
+    }
+
+
+    cancel(): void {
+        this.router.navigate( ['/'] );
+    }
+
+    onSubmit(): void {
+        this.service.complete( this.newPassword, this.token ).then( response => {
+            this.passwordIsReset = true;
+        } );
+    }
 }

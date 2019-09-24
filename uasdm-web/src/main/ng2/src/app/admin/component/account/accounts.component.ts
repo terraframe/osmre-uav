@@ -23,7 +23,6 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
 import { User, PageResult } from '../../model/account';
@@ -56,8 +55,6 @@ export class AccountsComponent implements OnInit {
     ngOnInit(): void {
         this.service.page( this.p ).then( res => {
             this.res = res;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -80,8 +77,6 @@ export class AccountsComponent implements OnInit {
     remove( user: User ): void {
         this.service.remove( user.oid ).then( response => {
             this.res.resultSet = this.res.resultSet.filter( h => h.oid !== user.oid );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -98,20 +93,10 @@ export class AccountsComponent implements OnInit {
             this.res = res;
 
             this.p = pageNumber;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
     inviteUsers(): void {
         this.router.navigate( ['/admin/invite'] );
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 }

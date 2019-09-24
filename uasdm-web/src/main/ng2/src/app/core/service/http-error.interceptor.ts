@@ -5,17 +5,29 @@ import {
     HttpHandler,
     HttpRequest,
     HttpResponse,
-    HttpResponseBase,    
+    HttpResponseBase,
     HttpErrorResponse
 } from '@angular/common/http';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/do';
+
+import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
+
 
 declare var acp: string;
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
+
+    /*
+     * Reference to the modal current showing
+    */
+    private bsModalRef: BsModalRef;
+
+    constructor( private modalService: BsModalService ) { }
 
     intercept( request: HttpRequest<any>, next: HttpHandler ): Observable<HttpEvent<any>> {
 
@@ -33,6 +45,10 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     // redirect to the login route
                     // or show a modal
                     window.location.href = acp + '/project/management#/login';
+                }
+                else {
+                    this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+                    this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
                 }
             }
         } );
