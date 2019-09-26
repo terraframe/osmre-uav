@@ -34,7 +34,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     WorkflowTask task = WorkflowTask.getTaskByUploadId(parser.getUuid());
     
     task.lock();
-    task.setStatus("Processing");
+    task.setStatus(WorkflowTask.PROCESSING);
     task.setMessage("Processing archived files");
     task.apply();
 
@@ -42,7 +42,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     collection.uploadArchive(task, infile, parser.getUploadTarget());
 
     task.lock();
-    task.setStatus("Complete");
+    task.setStatus(WorkflowTask.COMPLETE);
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
     

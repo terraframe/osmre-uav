@@ -1,15 +1,5 @@
 package gov.geoplatform.uasdm.controller;
 
-import gov.geoplatform.uasdm.S3GetResponse;
-import gov.geoplatform.uasdm.service.PlatformService;
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.SensorService;
-import gov.geoplatform.uasdm.service.WorkflowService;
-import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.QueryResult;
-import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.TreeComponent;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +19,14 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
+
+import gov.geoplatform.uasdm.S3GetResponse;
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.TreeComponent;
 
 @Controller(url = "project")
 public class ProjectManagementController
@@ -69,11 +67,7 @@ public class ProjectManagementController
   @Endpoint(url = "metadata-options", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getMetadataOptions(ClientRequestIF request)
   {
-    RestResponse response = new RestResponse();
-    response.set("sensors", new SensorService().getAll(request.getSessionId()));
-    response.set("platforms", new PlatformService().getAll(request.getSessionId()));
-
-    return response;
+    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId()));
   }
 
   @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)

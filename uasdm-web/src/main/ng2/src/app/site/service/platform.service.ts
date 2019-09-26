@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend, HttpHandler } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
@@ -7,31 +7,31 @@ import 'rxjs/add/operator/finally';
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { PageResult } from '../model/account';
-import { Sensor } from '../model/sensor';
+import { PageResult } from '../../shared/model/page';
+import { Platform } from '../model/platform';
 
 declare var acp: any;
 
 @Injectable()
-export class SensorService {
+export class PlatformService {
 
     constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
 
-    page( p: number ): Promise<PageResult<Sensor>> {
+    page( p: number ): Promise<PageResult<Platform>> {
         let params: HttpParams = new HttpParams();
         params = params.set( 'number', p.toString() );
 
         this.eventService.start();
 
         return this.http
-            .get<PageResult<Sensor>>( acp + '/sensor/page', { params: params } )
+            .get<PageResult<Platform>>( acp + '/platform/page', { params: params } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise();
     }
 
-    edit( oid: string ): Promise<Sensor> {
+    edit( oid: string ): Promise<Platform> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
@@ -40,14 +40,14 @@ export class SensorService {
         this.eventService.start();
 
         return this.http
-            .post<Sensor>( acp + '/sensor/lock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<Platform>( acp + '/platform/lock', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise();
     }
 
-    newInstance(): Promise<Sensor> {
+    newInstance(): Promise<Platform> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
@@ -56,7 +56,7 @@ export class SensorService {
         this.eventService.start();
 
         return this.http
-            .post<Sensor>( acp + '/sensor/newInstance', JSON.stringify( {} ), { headers: headers } )
+            .post<Platform>( acp + '/platform/newInstance', JSON.stringify( {} ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
@@ -72,14 +72,14 @@ export class SensorService {
         this.eventService.start();
 
         return this.http
-            .post<void>( acp + '/sensor/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( acp + '/platform/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise();
     }
 
-    apply( sensor: Sensor ): Promise<Sensor> {
+    apply( platform: Platform ): Promise<Platform> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ export class SensorService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Sensor>( acp + '/sensor/apply', JSON.stringify( { sensor: sensor } ), { headers: headers } )
+            .post<Platform>( acp + '/platform/apply', JSON.stringify( { platform: platform } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
@@ -104,7 +104,7 @@ export class SensorService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<void>( acp + '/sensor/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( acp + '/platform/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )

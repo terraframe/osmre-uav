@@ -7,7 +7,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 import { LocalizationService } from '../../../shared/service/localization.service';
 
-import { PageResult } from '../../model/account';
+import { PageResult } from '../../../shared/model/page';
 import { Platform } from '../../model/platform';
 import { PlatformService } from '../../service/platform.service';
 import { PlatformComponent } from './platform.component';

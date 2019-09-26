@@ -11,17 +11,31 @@
   </div>
 
   <div class="modal-title-container">
-      <h3>Sensor</h3>
+    <h3>Sensor</h3>
   </div>
 
   <form #ngForm="ngForm">
     <div class="form-group">
       <label>Name</label>
-      <input [(ngModel)]="sensor.name" name="name" type="input" class="form-control" placeholder="Name" [disabled]="!newInstance" required  />
+      <input [(ngModel)]="sensor.name" name="name" type="input" class="form-control" placeholder="Name" [disabled]="!newInstance" required />
     </div>
     <div class="form-group">
       <label>Label</label>
       <input [(ngModel)]="sensor.displayLabel" name="displayLabel" type="input" class="form-control" placeholder="Display Label" required />
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <input [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control" placeholder="Type" required />
+    </div>
+    <div class="form-group">
+      <label>Model</label>
+      <input [(ngModel)]="sensor.model" name="model" type="input" class="form-control" placeholder="Model" required />
+    </div>
+    <div class="form-group">
+      <label>Wave Length</label>
+      <div *ngFor="let wavelength of waveLengths">
+        <input type="checkbox" [value]="wavelength" [name]="wavelength" [checked]="(sensor.waveLength && (-1 !== sensor.waveLength.indexOf(wavelength)) ? 'checked' : '')" (change)="updateSelectedWaveLength($event)" />{{wavelength}}
+      </div>
     </div>
     <div class="btn-holder" style="text-align: right;">
       <button type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1895450212)
+@com.runwaysdk.business.ClassSignature(hash = -472245343)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -22,10 +22,11 @@ public abstract class PlatformBase extends com.runwaysdk.business.Business
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PLATFORMTYPE = "platformType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 1895450212;
+  private static final long serialVersionUID = -472245343;
   
   public PlatformBase()
   {
@@ -349,6 +350,34 @@ public abstract class PlatformBase extends com.runwaysdk.business.Business
     else
     {
       setValue(OWNER, oid);
+    }
+  }
+  
+  public String getPlatformType()
+  {
+    return getValue(PLATFORMTYPE);
+  }
+  
+  public void validatePlatformType()
+  {
+    this.validateAttribute(PLATFORMTYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getPlatformTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Platform.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PLATFORMTYPE);
+  }
+  
+  public void setPlatformType(String value)
+  {
+    if(value == null)
+    {
+      setValue(PLATFORMTYPE, "");
+    }
+    else
+    {
+      setValue(PLATFORMTYPE, value);
     }
   }
   

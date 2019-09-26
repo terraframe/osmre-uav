@@ -6,19 +6,21 @@ import { Observable } from 'rxjs/Observable';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { UserProfileComponent } from './component/user-profile.component';
+import { SensorsComponent } from './component/sensor/sensors.component';
+import { PlatformsComponent } from './component/platform/platforms.component';
 
 import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
-import { AuthGuard } from '../shared/service/guard.service';
+import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
 
 const routes: Routes = [
     {
         path: '',
-        canActivate: [ AuthGuard ],
+        canActivate: [AuthGuard],
         component: UserProfileComponent
     },
     {
         path: 'viewer',
-        canActivate: [ AuthGuard ],
+        canActivate: [AuthGuard],
         component: ProjectsComponent
     },
     {
@@ -28,9 +30,19 @@ const routes: Routes = [
     },
     {
         path: 'tasks',
-        canActivate: [ AuthGuard ],
+        canActivate: [AuthGuard],
         component: UserProfileComponent
     },
+    {
+        path: 'sensors',
+        canActivate: [AdminGuardService],
+        component: SensorsComponent,
+    },
+    {
+        path: 'platforms',
+        canActivate: [AdminGuardService],
+        component: PlatformsComponent,
+    }
 ];
 
 @NgModule( {

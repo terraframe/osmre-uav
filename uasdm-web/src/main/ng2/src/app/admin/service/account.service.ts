@@ -24,8 +24,9 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
 import { EventService } from '../../shared/service/event.service';
+import { PageResult } from '../../shared/model/page';
 
-import { Account, User, PageResult, UserInvite } from '../model/account';
+import { Account, User, UserInvite } from '../model/account';
 
 declare var acp: any;
 

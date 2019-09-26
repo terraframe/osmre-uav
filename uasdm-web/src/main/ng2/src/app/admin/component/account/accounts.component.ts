@@ -24,8 +24,9 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { PageResult } from '../../../shared/model/page';
 
-import { User, PageResult } from '../../model/account';
+import { User } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 
 declare let acp: string;

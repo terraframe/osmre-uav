@@ -11,7 +11,7 @@
   </div>
 
   <div class="modal-title-container">
-      <h3>Platform</h3>
+    <h3>Platform</h3>
   </div>
 
   <form #ngForm="ngForm">
@@ -22,6 +22,14 @@
     <div class="form-group">
       <label>Label</label>
       <input [(ngModel)]="platform.displayLabel" name="displayLabel" type="input" class="form-control" placeholder="Display Label" required />
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select [(ngModel)]="platform.platformType" name="platformType" type="input" class="form-control" required>
+        <option></option> 
+        <option>Fixed Wing</option>
+        <option>Hybrid</option>
+      </select>
     </div>
     <div class="btn-holder" style="text-align: right;">
       <button type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>

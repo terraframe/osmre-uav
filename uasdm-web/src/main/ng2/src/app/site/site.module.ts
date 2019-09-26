@@ -19,6 +19,10 @@ import { UploadModalComponent } from './component/modal/upload-modal.component';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { UserProfileComponent } from './component/user-profile.component';
+import { SensorsComponent } from './component/sensor/sensors.component';
+import { SensorComponent } from './component/sensor/sensor.component';
+import { PlatformsComponent } from './component/platform/platforms.component';
+import { PlatformComponent } from './component/platform/platform.component';
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -26,6 +30,8 @@ import { OnlyNumber } from './directive/number-only.directive';
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
 import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
+import { SensorService } from './service/sensor.service';
+import { PlatformService } from './service/platform.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
@@ -59,18 +65,26 @@ import '../rxjs-extensions';
         UploadComponent,
         UserProfileComponent,
         ForbiddenNameDirective,
-        OnlyNumber
+        OnlyNumber,
+        SensorComponent,
+        SensorsComponent,
+        PlatformComponent,
+        PlatformsComponent,        
     ],
     providers: [
         CanDeactivateGuardService,
         ManagementService,
         MapService,
+        SensorService,
+        PlatformService        
     ],
     entryComponents: [
         UploadModalComponent,
         EntityModalComponent,
         ImagePreviewModalComponent,
-        MetadataModalComponent
+        MetadataModalComponent,
+        SensorComponent,
+        PlatformComponent        
     ]
 } )
 export class SiteModule { }

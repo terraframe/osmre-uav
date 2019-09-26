@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 747325412)
+@com.runwaysdk.business.ClassSignature(hash = 1516136993)
 public abstract class PlatformDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Platform";
-  private static final long serialVersionUID = 747325412;
+  private static final long serialVersionUID = 1516136993;
   
   protected PlatformDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -38,6 +38,7 @@ public abstract class PlatformDTOBase extends com.runwaysdk.business.BusinessDTO
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PLATFORMTYPE = "platformType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
@@ -409,6 +410,43 @@ public abstract class PlatformDTOBase extends com.runwaysdk.business.BusinessDTO
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getPlatformType()
+  {
+    return getValue(PLATFORMTYPE);
+  }
+  
+  public void setPlatformType(String value)
+  {
+    if(value == null)
+    {
+      setValue(PLATFORMTYPE, "");
+    }
+    else
+    {
+      setValue(PLATFORMTYPE, value);
+    }
+  }
+  
+  public boolean isPlatformTypeWritable()
+  {
+    return isWritable(PLATFORMTYPE);
+  }
+  
+  public boolean isPlatformTypeReadable()
+  {
+    return isReadable(PLATFORMTYPE);
+  }
+  
+  public boolean isPlatformTypeModified()
+  {
+    return isModified(PLATFORMTYPE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getPlatformTypeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PLATFORMTYPE).getAttributeMdDTO();
   }
   
   public Long getSeq()
