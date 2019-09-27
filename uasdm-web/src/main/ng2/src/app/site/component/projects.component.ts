@@ -168,6 +168,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     nodes = [] as SiteEntity[];
 
     /* 
+     * Root nodes of the tree
+     */
+    previous = [] as SiteEntity[];
+
+
+
+    /* 
      * Currently clicked on id
      */
     current: TreeNode;
@@ -938,6 +945,44 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     getDefaultImgURL( event: any ): void {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
+    }
+
+    select( node: SiteEntity ): void {
+        if ( node.type === "folder" ) {
+            this.service.getItems( node.component, node.name ).then( nodes => {
+                this.nodes = nodes;
+            } );
+
+        }
+        else if ( node.type === "object" ) {
+            // Do nothing there are no children
+            //                return this.service.getItems( node.data.id, node.data.name );
+        }
+        else {
+            this.service.getItems( node.id, null ).then( nodes => {
+                this.previous.push( node );
+                this.nodes = nodes;
+            } );
+        }
+
+    }
+
+    back( node: SiteEntity ): void {
+
+        if ( node != null ) {
+            this.service.getItems( node.id, null ).then( nodes => {
+                var indexOf = this.previous.findIndex( i => i.id === node.id );
+
+                this.previous.splice( indexOf + 1 );
+                this.nodes = nodes;
+            } );
+        }
+        else if ( this.previous.length > 0 ) {
+            this.service.roots( null ).then( nodes => {
+                this.previous = [];
+                this.nodes = nodes;
+            } );
+        }
     }
 
     /*

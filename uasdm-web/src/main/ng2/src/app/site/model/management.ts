@@ -23,6 +23,7 @@ export class SiteEntity {
     ownerPhone: string;
     ownerEmail: string;
     privilegeType: string;
+    component: string;
 }
 
 export class CollectionHierarchy {
