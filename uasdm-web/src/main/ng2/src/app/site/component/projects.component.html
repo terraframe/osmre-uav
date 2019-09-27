@@ -43,9 +43,15 @@
                     <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container">
                         <div *ngIf="nodes.length > 0" class="tree">
                             <div class="list-group">
-                                <a *ngFor="let node of nodes" class="list-group-item" (click)="select(node, $event)">
+                              <div  *ngFor="let node of nodes" class="list-group-item">
+                                <a (click)="select(node, $event)">
                                     {{node.name}}
                                 </a>
+                                <span *ngIf="node.type !== 'folder'" class="pull-right button-column">
+                                  <a class="fa fa-pencil ico-edit" (click)="handleEdit(node)" title="Edit"></a>
+                                  <a class="fa fa-trash-o ico-remove" (click)="handleDelete(node)" title="Delete"></a>                                   
+                                </span>                                
+                              </div>
                             </div>
 
                         </div>
