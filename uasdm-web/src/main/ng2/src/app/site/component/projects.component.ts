@@ -31,6 +31,9 @@ import { UploadModalComponent } from './modal/upload-modal.component';
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 
+const mbxStyles = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingService = mbxStyles({ accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ" });
+
 declare var acp: any;
 declare var gpAppType: any;
 
@@ -226,11 +229,32 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     */
     private bsModalRef: BsModalRef;
 
-    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
+    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, 
+        private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
+        
         this.dataSource = Observable.create(( observer: any ) => {
-            this.service.searchEntites( this.search ).then( results => {
-                observer.next( results );
-            } );
+            
+            this.mapService.mbForwardGeocode(this.search).then(response => {
+                const match = response.features;
+
+                this.service.searchEntites( this.search ).then( results => {
+                    
+                    // Add Mapbox results to any local results
+                    match.forEach(obj => {
+                        let newObj = {
+                            id: obj.id,
+                            hierarchy: [],
+                            label: obj.place_name,
+                            center: obj.center,
+                            source: "MAPBOX"
+                        }
+
+                        results.push(newObj);
+                    });
+
+                    observer.next( results );
+                });
+            });
         } );
     }
 
@@ -238,9 +262,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
         this.userName = this.service.getCurrentUser();
-
-        console.log( this.admin );
-
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
         } );
@@ -280,6 +301,48 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.addLayers();
 
+        let searchLocations = (searchTerm) => {
+
+            var matchingFeatures = [];
+            // this.service.searchEntites( searchTerm ).then( results => {
+
+                let results = [{
+                    "hierarchy": [], 
+                    "id": "e458d9e8-91b4-4f2f-b768-dc8102ea2b70", 
+                    "label": "test", 
+                    "place_name": "🌲 test", 
+                    "center": [-104.99404, 39.75621]
+                }]
+
+                for (var i = 0; i < results.length; i++) {
+                    var feature = results[i];
+                    // handle queries with different capitalization than the source data by calling toLowerCase()
+                    if (feature.label.toLowerCase().search(searchTerm.toLowerCase()) !== -1) {
+                        // add a tree emoji as a prefix for custom data results
+                        // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+                        feature['place_name'] = '🌲 ' + feature.label;
+                        feature['center'] = [-104.99404, 39.75621];
+                        feature['place_type'] = ['park'];
+                        matchingFeatures.push(feature);
+                    }
+                }
+
+                return matchingFeatures;
+            // });
+            
+        }
+
+
+        // this.map.addControl(new MapboxGeocoder({
+        //     accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ",
+        //     mapboxgl: this.map,
+        //     localGeocoder: searchLocations,
+        //     localGeocoderOnly: true,
+        //     zoom: 14,
+        //     placeholder: "Search for a site or place...",
+        // }));
+
+
         this.refresh( true );
 
         // Add zoom and rotation controls to the map.
@@ -292,7 +355,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             let coord = e.lngLat.wrap();
 
             // EPSG:3857 = WGS 84 / Pseudo-Mercator
-            // EPSG:4326 WGS 84 
+            // EPSG:4326 = WGS 84 
             // let coord4326 = window.proj4(window.proj4.defs('EPSG:3857'), window.proj4.defs('EPSG:4326'), [coord.lng, coord.lat]);
             // let text = "Long: " + coord4326[0] + " Lat: " + coord4326[1];
 
@@ -854,31 +917,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     handleClick( $event: any ): void {
         let result = $event.item;
-        let id = result.hierarchy[result.hierarchy.length - 1].id;
 
-        if ( id != null ) {
-            let node = this.tree.treeModel.getNodeById( id );
-
-            if ( node != null ) {
-                node.setActiveAndVisible();
-                node.expand();
-            }
-            else {
-                this.service.roots( id ).then( nodes => {
-                    this.nodes = nodes;
-
-                    if ( id != null ) {
-                        setTimeout(() => {
-                            if ( this.tree ) {
-                                let node = this.tree.treeModel.getNodeById( id );
-                                node.setActiveAndVisible();
-                                node.expand();
-                            }
-                        }, 20 );
-                    }
-
-                } );
-            }
+        if(result.center){
+            this.map.flyTo({
+                center: result.center,
+                zoom: 9
+            })
         }
     }
 

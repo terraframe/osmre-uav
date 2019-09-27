@@ -18,6 +18,7 @@
 		"@angular/router": "~5.2.11",
 		"@mapbox/mapbox-gl-draw": "^1.1.1",
 		"@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
+		"@mapbox/mapbox-sdk": "^0.7.0",
 		"@types/file-saver": "^2.0.0",
 		"@types/geojson": "^7946.0.7",
 		"@types/mapbox-gl": "0.51.3",
