@@ -34,6 +34,7 @@ import { MapService } from './service/map.service';
 import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
 import { SensorService } from './service/sensor.service';
 import { PlatformService } from './service/platform.service';
+import { MetadataService } from './service/metadata.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
@@ -80,7 +81,8 @@ import '../rxjs-extensions';
         ManagementService,
         MapService,
         SensorService,
-        PlatformService        
+        PlatformService,
+        MetadataService
     ],
     entryComponents: [
         UploadModalComponent,

@@ -27,6 +27,7 @@ import { CollectionModalComponent } from './modal/collection-modal.component';
 
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
+import { MetadataService } from '../service/metadata.service';
 
 const mbxStyles = require( '@mapbox/mapbox-sdk/services/geocoding' );
 const geocodingService = mbxStyles( { accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ" } );
@@ -57,30 +58,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     @ViewChild( 'confirmTemplate' ) public confirmTemplate: TemplateRef<any>;
 
-//    /*
-//     * Template for tree node menu
-//     */
-//    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
-//
-//    /*
-//     * Template for folder node menu
-//     */
-//    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
-//
-//    /*
-//     * Template for site items
-//     */
-//    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
-//
-//    /*
-//     * Template for leaf menu
-//     */
-//    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
-//
-//    /*
-//     * Template for object items
-//     */
-//    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
+    //    /*
+    //     * Template for tree node menu
+    //     */
+    //    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
+    //
+    //    /*
+    //     * Template for folder node menu
+    //     */
+    //    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
+    //
+    //    /*
+    //     * Template for site items
+    //     */
+    //    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
+    //
+    //    /*
+    //     * Template for leaf menu
+    //     */
+    //    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
+    //
+    //    /*
+    //     * Template for object items
+    //     */
+    //    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
 
     /* 
      * Datasource to get search responses
@@ -156,7 +157,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private bsModalRef: BsModalRef;
 
     constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService,
-        private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
+        private modalService: BsModalService, private metadataService: MetadataService ) {
 
         this.dataSource = Observable.create(( observer: any ) => {
 
@@ -385,55 +386,55 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         //        this.tree.treeModel.expandAll();
     }
 
-//    handleOnMenu( node: any, $event: any ): void {
-//
-//        if ( node.data.type === "object" ) {
-//            this.contextMenuService.show.next( {
-//                contextMenu: this.objectMenuComponent,
-//                event: $event,
-//                item: node,
-//            } );
-//            $event.preventDefault();
-//            $event.stopPropagation();
-//        }
-//        else if ( node.data.type !== "folder" ) {
-//            if ( node.data.type === "Site" ) {
-//                node.data.childType = "Project"
-//            }
-//            else if ( node.data.type === "Project" ) {
-//                node.data.childType = "Mission"
-//            }
-//            else if ( node.data.type === "Mission" ) {
-//                node.data.childType = "Collection"
-//            }
-//            else if ( node.data.type === "Collection" ) {
-//                node.data.childType = null
-//            }
-//            else if ( node.data.type === "Imagery" ) {
-//                node.data.childType = null
-//            }
-//
-//            if ( node.data.type !== "Site" || this.admin ) {
-//                this.contextMenuService.show.next( {
-//                    contextMenu: this.nodeMenuComponent,
-//                    event: $event,
-//                    item: node,
-//                } );
-//                $event.preventDefault();
-//                $event.stopPropagation();
-//            }
-//
-//        }
-//        else {
-//            this.contextMenuService.show.next( {
-//                contextMenu: this.folderMenuComponent,
-//                event: $event,
-//                item: node
-//            } );
-//            $event.preventDefault();
-//            $event.stopPropagation();
-//        }
-//    }
+    //    handleOnMenu( node: any, $event: any ): void {
+    //
+    //        if ( node.data.type === "object" ) {
+    //            this.contextMenuService.show.next( {
+    //                contextMenu: this.objectMenuComponent,
+    //                event: $event,
+    //                item: node,
+    //            } );
+    //            $event.preventDefault();
+    //            $event.stopPropagation();
+    //        }
+    //        else if ( node.data.type !== "folder" ) {
+    //            if ( node.data.type === "Site" ) {
+    //                node.data.childType = "Project"
+    //            }
+    //            else if ( node.data.type === "Project" ) {
+    //                node.data.childType = "Mission"
+    //            }
+    //            else if ( node.data.type === "Mission" ) {
+    //                node.data.childType = "Collection"
+    //            }
+    //            else if ( node.data.type === "Collection" ) {
+    //                node.data.childType = null
+    //            }
+    //            else if ( node.data.type === "Imagery" ) {
+    //                node.data.childType = null
+    //            }
+    //
+    //            if ( node.data.type !== "Site" || this.admin ) {
+    //                this.contextMenuService.show.next( {
+    //                    contextMenu: this.nodeMenuComponent,
+    //                    event: $event,
+    //                    item: node,
+    //                } );
+    //                $event.preventDefault();
+    //                $event.stopPropagation();
+    //            }
+    //
+    //        }
+    //        else {
+    //            this.contextMenuService.show.next( {
+    //                contextMenu: this.folderMenuComponent,
+    //                event: $event,
+    //                item: node
+    //            } );
+    //            $event.preventDefault();
+    //            $event.stopPropagation();
+    //        }
+    //    }
 
 
     handleUploadFile( item: SiteEntity ): void {
@@ -667,19 +668,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     select( node: SiteEntity ): void {
+        const metadata = this.metadataService.getMetadata( node );
+
         if ( node.type === "folder" ) {
-//            this.service.getItems( node.component, node.name ).then( nodes => {
-//                this.nodes = nodes;
-//            } );
+            //            this.service.getItems( node.component, node.name ).then( nodes => {
+            //                this.nodes = nodes;
+            //            } );
         }
         else if ( node.type === "object" ) {
             // Do nothing there are no children
             //                return this.service.getItems( node.data.id, node.data.name );
         }
+        else if ( metadata.expandable ) {
+            if ( node.children == null || node.children.length == 0 ) {
+                this.service.getItems( node.id, null ).then( nodes => {
+                    node.children = nodes;
+
+                    this.expand( node );
+                } );
+            }
+            else {
+                this.expand( node );
+            }
+        }
         else {
             this.service.getItems( node.id, null ).then( nodes => {
 
-                if ( node.type === 'Collection' ) {
+                if ( metadata.leaf ) {
                     this.showCollectionModal( node, nodes );
                 }
                 else {
@@ -712,6 +727,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    expand( node: SiteEntity ) {
+        const cMetadata = this.metadataService.getMetadata( this.current );
+
+        if ( cMetadata.expandable ) {
+            this.previous.splice( this.previous.length - 1, 1 );
+        }
+
+        node.active = true;
+        this.current = node;
+
+        this.previous.push( node );
+
+    }
+
     setNodes( nodes: SiteEntity[] ): void {
         this.nodes = [];
         this.supportingData = [];
@@ -738,102 +767,102 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-//    /*
-//     *  Context menu visibility functions
-//     */
-//    public canEdit = ( item: any ): boolean => {
-//        if ( this.admin ) {
-//            return true;
-//        }
-//        else if ( this.worker ) {
-//            return ( item.data.type === "Mission" || item.data.type === "Collection" );
-//        }
-//
-//        return false;
-//    }
-//
-//    public canRunOrtho = ( item: any ): boolean => {
-//        if ( item.data == null || item.data.type !== "Collection" ) {
-//            return false;
-//        }
-//
-//        return true;
-//
-//        // TODO : If we don't have raw images uploaded then they can't run ortho
-//
-//        // TODO : Different roles?
-//        //      if ( this.admin ) {
-//        //        return true;
-//        //      }
-//        //
-//        //      return false;
-//    }
-//
-//    public canDelete = ( item: any ): boolean => {
-//        if ( this.admin ) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//
-//    public canAddChild = ( item: any ): boolean => {
-//        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
-//            return true;
-//        }
-//        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//
-//    public canCreateImageDir( item: any ): boolean {
-//        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project' ) {
-//            return true;
-//        }
-//    }
-//
-//    public canEditSite = ( item: any ): boolean => {
-//        return item.data.type === "Site" && this.canEdit( item );
-//    }
-//
-//    public hasMapImage = ( item: any ): boolean => {
-//        return ( item.data.imageKey != null );
-//    }
-//
-//    public isSite = ( item: any ): boolean => {
-//        return item.data.type === "Site";
-//    }
-//
-//    public isImageDir = ( item: any ): boolean => {
-//        return item.data.type === "Imagery";
-//    }
-//
-//    public isCollection = ( item: any ): boolean => {
-//        return item.data.type === "Collection";
-//    }
-//
-//    public canUpload = ( item: any ): boolean => {
-//        // Only allow direct uploads on Imagery child nodes
-//        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection" ) {
-//            if ( item.data.name === "raw" ) {
-//                return true;
-//            }
-//            else if ( item.data.name === "georef" ) {
-//                return true;
-//            }
-//            else if ( item.data.name === "ortho" ) {
-//                return true;
-//            }
-//            // else if(item.data.type === "Collection"){
-//            //     return true;
-//            // }
-//            // else if(item.data.type === "Imagery"){
-//            //     return true;
-//            // }
-//        }
-//
-//        return false;
-//    }
+    //    /*
+    //     *  Context menu visibility functions
+    //     */
+    //    public canEdit = ( item: any ): boolean => {
+    //        if ( this.admin ) {
+    //            return true;
+    //        }
+    //        else if ( this.worker ) {
+    //            return ( item.data.type === "Mission" || item.data.type === "Collection" );
+    //        }
+    //
+    //        return false;
+    //    }
+    //
+    //    public canRunOrtho = ( item: any ): boolean => {
+    //        if ( item.data == null || item.data.type !== "Collection" ) {
+    //            return false;
+    //        }
+    //
+    //        return true;
+    //
+    //        // TODO : If we don't have raw images uploaded then they can't run ortho
+    //
+    //        // TODO : Different roles?
+    //        //      if ( this.admin ) {
+    //        //        return true;
+    //        //      }
+    //        //
+    //        //      return false;
+    //    }
+    //
+    //    public canDelete = ( item: any ): boolean => {
+    //        if ( this.admin ) {
+    //            return true;
+    //        }
+    //
+    //        return false;
+    //    }
+    //
+    //    public canAddChild = ( item: any ): boolean => {
+    //        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
+    //            return true;
+    //        }
+    //        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
+    //            return true;
+    //        }
+    //
+    //        return false;
+    //    }
+    //
+    //    public canCreateImageDir( item: any ): boolean {
+    //        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project' ) {
+    //            return true;
+    //        }
+    //    }
+    //
+    //    public canEditSite = ( item: any ): boolean => {
+    //        return item.data.type === "Site" && this.canEdit( item );
+    //    }
+    //
+    //    public hasMapImage = ( item: any ): boolean => {
+    //        return ( item.data.imageKey != null );
+    //    }
+    //
+    //    public isSite = ( item: any ): boolean => {
+    //        return item.data.type === "Site";
+    //    }
+    //
+    //    public isImageDir = ( item: any ): boolean => {
+    //        return item.data.type === "Imagery";
+    //    }
+    //
+    //    public isCollection = ( item: any ): boolean => {
+    //        return item.data.type === "Collection";
+    //    }
+    //
+    //    public canUpload = ( item: any ): boolean => {
+    //        // Only allow direct uploads on Imagery child nodes
+    //        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection" ) {
+    //            if ( item.data.name === "raw" ) {
+    //                return true;
+    //            }
+    //            else if ( item.data.name === "georef" ) {
+    //                return true;
+    //            }
+    //            else if ( item.data.name === "ortho" ) {
+    //                return true;
+    //            }
+    //            // else if(item.data.type === "Collection"){
+    //            //     return true;
+    //            // }
+    //            // else if(item.data.type === "Imagery"){
+    //            //     return true;
+    //            // }
+    //        }
+    //
+    //        return false;
+    //    }
 }

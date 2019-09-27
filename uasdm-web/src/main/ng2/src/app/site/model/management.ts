@@ -26,6 +26,8 @@ export class SiteEntity {
     component: string;
     key: string;
     imageKey: string;
+    children: SiteEntity[];
+    active: boolean;
 }
 
 export class CollectionHierarchy {

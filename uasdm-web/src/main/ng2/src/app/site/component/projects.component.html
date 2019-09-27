@@ -52,6 +52,17 @@
                               <a class="fa fa-pencil ico-edit" (click)="handleEdit(node)" title="Edit"></a>
                               <a class="fa fa-trash-o ico-remove" (click)="handleDelete(node)" title="Delete"></a>                                   
                             </span>                                 
+                            <div *ngIf="node.active" class="list-group">
+                              <div  *ngFor="let child of node.children" class="list-group-item">
+                                <a (click)="select(child, $event)">
+                                  {{node.name}}
+                                </a>
+                                <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
+                                  <a class="fa fa-pencil ico-edit" (click)="handleEdit(child)" title="Edit"></a>
+                                  <a class="fa fa-trash-o ico-remove" (click)="handleDelete(child)" title="Delete"></a>                                   
+                                </span>                                 
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
