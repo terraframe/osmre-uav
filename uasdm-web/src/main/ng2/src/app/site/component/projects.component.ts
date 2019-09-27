@@ -17,7 +17,6 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
-import { NotificationModalComponent } from '../../shared/component/modal/notification-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
 
 import { SiteEntity } from '../model/management';
@@ -466,54 +465,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    //    handleCreate( parent: SiteEntity, type: string ): void {
-    //        let parentId = parent != null ? parent.id : null;
-    //
-    //        this.service.newChild( parentId, type ).then( data => {
-    //            this.bsModalRef = this.modalService.show( EntityModalComponent, {
-    //                animated: true,
-    //                backdrop: true,
-    //                ignoreBackdropClick: true,
-    //                'class': 'upload-modal'
-    //            } );
-    //            this.bsModalRef.content.newInstance = true;
-    //            this.bsModalRef.content.admin = this.admin;
-    //            this.bsModalRef.content.entity = data.item;
-    //            this.bsModalRef.content.attributes = data.attributes;
-    //
-    //            if ( parent != null ) {
-    //                this.bsModalRef.content.parentId = parent.id;
-    //            }
-    //
-    //            this.bsModalRef.content.onNodeChange.subscribe( entity => {
-    //
-    //                if ( parent != null ) {
-    //
-    //                    if ( parent.children != null ) {
-    //                        parent.children.push( entity );
-    //                    }
-    //                    else {
-    //                        d.children = [entity];
-    //                        d.hasChildren = true;
-    //                    }
-    //
-    //                    if ( this.tree ) {
-    //                        this.tree.treeModel.update();
-    //                        this.tree.treeModel.getNodeById( d.id ).setActiveAndVisible().expand();
-    //                    }
-    //                }
-    //                else {
-    //                    this.nodes.push( entity );
-    //
-    //                    if ( this.tree ) {
-    //                        this.tree.treeModel.update();
-    //                    }
-    //
-    //                    this.refresh( false );
-    //                }
-    //            } );
-    //        } );
-    //    }
+    handleCreate( parent: SiteEntity, type: string ): void {
+        let parentId = parent != null ? parent.id : null;
+
+        this.service.newChild( parentId, type ).then( data => {
+            this.bsModalRef = this.modalService.show( EntityModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'upload-modal'
+            } );
+            this.bsModalRef.content.newInstance = true;
+            this.bsModalRef.content.admin = this.admin;
+            this.bsModalRef.content.entity = data.item;
+            this.bsModalRef.content.attributes = data.attributes;
+
+            if ( parent != null ) {
+                this.bsModalRef.content.parentId = parent.id;
+            }
+
+            this.bsModalRef.content.onNodeChange.subscribe( entity => {
+
+                if ( parent != null ) {
+
+                }
+                else {
+                    if ( this.previous.length == 0 ) {
+                        this.nodes.push( entity );
+                    }
+
+                    this.refresh( false );
+                }
+            } );
+        } );
+    }
 
     zoomToFeature( node: SiteEntity ): void {
         if ( node.geometry != null ) {
