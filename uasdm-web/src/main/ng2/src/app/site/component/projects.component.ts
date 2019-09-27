@@ -15,7 +15,6 @@ import { saveAs as importedSaveAs } from "file-saver";
 import { Map, LngLatBounds, NavigationControl, ImageSource } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
