@@ -91,11 +91,21 @@ export class UploadModalComponent implements OnInit {
     showFileSelectPanel: boolean = false;
     taskFinishedNotifications: any[] = [];
 
+    previous = [] as SiteEntity[];
+
+
     public onUploadComplete: Subject<any>;
 
     constructor( public bsModalRef: BsModalRef, private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
     }
+
+
+    init( entity: SiteEntity, previous: SiteEntity[] ): void {
+        this.previous = JSON.parse( JSON.stringify( previous ) );
+        this.previous.push( entity );
+    }
+
 
     ngDoCheck() {
 

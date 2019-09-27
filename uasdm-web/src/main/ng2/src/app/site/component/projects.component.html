@@ -40,24 +40,44 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container">
-                        <div *ngIf="nodes.length > 0" class="tree">
-                            <div class="list-group">
-                              <div  *ngFor="let node of nodes" class="list-group-item">
-                                <a (click)="select(node, $event)">
-                                    {{node.name}}
-                                </a>
-                                <span *ngIf="node.type !== 'folder'" class="pull-right button-column">
-                                  <a class="fa fa-pencil ico-edit" (click)="handleEdit(node)" title="Edit"></a>
-                                  <a class="fa fa-trash-o ico-remove" (click)="handleDelete(node)" title="Delete"></a>                                   
-                                </span>                                
-                              </div>
-                            </div>
-
+                  <tabset>
+                    <tab heading="Data">                
+                      <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container">
+                        <div class="list-group">
+                          <div  *ngFor="let node of nodes" class="list-group-item">
+                            <a (click)="select(node, $event)">
+                              {{node.name}}
+                            </a>
+                            <span *ngIf="node.type !== 'folder'" class="pull-right button-column">
+                              <a class="fa fa-pencil ico-edit" (click)="handleEdit(node)" title="Edit"></a>
+                              <a class="fa fa-trash-o ico-remove" (click)="handleDelete(node)" title="Delete"></a>                                   
+                            </span>                                 
+                          </div>
                         </div>
-                    </div>
+                      </div>
+                      <div *ngIf="supportingData.length > 0" class="location-management-widget-section location-management-list-container">
+                        <label>Supporting Data</label>
+                        <div class="list-group">
+                          <div *ngFor="let node of supportingData" class="list-group-item">
+                            <a (click)="select(node, $event)">
+                              {{node.name}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </tab>
+                    <tab *ngIf="current != null" heading="Products">                
+                    </tab>
+                  </tabset>
                 </div>
             </div>
+            
+            <div *ngIf="current != null" class="row">
+              <div class="col-md-12">
+                <button (click)="handleUploadFile()" class="btn btn-primary">Upload</button>              
+              </div>
+            </div>
+            
         </div>
         <div class="col-md-9" id="site-explorer-map">
             <div class="row">
@@ -87,23 +107,19 @@
     </div>
 </div>
 
-<ng-template #bsItemTemplate let-match="match" let-query="query"> <span *ngIf="match.item.filename == null">
+<ng-template #bsItemTemplate let-match="match" let-query="query">
+  <span *ngIf="match.item.filename == null">
     <i class="fa fa-folder-open"></i>
-</span> <span *ngIf="match.item.filename != null">
+  </span>
+  <span *ngIf="match.item.filename != null">
     <i class="fa fa-file"></i>
-</span> <span>
+  </span>
+  <span>
     <span *ngFor="let site of match.item.hierarchy; index as i">
         {{site.label}} /
         <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
     </span>
-</span> <b>{{ match.item.label}}</b> </ng-template>
-
-<context-menu #nodeMenu>
-  <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-repeat"></i> Re-run Orthorectification Processing </ng-template> <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canDelete" (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item, '')"> <i class="fa fa-arrow-circle-down"></i> Add a {{item?.data.childType?.toLowerCase()}} to
-{{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canAddChild && canCreateImageDir" (execute)="handleCreate($event.item, 'Imagery')"> <i class="fa fa-arrow-circle-down"></i> Add an image directory to {{item?.data.name}} </ng-template> <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template> <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> <i style="font-size: 18px; padding: 0; width: auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i> Upload data </ng-template> <ng-template contextMenuItem [visible]="isSite" divider="true"></ng-template> <ng-template contextMenuItem let-item [visible]="canEditSite" (execute)="handleEditGeom($event.item)"> <i
-    class="fa fa-globe" aria-hidden="true"></i> Edit geometry for {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="isSite" (execute)="zoomToFeature($event.item)"> <i class="fa fa-search-plus"></i> Zoom to feature </ng-template> </context-menu>
-
-<context-menu #objectMenu> <ng-template contextMenuItem let-item (execute)="handleDownload($event.item)"> <i class="fa fa-download" aria-hidden="true"></i> Download {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="hasMapImage" (execute)="handleMapImage($event.item)"> <i class="fa fa-search-plus"></i>Toggle on map </ng-template> </context-menu>
-
-<context-menu #folderMenu> <ng-template contextMenuItem let-item (execute)="handleDownloadAll($event.item)"> <i class="fa fa-download" aria-hidden="true"></i> Download All Files </ng-template> <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template> <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> <i style="font-size: 18px; padding: 0; width: auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i> Upload data </ng-template> </context-menu>
+  </span>
+  <b>{{ match.item.label}}</b>
+</ng-template>
 

@@ -57,30 +57,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     @ViewChild( 'confirmTemplate' ) public confirmTemplate: TemplateRef<any>;
 
-    /*
-     * Template for tree node menu
-     */
-    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
-
-    /*
-     * Template for folder node menu
-     */
-    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
-
-    /*
-     * Template for site items
-     */
-    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
-
-    /*
-     * Template for leaf menu
-     */
-    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
-
-    /*
-     * Template for object items
-     */
-    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
+//    /*
+//     * Template for tree node menu
+//     */
+//    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
+//
+//    /*
+//     * Template for folder node menu
+//     */
+//    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
+//
+//    /*
+//     * Template for site items
+//     */
+//    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
+//
+//    /*
+//     * Template for leaf menu
+//     */
+//    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
+//
+//    /*
+//     * Template for object items
+//     */
+//    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
 
     /* 
      * Datasource to get search responses
@@ -96,6 +96,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      * Root nodes of the tree
      */
     nodes = [] as SiteEntity[];
+
+    /* 
+     * Root nodes of the tree
+     */
+    supportingData = [] as SiteEntity[];
 
     /* 
      * Breadcrumb of previous sites clicked on
@@ -380,58 +385,58 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         //        this.tree.treeModel.expandAll();
     }
 
-    handleOnMenu( node: any, $event: any ): void {
+//    handleOnMenu( node: any, $event: any ): void {
+//
+//        if ( node.data.type === "object" ) {
+//            this.contextMenuService.show.next( {
+//                contextMenu: this.objectMenuComponent,
+//                event: $event,
+//                item: node,
+//            } );
+//            $event.preventDefault();
+//            $event.stopPropagation();
+//        }
+//        else if ( node.data.type !== "folder" ) {
+//            if ( node.data.type === "Site" ) {
+//                node.data.childType = "Project"
+//            }
+//            else if ( node.data.type === "Project" ) {
+//                node.data.childType = "Mission"
+//            }
+//            else if ( node.data.type === "Mission" ) {
+//                node.data.childType = "Collection"
+//            }
+//            else if ( node.data.type === "Collection" ) {
+//                node.data.childType = null
+//            }
+//            else if ( node.data.type === "Imagery" ) {
+//                node.data.childType = null
+//            }
+//
+//            if ( node.data.type !== "Site" || this.admin ) {
+//                this.contextMenuService.show.next( {
+//                    contextMenu: this.nodeMenuComponent,
+//                    event: $event,
+//                    item: node,
+//                } );
+//                $event.preventDefault();
+//                $event.stopPropagation();
+//            }
+//
+//        }
+//        else {
+//            this.contextMenuService.show.next( {
+//                contextMenu: this.folderMenuComponent,
+//                event: $event,
+//                item: node
+//            } );
+//            $event.preventDefault();
+//            $event.stopPropagation();
+//        }
+//    }
 
-        if ( node.data.type === "object" ) {
-            this.contextMenuService.show.next( {
-                contextMenu: this.objectMenuComponent,
-                event: $event,
-                item: node,
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
-        }
-        else if ( node.data.type !== "folder" ) {
-            if ( node.data.type === "Site" ) {
-                node.data.childType = "Project"
-            }
-            else if ( node.data.type === "Project" ) {
-                node.data.childType = "Mission"
-            }
-            else if ( node.data.type === "Mission" ) {
-                node.data.childType = "Collection"
-            }
-            else if ( node.data.type === "Collection" ) {
-                node.data.childType = null
-            }
-            else if ( node.data.type === "Imagery" ) {
-                node.data.childType = null
-            }
 
-            if ( node.data.type !== "Site" || this.admin ) {
-                this.contextMenuService.show.next( {
-                    contextMenu: this.nodeMenuComponent,
-                    event: $event,
-                    item: node,
-                } );
-                $event.preventDefault();
-                $event.stopPropagation();
-            }
-
-        }
-        else {
-            this.contextMenuService.show.next( {
-                contextMenu: this.folderMenuComponent,
-                event: $event,
-                item: node
-            } );
-            $event.preventDefault();
-            $event.stopPropagation();
-        }
-    }
-
-
-    handleUploadFile( item: any ): void {
+    handleUploadFile( item: SiteEntity ): void {
 
         let hierarchy = {};
 
@@ -509,8 +514,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     handleEdit( node: SiteEntity ): void {
-        this.current = node;
-
         this.service.edit( node.id ).then( data => {
             this.bsModalRef = this.modalService.show( EntityModalComponent, {
                 animated: true,
@@ -532,7 +535,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     handleDownloadAll( node: SiteEntity ): void {
-        this.current = node;
 
         window.location.href = acp + '/project/download-all?id=' + node.component + "&key=" + node.name;
 
@@ -585,10 +587,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         //    importedSaveAs( blob, node.data.name );
         //} );
     }
-
-
-
-
 
     handleStyle( layer: any ): void {
 
@@ -670,9 +668,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     select( node: SiteEntity ): void {
         if ( node.type === "folder" ) {
-            this.service.getItems( node.component, node.name ).then( nodes => {
-                this.nodes = nodes;
-            } );
+//            this.service.getItems( node.component, node.name ).then( nodes => {
+//                this.nodes = nodes;
+//            } );
         }
         else if ( node.type === "object" ) {
             // Do nothing there are no children
@@ -685,8 +683,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.showCollectionModal( node, nodes );
                 }
                 else {
+                    this.current = node;
                     this.previous.push( node );
-                    this.nodes = nodes;
+                    this.setNodes( nodes );
                 }
             } );
         }
@@ -699,16 +698,32 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.service.getItems( node.id, null ).then( nodes => {
                 var indexOf = this.previous.findIndex( i => i.id === node.id );
 
+                this.current = node;
                 this.previous.splice( indexOf + 1 );
-                this.nodes = nodes;
+                this.setNodes( nodes );
             } );
         }
         else if ( this.previous.length > 0 ) {
             this.service.roots( null ).then( nodes => {
+                this.current = null;
                 this.previous = [];
-                this.nodes = nodes;
+                this.setNodes( nodes );
             } );
         }
+    }
+
+    setNodes( nodes: SiteEntity[] ): void {
+        this.nodes = [];
+        this.supportingData = [];
+
+        nodes.forEach( node => {
+            if ( node.type === 'folder' ) {
+                this.supportingData.push( node );
+            }
+            else {
+                this.nodes.push( node );
+            }
+        } )
     }
 
     showCollectionModal( collection: SiteEntity, folders: SiteEntity[] ): void {
@@ -723,102 +738,102 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-    /*
-     *  Context menu visibility functions
-     */
-    public canEdit = ( item: any ): boolean => {
-        if ( this.admin ) {
-            return true;
-        }
-        else if ( this.worker ) {
-            return ( item.data.type === "Mission" || item.data.type === "Collection" );
-        }
-
-        return false;
-    }
-
-    public canRunOrtho = ( item: any ): boolean => {
-        if ( item.data == null || item.data.type !== "Collection" ) {
-            return false;
-        }
-
-        return true;
-
-        // TODO : If we don't have raw images uploaded then they can't run ortho
-
-        // TODO : Different roles?
-        //      if ( this.admin ) {
-        //        return true;
-        //      }
-        //
-        //      return false;
-    }
-
-    public canDelete = ( item: any ): boolean => {
-        if ( this.admin ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public canAddChild = ( item: any ): boolean => {
-        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
-            return true;
-        }
-        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public canCreateImageDir( item: any ): boolean {
-        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project' ) {
-            return true;
-        }
-    }
-
-    public canEditSite = ( item: any ): boolean => {
-        return item.data.type === "Site" && this.canEdit( item );
-    }
-
-    public hasMapImage = ( item: any ): boolean => {
-        return ( item.data.imageKey != null );
-    }
-
-    public isSite = ( item: any ): boolean => {
-        return item.data.type === "Site";
-    }
-
-    public isImageDir = ( item: any ): boolean => {
-        return item.data.type === "Imagery";
-    }
-
-    public isCollection = ( item: any ): boolean => {
-        return item.data.type === "Collection";
-    }
-
-    public canUpload = ( item: any ): boolean => {
-        // Only allow direct uploads on Imagery child nodes
-        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection" ) {
-            if ( item.data.name === "raw" ) {
-                return true;
-            }
-            else if ( item.data.name === "georef" ) {
-                return true;
-            }
-            else if ( item.data.name === "ortho" ) {
-                return true;
-            }
-            // else if(item.data.type === "Collection"){
-            //     return true;
-            // }
-            // else if(item.data.type === "Imagery"){
-            //     return true;
-            // }
-        }
-
-        return false;
-    }
+//    /*
+//     *  Context menu visibility functions
+//     */
+//    public canEdit = ( item: any ): boolean => {
+//        if ( this.admin ) {
+//            return true;
+//        }
+//        else if ( this.worker ) {
+//            return ( item.data.type === "Mission" || item.data.type === "Collection" );
+//        }
+//
+//        return false;
+//    }
+//
+//    public canRunOrtho = ( item: any ): boolean => {
+//        if ( item.data == null || item.data.type !== "Collection" ) {
+//            return false;
+//        }
+//
+//        return true;
+//
+//        // TODO : If we don't have raw images uploaded then they can't run ortho
+//
+//        // TODO : Different roles?
+//        //      if ( this.admin ) {
+//        //        return true;
+//        //      }
+//        //
+//        //      return false;
+//    }
+//
+//    public canDelete = ( item: any ): boolean => {
+//        if ( this.admin ) {
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    public canAddChild = ( item: any ): boolean => {
+//        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
+//            return true;
+//        }
+//        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    public canCreateImageDir( item: any ): boolean {
+//        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project' ) {
+//            return true;
+//        }
+//    }
+//
+//    public canEditSite = ( item: any ): boolean => {
+//        return item.data.type === "Site" && this.canEdit( item );
+//    }
+//
+//    public hasMapImage = ( item: any ): boolean => {
+//        return ( item.data.imageKey != null );
+//    }
+//
+//    public isSite = ( item: any ): boolean => {
+//        return item.data.type === "Site";
+//    }
+//
+//    public isImageDir = ( item: any ): boolean => {
+//        return item.data.type === "Imagery";
+//    }
+//
+//    public isCollection = ( item: any ): boolean => {
+//        return item.data.type === "Collection";
+//    }
+//
+//    public canUpload = ( item: any ): boolean => {
+//        // Only allow direct uploads on Imagery child nodes
+//        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection" ) {
+//            if ( item.data.name === "raw" ) {
+//                return true;
+//            }
+//            else if ( item.data.name === "georef" ) {
+//                return true;
+//            }
+//            else if ( item.data.name === "ortho" ) {
+//                return true;
+//            }
+//            // else if(item.data.type === "Collection"){
+//            //     return true;
+//            // }
+//            // else if(item.data.type === "Imagery"){
+//            //     return true;
+//            // }
+//        }
+//
+//        return false;
+//    }
 }
