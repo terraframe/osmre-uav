@@ -13,8 +13,6 @@ import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
-import { SensorsComponent } from './component/sensor/sensors.component';
-import { PlatformsComponent } from './component/platform/platforms.component';
 
 const routes: Routes = [
     {
@@ -66,16 +64,6 @@ const routes: Routes = [
         path: 'system-info',
         component: SystemInfoComponent,
         data: {}
-    },
-    {
-        path: 'sensors',
-        canActivate: [AdminGuardService],
-        component: SensorsComponent,
-    },
-    {
-        path: 'platforms',
-        canActivate: [AdminGuardService],
-        component: PlatformsComponent,
     }
 ];
 

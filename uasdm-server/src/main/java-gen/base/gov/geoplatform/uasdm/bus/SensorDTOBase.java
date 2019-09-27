@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 352790763)
+@com.runwaysdk.business.ClassSignature(hash = -2091305329)
 public abstract class SensorDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Sensor";
-  private static final long serialVersionUID = 352790763;
+  private static final long serialVersionUID = -2091305329;
   
   protected SensorDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -35,12 +35,15 @@ public abstract class SensorDTOBase extends com.runwaysdk.business.BusinessDTO
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String MODEL = "model";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
+  public static java.lang.String WAVELENGTH = "waveLength";
   public java.util.Date getCreateDate()
   {
     return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(CREATEDATE));
@@ -325,6 +328,43 @@ public abstract class SensorDTOBase extends com.runwaysdk.business.BusinessDTO
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
   }
   
+  public String getModel()
+  {
+    return getValue(MODEL);
+  }
+  
+  public void setModel(String value)
+  {
+    if(value == null)
+    {
+      setValue(MODEL, "");
+    }
+    else
+    {
+      setValue(MODEL, value);
+    }
+  }
+  
+  public boolean isModelWritable()
+  {
+    return isWritable(MODEL);
+  }
+  
+  public boolean isModelReadable()
+  {
+    return isReadable(MODEL);
+  }
+  
+  public boolean isModelModified()
+  {
+    return isModified(MODEL);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getModelMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(MODEL).getAttributeMdDTO();
+  }
+  
   public String getName()
   {
     return getValue(NAME);
@@ -411,6 +451,43 @@ public abstract class SensorDTOBase extends com.runwaysdk.business.BusinessDTO
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
   }
   
+  public String getSensorType()
+  {
+    return getValue(SENSORTYPE);
+  }
+  
+  public void setSensorType(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORTYPE, "");
+    }
+    else
+    {
+      setValue(SENSORTYPE, value);
+    }
+  }
+  
+  public boolean isSensorTypeWritable()
+  {
+    return isWritable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeReadable()
+  {
+    return isReadable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeModified()
+  {
+    return isModified(SENSORTYPE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getSensorTypeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SENSORTYPE).getAttributeMdDTO();
+  }
+  
   public Long getSeq()
   {
     return com.runwaysdk.constants.MdAttributeLongUtil.getTypeSafeValue(getValue(SEQ));
@@ -459,6 +536,43 @@ public abstract class SensorDTOBase extends com.runwaysdk.business.BusinessDTO
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getSiteMasterMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SITEMASTER).getAttributeMdDTO();
+  }
+  
+  public String getWaveLength()
+  {
+    return getValue(WAVELENGTH);
+  }
+  
+  public void setWaveLength(String value)
+  {
+    if(value == null)
+    {
+      setValue(WAVELENGTH, "");
+    }
+    else
+    {
+      setValue(WAVELENGTH, value);
+    }
+  }
+  
+  public boolean isWaveLengthWritable()
+  {
+    return isWritable(WAVELENGTH);
+  }
+  
+  public boolean isWaveLengthReadable()
+  {
+    return isReadable(WAVELENGTH);
+  }
+  
+  public boolean isWaveLengthModified()
+  {
+    return isModified(WAVELENGTH);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getWaveLengthMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(WAVELENGTH).getAttributeMdDTO();
   }
   
   public static gov.geoplatform.uasdm.bus.SensorDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)

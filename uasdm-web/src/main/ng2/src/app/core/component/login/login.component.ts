@@ -19,10 +19,7 @@
 import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 import { SessionService } from '../../../shared/service/session.service';
 
 import { LoginHeaderComponent } from './login-header.component';
@@ -39,29 +36,13 @@ export class LoginComponent {
     username: string = '';
     password: string = '';
 
-    /*
-     * Reference to the modal current showing
-    */
-    private bsModalRef: BsModalRef;
-
-    constructor( private service: SessionService, private router: Router, private modalService: BsModalService ) {
+    constructor( private service: SessionService, private router: Router ) {
         this.context = acp as string;
     }
 
     onSubmit(): void {
         this.service.login( this.username, this.password ).then( response => {
             this.router.navigate( ['/menu/true'] );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
-
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 }

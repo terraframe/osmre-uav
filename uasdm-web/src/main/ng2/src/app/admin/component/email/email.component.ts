@@ -23,8 +23,6 @@ import { Location } from '@angular/common';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
-
 import { Email } from '../../model/email';
 import { EmailService } from '../../service/email.service';
 
@@ -46,19 +44,14 @@ export class EmailComponent implements OnInit {
         to: '',
     };
 
-    bsModalRef: BsModalRef;
-
     constructor(
         private service: EmailService,
-        private modalService: BsModalService,
         private location: Location ) {
     }
 
     ngOnInit(): void {
         this.service.getInstance().then( email => {
             this.email = email;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -67,20 +60,8 @@ export class EmailComponent implements OnInit {
     }
 
     onSubmit(): void {
-        this.service.apply( this.email )
-            .then( email => {
-                this.location.back();
-            } )
-            .catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
+        this.service.apply( this.email ).then( email => {
+            this.location.back();
+        } );
     }
 }

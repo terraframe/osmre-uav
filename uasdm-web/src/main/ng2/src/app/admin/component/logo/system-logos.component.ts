@@ -25,7 +25,6 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 import { LocalizationService } from '../../../shared/service/localization.service';
 
@@ -79,8 +78,6 @@ export class SystemLogosComponent implements OnInit {
         this.service.getIcons().then( icons => {
 
             this.icons = icons;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -91,16 +88,6 @@ export class SystemLogosComponent implements OnInit {
     remove( icon: SystemLogo ): void {
         this.service.remove( icon.oid ).then( response => {
             icon.custom = false;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 }

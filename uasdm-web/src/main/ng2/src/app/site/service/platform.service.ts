@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
-import { EventService } from '../../shared/service/event.service'
+import { EventService } from '../../shared/service/event.service';
+import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { PageResult } from '../model/account';
+import { PageResult } from '../../shared/model/page';
 import { Platform } from '../model/platform';
 
 declare var acp: any;
@@ -14,7 +15,7 @@ declare var acp: any;
 @Injectable()
 export class PlatformService {
 
-    constructor( private http: HttpClient, private eventService: EventService ) { }
+    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
 
     page( p: number ): Promise<PageResult<Platform>> {
         let params: HttpParams = new HttpParams();
@@ -86,7 +87,7 @@ export class PlatformService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<Platform>( acp + '/platform/apply', JSON.stringify( { platform: platform } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
@@ -102,7 +103,7 @@ export class PlatformService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<void>( acp + '/platform/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();

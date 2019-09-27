@@ -20,7 +20,6 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
-import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
 import { NotificationModalComponent } from '../../shared/component/modal/notification-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
 
@@ -257,11 +256,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
         this.userName = this.service.getCurrentUser();
-        
         this.service.roots( null ).then( nodes => {
             this.nodes = nodes;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -478,8 +474,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.current.data = node;
 
                 this.refresh( false );
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
 
@@ -557,8 +551,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.getThumbnail( image );
                     } )
 
-                } ).catch(( err: HttpErrorResponse ) => {
-                    this.error( err );
                 } );
         }
     }
@@ -702,8 +694,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.refresh( false );
                 }
             } );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -762,12 +752,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Do something
                 this.current.data = entity;
+
+                if ( entity.type === 'Site' ) {
+                    this.refresh( false );
+                }
             } );
-            
-            this.refresh( false );            
-            
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -787,8 +776,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.service.runOrtho( data.id ).then( data => {
             // Nothing
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -835,8 +822,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
         else {
@@ -858,8 +843,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.tree.treeModel.update();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
     }
@@ -929,37 +912,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleClick( $event: any ): void {
         let result = $event.item;
 
-        if(result.hierarchy && result.hierarchy.length > 0){
-            let id = result.hierarchy[result.hierarchy.length - 1].id;
-
-            if ( id != null ) {
-                let node = this.tree.treeModel.getNodeById( id );
-
-                if ( node != null ) {
-                    node.setActiveAndVisible();
-                    node.expand();
-                }
-                else {
-                    this.service.roots( id ).then( nodes => {
-                        this.nodes = nodes;
-
-                        if ( id != null ) {
-                            setTimeout(() => {
-                                if ( this.tree ) {
-                                    let node = this.tree.treeModel.getNodeById( id );
-                                    node.setActiveAndVisible();
-                                    node.expand();
-                                }
-                            }, 20 );
-                        }
-
-                    } ).catch(( err: HttpErrorResponse ) => {
-                        this.error( err );
-                    } );
-                }
-            }
-        }
-        
         if(result.center){
             this.map.flyTo({
                 center: result.center,
@@ -1031,14 +983,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     getDefaultImgURL( event: any ): void {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 
     /*

@@ -20,21 +20,21 @@ import net.lingala.zip4j.core.ZipFile;
 
 public class ImageryUploadEvent extends ImageryUploadEventBase
 {
-  public static final String[] formats = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
-  
-  private static final Logger logger = LoggerFactory.getLogger(ImageryUploadEvent.class);
-  
-  private static final long serialVersionUID = 510137801;
-  
+  public static final String[] formats          = new String[] { "jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif" };
+
+  private static final Logger  logger           = LoggerFactory.getLogger(ImageryUploadEvent.class);
+
+  private static final long    serialVersionUID = 510137801;
+
   public ImageryUploadEvent()
   {
     super();
   }
-  
+
   public void handleUploadFinish(RequestParser parser, File infile)
   {
     ImageryWorkflowTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    
+
     task.lock();
     task.setStatus("Processing");
     task.setMessage("Processing archived files");
@@ -43,20 +43,21 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     Imagery imagery = task.getImagery();
     imagery.uploadArchive(task, infile, parser.getUploadTarget());
 
+    calculateImageSize(infile, imagery);
+
     task.lock();
     task.setStatus("Complete");
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
-    
-    // Only initialize an ortho job if imagery has been uploaded to the raw folder.
+
+    // Only initialize an ortho job if imagery has been uploaded to the raw
+    // folder.
     if (parser.getUploadTarget() != null && parser.getUploadTarget().equals(ImageryComponent.RAW))
     {
       startODMProcessing(infile, task, parser);
     }
-    
-    calculateImageSize(infile, imagery);
   }
-  
+
   private void startODMProcessing(File infile, ImageryWorkflowTask uploadTask, RequestParser parser)
   {
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
@@ -69,36 +70,36 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("The images uploaded to ['" + task.getImagery().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilePrefix(parser.getCustomParams().get("outFileName"));
     task.apply();
-    
+
     task.initiate(infile);
   }
-  
+
   private void calculateImageSize(File zip, Imagery imagery)
   {
     try
     {
       File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
-      
+
       try
       {
         new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
-        
+
         File[] files = parentFolder.listFiles();
-        
+
         for (File file : files)
         {
           String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
           if (ArrayUtils.contains(ImageryUploadEvent.formats, ext))
           {
             BufferedImage bimg = ImageIO.read(file);
-            int width          = bimg.getWidth();
-            int height         = bimg.getHeight();
-            
+            int width = bimg.getWidth();
+            int height = bimg.getHeight();
+
             imagery.appLock();
             imagery.setImageHeight(height);
             imagery.setImageWidth(width);
             imagery.apply();
-            
+
             return;
           }
         }
@@ -113,5 +114,5 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       logger.error("Error occurred while calculating the image size.", e);
     }
   }
-  
+
 }

@@ -20,11 +20,13 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -34,6 +36,8 @@ import gov.geoplatform.uasdm.bus.ImageryComponent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.Platform;
+import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
@@ -513,6 +517,20 @@ public class ProjectManagementService
   public JSONArray bbox(String sessionId)
   {
     return UasComponent.bbox();
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getMetadataOptions(String sessionId)
+  {
+    SingleActorDAOIF user = Session.getCurrentSession().getUser();
+
+    JSONObject response = new JSONObject();
+    response.put("sensors", Sensor.getAll());
+    response.put("platforms", Platform.getAll());
+    response.put("name", user.getValue(GeoprismUser.USERNAME));
+    response.put("email", user.getValue(GeoprismUser.EMAIL));
+
+    return response;
   }
 
 //  public void logLoginAttempt(String sessionId, String username)

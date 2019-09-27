@@ -7,15 +7,19 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
 import { AuthService } from '../../shared/service/auth.service';
-import { SiteEntity, Message, Task, AttributeType, Condition, Option } from '../model/management';
 import { EventService } from '../../shared/service/event.service';
+import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
+
+import { SiteEntity, Message, Task, AttributeType, Condition } from '../model/management';
+import { Sensor } from '../model/sensor';
+import { Platform } from '../model/platform';
 
 declare var acp: any;
 
 @Injectable()
 export class ManagementService {
 
-    constructor( private http: HttpClient, private eventService: EventService, private authService: AuthService ) { }
+    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService ) { }
 
     getChildren( id: string ): Promise<SiteEntity[]> {
         let params: HttpParams = new HttpParams();
@@ -93,7 +97,7 @@ export class ManagementService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<SiteEntity>( acp + '/project/update', JSON.stringify( { entity: entity } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
@@ -151,7 +155,7 @@ export class ManagementService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<SiteEntity>( acp + '/project/apply-with-parent', JSON.stringify( params ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
@@ -323,11 +327,19 @@ export class ManagementService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<void>( acp + '/project/submit-metadata', JSON.stringify( { json: metaObj } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
+            .toPromise()
+    }
+
+    getMetadataOptions(): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string }> {
+        let params: HttpParams = new HttpParams();
+
+        return this.noErrorHttpClient
+            .get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string }>( acp + '/project/metadata-options', { params: params } )
             .toPromise()
     }
 
@@ -341,14 +353,4 @@ export class ManagementService {
 
         return false;
     }
-
-    getMetadataOptions(): Promise<{ sensors: Option[], platforms: Option[] }> {
-        let params: HttpParams = new HttpParams();
-
-        return this.http
-            .get<{ sensors: Option[], platforms: Option[] }>( acp + '/project/metadata-options', { params: params } )
-            .toPromise()
-    }
-
-
 }

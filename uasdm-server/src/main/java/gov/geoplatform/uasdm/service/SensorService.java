@@ -1,9 +1,7 @@
 package gov.geoplatform.uasdm.service;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runwaysdk.query.OIterator;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
@@ -16,37 +14,9 @@ public class SensorService
   public JSONObject page(String sessionId, Integer pageNumber)
   {
     SensorQuery query = Sensor.page(20, pageNumber);
+    query.WHERE(query.getName().NE(Sensor.OTHER));
 
-    return query.toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONArray getAll(String sessionId)
-  {
-    JSONArray array = new JSONArray();
-
-    SensorQuery query = Sensor.getAll();
-
-    OIterator<? extends Sensor> iterator = null;
-
-    try
-    {
-      iterator = query.getIterator();
-
-      while (iterator.hasNext())
-      {
-        array.put(iterator.next().toJSON());
-      }
-    }
-    finally
-    {
-      if (iterator != null)
-      {
-        iterator.close();
-      }
-    }
-
-    return array;
+    return Sensor.toJSON(query);
   }
 
   @Request(RequestType.SESSION)

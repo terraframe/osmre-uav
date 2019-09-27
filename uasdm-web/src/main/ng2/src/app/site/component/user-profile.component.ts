@@ -8,7 +8,6 @@ import 'rxjs/Rx';
 import { Observable } from 'rxjs/Rx';
 
 import { MetadataModalComponent } from './modal/metadata-modal.component';
-import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
 import { Message, Task } from '../model/management';
 import { ManagementService } from '../service/management.service';
@@ -57,8 +56,6 @@ export class UserProfileComponent implements OnInit {
 
             this.setTaskData( data );
 
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -206,9 +203,6 @@ export class UserProfileComponent implements OnInit {
 
                 this.totalActionsCount = this.getTotalActionsCount( this.tasks );
 
-            } )
-            .catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
     }
 
@@ -217,19 +211,6 @@ export class UserProfileComponent implements OnInit {
         this.managementService.getMissingMetadata()
             .then( messages => {
                 this.messages = messages;
-            } )
-            .catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
-
-    }
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
-
     }
 }

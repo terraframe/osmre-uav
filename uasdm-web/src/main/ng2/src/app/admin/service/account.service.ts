@@ -24,8 +24,9 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
 import { EventService } from '../../shared/service/event.service';
+import { PageResult } from '../../shared/model/page';
 
-import { Account, User, PageResult, UserInvite } from '../model/account';
+import { Account, User, UserInvite } from '../model/account';
 
 declare var acp: any;
 
@@ -89,14 +90,11 @@ export class AccountService {
         this.eventService.start();
 
         return this.http
-            .post( acp + '/uasdm-account/newInvite', JSON.stringify( {} ), { headers: headers } )
+            .post<Account>( acp + '/uasdm-account/newInvite', JSON.stringify( {} ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
             } )
             .toPromise()
-            .then(( response: any ) => {
-                return response.json() as Account;
-            } )
     }
 
     remove( oid: string ): Promise<void> {

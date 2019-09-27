@@ -43,22 +43,27 @@ export class EntityModalComponent implements OnInit {
     handleOnSubmit(): void {
         this.message = null;
 
-        if ( this.newInstance ) {
-            this.service.applyWithParent( this.entity, this.parentId ).then( data => {
-                this.onNodeChange.next( data );
-                this.bsModalRef.hide();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
+        if ( this.entity.type !== 'Site' || this.entity.geometry != null ) {
+            if ( this.newInstance ) {
+                this.service.applyWithParent( this.entity, this.parentId ).then( data => {
+                    this.onNodeChange.next( data );
+                    this.bsModalRef.hide();
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
+                } );
+            }
+            else {
+                this.service.update( this.entity ).then( node => {
+                    this.onNodeChange.next( node );
+
+                    this.bsModalRef.hide();
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
+                } );
+            }
         }
         else {
-            this.service.update( this.entity ).then( node => {
-                this.onNodeChange.next( node );
-
-                this.bsModalRef.hide();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
+            this.message = "Sites require a location";
         }
     }
 
@@ -70,8 +75,6 @@ export class EntityModalComponent implements OnInit {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
         }
     }
 

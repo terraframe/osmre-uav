@@ -47,7 +47,8 @@ export class ImagePreviewModalComponent implements OnInit {
             this.loading = false;
         }, error => {
             this.loading = false;
-            console.log( error );
+
+            this.error( error );
         } );
     }
 

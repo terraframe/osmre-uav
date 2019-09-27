@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
 
-import { Sensor } from '../../model/sensor';
+import { Sensor, WAVELENGTHS } from '../../model/sensor';
 import { SensorService } from '../../service/sensor.service';
 
 
@@ -18,6 +18,8 @@ export class SensorComponent implements OnInit {
     newInstance: boolean = false;
 
     message: string = null;
+
+    wavelengths: string[] = WAVELENGTHS;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
@@ -53,6 +55,23 @@ export class SensorComponent implements OnInit {
             } ).catch(( err: HttpErrorResponse ) => {
                 this.error( err );
             } );
+        }
+    }
+
+    updateSelectedWaveLength( event ) {
+
+        const indexOf = this.sensor.waveLength.indexOf( event.target.name )
+
+        if ( event.target.checked ) {
+
+            if ( indexOf < 0 ) {
+                this.sensor.waveLength.push( event.target.name );
+
+            }
+        } else {
+            if ( indexOf > -1 ) {
+                this.sensor.waveLength.splice( indexOf, 1 );
+            }
         }
     }
 

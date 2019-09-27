@@ -10,7 +10,6 @@ import { Subject } from 'rxjs/Subject';
 import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 
 import { SiteEntity, UploadForm, Task } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -391,12 +390,10 @@ export class UploadModalComponent implements OnInit {
          * Validate form values before uploading
          */
         if ( !this.values.create && !this.importedValues && this.values.imagery == null && !this.existingTask ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
+            this.message = "A collection must first be selected before the file can be uploaded";
         }
         else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = "Name is required";
+            this.message = "Name is required";
         }
         else {
 
@@ -478,9 +475,6 @@ export class UploadModalComponent implements OnInit {
     error( err: any ): void {
         // Handle error
         if ( err !== null ) {
-            // this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            // this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
         }
     }

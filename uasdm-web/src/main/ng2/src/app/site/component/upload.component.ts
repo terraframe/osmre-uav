@@ -206,7 +206,7 @@ export class UploadComponent implements OnInit {
                         clearInterval( that.uplodeCounterInterfal );
                     },
                     onError: function( id: number, errorReason: string, xhrOrXdr: string ) {
-                        that.error( { error: { message: xhrOrXdr } } );
+                        that.error( xhrOrXdr );
                     }
                 }
             };
@@ -223,9 +223,6 @@ export class UploadComponent implements OnInit {
     ngOnInit(): void {
         this.service.roots( null ).then( sites => {
             this.sites = sites;
-
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -270,8 +267,6 @@ export class UploadComponent implements OnInit {
 
             this.service.getChildren( this.values.site ).then( projects => {
                 this.projects = projects;
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
 
@@ -294,8 +289,6 @@ export class UploadComponent implements OnInit {
                 this.missions = missions.filter( mission => {
                     return mission.type === 'Mission';
                 } );
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
     }
@@ -314,8 +307,6 @@ export class UploadComponent implements OnInit {
 
             this.service.getChildren( this.values.mission ).then( collections => {
                 this.collections = collections;
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
     }
@@ -333,8 +324,6 @@ export class UploadComponent implements OnInit {
 
             this.service.getChildren( this.values.mission ).then( collections => {
                 this.collections = collections;
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
             } );
         }
     }
@@ -395,8 +384,6 @@ export class UploadComponent implements OnInit {
                     that.existingTask = false;
                     that.showUploadPanel();
 
-                } ).catch(( err: HttpErrorResponse ) => {
-                    this.error( err );
                 } );
         } );
     }
@@ -431,14 +418,6 @@ export class UploadComponent implements OnInit {
         thisRef.uplodeCounterInterfal = setInterval( incrementSeconds, 1000 );
     }
 
-    error( err: any ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
-    }
-
     public canDeactivate(): boolean {
         return this.disabled;
     }
@@ -447,6 +426,13 @@ export class UploadComponent implements OnInit {
     unloadNotification( $event: any ) {
         if ( this.disabled ) {
             $event.returnValue = 'An upload is currently in progress. Are you sure you want to leave?';
+        }
+    }
+
+    error( message: string ): void {
+        if ( message !== null ) {
+            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
+            this.bsModalRef.content.message = message;
         }
     }
 }

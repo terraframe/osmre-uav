@@ -129,7 +129,7 @@ public class MetadataXMLGenerator
     e.setAttribute("name", sensorName);
     e.setAttribute("type", jSensor.getString("type"));
     e.setAttribute("model", jSensor.getString("model"));
-    e.setAttribute("wavelength", jSensor.getString("wavelength"));
+    e.setAttribute("wavelength", jSensor.getJSONArray("wavelength").toString());
 //    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
 //    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
     Integer width = collection.getImageWidth();

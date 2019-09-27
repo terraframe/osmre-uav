@@ -15,13 +15,11 @@ import { UasdmHeaderComponent } from './component/header/header.component';
 import { ProgressBarComponent } from './component/progress-bar/progress-bar.component';
 import { LocalizeComponent } from './component/localize/localize.component';
 import { LoadingBarComponent } from './component/loading-bar/loading-bar.component';
-import { MessageComponent } from './component/message/message.component';
 import { BooleanFieldComponent } from './component/boolean-field/boolean-field.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { ErrorModalComponent } from './component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from './component/modal/basic-confirm-modal.component';
 import { NotificationModalComponent } from './component/modal/notification-modal.component';
-
 
 import { LocalizePipe } from './pipe/localize.pipe';
 import { KeysPipe } from './pipe/keys.pipe';
@@ -36,7 +34,7 @@ import { AuthService } from './service/auth.service';
 import { ProfileService } from './service/profile.service';
 import { SessionService } from './service/session.service';
 import { AdminGuardService, AuthGuard } from './service/guard.service';
-
+import { HttpBackendClient } from './service/http-backend-client.service';
 
 @NgModule( {
     imports: [
@@ -60,7 +58,6 @@ import { AdminGuardService, AuthGuard } from './service/guard.service';
         NotificationModalComponent,
         ErrorModalComponent,
         LocalizeComponent,
-        MessageComponent,
         BooleanFieldComponent,
         KeysPipe,
         LocalizePipe,
@@ -77,7 +74,6 @@ import { AdminGuardService, AuthGuard } from './service/guard.service';
         ErrorModalComponent,
         BooleanFieldComponent,
         LocalizeComponent,
-        MessageComponent,
         KeysPipe,
         LocalizePipe,
         PhonePipe,
@@ -105,7 +101,8 @@ export class SharedModule {
                 EventService,
                 ProgressService,
                 AdminGuardService,
-                AuthGuard
+                AuthGuard,
+                HttpBackendClient
             ]
         };
     }

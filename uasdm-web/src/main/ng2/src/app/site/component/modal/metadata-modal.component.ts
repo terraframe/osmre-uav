@@ -5,7 +5,8 @@ import { Subject } from 'rxjs/Subject';
 
 import { ManagementService } from '../../service/management.service';
 
-import { Option } from '../../model/management';
+import { Sensor, WAVELENGTHS } from '../../model/sensor';
+import { Platform } from '../../model/platform';
 
 
 declare var acp: string;
@@ -55,9 +56,9 @@ export class MetadataModalComponent implements OnInit {
         // },
         platform: {
             name: "",
-            otherName: "Falcon Fixed Wing",
+            otherName: "",
             class: "",
-            type: "Fixed Wing",
+            type: "",
             serialNumber: "",
             faaIdNumber: ""
         },
@@ -66,7 +67,7 @@ export class MetadataModalComponent implements OnInit {
             otherName: "",
             type: "",
             model: "",
-            wavelength: "",
+            wavelength: [],
             // imageWidth:"",
             // imageHeight:"",
             sensorWidth: "",
@@ -84,8 +85,9 @@ export class MetadataModalComponent implements OnInit {
      */
     public onMetadataChange: Subject<string>;
 
-    sensors: Option[] = [];
-    platforms: Option[] = [];
+    sensors: Sensor[] = [];
+    platforms: Platform[] = [];
+    wavelengths: string[] = WAVELENGTHS;
 
     otherSensorId: string = "";
     otherPlatformId: string = "";
@@ -98,6 +100,10 @@ export class MetadataModalComponent implements OnInit {
         this.service.getMetadataOptions().then(( options ) => {
             this.sensors = options.sensors;
             this.platforms = options.platforms;
+
+            this.metaObject.pointOfContact.name = options.name;
+            this.metaObject.pointOfContact.email = options.email;
+
 
             this.sensors.forEach( sensor => {
                 if ( sensor.name === 'OTHER' ) {
@@ -115,6 +121,52 @@ export class MetadataModalComponent implements OnInit {
         } );
     }
 
+    handleSensorSelect(): void {
+        if ( this.metaObject.sensor.name !== this.otherSensorId ) {
+            const sensor = this.getSelectedSensor();
+
+            this.metaObject.sensor.type = sensor.sensorType;
+            this.metaObject.sensor.model = sensor.model;
+            this.metaObject.sensor.wavelength = sensor.waveLength;
+        }
+    }
+
+    handlePlatformSelect(): void {
+        if ( this.metaObject.platform.name !== this.otherPlatformId ) {
+            const platform = this.getSelectedPlatform();
+
+            this.metaObject.platform.type = platform.platformType;
+        }
+    }
+
+    getSelectedSensor(): Sensor {
+        var indexOf = this.sensors.findIndex( i => i.oid === this.metaObject.sensor.name );
+
+        return this.sensors[indexOf];
+    }
+
+    getSelectedPlatform(): Platform {
+        var indexOf = this.platforms.findIndex( i => i.oid === this.metaObject.platform.name );
+
+        return this.platforms[indexOf];
+    }
+    
+    updateSelectedWaveLength( event ) {
+
+        const indexOf = this.metaObject.sensor.wavelength.indexOf( event.target.name )
+
+        if ( event.target.checked ) {
+
+            if ( indexOf < 0 ) {
+                this.metaObject.sensor.wavelength.push( event.target.name );
+
+            }
+        } else {
+            if ( indexOf > -1 ) {
+                this.metaObject.sensor.wavelength.splice( indexOf, 1 );
+            }
+        }
+    }    
 
     handleSubmit(): void {
 
@@ -125,18 +177,15 @@ export class MetadataModalComponent implements OnInit {
         this.service.submitCollectionMetadata( this.metaObject ).then(() => {
             this.bsModalRef.hide();
             this.onMetadataChange.next( this.collectionId );
-        } )
-            .catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
     }
 
     error( err: HttpErrorResponse ): void {
         // Handle error
         if ( err !== null ) {
             this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
         }
     }
 }

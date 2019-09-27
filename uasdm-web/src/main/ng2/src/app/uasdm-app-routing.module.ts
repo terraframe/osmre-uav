@@ -10,11 +10,6 @@ import { HubComponent } from './core/component/hub/hub.component';
 
 const routes: Routes = [
     {
-        path: '',
-        redirectTo: '/site/tasks',
-        pathMatch: 'full'
-    },
-    {
         path: 'menu',
         redirectTo: '/site/tasks',
     },
@@ -34,13 +29,17 @@ const routes: Routes = [
     },
     {
         path: 'admin',
-//        canActivate: [AdminGuardService],
+        //        canActivate: [AdminGuardService],
         loadChildren: './admin/admin.module#AdminModule'
     },
     {
         path: 'site',
-//        canActivate: [AdminGuardService],
+        //        canActivate: [AdminGuardService],
         loadChildren: './site/site.module#SiteModule'
+    },
+    {
+        path: '**',
+        redirectTo: '/site/tasks',
     }
 ];
 

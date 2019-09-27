@@ -24,34 +24,33 @@ import { Location } from '@angular/common';
 import { ForgotPasswordService } from '../../service/forgotpassword.service';
 
 
-@Component({
-  selector: 'forgotpassword',
-  templateUrl: './forgotpassword.component.html',
-  styleUrls: ['./forgotpassword.component.css']
-})
+@Component( {
+    selector: 'forgotpassword',
+    templateUrl: './forgotpassword.component.html',
+    styleUrls: ['./forgotpassword.component.css']
+} )
 export class ForgotPasswordComponent implements OnInit {
-  username: string;
-  emailIsSent: boolean = false;
+    username: string;
+    emailIsSent: boolean = false;
 
-  constructor(
-    private service: ForgotPasswordService,
-    private router: Router,      
-    private route: ActivatedRoute,
-    private location: Location) {
-  }
+    constructor(
+        private service: ForgotPasswordService,
+        private router: Router,
+        private route: ActivatedRoute,
+        private location: Location ) {
+    }
 
-  ngOnInit(): void {
-  
-  }
-  
-  cancel(): void {    
-    this.router.navigate(['/']);
-  } 
-  
-  onSubmit(): void {
-    this.service.submit(this.username)
-      .then(response => {
-        this.emailIsSent = true;
-      });
-  }  
+    ngOnInit(): void {
+
+    }
+
+    cancel(): void {
+        this.router.navigate( ['/'] );
+    }
+
+    onSubmit(): void {
+        this.service.submit( this.username ).then( response => {
+            this.emailIsSent = true;
+        } );
+    }
 }

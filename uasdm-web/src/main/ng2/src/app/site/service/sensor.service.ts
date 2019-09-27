@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend, HttpHandler } from '@angular/common/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/finally';
 
-import { EventService } from '../../shared/service/event.service'
+import { EventService } from '../../shared/service/event.service';
+import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { PageResult } from '../model/account';
+import { PageResult } from '../../shared/model/page';
 import { Sensor } from '../model/sensor';
 
 declare var acp: any;
@@ -14,7 +15,7 @@ declare var acp: any;
 @Injectable()
 export class SensorService {
 
-    constructor( private http: HttpClient, private eventService: EventService ) { }
+    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
 
     page( p: number ): Promise<PageResult<Sensor>> {
         let params: HttpParams = new HttpParams();
@@ -86,7 +87,7 @@ export class SensorService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<Sensor>( acp + '/sensor/apply', JSON.stringify( { sensor: sensor } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();
@@ -102,7 +103,7 @@ export class SensorService {
 
         this.eventService.start();
 
-        return this.http
+        return this.noErrorHttpClient
             .post<void>( acp + '/sensor/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
             .finally(() => {
                 this.eventService.complete();

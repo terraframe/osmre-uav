@@ -54,10 +54,3 @@ export class Account {
     bureaus: { value: string, label: string }[];
     changePassword: boolean;
 }
-
-export class PageResult<T> {
-    count: number;
-    pageNumber: number;
-    pageSize: number;
-    resultSet: T[];
-}

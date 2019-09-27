@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 774096747)
+@com.runwaysdk.business.ClassSignature(hash = -273173233)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -19,13 +19,16 @@ public abstract class SensorBase extends com.runwaysdk.business.Business
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String MODEL = "model";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 774096747;
+  public static java.lang.String WAVELENGTH = "waveLength";
+  private static final long serialVersionUID = -273173233;
   
   public SensorBase()
   {
@@ -256,6 +259,34 @@ public abstract class SensorBase extends com.runwaysdk.business.Business
     return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(LOCKEDBY);
   }
   
+  public String getModel()
+  {
+    return getValue(MODEL);
+  }
+  
+  public void validateModel()
+  {
+    this.validateAttribute(MODEL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getModelMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(MODEL);
+  }
+  
+  public void setModel(String value)
+  {
+    if(value == null)
+    {
+      setValue(MODEL, "");
+    }
+    else
+    {
+      setValue(MODEL, value);
+    }
+  }
+  
   public String getName()
   {
     return getValue(NAME);
@@ -352,6 +383,34 @@ public abstract class SensorBase extends com.runwaysdk.business.Business
     }
   }
   
+  public String getSensorType()
+  {
+    return getValue(SENSORTYPE);
+  }
+  
+  public void validateSensorType()
+  {
+    this.validateAttribute(SENSORTYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getSensorTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(SENSORTYPE);
+  }
+  
+  public void setSensorType(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORTYPE, "");
+    }
+    else
+    {
+      setValue(SENSORTYPE, value);
+    }
+  }
+  
   public Long getSeq()
   {
     return com.runwaysdk.constants.MdAttributeLongUtil.getTypeSafeValue(getValue(SEQ));
@@ -398,6 +457,34 @@ public abstract class SensorBase extends com.runwaysdk.business.Business
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Sensor.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(TYPE);
+  }
+  
+  public String getWaveLength()
+  {
+    return getValue(WAVELENGTH);
+  }
+  
+  public void validateWaveLength()
+  {
+    this.validateAttribute(WAVELENGTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getWaveLengthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(WAVELENGTH);
+  }
+  
+  public void setWaveLength(String value)
+  {
+    if(value == null)
+    {
+      setValue(WAVELENGTH, "");
+    }
+    else
+    {
+      setValue(WAVELENGTH, value);
+    }
   }
   
   protected String getDeclaredType()

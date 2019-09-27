@@ -23,11 +23,6 @@ import { Location } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
-
 import { Account, UserInvite } from '../../model/account';
 
 import { AccountService } from '../../service/account.service';
@@ -41,15 +36,9 @@ import { AccountComponent } from './account.component';
 export class AccountInviteComponent implements OnInit {
     invite: UserInvite;
 
-    /*
-     * Reference to the modal current showing
-    */
-    private bsModalRef: BsModalRef;
-
     constructor(
         private service: AccountService,
-        private location: Location,
-        private modalService: BsModalService ) {
+        private location: Location ) {
     }
 
     ngOnInit(): void {
@@ -58,8 +47,6 @@ export class AccountInviteComponent implements OnInit {
         this.service.newInvite().then(( account: Account ) => {
             this.invite.groups = account.groups;
             this.invite.bureaus = account.bureaus;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
     }
 
@@ -84,17 +71,6 @@ export class AccountInviteComponent implements OnInit {
 
         this.service.inviteUser( this.invite, roleIds ).then( response => {
             this.location.back();
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
         } );
-    }
-
-
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
     }
 }
