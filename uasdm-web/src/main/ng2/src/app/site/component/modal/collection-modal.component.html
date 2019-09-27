@@ -1,0 +1,39 @@
+<div *ngIf="entity != null" class="modal-body">
+  <div *ngIf="message != null" class="error-container">
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <tabset>
+      <tab *ngFor="let folder of folders" 
+         [heading]="folder.name" 
+         [id]="folder.name"
+         (selectTab)="onSelect(folder, $event)"
+         >
+        <div id="image-panel" *ngIf="images.length > 0">
+          <div id="image-list-container">
+            <ul class="media-list">
+              <li class="media" *ngFor="let image of images" @fadeIn>
+                <div class="media-left" *ngIf="thumbnails[image.key] != null">
+                  <a (click)="previewImage($event, image)">
+                    <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                  </a>
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading">{{image.name}}</h4>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>      
+      </tab>
+    </tabset>
+  </div>
+</div>

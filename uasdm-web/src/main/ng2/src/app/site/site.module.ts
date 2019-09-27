@@ -8,6 +8,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 
@@ -16,6 +17,7 @@ import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
+import { CollectionModalComponent } from './component/modal/collection-modal.component';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { UserProfileComponent } from './component/user-profile.component';
@@ -52,6 +54,7 @@ import '../rxjs-extensions';
         BsDropdownModule,
         TypeaheadModule,
         AccordionModule,
+        TabsModule,
         SharedModule,
         SiteRoutingModule
     ],
@@ -61,6 +64,7 @@ import '../rxjs-extensions';
         MetadataModalComponent,
         ImagePreviewModalComponent,
         UploadModalComponent,
+        CollectionModalComponent,
         ProjectsComponent,
         UploadComponent,
         UserProfileComponent,
@@ -84,6 +88,7 @@ import '../rxjs-extensions';
         ImagePreviewModalComponent,
         MetadataModalComponent,
         SensorComponent,
+        CollectionModalComponent,
         PlatformComponent        
     ]
 } )

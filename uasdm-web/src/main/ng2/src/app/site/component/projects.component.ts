@@ -25,14 +25,14 @@ import { AuthService } from '../../shared/service/auth.service';
 import { SiteEntity } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
-import { ImagePreviewModalComponent } from './modal/image-preview-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
+import { CollectionModalComponent } from './modal/collection-modal.component';
 
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 
-const mbxStyles = require('@mapbox/mapbox-sdk/services/geocoding');
-const geocodingService = mbxStyles({ accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ" });
+const mbxStyles = require( '@mapbox/mapbox-sdk/services/geocoding' );
+const geocodingService = mbxStyles( { accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ" } );
 
 declare var acp: any;
 declare var gpAppType: any;
@@ -52,10 +52,7 @@ declare var gpAppType: any;
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    images: any[] = [];
-    showImagePanel = false;
     // imageToShow: any;
-    thumbnails: any = {};
     userName: string = "";
 
     /* 
@@ -83,7 +80,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 click: ( tree: any, node: any, $event: any ) => {
 
                     if ( node.data.type === "folder" && node.data.name !== "accessible_support" ) {
-                        this.toggleDirectory( node );
+//                        this.toggleDirectory( node );
                     }
                     else if ( node.data.type === "object" ) {
                         // clicked on raw file. do nothing.
@@ -93,18 +90,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                         if ( node.data.type === "Collection" && ( this.admin || node.data.ownerName === this.userName || node.data.privilegeType !== 'OWNER' ) ) {
                             // toggleExpanded() calls the getChildren() method above
                             node.toggleExpanded();
-
-                            this.images = [];
-
-                            this.showImagePanel = false;
                         }
                         else if ( node.data.type !== "Collection" ) {
                             // toggleExpanded() calls the getChildren() method above
                             node.toggleExpanded();
-
-                            this.images = [];
-
-                            this.showImagePanel = false;
                         }
                     }
 
@@ -163,7 +152,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     /* 
      * Model for text being searched
      */
-    search: string;
+    search: string = "";
 
     /* 
      * Root nodes of the tree
@@ -229,18 +218,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     */
     private bsModalRef: BsModalRef;
 
-    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService, 
+    constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService,
         private modalService: BsModalService, private contextMenuService: ContextMenuService ) {
-        
+
         this.dataSource = Observable.create(( observer: any ) => {
-            
-            this.mapService.mbForwardGeocode(this.search).then(response => {
+
+            this.mapService.mbForwardGeocode( this.search ).then( response => {
                 const match = response.features;
 
                 this.service.searchEntites( this.search ).then( results => {
-                    
+
                     // Add Mapbox results to any local results
-                    match.forEach(obj => {
+                    match.forEach( obj => {
                         let newObj = {
                             id: obj.id,
                             hierarchy: [],
@@ -249,12 +238,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                             source: "MAPBOX"
                         }
 
-                        results.push(newObj);
-                    });
+                        results.push( newObj );
+                    } );
 
                     observer.next( results );
-                });
-            });
+                } );
+            } );
         } );
     }
 
@@ -301,35 +290,35 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.addLayers();
 
-        let searchLocations = (searchTerm) => {
+        let searchLocations = ( searchTerm ) => {
 
             var matchingFeatures = [];
             // this.service.searchEntites( searchTerm ).then( results => {
 
-                let results = [{
-                    "hierarchy": [], 
-                    "id": "e458d9e8-91b4-4f2f-b768-dc8102ea2b70", 
-                    "label": "test", 
-                    "place_name": "🌲 test", 
-                    "center": [-104.99404, 39.75621]
-                }]
+            let results = [{
+                "hierarchy": [],
+                "id": "e458d9e8-91b4-4f2f-b768-dc8102ea2b70",
+                "label": "test",
+                "place_name": "🌲 test",
+                "center": [-104.99404, 39.75621]
+            }]
 
-                for (var i = 0; i < results.length; i++) {
-                    var feature = results[i];
-                    // handle queries with different capitalization than the source data by calling toLowerCase()
-                    if (feature.label.toLowerCase().search(searchTerm.toLowerCase()) !== -1) {
-                        // add a tree emoji as a prefix for custom data results
-                        // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-                        feature['place_name'] = '🌲 ' + feature.label;
-                        feature['center'] = [-104.99404, 39.75621];
-                        feature['place_type'] = ['park'];
-                        matchingFeatures.push(feature);
-                    }
+            for ( var i = 0; i < results.length; i++ ) {
+                var feature = results[i];
+                // handle queries with different capitalization than the source data by calling toLowerCase()
+                if ( feature.label.toLowerCase().search( searchTerm.toLowerCase() ) !== -1 ) {
+                    // add a tree emoji as a prefix for custom data results
+                    // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+                    feature['place_name'] = '🌲 ' + feature.label;
+                    feature['center'] = [-104.99404, 39.75621];
+                    feature['place_type'] = ['park'];
+                    matchingFeatures.push( feature );
                 }
+            }
 
-                return matchingFeatures;
+            return matchingFeatures;
             // });
-            
+
         }
 
 
@@ -524,42 +513,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    toggleDirectory( node: TreeNode ): void {
-        // clear any existing images
-        this.images = [];
-
-        node.toggleExpanded();
-        this.showImagePanel = false;
-
-        if ( !node.isCollapsed ) {
-
-            // open the panel immediatly
-            this.showImagePanel = true;
-
-            this.service.getItems( node.data.component, node.data.name )
-                .then( items => {
-                    //this.images = [items[0]]; // not yet handling different types of files
-
-                    // this.images = items;
-
-                    for ( let i = 0; i < items.length; ++i ) {
-                        let item = items[i];
-
-                        if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
-                            item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
-                            item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
-
-                            this.images.push( item );
-                        }
-                    }
-
-                    this.images.forEach( image => {
-                        this.getThumbnail( image );
-                    } )
-
-                } );
-        }
-    }
 
 
     handleOnUpdateData(): void {
@@ -871,30 +824,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    createImageFromBlob( image: Blob, imageData: any ) {
-        let reader = new FileReader();
-        reader.addEventListener( "load", () => {
-            // this.imageToShow = reader.result;
-            this.thumbnails[imageData.key] = reader.result;
-        }, false );
-
-        if ( image ) {
-            reader.readAsDataURL( image );
-        }
-    }
-
-    getThumbnail( image: any ): void {
-
-        let rootPath: string = image.key.substr( 0, image.key.lastIndexOf( "/" ) );
-        let fileName: string = /[^/]*$/.exec( image.key )[0];
-        let thumbKey: string = rootPath + "/thumbnails/" + fileName;
-
-        this.service.download( image.component, thumbKey, false ).subscribe( blob => {
-            this.createImageFromBlob( blob, image );
-        }, error => {
-            console.log( error );
-        } );
-    }
 
 
 
@@ -918,11 +847,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleClick( $event: any ): void {
         let result = $event.item;
 
-        if(result.center){
-            this.map.flyTo({
+        if ( result.center ) {
+            this.map.flyTo( {
                 center: result.center,
                 zoom: 9
-            })
+            } )
         }
     }
 
@@ -976,27 +905,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.fitBounds( bounds );
     }
 
-    previewImage( event: any, image: any ): void {
-        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-            'class': 'image-preview-modal'
-        } );
-        this.bsModalRef.content.image = image;
-        this.bsModalRef.content.src = event.target.src;
-    }
-
-    getDefaultImgURL( event: any ): void {
-        event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
-    }
-
     select( node: SiteEntity ): void {
         if ( node.type === "folder" ) {
             this.service.getItems( node.component, node.name ).then( nodes => {
                 this.nodes = nodes;
             } );
-
         }
         else if ( node.type === "object" ) {
             // Do nothing there are no children
@@ -1004,8 +917,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         else {
             this.service.getItems( node.id, null ).then( nodes => {
-                this.previous.push( node );
-                this.nodes = nodes;
+
+                if ( node.type === 'Collection' ) {
+                    this.showCollectionModal( node, nodes );
+                }
+                else {
+                    this.previous.push( node );
+                    this.nodes = nodes;
+                }
             } );
         }
 
@@ -1028,6 +947,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             } );
         }
     }
+
+    showCollectionModal( collection: SiteEntity, folders: SiteEntity[] ): void {
+        this.bsModalRef = this.modalService.show( CollectionModalComponent, {
+            animated: true,
+            backdrop: false,
+            ignoreBackdropClick: false,
+            'class': 'collection-modal'
+        } );
+        this.bsModalRef.content.entity = collection;
+        this.bsModalRef.content.folders = folders;
+    }
+
+
 
     /*
      *  Context menu visibility functions

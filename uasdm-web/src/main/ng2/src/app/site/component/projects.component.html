@@ -11,7 +11,7 @@
                     <div class="col-md-8">
                       <ul class="breadcrumb">
                           <li>
-                            <a (click)="back()">UAS Sites</a>
+                            <a (click)="back(null)">UAS Sites</a>
                           </li>
                           <li *ngFor="let entity of previous; last as isLast" [ngClass]="{'active':isLast}">
                             <a *ngIf="!isLast" (click)="back(entity)"> {{entity.name}}</a>
@@ -57,12 +57,14 @@
             <div class="row">
 
                 <article class="base-layer-panel">
-                    <accordion> <accordion-group heading="Base Maps" style="border:none;">
-                    <div class="row-form" *ngFor="let baseLayer of baseLayers">
-                        <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id' [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
-                        <label class="layer-toggle-label">{{baseLayer.label}}</label>
-                    </div>
-                    </accordion-group> </accordion>
+                    <accordion> 
+                      <accordion-group heading="Base Maps" style="border:none;">
+                        <div class="row-form" *ngFor="let baseLayer of baseLayers">
+                          <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id' [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
+                          <label class="layer-toggle-label">{{baseLayer.label}}</label>
+                        </div>
+                      </accordion-group>
+                    </accordion>
                 </article>
 
                 <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right" style="background: rgba(255, 255, 255, .5); right: 265px; padding: 0 5px 0 5px;"></div>
@@ -71,28 +73,6 @@
                     <button (click)="cancelDraw()" class="mapboxgl-ctrl-icon ">
                         <i class="fa fa-times-circle"></i>
                     </button>
-                </div>
-
-                <div id="image-panel" *ngIf="showImagePanel && images.length > 0">
-                    <div style="text-align: right;">
-                        <i class="fa fa-times btn btn-close" style="min-width: 10px; padding: 10px 10px;" (click)="showImagePanel = !showImagePanel"></i>
-                    </div>
-                    <div id="image-list-container">
-
-                        <ul class="media-list">
-                            <li class="media" *ngFor="let image of images" @fadeIn>
-                                <div class="media-left" *ngIf="thumbnails[image.key] != null">
-                                    <a [contextMenu]="objectMenu" [contextMenuSubject]="{data:image}" (click)="previewImage($event, image)">
-                                        <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
-                                    </a>
-                                </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">{{image.name}}</h4>
-                                    <!-- {{image.id}} -->
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div id="map" class="map-view-port"></div>
@@ -112,7 +92,8 @@
     </span>
 </span> <b>{{ match.item.label}}</b> </ng-template>
 
-<context-menu #nodeMenu> <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-repeat"></i> Re-run Orthorectification Processing </ng-template> <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canDelete" (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item, '')"> <i class="fa fa-arrow-circle-down"></i> Add a {{item?.data.childType?.toLowerCase()}} to
+<context-menu #nodeMenu>
+  <ng-template contextMenuItem let-item [visible]="canRunOrtho" (execute)="handleRunOrtho($event.item)"> <i class="fa fa-repeat"></i> Re-run Orthorectification Processing </ng-template> <ng-template contextMenuItem let-item [visible]="canEdit" (execute)="handleEdit($event.item)"> <i class="fa fa-edit"></i> Edit {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canDelete" (execute)="handleDelete($event.item)"> <i class="fa fa-trash" aria-hidden="true"></i> Delete {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canAddChild" (execute)="handleCreate($event.item, '')"> <i class="fa fa-arrow-circle-down"></i> Add a {{item?.data.childType?.toLowerCase()}} to
 {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="canAddChild && canCreateImageDir" (execute)="handleCreate($event.item, 'Imagery')"> <i class="fa fa-arrow-circle-down"></i> Add an image directory to {{item?.data.name}} </ng-template> <ng-template contextMenuItem [visible]="canUpload" divider="true"></ng-template> <ng-template contextMenuItem let-item [visible]="canUpload" (execute)="handleUploadFile($event.item)"> <i style="font-size: 18px; padding: 0; width: auto; transform: none; color: #767676;" class="fa fa-cloud-upload"></i> Upload data </ng-template> <ng-template contextMenuItem [visible]="isSite" divider="true"></ng-template> <ng-template contextMenuItem let-item [visible]="canEditSite" (execute)="handleEditGeom($event.item)"> <i
     class="fa fa-globe" aria-hidden="true"></i> Edit geometry for {{item?.data.name}} </ng-template> <ng-template contextMenuItem let-item [visible]="isSite" (execute)="zoomToFeature($event.item)"> <i class="fa fa-search-plus"></i> Zoom to feature </ng-template> </context-menu>
 
