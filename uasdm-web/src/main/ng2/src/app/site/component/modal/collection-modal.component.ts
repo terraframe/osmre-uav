@@ -18,6 +18,11 @@ declare var acp: string;
 export class CollectionModalComponent implements OnInit {
     entity: SiteEntity;
 
+    /* 
+     * Breadcrumb of previous sites clicked on
+     */
+    previous = [] as SiteEntity[];
+
     folders: SiteEntity[] = [];
 
     thumbnails: any = {};
@@ -36,9 +41,11 @@ export class CollectionModalComponent implements OnInit {
         this.onNodeChange = new Subject();
     }
 
-    init( entity: SiteEntity, folders: SiteEntity[] ): void {
+    init( entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[] ): void {
         this.entity = entity;
-        this.folders = folders;
+        this.folders = folders;        
+        this.previous = JSON.parse( JSON.stringify( previous ) );        
+        this.previous.push( this.entity );
 
         if ( this.folders.length > 0 ) {
             this.onSelect( this.folders[0] );

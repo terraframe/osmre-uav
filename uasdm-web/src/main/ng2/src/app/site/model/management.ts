@@ -24,7 +24,8 @@ export class SiteEntity {
     ownerEmail: string;
     privilegeType: string;
     component: string;
-    active:boolean;
+    key: string;
+    imageKey: string;
 }
 
 export class CollectionHierarchy {

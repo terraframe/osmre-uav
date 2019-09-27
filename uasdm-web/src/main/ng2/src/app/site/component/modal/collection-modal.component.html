@@ -1,5 +1,5 @@
 <div class="modal-body">
-  <div  style="height: 400px">
+  <div  style="height: 450px">
   <div *ngIf="message != null" class="error-container">
     <div class="label-holder">
       <strong>Error</strong>
@@ -10,8 +10,24 @@
       </div>
     </div>
   </div>
-
+  
   <div *ngIf="entity != null">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>{{entity.name}}</h2>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="breadcrumb">
+          <li *ngFor="let prev of previous">
+            <span> {{prev.name}}</span>
+          </li>
+        </ul>                    
+      </div>
+    </div>
+  
     <tabset>
       <tab *ngFor="let folder of folders" 
          [heading]="folder.name" 
