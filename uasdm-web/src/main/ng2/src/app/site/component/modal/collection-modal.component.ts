@@ -1,7 +1,10 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TabDirective } from 'ngx-bootstrap/tabs';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
+
+import { NotificationModalComponent } from '../../../shared/component/modal/notification-modal.component';
 
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -31,11 +34,17 @@ export class CollectionModalComponent implements OnInit {
     message: string;
 
     /*
+     * Reference to the modal current showing
+    */
+    private notificationModalRef: BsModalRef;
+
+
+    /*
      * Observable subject for TreeNode changes.  Called when create is successful 
      */
     public onNodeChange: Subject<SiteEntity>;
 
-    constructor( private service: ManagementService ) { }
+    constructor( private service: ManagementService, private modalService: BsModalService, public bsModalRef: BsModalRef ) { }
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
@@ -43,8 +52,8 @@ export class CollectionModalComponent implements OnInit {
 
     init( entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[] ): void {
         this.entity = entity;
-        this.folders = folders;        
-        this.previous = JSON.parse( JSON.stringify( previous ) );        
+        this.folders = folders;
+        this.previous = JSON.parse( JSON.stringify( previous ) );
         this.previous.push( this.entity );
 
         if ( this.folders.length > 0 ) {
@@ -118,6 +127,22 @@ export class CollectionModalComponent implements OnInit {
         //        } );
         //        this.bsModalRef.content.image = image;
         //        this.bsModalRef.content.src = event.target.src;
+    }
+
+    handleRunOrtho(): void {
+
+        this.notificationModalRef = this.modalService.show( NotificationModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            class: 'modal-dialog-centered'
+        } );
+        this.notificationModalRef.content.message = "Your ortho task is running for [" + this.entity.name + "]. You can view the current process and results on your tasks page.";
+        this.notificationModalRef.content.submitText = 'OK';
+
+        this.service.runOrtho( this.entity.id ).then( data => {
+            // Nothing
+        } );
     }
 
 

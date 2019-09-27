@@ -546,23 +546,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } );
     }
 
-    handleRunOrtho( node: SiteEntity ): void {
-        this.current = node;
-
-        this.bsModalRef = this.modalService.show( NotificationModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-            class: 'modal-dialog-centered'
-        } );
-        this.bsModalRef.content.message = "Your ortho task is running for [" + node.folderName + "]. You can view the current process and results on your tasks page.";
-        this.bsModalRef.content.submitText = 'OK';
-
-        this.service.runOrtho( node.id ).then( data => {
-            // Nothing
-        } );
-    }
-
     handleDownloadAll( node: SiteEntity ): void {
         this.current = node;
 
