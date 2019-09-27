@@ -1,4 +1,5 @@
-<div *ngIf="entity != null" class="modal-body">
+<div class="modal-body">
+  <div  style="height: 400px">
   <div *ngIf="message != null" class="error-container">
     <div class="label-holder">
       <strong>Error</strong>
@@ -10,17 +11,15 @@
     </div>
   </div>
 
-  <div>
+  <div *ngIf="entity != null">
     <tabset>
       <tab *ngFor="let folder of folders" 
          [heading]="folder.name" 
-         [id]="folder.name"
-         (selectTab)="onSelect(folder, $event)"
-         >
-        <div id="image-panel" *ngIf="images.length > 0">
+         (select)="onSelect(folder)">
+        <div>
           <div id="image-list-container">
             <ul class="media-list">
-              <li class="media" *ngFor="let image of images" @fadeIn>
+              <li class="media" *ngFor="let image of images">
                 <div class="media-left" *ngIf="thumbnails[image.key] != null">
                   <a (click)="previewImage($event, image)">
                     <img class="image-thumbnail" [src]="thumbnails[image.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
@@ -35,5 +34,6 @@
         </div>      
       </tab>
     </tabset>
+  </div>
   </div>
 </div>

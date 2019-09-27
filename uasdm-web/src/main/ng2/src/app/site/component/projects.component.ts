@@ -953,10 +953,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             animated: true,
             backdrop: false,
             ignoreBackdropClick: false,
-            'class': 'collection-modal'
+            class: 'image-preview-modal'
         } );
-        this.bsModalRef.content.entity = collection;
-        this.bsModalRef.content.folders = folders;
+        this.bsModalRef.content.init(collection, folders);
     }
 
 

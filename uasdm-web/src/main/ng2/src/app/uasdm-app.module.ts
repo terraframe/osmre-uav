@@ -9,7 +9,6 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
@@ -47,7 +46,6 @@ import { SharedModule } from './shared/shared.module';
         BsDropdownModule.forRoot(),
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
-        TabsModule.forRoot(),        
         NgxPaginationModule,
         PasswordStrengthBarModule,
         SharedModule.forRoot()

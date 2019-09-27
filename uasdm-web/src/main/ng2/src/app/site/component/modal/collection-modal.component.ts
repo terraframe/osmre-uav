@@ -1,8 +1,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { TabDirective } from 'ngx-bootstrap/tabs';
 import { Subject } from 'rxjs/Subject';
-import { TreeNode } from 'angular-tree-component';
 
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -31,10 +30,19 @@ export class CollectionModalComponent implements OnInit {
      */
     public onNodeChange: Subject<SiteEntity>;
 
-    constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
+    constructor( private service: ManagementService ) { }
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
+    }
+
+    init( entity: SiteEntity, folders: SiteEntity[] ): void {
+        this.entity = entity;
+        this.folders = folders;
+
+        if ( this.folders.length > 0 ) {
+            this.onSelect( this.folders[0] );
+        }
     }
 
     createImageFromBlob( image: Blob, imageData: any ) {
@@ -63,8 +71,8 @@ export class CollectionModalComponent implements OnInit {
     }
 
     onSelect( folder: SiteEntity ): void {
-        console.log("Setting folder active: " + folder.name);        
-        
+        console.log( "Setting folder active: " + folder.name );
+
         // clear any existing images
         this.images = [];
 
@@ -95,14 +103,14 @@ export class CollectionModalComponent implements OnInit {
     }
 
     previewImage( event: any, image: any ): void {
-//        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-//            animated: true,
-//            backdrop: true,
-//            ignoreBackdropClick: true,
-//            'class': 'image-preview-modal'
-//        } );
-//        this.bsModalRef.content.image = image;
-//        this.bsModalRef.content.src = event.target.src;
+        //        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
+        //            animated: true,
+        //            backdrop: true,
+        //            ignoreBackdropClick: true,
+        //            'class': 'image-preview-modal'
+        //        } );
+        //        this.bsModalRef.content.image = image;
+        //        this.bsModalRef.content.src = event.target.src;
     }
 
 

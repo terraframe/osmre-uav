@@ -54,7 +54,7 @@ import '../rxjs-extensions';
         BsDropdownModule,
         TypeaheadModule,
         AccordionModule,
-        TabsModule,
+        TabsModule.forRoot(),        
         SharedModule,
         SiteRoutingModule
     ],
