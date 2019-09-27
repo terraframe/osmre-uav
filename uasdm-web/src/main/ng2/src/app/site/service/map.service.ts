@@ -10,13 +10,20 @@ import { GeoJSONSource } from 'mapbox-gl';
 
 import * as mapboxgl from 'mapbox-gl';
 
+import * as mbxGeocodingService from '@mapbox/mapbox-sdk/services/geocoding';
+
+const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
+
+// const mbxStyles = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingService = mbxGeocodingService({ accessToken: mapboxKey });
+
 declare var acp: any;
 
 @Injectable()
 export class MapService {
 
     constructor( private http: HttpClient ) {
-        ( mapboxgl as any ).accessToken = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
+        ( mapboxgl as any ).accessToken = mapboxKey;
     }
 
     features(): Promise<{ features: GeoJSONSource, bbox: number[] }> {
@@ -27,5 +34,14 @@ export class MapService {
             .toPromise()
     }
 
+    mbForwardGeocode(searchText: string): Promise<any> {
+        let params: HttpParams = new HttpParams();
+
+        let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/"+ searchText +".json?proximity=-74.70850,40.78375&access_token="+ mapboxKey;
+
+        return this.http
+            .get( url, { params: params } )
+            .toPromise()
+    }
 
 }
