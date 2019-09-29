@@ -55,7 +55,7 @@
                             <div *ngIf="node.active" class="list-group">
                               <div  *ngFor="let child of node.children" class="list-group-item">
                                 <a (click)="select(child, $event)">
-                                  {{node.name}}
+                                  {{child.name}}
                                 </a>
                                 <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
                                   <a class="fa fa-pencil ico-edit" (click)="handleEdit(child)" title="Edit"></a>

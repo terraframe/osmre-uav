@@ -57,8 +57,11 @@ export class LeafModalComponent implements OnInit {
     init( entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[] ): void {
         this.entity = entity;
         this.folders = folders;
-        this.previous = JSON.parse( JSON.stringify( previous ) );
-        this.previous.push( this.entity );
+        this.previous = [...previous];
+
+        if ( this.previous.length > 0 && this.previous[this.previous.length - 1].id !== this.entity.id ) {
+            this.previous.push( this.entity );
+        }
 
         if ( this.folders.length > 0 ) {
             this.onSelect( this.folders[0] );

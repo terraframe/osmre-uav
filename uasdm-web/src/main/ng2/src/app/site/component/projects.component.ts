@@ -663,7 +663,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 } );
             }
             else {
-                this.showLeafModal( node, [node] );
+                this.showLeafModal( this.current, [node] );
             }
         }
         else if ( node.type === "object" ) {
