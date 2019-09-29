@@ -17,6 +17,14 @@ import { MetadataService } from '../../service/metadata.service';
 
 declare var acp: string;
 
+class Page {
+    index: number;
+    selection: Selection;
+    options: SiteEntity[];
+    label: string;
+    type: string
+};
+
 class Selection {
     type: string;
     isNew: boolean;
@@ -26,7 +34,7 @@ class Selection {
 @Component( {
     selector: 'upload-modal',
     templateUrl: './upload-modal.component.html',
-    styleUrls: []
+    styleUrls: ['./upload-modal.component.css']
 } )
 export class UploadModalComponent implements OnInit {
     objectKeys = Object.keys;
@@ -34,27 +42,6 @@ export class UploadModalComponent implements OnInit {
     importedValues: boolean = false;
 
     message: string = "";
-
-
-    /* 
-     * List of sites
-     */
-    // sites = [] as SiteEntity[];
-
-    /* 
-     * List of projects
-     */
-    // projects = [] as SiteEntity[];
-
-    /* 
-     * List of missions
-     */
-    // missions = [] as SiteEntity[];
-
-    /* 
-     * List of collections
-     */
-    // collections = [] as SiteEntity[];
 
     /* 
      * Form values
@@ -80,10 +67,36 @@ export class UploadModalComponent implements OnInit {
     showFileSelectPanel: boolean = false;
     taskFinishedNotifications: any[] = [];
 
+    /*
+     * List of hierarchies
+     */
     hierarchy: string[] = [];
 
+    /*
+     * List of selections: One per hierarchy type
+     */
     selections: Selection[] = [];
-    options: { [key: string]: SiteEntity[] } = {};
+
+    /*
+     * List of previous selection labels
+     */
+    labels: string[] = [];
+
+    /*
+     * List of pages
+     */
+    pages: Page[] = [{
+        index: 0,
+        selection: null,
+        options: [],
+        type: 'FILE',
+        label: ''
+    }];
+
+    /*
+     * Current page  
+     */
+    page: Page = this.pages[0];
 
     public onUploadComplete: Subject<any>;
 
@@ -249,7 +262,8 @@ export class UploadModalComponent implements OnInit {
         this.hierarchy = this.metadataService.getHierarchy();
         this.selections = [];
 
-        this.hierarchy.forEach( type => {
+        for ( let i = 0; i < this.hierarchy.length; i++ ) {
+            const type = this.hierarchy[i];
 
             const index = entities.findIndex( entity => { return entity.type === type } );
 
@@ -262,16 +276,23 @@ export class UploadModalComponent implements OnInit {
                 this.selections.push( { type: type, isNew: false, value: null } );
             }
 
-            this.options[type] = [];
+            this.pages.push( {
+                index: ( i + 1 ),
+                selection: this.selections[i],
+                options: i == 0 ? [entities[0]] : [],
+                label: '',
+                type: 'CATEGORY'
+            } );
+        }
+
+        this.pages.push( {
+            index: ( this.hierarchy.length + 1 ),
+            selection: null,
+            options: [],
+            label: '',
+            type: 'SUMMARY'
         } );
-
-        this.options[this.hierarchy[0]] = [entities[0]];
-
-        this.onSelect( this.selections[0] );
     }
-
-
-
 
     ngOnInit(): void {
 
@@ -313,143 +334,105 @@ export class UploadModalComponent implements OnInit {
         }
     }
 
-    // onSiteSelect( siteId: string ): void {
-    //     this.values.site = siteId;
+    isPageValid( page: Page ): boolean {
+        if ( page.type === 'CATEGORY' ) {
+            return ( page.selection != null && page.selection.value != null && page.selection.value.length > 0 );
+        }
+        else if ( page.type === 'FILE' ) {
+            if ( this.uploader != null ) {
+                const uploads: any = this.uploader.getUploads();
 
-    //     if ( siteId != null && siteId.length > 0 ) {
+                return ( uploads != null && uploads.length > 0 );
+            };
+        }
 
-    //         // Reset select options
-    //         this.projects = [] as SiteEntity[];
-    //         this.missions = [] as SiteEntity[];
-    //         this.collections = [] as SiteEntity[];
+        return true;
+    }
 
-    //         // Reset form values
-    //         this.values.project = null;
-    //         this.values.mission = null;
-    //         this.values.collection = null;
-
-    //         this.service.getChildren( this.values.site ).then( projects => {
-    //             this.projects = projects;
-    //         } ).catch(( err: HttpErrorResponse ) => {
-    //             this.error( err );
-    //         } );
-    //     }
-    // }
-
-    // onProjectSelect( projectId: string ): void {
-    //     this.values.project = projectId;
-
-    //     // Reset select options
-    //     this.missions = [] as SiteEntity[];
-    //     this.collections = [] as SiteEntity[];
-
-    //     // Reset form values
-    //     this.values.mission = null;
-    //     this.values.collection = null;
-
-    //     if ( projectId != null && projectId.length > 0 ) {
-    //         this.service.getChildren( this.values.project ).then( missions => {
-    //             this.missions = missions;
-    //         } ).catch(( err: HttpErrorResponse ) => {
-    //             this.error( err );
-    //         } );
-    //     }
-    // }
-
-    // onMissionSelect( missionId: string ): void {
-    //     this.values.mission = missionId;
-
-    //     // Reset select options
-    //     this.collections = [] as SiteEntity[];
-
-    //     // Reset form values
-    //     this.values.collection = null;
-    //     this.values.name = null;
-
-    //     if ( missionId != null && missionId.length > 0 && !this.values.create ) {
-
-    //         this.service.getChildren( this.values.mission ).then( collections => {
-    //             this.collections = collections;
-    //         } ).catch(( err: HttpErrorResponse ) => {
-    //             this.error( err );
-    //         } );
-    //     }
-    // }
-
-    // handleChange(): void {
-
-    //     // Reset select options
-    //     this.collections = [] as SiteEntity[];
-
-    //     // Reset form values
-    //     this.values.collection = null;
-    //     this.values.name = null;
-
-    //     if ( this.values.mission != null && this.values.mission.length > 0 && !this.values.create ) {
-
-    //         this.service.getChildren( this.values.mission ).then( collections => {
-    //             this.collections = collections;
-    //         } ).catch(( err: HttpErrorResponse ) => {
-    //             this.error( err );
-    //         } );
-    //     }
-    // }
-
-    // onCollectionSelect( collectionId: string ): void {
-    //     this.values.collection = collectionId;
-
-    //     if(collectionId && collectionId.trim().length > 0){
-    //         this.showFileSelectPanel = true;
-    //     }
-    //     else {
-    //         this.showFileSelectPanel = false
-    //     }
-    // }
-
-    onSelect( selection: Selection ): void {
-        const index = this.hierarchy.indexOf( selection.type );
-
-        if ( index != this.hierarchy.length - 1 ) {
-            if ( selection.value != null && selection.value.length > 0 && !selection.isNew ) {
-
-                this.service.getChildren( selection.value ).then( children => {
-                    const childType = this.hierarchy[index + 1];
-                    this.options[childType] = children.filter( child => {
-                        return child.type === childType;
-                    } );
-                } ).catch(( err: HttpErrorResponse ) => {
-                    this.error( err );
-                } );
+    updateCurrentPageLabel(): void {
+        this.page.options.forEach( entity => {
+            if ( entity.id === this.page.selection.value ) {
+                this.page.label = entity.name;
             }
+        } )
+    }
+
+    handleNextPage(): void {
+
+        if ( ( this.page.index + 1 ) < this.pages.length ) {
+
+            const nextPage = this.pages[this.page.index + 1];
+
+            if ( this.page.type === 'CATEGORY' ) {
+                this.updateCurrentPageLabel();
+                this.labels.push( this.page.label );
+            }
+
+            if ( nextPage.type === 'CATEGORY' ) {
+
+                if ( this.page.type === 'FILE' ) {
+                    this.page = nextPage;
+                }
+                else {
+                    if ( this.page.selection.value != null && this.page.selection.value.length > 0 && !this.page.selection.isNew ) {
+
+                        this.service.getChildren( this.page.selection.value ).then( children => {
+                            nextPage.options = children.filter( child => {
+                                return child.type === nextPage.selection.type;
+                            } );
+
+                            this.page = nextPage;
+                        } ).catch(( err: HttpErrorResponse ) => {
+                            this.error( err );
+                        } );
+                    }
+                }
+            }
+            else {
+                this.page = nextPage;
+            }
+        }
+    }
+
+    handleBackPage(): void {
+
+        if ( this.page.index > 0 ) {
+
+            const prevPage = this.pages[this.page.index - 1];
+
+            if ( prevPage.type === 'CATEGORY' ) {
+                this.labels.splice( this.labels.length - 1, 1 );
+            }
+
+            this.page = prevPage;
         }
     }
 
     handleUpload(): void {
 
-        /*
-         * Validate form values before uploading
-         */
-        const selection = this.selections[this.selections.length - 1];
 
-        let label = '';
-        this.options[selection.type].forEach( entity => {
-            if ( entity.id === selection.value ) {
-                label = entity.name;
+        if ( !this.existingTask ) {
+            /*
+             * Validate form values before uploading
+             */
+            const page = this.pages[this.pages.length - 2];
+            const selection = page.selection;
+
+            if ( selection.value == null ) {
+                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
             }
-        } )
+            else {
+                this.values.uasComponentOid = selection.value;
 
-        if ( !this.existingTask && selection.value == null ) {
-            this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
+                this.values.uploadTarget = page.label;
+
+                this.uploader.setParams( this.values );
+                this.uploader.uploadStoredFiles();
+            }
         }
         else {
-            this.values.uasComponentOid = selection.value;
-
-            this.values.uploadTarget = label;
-
-            this.uploader.setParams( this.values );
             this.uploader.uploadStoredFiles();
         }
-
     }
 
     removeUpload( event: any ): void {

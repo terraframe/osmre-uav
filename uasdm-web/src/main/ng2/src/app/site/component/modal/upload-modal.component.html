@@ -27,12 +27,72 @@
         </div>
         <div class="col-md-2"></div>
     </div>
+    
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <ol class="list-group list-group-horizontal">
+          <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'FILE'}" >Upload</li>
+          <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'CATEGORY'}">Categories</li>
+          <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'SUMMARY'}">Finalize</li>
+        </ol>                    
+      </div>    
+    </div>
+    
+    <div class="row" *ngIf="labels.length > 0">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <ul class="breadcrumb">
+          <li *ngFor="let label of labels">
+            <span> {{label}}</span>
+          </li>
+        </ul>                    
+      </div>    
+    </div>
+    
+    <!-- Section for each page -->
+    <div class="row" *ngIf="page.type === 'CATEGORY'">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+      
+        <div class="form-group">
+          <label [for]="page.selection.type">{{page.selection.type}}:</label>
+        
+          <select [name]="page.selection.type" [(ngModel)]="page.selection.value" required>
+            <option></option>
+            <option *ngFor="let option of page.options" [value]="option.id">{{option.name}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-    <div *ngIf="selections" class="row">
+    <!-- Summary page -->
+    <div class="row" *ngIf="!uploadVisible && page.type === 'SUMMARY'">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+
+<!-- 
+      <div *ngFor="let selection of selections" class="form-group">
+        <label [for]="selection.type">{{selection.type}}:</label>
+
+        <select [name]="selection.type" (change)="onSelect(selection)" [(ngModel)]="selection.value" required>
+          <option></option>
+          <option *ngFor="let option of options[selection.type]" [value]="option.id">{{option.name}}</option>
+        </select>
+       </div>
+ -->                    
+
+        <div class="form-group">
+          <label for="outFileName">Output File Name Prefix:</label>
+          <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control" placeholder="Output file name prefix..." />
+        </div>
+      </div>
+    </div>
+    
+
+    <div [hidden]="page.type !== 'FILE' && page.type !== 'SUMMARY'" class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-
-            <form #ngForm="ngForm">
 
                 <!-- Existing task panel -->
                 <div *ngIf="existingTask && !currentTask">
@@ -79,24 +139,7 @@
                         </h4>
                     </div>
                 </div> <!-- End task finished upload notification -->
-
-                <div style="margin-top: 30px;" class="" *ngIf="!disabled && !existingTask">
-                    
-                    <div *ngFor="let selection of selections" class="form-group">
-                        <label [for]="selection.type">{{selection.type}}:</label>
-
-                        <select [name]="selection.type" (change)="onSelect(selection)" [(ngModel)]="selection.value" required>
-                            <option></option>
-                            <option *ngFor="let option of options[selection.type]" [value]="option.id">{{option.name}}</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="outFileName">Output File Name Prefix:</label>
-                        <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control" placeholder="Output file name prefix..." />
-                    </div>
-                </div>
-
+                
                 <!-- Current upload indicator -->
                 <div class="" [hidden]="!uploadVisible">
                     <div *ngIf="currentTask" class="panel panel-warning" style="margin: 30px 0 30px 0;">
@@ -126,24 +169,38 @@
                     </div>
 
                     <div class="uploader-container" style="margin-top: 20px;" #uploader></div>
-
-                    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix" style="padding:0; margin-top:20px;">
-                        <div class="ui-dialog-buttonset" >
-                            <button type="button" [disabled]="disabled" (click)="close()" class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
-                                <span class="ui-button-text">Close</span>
-                            </button>
-
-                            <button type="button btn btn-primary" [disabled]="!ngForm.valid || disabled" class="btn btn-primary" (click)="handleUpload($event)">
-                                <i class="icon-upload icon-white"></i>
-                                Upload
-                            </button>
-                        </div>
-                    </div>
                 </div> <!-- End current upload indicator -->
-            </form>
-
         </div>
         <div class="col-md-2"></div>
     </div>
-    </div>
+    
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix" style="padding:0; margin-top:20px;">
+          <div class="ui-dialog-buttonset" >
+            <button type="button" [disabled]="disabled" (click)="close()" class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
+              <span class="ui-button-text">Close</span>
+            </button>
+
+            <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled" class="btn btn-secondary" (click)="handleBackPage($event)">
+              <i class="icon-upload icon-white"></i>
+              Back
+            </button>
+                            
+            <button *ngIf="page.index < (pages.length - 1)" type="button btn btn-primary" [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleNextPage($event)">
+              <i class="icon-upload icon-white"></i>
+              Next
+            </button>
+                            
+            <button *ngIf="page.index === (pages.length - 1)" type="button btn btn-primary" [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleUpload($event)">
+              <i class="icon-upload icon-white"></i>
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>                    
+    </div>                    
+    
+</div>
 <!-- </div> -->
