@@ -345,6 +345,9 @@ export class UploadModalComponent implements OnInit {
                 return ( uploads != null && uploads.length > 0 );
             };
         }
+        else if ( page.type === 'SUMMARY' ) {
+            return ( this.currentTask == null );
+        }
 
         return true;
     }

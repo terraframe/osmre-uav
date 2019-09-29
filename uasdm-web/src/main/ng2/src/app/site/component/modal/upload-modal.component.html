@@ -67,7 +67,7 @@
     </div>
 
     <!-- Summary page -->
-    <div class="row" *ngIf="!uploadVisible && page.type === 'SUMMARY'">
+    <div class="row" *ngIf="page.type === 'SUMMARY' && currentTask == null">
       <div class="col-md-2"></div>
       <div class="col-md-8">
 
