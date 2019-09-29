@@ -8,17 +8,18 @@ import { NotificationModalComponent } from '../../../shared/component/modal/noti
 
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
+import { MetadataService } from '../../service/metadata.service';
 
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 
 declare var acp: string;
 
 @Component( {
-    selector: 'collection-modal',
-    templateUrl: './collection-modal.component.html',
+    selector: 'leaf-modal',
+    templateUrl: './leaf-modal.component.html',
     styleUrls: []
 } )
-export class CollectionModalComponent implements OnInit {
+export class LeafModalComponent implements OnInit {
     entity: SiteEntity;
 
     /* 
@@ -29,9 +30,11 @@ export class CollectionModalComponent implements OnInit {
     folders: SiteEntity[] = [];
 
     thumbnails: any = {};
-    images: any[] = [];
+    items: any[] = [];
 
     message: string;
+
+    processable: boolean = false;
 
     /*
      * Reference to the modal current showing
@@ -44,7 +47,8 @@ export class CollectionModalComponent implements OnInit {
      */
     public onNodeChange: Subject<SiteEntity>;
 
-    constructor( private service: ManagementService, private modalService: BsModalService, public bsModalRef: BsModalRef ) { }
+    constructor( private service: ManagementService, private metadataService: MetadataService
+        , private modalService: BsModalService, public bsModalRef: BsModalRef ) { }
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
@@ -59,6 +63,8 @@ export class CollectionModalComponent implements OnInit {
         if ( this.folders.length > 0 ) {
             this.onSelect( this.folders[0] );
         }
+
+        this.processable = this.metadataService.isProcessable( entity.type );
     }
 
     createImageFromBlob( image: Blob, imageData: any ) {
@@ -87,31 +93,35 @@ export class CollectionModalComponent implements OnInit {
     }
 
     onSelect( folder: SiteEntity ): void {
-        console.log( "Setting folder active: " + folder.name );
-
-        // clear any existing images
-        this.images = [];
+        // clear any existing items
+        this.items = [];
 
         this.service.getItems( folder.component, folder.name ).then( items => {
             //this.images = [items[0]]; // not yet handling different types of files
 
             // this.images = items;
 
+            this.items = items;
+
             for ( let i = 0; i < items.length; ++i ) {
                 let item = items[i];
 
-                if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
-                    item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
-                    item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
-
-                    this.images.push( item );
+                if ( this.isImage( item ) ) {
+                    this.getThumbnail( item );
                 }
-            }
 
-            this.images.forEach( image => {
-                this.getThumbnail( image );
-            } )
+            }
         } );
+    }
+
+    isImage( item: any ): boolean {
+        if ( item.name.toLowerCase().indexOf( ".png" ) !== -1 || item.name.toLowerCase().indexOf( ".jpg" ) !== -1 ||
+            item.name.toLowerCase().indexOf( ".jpeg" ) !== -1 || item.name.toLowerCase().indexOf( ".tif" ) !== -1 ||
+            item.name.toLowerCase().indexOf( ".tiff" ) !== -1 ) {
+
+            return true;
+        }
+        return false;
     }
 
     getDefaultImgURL( event: any ): void {

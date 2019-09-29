@@ -2,12 +2,14 @@ export class Metadata {
     drillable: boolean;
     expandable: boolean;
     leaf: boolean;
-    upload: boolean;
+    uploadable: boolean;
+    processable: boolean;
 
-    constructor( drillable: boolean, expandable: boolean, leaf: boolean, upload: boolean ) {
+    constructor( drillable: boolean, expandable: boolean, leaf: boolean, uploadable: boolean, processable: boolean ) {
         this.drillable = drillable;
         this.expandable = expandable;
         this.leaf = leaf;
-        this.upload = upload;
+        this.uploadable = uploadable;
+        this.processable = processable;
     }
 }

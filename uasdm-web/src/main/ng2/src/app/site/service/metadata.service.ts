@@ -11,25 +11,43 @@ export class MetadataService {
     private cache: any = {};
 
     constructor() {
-        this.cache['Site'] = new Metadata( true, false, false, false );
-        this.cache['Project'] = new Metadata( false, true, false, false );
-        this.cache['Mission'] = new Metadata( true, false, false, false );
-        this.cache['Collection'] = new Metadata( false, false, true, false );
-        this.cache['folder'] = new Metadata( false, false, true, true );
-        this.cache['raw'] = new Metadata( false, false, false, true );
-        this.cache['ptcloud'] = new Metadata( false, false, false, false );
-        this.cache['dem'] = new Metadata( false, false, false, false );
-        this.cache['ortho'] = new Metadata( false, false, false, false );
+        this.cache['Site'] = new Metadata( true, false, false, false, false );
+        this.cache['Project'] = new Metadata( false, true, false, false, false );
+        this.cache['Mission'] = new Metadata( true, false, false, false, false );
+        this.cache['Collection'] = new Metadata( false, false, true, false, true );
+        this.cache['folder'] = new Metadata( false, false, true, true, false );
+
+        // Metadata for specific folder types
+        this.cache['raw'] = new Metadata( false, false, false, true, false );
+        this.cache['accessible'] = new Metadata( false, false, false, true, false );
     }
 
     getMetadata( entity: SiteEntity ): Metadata {
-
         return this.cache[entity.type];
+    }
+
+    getTypeContainsFolders( entity: SiteEntity ): boolean {
+        return ( entity.type === 'Collection' );
+    }
+
+    isUploadable( type: string ): boolean {
+        if ( this.cache[type] != null ) {
+            return this.cache[type].uploadable;
+        }
+
+        return false;
+    }
+
+    isProcessable( type: string ): boolean {
+        if ( this.cache[type] != null ) {
+            return this.cache[type].processable;
+        }
+
+        return false;
     }
 
     getHierarchy(): string[] {
 
         return ['Site', 'Project', 'Mission', 'Collection'];
     }
-
 }

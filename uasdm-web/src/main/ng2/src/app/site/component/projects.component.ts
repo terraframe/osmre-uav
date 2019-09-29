@@ -23,7 +23,7 @@ import { SiteEntity } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
-import { CollectionModalComponent } from './modal/collection-modal.component';
+import { LeafModalComponent } from './modal/leaf-modal.component';
 
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
@@ -656,10 +656,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     select( node: SiteEntity ): void {
         const metadata = this.metadataService.getMetadata( node );
 
-        if ( node.type === "folder" ) {
-            //            this.service.getItems( node.component, node.name ).then( nodes => {
-            //                this.nodes = nodes;
-            //            } );
+        if ( metadata.leaf ) {
+            if ( this.metadataService.getTypeContainsFolders( node ) ) {
+                this.service.getItems( node.id, null ).then( nodes => {
+                    this.showLeafModal( node, nodes );
+                } );
+            }
+            else {
+                this.showLeafModal( node, [node] );
+            }
         }
         else if ( node.type === "object" ) {
             // Do nothing there are no children
@@ -679,15 +684,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         else {
             this.service.getItems( node.id, null ).then( nodes => {
-
-                if ( metadata.leaf ) {
-                    this.showCollectionModal( node, nodes );
-                }
-                else {
-                    this.current = node;
-                    this.previous.push( node );
-                    this.setNodes( nodes );
-                }
+                this.current = node;
+                this.previous.push( node );
+                this.setNodes( nodes );
             } );
         }
 
@@ -741,8 +740,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } )
     }
 
-    showCollectionModal( collection: SiteEntity, folders: SiteEntity[] ): void {
-        this.bsModalRef = this.modalService.show( CollectionModalComponent, {
+    showLeafModal( collection: SiteEntity, folders: SiteEntity[] ): void {
+        this.bsModalRef = this.modalService.show( LeafModalComponent, {
             animated: true,
             backdrop: false,
             ignoreBackdropClick: false,
