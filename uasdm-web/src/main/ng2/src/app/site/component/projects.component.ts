@@ -439,28 +439,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     handleUploadFile( item: SiteEntity ): void {
 
-        let hierarchy = {};
-
-        function getParent( item ) {
-            hierarchy[item.data.type.toLowerCase()] = item.data;
-
-            if ( item.parent && item.parent.data.type ) {
-                return getParent( item.parent );
-            }
-        }
-
-        getParent( item );
-
         this.bsModalRef = this.modalService.show( UploadModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
             'class': 'upload-modal'
         } );
-        this.bsModalRef.content.setHierarchy = hierarchy;
-        this.bsModalRef.content.clickedItem = item;
+        this.bsModalRef.content.init( this.previous );
 
-        let that = this;
         this.bsModalRef.content.onUploadComplete.subscribe( node => {
             // that.service.getItems( node.data.component, node.data.name )
             // .then(data => {

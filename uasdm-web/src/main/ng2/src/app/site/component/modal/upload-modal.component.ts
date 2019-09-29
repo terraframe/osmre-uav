@@ -13,9 +13,15 @@ import { BasicConfirmModalComponent } from '../../../shared/component/modal/basi
 
 import { SiteEntity, UploadForm, Task } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
-
+import { MetadataService } from '../../service/metadata.service';
 
 declare var acp: string;
+
+class Selection {
+    type: string;
+    isNew: boolean;
+    value: string;
+};
 
 @Component( {
     selector: 'upload-modal',
@@ -24,23 +30,6 @@ declare var acp: string;
 } )
 export class UploadModalComponent implements OnInit {
     objectKeys = Object.keys;
-
-    @Input() clickedItem: any;
-
-    @Input()
-    set setHierarchy( data: any ) {
-        this.hierarchy = data;
-
-        for ( let property in this.hierarchy ) {
-            if ( this.hierarchy.hasOwnProperty( property ) ) {
-                this.values[property] = this.hierarchy[property];
-            }
-        }
-
-        this.importedValues = true;
-    };
-
-    hierarchy: any;
 
     importedValues: boolean = false;
 
@@ -91,30 +80,15 @@ export class UploadModalComponent implements OnInit {
     showFileSelectPanel: boolean = false;
     taskFinishedNotifications: any[] = [];
 
-    previous = [] as SiteEntity[];
+    hierarchy: string[] = [];
 
+    selections: Selection[] = [];
+    options: { [key: string]: SiteEntity[] } = {};
 
     public onUploadComplete: Subject<any>;
 
-    constructor( public bsModalRef: BsModalRef, private service: ManagementService, private modalService: BsModalService, differs: KeyValueDiffers ) {
+    constructor( private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
-    }
-
-
-    init( entity: SiteEntity, previous: SiteEntity[] ): void {
-        this.previous = JSON.parse( JSON.stringify( previous ) );
-        this.previous.push( entity );
-    }
-
-
-    ngDoCheck() {
-
-        if ( this.uploader ) {
-            const change = this.differ.diff( this.uploader );
-            if ( change ) {
-                this.setExistingTask();
-            }
-        }
     }
 
     @ViewChild( 'uploader' ) set content( elem: ElementRef ) {
@@ -206,12 +180,12 @@ export class UploadModalComponent implements OnInit {
 
                         if ( responseJSON.success ) {
                             let notificationMsg = "";
-                            if ( that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef" ) {
-                                notificationMsg = "Your upload has finished and can be viewed in the Site Navigator.";
-                            }
-                            else {
-                                notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
-                            }
+                            //                            if ( that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef" ) {
+                            //                                notificationMsg = "Your upload has finished and can be viewed in the Site Navigator.";
+                            //                            }
+                            //                            else {
+                            notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
+                            //                            }
 
                             that.taskFinishedNotifications.push( {
                                 'id': id,
@@ -219,7 +193,7 @@ export class UploadModalComponent implements OnInit {
                             } )
                         }
 
-                        that.onUploadComplete.next( that.clickedItem );
+                        that.onUploadComplete.next();
                     },
                     onCancel: function( id: number, name: string ) {
                         //that.currentTask = null;
@@ -260,6 +234,44 @@ export class UploadModalComponent implements OnInit {
     ngAfterViewInit() {
 
     }
+
+    ngDoCheck() {
+
+        if ( this.uploader ) {
+            const change = this.differ.diff( this.uploader );
+            if ( change ) {
+                this.setExistingTask();
+            }
+        }
+    }
+
+    init( entities: SiteEntity[] ): void {
+        this.hierarchy = this.metadataService.getHierarchy();
+        this.selections = [];
+
+        this.hierarchy.forEach( type => {
+
+            const index = entities.findIndex( entity => { return entity.type === type } );
+
+            if ( index !== -1 ) {
+                const entity = entities[index];
+
+                this.selections.push( { type: type, isNew: false, value: entity.id } );
+            }
+            else {
+                this.selections.push( { type: type, isNew: false, value: null } );
+            }
+
+            this.options[type] = [];
+        } );
+
+        this.options[this.hierarchy[0]] = [entities[0]];
+
+        this.onSelect( this.selections[0] );
+    }
+
+
+
 
     ngOnInit(): void {
 
@@ -394,28 +406,45 @@ export class UploadModalComponent implements OnInit {
     //     }
     // }
 
+    onSelect( selection: Selection ): void {
+        const index = this.hierarchy.indexOf( selection.type );
+
+        if ( index != this.hierarchy.length - 1 ) {
+            if ( selection.value != null && selection.value.length > 0 && !selection.isNew ) {
+
+                this.service.getChildren( selection.value ).then( children => {
+                    const childType = this.hierarchy[index + 1];
+                    this.options[childType] = children.filter( child => {
+                        return child.type === childType;
+                    } );
+                } ).catch(( err: HttpErrorResponse ) => {
+                    this.error( err );
+                } );
+            }
+        }
+    }
+
     handleUpload(): void {
 
         /*
          * Validate form values before uploading
          */
-        if ( !this.values.create && !this.importedValues && this.values.imagery == null && !this.existingTask ) {
-            this.message = "A collection must first be selected before the file can be uploaded";
-        }
-        else if ( this.values.create && ( this.values.mission == null || this.values.name == null || this.values.name.length == 0 ) && !this.existingTask ) {
-            this.message = "Name is required";
+        const selection = this.selections[this.selections.length - 1];
+
+        let label = '';
+        this.options[selection.type].forEach( entity => {
+            if ( entity.id === selection.value ) {
+                label = entity.name;
+            }
+        } )
+
+        if ( !this.existingTask && selection.value == null ) {
+            this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
         }
         else {
+            this.values.uasComponentOid = selection.value;
 
-            if ( this.values.collection ) {
-                this.values.uasComponentOid = this.values.collection.id;
-            } else if ( this.values.imagery ) {
-                this.values.uasComponentOid = this.values.imagery.id;
-            }
-
-            if ( this.clickedItem && this.clickedItem.data ) {
-                this.values.uploadTarget = this.clickedItem.data.name
-            }
+            this.values.uploadTarget = label;
 
             this.uploader.setParams( this.values );
             this.uploader.uploadStoredFiles();

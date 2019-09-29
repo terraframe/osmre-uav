@@ -27,4 +27,9 @@ export class MetadataService {
         return this.cache[entity.type];
     }
 
+    getHierarchy(): string[] {
+
+        return ['Site', 'Project', 'Mission', 'Collection'];
+    }
+
 }
