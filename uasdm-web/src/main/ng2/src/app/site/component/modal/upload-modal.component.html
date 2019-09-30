@@ -32,7 +32,9 @@
       <div class="col-md-2"></div>
       <div class="col-md-8">
         <ol class="list-group list-group-horizontal">
+<!-- 
           <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'FILE'}" >Upload</li>
+ -->        
           <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'CATEGORY'}">Categories</li>
           <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'SUMMARY'}">Finalize</li>
         </ol>                    
@@ -57,11 +59,33 @@
       
         <div class="form-group">
           <label [for]="page.selection.type">{{page.selection.type}}:</label>
-        
-          <select [name]="page.selection.type" [(ngModel)]="page.selection.value" required>
-            <option></option>
-            <option *ngFor="let option of page.options" [value]="option.id">{{option.name}}</option>
-          </select>
+          
+          <div class="row">
+            <div class="col-md-8">
+              <select [name]="page.selection.type" [(ngModel)]="page.selection.value" [disabled]="page.selection.isNew" required>
+                <option></option>
+                <option *ngFor="let option of page.options" [value]="option.id">{{option.name}}</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button *ngIf="!page.selection.isNew" type="button btn btn-primary" class="btn btn-primary" (click)="setIsNew(true, $event)">
+                Add
+              </button>
+            </div>
+         </div>    
+        </div>
+        <div *ngIf="page.selection.isNew" class="form-group">
+          <div class="row">
+            <div class="col-md-8">
+              <input [(ngModel)]="page.selection.label" name="label" type="input" class="form-control" [placeholder]="'Add New ' + page.selection.type" required />
+            </div>
+            <div class="col-md-2">
+              <button type="button btn btn-primary" class="btn btn-primary" (click)="setIsNew(false, $event)">
+                Cancel
+              </button>
+            </div>
+         </div>    
+          
         </div>
       </div>
     </div>

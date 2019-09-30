@@ -1,19 +1,6 @@
 package gov.geoplatform.uasdm.service;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Imagery;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.view.RequestParser;
-import gov.geoplatform.uasdm.view.SiteItem;
-
 import java.util.List;
-import java.util.Map;
-
-import net.geoprism.GeoprismUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +10,16 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.view.RequestParser;
+import net.geoprism.GeoprismUser;
 
 public class WorkflowService
 {
@@ -37,24 +34,23 @@ public class WorkflowService
   @Transaction
   public JSONObject createUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
-    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
-    
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
     if (task == null)
     {
-      
+      UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
+
       if (uasComponent instanceof Imagery)
       {
 //        Imagery imagery = this.getImagery(sessionId, parser);
-        Imagery imagery = (Imagery)uasComponent;
-        
+        Imagery imagery = (Imagery) uasComponent;
+
         ImageryWorkflowTask imageryWorkflowTask = new ImageryWorkflowTask();
-        imageryWorkflowTask.setUpLoadId(parser.getUuid());
+        imageryWorkflowTask.setUploadId(parser.getUuid());
         imageryWorkflowTask.setImagery(imagery);
         imageryWorkflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
         imageryWorkflowTask.setTaskLabel("UAV data upload for imagery [" + imagery.getName() + "]");
-        
+
         task = imageryWorkflowTask;
       }
       else
@@ -63,11 +59,11 @@ public class WorkflowService
         Collection collection = (Collection) uasComponent;
 
         WorkflowTask workflowTask = new WorkflowTask();
-        workflowTask.setUpLoadId(parser.getUuid());
-        workflowTask.setCollection(collection);
+        workflowTask.setUploadId(parser.getUuid());
+        workflowTask.setComponent(collection);
         workflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
         workflowTask.setTaskLabel("UAV data upload for collection [" + collection.getName() + "]");
-        
+
         task = workflowTask;
       }
     }
@@ -99,9 +95,7 @@ public class WorkflowService
   @Transaction
   public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParser parser)
   {
-    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
-    
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
     if (task != null)
     {
@@ -128,9 +122,7 @@ public class WorkflowService
   @Transaction
   public void errorUploadTaskInTransaction(String sessionId, RequestParser parser, String message)
   {
-    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
-    
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
     if (task != null)
     {

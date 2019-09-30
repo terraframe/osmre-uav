@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 2065559255)
+@com.runwaysdk.business.ClassSignature(hash = 674918184)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -38,27 +38,27 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   {
     return gov.geoplatform.uasdm.bus.CollectionUploadEvent.CLASS;
   }
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection()
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
-    return getCollection(null);
+    return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
   {
 
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION);
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT);
 
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION, mdAttributeIF, this, alias, null);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT, mdAttributeIF, this, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
   {
 
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION);
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT);
 
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION, mdAttributeIF, this, alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT, mdAttributeIF, this, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableMoment getCreateDate()
@@ -339,9 +339,9 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT)) 
     {
-       return new gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.CREATEDBY)) 
     {
@@ -406,9 +406,9 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   public interface CollectionUploadEventQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection();
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias);
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableMoment getCreateDate();
     public com.runwaysdk.query.SelectableMoment getCreateDate(String alias);
     public com.runwaysdk.query.SelectableMoment getCreateDate(String alias, String displayLabel);
@@ -486,21 +486,21 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
       return this.NE(collectionUploadEvent.getOid());
     }
 
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection()
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
-    return getCollection(null);
+    return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION, alias, null);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION,  alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT,  alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableMoment getCreateDate()
@@ -745,9 +745,9 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT)) 
     {
-       return new gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.CREATEDBY)) 
     {
@@ -789,9 +789,9 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   public interface CollectionUploadEventQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection();
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias);
-    public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
+    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableMoment getCreateDate();
     public com.runwaysdk.query.SelectableMoment getCreateDate(String alias);
     public com.runwaysdk.query.SelectableMoment getCreateDate(String alias, String displayLabel);
@@ -918,21 +918,21 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
 
       return this.containsExactly(itemIdArray);
   }
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection()
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
-    return getCollection(null);
+    return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION, alias, null);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF getCollection(String alias, String displayLabel)
+  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION,  alias, displayLabel);
+    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT,  alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableMoment getCreateDate()
@@ -1177,9 +1177,9 @@ public  class CollectionUploadEventQuery extends com.runwaysdk.query.GeneratedBu
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COLLECTION)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.COMPONENT)) 
     {
-       return new gov.geoplatform.uasdm.bus.CollectionQuery.CollectionQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionUploadEvent.CREATEDBY)) 
     {

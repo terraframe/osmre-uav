@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1881226990)
+@com.runwaysdk.business.ClassSignature(hash = -744414735)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class CollectionUploadEventBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionUploadEvent";
-  public static java.lang.String COLLECTION = "collection";
+  public static java.lang.String COMPONENT = "component";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
@@ -26,62 +26,62 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
   public static java.lang.String UPLOADID = "uploadId";
-  private static final long serialVersionUID = 1881226990;
+  private static final long serialVersionUID = -744414735;
   
   public CollectionUploadEventBase()
   {
     super();
   }
   
-  public gov.geoplatform.uasdm.bus.Collection getCollection()
+  public gov.geoplatform.uasdm.bus.UasComponent getComponent()
   {
-    if (getValue(COLLECTION).trim().equals(""))
+    if (getValue(COMPONENT).trim().equals(""))
     {
       return null;
     }
     else
     {
-      return gov.geoplatform.uasdm.bus.Collection.get(getValue(COLLECTION));
+      return gov.geoplatform.uasdm.bus.UasComponent.get(getValue(COMPONENT));
     }
   }
   
-  public String getCollectionOid()
+  public String getComponentOid()
   {
-    return getValue(COLLECTION);
+    return getValue(COMPONENT);
   }
   
-  public void validateCollection()
+  public void validateComponent()
   {
-    this.validateAttribute(COLLECTION);
+    this.validateAttribute(COMPONENT);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getCollectionMd()
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getComponentMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionUploadEvent.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(COLLECTION);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(COMPONENT);
   }
   
-  public void setCollection(gov.geoplatform.uasdm.bus.Collection value)
+  public void setComponent(gov.geoplatform.uasdm.bus.UasComponent value)
   {
     if(value == null)
     {
-      setValue(COLLECTION, "");
+      setValue(COMPONENT, "");
     }
     else
     {
-      setValue(COLLECTION, value.getOid());
+      setValue(COMPONENT, value.getOid());
     }
   }
   
-  public void setCollectionId(java.lang.String oid)
+  public void setComponentId(java.lang.String oid)
   {
     if(oid == null)
     {
-      setValue(COLLECTION, "");
+      setValue(COMPONENT, "");
     }
     else
     {
-      setValue(COLLECTION, oid);
+      setValue(COMPONENT, oid);
     }
   }
   
@@ -480,13 +480,6 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
   protected String getDeclaredType()
   {
     return CLASS;
-  }
-  
-  public static CollectionUploadEventQuery getAllInstances(String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
-  {
-    CollectionUploadEventQuery query = new CollectionUploadEventQuery(new com.runwaysdk.query.QueryFactory());
-    com.runwaysdk.business.Entity.getAllInstances(query, sortAttribute, ascending, pageSize, pageNumber);
-    return query;
   }
   
   public static CollectionUploadEvent get(String oid)

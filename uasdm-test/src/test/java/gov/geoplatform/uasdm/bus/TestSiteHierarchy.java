@@ -500,7 +500,7 @@ public class TestSiteHierarchy
 //    workflowTask.setGeoprismUserId(singleActor.getOid());
 //    workflowTask.setStatus("Test Status");
 //    workflowTask.setTaskLabel("Test Task");
-//    workflowTask.setUpLoadId("123");
+//    workflowTask.setUploadId("123");
 //    workflowTask.setCollectionId(collectionId);
 //    workflowTask.apply();
 //

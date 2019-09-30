@@ -25,7 +25,7 @@ import { User } from '../model/user';
 export class AuthService {
     private user: User = {
         loggedIn: false,
-        username: '',
+        userName: '',
         roles: []
     };
 
@@ -36,7 +36,7 @@ export class AuthService {
             let cookieData: string = this.service.get( "user" )
             let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
 
-            this.user.username = cookieDataJSON.userName;
+            this.user.userName = cookieDataJSON.userName;
             this.user.roles = cookieDataJSON.roles;
             this.user.loggedIn = true;
         }
@@ -49,13 +49,13 @@ export class AuthService {
     removeUser(): void {
         this.user = {
             loggedIn: false,
-            username: '',
+            userName: '',
             roles: []
         };
     }
 
     getUserName(): string {
-        return this.user.username;
+        return this.user.userName;
     }
 
     isLoggedIn(): boolean {

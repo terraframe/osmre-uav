@@ -27,7 +27,7 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
 
     JSONObject obj = super.toJSON();
-    obj.put("uploadId", this.getUpLoadId());
+    obj.put("uploadId", this.getUploadId());
     obj.put("imagery", this.getImageryOid());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
@@ -37,28 +37,6 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
     return obj;
   }
 
-  public static ImageryWorkflowTask getTaskByUploadId(String uploadId)
-  {
-    ImageryWorkflowTaskQuery query = new ImageryWorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getUpLoadId().EQ(uploadId));
-
-    OIterator<? extends ImageryWorkflowTask> it = query.getIterator();
-
-    try
-    {
-      if (it.hasNext())
-      {
-        return it.next();
-      }
-    }
-    finally
-    {
-      it.close();
-    }
-
-    return null;
-  }
-  
   /**
    * Returns a label of a component associated with this task.
    * 

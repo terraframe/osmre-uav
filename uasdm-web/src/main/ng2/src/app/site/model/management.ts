@@ -43,6 +43,14 @@ export class ImageHierarchy {
     image: string;
 }
 
+export class Selection {
+    type: string;
+    isNew: boolean;
+    value: string;
+    label: string;
+};
+
+
 export class UploadForm {
     create: boolean;
     name: string;
@@ -54,6 +62,7 @@ export class UploadForm {
     collection: any;
     imagery: any;
     uploadTarget: string;
+    selections: string;
 }
 
 export class Action {

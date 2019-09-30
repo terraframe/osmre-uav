@@ -77,7 +77,7 @@ public class Collection extends CollectionBase implements ImageryComponent
       eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
 
       // Get Collections associated with those tasks
-      cQ.WHERE(cQ.getOid().EQ(eQ.getCollection().getOid()));
+      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent().getOid()));
 
       // Get the Missions of those Collections;
       cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
@@ -179,7 +179,7 @@ public class Collection extends CollectionBase implements ImageryComponent
   public List<AbstractWorkflowTask> getTasks()
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getCollection().EQ(this));
+    query.WHERE(query.getComponent().EQ(this));
 
     OIterator<? extends WorkflowTask> iterator = query.getIterator();
 

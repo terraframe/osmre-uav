@@ -1,23 +1,10 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.ImageryComponent;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.service.SolrService;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import net.geoprism.EmailSetting;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,6 +15,18 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.ImageryComponent;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.service.SolrService;
+import net.geoprism.EmailSetting;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
 {
@@ -414,7 +413,7 @@ public class ODMStatusServer
       if (task instanceof ImageryODMProcessingTask)
       {
         ImageryODMUploadTask imageryOdmUploadTask = new ImageryODMUploadTask();
-        imageryOdmUploadTask.setUpLoadId(task.getUpLoadId());
+        imageryOdmUploadTask.setUploadId(task.getUploadId());
         imageryOdmUploadTask.setImageryId(task.getImageryComponentOid());
         imageryOdmUploadTask.setGeoprismUser(task.getGeoprismUser());
         imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
@@ -430,8 +429,8 @@ public class ODMStatusServer
       else
       {        
         ODMUploadTask odmUploadTask = new ODMUploadTask();
-        odmUploadTask.setUpLoadId(task.getUpLoadId());
-        odmUploadTask.setCollectionId(task.getImageryComponentOid());
+        odmUploadTask.setUploadId(task.getUploadId());
+        odmUploadTask.setComponentId(task.getImageryComponentOid());
         odmUploadTask.setGeoprismUser(task.getGeoprismUser());
         odmUploadTask.setOdmUUID(task.getOdmUUID());
         odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());

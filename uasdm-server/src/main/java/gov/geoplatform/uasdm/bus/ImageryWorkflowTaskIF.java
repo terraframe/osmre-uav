@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 import gov.geoplatform.uasdm.view.RequestParser;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
@@ -10,7 +11,6 @@ import com.runwaysdk.dataaccess.DataAccessException;
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
 {
   public JSONObject toJSON();
-  
 
   /**
    * Returns a label of a component associated with this task.
@@ -18,10 +18,9 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * @return label of a component associated with this task.
    */
   public String getComponentLabel();
-  
-  
+
   public ImageryComponent getImageryComponent();
-  
+
   /**
    * Locks the given Entity by the current treads.
    * 
@@ -29,24 +28,52 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    *           if the Entity is locked by another user
    */
   public void appLock();
-  
+
   /**
    * {@link Entity#apply()}
    */
   public void apply();
-  
-  
+
   /**
-   * If the {@link RequestParser} contains an ID of a {@link UasComponent}, then return the component or return null.
+   * If the {@link RequestParser} contains an ID of a {@link UasComponent}, then
+   * return the component or return null.
    * 
    * @param parser
-   * @return the {@link RequestParser} contains an ID of a {@link UasComponent}, then return the component or return null.
+   * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
+   *         then return the component or return null.
    */
   public static UasComponent getUasComponentFromRequestParser(RequestParser parser)
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
       return UasComponent.get(parser.getUasComponentOid());
+    }
+    else if (parser.getSelections() != null)
+    {
+      JSONArray selections = parser.getSelections();
+
+      // The root object will always already be created
+      UasComponent component = UasComponent.get(selections.getJSONObject(0).getString("value"));
+
+      for (int i = 1; i < selections.length(); i++)
+      {
+        JSONObject selection = selections.getJSONObject(i);
+
+        if (selection.getBoolean("isNew"))
+        {
+          UasComponent child = component.createChild(selection.getString("type"));
+          child.setName(selection.getString("label"));
+          child.applyWithParent(component);
+
+          component = child;
+        }
+        else
+        {
+          component = UasComponent.get(selection.getString("value"));
+        }
+      }
+
+      return component;
     }
     else
     {
@@ -55,22 +82,15 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
   }
 
   /**
-   * Returns the {@link AbstractWorkflowTask} for the given {@link UasComponent} or null if none exists.
+   * Returns the {@link AbstractWorkflowTask} for the given {@link UasComponent}
+   * or null if none exists.
    * 
-   * @param uasComponent
    * @param parser
+   * 
    * @return
    */
-  public static AbstractWorkflowTask getWorkflowTaskForComponent(UasComponent uasComponent, RequestParser parser)
+  public static AbstractWorkflowTask getWorkflowTaskForUpload(RequestParser parser)
   {
-    if (uasComponent instanceof Imagery)
-    {
-      return ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    }
-    else
-    {
-      return WorkflowTask.getTaskByUploadId(parser.getUuid());
-    }
+    return AbstractUploadTask.getTaskByUploadId(parser.getUuid());
   }
-
 }

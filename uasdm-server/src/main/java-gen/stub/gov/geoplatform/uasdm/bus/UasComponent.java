@@ -7,6 +7,7 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -659,4 +660,13 @@ public abstract class UasComponent extends UasComponentBase
    */
   public abstract List<AbstractWorkflowTask> getTasks();
 
+  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  {
+    throw new UnsupportedOperationException();
+  }
 }

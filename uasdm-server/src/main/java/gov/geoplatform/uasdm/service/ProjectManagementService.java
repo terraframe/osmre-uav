@@ -29,6 +29,7 @@ import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
@@ -276,12 +277,12 @@ public class ProjectManagementService
     Collection collection = (Collection) UasComponent.get(id);
 
     ODMProcessingTask task = new ODMProcessingTask();
-    task.setUpLoadId(id);
-    task.setCollectionId(collection.getOid());
+    task.setUploadId(id);
+    task.setComponentId(collection.getOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
-    task.setMessage("The images uploaded to ['" + task.getCollection().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getComponent().getName() + "]");
+    task.setMessage("The images uploaded to ['" + task.getComponent().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.apply();
 
     File zip;
@@ -369,33 +370,18 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)
   {
-    WorkflowTask wfTask = WorkflowTask.getTaskByUploadId(uploadId);
+    AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
 
     if (wfTask != null)
     {
       wfTask.delete();
-    }
-    else
-    {
-      ImageryWorkflowTask iwfTask = ImageryWorkflowTask.getTaskByUploadId(uploadId);
-
-      if (iwfTask != null)
-      {
-        iwfTask.delete();
-      }
-      else
-      {
-        logger.error("Attempt to delete task with id [" + uploadId + "] which does not exist.");
-      }
     }
   }
 
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
   {
-    UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
-
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForComponent(uasComponent, parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
     try
     {
@@ -405,7 +391,7 @@ public class ProjectManagementService
 
         ImageryUploadEvent event = new ImageryUploadEvent();
         event.setGeoprismUser(imageryWorkflowTask.getGeoprismUser());
-        event.setUploadId(imageryWorkflowTask.getUpLoadId());
+        event.setUploadId(imageryWorkflowTask.getUploadId());
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
 
@@ -417,8 +403,8 @@ public class ProjectManagementService
 
         CollectionUploadEvent event = new CollectionUploadEvent();
         event.setGeoprismUser(collectionWorkflowTask.getGeoprismUser());
-        event.setUploadId(collectionWorkflowTask.getUpLoadId());
-        event.setCollection(collectionWorkflowTask.getCollection());
+        event.setUploadId(collectionWorkflowTask.getUploadId());
+        event.setComponent(collectionWorkflowTask.getComponent());
         event.apply();
 
         event.handleUploadFinish(parser, infile);

@@ -12,7 +12,7 @@ public interface ODMProcessingTaskIF extends ImageryWorkflowTaskIF
   
   public String getOdmUUID();
   
-  public String getUpLoadId();
+  public String getUploadId();
   
   public void setOdmUUID(String value);
   

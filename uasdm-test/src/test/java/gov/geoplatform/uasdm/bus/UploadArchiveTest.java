@@ -174,8 +174,8 @@ public class UploadArchiveTest
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
-    task.setCollection(collection);
-    task.setUpLoadId("testID");
+    task.setComponent(collection);
+    task.setUploadId("testID");
     task.setStatus("Test Status");
     task.apply();
 

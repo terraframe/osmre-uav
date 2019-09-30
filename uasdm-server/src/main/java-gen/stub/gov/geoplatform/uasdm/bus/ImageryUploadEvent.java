@@ -33,7 +33,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
   public void handleUploadFinish(RequestParser parser, File infile)
   {
-    ImageryWorkflowTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    ImageryWorkflowTask task = (ImageryWorkflowTask) ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
 
     task.lock();
     task.setStatus("Processing");
@@ -61,7 +61,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
   private void startODMProcessing(File infile, ImageryWorkflowTask uploadTask, RequestParser parser)
   {
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
-    task.setUpLoadId(uploadTask.getUpLoadId());
+    task.setUploadId(uploadTask.getUploadId());
     task.setImageryId(uploadTask.getImageryOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());

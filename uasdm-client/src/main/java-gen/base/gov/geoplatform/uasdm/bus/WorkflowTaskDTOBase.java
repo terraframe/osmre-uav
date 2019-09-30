@@ -78,12 +78,12 @@ public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.Abst
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(COLLECTION).getAttributeMdDTO();
   }
   
-  public String getUpLoadId()
+  public String getUploadId()
   {
     return getValue(UPLOADID);
   }
   
-  public void setUpLoadId(String value)
+  public void setUploadId(String value)
   {
     if(value == null)
     {
@@ -95,22 +95,22 @@ public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.Abst
     }
   }
   
-  public boolean isUpLoadIdWritable()
+  public boolean isUploadIdWritable()
   {
     return isWritable(UPLOADID);
   }
   
-  public boolean isUpLoadIdReadable()
+  public boolean isUploadIdReadable()
   {
     return isReadable(UPLOADID);
   }
   
-  public boolean isUpLoadIdModified()
+  public boolean isUploadIdModified()
   {
     return isModified(UPLOADID);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getUpLoadIdMd()
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getUploadIdMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(UPLOADID).getAttributeMdDTO();
   }

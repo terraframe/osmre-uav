@@ -16,7 +16,13 @@ import net.geoprism.GeoprismUser;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF
 {
-  private static final long serialVersionUID = 227492042;
+  private static final long  serialVersionUID = 227492042;
+
+  public static final String PROCESSING       = "Processing";
+
+  public static final String COMPLETE         = "Complete";
+
+  public static final String QUEUED           = "Queued";
 
   public AbstractWorkflowTask()
   {
@@ -81,7 +87,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
       iterator.close();
     }
   }
-  
+
   public JSONObject toJSON()
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
@@ -94,7 +100,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     {
       jActions.put(action.toJSON());
     }
-    
+
     JSONObject obj = new JSONObject();
     obj.put("oid", this.getOid());
     obj.put("label", this.getTaskLabel());
@@ -118,8 +124,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
 
     return array;
   }
-  
-  
+
   /**
    * Returns a label of a component associated with this task.
    * 
@@ -129,5 +134,5 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
   {
     return "";
   }
-  
+
 }

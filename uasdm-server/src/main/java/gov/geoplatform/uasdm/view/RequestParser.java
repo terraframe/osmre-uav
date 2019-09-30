@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.json.JSONArray;
 
 public class RequestParser
 {
@@ -30,9 +31,11 @@ public class RequestParser
   private static String       METHOD_PARAM         = "_method";
 
   private static String       GENERATE_ERROR_PARAM = "generateError";
-  
+
   private static String       UAS_COMPONENT_OID    = "uasComponentOid";
-  
+
+  private static String       SELECTIONS           = "selections";
+
   private static String       UPLOAD_TARGET        = "uploadTarget";
 
   private String              filename;
@@ -56,10 +59,12 @@ public class RequestParser
   private Map<String, String> customParams         = new HashMap<>();
 
   private Boolean             resume;
-  
+
   private String              uasComponentOid;
-  
+
   private String              uploadTarget;
+
+  private JSONArray           selections;
 
   private RequestParser()
   {
@@ -133,12 +138,17 @@ public class RequestParser
   {
     return uuid;
   }
-  
+
   public String getUasComponentOid()
   {
     return uasComponentOid;
   }
-  
+
+  public JSONArray getSelections()
+  {
+    return selections;
+  }
+
   public String getUploadTarget()
   {
     return uploadTarget;
@@ -194,17 +204,22 @@ public class RequestParser
     {
       requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
     }
-    
+
     if (requestParser.uasComponentOid == null)
     {
       requestParser.uasComponentOid = multipartUploadParser.getParams().get(UAS_COMPONENT_OID);
+    }
+
+    if (requestParser.selections == null && multipartUploadParser.getParams().containsKey(SELECTIONS))
+    {
+      requestParser.selections = new JSONArray(multipartUploadParser.getParams().get(SELECTIONS));
     }
 
     if (requestParser.uploadTarget == null)
     {
       requestParser.uploadTarget = multipartUploadParser.getParams().get(UPLOAD_TARGET);
     }
-    
+
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -253,12 +268,12 @@ public class RequestParser
     {
       requestParser.uuid = req.getParameter(UUID_PARAM);
     }
-    
+
     if (requestParser.uasComponentOid == null)
     {
       requestParser.uasComponentOid = req.getParameter(UAS_COMPONENT_OID);
     }
-    
+
     if (requestParser.uploadTarget == null)
     {
       requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);

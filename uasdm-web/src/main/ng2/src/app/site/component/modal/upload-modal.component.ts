@@ -11,7 +11,7 @@ import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
-import { SiteEntity, UploadForm, Task } from '../../model/management';
+import { SiteEntity, UploadForm, Task, Selection } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
@@ -21,14 +21,7 @@ class Page {
     index: number;
     selection: Selection;
     options: SiteEntity[];
-    label: string;
     type: string
-};
-
-class Selection {
-    type: string;
-    isNew: boolean;
-    value: string;
 };
 
 @Component( {
@@ -90,7 +83,6 @@ export class UploadModalComponent implements OnInit {
         selection: null,
         options: [],
         type: 'FILE',
-        label: ''
     }];
 
     /*
@@ -258,42 +250,6 @@ export class UploadModalComponent implements OnInit {
         }
     }
 
-    init( entities: SiteEntity[] ): void {
-        this.hierarchy = this.metadataService.getHierarchy();
-        this.selections = [];
-
-        for ( let i = 0; i < this.hierarchy.length; i++ ) {
-            const type = this.hierarchy[i];
-
-            const index = entities.findIndex( entity => { return entity.type === type } );
-
-            if ( index !== -1 ) {
-                const entity = entities[index];
-
-                this.selections.push( { type: type, isNew: false, value: entity.id } );
-            }
-            else {
-                this.selections.push( { type: type, isNew: false, value: null } );
-            }
-
-            this.pages.push( {
-                index: ( i + 1 ),
-                selection: this.selections[i],
-                options: i == 0 ? [entities[0]] : [],
-                label: '',
-                type: 'CATEGORY'
-            } );
-        }
-
-        this.pages.push( {
-            index: ( this.hierarchy.length + 1 ),
-            selection: null,
-            options: [],
-            label: '',
-            type: 'SUMMARY'
-        } );
-    }
-
     ngOnInit(): void {
 
         this.onUploadComplete = new Subject();
@@ -304,6 +260,57 @@ export class UploadModalComponent implements OnInit {
         // } ).catch(( err: HttpErrorResponse ) => {
         //     this.error( err );
         // } );
+    }
+
+    init( entities: SiteEntity[] ): void {
+        this.hierarchy = this.metadataService.getHierarchy();
+        this.selections = [];
+        this.pages = [];
+
+        for ( let i = 0; i < this.hierarchy.length; i++ ) {
+            const type = this.hierarchy[i];
+
+            const index = entities.findIndex( entity => { return entity.type === type } );
+
+            if ( index !== -1 ) {
+                const entity = entities[index];
+
+                this.selections.push( { type: type, isNew: false, value: entity.id, label: entity.name } );
+            }
+            else {
+                this.selections.push( { type: type, isNew: false, value: null, label: '' } );
+            }
+
+            if ( i > 0 ) {
+                this.pages.push( {
+                    index: ( this.pages.length ),
+                    selection: this.selections[i],
+                    options: [],
+                    type: 'CATEGORY'
+                } );
+            }
+        }
+
+        this.labels.push( this.selections[0].label );
+
+        this.pages.push( {
+            index: ( this.pages.length ),
+            selection: null,
+            options: [],
+            type: 'SUMMARY'
+        } );
+
+        this.page = this.pages[0];
+
+        this.service.getChildren( this.selections[0].value ).then( children => {
+            this.page.options = children.filter( child => {
+                return child.type === this.page.selection.type;
+            } );
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
+
+        console.log( this.pages );
     }
 
     close(): void {
@@ -336,7 +343,9 @@ export class UploadModalComponent implements OnInit {
 
     isPageValid( page: Page ): boolean {
         if ( page.type === 'CATEGORY' ) {
-            return ( page.selection != null && page.selection.value != null && page.selection.value.length > 0 );
+            if ( page.selection != null ) {
+                return ( page.selection.value != null && page.selection.value.length > 0 ) || ( page.selection.label != null && page.selection.label.length > 0 );
+            }
         }
         else if ( page.type === 'FILE' ) {
             if ( this.uploader != null ) {
@@ -355,9 +364,17 @@ export class UploadModalComponent implements OnInit {
     updateCurrentPageLabel(): void {
         this.page.options.forEach( entity => {
             if ( entity.id === this.page.selection.value ) {
-                this.page.label = entity.name;
+                this.page.selection.label = entity.name;
             }
         } )
+    }
+
+    setIsNew( isNew: boolean ): void {
+        this.page.selection.isNew = isNew;
+
+        if ( isNew ) {
+            this.page.selection.value = null;
+        }
     }
 
     handleNextPage(): void {
@@ -368,7 +385,7 @@ export class UploadModalComponent implements OnInit {
 
             if ( this.page.type === 'CATEGORY' ) {
                 this.updateCurrentPageLabel();
-                this.labels.push( this.page.label );
+                this.labels.push( this.page.selection.label );
             }
 
             if ( nextPage.type === 'CATEGORY' ) {
@@ -377,7 +394,7 @@ export class UploadModalComponent implements OnInit {
                     this.page = nextPage;
                 }
                 else {
-                    if ( this.page.selection.value != null && this.page.selection.value.length > 0 && !this.page.selection.isNew ) {
+                    if ( !this.page.selection.isNew && this.page.selection.value != null && this.page.selection.value.length > 0 ) {
 
                         this.service.getChildren( this.page.selection.value ).then( children => {
                             nextPage.options = children.filter( child => {
@@ -388,6 +405,9 @@ export class UploadModalComponent implements OnInit {
                         } ).catch(( err: HttpErrorResponse ) => {
                             this.error( err );
                         } );
+                    }
+                    else {
+                        this.page = nextPage;
                     }
                 }
             }
@@ -421,17 +441,17 @@ export class UploadModalComponent implements OnInit {
             const page = this.pages[this.pages.length - 2];
             const selection = page.selection;
 
-            if ( selection.value == null ) {
-                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
-            }
-            else {
-                this.values.uasComponentOid = selection.value;
-
-                this.values.uploadTarget = page.label;
+//            if ( selection.value == null  ) {
+//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
+//            }
+//            else {
+//                this.values.uasComponentOid = selection.value;
+                this.values.selections = JSON.stringify(this.selections);
+                this.values.uploadTarget = this.metadataService.getUploadTarget(page.selection.type);
 
                 this.uploader.setParams( this.values );
                 this.uploader.uploadStoredFiles();
-            }
+//            }
         }
         else {
             this.uploader.uploadStoredFiles();

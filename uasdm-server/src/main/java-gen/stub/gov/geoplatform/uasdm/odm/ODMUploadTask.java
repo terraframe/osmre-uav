@@ -12,7 +12,7 @@ public class ODMUploadTask extends ODMUploadTaskBase implements ODMUploadTaskIF
   
   public String getImageryComponentOid()
   {
-    return this.getCollectionOid();
+    return this.getComponentOid();
   }
   
   public void setProcessingTask(ODMProcessingTaskIF odmProcessingTask)
