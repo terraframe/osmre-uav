@@ -513,12 +513,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.bsModalRef.content.entity = data.item;
             this.bsModalRef.content.attributes = data.attributes;
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
-                // Do something
-                if ( entity.type === 'Site' ) {
+                // Update the node
+                entity.children = node.children;
+                entity.active = node.active;
+                
+                this.refreshEntity( entity, this.nodes );
+                this.refreshEntity( entity, this.previous );
+                this.nodes.forEach( node => {
+                    this.refreshEntity( entity, node.children );
+                } );
+
+                if ( this.metadataService.getMetadata( entity ).root ) {
                     this.refresh( false );
                 }
             } );
         } );
+    }
+
+    refreshEntity( node: SiteEntity, nodes: SiteEntity[] ): void {
+        let indexOf = nodes.findIndex( i => i.id === node.id );
+
+        if ( indexOf !== -1 ) {
+            nodes[indexOf] = node;
+        }
     }
 
     handleDownloadAll( node: SiteEntity ): void {
