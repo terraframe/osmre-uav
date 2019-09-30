@@ -375,6 +375,9 @@ export class UploadModalComponent implements OnInit {
         if ( isNew ) {
             this.page.selection.value = null;
         }
+        else {
+            this.page.selection.label = null;
+        }
     }
 
     handleNextPage(): void {
@@ -438,20 +441,19 @@ export class UploadModalComponent implements OnInit {
             /*
              * Validate form values before uploading
              */
-            const page = this.pages[this.pages.length - 2];
-            const selection = page.selection;
+            const selection = this.selections[this.selections.length - 1];
 
-//            if ( selection.value == null  ) {
-//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
-//            }
-//            else {
-//                this.values.uasComponentOid = selection.value;
-                this.values.selections = JSON.stringify(this.selections);
-                this.values.uploadTarget = this.metadataService.getUploadTarget(page.selection.type);
+            //            if ( selection.value == null  ) {
+            //                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
+            //            }
+            //            else {
+            //                this.values.uasComponentOid = selection.value;
+            this.values.selections = JSON.stringify( this.selections );
+            this.values.uploadTarget = this.metadataService.getUploadTarget( selection.type );
 
-                this.uploader.setParams( this.values );
-                this.uploader.uploadStoredFiles();
-//            }
+            this.uploader.setParams( this.values );
+            this.uploader.uploadStoredFiles();
+            //            }
         }
         else {
             this.uploader.uploadStoredFiles();
