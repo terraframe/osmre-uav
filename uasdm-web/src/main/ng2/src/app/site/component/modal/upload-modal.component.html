@@ -95,16 +95,10 @@
       <div class="col-md-2"></div>
       <div class="col-md-8">
 
-      <div *ngFor="let p of pages" class="form-group">
-        <div *ngIf="p.type === 'CATEGORY'">
-          <label [for]="p.selection.type">{{p.selection.type}}:</label>
-
-          <select [name]="p.selection.type" [(ngModel)]="p.selection.value" disabled required>
-            <option></option>
-            <option *ngFor="let option of p.options" [value]="option.id">{{option.name}}</option>
-          </select>
+        <div *ngFor="let selection of selections" class="form-group">
+          <label [for]="selection.type">{{selection.type}}:</label>
+          <input [(ngModel)]="selection.label" [name]="selection.type" type="input" class="form-control" disabled required />
         </div>
-       </div>
 
         <div class="form-group">
           <label for="outFileName">Output File Name Prefix:</label>
