@@ -212,6 +212,10 @@ export class UploadModalComponent implements OnInit {
                                     this.error( err );
                                 } );
                         }
+                        
+                        if(that.existingTask) {
+                            that.page = that.pages[0];
+                        }
 
                         that.disabled = false;
                         that.currentTask = null;
