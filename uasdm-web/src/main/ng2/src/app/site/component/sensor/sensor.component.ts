@@ -19,7 +19,7 @@ export class SensorComponent implements OnInit {
 
     message: string = null;
 
-    wavelengths: string[] = WAVELENGTHS;
+    waveLengths: string[] = WAVELENGTHS;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
