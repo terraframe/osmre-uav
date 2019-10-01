@@ -303,14 +303,17 @@ export class UploadModalComponent implements OnInit {
         this.page = this.pages[0];
 
         this.service.getChildren( this.selections[0].value ).then( children => {
-            this.page.options = children.filter( child => {
-                return child.type === this.page.selection.type;
+            this.pages[0].options = children.filter( child => {
+                return child.type === this.pages[0].selection.type;
             } );
         } ).catch(( err: HttpErrorResponse ) => {
             this.error( err );
         } );
 
-        console.log( this.pages );
+        // Handle the case where there is an existing file upload
+        if ( this.existingTask ) {
+            this.page = this.pages[this.pages.length - 1];
+        }
     }
 
     close(): void {
@@ -334,10 +337,9 @@ export class UploadModalComponent implements OnInit {
         let resumable = this.uploader.getResumableFilesData() as any[];
         if ( resumable.length > 0 ) {
             this.existingTask = true;
-
-            if ( !this.selectedContinue ) {
-                this.hideUploadPanel();
-            }
+            //            if ( !this.selectedContinue ) {
+            //                this.hideUploadPanel();
+            //            }
         }
     }
 
@@ -472,7 +474,7 @@ export class UploadModalComponent implements OnInit {
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Cancel Upload';
 
-        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
+        this.bsModalRef.content.onConfirm.subscribe( data => {
             this.service.removeTask( this.uploader.getResumableFilesData()[0].uuid )
                 .then(() => {
                     //that.uploader.clearStoredFiles();
@@ -482,22 +484,22 @@ export class UploadModalComponent implements OnInit {
                     // we are clearing localStorage manually.
                     localStorage.clear();
                     that.existingTask = false;
-                    that.showUploadPanel();
-
+                    this.page = this.pages[0];
+//                    that.showUploadPanel();
                 } ).catch(( err: HttpErrorResponse ) => {
                     this.error( err );
                 } );
         } );
     }
 
-    hideUploadPanel(): void {
-        this.uploadVisible = false;
-    }
-
-    showUploadPanel(): void {
-        this.uploadVisible = true;
-        this.selectedContinue = true;
-    }
+//    hideUploadPanel(): void {
+//        this.uploadVisible = false;
+//    }
+//
+//    showUploadPanel(): void {
+//        this.uploadVisible = true;
+//        this.selectedContinue = true;
+//    }
 
     countUpload( thisRef: any ): void {
         let ct = 0;
