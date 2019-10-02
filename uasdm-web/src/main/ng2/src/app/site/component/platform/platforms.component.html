@@ -5,7 +5,7 @@
 
 		<h2>Platforms</h2>
 
-		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 		
 		<div class="list-table-wrapper">
 			<table id="manage-platforms-table"
@@ -39,6 +39,6 @@
 			</table>
 		</div>
 		
-		<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 	</div>
 </div>

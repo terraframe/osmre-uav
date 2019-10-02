@@ -20,7 +20,7 @@
   
     <div class="row">
       <div class="col-md-12">
-        <ul class="breadcrumb">
+        <ul class="breadcrumb" style="margin-bottom: 10px;">
           <li *ngFor="let prev of previous">
             <span> {{prev.name}}</span>
           </li>
@@ -30,23 +30,29 @@
   
     <div class="row">
       <tabset>
-        <tab *ngFor="let folder of folders" 
-           [heading]="folder.name" 
-           (select)="onSelect(folder)">
+        <tab *ngFor="let folder of folders" [heading]="folder.name" (select)="onSelect(folder)">
           <div>
             <div id="image-list-container">
-              <ul class="media-list">
-                <li class="media" *ngFor="let item of items">
-                  <div class="media-left" *ngIf="thumbnails[item.key] != null">
-                    <a (click)="previewImage($event, item)">
-                      <img class="item-thumbnail" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
-                    </a>
-                  </div>
-                  <div class="media-body">
-                    <h4 class="media-heading">{{item.name}}</h4>
-                  </div>
-                </li>
+
+              <ul class="list-group row">
+                  <li class="list-group-item col-xs-3">
+                    <div class="img-upload-ico" style="height: 150px;width: 200px;background: lightgrey;">
+                      <span class="circle"></span>
+                      <!-- <h4>Add Image</h4> -->
+                    </div>
+                  </li>
+                  <li *ngFor="let item of items" class="list-group-item col-xs-3">
+                     <div class="" *ngIf="thumbnails[item.key] != null">
+                        <a (click)="previewImage($event, item)" class="thumbnail">
+                          <img class="" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                          <div class="caption">
+                            <h4 class="media-heading">{{item.name}}</h4>
+                          </div>
+                        </a>
+                      </div>
+                  </li>
               </ul>
+
             </div>
           </div>      
         </tab>
@@ -54,7 +60,10 @@
     </div>
     <div class="btn-holder" style="text-align: right;">
       <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-      <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary pull-right">Reprocess imagery</button>    
+      <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary pull-right" style="margin-left: 5px;">
+        Reprocess imagery
+        <i class="fa fa-refresh" aria-hidden="true" style="vertical-align: middle;margin-left: 10px;"></i>
+      </button>    
     </div>
     
     <div class="row">

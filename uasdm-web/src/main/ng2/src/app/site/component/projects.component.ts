@@ -29,8 +29,6 @@ import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 import { MetadataService } from '../service/metadata.service';
 
-const mbxStyles = require( '@mapbox/mapbox-sdk/services/geocoding' );
-const geocodingService = mbxStyles( { accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ" } );
 
 declare var acp: any;
 declare var gpAppType: any;
@@ -38,7 +36,7 @@ declare var gpAppType: any;
 @Component( {
     selector: 'projects',
     templateUrl: './projects.component.html',
-    styles: [],
+    styles: ['./projects.css'],
     animations: [
         trigger( 'fadeIn', [
             transition( ':enter', [
@@ -227,47 +225,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } );
 
         this.addLayers();
-
-        let searchLocations = ( searchTerm ) => {
-
-            var matchingFeatures = [];
-            // this.service.searchEntites( searchTerm ).then( results => {
-
-            let results = [{
-                "hierarchy": [],
-                "id": "e458d9e8-91b4-4f2f-b768-dc8102ea2b70",
-                "label": "test",
-                "place_name": "🌲 test",
-                "center": [-104.99404, 39.75621]
-            }]
-
-            for ( var i = 0; i < results.length; i++ ) {
-                var feature = results[i];
-                // handle queries with different capitalization than the source data by calling toLowerCase()
-                if ( feature.label.toLowerCase().search( searchTerm.toLowerCase() ) !== -1 ) {
-                    // add a tree emoji as a prefix for custom data results
-                    // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-                    feature['place_name'] = '🌲 ' + feature.label;
-                    feature['center'] = [-104.99404, 39.75621];
-                    feature['place_type'] = ['park'];
-                    matchingFeatures.push( feature );
-                }
-            }
-
-            return matchingFeatures;
-            // });
-
-        }
-
-
-        // this.map.addControl(new MapboxGeocoder({
-        //     accessToken: "pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ",
-        //     mapboxgl: this.map,
-        //     localGeocoder: searchLocations,
-        //     localGeocoderOnly: true,
-        //     zoom: 14,
-        //     placeholder: "Search for a site or place...",
-        // }));
 
 
         this.refresh( true );
@@ -500,7 +457,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    handleEdit( node: SiteEntity ): void {
+    handleEdit( node: SiteEntity, event: any ): void {
+
+        event.stopPropagation();
+
         this.service.edit( node.id ).then( data => {
             this.bsModalRef = this.modalService.show( EntityModalComponent, {
                 animated: true,
@@ -549,7 +509,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         //      } );
     }
 
-    handleDelete( node: SiteEntity ): void {
+    handleDelete( node: SiteEntity, event: any ): void {
+
+        event.stopPropagation();
+        
         this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
@@ -604,8 +567,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     highlight( match: any, query: string[] | string ): string {
-        console.log( match );
-
         return 'Test';
     }
 
@@ -670,7 +631,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.fitBounds( bounds );
     }
 
-    select( node: SiteEntity ): void {
+
+    getMetadata( node: SiteEntity ): any {
+        const metadata = this.metadataService.getMetadata( node );
+
+        return metadata;
+    }
+
+
+    select( node: SiteEntity, event: any ): void {
+        event.stopPropagation();
         const metadata = this.metadataService.getMetadata( node );
 
         if ( metadata.leaf ) {
@@ -687,18 +657,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             // Do nothing there are no children
             //                return this.service.getItems( node.data.id, node.data.name );
         }
-        else if ( metadata.expandable ) {
-            if ( node.children == null || node.children.length == 0 ) {
-                this.service.getItems( node.id, null ).then( nodes => {
-                    node.children = nodes;
+        // else if ( metadata.expandable ) {
+        //     if ( node.children == null || node.children.length == 0 ) {
+        //         this.service.getItems( node.id, null ).then( nodes => {
+        //             node.children = nodes;
 
-                    this.expand( node );
-                } );
-            }
-            else {
-                this.expand( node );
-            }
-        }
+        //             this.expand( node );
+        //         } );
+        //     }
+        //     else {
+        //         this.expand( node );
+        //     }
+        // }
         else {
             this.service.getItems( node.id, null ).then( nodes => {
                 this.current = node;
@@ -706,7 +676,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.setNodes( nodes );
             } );
         }
+    }
 
+    handleExpand( node: SiteEntity, event: any ): void {
+
+        event.stopPropagation();
+        
+        if ( node.children == null || node.children.length == 0 ) {
+                this.service.getItems( node.id, null ).then( nodes => {
+                    node.children = nodes;
+
+                    this.expand( node );
+                } );
+            }
+            else {
+                // this.expand( node );
+                node.children = [];
+            }
     }
 
     back( node: SiteEntity ): void {
@@ -732,14 +718,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     expand( node: SiteEntity ) {
         const cMetadata = this.metadataService.getMetadata( this.current );
 
-        if ( cMetadata.expandable ) {
-            this.previous.splice( this.previous.length - 1, 1 );
-        }
+        // if ( cMetadata.expandable ) {
+        //     this.previous.splice( this.previous.length - 1, 1 );
+        // }
 
         node.active = true;
         this.current = node;
 
-        this.previous.push( node );
+        // this.previous.push( node );
 
     }
 
