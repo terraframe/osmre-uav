@@ -28,7 +28,7 @@
         <div class="col-md-2"></div>
     </div>
     
-    <div class="row">
+    <div class="row" *ngIf="!existingTask">
       <div class="col-md-2"></div>
       <div class="col-md-8">
         <ol class="list-group list-group-horizontal">
@@ -41,7 +41,7 @@
       </div>    
     </div>
     
-    <div class="row" *ngIf="labels.length > 0">
+    <div class="row" *ngIf="!existingTask && labels.length > 0">
       <div class="col-md-2"></div>
       <div class="col-md-8">
         <ul class="breadcrumb">
@@ -91,7 +91,7 @@
     </div>
 
     <!-- Summary page -->
-    <div class="row" *ngIf="page.type === 'SUMMARY' && currentTask == null">
+    <div class="row" *ngIf="page.type === 'SUMMARY' && !existingTask && currentTask == null">
       <div class="col-md-2"></div>
       <div class="col-md-8">
 
@@ -121,8 +121,7 @@
                                 continue.</h4>
                             <h4>
                                 <b>To continue an upload</b>
-                                please click the Continue Upload button and re-upload your file and we will try our best
-                                to continue where you left off.
+                                please re-upload your file and we will try our best to continue where you left off.
                             </h4>
 
                             <hr>
@@ -131,11 +130,13 @@
                                 <i class="icon-upload icon-white"></i>
                                 Cancel Upload
                             </button>
+<!-- 
                             <button type="button" class="btn btn-primary" style="margin-top: 20px;"
                                 (click)="showUploadPanel()">
                                 <i class="icon-upload icon-white"></i>
                                 Continue Upload
                             </button>
+ -->                            
                         </div>
                     </div>
                 </div> <!-- End existing task panel -->
@@ -201,12 +202,12 @@
               <span class="ui-button-text">Close</span>
             </button>
 
-            <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled" class="btn btn-secondary" (click)="handleBackPage($event)">
+            <button *ngIf="!existingTask && page.index > 0" type="button btn btn-primary" [disabled]="disabled" class="btn btn-secondary" (click)="handleBackPage($event)">
               <i class="icon-upload icon-white"></i>
               Back
             </button>
                             
-            <button *ngIf="page.index < (pages.length - 1)" type="button btn btn-primary" [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleNextPage($event)">
+            <button *ngIf="!existingTask && page.index < (pages.length - 1)" type="button btn btn-primary" [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleNextPage($event)">
               <i class="icon-upload icon-white"></i>
               Next
             </button>
