@@ -48,15 +48,9 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     WorkflowActionQuery query = new WorkflowActionQuery(new QueryFactory());
     query.WHERE(query.getWorkflowTask().EQ(this));
 
-    OIterator<? extends WorkflowAction> iterator = query.getIterator();
-
-    try
+    try (OIterator<? extends WorkflowAction> iterator = query.getIterator())
     {
       return new LinkedList<WorkflowAction>(iterator.getAll());
-    }
-    finally
-    {
-      iterator.close();
     }
   }
 
@@ -76,15 +70,9 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
     query.ORDER_BY_ASC(query.getLastUpdateDate());
 
-    OIterator<? extends AbstractWorkflowTask> iterator = query.getIterator();
-
-    try
+    try (OIterator<? extends AbstractWorkflowTask> iterator = query.getIterator())
     {
       return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
-    }
-    finally
-    {
-      iterator.close();
     }
   }
 

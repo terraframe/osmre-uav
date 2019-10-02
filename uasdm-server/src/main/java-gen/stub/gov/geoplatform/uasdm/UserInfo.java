@@ -242,22 +242,12 @@ public class UserInfo extends UserInfoBase
       UserInfoQuery query = new UserInfoQuery(new QueryFactory());
       query.WHERE(query.getGeoprismUser().EQ(user));
 
-      OIterator<? extends UserInfo> it = null;
-
-      try
+      try (OIterator<? extends UserInfo> it = query.getIterator())
       {
-        it = query.getIterator();
 
         if (it.hasNext())
         {
           return it.next();
-        }
-      }
-      finally
-      {
-        if (it != null)
-        {
-          it.close();
         }
       }
     }

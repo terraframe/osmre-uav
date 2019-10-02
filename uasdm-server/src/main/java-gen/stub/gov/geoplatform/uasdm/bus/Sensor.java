@@ -91,18 +91,12 @@ public class Sensor extends SensorBase
   {
     JSONArray resultSet = new JSONArray();
 
-    OIterator<? extends Sensor> it = query.getIterator();
-
-    try
+    try (OIterator<? extends Sensor> it = query.getIterator())
     {
       for (Sensor sensor : it)
       {
         resultSet.put(sensor.toJSON());
       }
-    }
-    finally
-    {
-      it.close();
     }
 
     JSONObject json = new JSONObject();
@@ -120,22 +114,11 @@ public class Sensor extends SensorBase
 
     SensorQuery query = Sensor.getQuery();
 
-    OIterator<? extends Sensor> iterator = null;
-
-    try
+    try (OIterator<? extends Sensor> iterator = query.getIterator())
     {
-      iterator = query.getIterator();
-
       while (iterator.hasNext())
       {
         array.put(iterator.next().toJSON());
-      }
-    }
-    finally
-    {
-      if (iterator != null)
-      {
-        iterator.close();
       }
     }
 

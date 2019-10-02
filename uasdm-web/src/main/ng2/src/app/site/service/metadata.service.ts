@@ -12,15 +12,15 @@ export class MetadataService {
 
     constructor() {
         // ( root, leaf, drillable, expandable, uploadable, processable )
-        this.cache['Site'] = new Metadata( true, false, true, false, false, false );
-        this.cache['Project'] = new Metadata( false, false, true, false, false, false );
-        this.cache['Mission'] = new Metadata( false, false, false, true, false, false );
-        this.cache['Collection'] = new Metadata( false, true, false, false, false, true );
-        this.cache['folder'] = new Metadata( false, true, false, false, true, false );
+        this.cache['Site'] = new Metadata( true, false, true, false, false, false, 'Projects' );
+        this.cache['Project'] = new Metadata( false, false, true, false, false, false, 'Missions' );
+        this.cache['Mission'] = new Metadata( false, false, false, true, false, false, 'Collections' );
+        this.cache['Collection'] = new Metadata( false, true, false, false, false, true, 'Images' );
+        this.cache['folder'] = new Metadata( false, true, false, false, true, false, '' );
 
         // Metadata for specific folder types
-        this.cache['raw'] = new Metadata( false, false, false, false, true, false );
-        this.cache['accessible'] = new Metadata( false, false, false, false, true, false );
+        this.cache['raw'] = new Metadata( false, false, false, false, true, false, '' );
+        this.cache['accessible'] = new Metadata( false, false, false, false, true, false, '' );
     }
 
     getMetadata( entity: SiteEntity ): Metadata {

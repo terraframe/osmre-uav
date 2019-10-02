@@ -71,11 +71,13 @@ public class UserInvite extends UserInviteBase
 
     UserInviteQuery query = new UserInviteQuery(new QueryFactory());
     query.WHERE(query.getEmail().EQi(invite.getEmail()));
-    OIterator<? extends UserInvite> it = query.getIterator();
 
-    while (it.hasNext())
+    try (OIterator<? extends UserInvite> it = query.getIterator())
     {
-      it.next().delete();
+      while (it.hasNext())
+      {
+        it.next().delete();
+      }
     }
 
     invite.setStartTime(new Date());
@@ -114,20 +116,7 @@ public class UserInvite extends UserInviteBase
   @Transaction
   private static void completeInTrans(java.lang.String token, net.geoprism.GeoprismUser user)
   {
-    UserInviteQuery query = new UserInviteQuery(new QueryFactory());
-    query.WHERE(query.getToken().EQ(token));
-    OIterator<? extends UserInvite> reqIt = query.getIterator();
-
-    UserInvite invite;
-    if (reqIt.hasNext())
-    {
-      invite = reqIt.next();
-      invite.appLock();
-    }
-    else
-    {
-      throw new InvalidUserInviteToken();
-    }
+    UserInvite invite = getInviteByToken(token);
 
     if ( ( System.currentTimeMillis() - invite.getStartTime().getTime() ) > ( expireTime * 3600000 ))
     {
@@ -165,6 +154,28 @@ public class UserInvite extends UserInviteBase
     invite.delete();
 
     logger.info("User [" + user.getUsername() + "] has been created via a user invite.");
+  }
+
+  protected static UserInvite getInviteByToken(String token)
+  {
+    UserInviteQuery query = new UserInviteQuery(new QueryFactory());
+    query.WHERE(query.getToken().EQ(token));
+
+    try (OIterator<? extends UserInvite> reqIt = query.getIterator())
+    {
+
+      if (reqIt.hasNext())
+      {
+        UserInvite invite = reqIt.next();
+        invite.appLock();
+
+        return invite;
+      }
+      else
+      {
+        throw new InvalidUserInviteToken();
+      }
+    }
   }
 
   private void sendEmail(String serverExternalUrl)

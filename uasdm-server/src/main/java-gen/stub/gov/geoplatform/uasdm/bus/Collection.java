@@ -82,11 +82,12 @@ public class Collection extends CollectionBase implements ImageryComponent
       // Get the Missions of those Collections;
       cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
 
-      OIterator<? extends Collection> i = cQ.getIterator();
-
-      for (Collection collection : i)
+      try (OIterator<? extends Collection> i = cQ.getIterator())
       {
-        collectionList.add(collection);
+        for (Collection collection : i)
+        {
+          collectionList.add(collection);
+        }
       }
     }
 
@@ -188,15 +189,9 @@ public class Collection extends CollectionBase implements ImageryComponent
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
 
-    OIterator<? extends WorkflowTask> iterator = query.getIterator();
-
-    try
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
     {
       return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
-    }
-    finally
-    {
-      iterator.close();
     }
   }
 
@@ -205,15 +200,9 @@ public class Collection extends CollectionBase implements ImageryComponent
     CollectionUploadEventQuery query = new CollectionUploadEventQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
 
-    OIterator<? extends CollectionUploadEvent> iterator = query.getIterator();
-
-    try
+    try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
     {
       return new LinkedList<CollectionUploadEvent>(iterator.getAll());
-    }
-    finally
-    {
-      iterator.close();
     }
   }
 
@@ -315,6 +304,21 @@ public class Collection extends CollectionBase implements ImageryComponent
     String baseName = FilenameUtils.getBaseName(key);
 
     return this.getOid() + "-" + baseName;
+  }
+
+  @Override
+  public Integer getNumberOfChildren()
+  {
+//    int count = 0;
+//    count += this.getItemCount(this.buildRawKey());
+//    count += this.getItemCount(this.buildPointCloudKey());
+//    count += this.getItemCount(this.buildDemKey());
+//    count += this.getItemCount(this.buildOrthoKey());
+
+    DocumentQuery query = new DocumentQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this));
+
+    return new Long(query.getCount()).intValue();
   }
 
   public Collection getUasComponent()

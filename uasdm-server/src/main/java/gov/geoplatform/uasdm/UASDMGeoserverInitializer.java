@@ -18,25 +18,20 @@ public class UASDMGeoserverInitializer implements GeoserverInitializerIF
   public void initialize()
   {
     logger.info("Starting publishing of Collection image services (this may take a while on dev environments)");
-    
-    CollectionQuery cq = new CollectionQuery(new QueryFactory());   
-    OIterator<? extends Collection> it = cq.getIterator();
-    
-    try
+
+    CollectionQuery cq = new CollectionQuery(new QueryFactory());
+
+    try (OIterator<? extends Collection> it = cq.getIterator())
     {
       while (it.hasNext())
       {
         Collection col = it.next();
-        
+
         logger.info("Creating image services for Collection [" + col.getName() + "].");
         col.createImageServices();
       }
     }
-    finally
-    {
-      it.close();
-    }
-    
+
     logger.info("Collection image services published successfully.");
   }
 }

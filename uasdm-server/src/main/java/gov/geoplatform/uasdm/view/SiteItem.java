@@ -18,32 +18,32 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SiteItem implements TreeComponent
 {
-  public static String        ID             = "id";
+  public static String        ID                 = "id";
 
-  public static String        TYPE           = "type";
+  public static String        TYPE               = "type";
 
-  public static String        TYPE_LABEL     = "typeLabel";
-  
-  public static String        OWNER_NAME     = "ownerName";
-  
-  public static String        OWNER_PHONE    = "ownerPhone";
-  
-  public static String        OWNER_EMAIL    = "ownerEmail";
-  
-  public static String        PRIVILEGE_TYPE = "privilegeType";
+  public static String        TYPE_LABEL         = "typeLabel";
 
-  public static String        HAS_CHILDREN   = "hasChildren";
+  public static String        OWNER_NAME         = "ownerName";
 
-  public static String        CHILDREN       = "children";
+  public static String        OWNER_PHONE        = "ownerPhone";
 
-  public static String        GEOMETRY       = "geometry";
-  
+  public static String        OWNER_EMAIL        = "ownerEmail";
+
+  public static String        PRIVILEGE_TYPE     = "privilegeType";
+
+  public static String        NUMBER_OF_CHILDREN = "numberOfChildren";
+
+  public static String        CHILDREN           = "children";
+
+  public static String        GEOMETRY           = "geometry";
+
   private String              id;
 
   private String              type;
 
   private String              typeLabel;
-  
+
   private String              ownerName;
 
   private String              ownerPhone;
@@ -54,7 +54,7 @@ public class SiteItem implements TreeComponent
 
   private Geometry            geometry;
 
-  private Boolean             hasChildren;
+  private Integer             numberOfChildren;
 
   private List<TreeComponent> children;
 
@@ -107,7 +107,7 @@ public class SiteItem implements TreeComponent
   {
     this.ownerName = ownerName;
   }
-  
+
   public String getOwnerPhone()
   {
     return ownerPhone;
@@ -138,14 +138,14 @@ public class SiteItem implements TreeComponent
     this.privilegeType = privilegeType;
   }
 
-  public Boolean getHasChildren()
+  public Integer getNumberOfChildren()
   {
-    return hasChildren;
+    return numberOfChildren;
   }
 
-  public void setHasChildren(Boolean hasChildren)
+  public void setNumberOfChildren(Integer numberOfChildren)
   {
-    this.hasChildren = hasChildren;
+    this.numberOfChildren = numberOfChildren;
   }
 
   public void addChild(TreeComponent child)
@@ -198,7 +198,7 @@ public class SiteItem implements TreeComponent
       obj.put(ID, this.id);
       obj.put(TYPE, this.type);
       obj.put(TYPE_LABEL, this.typeLabel);
-      obj.put(HAS_CHILDREN, this.hasChildren);
+      obj.put(NUMBER_OF_CHILDREN, this.numberOfChildren);
       obj.put(OWNER_NAME, this.getOwnerName());
       obj.put(OWNER_PHONE, this.getOwnerPhone());
       obj.put(OWNER_EMAIL, this.getOwnerEmail());
@@ -249,17 +249,17 @@ public class SiteItem implements TreeComponent
     item.setId(object.getString(ID));
     item.setType(object.getString(TYPE));
     item.setTypeLabel(object.getString(TYPE_LABEL));
-    item.setHasChildren(object.getBoolean(HAS_CHILDREN));
-    
-    // These fields are not set on the object, but rather are properties of the owner itself.
+//    item.setNumberOfChildren(object.getBoolean(HAS_CHILDREN));
+
+    // These fields are not set on the object, but rather are properties of the
+    // owner itself.
     // OWNER_NAME
     // OWNER_PHONE
     // OWNER_EMAIL
-    if(item.getType().equals("Collection"))
+    if (item.getType().equals("Collection"))
     {
       item.setPrivilegeType(object.getString(PRIVILEGE_TYPE));
     }
-    
 
     Iterator<String> keys = object.keys();
 
@@ -278,9 +278,9 @@ public class SiteItem implements TreeComponent
       try
       {
         Object oGeom = object.get(GEOMETRY);
-        
+
         String sGeom = oGeom.toString();
-        
+
         item.setGeometry(new GeometryJSON().readPoint(sGeom));
       }
       catch (IOException e)
@@ -309,7 +309,7 @@ public class SiteItem implements TreeComponent
       return false;
     }
 
-    if (attributeName.equals(HAS_CHILDREN))
+    if (attributeName.equals(NUMBER_OF_CHILDREN))
     {
       return false;
     }

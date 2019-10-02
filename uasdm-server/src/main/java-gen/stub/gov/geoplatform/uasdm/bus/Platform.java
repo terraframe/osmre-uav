@@ -70,18 +70,12 @@ public class Platform extends PlatformBase
   {
     JSONArray resultSet = new JSONArray();
 
-    OIterator<? extends Platform> it = query.getIterator();
-
-    try
+    try (OIterator<? extends Platform> it = query.getIterator())
     {
       for (Platform platform : it)
       {
         resultSet.put(platform.toJSON());
       }
-    }
-    finally
-    {
-      it.close();
     }
 
     JSONObject json = new JSONObject();
@@ -99,22 +93,11 @@ public class Platform extends PlatformBase
 
     PlatformQuery query = Platform.getQuery();
 
-    OIterator<? extends Platform> iterator = null;
-
-    try
+    try (OIterator<? extends Platform> iterator = query.getIterator())
     {
-      iterator = query.getIterator();
-
       while (iterator.hasNext())
       {
         array.put(iterator.next().toJSON());
-      }
-    }
-    finally
-    {
-      if (iterator != null)
-      {
-        iterator.close();
       }
     }
 

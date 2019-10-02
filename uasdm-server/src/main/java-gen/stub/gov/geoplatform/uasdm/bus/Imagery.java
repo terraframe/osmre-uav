@@ -152,15 +152,9 @@ public class Imagery extends ImageryBase implements ImageryComponent
     ImageryWorkflowTaskQuery query = new ImageryWorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getImagery().EQ(this));
 
-    OIterator<? extends ImageryWorkflowTask> iterator = query.getIterator();
-
-    try
+    try (OIterator<? extends ImageryWorkflowTask> iterator = query.getIterator())
     {
       return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
-    }
-    finally
-    {
-      iterator.close();
     }
   }
 
@@ -363,6 +357,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
         {
           tx.shutdownNow();
         }
+
+        Document.createIfNotExist(imageryComponent.getUasComponent(), key, name);
 
         SolrService.updateOrCreateDocument(ancestors, imageryComponent.getUasComponent(), key, name);
       }

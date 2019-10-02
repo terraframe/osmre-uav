@@ -92,15 +92,9 @@ public class ProjectManagementService
     SiteQuery q = new SiteQuery(qf);
     q.ORDER_BY_ASC(q.getName());
 
-    OIterator<? extends Site> i = q.getIterator();
-
-    try
+    try (OIterator<? extends Site> i = q.getIterator())
     {
       i.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
-    }
-    finally
-    {
-      i.close();
     }
 
     if (id != null)
@@ -146,11 +140,6 @@ public class ProjectManagementService
 
           for (TreeComponent chi : children)
           {
-            if (chi instanceof SiteItem)
-            {
-              ( (SiteItem) chi ).setHasChildren(true);
-            }
-
             if (!chi.getId().equals(child.getId()))
             {
               parent.addChild(chi);

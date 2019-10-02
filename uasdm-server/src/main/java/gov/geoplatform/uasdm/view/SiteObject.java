@@ -110,10 +110,10 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.KEY, this.key);
     json.put(SiteObject.COMPONENT, this.componentId);
 
-    if (this.type.equals(SiteObject.FOLDER))
-    {
-      json.put(SiteItem.HAS_CHILDREN, true);
-    }
+//    if (this.type.equals(SiteObject.FOLDER))
+//    {
+//      json.put(SiteItem.HAS_CHILDREN, true);
+//    }
 
     if (this.imageKey != null)
     {

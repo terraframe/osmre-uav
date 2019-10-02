@@ -95,7 +95,7 @@
                                     <a class="fa fa-pencil ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
                                     <a class="fa fa-trash-o ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>                                   
                                   </span>  
-                                  <p><b>7</b> TODO: child node count</p>
+                                  <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
                                 </div>
                               </div>
                               <!-- <div class="card-footer">Footer</div> -->
@@ -108,7 +108,7 @@
                                   <i (click)="handleExpand(node, $event)" class="fa fa-expand pull-right" aria-hidden="true"></i>
 
                                   <h4>{{node.name}}</h4>
-                                  <p><b>1</b> TODO: child node count</p>
+                                  <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
                                   
                                   <div *ngIf="node.active" class="list-group" >
                                     <div *ngFor="let child of node.children" (click)="select(child, $event)" class="list-group-item" style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">

@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.bus;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.view.Option;
@@ -25,14 +26,17 @@ public class Bureau extends BureauBase
     BureauQuery query = new BureauQuery(new QueryFactory());
     query.ORDER_BY_ASC(query.getDisplayLabel());
 
-    List<? extends Bureau> bureaus = query.getIterator().getAll();
-
-    for (Bureau bureau : bureaus)
+    try (OIterator<? extends Bureau> it = query.getIterator())
     {
-      options.add(new Option(bureau.getOid(), bureau.getDisplayLabel()));
-    }
+      List<? extends Bureau> bureaus = it.getAll();
 
-    return options;
+      for (Bureau bureau : bureaus)
+      {
+        options.add(new Option(bureau.getOid(), bureau.getDisplayLabel()));
+      }
+
+      return options;
+    }
   }
 
 }

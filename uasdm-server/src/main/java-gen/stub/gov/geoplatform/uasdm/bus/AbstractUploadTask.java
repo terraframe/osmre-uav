@@ -17,18 +17,12 @@ public class AbstractUploadTask extends AbstractUploadTaskBase
     AbstractUploadTaskQuery query = new AbstractUploadTaskQuery(new QueryFactory());
     query.WHERE(query.getUploadId().EQ(uploadId));
 
-    OIterator<? extends AbstractUploadTask> it = query.getIterator();
-
-    try
+    try (OIterator<? extends AbstractUploadTask> it = query.getIterator())
     {
       if (it.hasNext())
       {
         return it.next();
       }
-    }
-    finally
-    {
-      it.close();
     }
 
     return null;

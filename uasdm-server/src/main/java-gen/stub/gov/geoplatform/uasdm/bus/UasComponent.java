@@ -357,19 +357,14 @@ public abstract class UasComponent extends UasComponentBase
       childQ.AND(childQ.getOid().NE(oid));
     }
 
-    OIterator<? extends UasComponent> i = childQ.getIterator();
-
-    try
+    try (OIterator<? extends UasComponent> i = childQ.getIterator())
     {
       if (i.hasNext())
       {
         return true;
       }
     }
-    finally
-    {
-      i.close();
-    }
+
     return false;
   }
 
@@ -469,6 +464,51 @@ public abstract class UasComponent extends UasComponentBase
     return client.getObject(request);
   }
 
+  public int getItemCount(String key)
+  {
+    int count = 0;
+
+    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+
+    String bucketName = AppProperties.getBucketName();
+
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+    ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+    while (true)
+    {
+      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+
+      while (objIter.hasNext())
+      {
+        S3ObjectSummary summary = objIter.next();
+
+        String summaryKey = summary.getKey();
+
+        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
+        {
+          count++;
+        }
+      }
+
+      // If the bucket contains many objects, the listObjects() call
+      // might not return all of the objects in the first listing. Check to
+      // see whether the listing was truncated.
+      if (objectListing.isTruncated())
+      {
+        objectListing = client.listNextBatchOfObjects(objectListing);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    return count;
+  }
+
   public List<UasComponent> getAncestors()
   {
     List<UasComponent> ancestors = new LinkedList<UasComponent>();
@@ -548,9 +588,7 @@ public abstract class UasComponent extends UasComponentBase
     SiteQuery query = new SiteQuery(new QueryFactory());
     query.WHERE(query.getGeoPoint().NE((String) null));
 
-    OIterator<? extends Site> it = query.getIterator();
-
-    try
+    try (OIterator<? extends Site> it = query.getIterator())
     {
       writer.object();
 
@@ -578,10 +616,6 @@ public abstract class UasComponent extends UasComponentBase
       writer.value(new JSONObject("{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:EPSG::4326\"}}"));
 
       writer.endObject();
-    }
-    finally
-    {
-      it.close();
     }
 
     return new JSONObject(sWriter.toString());
@@ -668,5 +702,19 @@ public abstract class UasComponent extends UasComponentBase
   public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
   {
     throw new UnsupportedOperationException();
+  }
+
+  public Integer getNumberOfChildren()
+  {
+    OIterator<? extends UasComponent> children = this.getAllComponents();
+
+    try
+    {
+      return children.getAll().size();
+    }
+    finally
+    {
+      children.close();
+    }
   }
 }

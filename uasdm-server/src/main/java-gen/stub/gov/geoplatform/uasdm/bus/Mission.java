@@ -24,9 +24,9 @@ public class Mission extends MissionBase
   public Collection createDefaultChild()
   {
     Collection collection = new Collection();
-    
+
     collection.addPrivilegeType(AllPrivilegeType.AGENCY);
-    
+
     return collection;
   }
 
@@ -85,15 +85,9 @@ public class Mission extends MissionBase
   {
     MissionQuery query = new MissionQuery(new QueryFactory());
 
-    OIterator<? extends Mission> it = query.getIterator();
-
-    try
+    try (OIterator<? extends Mission> it = query.getIterator())
     {
       return new LinkedList<Mission>(it.getAll());
-    }
-    finally
-    {
-      it.close();
     }
   }
 
@@ -120,7 +114,7 @@ public class Mission extends MissionBase
 
     return objects;
   }
-  
+
   @Override
   public List<AbstractWorkflowTask> getTasks()
   {

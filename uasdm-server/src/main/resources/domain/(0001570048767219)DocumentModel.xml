@@ -1,0 +1,34 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Document" label="Document" generateController="false">
+        <attributes>
+          <char name="s3location" label="Name" size="4096" required="true" indexType="unique index" />
+          <char name="name" label="Folder Name" size="256" required="true" />
+          <reference name="component" label="Component" required="true" type="gov.geoplatform.uasdm.bus.UasComponent" />          
+        </attributes>
+      </mdBusiness>    
+    </create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Document">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Document">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.Document" type="com.runwaysdk.system.metadata.MdBusiness" />         
+    </delete>
+  </undoIt>
+</version>

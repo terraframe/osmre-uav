@@ -46,35 +46,7 @@ public abstract class Converter
     }
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
-
-    if (uasComponent instanceof Collection || uasComponent instanceof Mission || uasComponent instanceof Imagery || hasChildren)
-    {
-      /*
-       * Collection and Mission always have children because of the image and
-       * metadata folders
-       */
-      siteItem.setHasChildren(true);
-    }
-    else
-    {
-      OIterator<? extends UasComponent> children = uasComponent.getAllComponents();
-
-      try
-      {
-        if (children.hasNext())
-        {
-          siteItem.setHasChildren(true);
-        }
-        else
-        {
-          siteItem.setHasChildren(false);
-        }
-      }
-      finally
-      {
-        children.close();
-      }
-    }
+    siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
 
     if (metadata)
     {

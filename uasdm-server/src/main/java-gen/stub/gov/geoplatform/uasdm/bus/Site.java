@@ -107,19 +107,14 @@ public class Site extends SiteBase
       query.AND(query.getOid().NE(oid));
     }
 
-    OIterator<? extends UasComponent> i = query.getIterator();
-
-    try
+    try (OIterator<? extends UasComponent> i = query.getIterator())
     {
       if (i.hasNext())
       {
         return true;
       }
     }
-    finally
-    {
-      i.close();
-    }
+
     return false;
   }
 
