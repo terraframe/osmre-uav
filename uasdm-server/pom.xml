@@ -273,9 +273,9 @@
 											<value>${project.basedir}/cache</value>
 										</systemProperty>
 										<systemProperty>
-                      <key>envcfg</key>
-                      <value>${project.basedir}/../envcfg</value>
-                    </systemProperty>
+                                            <key>envcfg</key>
+                                            <value>${project.basedir}/../envcfg</value>
+                                        </systemProperty>
 									</systemProperties>
 								</configuration>
 							</execution>

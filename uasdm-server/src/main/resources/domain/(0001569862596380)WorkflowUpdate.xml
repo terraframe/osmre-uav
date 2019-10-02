@@ -59,7 +59,23 @@
           <char name="odmUUID" size="64" label="UUID"/>
           <reference name="processingTask" type="gov.geoplatform.uasdm.odm.ODMProcessingTask" />         
         </attributes>
-      </mdBusiness>      
+      </mdBusiness>  
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ImageryODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <text name="odmOutput" label="output" />
+          <char name="filePrefix" label="filePrefix" size="300"/>
+        </attributes>
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ImageryODMUploadTask" label="ODM Upload" extends="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <reference name="processingTask" type="gov.geoplatform.uasdm.odm.ImageryODMProcessingTask" />
+        </attributes>
+      </mdBusiness>
+          
     </create>
     <permissions>
       <role roleName="geoprism.admin.Administrator">

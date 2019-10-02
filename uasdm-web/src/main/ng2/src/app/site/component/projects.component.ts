@@ -454,6 +454,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             // })
         } );
 
+//        this.bsModalRef.content.onHierarchyChange.subscribe( () => {
+//            const metadata = this.metadataService.getMetadata( item );
+//
+//            if ( metadata.expandable ) {
+////                if ( node.children == null || node.children.length == 0 ) {
+////                    this.service.getItems( node.id, null ).then( nodes => {
+////                        node.children = nodes;
+////
+////                        this.expand( node );
+////                    } );
+////                }
+////                else {
+////                    this.expand( node );
+////                }
+//            }
+//            else {
+//                this.service.getItems( item.id, null ).then( nodes => {
+//                    this.setNodes( nodes );
+//                } );
+//            }
+//
+//        } );
     }
 
 
@@ -516,7 +538,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Update the node
                 entity.children = node.children;
                 entity.active = node.active;
-                
+
                 this.refreshEntity( entity, this.nodes );
                 this.refreshEntity( entity, this.previous );
                 this.nodes.forEach( node => {

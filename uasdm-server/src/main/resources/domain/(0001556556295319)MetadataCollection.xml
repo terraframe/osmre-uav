@@ -3,7 +3,7 @@
     <create>
       <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" exported="false" publish="false" >
 	      <attributes>
-	        <reference name="collection" type="gov.geoplatform.uasdm.bus.Collection"/>
+            <reference name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
 	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
 	        <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
 	      </attributes>

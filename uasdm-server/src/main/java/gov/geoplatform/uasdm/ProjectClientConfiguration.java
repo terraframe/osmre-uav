@@ -41,5 +41,10 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
     endpoints.add("uasdm-account/newInstance");
     return endpoints;
   }
-
+  
+  @Override
+  public String getHomeUrl()
+  {
+    return "/project/management";
+  }
 }

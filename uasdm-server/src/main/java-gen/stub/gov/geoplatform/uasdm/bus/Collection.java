@@ -157,6 +157,13 @@ public class Collection extends CollectionBase implements ImageryComponent
       task.delete();
     }
 
+    List<CollectionUploadEvent> events = this.getEvents();
+
+    for (CollectionUploadEvent event : events)
+    {
+      event.delete();
+    }
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -186,6 +193,23 @@ public class Collection extends CollectionBase implements ImageryComponent
     try
     {
       return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
+    }
+    finally
+    {
+      iterator.close();
+    }
+  }
+
+  public List<CollectionUploadEvent> getEvents()
+  {
+    CollectionUploadEventQuery query = new CollectionUploadEventQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this));
+
+    OIterator<? extends CollectionUploadEvent> iterator = query.getIterator();
+
+    try
+    {
+      return new LinkedList<CollectionUploadEvent>(iterator.getAll());
     }
     finally
     {

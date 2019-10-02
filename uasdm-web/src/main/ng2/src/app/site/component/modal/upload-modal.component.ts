@@ -88,9 +88,16 @@ export class UploadModalComponent implements OnInit {
     /*
      * Current page  
      */
+    hierarchyChange: boolean = false;
+
+    /*
+     * Current page  
+     */
     page: Page = this.pages[0];
 
     public onUploadComplete: Subject<any>;
+
+    public onHierarchyChange: Subject<boolean>;
 
     constructor( private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -174,6 +181,14 @@ export class UploadModalComponent implements OnInit {
                         that.currentTask = null;
                         that.existingTask = false;
 
+                        if ( !that.hierarchyChange ) {
+                            for ( let i = 0; i < that.selections.length; i++ ) {
+                                if ( that.selections[i].isNew ) {
+                                    that.hierarchyChange = true;
+                                }
+                            }
+                        }
+
                         if ( that.taskPolling ) {
                             that.taskPolling.unsubscribe();
                             that.pollingIsSet = false;
@@ -212,8 +227,8 @@ export class UploadModalComponent implements OnInit {
                                     this.error( err );
                                 } );
                         }
-                        
-                        if(that.existingTask) {
+
+                        if ( that.existingTask ) {
                             that.page = that.pages[0];
                         }
 
@@ -255,15 +270,8 @@ export class UploadModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this.onUploadComplete = new Subject();
-
-        // this.service.roots( null ).then( sites => {
-        //     this.sites = sites;
-
-        // } ).catch(( err: HttpErrorResponse ) => {
-        //     this.error( err );
-        // } );
+        this.onHierarchyChange = new Subject();
     }
 
     init( entities: SiteEntity[] ): void {
@@ -321,6 +329,10 @@ export class UploadModalComponent implements OnInit {
     }
 
     close(): void {
+        if ( this.hierarchyChange ) {
+            this.onHierarchyChange.next( true );
+        }
+
         this.bsModalRef.hide();
     }
 
@@ -489,21 +501,21 @@ export class UploadModalComponent implements OnInit {
                     localStorage.clear();
                     that.existingTask = false;
                     this.page = this.pages[0];
-//                    that.showUploadPanel();
+                    //                    that.showUploadPanel();
                 } ).catch(( err: HttpErrorResponse ) => {
                     this.error( err );
                 } );
         } );
     }
 
-//    hideUploadPanel(): void {
-//        this.uploadVisible = false;
-//    }
-//
-//    showUploadPanel(): void {
-//        this.uploadVisible = true;
-//        this.selectedContinue = true;
-//    }
+    //    hideUploadPanel(): void {
+    //        this.uploadVisible = false;
+    //    }
+    //
+    //    showUploadPanel(): void {
+    //        this.uploadVisible = true;
+    //        this.selectedContinue = true;
+    //    }
 
     countUpload( thisRef: any ): void {
         let ct = 0;
