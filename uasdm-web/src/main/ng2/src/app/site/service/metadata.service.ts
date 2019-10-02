@@ -11,9 +11,10 @@ export class MetadataService {
     private cache: any = {};
 
     constructor() {
+        // ( root, leaf, drillable, expandable, uploadable, processable )
         this.cache['Site'] = new Metadata( true, false, true, false, false, false );
-        this.cache['Project'] = new Metadata( false, false, false, true, false, false );
-        this.cache['Mission'] = new Metadata( false, false, true, false, false, false );
+        this.cache['Project'] = new Metadata( false, false, true, false, false, false );
+        this.cache['Mission'] = new Metadata( false, false, false, true, false, false );
         this.cache['Collection'] = new Metadata( false, true, false, false, false, true );
         this.cache['folder'] = new Metadata( false, true, false, false, true, false );
 
