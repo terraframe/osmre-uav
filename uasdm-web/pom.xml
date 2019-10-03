@@ -92,6 +92,7 @@
                     -Daws.accessKeyId=AKIAIUOLICSECPXGYTAA
                     -Daws.secretKey=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
                     -Denvcfg=${project.basedir}/../envcfg
+                    -Dproject.basedir=${project.basedir}
                   </cargo.jvmargs>
                 </properties>
               </configuration>
