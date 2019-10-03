@@ -706,15 +706,30 @@ public abstract class UasComponent extends UasComponentBase
 
   public Integer getNumberOfChildren()
   {
-    OIterator<? extends UasComponent> children = this.getAllComponents();
-
-    try
+    try (OIterator<? extends UasComponent> children = this.getAllComponents())
     {
       return children.getAll().size();
     }
-    finally
+  }
+
+  public UasComponent getChild(String name)
+  {
+    QueryFactory factory = new QueryFactory();
+    ComponentHasComponentQuery rQuery = new ComponentHasComponentQuery(factory);
+    rQuery.WHERE(rQuery.getParent().EQ(this));
+
+    UasComponentQuery query = new UasComponentQuery(factory);
+    query.WHERE(query.getName().EQ(name));
+    query.AND(query.component(rQuery));
+
+    try (OIterator<? extends UasComponent> children = query.getIterator())
     {
-      children.close();
+      if (children.hasNext())
+      {
+        return children.next();
+      }
     }
+
+    return null;
   }
 }

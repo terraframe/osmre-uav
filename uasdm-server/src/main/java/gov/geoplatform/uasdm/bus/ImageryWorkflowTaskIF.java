@@ -42,7 +42,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
    *         then return the component or return null.
    */
-  public static UasComponent getUasComponentFromRequestParser(RequestParser parser)
+  public static UasComponent getOrCreateUasComponentFromRequestParser(RequestParser parser)
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
@@ -61,9 +61,17 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
 
         if (selection.getBoolean("isNew"))
         {
-          UasComponent child = component.createChild(selection.getString("type"));
-          child.setName(selection.getString("label"));
-          child.applyWithParent(component);
+          String name = selection.getString("label");
+
+          // Try to find a component with the same name and parent
+          UasComponent child = component.getChild(name);
+
+          if (child == null)
+          {
+            child = component.createChild(selection.getString("type"));
+            child.setName(name);
+            child.applyWithParent(component);
+          }
 
           component = child;
         }

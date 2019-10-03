@@ -38,7 +38,7 @@ public class WorkflowService
 
     if (task == null)
     {
-      UasComponent uasComponent = ImageryWorkflowTaskIF.getUasComponentFromRequestParser(parser);
+      UasComponent uasComponent = ImageryWorkflowTaskIF.getOrCreateUasComponentFromRequestParser(parser);
 
       if (uasComponent instanceof Imagery)
       {
