@@ -1,15 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.geoprism.GeoprismUser;
-
-import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -19,6 +14,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.SingleActor;
+
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.GeoprismUser;
 
 public class Collection extends CollectionBase implements ImageryComponent
 {
@@ -297,13 +295,6 @@ public class Collection extends CollectionBase implements ImageryComponent
   public void createImageServices()
   {
     Imagery.createImageServices(this);
-  }
-
-  public String getStoreName(String key)
-  {
-    String baseName = FilenameUtils.getBaseName(key);
-
-    return this.getOid() + "-" + baseName;
   }
 
   @Override

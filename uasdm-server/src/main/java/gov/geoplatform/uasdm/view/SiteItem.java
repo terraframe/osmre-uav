@@ -242,6 +242,18 @@ public class SiteItem implements TreeComponent
     return array;
   }
 
+  public static JSONArray serializeItems(Iterable<SiteItem> items)
+  {
+    JSONArray array = new JSONArray();
+
+    for (SiteItem item : items)
+    {
+      array.put(item.toJSON());
+    }
+
+    return array;
+  }
+
   @SuppressWarnings("unchecked")
   public static SiteItem deserialize(JSONObject object)
   {

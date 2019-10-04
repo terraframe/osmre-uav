@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 96764937)
+@com.runwaysdk.business.ClassSignature(hash = -1230834459)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -389,6 +389,238 @@ public  class DocumentQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   }
 
 
+  public com.runwaysdk.query.Condition product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.getBusinessQuery().isChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.getBusinessQuery().isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.getBusinessQuery().isChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.getBusinessQuery().isChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.getBusinessQuery().isChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.getBusinessQuery().isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.getBusinessQuery().isChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.getBusinessQuery().isChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.getBusinessQuery().isNotChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.getBusinessQuery().isNotChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.getBusinessQuery().isNotChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.getBusinessQuery().isNotChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.getBusinessQuery().isParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.getBusinessQuery().isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.getBusinessQuery().isParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.getBusinessQuery().isParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.getBusinessQuery().isParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.getBusinessQuery().isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.getBusinessQuery().isParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.getBusinessQuery().isParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.getBusinessQuery().isNotParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.getBusinessQuery().isNotParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.getBusinessQuery().isNotParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.getBusinessQuery().isNotParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.getBusinessQuery().isNotParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+
 /**
  * Interface that masks all type unsafe query methods and defines all type safe methods.
  * This type is used when a join is performed on this class as a reference.
@@ -445,6 +677,58 @@ public  class DocumentQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Document document);
 
     public com.runwaysdk.query.BasicCondition NE(gov.geoplatform.uasdm.bus.Document document);
+
+
+  public com.runwaysdk.query.Condition generatedProducts();
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts();
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery);
+
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts();
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts();
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery);
+
+
+  public com.runwaysdk.query.Condition product();
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_product();
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery);
+
+
+  public com.runwaysdk.query.Condition NOT_IN_product();
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product();
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery);
 
   }
 
@@ -731,6 +1015,238 @@ public  class DocumentQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Document.TYPE, alias, displayLabel);
 
   }
+
+  public com.runwaysdk.query.Condition generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.isParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.isParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.isParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.isParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.isParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.isParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.isParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.isNotParentIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+
+    return this.isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.isNotParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    return this.isNotParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.isNotParentIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.DocumentGeneratedProduct.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasChild(productQuery));
+
+    return this.isNotParentIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.isNotParentIn(documentGeneratedProductQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_generatedProducts(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.DocumentGeneratedProductQuery documentGeneratedProductQuery)
+  {
+    documentGeneratedProductQuery.AND(documentGeneratedProductQuery.hasChild(productQuery));
+    return this.isNotParentIn_SUBSELECT(documentGeneratedProductQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.isChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.isChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.isChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.isChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.isChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.isChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.isNotChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+
+    return this.isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.isNotChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    return this.isNotChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.isNotChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.bus.ProductHasDocument.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(productQuery));
+
+    return this.isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.isNotChildIn(productHasDocumentQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_product(gov.geoplatform.uasdm.bus.ProductQuery productQuery, gov.geoplatform.uasdm.bus.ProductHasDocumentQuery productHasDocumentQuery)
+  {
+    productHasDocumentQuery.AND(productHasDocumentQuery.hasParent(productQuery));
+    return this.isNotChildIn_SUBSELECT(productHasDocumentQuery);
+  }
+
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();

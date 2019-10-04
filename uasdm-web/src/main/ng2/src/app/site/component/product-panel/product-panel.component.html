@@ -1,0 +1,29 @@
+<div class="list-group">
+    <div *ngFor="let product of products" class="list-group-item">
+        <div class="card card-default">
+            <div class="card-body card-8-4">
+                <h5 class="card-title">
+                    {{product.name}}
+
+                    <ul class="breadcrumb">
+                        <li *ngFor="let entity of product.entities">
+                            <span> {{entity.name}} </span>
+                        </li>
+                    </ul>
+                </h5>
+                <div class="card-left">
+                    <div *ngIf="thumbnails[product.id] != null">
+                        <a class="thumbnail" (click)="previewImage(product)">
+                            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                        </a>
+                    </div>
+                </div>
+                <div class="card-right">                
+                    <a class="fa fa-globe" (click)="handleMapIt(product, $event)" title="Edit">Map It</a>
+                    <a class="fa fa-info-circle" (click)="handleGetInfo(product, $event)" title="Edit">Get Info</a>
+                    <a class="fa fa-trash-o" (click)="handleDelete(product, $event)" title="Delete">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

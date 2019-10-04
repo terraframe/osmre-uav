@@ -1,12 +1,6 @@
 package gov.geoplatform.uasdm.view;
 
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Imagery;
-import gov.geoplatform.uasdm.bus.Mission;
-import gov.geoplatform.uasdm.bus.Project;
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.UasComponent;
-
+import java.util.LinkedList;
 import java.util.List;
 
 import com.runwaysdk.business.BusinessFacade;
@@ -17,6 +11,16 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.session.Session;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Document;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.Mission;
+import gov.geoplatform.uasdm.bus.Product;
+import gov.geoplatform.uasdm.bus.Project;
+import gov.geoplatform.uasdm.bus.Site;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public abstract class Converter
 {
@@ -168,7 +172,50 @@ public abstract class Converter
       // Should never hit this case unless a new type is added to the hierarchy
       return null;
     }
+  }
 
+  public static ProductView toView(Product product, List<UasComponent> components)
+  {
+    List<SiteItem> list = new LinkedList<SiteItem>();
+
+    for (UasComponent component : components)
+    {
+      list.add(Converter.toSiteItem(component, false));
+    }
+
+    List<Document> documents = new LinkedList<Document>();
+
+    try (OIterator<? extends Document> it = product.getAllDocuments())
+    {
+      documents.addAll(it.getAll());
+    }
+
+    ProductView view = new ProductView();
+    view.setComponents(list);
+    view.setId(product.getOid());
+    view.setName(product.getName());
+    view.setDateTime(product.getCreateDate());
+    view.setSensor("TODO: Sensor Information");
+    view.setPilotName("TODO: Pilot Name");
+
+    for (Document document : documents)
+    {
+      if (document.getName().endsWith(".png"))
+      {
+        view.setImageKey(document.getS3location());
+      }
+      else if (document.getName().endsWith(".tif"))
+      {
+        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
+
+        if (GeoserverFacade.layerExists(storeName))
+        {
+          view.setMapKey(storeName);
+        }
+      }
+    }
+
+    return view;
   }
 
 }

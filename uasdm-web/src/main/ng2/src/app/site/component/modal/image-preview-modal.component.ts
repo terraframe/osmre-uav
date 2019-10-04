@@ -10,21 +10,22 @@ import { ManagementService } from '../../service/management.service';
     templateUrl: './image-preview-modal.component.html',
     styleUrls: []
 } )
-export class ImagePreviewModalComponent implements OnInit {
+export class ImagePreviewModalComponent {
 
     message: string = null;
     open: boolean = true;
-    src: any;
-    loading: boolean = false;
+    loading: boolean = true;
     imageToShow: any;
-    @Input() image: any;
+    component: string;
+    key: string;
 
     constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
-    ngOnInit(): void {
-        setTimeout(() => {
-            this.getImage( this.image );
-        }, 0 );
+    init( component: string, key: string ) {
+        this.component = component;
+        this.key = key;
+
+        this.getImage( this.component, this.key );
     }
 
     createImageFromBlob( image: Blob ) {
@@ -38,11 +39,11 @@ export class ImagePreviewModalComponent implements OnInit {
         }
     }
 
-    getImage( image: any ): void {
+    getImage( component: string, key: string ): void {
 
         this.loading = true;
 
-        this.service.download( image.component, image.key, false ).subscribe( blob => {
+        this.service.download( component, key, false ).subscribe( blob => {
             this.createImageFromBlob( blob );
             this.loading = false;
         }, error => {

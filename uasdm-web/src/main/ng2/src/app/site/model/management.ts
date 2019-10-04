@@ -91,3 +91,14 @@ export class Message {
     imageWidth: string;
     imageHeight: string;
 }
+
+export class Product {
+    id: string;
+    name: string;
+    pilotName: string;
+    dateTime: string;
+    sensor: string;
+    entities: SiteEntity[];
+    imageKey: string;
+    mapKey: string;
+}

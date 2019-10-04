@@ -1,0 +1,57 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Product" label="Document" generateController="false">
+        <attributes>
+          <char name="name" label="Name" size="256" required="true" />
+          <reference name="component" label="Component" required="true" type="gov.geoplatform.uasdm.bus.UasComponent" />          
+        </attributes>
+      </mdBusiness>    
+      
+      <mdGraph name="gov.geoplatform.uasdm.bus.ProductHasDocument" label="Product Has Document" cacheAlgorithm="nothing">
+        <parent cardinality="1" name="gov.geoplatform.uasdm.bus.Product" method="Product" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.bus.Document" method="Documents" />
+      </mdGraph>      
+      
+      <mdGraph name="gov.geoplatform.uasdm.bus.DocumentGeneratedProduct" label="Document Generated Product" cacheAlgorithm="nothing">
+        <parent cardinality="*" name="gov.geoplatform.uasdm.bus.Document" method="GeneratedDocuments" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.bus.Product" method="GeneratedProducts" />
+      </mdGraph>      
+    </create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Product">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ProductHasDocument">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.DocumentGeneratedProduct">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Product">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ProductHasDocument">
+            <operation name="ALL" />
+          </mdRelationshipPermission>          
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.DocumentGeneratedProduct">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.DocumentGeneratedProduct" type="com.runwaysdk.system.metadata.MdGraph" />    
+      <object key="gov.geoplatform.uasdm.bus.ProductHasDocument" type="com.runwaysdk.system.metadata.MdGraph" />    
+      <object key="gov.geoplatform.uasdm.bus.Product" type="com.runwaysdk.system.metadata.MdBusiness" />    
+    </delete>
+  </undoIt>
+</version>

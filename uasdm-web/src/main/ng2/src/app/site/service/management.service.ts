@@ -10,7 +10,7 @@ import { AuthService } from '../../shared/service/auth.service';
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, Product } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 

@@ -13,6 +13,7 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
+import { ProductPanelComponent } from './component/product-panel/product-panel.component';
 import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
@@ -29,6 +30,7 @@ import { PlatformComponent } from './component/platform/platform.component';
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
 
+import { ProductService } from './service/product.service';
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
 import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
@@ -55,12 +57,13 @@ import '../rxjs-extensions';
         BsDropdownModule,
         TypeaheadModule,
         AccordionModule,
-        TabsModule.forRoot(),        
+        TabsModule.forRoot(),
         SharedModule,
         SiteRoutingModule
     ],
     declarations: [
         MapAttributeComponent,
+        ProductPanelComponent,
         EntityModalComponent,
         MetadataModalComponent,
         ImagePreviewModalComponent,
@@ -74,11 +77,12 @@ import '../rxjs-extensions';
         SensorComponent,
         SensorsComponent,
         PlatformComponent,
-        PlatformsComponent,        
+        PlatformsComponent,
     ],
     providers: [
         CanDeactivateGuardService,
         ManagementService,
+        ProductService,
         MapService,
         SensorService,
         PlatformService,
@@ -91,7 +95,7 @@ import '../rxjs-extensions';
         MetadataModalComponent,
         SensorComponent,
         LeafModalComponent,
-        PlatformComponent        
+        PlatformComponent
     ]
 } )
 export class SiteModule { }

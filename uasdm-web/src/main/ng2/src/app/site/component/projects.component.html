@@ -160,7 +160,8 @@
                       </div> -->
 
                     </tab>
-                    <tab *ngIf="current != null" heading="Products">                
+                    <tab *ngIf="current != null" heading="Products">
+                      <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)"></product-panel>           
                     </tab>
                   </tabset>
 

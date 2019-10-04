@@ -21,9 +21,11 @@ import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
 
 import gov.geoplatform.uasdm.S3GetResponse;
+import gov.geoplatform.uasdm.service.ProductService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
@@ -232,5 +234,14 @@ public class ProjectManagementController
     response.set("bbox", this.service.bbox(request.getSessionId()));
 
     return response;
+  }
+
+  @Endpoint(url = "products", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF products(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    ProductService service = new ProductService();
+    List<ProductView> products = service.getProducts(request.getSessionId(), id);
+
+    return new RestBodyResponse(ProductView.serialize(products));
   }
 }

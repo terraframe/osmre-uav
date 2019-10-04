@@ -3,8 +3,10 @@ package gov.geoplatform.uasdm.odm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,6 +25,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.ImageryComponent;
+import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.service.SolrService;
 import net.geoprism.EmailSetting;
@@ -555,6 +558,16 @@ public class ODMStatusServer
         Util.uploadFileToS3(zip, uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName(), uploadTask);
       }
 
+      ImageryComponent ic = uploadTask.getImageryComponent();
+
+      // Determine the raw documents which were used for to generate this ODM
+      // output
+      UasComponent component = ic.getUasComponent();
+
+      List<Document> raws = component.getDocuments().stream().filter(doc -> {
+        return doc.getS3location().contains("/raw/");
+      }).collect(Collectors.toList());
+
       String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
 
       /**
@@ -564,6 +577,8 @@ public class ODMStatusServer
       try
       {
         new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
+
+        List<Document> documents = new LinkedList<Document>();
 
         for (ODMFolderProcessingConfig config : processingConfigs)
         {
@@ -577,7 +592,7 @@ public class ODMStatusServer
 
           if (parentDir.exists())
           {
-            processChildren(parentDir, config.s3FolderName, config, filePrefix);
+            processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
           }
 
           List<String> unprocessed = config.getUnprocessedFiles();
@@ -589,6 +604,15 @@ public class ODMStatusServer
             }
           }
         }
+
+        Product product = Product.createIfNotExist(ic.getUasComponent());
+        product.addDocuments(documents);
+
+        for (Document raw : raws)
+        {
+          raw.addGeneratedProduct(product);
+        }
+
       }
       finally
       {
@@ -601,7 +625,7 @@ public class ODMStatusServer
       }
     }
 
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix)
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents)
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
@@ -630,13 +654,13 @@ public class ODMStatusServer
             Util.uploadFileToS3(child, key, uploadTask);
           }
 
-          Document.createIfNotExist(ic.getUasComponent(), key, name);
+          documents.add(Document.createIfNotExist(ic.getUasComponent(), key, name));
 
           SolrService.updateOrCreateDocument(ic.getAncestors(), (UasComponent) ic, key, name);
         }
         else if (child.isDirectory())
         {
-          processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix);
+          processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix, documents);
         }
       }
     }

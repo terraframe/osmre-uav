@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import net.geoprism.JSONStringImpl;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -209,6 +210,14 @@ public abstract class UasComponent extends UasComponentBase
     for (AbstractWorkflowTask task : tasks)
     {
       task.delete();
+    }
+
+    // Delete all of the documents
+    List<Document> documents = this.getDocuments();
+
+    for (Document document : documents)
+    {
+      document.delete();
     }
 
     super.delete();
@@ -732,4 +741,23 @@ public abstract class UasComponent extends UasComponentBase
 
     return null;
   }
+
+  public String getStoreName(String key)
+  {
+    String baseName = FilenameUtils.getBaseName(key);
+
+    return this.getOid() + "-" + baseName;
+  }
+
+  public List<Document> getDocuments()
+  {
+    DocumentQuery query = new DocumentQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this));
+
+    try (OIterator<? extends Document> iterator = query.getIterator())
+    {
+      return new LinkedList<Document>(iterator.getAll());
+    }
+  }
+
 }

@@ -1,15 +1,106 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.util.Iterator;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.internal.StaticCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.VersionListing;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.AppProperties;
+
 public class Document extends DocumentBase
 {
-  private static final long serialVersionUID = -877956259;
+  private static final long  serialVersionUID = -877956259;
+
+  public static final String PRODUCT          = "PRODUCT";
 
   public Document()
   {
     super();
+  }
+
+  @Override
+  public void delete()
+  {
+    super.delete();
+
+    if (!this.getS3location().trim().equals(""))
+    {
+      this.deleteS3File(this.getS3location());
+    }
+  }
+
+  protected void deleteS3File(String key)
+  {
+    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+
+    String bucketName = AppProperties.getBucketName();
+
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+    ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+    while (true)
+    {
+      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+
+      while (objIter.hasNext())
+      {
+        String objectKey = objIter.next().getKey();
+
+        client.deleteObject(bucketName, objectKey);
+      }
+
+      // If the bucket contains many objects, the listObjects() call
+      // might not return all of the objects in the first listing. Check to
+      // see whether the listing was truncated. If so, retrieve the next page of
+      // objects
+      // and delete them.
+      if (objectListing.isTruncated())
+      {
+        objectListing = client.listNextBatchOfObjects(objectListing);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    // Delete all object versions (required for versioned buckets).
+    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withPrefix(key));
+    while (true)
+    {
+      Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
+      while (versionIter.hasNext())
+      {
+        S3VersionSummary vs = versionIter.next();
+        client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+      }
+
+      if (versionList.isTruncated())
+      {
+        versionList = client.listNextBatchOfVersions(versionList);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
+
+    client.deleteObjects(multiObjectDeleteRequest);
   }
 
   @Override
@@ -25,11 +116,16 @@ public class Document extends DocumentBase
     if (document == null)
     {
       document = new Document();
-      document.setComponent(uasComponent);
       document.setS3location(key);
-      document.setName(name);
-      document.apply();
     }
+    else
+    {
+      document.appLock();
+    }
+
+    document.setComponent(uasComponent);
+    document.setName(name);
+    document.apply();
 
     return document;
   }
@@ -44,6 +140,33 @@ public class Document extends DocumentBase
       if (it.hasNext())
       {
         return it.next();
+      }
+    }
+
+    return null;
+  }
+
+  public void addGeneratedProduct(Product product)
+  {
+    DocumentGeneratedProduct pd = this.getDocumentGeneratedProduct(product);
+
+    if (pd == null)
+    {
+      this.addGeneratedProducts(product).apply();
+    }
+  }
+
+  public DocumentGeneratedProduct getDocumentGeneratedProduct(Product product)
+  {
+    DocumentGeneratedProductQuery query = new DocumentGeneratedProductQuery(new QueryFactory());
+    query.WHERE(query.getParent().EQ(this));
+    query.AND(query.getChild().EQ(product));
+
+    try (OIterator<? extends DocumentGeneratedProduct> iterator = query.getIterator())
+    {
+      if (iterator.hasNext())
+      {
+        return iterator.next();
       }
     }
 

@@ -54,10 +54,14 @@ export class EntityModalComponent implements OnInit {
             }
             else {
                 this.service.update( this.entity ).then( node => {
+                    console.log( 'Test', this );
+
                     this.onNodeChange.next( node );
 
                     this.bsModalRef.hide();
                 } ).catch(( err: HttpErrorResponse ) => {
+                    console.log( err );
+
                     this.error( err );
                 } );
             }

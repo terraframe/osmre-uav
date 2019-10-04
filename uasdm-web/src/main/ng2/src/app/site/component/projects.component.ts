@@ -19,7 +19,7 @@ import { Observable } from 'rxjs/Observable';
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
 
-import { SiteEntity } from '../model/management';
+import { SiteEntity, Product } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
@@ -110,7 +110,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      * Root nodes of the tree
      */
     current: SiteEntity;
-
 
     /* 
      * mapbox-gl map
@@ -411,28 +410,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             // })
         } );
 
-//        this.bsModalRef.content.onHierarchyChange.subscribe( () => {
-//            const metadata = this.metadataService.getMetadata( item );
-//
-//            if ( metadata.expandable ) {
-////                if ( node.children == null || node.children.length == 0 ) {
-////                    this.service.getItems( node.id, null ).then( nodes => {
-////                        node.children = nodes;
-////
-////                        this.expand( node );
-////                    } );
-////                }
-////                else {
-////                    this.expand( node );
-////                }
-//            }
-//            else {
-//                this.service.getItems( item.id, null ).then( nodes => {
-//                    this.setNodes( nodes );
-//                } );
-//            }
-//
-//        } );
+        //        this.bsModalRef.content.onHierarchyChange.subscribe( () => {
+        //            const metadata = this.metadataService.getMetadata( item );
+        //
+        //            if ( metadata.expandable ) {
+        ////                if ( node.children == null || node.children.length == 0 ) {
+        ////                    this.service.getItems( node.id, null ).then( nodes => {
+        ////                        node.children = nodes;
+        ////
+        ////                        this.expand( node );
+        ////                    } );
+        ////                }
+        ////                else {
+        ////                    this.expand( node );
+        ////                }
+        //            }
+        //            else {
+        //                this.service.getItems( item.id, null ).then( nodes => {
+        //                    this.setNodes( nodes );
+        //                } );
+        //            }
+        //
+        //        } );
     }
 
 
@@ -456,6 +455,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
+                console.log( 'On Change', this );
+                console.log( 'Entity', entity );
 
                 if ( parent != null ) {
 
@@ -513,10 +514,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     refreshEntity( node: SiteEntity, nodes: SiteEntity[] ): void {
-        let indexOf = nodes.findIndex( i => i.id === node.id );
 
-        if ( indexOf !== -1 ) {
-            nodes[indexOf] = node;
+        if ( nodes != null ) {
+            let indexOf = nodes.findIndex( i => i.id === node.id );
+
+            if ( indexOf !== -1 ) {
+                nodes[indexOf] = node;
+            }
         }
     }
 
@@ -534,7 +538,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleDelete( node: SiteEntity, event: any ): void {
 
         event.stopPropagation();
-        
+
         this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
@@ -603,23 +607,25 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    handleMapImage( node: SiteEntity ): void {
+    handleMapImage( product: Product ): void {
 
-        const imageKey = node.imageKey;
+        const mapKey = product.mapKey;
 
-        if ( this.map.getLayer( imageKey ) != null ) {
-            this.map.removeLayer( imageKey );
-            this.map.removeSource( imageKey );
+        if ( mapKey != null ) {
+            if ( this.map.getLayer( mapKey ) != null ) {
+                this.map.removeLayer( mapKey );
+                this.map.removeSource( mapKey );
 
-            var index = this.layers.indexOf( imageKey );
-            if ( index !== -1 ) {
-                this.layers.splice( index, 1 );
+                var index = this.layers.indexOf( mapKey );
+                if ( index !== -1 ) {
+                    this.layers.splice( index, 1 );
+                }
             }
-        }
-        else {
-            this.addImageLayer( imageKey );
+            else {
+                this.addImageLayer( mapKey );
 
-            this.layers.push( imageKey );
+                this.layers.push( mapKey );
+            }
         }
     }
 
@@ -703,18 +709,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleExpand( node: SiteEntity, event: any ): void {
 
         event.stopPropagation();
-        
-        if ( node.children == null || node.children.length == 0 ) {
-                this.service.getItems( node.id, null ).then( nodes => {
-                    node.children = nodes;
 
-                    this.expand( node );
-                } );
-            }
-            else {
-                // this.expand( node );
-                node.children = [];
-            }
+        if ( node.children == null || node.children.length == 0 ) {
+            this.service.getItems( node.id, null ).then( nodes => {
+                node.children = nodes;
+
+                this.expand( node );
+            } );
+        }
+        else {
+            // this.expand( node );
+            node.children = [];
+        }
     }
 
     back( node: SiteEntity ): void {
