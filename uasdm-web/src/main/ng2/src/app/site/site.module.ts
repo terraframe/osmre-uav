@@ -19,6 +19,7 @@ import { MetadataModalComponent } from './component/modal/metadata-modal.compone
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
 import { LeafModalComponent } from './component/modal/leaf-modal.component';
+import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { UserProfileComponent } from './component/user-profile.component';
@@ -69,6 +70,7 @@ import '../rxjs-extensions';
         ImagePreviewModalComponent,
         UploadModalComponent,
         LeafModalComponent,
+        ProductModalComponent,
         ProjectsComponent,
         UploadComponent,
         UserProfileComponent,
@@ -95,6 +97,7 @@ import '../rxjs-extensions';
         MetadataModalComponent,
         SensorComponent,
         LeafModalComponent,
+        ProductModalComponent,
         PlatformComponent
     ]
 } )

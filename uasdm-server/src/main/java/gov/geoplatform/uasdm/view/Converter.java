@@ -176,6 +176,15 @@ public abstract class Converter
 
   public static ProductView toView(Product product, List<UasComponent> components)
   {
+    ProductView view = new ProductView();
+
+    populate(view, product, components);
+
+    return view;
+  }
+
+  protected static void populate(ProductView view, Product product, List<UasComponent> components)
+  {
     List<SiteItem> list = new LinkedList<SiteItem>();
 
     for (UasComponent component : components)
@@ -190,13 +199,9 @@ public abstract class Converter
       documents.addAll(it.getAll());
     }
 
-    ProductView view = new ProductView();
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
-    view.setDateTime(product.getCreateDate());
-    view.setSensor("TODO: Sensor Information");
-    view.setPilotName("TODO: Pilot Name");
 
     for (Document document : documents)
     {
@@ -214,6 +219,25 @@ public abstract class Converter
         }
       }
     }
+  }
+
+  public static ProductDetailView toDetailView(Product product, List<UasComponent> components, List<Document> generated)
+  {
+    ProductDetailView view = new ProductDetailView();
+
+    populate(view, product, components);
+
+    List<Document> documents = new LinkedList<Document>();
+
+    try (OIterator<? extends Document> it = product.getAllGeneratedDocuments())
+    {
+      documents.addAll(it.getAll());
+    }
+
+    view.setPilotName("TODO: Pilot Name");
+    view.setSensor("TODO: Sensor");
+    view.setDateTime(product.getCreateDate());
+    view.setDocuments(documents);
 
     return view;
   }

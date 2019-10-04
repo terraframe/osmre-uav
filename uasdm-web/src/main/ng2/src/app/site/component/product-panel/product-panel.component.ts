@@ -7,6 +7,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
+import { ProductModalComponent } from '../modal/product-modal.component';
 
 import { SiteEntity, Product } from '../../model/management';
 import { ProductService } from '../../service/product.service';
@@ -22,6 +23,8 @@ export class ProductPanelComponent {
     @Input() id: string;
 
     @Output() public toggleMapImage = new EventEmitter<Product>();
+
+    @Output() public gotoSite = new EventEmitter<Product>();
 
     /* 
      * List of products for the current node
@@ -123,4 +126,19 @@ export class ProductPanelComponent {
         this.bsModalRef.content.init( component, product.imageKey );
     }
 
+    handleGetInfo( product: Product ): void {
+        this.pService.getDetail( product.id ).then( detail => {
+            this.bsModalRef = this.modalService.show( ProductModalComponent, {
+                animated: true,
+                backdrop: false,
+                ignoreBackdropClick: false,
+                'class': 'image-preview-modal'
+            } );
+            this.bsModalRef.content.init( detail );
+
+            this.bsModalRef.content.onGotoSite.subscribe( data => {
+                this.gotoSite.emit( data );
+            } );
+        } );
+    }
 }

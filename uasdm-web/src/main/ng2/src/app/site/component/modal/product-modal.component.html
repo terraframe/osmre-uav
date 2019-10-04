@@ -1,0 +1,94 @@
+<div class="modal-body">
+  <div  style="height: 500px">
+  <div *ngIf="message != null" class="error-container">
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="product != null">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>{{product.name}}</h2>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="breadcrumb" style="margin-bottom: 10px;">
+          <li *ngFor="let entity of product.entities">
+            <span> {{entity.name}}</span>
+          </li>
+        </ul>                    
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <div class="" *ngIf="thumbnails[product.id] != null">
+          <a class="thumbnail">
+            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <label>Pilot Name:</label>{{product.pilotName}} 
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <label>Date/Time:</label>{{product.dateTime}} 
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <label>Sensor Information:</label>{{product.sensor}} 
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <label>Raw Images</label> 
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="image-list-container">
+          <ul class="list-group row">
+            <li *ngFor="let item of product.documents" class="list-group-item col-xs-3">
+              <div class="" *ngIf="thumbnails[item.id] != null">
+                <a class="thumbnail">
+                  <img class="" [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                  <div class="caption">
+                    <h4 class="media-heading">{{item.name}}</h4>
+                  </div>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>    
+      </div>    
+    </div>
+    
+    <div class="btn-holder" style="text-align: right;">
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+      <button (click)="handleGoto()" class="btn btn-primary pull-right" style="margin-left: 5px;">
+        Collection Details
+      </button>    
+    </div>
+    
+    <div class="row">
+    </div>
+  </div>
+  </div>
+</div>

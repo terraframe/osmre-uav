@@ -2,6 +2,8 @@ package gov.geoplatform.uasdm.bus;
 
 import java.util.Iterator;
 
+import org.json.JSONObject;
+
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -20,9 +22,7 @@ import gov.geoplatform.uasdm.AppProperties;
 
 public class Document extends DocumentBase
 {
-  private static final long  serialVersionUID = -877956259;
-
-  public static final String PRODUCT          = "PRODUCT";
+  private static final long serialVersionUID = -877956259;
 
   public Document()
   {
@@ -171,6 +171,16 @@ public class Document extends DocumentBase
     }
 
     return null;
+  }
+
+  public JSONObject toJSON()
+  {
+    JSONObject object = new JSONObject();
+    object.put("id", this.getOid());
+    object.put("key", this.getS3location());
+    object.put("name", this.getName());
+
+    return object;
   }
 
 }

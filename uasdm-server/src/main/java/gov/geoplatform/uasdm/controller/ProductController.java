@@ -14,6 +14,7 @@ import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 
 import gov.geoplatform.uasdm.service.ProductService;
+import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 
 @Controller(url = "product")
@@ -32,6 +33,14 @@ public class ProductController
     List<ProductView> products = service.getProducts(request.getSessionId(), id);
 
     return new RestBodyResponse(ProductView.serialize(products));
+  }
+
+  @Endpoint(url = "detail", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF detail(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    ProductDetailView detail = service.getProductDetail(request.getSessionId(), id);
+
+    return new RestBodyResponse(detail.toJSON());
   }
 
   @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)

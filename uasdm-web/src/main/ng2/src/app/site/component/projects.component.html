@@ -161,7 +161,7 @@
 
                     </tab>
                     <tab *ngIf="current != null" heading="Products">
-                      <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)"></product-panel>           
+                      <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)" (gotoSite)="handleGotoSite($event)"></product-panel>           
                     </tab>
                   </tabset>
 

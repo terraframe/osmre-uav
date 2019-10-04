@@ -668,7 +668,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     select( node: SiteEntity, event: any ): void {
-        event.stopPropagation();
+
+        if ( event != null ) {
+            event.stopPropagation();
+        }
+
         const metadata = this.metadataService.getMetadata( node );
 
         if ( metadata.leaf ) {
@@ -722,6 +726,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             node.children = [];
         }
     }
+
+    handleGotoSite( product: Product ): void {
+        const entity = product.entities[product.entities.length - 1];
+
+        this.select( entity, null );
+    }
+
 
     back( node: SiteEntity ): void {
 

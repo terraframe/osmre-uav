@@ -9,7 +9,7 @@ import 'rxjs/add/operator/finally';
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { Product } from '../model/management';
+import { Product, ProductDetail } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 
@@ -26,6 +26,20 @@ export class ProductService {
 
         return this.http
             .get<Product[]>( acp + '/product/get-all', { params: params } )
+            .toPromise()
+    }
+
+    getDetail( id: string ): Promise<ProductDetail> {
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
+
+        this.eventService.start();
+
+        return this.http
+            .get<ProductDetail>( acp + '/product/detail', { params: params } )
+            .finally(() => {
+                this.eventService.complete();
+            } )
             .toPromise()
     }
 

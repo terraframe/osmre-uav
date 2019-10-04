@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.view;
 
-import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -13,12 +12,6 @@ public class ProductView
   private String         name;
 
   private List<SiteItem> components;
-
-  private String         pilotName;
-
-  private Date           dateTime;
-
-  private String         sensor;
 
   private String         imageKey;
 
@@ -54,36 +47,6 @@ public class ProductView
     this.components = components;
   }
 
-  public String getPilotName()
-  {
-    return pilotName;
-  }
-
-  public void setPilotName(String pilotName)
-  {
-    this.pilotName = pilotName;
-  }
-
-  public Date getDateTime()
-  {
-    return dateTime;
-  }
-
-  public void setDateTime(Date dateTime)
-  {
-    this.dateTime = dateTime;
-  }
-
-  public String getSensor()
-  {
-    return sensor;
-  }
-
-  public void setSensor(String sensor)
-  {
-    this.sensor = sensor;
-  }
-
   public String getImageKey()
   {
     return imageKey;
@@ -104,15 +67,12 @@ public class ProductView
     this.mapKey = mapKey;
   }
 
-  private JSONObject toJSON()
+  public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
     object.put("id", this.id);
     object.put("name", this.name);
     object.put("entities", SiteItem.serializeItems(this.components));
-    object.put("pilotName", this.pilotName);
-    object.put("dateTime", this.dateTime);
-    object.put("sensor", this.sensor);
 
     if (this.imageKey != null)
     {

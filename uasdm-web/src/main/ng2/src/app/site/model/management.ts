@@ -92,13 +92,23 @@ export class Message {
     imageHeight: string;
 }
 
+export class ProductDocument {
+    id: string;
+    name: string;
+    key: string;
+}
+
 export class Product {
     id: string;
     name: string;
-    pilotName: string;
-    dateTime: string;
-    sensor: string;
     entities: SiteEntity[];
     imageKey: string;
     mapKey: string;
+}
+
+export class ProductDetail extends Product {
+    pilotName: string;
+    dateTime: string;
+    sensor: string;
+    documents: ProductDocument[];
 }

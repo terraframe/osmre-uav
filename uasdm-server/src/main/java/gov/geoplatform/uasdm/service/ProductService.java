@@ -8,10 +8,12 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.ProductQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 
 public class ProductService
@@ -60,5 +62,25 @@ public class ProductService
     }
 
     return list;
+  }
+
+  @Request(RequestType.SESSION)
+  public ProductDetailView getProductDetail(String sessionId, String id)
+  {
+    Product product = Product.get(id);
+
+    UasComponent component = product.getComponent();
+
+    List<UasComponent> components = component.getAncestors();
+    components.add(component);
+
+    List<Document> generated = new LinkedList<Document>();
+
+    try (OIterator<? extends Document> it = product.getAllGeneratedDocuments())
+    {
+      generated.addAll(it.getAll());
+    }
+
+    return Converter.toDetailView(product, components, generated);
   }
 }
