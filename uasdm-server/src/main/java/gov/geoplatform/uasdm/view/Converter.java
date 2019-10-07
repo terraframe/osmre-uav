@@ -12,6 +12,7 @@ import com.runwaysdk.session.Session;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.Imagery;
@@ -234,9 +235,16 @@ public abstract class Converter
       documents.addAll(it.getAll());
     }
 
-    view.setPilotName("TODO: Pilot Name");
-    view.setSensor("TODO: Sensor");
-    view.setDateTime(product.getCreateDate());
+    // Get metadata
+    FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);
+
+    if (metadata != null)
+    {
+      view.setPilotName(metadata.getName());
+      view.setSensor(metadata.getSensor().getName());
+    }
+
+    view.setDateTime(product.getLastUpdateDate());
     view.setDocuments(documents);
 
     return view;
