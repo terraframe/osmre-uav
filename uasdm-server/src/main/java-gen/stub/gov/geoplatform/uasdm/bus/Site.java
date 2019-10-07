@@ -26,10 +26,10 @@ public class Site extends SiteBase
   @Override
   public void applyWithParent(UasComponent parent)
   {
-    if (this.isNew() && isDuplicateSiteFolderName(this.getOid(), this.getFolderName()))
+    if (this.isNew() && isDuplicateSiteName(this.getOid(), this.getName()))
     {
       DuplicateSiteException e = new DuplicateSiteException();
-      e.setFolderName(this.getFolderName());
+      e.setFolderName(this.getName());
 
       throw e;
     }
@@ -95,12 +95,12 @@ public class Site extends SiteBase
     return Bureau.getOptions();
   }
 
-  public static boolean isDuplicateSiteFolderName(String oid, String folderName)
+  public static boolean isDuplicateSiteName(String oid, String name)
   {
     QueryFactory qf = new QueryFactory();
     SiteQuery query = new SiteQuery(qf);
 
-    query.WHERE(query.getFolderName().EQ(folderName));
+    query.WHERE(query.getName().EQ(name));
 
     if (oid != null)
     {

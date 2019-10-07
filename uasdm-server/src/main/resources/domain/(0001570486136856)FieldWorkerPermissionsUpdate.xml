@@ -1,0 +1,45 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdException name="gov.geoplatform.uasdm.bus.DuplicateSiteException" 
+                   message="A site already exists with the name [{folderName}]">
+      </mdException>          
+    </update>
+    <permissions>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.UasComponent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Site">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Project">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Mission">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.Collection">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ComponentHasComponent">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.SiteHasProjects">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.ProjectHasMission">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.bus.MissionHasCollection">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
