@@ -406,10 +406,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.bsModalRef.content.init( this.breadcrumbs );
 
         this.bsModalRef.content.onUploadComplete.subscribe( node => {
-            // that.service.getItems( node.data.component, node.data.name )
-            // .then(data => {
-            //     // TODO: update tree node children
-            // })
+            this.service.getItems( this.current.id, null ).then( nodes => {
+                this.setNodes( nodes );
+            } );
         } );
 
         //        this.bsModalRef.content.onHierarchyChange.subscribe( () => {
@@ -504,6 +503,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.refreshEntity( entity, this.nodes );
                 this.refreshEntity( entity, this.breadcrumbs );
+
                 this.nodes.forEach( node => {
                     this.refreshEntity( entity, node.children );
                 } );
@@ -732,7 +732,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     handleExpand( node: SiteEntity, event: any ): void {
 
-        event.stopPropagation();
+        if ( event != null ) {
+            event.stopPropagation();
+        }
 
         if ( node.children == null || node.children.length == 0 ) {
             this.service.getItems( node.id, null ).then( nodes => {
