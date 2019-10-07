@@ -238,8 +238,12 @@ public abstract class Converter
     // Get metadata
     FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);
 
-    view.setPilotName(metadata.getName());
-    view.setSensor(metadata.getSensor().getName());
+    if (metadata != null)
+    {
+      view.setPilotName(metadata.getName());
+      view.setSensor(metadata.getSensor().getName());
+    }
+
     view.setDateTime(product.getLastUpdateDate());
     view.setDocuments(documents);
 

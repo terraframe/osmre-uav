@@ -104,7 +104,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     /* 
      * Breadcrumb of previous sites clicked on
      */
-    previous = [] as SiteEntity[];
+    breadcrumbs = [] as SiteEntity[];
 
     /* 
      * Root nodes of the tree
@@ -401,7 +401,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             ignoreBackdropClick: true,
             'class': 'upload-modal'
         } );
-        this.bsModalRef.content.init( this.previous );
+        this.bsModalRef.content.init( this.breadcrumbs );
 
         this.bsModalRef.content.onUploadComplete.subscribe( node => {
             // that.service.getItems( node.data.component, node.data.name )
@@ -462,7 +462,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 }
                 else {
-                    if ( this.previous.length == 0 ) {
+                    if ( this.breadcrumbs.length == 0 ) {
                         this.nodes.push( entity );
                     }
 
@@ -501,7 +501,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 entity.active = node.active;
 
                 this.refreshEntity( entity, this.nodes );
-                this.refreshEntity( entity, this.previous );
+                this.refreshEntity( entity, this.breadcrumbs );
                 this.nodes.forEach( node => {
                     this.refreshEntity( entity, node.children );
                 } );
@@ -667,7 +667,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    select( node: SiteEntity, event: any ): void {
+    select( node: SiteEntity, parent: SiteEntity, event: any ): void {
 
         if ( event != null ) {
             event.stopPropagation();
@@ -676,13 +676,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         const metadata = this.metadataService.getMetadata( node );
 
         if ( metadata.leaf ) {
+            const breadcrumbs = [...this.breadcrumbs];
+
+            if ( parent != null ) {
+                breadcrumbs.push( parent );
+            }
+
             if ( this.metadataService.getTypeContainsFolders( node ) ) {
                 this.service.getItems( node.id, null ).then( nodes => {
-                    this.showLeafModal( node, nodes );
+                    this.showLeafModal( node, nodes, breadcrumbs );
                 } );
             }
             else {
-                this.showLeafModal( this.current, [node] );
+                this.showLeafModal( this.current, [node], breadcrumbs );
             }
         }
         else if ( node.type === "object" ) {
@@ -704,9 +710,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         else {
             this.service.getItems( node.id, null ).then( nodes => {
                 this.current = node;
-                this.previous.push( node );
+
+                if ( parent != null ) {
+                    this.addBreadcrumb( parent );
+                }
+
+                this.addBreadcrumb( node );
                 this.setNodes( nodes );
             } );
+        }
+    }
+
+    addBreadcrumb( node: SiteEntity ): void {
+
+        if ( this.breadcrumbs.length == 0 || this.breadcrumbs[this.breadcrumbs.length - 1].id !== node.id ) {
+            this.breadcrumbs.push( node );
         }
     }
 
@@ -730,7 +748,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleGotoSite( product: Product ): void {
         const entity = product.entities[product.entities.length - 1];
 
-        this.select( entity, null );
+        this.select( entity, null, null );
     }
 
 
@@ -738,17 +756,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if ( node != null ) {
             this.service.getItems( node.id, null ).then( nodes => {
-                var indexOf = this.previous.findIndex( i => i.id === node.id );
+                var indexOf = this.breadcrumbs.findIndex( i => i.id === node.id );
 
                 this.current = node;
-                this.previous.splice( indexOf + 1 );
+                this.breadcrumbs.splice( indexOf + 1 );
                 this.setNodes( nodes );
             } );
         }
-        else if ( this.previous.length > 0 ) {
+        else if ( this.breadcrumbs.length > 0 ) {
             this.service.roots( null ).then( nodes => {
                 this.current = null;
-                this.previous = [];
+                this.breadcrumbs = [];
                 this.setNodes( nodes );
             } );
         }
@@ -757,15 +775,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     expand( node: SiteEntity ) {
         const cMetadata = this.metadataService.getMetadata( this.current );
 
-        // if ( cMetadata.expandable ) {
-        //     this.previous.splice( this.previous.length - 1, 1 );
-        // }
-
         node.active = true;
         this.current = node;
-
-        // this.previous.push( node );
-
     }
 
     setNodes( nodes: SiteEntity[] ): void {
@@ -782,14 +793,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } )
     }
 
-    showLeafModal( collection: SiteEntity, folders: SiteEntity[] ): void {
+    showLeafModal( collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[] ): void {
         this.bsModalRef = this.modalService.show( LeafModalComponent, {
             animated: true,
             backdrop: false,
             ignoreBackdropClick: false,
             class: 'image-preview-modal'
         } );
-        this.bsModalRef.content.init( collection, folders, this.previous );
+        this.bsModalRef.content.init( collection, folders, breadcrumbs );
     }
 
 

@@ -11,6 +11,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -438,22 +441,29 @@ public class FlightMetadata
 
     String key = component.getS3location() + folderName + "/" + component.getName() + filename;
 
-    S3Object object = component.download(key);
-
-    if (object != null)
+    try
     {
-      try (S3ObjectInputStream istream = object.getObjectContent())
-      {
+      S3Object object = component.download(key);
 
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = builder.parse(istream);
-
-        metadata.parse(document);
-      }
-      catch (IOException | ParserConfigurationException | SAXException e)
+      if (object != null)
       {
-        throw new ProgrammingErrorException(e);
+        try (S3ObjectInputStream istream = object.getObjectContent())
+        {
+
+          DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+          Document document = builder.parse(istream);
+
+          metadata.parse(document);
+        }
+        catch (IOException | ParserConfigurationException | SAXException e)
+        {
+          throw new ProgrammingErrorException(e);
+        }
       }
+    }
+    catch (AmazonClientException e)
+    {
+      // Metadata doesn't exist
     }
 
     return metadata;

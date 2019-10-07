@@ -29,7 +29,7 @@
                             <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
                             <a (click)="back(null)" style="color: #6BA53A;">UAS Sites</a>
                           </li>
-                          <li *ngFor="let entity of previous; last as isLast" [ngClass]="{'active':isLast}">
+                          <li *ngFor="let entity of breadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
                             <a *ngIf="!isLast" (click)="back(entity)" style="color: #6BA53A;"> {{entity.name}}</a>
                             <span *ngIf="isLast"> <b>{{entity.name}}</b> </span>
                           </li>
@@ -79,7 +79,7 @@
 
 
                             <!-- Two column layout -->
-                            <div class="card card-default" *ngIf="getMetadata(node).root" (click)="select(node, $event)">
+                            <div class="card card-default" *ngIf="getMetadata(node).root" (click)="select(node, null, $event)">
                               <!-- <div class="card-header">Header</div> -->
                               <div class="card-body card-5-7">
                                 <div class="card-left">
@@ -103,7 +103,7 @@
 
 
                             <!-- Single column card -->
-                            <div class="card card-default" *ngIf="!getMetadata(node).root" (click)="select(node, $event)">
+                            <div class="card card-default" *ngIf="!getMetadata(node).root" (click)="select(node, null, $event)">
                               <div class="card-body">
                                   <i (click)="handleExpand(node, $event)" class="fa fa-expand pull-right" aria-hidden="true"></i>
 
@@ -111,7 +111,7 @@
                                   <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
                                   
                                   <div *ngIf="node.active" class="list-group" >
-                                    <div *ngFor="let child of node.children" (click)="select(child, $event)" class="list-group-item" style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
+                                    <div *ngFor="let child of node.children" (click)="select(child, node, $event)" class="list-group-item" style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
                                       <!-- <a (click)="select(child, $event)"> -->
                                         {{child.name}}
                                       <!-- </a> -->
@@ -132,7 +132,7 @@
                                 <h4>Supporting Data</h4>
                                 <div class="list-group">
                                   <div class="list-group-item" style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
-                                    <a (click)="select(node, $event)">
+                                    <a (click)="select(node, null, $event)">
                                       {{node.name}}
                                     </a>
                                   </div>
