@@ -59,9 +59,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "bounds") String bounds)
   {
-    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id);
+    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id, bounds);
 
     return new RestBodyResponse(SiteItem.serialize(roots));
   }

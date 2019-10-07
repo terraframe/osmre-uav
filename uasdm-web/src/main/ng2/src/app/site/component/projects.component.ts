@@ -11,7 +11,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
 import { saveAs as importedSaveAs } from "file-saver";
-import { Map, LngLatBounds, NavigationControl, ImageSource } from 'mapbox-gl';
+import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -188,9 +188,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.admin = this.authService.isAdmin();
         this.worker = this.authService.isWorker();
         this.userName = this.service.getCurrentUser();
-        this.service.roots( null ).then( nodes => {
-            this.nodes = nodes;
-        } );
     }
 
     ngOnDestroy(): void {
@@ -249,6 +246,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             mousemovePanel.textContent = text;
         } );
 
+        this.map.on( 'zoomend', ( e ) => {
+            this.handleExtentChange( e );
+        } );
+
+        this.map.on( 'moveend', ( e ) => {
+            this.handleExtentChange( e );
+        } );
+
         // MapboxGL doesn't have a good way to detect when moving off the map
         let sidebar = document.getElementById( "location-explorer-list" );
         sidebar.addEventListener( "mouseenter", function() {
@@ -302,6 +307,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.layers.forEach( imageKey => {
             this.addImageLayer( imageKey );
         } );
+    }
+
+    handleExtentChange( e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent> ): void {
+        if ( this.current == null ) {
+            console.log( this.map.getBounds() );
+
+            this.service.roots( null, this.map.getBounds() ).then( nodes => {
+                this.nodes = nodes;
+            } );
+        }
     }
 
     refresh( zoom: boolean ): void {
@@ -772,7 +787,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             } );
         }
         else if ( this.breadcrumbs.length > 0 ) {
-            this.service.roots( null ).then( nodes => {
+            this.service.roots( null, this.map.getBounds() ).then( nodes => {
                 this.current = null;
                 this.breadcrumbs = [];
                 this.setNodes( nodes );

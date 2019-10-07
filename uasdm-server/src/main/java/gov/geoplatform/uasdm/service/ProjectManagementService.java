@@ -27,6 +27,9 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
@@ -45,6 +48,7 @@ import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.postgis.ST_WITHIN;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -84,12 +88,33 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> getRoots(String sessionId, String id)
+  public List<TreeComponent> getRoots(String sessionId, String id, String bounds)
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
     QueryFactory qf = new QueryFactory();
     SiteQuery q = new SiteQuery(qf);
+
+    if (bounds != null && bounds.length() > 0)
+    {
+      // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
+      JSONObject object = new JSONObject(bounds);
+
+      JSONObject sw = object.getJSONObject("_sw");
+      JSONObject ne = object.getJSONObject("_ne");
+
+      double x1 = sw.getDouble("lng");
+      double x2 = ne.getDouble("lng");
+      double y1 = sw.getDouble("lat");
+      double y2 = ne.getDouble("lat");
+
+      Envelope envelope = new Envelope(x1, x2, y1, y2);
+      GeometryFactory factory = new GeometryFactory();
+      Geometry geometry = factory.toGeometry(envelope);
+
+      q.WHERE(new ST_WITHIN(q.getGeoPoint(), geometry));
+    }
+
     q.ORDER_BY_ASC(q.getName());
 
     try (OIterator<? extends Site> i = q.getIterator())

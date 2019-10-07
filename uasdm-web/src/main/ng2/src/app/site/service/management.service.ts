@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { LngLatBounds } from 'mapbox-gl';
 import { Observable } from 'rxjs';
 
 import 'rxjs/add/operator/map';
@@ -44,13 +45,16 @@ export class ManagementService {
             .toPromise()
     }
 
-    roots( id: string ): Promise<SiteEntity[]> {
+    roots( id: string, bounds: LngLatBounds ): Promise<SiteEntity[]> {
         let params: HttpParams = new HttpParams();
 
         if ( id != null ) {
             params = params.set( 'id', id );
         }
 
+        if ( bounds != null ) {
+            params = params.set( 'bounds', JSON.stringify( bounds ) );
+        }
 
         return this.http
             .get<SiteEntity[]>( acp + '/project/roots', { params: params } )
