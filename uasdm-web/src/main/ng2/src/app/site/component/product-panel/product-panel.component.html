@@ -14,11 +14,11 @@
 
                 <div class="card-left">
                     
-                    <img src="https://via.placeholder.com/150x75" class="img-responsive">
+                    <!-- <img src="https://via.placeholder.com/150x75" class="img-responsive"> -->
 
                     <div *ngIf="thumbnails[product.id] != null">
                         <a class="thumbnail" (click)="previewImage(product)">
-                            <!-- <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image"> -->
+                            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                         </a>
                     </div>
                 </div>
