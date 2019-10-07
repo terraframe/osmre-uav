@@ -42,7 +42,7 @@
                     </div>
                   </li>
                   <li *ngFor="let item of items" class="list-group-item col-xs-3">
-                     <div class="" *ngIf="thumbnails[item.key] != null">
+                     <div class="" >  
                         <a (click)="previewImage($event, item)" class="thumbnail">
                           <img class="" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                           <div class="caption">

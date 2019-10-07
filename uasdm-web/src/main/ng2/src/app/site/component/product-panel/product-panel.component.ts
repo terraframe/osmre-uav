@@ -13,6 +13,8 @@ import { SiteEntity, Product } from '../../model/management';
 import { ProductService } from '../../service/product.service';
 import { ManagementService } from '../../service/management.service';
 
+declare var acp: string;
+
 @Component( {
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
@@ -53,9 +55,9 @@ export class ProductPanelComponent {
         this.pService.getProducts( id ).then( products => {
             this.products = products;
 
-            this.products.forEach( product => {
-                this.getThumbnail( product );
-            } );
+            // this.products.forEach( product => {
+            //     this.getThumbnail( product );
+            // } );
         } );
     }
 
@@ -83,6 +85,10 @@ export class ProductPanelComponent {
         }, error => {
             console.log( error );
         } );
+    }
+
+    getDefaultImgURL( event: any ): void {
+        event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
     handleMapIt( product: Product ): void {

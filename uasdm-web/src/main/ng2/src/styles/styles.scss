@@ -124,8 +124,17 @@ tree-node-expander{
 
 .breadcrumb {
   padding: 2px;
-  background-color: white;
-	margin: 15px 0 0 0;
+  background-color: inherit;
+  margin: 15px 0 0 0;
+  font-size: 12px;
+  font-weight: bold;
+  color:#767676;
+}
+.breadcrumb li {
+  font-weight: normal;
+}
+.breadcrumb li:last-child {
+  font-weight: bold;
 }
 
 i.fa.fa-angle-left.breadcrumb-back-ico {
@@ -230,15 +239,12 @@ button.create-site-btn {
     height: 20px;
     margin: 0 !important;
     cursor: pointer;
+    vertical-align: middle;
 }
 .layer-toggle-label {
     display: inline-block;
-    max-width: 100%;
     margin: 0;
-    font-weight: 700;
-    width: 60px;
-    line-height: 20px;
-    float: right;
+    vertical-align: middle;
 }
 
 .panel-group {
@@ -253,8 +259,11 @@ button.create-site-btn {
 
 // ----- //
 
-.fa.ico-edit:hover {
-    color: #6BA53A;
+.fa.fa-caret-down:hover {
+    color: #007276;
+}
+.fa.fa-pencil-alt:hover {
+    color: #007276;
 }
 
 
@@ -294,7 +303,7 @@ button.create-site-btn {
 .nav-tabs>li.active>a, 
 .nav-tabs>li.active>a:focus, 
 .nav-tabs>li.active>a:hover {
-  color: #6BA53A;
+  color: #007276;
   background-color: #ececec;
   border: none;
   margin: 0;
@@ -338,7 +347,9 @@ button.create-site-btn {
  * https://codepen.io/jstneg/pen/EVKYZj
  */
 .card{ background-color: #fff; border: 1px solid transparent; border-radius: 6px; }
-.card:hover{cursor:pointer;background-color: #f5f5f5;}
+.card .button-column {background: rgba(255,255,255,.85);}
+.card.clickable:hover{cursor:pointer;background-color: #f5f5f5;}
+.card.clickable:hover .button-column {background: rgba(245,245,245,.85);}
 .card > .card-link{ color: #333; }
 .card > .card-link:hover{  text-decoration: none; }
 .card > .card-link .card-img img{ border-radius: 6px 6px 0 0; }
@@ -354,6 +365,7 @@ button.create-site-btn {
 .card .card-footer{ border-radius: 0 0 6px 6px; padding: 8px; }
 .card .card-left{ position: relative; float: left; padding: 0 0 8px 0; }
 .card .card-right{ position: relative; float: left; padding: 8px 0 0 0; }
+.card .card-right .fa::before{padding-right: 5px;}
 .card .card-body h1:first-child,
 .card .card-body h2:first-child,
 .card .card-body h3:first-child, 
@@ -361,7 +373,7 @@ button.create-site-btn {
 .card .card-body .h1,
 .card .card-body .h2,
 .card .card-body .h3, 
-.card .card-body .h4{ margin-top: 0; }
+.card .card-body .h4{ margin-top: 0; word-break: break-all;}
 .card .card-body .heading{ display: block;  }
 .card .card-body .heading:last-child{ margin-bottom: 0; }
 
@@ -467,4 +479,17 @@ button.create-site-btn {
   top: 30px;
   bottom: 35px;
   z-index: 9;
+}
+
+
+.caption {
+  word-break: break-all;
+}
+
+
+
+.layer-toggle:not(:empty) {
+    -moz-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
