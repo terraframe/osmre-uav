@@ -32,12 +32,13 @@ import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
 {
+  public static final String FILENAME = "_uasmetadata.xml";
 
-  private Document   dom;
+  private Document           dom;
 
-  private JSONObject json;
+  private JSONObject         json;
 
-  private Collection collection;
+  private Collection         collection;
 
   public MetadataXMLGenerator(String json)
   {
@@ -207,8 +208,8 @@ public class MetadataXMLGenerator
       throw new ProgrammingErrorException(e);
     }
 
-    String fileName = this.collection.getName() + "_uasmetadata.xml";
-    String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + "_uasmetadata.xml";
+    String fileName = this.collection.getName() + FILENAME;
+    String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
     Util.uploadFileToS3(temp, key, null);
 
     SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
