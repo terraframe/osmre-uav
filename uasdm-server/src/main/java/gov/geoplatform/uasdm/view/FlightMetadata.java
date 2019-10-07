@@ -302,6 +302,17 @@ public class FlightMetadata
 
   private SensorMetadata   sensor;
 
+  public FlightMetadata()
+  {
+    this.name = "";
+    this.email = "";
+    this.project = new LocationMetadata();
+    this.mission = new LocationMetadata();
+    this.collection = new LocationMetadata();
+    this.platform = new PlatformMetadata();
+    this.sensor = new SensorMetadata();
+  }
+
   public String getName()
   {
     return name;
