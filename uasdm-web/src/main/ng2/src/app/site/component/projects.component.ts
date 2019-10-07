@@ -148,6 +148,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     layers: any[] = [];
 
+    baselayerIconHover = false;
+
     /*
      * Reference to the modal current showing
     */

@@ -2,26 +2,38 @@
     <div *ngFor="let product of products" class="list-group-item">
         <div class="card card-default">
             <div class="card-body card-8-4">
-                <h5 class="card-title">
+                <h5 class="card-title" style="color:#a0a0a0">
                     {{product.name}}
-
-                    <ul class="breadcrumb">
-                        <li *ngFor="let entity of product.entities">
-                            <span> {{entity.name}} </span>
-                        </li>
-                    </ul>
                 </h5>
+
+                <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
+                    <li *ngFor="let entity of product.entities">
+                        <span> {{entity.name}} </span>
+                    </li>
+                </ul>
+
                 <div class="card-left">
+                    
+                    <img src="https://via.placeholder.com/150x75" class="img-responsive">
+
                     <div *ngIf="thumbnails[product.id] != null">
                         <a class="thumbnail" (click)="previewImage(product)">
-                            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                            <!-- <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image"> -->
                         </a>
                     </div>
                 </div>
-                <div class="card-right">                
-                    <a class="fa fa-globe" (click)="handleMapIt(product, $event)" title="Edit">Map It</a>
-                    <a class="fa fa-info-circle" (click)="handleGetInfo(product, $event)" title="Edit">Get Info</a>
-                    <a class="fa fa-trash-o" (click)="handleDelete(product, $event)" title="Delete">Delete</a>
+                <div class="card-right">   
+                    <ul style="list-style: none;padding: 0;">
+                        <li style="padding: 3px 0 3px 0;">
+                            <a class="fa fa-globe" (click)="handleMapIt(product, $event)" title="Show on map">Map It</a>
+                        </li>
+                        <li style="padding: 3px 0 3px 0;">
+                            <a class="fa fa-info-circle" (click)="handleGetInfo(product, $event)" title="See details">Get Info</a>
+                        </li>
+                        <li style="padding: 3px 0 3px 0;">
+                            <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)" title="Delete">Delete</a>
+                        </li>
+                    </ul>             
                 </div>
             </div>
         </div>
