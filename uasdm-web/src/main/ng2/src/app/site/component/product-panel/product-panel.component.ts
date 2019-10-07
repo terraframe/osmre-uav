@@ -55,9 +55,9 @@ export class ProductPanelComponent {
         this.pService.getProducts( id ).then( products => {
             this.products = products;
 
-            // this.products.forEach( product => {
-            //     this.getThumbnail( product );
-            // } );
+            this.products.forEach( product => {
+                this.getThumbnail( product );
+            } );
         } );
     }
 
@@ -75,16 +75,22 @@ export class ProductPanelComponent {
 
     getThumbnail( product: Product ): void {
 
-        const component: string = product.entities[product.entities.length - 1].id;
-        const rootPath: string = product.imageKey.substr( 0, product.imageKey.lastIndexOf( "/" ) );
-        const fileName: string = /[^/]*$/.exec( product.imageKey )[0];
-        const thumbKey: string = rootPath + "/thumbnails/" + fileName;
+        // imageKey only exists if an image actually exists on s3
+        if(product.imageKey){
+            const component: string = product.entities[product.entities.length - 1].id;
+            const rootPath: string = product.imageKey.substr( 0, product.imageKey.lastIndexOf( "/" ) );
+            const fileName: string = /[^/]*$/.exec( product.imageKey )[0];
+            const thumbKey: string = rootPath + "/thumbnails/" + fileName;
 
-        this.mService.download( component, thumbKey, false ).subscribe( blob => {
-            this.createImageFromBlob( blob, product );
-        }, error => {
-            console.log( error );
-        } );
+            this.mService.download( component, thumbKey, false ).subscribe( blob => {
+                this.createImageFromBlob( blob, product );
+            }, error => {
+                console.log( error );
+            } );
+        }
+        else{
+            this.thumbnails[product.id] = acp + "/net/geoprism/images/thumbnail-default.png";
+        }
     }
 
     getDefaultImgURL( event: any ): void {
