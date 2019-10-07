@@ -748,7 +748,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleGotoSite( product: Product ): void {
         const entity = product.entities[product.entities.length - 1];
 
-        this.select( entity, null, null );
+        const breadcrumbs = product.entities;
+
+        this.service.getItems( entity.id, null ).then( nodes => {
+            this.showLeafModal( entity, nodes, breadcrumbs );
+        } );
     }
 
 

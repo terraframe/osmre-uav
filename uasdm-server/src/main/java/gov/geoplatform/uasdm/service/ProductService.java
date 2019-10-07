@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.service;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public class ProductService
         UasComponent component = product.getComponent();
 
         List<UasComponent> components = component.getAncestors();
+        Collections.reverse(components);
+
         components.add(component);
 
         boolean valid = false;
@@ -72,6 +75,8 @@ public class ProductService
     UasComponent component = product.getComponent();
 
     List<UasComponent> components = component.getAncestors();
+    Collections.reverse(components);
+
     components.add(component);
 
     List<Document> generated = new LinkedList<Document>();
