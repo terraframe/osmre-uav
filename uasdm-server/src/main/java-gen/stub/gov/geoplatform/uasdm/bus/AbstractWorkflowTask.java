@@ -18,11 +18,24 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
 {
   private static final long  serialVersionUID = 227492042;
 
-  public static final String PROCESSING       = "Processing";
-
-  public static final String COMPLETE         = "Complete";
-
-  public static final String QUEUED           = "Queued";
+  public static enum WorkflowTaskStatus {
+    PROCESSING("Processing"),
+    COMPLETE("Complete"),
+    ERROR("Error"),
+    QUEUED("Queued");
+    
+    private final String asString;
+    
+    private WorkflowTaskStatus(String asString)
+    {
+      this.asString = asString;
+    }
+    
+    public String toString()
+    {
+      return asString;
+    }
+  }
 
   public AbstractWorkflowTask()
   {

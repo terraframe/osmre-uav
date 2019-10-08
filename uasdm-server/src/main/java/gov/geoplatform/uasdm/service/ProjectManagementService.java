@@ -24,25 +24,21 @@ import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryComponent;
-import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.Converter;
@@ -291,7 +287,7 @@ public class ProjectManagementService
       throw new ProgrammingErrorException(e);
     }
 
-    task.initiate(zip);
+    task.initiate(new FileResource(zip));
   }
 
   @Request(RequestType.SESSION)
@@ -370,34 +366,9 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
   {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
-
     try
     {
-      if (task instanceof ImageryWorkflowTask)
-      {
-        ImageryWorkflowTask imageryWorkflowTask = (ImageryWorkflowTask) task;
-
-        ImageryUploadEvent event = new ImageryUploadEvent();
-        event.setGeoprismUser(imageryWorkflowTask.getGeoprismUser());
-        event.setUploadId(imageryWorkflowTask.getUploadId());
-        event.setImagery(imageryWorkflowTask.getImagery());
-        event.apply();
-
-        event.handleUploadFinish(parser, infile);
-      }
-      else
-      {
-        WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
-
-        CollectionUploadEvent event = new CollectionUploadEvent();
-        event.setGeoprismUser(collectionWorkflowTask.getGeoprismUser());
-        event.setUploadId(collectionWorkflowTask.getUploadId());
-        event.setComponent(collectionWorkflowTask.getComponent());
-        event.apply();
-
-        event.handleUploadFinish(parser, infile);
-      }
+      ImageryProcessingJob.processImages(parser, infile);
     }
     catch (Throwable t)
     {

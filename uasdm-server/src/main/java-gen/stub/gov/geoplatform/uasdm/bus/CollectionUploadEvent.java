@@ -11,9 +11,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
+
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.RequestParser;
 import net.geoprism.GeoprismUser;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -28,24 +31,22 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(RequestParser parser, File infile)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationResource infile, String outFileNamePrefix)
   {
-    WorkflowTask task = (WorkflowTask) WorkflowTask.getTaskByUploadId(parser.getUuid());
-
     task.lock();
-    task.setStatus(WorkflowTask.PROCESSING);
+    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("Processing archived files");
     task.apply();
 
     UasComponent collection = task.getComponent();
-    collection.uploadArchive(task, infile, parser.getUploadTarget());
+    collection.uploadArchive(task, infile, uploadTarget);
 
     task.lock();
-    task.setStatus(WorkflowTask.COMPLETE);
+    task.setStatus(WorkflowTaskStatus.COMPLETE.toString());
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, parser);
+    startODMProcessing(infile, task, outFileNamePrefix);
 
     if (collection instanceof Collection)
     {
@@ -55,7 +56,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    handleMetadataWorkflow(task);
   }
 
-  private void startODMProcessing(File infile, WorkflowTask uploadTask, RequestParser parser)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
   {
     UasComponent component = uploadTask.getComponent();
 
@@ -64,16 +65,15 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setComponent(component);
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-//    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setTaskLabel("UAV data orthorectification for collection [" + component.getName() + "]");
     task.setMessage("The images uploaded to ['" + component.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilePrefix(parser.getCustomParams().get("outFileName"));
+    task.setFilePrefix(outFileNamePrefix);
     task.apply();
 
     task.initiate(infile);
   }
 
-  private void calculateImageSize(File zip, Collection collection)
+  private void calculateImageSize(ApplicationResource zip, Collection collection)
   {
     try
     {
@@ -81,7 +81,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
       try
       {
-        new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+        new ZipFile(zip.getUnderlyingFile()).extractAll(parentFolder.getAbsolutePath());
 
         File[] files = parentFolder.listFiles();
 
