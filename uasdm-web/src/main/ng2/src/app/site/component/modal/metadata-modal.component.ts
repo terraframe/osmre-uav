@@ -16,7 +16,7 @@ declare var acp: string;
     templateUrl: './metadata-modal.component.html',
     styleUrls: []
 } )
-export class MetadataModalComponent implements OnInit {
+export class MetadataModalComponent {
     /*
      * collectionId for the metadata
      */
@@ -94,16 +94,19 @@ export class MetadataModalComponent implements OnInit {
 
     constructor( public bsModalRef: BsModalRef, private service: ManagementService ) { }
 
-    ngOnInit(): void {
+    init( collectionId: string ): void {
+        this.collectionId = collectionId;
+        
         this.onMetadataChange = new Subject();
 
-        this.service.getMetadataOptions().then(( options ) => {
+        this.service.getMetadataOptions( this.collectionId ).then(( options ) => {
             this.sensors = options.sensors;
             this.platforms = options.platforms;
 
             this.metaObject.pointOfContact.name = options.name;
             this.metaObject.pointOfContact.email = options.email;
-
+            this.metaObject.sensor.name = options.sensor;
+            this.metaObject.platform.name = options.platform;
 
             this.sensors.forEach( sensor => {
                 if ( sensor.name === 'OTHER' ) {
@@ -116,13 +119,17 @@ export class MetadataModalComponent implements OnInit {
                     this.otherPlatformId = platform.oid;
                 }
             } );
+            
+            this.handleSensorSelect();
+            this.handlePlatformSelect();
+            
         } ).catch(( err: HttpErrorResponse ) => {
             this.error( err );
         } );
     }
 
     handleSensorSelect(): void {
-        if ( this.metaObject.sensor.name !== this.otherSensorId ) {
+        if ( this.metaObject.sensor.name != null && this.metaObject.sensor.name !== "" && this.metaObject.sensor.name !== this.otherSensorId ) {
             const sensor = this.getSelectedSensor();
 
             this.metaObject.sensor.type = sensor.sensorType;
@@ -132,7 +139,7 @@ export class MetadataModalComponent implements OnInit {
     }
 
     handlePlatformSelect(): void {
-        if ( this.metaObject.platform.name !== this.otherPlatformId ) {
+        if ( this.metaObject.platform.name != null  && this.metaObject.platform.name !== "" && this.metaObject.platform.name !== this.otherPlatformId ) {
             const platform = this.getSelectedPlatform();
 
             this.metaObject.platform.type = platform.platformType;
@@ -150,7 +157,7 @@ export class MetadataModalComponent implements OnInit {
 
         return this.platforms[indexOf];
     }
-    
+
     updateSelectedWaveLength( event ) {
 
         const indexOf = this.metaObject.sensor.wavelength.indexOf( event.target.name )
@@ -166,7 +173,7 @@ export class MetadataModalComponent implements OnInit {
                 this.metaObject.sensor.wavelength.splice( indexOf, 1 );
             }
         }
-    }    
+    }
 
     handleSubmit(): void {
 

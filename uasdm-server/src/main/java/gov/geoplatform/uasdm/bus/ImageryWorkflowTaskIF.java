@@ -70,6 +70,17 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           {
             child = component.createChild(selection.getString("type"));
             child.setName(name);
+
+            if (child instanceof Collection && selection.has(Collection.PLATFORM))
+            {
+              child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
+            }
+
+            if (child instanceof Collection && selection.has(Collection.SENSOR))
+            {
+              child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
+            }
+
             child.applyWithParent(component);
           }
 

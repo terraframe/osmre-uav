@@ -339,11 +339,13 @@ export class ManagementService {
             .toPromise()
     }
 
-    getMetadataOptions(): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string }> {
+    getMetadataOptions( id: string ): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
+        
         let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
 
         return this.noErrorHttpClient
-            .get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string }>( acp + '/project/metadata-options', { params: params } )
+            .get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }>( acp + '/project/metadata-options', { params: params } )
             .toPromise()
     }
 

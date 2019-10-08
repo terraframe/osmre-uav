@@ -11,6 +11,8 @@ import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
+import { Sensor } from '../../model/sensor';
+import { Platform } from '../../model/platform';
 import { SiteEntity, UploadForm, Task, Selection } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
@@ -94,6 +96,9 @@ export class UploadModalComponent implements OnInit {
      * Current page  
      */
     page: Page = this.pages[0];
+
+    sensors: Sensor[] = [];
+    platforms: Platform[] = [];
 
     public onUploadComplete: Subject<any>;
 
@@ -272,6 +277,13 @@ export class UploadModalComponent implements OnInit {
     ngOnInit(): void {
         this.onUploadComplete = new Subject();
         this.onHierarchyChange = new Subject();
+
+        this.service.getMetadataOptions().then(( options ) => {
+            this.sensors = options.sensors;
+            this.platforms = options.platforms;
+        } ).catch(( err: HttpErrorResponse ) => {
+            this.error( err );
+        } );
     }
 
     init( entities: SiteEntity[] ): void {
@@ -476,6 +488,10 @@ export class UploadModalComponent implements OnInit {
         else {
             this.uploader.uploadStoredFiles();
         }
+    }
+
+    hasField( fieldName: string ): boolean {
+        return this.metadataService.hasExtraField( this.page.selection.type, fieldName );
     }
 
     removeUpload( event: any ): void {

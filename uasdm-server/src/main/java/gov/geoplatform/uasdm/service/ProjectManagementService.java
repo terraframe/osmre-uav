@@ -520,15 +520,22 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject getMetadataOptions(String sessionId)
+  public JSONObject getMetadataOptions(String sessionId, String id)
   {
     SingleActorDAOIF user = Session.getCurrentSession().getUser();
+    UasComponent component = UasComponent.get(id);
 
     JSONObject response = new JSONObject();
     response.put("sensors", Sensor.getAll());
     response.put("platforms", Platform.getAll());
-    response.put("name", user.getValue(GeoprismUser.USERNAME));
+    response.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
     response.put("email", user.getValue(GeoprismUser.EMAIL));
+
+    if (component instanceof Collection)
+    {
+      response.put("platform", component.getValue(Collection.PLATFORM));
+      response.put("sensor", component.getValue(Collection.SENSOR));
+    }
 
     return response;
   }
