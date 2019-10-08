@@ -192,6 +192,12 @@ button.create-site-btn {
     border-right: 2px solid lightgrey;
 }
 
+a.thumbnail.active, 
+a.thumbnail:focus, 
+a.thumbnail:hover {
+    border-color: #007276;
+}
+
 .media {
     padding-left: 15px;
 }
@@ -418,31 +424,31 @@ button.create-site-btn {
 
 
 /* -- price theme ------ */
-.card-price{ border-color: #999; background-color: #ededed; margin-bottom: 24px; }
-.card-price > .card-heading,
-.card-price > .card-footer{ color: #333; background-color: #fdfdfd; }
-.card-price > .card-heading{ border-bottom: 1px solid #ddd; padding: 8px; }
-.card-price > .card-footer{ border-top: 1px solid #ddd; padding: 8px; }
-.card-price > .card-img:first-child img{ border-radius: 6px 6px 0 0; }
-.card-price > .card-left{ padding-right: 4px; }
-.card-price > .card-right{ padding-left: 4px; }
-.card-price .card-caption { color: #fff; text-align: center; text-transform: uppercase; }
-.card-price p:last-child{ margin-bottom: 0; }
+// .card-price{ border-color: #999; background-color: #ededed; margin-bottom: 24px; }
+// .card-price > .card-heading,
+// .card-price > .card-footer{ color: #333; background-color: #fdfdfd; }
+// .card-price > .card-heading{ border-bottom: 1px solid #ddd; padding: 8px; }
+// .card-price > .card-footer{ border-top: 1px solid #ddd; padding: 8px; }
+// .card-price > .card-img:first-child img{ border-radius: 6px 6px 0 0; }
+// .card-price > .card-left{ padding-right: 4px; }
+// .card-price > .card-right{ padding-left: 4px; }
+// .card-price .card-caption { color: #fff; text-align: center; text-transform: uppercase; }
+// .card-price p:last-child{ margin-bottom: 0; }
 
-.card-price .price{ 
-  text-align: center; 
-  color: #337ab7; 
-  font-size: 3em; 
-  text-transform: uppercase;
-  line-height: 0.7em; 
-  margin: 24px 0 16px;
-}
-.card-price .price small{ font-size: 0.4em; color: #66a5da; }
-.card-price .details{ list-style: none; margin-bottom: 24px; padding: 0 18px; }
-.card-price .details li{ text-align: center; margin-bottom: 8px; }
-.card-price .buy-now{ text-transform: uppercase; }
-.card-price table .price{ font-size: 1.2em; font-weight: 700; text-align: left; }
-.card-price table .note{ color: #666; font-size: 0.8em; }
+// .card-price .price{ 
+//   text-align: center; 
+//   color: #337ab7; 
+//   font-size: 3em; 
+//   text-transform: uppercase;
+//   line-height: 0.7em; 
+//   margin: 24px 0 16px;
+// }
+// .card-price .price small{ font-size: 0.4em; color: #66a5da; }
+// .card-price .details{ list-style: none; margin-bottom: 24px; padding: 0 18px; }
+// .card-price .details li{ text-align: center; margin-bottom: 8px; }
+// .card-price .buy-now{ text-transform: uppercase; }
+// .card-price table .price{ font-size: 1.2em; font-weight: 700; text-align: left; }
+// .card-price table .note{ color: #666; font-size: 0.8em; }
 
 .circle {
   border-radius: 50%;
@@ -493,3 +499,42 @@ button.create-site-btn {
     -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
+
+.img-disabled {
+  filter: brightness(0.2);
+}
+.card-disabled {
+    background: #707070;
+}
+
+// ------ Custom X checkbox
+
+input[type="checkbox"].x-box{
+    -webkit-appearance: initial;
+    appearance: initial;
+    background: white;
+    width: 20px;
+    height: 20px;
+    border: solid 1px lightgrey;
+    position: absolute;
+    border-radius: 0;
+    margin: 5px;
+    z-index: 9;
+}
+input[type="checkbox"].x-box:checked {
+    // background: red;
+}
+input[type="checkbox"].x-box:checked:after {
+    content: "x";
+    color: #242424;
+    font-size: 40px;
+    position: absolute;
+    left: 50%;
+    top: 35%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+// ------ End Custom X checkbox

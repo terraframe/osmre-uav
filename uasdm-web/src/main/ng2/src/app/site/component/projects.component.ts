@@ -311,8 +311,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     handleExtentChange( e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent> ): void {
         if ( this.current == null ) {
-            console.log( this.map.getBounds() );
-
             this.service.roots( null, this.map.getBounds() ).then( nodes => {
                 this.nodes = nodes;
             } );

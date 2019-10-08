@@ -142,6 +142,10 @@ export class LeafModalComponent implements OnInit {
         //        this.bsModalRef.content.src = event.target.src;
     }
 
+    toggleExcludeImage( event: any, image: any ): void {
+        image.excludeFromProcess = !image.excludeFromProcess;
+    }
+
     handleRunOrtho(): void {
 
         this.notificationModalRef = this.modalService.show( NotificationModalComponent, {

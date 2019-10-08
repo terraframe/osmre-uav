@@ -1,0 +1,17 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Collection">
+        <create>
+          <attributes>
+            <reference name="sensor" label="Sensor" required="false" type="gov.geoplatform.uasdm.bus.Sensor" />      
+            <reference name="platform" label="Platform" required="false" type="gov.geoplatform.uasdm.bus.Platform" />      
+          </attributes>
+        </create>
+      </mdBusiness>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

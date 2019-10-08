@@ -85,7 +85,24 @@
               </button>
             </div>
          </div>    
-          
+         <div class="row" *ngIf="hasField('platform')">
+           <div class="col-md-8">
+             <label for="platform">Platform:</label>
+             <select [(ngModel)]="page.selection.platform" name="platform" type="input" required>                               
+               <option></option>
+               <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.displayLabel}}</option>
+             </select>            
+           </div>
+         </div>    
+         <div class="row" *ngIf="hasField('sensor')">
+           <div class="col-md-8">
+             <label for="sensor">Sensor:</label>
+             <select [(ngModel)]="page.selection.sensor" name="sensor" type="input" required>                               
+               <option></option>
+               <option *ngFor="let sensor of sensors" [value]="sensor.oid">{{sensor.displayLabel}}</option>
+             </select>            
+           </div>
+         </div>    
         </div>
       </div>
     </div>

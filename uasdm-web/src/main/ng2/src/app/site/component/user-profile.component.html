@@ -82,7 +82,7 @@
                       <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="panel-body">
                         <ul class="list-unstyled" style="margin: 0;">
                           <li>Status: <b>{{task.status}}</b></li>
-                          <li>Message: <b>{{task.message}}</b></li>
+                          <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
                           <li>Created on: <b>{{task.createDate}}</b></li>
                           <li>Last update: <b>{{task.lastUpdatedDate}}</b></li> 
                         </ul>

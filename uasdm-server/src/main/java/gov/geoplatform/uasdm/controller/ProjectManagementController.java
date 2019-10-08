@@ -67,9 +67,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "metadata-options", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMetadataOptions(ClientRequestIF request)
+  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId()));
+    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId(), id));
   }
 
   @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)

@@ -1,5 +1,5 @@
 <div class="modal-body">
-  <div  style="height: 500px">
+  <div>
   <div *ngIf="message != null" class="error-container">
     <div class="label-holder">
       <strong>Error</strong>
@@ -35,21 +35,16 @@
             <div id="image-list-container">
 
               <ul class="list-group row">
-                  <li class="list-group-item col-xs-3">
-                    <div class="img-upload-ico" style="height: 150px;width: 200px;background: lightgrey;">
-                      <span class="circle"></span>
-                      <!-- <h4>Add Image</h4> -->
-                    </div>
-                  </li>
                   <li *ngFor="let item of items" class="list-group-item col-xs-3">
-                     <div class="" >  
-                        <a (click)="previewImage($event, item)" class="thumbnail">
-                          <img class="" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                     <!-- <div class="" >   -->
+                        <a class="thumbnail" [ngClass]="{'card-disabled' : item.excludeFromProcess}" >
+                          <input type="checkbox" class="x-box" [checked]="item.excludeFromProcess" (change)="item.excludeFromProcess = !item.excludeFromProcess"/>
+                          <img (click)="toggleExcludeImage($event, item)" [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                           <div class="caption">
                             <h4 class="media-heading">{{item.name}}</h4>
                           </div>
                         </a>
-                      </div>
+                      <!-- </div> -->
                   </li>
               </ul>
 
@@ -58,16 +53,18 @@
         </tab>
       </tabset>
     </div>
-    <div class="btn-holder" style="text-align: right;">
+    <div class="row">
+    <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
       <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-      <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary pull-right" style="margin-left: 5px;">
+      <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
         Reprocess imagery
-        <i class="fa fa-refresh" aria-hidden="true" style="vertical-align: middle;margin-left: 10px;"></i>
+        <i class="fa fa-sync-alt" aria-hidden="true" style="vertical-align: middle;margin-left: 10px;"></i>
       </button>    
     </div>
-    
-    <div class="row">
     </div>
+    
+    <!-- <div class="row">
+    </div> -->
   </div>
   </div>
 </div>

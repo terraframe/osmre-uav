@@ -10,6 +10,8 @@ import { SiteEntity, AttributeType, Condition, ProductDetail, ProductDocument } 
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
+declare var acp: string;
+
 @Component( {
     selector: 'product-modal',
     templateUrl: './product-modal.component.html',
@@ -67,6 +69,10 @@ export class ProductModalComponent implements OnInit {
         }, error => {
             console.log( error );
         } );
+    }
+
+    getDefaultImgURL( event: any ): void {
+        event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
     handleGoto(): void {

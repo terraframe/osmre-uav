@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1573516235)
+@com.runwaysdk.business.ClassSignature(hash = -48175787)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -89,6 +89,29 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform()
+  {
+    return getPlatform(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Collection.PLATFORM);
+
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Collection.PLATFORM, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Collection.PLATFORM);
+
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Collection.PLATFORM, mdAttributeIF, this, alias, displayLabel);
+
+  }
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType()
   {
     return getPrivilegeType(null);
@@ -112,6 +135,47 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return (gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Collection.PRIVILEGETYPE, mdAttributeIF, this, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor()
+  {
+    return getSensor(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Collection.SENSOR);
+
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Collection.SENSOR, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Collection.SENSOR);
+
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Collection.SENSOR, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Collection.PLATFORM)) 
+    {
+       return new gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.Collection.SENSOR)) 
+    {
+       return new gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   protected com.runwaysdk.query.AttributeEnumeration enumerationFactory( com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  String mdEnumerationTableName, com.runwaysdk.dataaccess.MdBusinessDAOIF masterListMdBusinessIF, String masterListTalbeAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();
@@ -283,9 +347,15 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform();
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias);
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias, String displayLabel);
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType();
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType(String alias);
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor();
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias);
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.Collection collection);
 
@@ -396,6 +466,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform()
+  {
+    return getPlatform(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.PLATFORM, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.PLATFORM,  alias, displayLabel);
+
+  }
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType()
   {
     return getPrivilegeType(null);
@@ -411,6 +498,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType(String alias, String displayLabel)
   {
     return (gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF)this.get(gov.geoplatform.uasdm.bus.Collection.PRIVILEGETYPE, alias, displayLabel);
+
+  }
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor()
+  {
+    return getSensor(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.SENSOR, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.SENSOR,  alias, displayLabel);
 
   }
 
@@ -529,6 +633,24 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return this.isNotChildIn_SUBSELECT(missionHasCollectionQuery);
   }
 
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Collection.PLATFORM)) 
+    {
+       return new gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.Collection.SENSOR)) 
+    {
+       return new gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   protected com.runwaysdk.query.AttributeEnumeration enumerationFactory( com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  String mdEnumerationTableName, com.runwaysdk.dataaccess.MdBusinessDAOIF masterListMdBusinessIF, String masterListTalbeAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();
@@ -561,9 +683,15 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded();
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias);
     public com.runwaysdk.query.SelectableBoolean getMetadataUploaded(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform();
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias);
+    public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias, String displayLabel);
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType();
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType(String alias);
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType(String alias, String displayLabel);
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor();
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias);
+    public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.Collection ... collection);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.Collection ... collection);
@@ -699,6 +827,23 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Collection.METADATAUPLOADED, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform()
+  {
+    return getPlatform(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.PLATFORM, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF getPlatform(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.PLATFORM,  alias, displayLabel);
+
+  }
   public gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF getPrivilegeType()
   {
     return getPrivilegeType(null);
@@ -716,6 +861,41 @@ public  class CollectionQuery extends gov.geoplatform.uasdm.bus.UasComponentQuer
     return (gov.geoplatform.uasdm.bus.PrivilegeTypeQuery.AllPrivilegeTypeQueryIF)this.get(gov.geoplatform.uasdm.bus.Collection.PRIVILEGETYPE, alias, displayLabel);
 
   }
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor()
+  {
+    return getSensor(null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias)
+  {
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.SENSOR, alias, null);
+
+  }
+ 
+  public gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF getSensor(String alias, String displayLabel)
+  {
+    return (gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Collection.SENSOR,  alias, displayLabel);
+
+  }
+  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
+  {
+    String name = mdAttributeIF.definesAttribute();
+    
+    if (name.equals(gov.geoplatform.uasdm.bus.Collection.PLATFORM)) 
+    {
+       return new gov.geoplatform.uasdm.bus.PlatformQuery.PlatformQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.Collection.SENSOR)) 
+    {
+       return new gov.geoplatform.uasdm.bus.SensorQuery.SensorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else 
+    {
+      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+  }
+
   protected com.runwaysdk.query.AttributeEnumeration enumerationFactory( com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  String mdEnumerationTableName, com.runwaysdk.dataaccess.MdBusinessDAOIF masterListMdBusinessIF, String masterListTalbeAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();
