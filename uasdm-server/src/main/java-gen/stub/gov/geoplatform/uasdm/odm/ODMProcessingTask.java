@@ -1,11 +1,12 @@
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -32,7 +33,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     return obj;
   }
 
-  public void initiate(File images)
+  public void initiate(ApplicationResource images)
   {
     try
     {

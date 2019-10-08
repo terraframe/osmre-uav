@@ -524,10 +524,20 @@ public class ODMStatusServer
       catch (Throwable t)
       {
         logger.error("Error occurred while uploading S3 files for " + uploadTask.getOdmUUID(), t);
+        
+        String msg;
+        if (t instanceof SpecialException)
+        {
+          msg = t.getLocalizedMessage();
+        }
+        else
+        {
+          msg = "The upload failed. " + t.getLocalizedMessage();
+        }
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.FAILED.getLabel());
-        uploadTask.setMessage("The upload failed. " + t.getLocalizedMessage());
+        uploadTask.setMessage(msg);
         uploadTask.apply();
       }
     }
@@ -546,16 +556,17 @@ public class ODMStatusServer
     }
 
 //    @Transaction
-    public void runInTrans() throws ZipException
+    public void runInTrans() throws ZipException, SpecialException
     {
       List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
 
       /**
        * Upload the full all.zip file to S3 for archive purposes.
        */
+      String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
       if (!isTest)
       {
-        Util.uploadFileToS3(zip, uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName(), uploadTask);
+        Util.uploadFileToS3(zip, allKey, uploadTask);
       }
 
       ImageryComponent ic = uploadTask.getImageryComponent();
@@ -576,7 +587,14 @@ public class ODMStatusServer
        */
       try
       {
-        new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
+        try
+        {
+          new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
+        }
+        catch (ZipException e)
+        {
+          throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
+        }
 
         List<Document> documents = new LinkedList<Document>();
 
@@ -662,6 +680,16 @@ public class ODMStatusServer
         {
           processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix, documents);
         }
+      }
+    }
+    
+    private class SpecialException extends Exception
+    {
+      private static final long serialVersionUID = 1L;
+
+      public SpecialException(String string, ZipException e)
+      {
+        super(string, e);
       }
     }
 

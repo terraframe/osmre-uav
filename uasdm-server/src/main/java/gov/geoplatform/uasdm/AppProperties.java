@@ -2,9 +2,12 @@ package gov.geoplatform.uasdm;
 
 import java.io.File;
 
+import com.google.common.io.Files;
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 import com.runwaysdk.constants.DeployProperties;
+
+import net.geoprism.GeoprismProperties;
 
 public class AppProperties
 {
@@ -52,7 +55,7 @@ public class AppProperties
 
   public static String getOdmUrl()
   {
-    return Singleton.getProps().getString("odm.url");
+    return Singleton.getProps().getString("odm.url", "http://localhost:3000/");
   }
 
   public static String getOdmUsername()
@@ -67,27 +70,27 @@ public class AppProperties
 
   public static String getSolrUrl()
   {
-    return Singleton.getProps().getString("solr.url");
+    return Singleton.getProps().getString("solr.url", "http://localhost:8983/solr/uasdm");
   }
 
   public static Boolean isSolrEnabled()
   {
-    return Singleton.getProps().getBoolean("solr.enabled");
+    return Singleton.getProps().getBoolean("solr.enabled", true);
   }
 
   public static File getTempDirectory()
   {
-    return new File(DeployProperties.getDeployPath() + File.separator + Singleton.getProps().getString("temp.dir"));
+    return new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("temp.dir", "temp"));
   }
 
   public static File getUploadDirectory()
   {
-    return new File(DeployProperties.getDeployPath() + File.separator + Singleton.getProps().getString("upload.dir"));
+    return new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("upload.dir", "upload"));
   }
 
   public static Integer getChunkExpireTime()
   {
-    return Singleton.getProps().getInteger("chunk.expire.time");
+    return Singleton.getProps().getInteger("chunk.expire.time", 1);
   }
   
   public static Integer getInviteUserTokenExpireTime()
