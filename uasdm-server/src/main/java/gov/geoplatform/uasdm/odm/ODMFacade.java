@@ -9,8 +9,12 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -18,6 +22,8 @@ import gov.geoplatform.uasdm.AppProperties;
 public class ODMFacade
 {
   private static HTTPConnector connector;
+  
+  private static final Logger logger = LoggerFactory.getLogger(ODMFacade.class);
   
   public static synchronized void initialize()
   {
@@ -81,7 +87,9 @@ public class ODMFacade
     {
       File zip = File.createTempFile("all", ".zip");
       
-      FileUtils.copyURLToFile(new URL(connector.getServerUrl() + "task/" + uuid + "/download/all.zip"), zip, 20000, 0);
+      String url = connector.getServerUrl() + "task/" + uuid + "/download/all.zip";
+      logger.info("Downloading file from ODM [" + url + "].");
+      FileUtils.copyURLToFile(new URL(url), zip, 20000, 0);
       
       return zip;
     }
@@ -91,15 +99,15 @@ public class ODMFacade
     }
   }
   
-  public static NewResponse taskNew(File images)
+  public static NewResponse taskNew(ApplicationResource images)
   {
     initialize();
     
-    try
+    try(CloseableFile fImages = images.openNewFile())
     {
       Part[] parts = new Part[2];
       
-      parts[0] = new FilePart("images", images, "application/octet-stream", "UTF-8");
+      parts[0] = new FilePart("images", fImages, "application/octet-stream", "UTF-8");
       
       parts[1] = new StringPart("options", "[{\n" + 
           "  \"name\": \"dsm\",\n" + 

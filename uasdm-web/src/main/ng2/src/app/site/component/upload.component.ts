@@ -221,7 +221,7 @@ export class UploadComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.service.roots( null ).then( sites => {
+        this.service.roots( null, null ).then( sites => {
             this.sites = sites;
         } );
     }

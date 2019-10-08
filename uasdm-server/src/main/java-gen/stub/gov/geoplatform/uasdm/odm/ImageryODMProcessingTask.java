@@ -1,9 +1,5 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.bus.Imagery;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.ApplicationResource;
+
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.Imagery;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -42,7 +42,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     return obj;
   }
 
-  public void initiate(File images)
+  public void initiate(ApplicationResource images)
   {
     try
     {

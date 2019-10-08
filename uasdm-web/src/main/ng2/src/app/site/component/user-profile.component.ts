@@ -140,11 +140,9 @@ export class UserProfileComponent implements OnInit {
             ignoreBackdropClick: true,
             'class': 'upload-modal'
         } );
-        this.bsModalRef.content.collectionId = message.collectionId;
-        this.bsModalRef.content.imageHeight = message.imageHeight;
-        this.bsModalRef.content.imageWidth = message.imageWidth;
+        this.bsModalRef.content.init( message.collectionId );
 
-        ( <MetadataModalComponent>this.bsModalRef.content ).onMetadataChange.subscribe(( collectionId ) => {
+        this.bsModalRef.content.onMetadataChange.subscribe(( collectionId ) => {
 
             let index = -1;
             for ( let i = 0; i < this.messages.length; i++ ) {

@@ -29,6 +29,7 @@ import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.service.SolrService;
+import net.geoprism.GeoprismProperties;
 
 public class MetadataXMLGenerator
 {
@@ -185,11 +186,26 @@ public class MetadataXMLGenerator
     File temp = null;
     try
     {
-      temp = File.createTempFile("metadata", "xml");
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
+      temp = new File(AppProperties.getTempDirectory(), "metadata.xml");
+      
+      try (FileOutputStream fos = new FileOutputStream(temp))
+      {
+        this.generate(fos);
+      }
+      catch (IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+
+      String fileName = this.collection.getName() + FILENAME;
+      String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
+      Util.uploadFileToS3(temp, key, null);
+
+      SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
+
+      this.collection.appLock();
+      this.collection.setMetadataUploaded(true);
+      this.collection.apply();
     }
     finally
     {
@@ -198,25 +214,6 @@ public class MetadataXMLGenerator
         FileUtils.deleteQuietly(temp);
       }
     }
-
-    try (FileOutputStream fos = new FileOutputStream(temp))
-    {
-      this.generate(fos);
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-
-    String fileName = this.collection.getName() + FILENAME;
-    String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
-    Util.uploadFileToS3(temp, key, null);
-
-    SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
-
-    this.collection.appLock();
-    this.collection.setMetadataUploaded(true);
-    this.collection.apply();
   }
 
 }

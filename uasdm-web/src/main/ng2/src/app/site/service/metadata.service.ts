@@ -39,6 +39,14 @@ export class MetadataService {
         return false;
     }
 
+    hasExtraField( type: string, fieldName: string ): boolean {
+        if ( type === 'Collection' ) {
+            return ( fieldName === 'platform' || fieldName === 'sensor' );
+        }
+
+        return false;
+    }
+
     isProcessable( type: string ): boolean {
         if ( this.cache[type] != null ) {
             return this.cache[type].processable;

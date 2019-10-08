@@ -1,12 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,6 +33,12 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.ApplicationResource;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Imagery extends ImageryBase implements ImageryComponent
 {
@@ -174,20 +173,20 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
 
   @Override
-  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
-  public static void uploadArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
-    String extension = FilenameUtils.getExtension(archive.getName());
+    String extension = archive.getNameExtension();
 
     if (extension.equalsIgnoreCase("zip"))
     {
@@ -199,13 +198,13 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
 
-  protected static void uploadZipArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
+  protected static void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
     byte[] buffer = new byte[BUFFER_SIZE];
 
-    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
+    try (ZipInputStream zis = new ZipInputStream(archive.openNewStream()))
     {
       ZipEntry entry;
       while ( ( entry = zis.getNextEntry() ) != null)
@@ -240,13 +239,13 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
   }
 
-  private static void uploadTarGzArchive(AbstractWorkflowTask task, File archive, ImageryComponent imageryComponent, String uploadTarget)
+  private static void uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
 
     byte data[] = new byte[BUFFER_SIZE];
 
-    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
+    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
     {
       try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
       {

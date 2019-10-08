@@ -1,9 +1,5 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
-import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.RequestParser;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -15,6 +11,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.system.VaultFile;
+
+import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -31,19 +33,17 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(RequestParser parser, File infile)
+  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationResource appRes, String outFileNamePrefix)
   {
-    ImageryWorkflowTask task = (ImageryWorkflowTask) ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-
     task.lock();
     task.setStatus("Processing");
     task.setMessage("Processing archived files");
     task.apply();
 
     Imagery imagery = task.getImagery();
-    imagery.uploadArchive(task, infile, parser.getUploadTarget());
+    imagery.uploadArchive(task, appRes, uploadTarget);
 
-    calculateImageSize(infile, imagery);
+    calculateImageSize(appRes, imagery);
 
     task.lock();
     task.setStatus("Complete");
@@ -52,29 +52,28 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
     // Only initialize an ortho job if imagery has been uploaded to the raw
     // folder.
-    if (parser.getUploadTarget() != null && parser.getUploadTarget().equals(ImageryComponent.RAW))
+    if (uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW))
     {
-      startODMProcessing(infile, task, parser);
+      startODMProcessing(appRes, task, outFileNamePrefix);
     }
   }
 
-  private void startODMProcessing(File infile, ImageryWorkflowTask uploadTask, RequestParser parser)
+  private void startODMProcessing(ApplicationResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
   {
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setImageryId(uploadTask.getImageryOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-//    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getCollection().getName() + "]");
     task.setTaskLabel("UAV data orthorectification for imagery [" + task.getImagery().getName() + "]");
     task.setMessage("The images uploaded to ['" + task.getImagery().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilePrefix(parser.getCustomParams().get("outFileName"));
+    task.setFilePrefix(outFileNamePrefix);
     task.apply();
 
-    task.initiate(infile);
+    task.initiate(appRes);
   }
 
-  private void calculateImageSize(File zip, Imagery imagery)
+  private void calculateImageSize(ApplicationResource zip, Imagery imagery)
   {
     try
     {
@@ -82,7 +81,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
       try
       {
-        new ZipFile(zip).extractAll(parentFolder.getAbsolutePath());
+        new ZipFile(zip.getUnderlyingFile()).extractAll(parentFolder.getAbsolutePath());
 
         File[] files = parentFolder.listFiles();
 
@@ -107,6 +106,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       finally
       {
         FileUtils.deleteQuietly(parentFolder);
+        zip.close();
       }
     }
     catch (Throwable e)
