@@ -340,9 +340,12 @@ export class ManagementService {
     }
 
     getMetadataOptions( id: string ): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
-        
+
         let params: HttpParams = new HttpParams();
-        params = params.set( 'id', id );
+
+        if ( id != null ) {
+            params = params.set( 'id', id );
+        }
 
         return this.noErrorHttpClient
             .get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }>( acp + '/project/metadata-options', { params: params } )

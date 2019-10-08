@@ -278,7 +278,7 @@ export class UploadModalComponent implements OnInit {
         this.onUploadComplete = new Subject();
         this.onHierarchyChange = new Subject();
 
-        this.service.getMetadataOptions().then(( options ) => {
+        this.service.getMetadataOptions( null ).then(( options ) => {
             this.sensors = options.sensors;
             this.platforms = options.platforms;
         } ).catch(( err: HttpErrorResponse ) => {

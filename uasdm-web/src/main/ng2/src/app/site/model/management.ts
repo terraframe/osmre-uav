@@ -48,8 +48,8 @@ export class Selection {
     isNew: boolean;
     value: string;
     label: string;
-    platform: string;
-    sensor: string;
+    platform?: string;
+    sensor?: string;
 };
 
 
