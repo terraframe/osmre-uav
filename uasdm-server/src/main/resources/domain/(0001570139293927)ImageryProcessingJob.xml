@@ -1,0 +1,20 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.ImageryProcessingJob" extends="com.runwaysdk.system.scheduler.ExecutableJob" description="Assists with orchestrating the entire lifecycle of imagery processing, from upload to ODM processing." generateController="false">
+        <attributes>
+          <reference name="workflowTask" label="Task" type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"/>
+          <file name="imageryFile" required="true" />
+          <text name="uploadTarget" required="false" />
+          <text name="outFileNamePrefix" required="false" />
+        </attributes>
+      </mdBusiness>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.ImageryProcessingJob" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </undoIt>
+</version>
