@@ -18,6 +18,7 @@ import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.view.RequestParser;
 import net.geoprism.GeoprismUser;
 
@@ -127,7 +128,7 @@ public class WorkflowService
     if (task != null)
     {
       task.lock();
-      task.setStatus("Error");
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.setMessage(message);
       task.apply();
     }

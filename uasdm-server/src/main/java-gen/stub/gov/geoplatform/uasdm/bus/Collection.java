@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -225,13 +226,13 @@ public class Collection extends CollectionBase implements ImageryComponent
   }
 
   @Override
-  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }

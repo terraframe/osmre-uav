@@ -1,13 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.AdminCondition;
-import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -18,8 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.geoprism.JSONStringImpl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geotools.geojson.geom.GeometryJSON;
@@ -52,10 +43,18 @@ import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.AdminCondition;
+import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase
 {
@@ -703,12 +702,12 @@ public abstract class UasComponent extends UasComponentBase
    */
   public abstract List<AbstractWorkflowTask> getTasks();
 
-  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     throw new UnsupportedOperationException();
   }
 
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget)
+  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     throw new UnsupportedOperationException();
   }

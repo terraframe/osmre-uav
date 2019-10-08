@@ -1,9 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.File;
 import java.util.List;
 
 import org.slf4j.Logger;
+
+import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -27,9 +28,9 @@ public interface ImageryComponent
 
   public static final String GEOREF      = "georef";
 
-  public void uploadArchive(AbstractWorkflowTask task, File archive, String uploadTarget);
+  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
-  public void uploadZipArchive(AbstractWorkflowTask task, File archive, String uploadTarget);
+  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
   public Logger getLog();
 
