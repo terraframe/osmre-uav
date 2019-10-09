@@ -226,15 +226,15 @@ public class Collection extends CollectionBase implements ImageryComponent
   }
 
   @Override
-  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    Imagery.uploadArchive(task, archive, this, uploadTarget);
+    return Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
-  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    Imagery.uploadZipArchive(task, archive, this, uploadTarget);
+    return Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
   @Override

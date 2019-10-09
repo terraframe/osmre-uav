@@ -28,9 +28,9 @@ public interface ImageryComponent
 
   public static final String GEOREF      = "georef";
 
-  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
-  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
+  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
   public Logger getLog();
 

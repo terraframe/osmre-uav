@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -282,18 +284,16 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void runOrtho(String sessionId, String id)
+  public void runOrtho(String sessionId, String id, String excludes)
   {
     Collection collection = (Collection) UasComponent.get(id);
 
-    ODMProcessingTask task = new ODMProcessingTask();
-    task.setUploadId(id);
-    task.setComponentId(collection.getOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
-    task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getComponent().getName() + "]");
-    task.setMessage("The images uploaded to ['" + task.getComponent().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.apply();
+    /*
+     * Predicate for filtering out files from the zip file to send to ODM
+     */
+    Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
+
+    List<String> filenames = new LinkedList<String>();
 
     File zip;
     try
@@ -304,7 +304,9 @@ public class ProjectManagementService
 
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
       {
-        downloadAll(sessionId, id, ImageryComponent.RAW, ostream);
+        List<String> files = downloadAll(sessionId, id, ImageryComponent.RAW, ostream, predicate);
+
+        filenames.addAll(files);
       }
     }
     catch (IOException e)
@@ -312,13 +314,42 @@ public class ProjectManagementService
       throw new ProgrammingErrorException(e);
     }
 
+    JSONArray array = new JSONArray();
+
+    for (String filename : filenames)
+    {
+      array.put(filename);
+    }
+
+    ODMProcessingTask task = new ODMProcessingTask();
+    task.setUploadId(id);
+    task.setComponentId(collection.getOid());
+    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getComponent().getName() + "]");
+    task.setMessage("The images uploaded to ['" + task.getComponent().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setFilenames(array.toString());
+    task.apply();
+
     task.initiate(new FileResource(zip));
   }
 
   @Request(RequestType.SESSION)
   public void downloadAll(String sessionId, String id, String key, OutputStream out)
   {
+    this.downloadAll(sessionId, id, key, out, null);
+  }
+
+  private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate)
+  {
     List<SiteObject> items = getObjects(id, key);
+
+    List<String> filenames = new LinkedList<String>();
+
+    if (predicate != null)
+    {
+      items = items.stream().filter(predicate).collect(Collectors.toList());
+    }
 
     try (ZipOutputStream zos = new ZipOutputStream(out))
     {
@@ -334,13 +365,16 @@ public class ProjectManagementService
 
           zos.closeEntry();
         }
-      }
 
+        filenames.add(item.getName());
+      }
     }
     catch (IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
+
+    return filenames;
   }
 
   @Request(RequestType.SESSION)
