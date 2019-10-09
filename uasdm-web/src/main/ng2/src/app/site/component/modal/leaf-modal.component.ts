@@ -109,6 +109,8 @@ export class LeafModalComponent implements OnInit {
 
             this.items = items;
 
+            this.excludes = []; // clear excludes if toggling between tabs
+
             for ( let i = 0; i < items.length; ++i ) {
                 let item = items[i];
 
