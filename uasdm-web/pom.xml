@@ -175,21 +175,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>replace-index.jsp</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-            <inherited>false</inherited>
-            <configuration>
-              <file>src/main/webapp/index.jsp</file>
-              <outputFile>target/uasdm/index.jsp</outputFile>
-              <regex>false</regex>
-              <token>$local.host$</token>
-              <value>${local.host}</value>
-            </configuration>
-          </execution>
-          <execution>
             <id>replace-prism.jsp</id>
             <phase>prepare-package</phase>
             <goals>
