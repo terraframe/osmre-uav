@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -39,14 +40,14 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     UasComponent collection = task.getComponent();
-    collection.uploadArchive(task, infile, uploadTarget);
+    List<String> filenames = collection.uploadArchive(task, infile, uploadTarget);
 
     task.lock();
     task.setStatus(WorkflowTaskStatus.COMPLETE.toString());
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, outFileNamePrefix);
+    startODMProcessing(infile, task, outFileNamePrefix, filenames);
 
     if (collection instanceof Collection)
     {
@@ -56,7 +57,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    handleMetadataWorkflow(task);
   }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix, List<String> filenames)
   {
     UasComponent component = uploadTask.getComponent();
 

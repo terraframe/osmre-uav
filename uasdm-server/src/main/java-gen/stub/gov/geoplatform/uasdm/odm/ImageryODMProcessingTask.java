@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -40,6 +42,12 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     obj.put("odmOutput", this.getOdmOutput());
 
     return obj;
+  }
+
+  @Override
+  public List<String> getFileList()
+  {
+    return new LinkedList<String>();
   }
 
   public void initiate(ApplicationResource images)

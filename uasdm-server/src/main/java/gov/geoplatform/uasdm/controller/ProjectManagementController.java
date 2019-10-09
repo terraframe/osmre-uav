@@ -118,9 +118,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "excludes") String excludes)
   {
-    this.service.runOrtho(request.getSessionId(), id);
+    this.service.runOrtho(request.getSessionId(), id, excludes);
 
     return new RestResponse();
   }

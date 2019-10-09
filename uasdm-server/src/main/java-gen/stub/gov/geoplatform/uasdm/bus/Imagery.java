@@ -173,34 +173,37 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
 
   @Override
-  public void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    Imagery.uploadArchive(task, archive, this, uploadTarget);
+    return Imagery.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
-  public void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    Imagery.uploadZipArchive(task, archive, this, uploadTarget);
+    return Imagery.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
-  public static void uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     String extension = archive.getNameExtension();
 
     if (extension.equalsIgnoreCase("zip"))
     {
-      uploadZipArchive(task, archive, imageryComponent, uploadTarget);
+      return uploadZipArchive(task, archive, imageryComponent, uploadTarget);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
+      return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
     }
+
+    return new LinkedList<String>();
   }
 
-  protected static void uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  protected static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
+    List<String> filenames = new LinkedList<String>();
 
     byte[] buffer = new byte[BUFFER_SIZE];
 
@@ -223,7 +226,14 @@ public class Imagery extends ImageryBase implements ImageryComponent
           }
 
           // Upload the file to S3
-          uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), entry.getName(), tmp, imageryComponent);
+          String filename = entry.getName();
+
+          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+
+          if (success)
+          {
+            filenames.add(filename);
+          }
         }
         finally
         {
@@ -237,11 +247,14 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
       throw new ProgrammingErrorException(e);
     }
+
+    return filenames;
   }
 
-  private static void uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  private static List<String> uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     List<UasComponent> ancestors = imageryComponent.getAncestors();
+    List<String> filenames = new LinkedList<String>();
 
     byte data[] = new byte[BUFFER_SIZE];
 
@@ -254,9 +267,10 @@ public class Imagery extends ImageryBase implements ImageryComponent
         while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
         {
           /** If the entry is a directory, create the directory. **/
+          String filename = entry.getName();
           if (entry.isDirectory())
           {
-            File f = new File(entry.getName());
+            File f = new File(filename);
             boolean created = f.mkdir();
             if (!created)
             {
@@ -283,7 +297,12 @@ public class Imagery extends ImageryBase implements ImageryComponent
               }
 
               // Upload the file to S3
-              uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), entry.getName(), tmp, imageryComponent);
+              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+
+              if (success)
+              {
+                filenames.add(filename);
+              }
             }
             finally
             {
@@ -300,10 +319,12 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
       throw new ProgrammingErrorException(e);
     }
+
+    return filenames;
   }
 
   @Transaction
-  private static void uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
+  private static boolean uploadFile(AbstractWorkflowTask task, List<UasComponent> ancestors, String keySuffix, String name, File tmp, ImageryComponent imageryComponent)
   {
     if (isValidName(name))
     {
@@ -360,6 +381,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
         Document.createIfNotExist(imageryComponent.getUasComponent(), key, name);
 
         SolrService.updateOrCreateDocument(ancestors, imageryComponent.getUasComponent(), key, name);
+
+        return true;
       }
       catch (Exception e)
       {
@@ -370,6 +393,8 @@ public class Imagery extends ImageryBase implements ImageryComponent
     {
       task.createAction("The filename [" + name + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
     }
+
+    return false;
   }
 
   @Override

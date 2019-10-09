@@ -8,4 +8,5 @@
   <server-context-listener class="net.geoprism.report.CacheDocumentManagerContextListener" /> 
   <server-context-listener class="gov.geoplatform.uasdm.chunk.ChunkManagerContextListener" />
   <server-context-listener class="gov.geoplatform.uasdm.odm.ODMContextListener" /> 
+  <server-context-listener class="com.runwaysdk.patcher.domain.CollectionDocumentListener" /> 
 </server-context-listeners>
