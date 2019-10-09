@@ -576,6 +576,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.nodes.forEach( n => {
                 if ( n.children != null ) {
                     n.children = n.children.filter(( child: any ) => child.id !== node.id );
+
+                    n.numberOfChildren = n.children.length;
                 }
             } );
 

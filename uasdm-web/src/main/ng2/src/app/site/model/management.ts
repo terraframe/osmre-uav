@@ -18,7 +18,7 @@ export class SiteEntity {
     folderName: string;
     type: string;
     geometry: any;
-    hasChildren: boolean;
+    numberOfChildren: number;
     ownerName: string;
     ownerPhone: string;
     ownerEmail: string;
