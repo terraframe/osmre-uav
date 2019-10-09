@@ -17,8 +17,13 @@ public class Product extends ProductBase
   }
 
   @Override
-  @Transaction
   public void delete()
+  {
+    this.delete(true);
+  }
+
+  @Transaction
+  public void delete(boolean removeFromS3)
   {
     // Delete all of the documents
     List<Document> documents = new LinkedList<Document>();
@@ -30,7 +35,7 @@ public class Product extends ProductBase
 
     for (Document document : documents)
     {
-      document.delete();
+      document.delete(removeFromS3);
     }
 
     super.delete();

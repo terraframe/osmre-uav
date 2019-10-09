@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
@@ -32,9 +33,15 @@ public class Document extends DocumentBase
   @Override
   public void delete()
   {
+    this.delete(true);
+  }
+
+  @Transaction
+  public void delete(boolean removeFromS3)
+  {
     super.delete();
 
-    if (!this.getS3location().trim().equals(""))
+    if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       this.deleteS3File(this.getS3location());
     }
