@@ -573,6 +573,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.service.remove( node.id ).then( response => {
             this.nodes = this.nodes.filter(( n: any ) => n.id !== node.id );
 
+            this.nodes.forEach( n => {
+                if ( n.children != null ) {
+                    n.children = n.children.filter(( child: any ) => child.id !== node.id );
+                }
+            } );
+
             if ( node.type !== 'Site' ) {
                 this.refresh( false );
             }

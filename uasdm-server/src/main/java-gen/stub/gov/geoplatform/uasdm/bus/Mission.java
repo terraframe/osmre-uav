@@ -66,6 +66,7 @@ public class Mission extends MissionBase
     }
   }
 
+  @Transaction
   public void delete()
   {
     super.delete();

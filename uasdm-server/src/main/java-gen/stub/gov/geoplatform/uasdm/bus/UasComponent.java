@@ -202,6 +202,7 @@ public abstract class UasComponent extends UasComponentBase
     return this.isModified(UasComponent.DESCRIPTION);
   }
 
+  @Transaction
   public void delete()
   {
     List<AbstractWorkflowTask> tasks = this.getTasks();
@@ -209,6 +210,14 @@ public abstract class UasComponent extends UasComponentBase
     for (AbstractWorkflowTask task : tasks)
     {
       task.delete();
+    }
+
+    // Delete all of the products
+    List<Product> products = this.getProducts();
+
+    for (Product product : products)
+    {
+      product.delete();
     }
 
     // Delete all of the documents
@@ -759,4 +768,14 @@ public abstract class UasComponent extends UasComponentBase
     }
   }
 
+  public List<Product> getProducts()
+  {
+    ProductQuery query = new ProductQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this));
+
+    try (OIterator<? extends Product> iterator = query.getIterator())
+    {
+      return new LinkedList<Product>(iterator.getAll());
+    }
+  }
 }

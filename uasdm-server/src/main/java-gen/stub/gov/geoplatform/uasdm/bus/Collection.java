@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -148,6 +147,7 @@ public class Collection extends CollectionBase implements ImageryComponent
     }
   }
 
+  @Transaction
   public void delete()
   {
     List<AbstractWorkflowTask> tasks = this.getTasks();
