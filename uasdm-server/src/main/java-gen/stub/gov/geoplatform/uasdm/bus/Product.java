@@ -101,4 +101,18 @@ public class Product extends ProductBase
 
     return null;
   }
+
+  @Transaction
+  public void clear()
+  {
+    try (OIterator<? extends DocumentGeneratedProduct> relationships = this.getAllGeneratedDocumentsRel())
+    {
+      List<? extends DocumentGeneratedProduct> list = relationships.getAll();
+
+      for (DocumentGeneratedProduct relationship : list)
+      {
+        relationship.delete();
+      }
+    }
+  }
 }

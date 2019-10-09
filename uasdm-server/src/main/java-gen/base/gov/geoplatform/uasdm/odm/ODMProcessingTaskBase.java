@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1264909444)
+@com.runwaysdk.business.ClassSignature(hash = -1929853478)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,9 +12,10 @@ public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.Wo
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMProcessingTask";
   public static java.lang.String FILEPREFIX = "filePrefix";
+  public static java.lang.String FILENAMES = "filenames";
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
-  private static final long serialVersionUID = 1264909444;
+  private static final long serialVersionUID = -1929853478;
   
   public ODMProcessingTaskBase()
   {
@@ -46,6 +47,34 @@ public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.Wo
     else
     {
       setValue(FILEPREFIX, value);
+    }
+  }
+  
+  public String getFilenames()
+  {
+    return getValue(FILENAMES);
+  }
+  
+  public void validateFilenames()
+  {
+    this.validateAttribute(FILENAMES);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getFilenamesMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(FILENAMES);
+  }
+  
+  public void setFilenames(String value)
+  {
+    if(value == null)
+    {
+      setValue(FILENAMES, "");
+    }
+    else
+    {
+      setValue(FILENAMES, value);
     }
   }
   

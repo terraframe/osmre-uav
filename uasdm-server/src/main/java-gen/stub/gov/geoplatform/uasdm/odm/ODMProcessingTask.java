@@ -1,12 +1,14 @@
 package gov.geoplatform.uasdm.odm;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -31,6 +33,25 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     obj.put("odmOutput", this.getOdmOutput());
 
     return obj;
+  }
+
+  @Override
+  public List<String> getFileList()
+  {
+    List<String> list = new LinkedList<String>();
+    String filenames = this.getFilenames();
+
+    if (filenames != null && filenames.length() > 0)
+    {
+      JSONArray array = new JSONArray(filenames);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        list.add(array.getString(i));
+      }
+    }
+
+    return list;
   }
 
   public void initiate(ApplicationResource images)

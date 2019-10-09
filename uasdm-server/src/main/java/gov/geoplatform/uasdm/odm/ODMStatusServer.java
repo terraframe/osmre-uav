@@ -524,7 +524,7 @@ public class ODMStatusServer
       catch (Throwable t)
       {
         logger.error("Error occurred while uploading S3 files for " + uploadTask.getOdmUUID(), t);
-        
+
         String msg;
         if (t instanceof SpecialException)
         {
@@ -623,12 +623,20 @@ public class ODMStatusServer
           }
         }
 
+        ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
+        List<String> list = processingTask.getFileList();
+
         Product product = Product.createIfNotExist(ic.getUasComponent());
+        product.clear();
+
         product.addDocuments(documents);
 
         for (Document raw : raws)
         {
-          raw.addGeneratedProduct(product);
+          if (list.size() == 0 || list.contains(raw.getName()))
+          {
+            raw.addGeneratedProduct(product);
+          }
         }
 
       }
@@ -682,7 +690,7 @@ public class ODMStatusServer
         }
       }
     }
-    
+
     private class SpecialException extends Exception
     {
       private static final long serialVersionUID = 1L;
