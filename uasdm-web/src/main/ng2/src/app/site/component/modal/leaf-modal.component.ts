@@ -11,6 +11,7 @@ import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
+import { FileItem } from 'ng2-file-upload';
 
 declare var acp: string;
 
@@ -35,6 +36,8 @@ export class LeafModalComponent implements OnInit {
     message: string;
 
     processable: boolean = false;
+
+    excludes: string[] = [];
 
     /*
      * Reference to the modal current showing
@@ -144,6 +147,20 @@ export class LeafModalComponent implements OnInit {
 
     toggleExcludeImage( event: any, image: any ): void {
         image.excludeFromProcess = !image.excludeFromProcess;
+
+        if(image.excludeFromProcess){
+            this.excludes.push(image.name);
+        }
+        else {
+            let position = this.excludes.indexOf(image.name);
+            if(position > -1){
+                this.excludes.splice(position, 1);
+            }
+        }
+    }
+
+    isProcessable(item: any): boolean {
+        return this.metadataService.isProcessable( item.type );
     }
 
     handleRunOrtho(): void {
@@ -157,7 +174,7 @@ export class LeafModalComponent implements OnInit {
         this.notificationModalRef.content.message = "Your ortho task is running for [" + this.entity.name + "]. You can view the current process and results on your tasks page.";
         this.notificationModalRef.content.submitText = 'OK';
 
-        this.service.runOrtho( this.entity.id ).then( data => {
+        this.service.runOrtho( this.entity.id, this.excludes ).then( data => {
             // Nothing
         } );
     }

@@ -284,19 +284,19 @@ a.thumbnail:hover {
 // .nav-tabs>li {
 //   width: 50%;
 // }
-.nav-tabs>li:only-child {
+.nav-full-width .nav-tabs>li:only-child {
   width: 100%;
 }
-.nav-tabs>li:first-child:nth-last-child(n + 2),
-.nav-tabs>li:first-child:nth-last-child(n + 2) ~ li {
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 2),
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 2) ~ li {
   width: 50%;
 }
-.nav-tabs>li:first-child:nth-last-child(n + 4),
-.nav-tabs>li:first-child:nth-last-child(n + 4) ~ li {
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4),
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4) ~ li {
   width: 25%;
 }
 
-.nav-tabs>li>a {
+.nav-full-width .nav-tabs>li>a {
   color: grey;
   font-weight: bold;
   text-align: center;
@@ -306,9 +306,9 @@ a.thumbnail:hover {
   border-radius: 0;
 }
 
-.nav-tabs>li.active>a, 
-.nav-tabs>li.active>a:focus, 
-.nav-tabs>li.active>a:hover {
+.nav-full-width .nav-tabs>li.active>a, 
+.nav-full-width .nav-tabs>li.active>a:focus, 
+.nav-full-width .nav-tabs>li.active>a:hover {
   color: #007276;
   background-color: #ececec;
   border: none;

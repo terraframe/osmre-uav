@@ -77,7 +77,7 @@ export class ManagementService {
             .toPromise()
     }
 
-    runOrtho( id: string ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+    runOrtho( id: string, excludes: string[] ): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
