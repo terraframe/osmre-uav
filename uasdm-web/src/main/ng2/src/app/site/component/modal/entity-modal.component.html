@@ -34,7 +34,7 @@
           </textarea>
         </div>
         <div *ngIf="attribute.type === 'point'">          
-          <map-attribute [(site)]="entity" ></map-attribute>
+          <map-attribute [(site)]="entity" [center]="center" [zoom]="zoom" ></map-attribute>
         </div>
       </div>
     </div>

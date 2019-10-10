@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 import { TreeNode } from 'angular-tree-component';
+import { LngLat } from 'mapbox-gl';
 
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -29,6 +30,9 @@ export class EntityModalComponent implements OnInit {
 
     message: string = null;
 
+    center: LngLat = null;
+    zoom: number = null;
+
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
      */
@@ -38,6 +42,15 @@ export class EntityModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
+    }
+
+    init( newInstance: boolean, admin: boolean, entity: SiteEntity, attributes: AttributeType[], center: LngLat, zoom: number ) {
+        this.newInstance = newInstance;
+        this.admin = admin;
+        this.entity = entity;
+        this.attributes = attributes;
+        this.center = center;
+        this.zoom = zoom;
     }
 
     handleOnSubmit(): void {

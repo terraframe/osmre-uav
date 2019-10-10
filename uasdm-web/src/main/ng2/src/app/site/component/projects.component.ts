@@ -459,10 +459,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.newInstance = true;
-            this.bsModalRef.content.admin = this.admin;
-            this.bsModalRef.content.entity = data.item;
-            this.bsModalRef.content.attributes = data.attributes;
+            this.bsModalRef.content.init( true, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
+
 
             if ( parent != null ) {
                 this.bsModalRef.content.parentId = parent.id;
@@ -505,10 +503,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ignoreBackdropClick: true,
                 'class': 'edit-modal'
             } );
-            this.bsModalRef.content.newInstance = false;
-            this.bsModalRef.content.admin = this.admin;
-            this.bsModalRef.content.entity = data.item;
-            this.bsModalRef.content.attributes = data.attributes;
+            this.bsModalRef.content.init( false, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
+            
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Update the node
                 entity.children = node.children;
