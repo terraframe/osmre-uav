@@ -51,7 +51,7 @@ public class Platform extends PlatformBase
   public static PlatformQuery getQuery()
   {
     PlatformQuery query = new PlatformQuery(new QueryFactory());
-    query.ORDER_BY_DESC(query.getDisplayLabel());
+    query.ORDER_BY_ASC(query.getDisplayLabel());
 
     return query;
   }
