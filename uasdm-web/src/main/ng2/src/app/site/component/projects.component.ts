@@ -577,7 +577,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             } );
 
-            if ( node.type !== 'Site' ) {
+            if ( node.type === 'Site' ) {
                 this.refresh( false );
             }
         } );

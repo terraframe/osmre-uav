@@ -383,7 +383,22 @@ export class UploadModalComponent implements OnInit {
     isPageValid( page: Page ): boolean {
         if ( page.type === 'CATEGORY' ) {
             if ( page.selection != null ) {
-                return ( page.selection.value != null && page.selection.value.length > 0 ) || ( page.selection.label != null && page.selection.label.length > 0 );
+                if ( page.selection.value != null && page.selection.value.length > 0 ) {
+                    return true;
+                }
+                else if ( page.selection.label != null && page.selection.label.length > 0 ) {
+                    if(this.hasField('platform') && (page.selection.platform == null || page.selection.platform.length === 0)) {
+                        return false;
+                    }
+                    
+                    if(this.hasField('sensor') && (page.selection.sensor == null || page.selection.sensor.length === 0)) {
+                        return false;
+                    }
+                    
+                    return true;
+                }
+
+                return false;
             }
         }
         else if ( page.type === 'FILE' ) {

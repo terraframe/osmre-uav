@@ -22,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.Collection;
@@ -181,13 +182,14 @@ public class MetadataXMLGenerator
     }
   }
 
+  @Transaction
   public void generateAndUpload()
   {
     File temp = null;
     try
     {
       temp = new File(AppProperties.getTempDirectory(), "metadata.xml");
-      
+
       try (FileOutputStream fos = new FileOutputStream(temp))
       {
         this.generate(fos);
@@ -200,6 +202,8 @@ public class MetadataXMLGenerator
       String fileName = this.collection.getName() + FILENAME;
       String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
+
+      gov.geoplatform.uasdm.bus.Document.createIfNotExist(this.collection, key, fileName);
 
       SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
 
