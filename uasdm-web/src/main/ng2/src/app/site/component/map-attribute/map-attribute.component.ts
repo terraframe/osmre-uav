@@ -75,10 +75,10 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
             center: this.center
         };
 
-        //        if ( this.site.geometry != null ) {
-        //            config.zoom = 10;
-        //            config.center = this.site.geometry.coordinates;
-        //        }
+        if ( this.site.geometry != null ) {
+            //                    config.zoom = 10;
+            config.center = this.site.geometry.coordinates;
+        }
 
 
         this.map = new Map( config );
