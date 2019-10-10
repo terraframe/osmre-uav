@@ -139,7 +139,7 @@ public class ProjectManagementController
       thread.setDaemon(true);
       thread.start();
 
-      return new InputStreamResponse(istream, "application/zip", name.toString().replaceAll("\\s+","") + ".zip");
+      return new InputStreamResponse(istream, "application/zip", "\"" + name + ".zip" + "\"");
     }
     catch (IOException e)
     {
