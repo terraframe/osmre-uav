@@ -62,7 +62,7 @@
                   <tabset class="nav-full-width">
                     <tab heading="Data">                
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
-                      style="height: calc(100vh - 230px);overflow-y: auto;">
+                      style="height: calc(100vh - 268px);overflow-y: auto;">
                         <div class="list-group">
 
                           <div *ngFor="let node of nodes" class="list-group-item">
@@ -169,7 +169,10 @@
 
                     </tab>
                     <tab *ngIf="current != null" heading="Products">
-                      <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)" (gotoSite)="handleGotoSite($event)"></product-panel>           
+                      <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
+                      style="height: calc(100vh - 268px);overflow-y: auto;">
+                        <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)" (gotoSite)="handleGotoSite($event)"></product-panel>           
+                      </div>
                     </tab>
                   </tabset>
 
@@ -179,7 +182,7 @@
 
 
             <footer class="sidebar-footer" style="" *ngIf="current != null">
-              <div class="row" *ngIf="current != null">
+              <div class="row" *ngIf="current != null" style="background:white;">
                 <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
                   <button (click)="handleUploadFile()" class="btn btn-primary">Upload</button>              
                 </div>
