@@ -20,6 +20,7 @@ import { ProfileComponent } from './component/profile/profile.component';
 import { ErrorModalComponent } from './component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from './component/modal/basic-confirm-modal.component';
 import { NotificationModalComponent } from './component/modal/notification-modal.component';
+import { ModalStepIndicatorComponent } from './modal/step-indicator/modal-step-indicator.component';
 
 import { LocalizePipe } from './pipe/localize.pipe';
 import { KeysPipe } from './pipe/keys.pipe';
@@ -35,6 +36,7 @@ import { ProfileService } from './service/profile.service';
 import { SessionService } from './service/session.service';
 import { AdminGuardService, AuthGuard } from './service/guard.service';
 import { HttpBackendClient } from './service/http-backend-client.service';
+
 
 @NgModule( {
     imports: [
@@ -59,6 +61,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         ErrorModalComponent,
         LocalizeComponent,
         BooleanFieldComponent,
+        ModalStepIndicatorComponent,
+        ModalStepIndicatorComponent,
         KeysPipe,
         LocalizePipe,
         PhonePipe,
@@ -74,6 +78,7 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         ErrorModalComponent,
         BooleanFieldComponent,
         LocalizeComponent,
+        ModalStepIndicatorComponent,
         KeysPipe,
         LocalizePipe,
         PhonePipe,

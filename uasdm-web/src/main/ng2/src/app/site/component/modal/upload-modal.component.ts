@@ -17,6 +17,8 @@ import { SiteEntity, UploadForm, Task, Selection } from '../../model/management'
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
+import {StepConfig} from '../../../shared/modal/step-indicator/modal-step-indicator'
+
 declare var acp: string;
 
 class Page {
@@ -103,6 +105,13 @@ export class UploadModalComponent implements OnInit {
     public onUploadComplete: Subject<any>;
 
     public onHierarchyChange: Subject<boolean>;
+
+    // modalState: any = {"state":'category', "attribute":"", "termOption":""}
+
+    modalStepConfig: StepConfig = {"steps": [
+        {"label":"Category", "active":true, "enabled":true},
+        {"label":"Final", "active":true, "enabled":false}
+    ]};
 
     constructor( private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers ) {
         this.differ = differs.find( [] ).create();
@@ -446,6 +455,11 @@ export class UploadModalComponent implements OnInit {
             }
             else {
                 this.page = nextPage;
+
+                this.modalStepConfig = {"steps": [
+                    {"label":"Category", "active":true, "enabled":false},
+                    {"label":"Final", "active":true, "enabled":true}
+                ]};
             }
         }
     }
