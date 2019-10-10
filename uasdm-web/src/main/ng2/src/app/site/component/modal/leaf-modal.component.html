@@ -56,6 +56,7 @@
     <div class="row">
     <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
       <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+      <button type="button" class="btn btn-secondary" (click)="handleDownload()">Download</button>
       <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
         Reprocess imagery
         <i class="fa fa-sync-alt" aria-hidden="true" style="vertical-align: middle;margin-left: 10px;"></i>

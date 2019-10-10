@@ -38,6 +38,8 @@ export class LeafModalComponent implements OnInit {
     processable: boolean = false;
 
     excludes: string[] = [];
+    
+    folder: SiteEntity;
 
     /*
      * Reference to the modal current showing
@@ -119,6 +121,8 @@ export class LeafModalComponent implements OnInit {
                 }
 
             }
+            
+            this.folder = folder;
         } );
     }
 
@@ -180,6 +184,18 @@ export class LeafModalComponent implements OnInit {
             // Nothing
         } );
     }
+
+    handleDownload( ): void {
+
+        window.location.href = acp + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+
+        //      this.service.downloadAll( data.id ).then( data => {
+        //        
+        //      } ).catch(( err: HttpErrorResponse ) => {
+        //          this.error( err );
+        //      } );
+    }
+
 
 
 

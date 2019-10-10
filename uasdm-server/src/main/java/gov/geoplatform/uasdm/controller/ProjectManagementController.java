@@ -1,8 +1,8 @@
 package gov.geoplatform.uasdm.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -19,8 +19,10 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
+import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.S3GetResponse;
+import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.service.ProductService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
@@ -105,16 +107,44 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "download-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadAll(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  public ResponseIF downloadAll(ClientRequestIF request, final @RequestParamter(name = "id") String id, final @RequestParamter(name = "key") String key)
   {
-    // Ideally I should be able to write these bytes directly to the
-    // ServletOutputStream but we'll be dumb and waste memory with InputStreams
-    // because its supported by Runway mvc.
-    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+    final String sessionId = request.getSessionId();
 
-    this.service.downloadAll(request.getSessionId(), id, key, bao);
+    SiteItem item = this.service.get(sessionId, id);
+    Object name = item.getValue(UasComponent.NAME);
 
-    return new InputStreamResponse(new ByteArrayInputStream(bao.toByteArray()), "application/zip");
+    try
+    {
+      PipedInputStream istream = new PipedInputStream();
+      PipedOutputStream ostream = new PipedOutputStream(istream);
+
+      Thread thread = new Thread(new Runnable()
+      {
+        @Override
+        @Request
+        public void run()
+        {
+          try
+          {
+
+            ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream);
+          }
+          catch (Exception e)
+          {
+            // Handle error message
+          }
+        }
+      });
+      thread.setDaemon(true);
+      thread.start();
+
+      return new InputStreamResponse(istream, "application/zip", name.toString().replaceAll("\\s+","") + ".zip");
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException("Test");
+    }
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
