@@ -25,6 +25,6 @@ public class ExcludeSiteObjectPredicate implements Predicate<SiteObject>
   @Override
   public boolean test(SiteObject t)
   {
-    return this.filenames.contains(t.getName());
+    return !this.filenames.contains(t.getName());
   }
 }

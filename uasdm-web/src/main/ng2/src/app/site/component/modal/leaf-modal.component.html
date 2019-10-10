@@ -38,8 +38,8 @@
                   <li *ngFor="let item of items" class="list-group-item col-xs-3">
                      <!-- <div class="" >   -->
                         <a class="thumbnail" [ngClass]="{'card-disabled' : item.excludeFromProcess}" >
-                          <input type="checkbox" class="x-box" [checked]="item.excludeFromProcess" (change)="item.excludeFromProcess = !item.excludeFromProcess"/>
-                          <img (click)="toggleExcludeImage($event, item)" [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                          <input type="checkbox" class="x-box" [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)"/>
+                          <img [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                           <div class="caption">
                             <h4 class="media-heading">{{item.name}}</h4>
                           </div>

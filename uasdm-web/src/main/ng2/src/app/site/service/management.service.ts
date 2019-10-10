@@ -86,7 +86,7 @@ export class ManagementService {
         //   this.eventService.start();
 
         return this.http
-            .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/run-ortho', JSON.stringify( { id: id } ), { headers: headers } )
+            .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/run-ortho', JSON.stringify( { id: id, excludes: excludes } ), { headers: headers } )
             .finally(() => {
                 //   this.eventService.complete();
             } )
