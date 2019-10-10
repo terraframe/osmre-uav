@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
+import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Subject } from 'rxjs/Subject';
@@ -46,6 +46,9 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @Input() site: SiteEntity;
 
+    @Input() center: LngLat = new LngLat( -78.880453, 42.897852 );
+    @Input() zoom: number = 2;
+
     coordinate: {
         longitude: number,
         latitude: number
@@ -68,12 +71,12 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         let config: MapboxOptions = {
             container: 'map-attribute-div',
             style: 'mapbox://styles/mapbox/outdoors-v11',
-            zoom: 2,
-            center: [-78.880453, 42.897852]
+            zoom: this.zoom,
+            center: this.center
         };
 
         if ( this.site.geometry != null ) {
-            config.zoom = 10;
+            //                    config.zoom = 10;
             config.center = this.site.geometry.coordinates;
         }
 
@@ -117,8 +120,6 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         } );
 
         this.addLayers();
-
-        //        this.refresh( true );
     }
 
 

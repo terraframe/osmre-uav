@@ -549,6 +549,14 @@ public class ProjectManagementService
     return response;
   }
 
+  @Request(RequestType.SESSION)
+  public SiteItem get(String sessionId, String id)
+  {
+    UasComponent component = UasComponent.get(id);
+
+    return Converter.toSiteItem(component, false);
+  }
+
 //  public void logLoginAttempt(String sessionId, String username)
 //  {
 //    if (sessionId != null)

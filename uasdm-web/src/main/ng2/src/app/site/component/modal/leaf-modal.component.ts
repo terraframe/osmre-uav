@@ -36,6 +36,7 @@ export class LeafModalComponent implements OnInit {
     processable: boolean = false;
     excludes: string[] = [];
     enableSelectableImages: boolean = false;
+    folder: SiteEntity;
 
     /*
      * Reference to the modal current showing
@@ -71,13 +72,6 @@ export class LeafModalComponent implements OnInit {
         }
 
         this.processable = this.metadataService.isProcessable( entity.type );
-    }
-
-    downloadAllImages(): any {
-
-        // const component: string = product.entities[product.entities.length - 1].id;
-
-        // window.location.href = acp + '/project/download-all?id=' + this.entity.id + "&key=" + node.data.name;
     }
 
     createImageFromBlob( image: Blob, imageData: any ) {
@@ -132,6 +126,8 @@ export class LeafModalComponent implements OnInit {
                 }
 
             }
+            
+            this.folder = folder;
         } );
     }
 
@@ -197,6 +193,18 @@ export class LeafModalComponent implements OnInit {
             this.statusMessage = "Your process is started.";
         } );
     }
+
+    handleDownload( ): void {
+
+        window.location.href = acp + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+
+        //      this.service.downloadAll( data.id ).then( data => {
+        //        
+        //      } ).catch(( err: HttpErrorResponse ) => {
+        //          this.error( err );
+        //      } );
+    }
+
 
 
 
