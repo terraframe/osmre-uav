@@ -459,42 +459,6 @@ a.thumbnail.non-clickable:focus {
 // .card-price table .price{ font-size: 1.2em; font-weight: 700; text-align: left; }
 // .card-price table .note{ color: #666; font-size: 0.8em; }
 
-.circle {
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  // background-color: rgb(44, 108, 128);
-  // position: relative;
-  position: absolute;
-  border: solid 2px grey;
-  top: 50%;
-  transform: translateY(-50%);
-      left: 65px;
-}
-.circle::after {
-  content: " ";
-  position: absolute;
-  display: block;
-  background-color: grey;
-  height: 2px;
-  margin-top: -3px;
-  top: 50%;
-  left: 30px;
-  right: 30px;
-  z-index: 9;
-}
-.circle::before {
-  content: " ";
-  position: absolute;
-  display: block;
-  background-color: grey;
-  width: 2px;
-  margin-left: -3px;
-  left: 50%;
-  top: 30px;
-  bottom: 35px;
-  z-index: 9;
-}
 
 
 .caption {
