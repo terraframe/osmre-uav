@@ -31,15 +31,14 @@
     <div class="row">
       <tabset class="nav-full-width">
         <tab *ngFor="let folder of folders" [heading]="folder.name" (select)="onSelect(folder)">
-          <div>
             <div id="image-list-container">
 
               <ul class="list-group row">
                   <li *ngFor="let item of items" class="list-group-item col-xs-3">
                      <!-- <div class="" >   -->
-                        <a class="thumbnail" [ngClass]="{'card-disabled' : item.excludeFromProcess}" >
-                          <input type="checkbox" class="x-box" [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)"/>
-                          <img [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                        <a class="thumbnail" [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}" >
+                          <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)"/>
+                          <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false" [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                           <div class="caption">
                             <h4 class="media-heading">{{item.name}}</h4>
                           </div>
@@ -49,18 +48,26 @@
               </ul>
 
             </div>
-          </div>      
         </tab>
       </tabset>
     </div>
     <div class="row">
-    <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
-      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-      <button *ngIf="processable" (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
-        Reprocess imagery
-        <i class="fa fa-sync-alt" aria-hidden="true" style="vertical-align: middle;margin-left: 10px;"></i>
-      </button>    
-    </div>
+
+      <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
+        <p>{{statusMessage}}</p>
+        <p>See this process on 
+          <a routerlink="/site/tasks" routerlinkactive="active" href="#/site/tasks">your tasks page</a>
+        </p>
+      </div>
+
+      <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="downloadAllImages()">Download Raw Images</button>
+        <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning" (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
+          Reprocess imagery
+          <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true" style="color:white;vertical-align: middle;margin-left: 10px;"></i>
+        </button>
+      </div>
     </div>
     
     <!-- <div class="row">

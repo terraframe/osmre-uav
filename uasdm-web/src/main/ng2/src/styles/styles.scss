@@ -192,10 +192,19 @@ button.create-site-btn {
     border-right: 2px solid lightgrey;
 }
 
+
+
 a.thumbnail.active, 
 a.thumbnail:focus, 
 a.thumbnail:hover {
     border-color: #007276;
+}
+
+a.thumbnail.non-clickable:active,
+a.thumbnail.non-clickable:hover,
+a.thumbnail.non-clickable:focus {
+  cursor: auto !important;
+  border-color: #ddd !important;
 }
 
 .media {

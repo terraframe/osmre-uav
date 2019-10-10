@@ -27,17 +27,15 @@ export class LeafModalComponent implements OnInit {
      * Breadcrumb of previous sites clicked on
      */
     previous = [] as SiteEntity[];
-
     folders: SiteEntity[] = [];
-
     thumbnails: any = {};
     items: any[] = [];
-
+    processRunning: boolean = false;
     message: string;
-
+    statusMessage: string;
     processable: boolean = false;
-
     excludes: string[] = [];
+    enableSelectableImages: boolean = false;
 
     /*
      * Reference to the modal current showing
@@ -55,6 +53,8 @@ export class LeafModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
+
+        this.excludes = []; // clear excludes if toggling between tabs
     }
 
     init( entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[] ): void {
@@ -71,6 +71,13 @@ export class LeafModalComponent implements OnInit {
         }
 
         this.processable = this.metadataService.isProcessable( entity.type );
+    }
+
+    downloadAllImages(): any {
+
+        // const component: string = product.entities[product.entities.length - 1].id;
+
+        // window.location.href = acp + '/project/download-all?id=' + this.entity.id + "&key=" + node.data.name;
     }
 
     createImageFromBlob( image: Blob, imageData: any ) {
@@ -101,6 +108,12 @@ export class LeafModalComponent implements OnInit {
     onSelect( folder: SiteEntity ): void {
         // clear any existing items
         this.items = [];
+
+        if(folder.name === "raw"){
+            this.enableSelectableImages = true;
+        } else {
+            this.enableSelectableImages = false;
+        }
 
         this.service.getItems( folder.component, folder.name ).then( items => {
             //this.images = [items[0]]; // not yet handling different types of files
@@ -167,17 +180,21 @@ export class LeafModalComponent implements OnInit {
 
     handleRunOrtho(): void {
 
-        this.notificationModalRef = this.modalService.show( NotificationModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-            class: 'modal-dialog-centered'
-        } );
-        this.notificationModalRef.content.message = "Your ortho task is running for [" + this.entity.name + "]. You can view the current process and results on your tasks page.";
-        this.notificationModalRef.content.submitText = 'OK';
+        // this.notificationModalRef = this.modalService.show( NotificationModalComponent, {
+        //     animated: true,
+        //     backdrop: true,
+        //     ignoreBackdropClick: true,
+        //     class: 'modal-dialog-centered'
+        // } );
+        // this.notificationModalRef.content.message = "Your ortho task is running for [" + this.entity.name + "]. You can view the current process and results on your tasks page.";
+        // this.notificationModalRef.content.submitText = 'OK';
+
+
+        this.processRunning = true;
 
         this.service.runOrtho( this.entity.id, this.excludes ).then( data => {
-            // Nothing
+            this.processRunning = false;
+            this.statusMessage = "Your process is started.";
         } );
     }
 
