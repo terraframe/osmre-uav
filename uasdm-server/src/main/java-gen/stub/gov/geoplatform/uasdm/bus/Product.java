@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,10 @@ public class Product extends ProductBase
   private static final long serialVersionUID = 1797567850;
   
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
+  
+  private String imageKey = null;
+  
+  private String mapKey = null;
   
   public Product()
   {
@@ -220,5 +225,69 @@ public class Product extends ProductBase
 
     logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].");
     return null;
+  }
+
+  public void updateBoundingBox()
+  {
+    UasComponent component = this.getComponent();
+
+    List<UasComponent> components = component.getAncestors();
+    Collections.reverse(components);
+
+    components.add(component);
+    
+    if (this.getImageKey() == null || this.getMapKey() == null)
+    {
+      this.calculateKeys(components);
+    }
+    
+    if (this.getMapKey() != null && this.getMapKey().length() > 0)
+    {
+      String bbox = this.calculateBoundingBox(this.getMapKey());
+      
+      if (bbox != null)
+      {
+        this.lock();
+        this.setBoundingBox(bbox);
+        this.apply();
+      }
+    }
+  }
+  
+  public String getImageKey()
+  {
+    return this.imageKey;
+  }
+  
+  public String getMapKey()
+  {
+    return this.mapKey;
+  }
+  
+  public void calculateKeys(List<UasComponent> components)
+  {
+    List<Document> documents = new LinkedList<Document>();
+
+    try (OIterator<? extends Document> it = this.getAllDocuments())
+    {
+      documents.addAll(it.getAll());
+    }
+    
+    for (Document document : documents)
+    {
+      if (document.getName().endsWith(".png"))
+      {
+        this.imageKey = document.getS3location();
+      }
+      else if (document.getName().endsWith(".tif"))
+      {
+        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
+
+        if (GeoserverFacade.layerExists(storeName))
+        {
+          this.mapKey = storeName;
+        }
+      }
+    }
   }
 }

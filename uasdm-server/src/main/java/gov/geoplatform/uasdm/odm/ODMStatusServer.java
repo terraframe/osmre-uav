@@ -27,7 +27,6 @@ import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -481,7 +480,7 @@ public class ODMStatusServer
     {
       try
       {
-        runInTrans();
+        Product product = runInTrans();
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
@@ -490,6 +489,9 @@ public class ODMStatusServer
 
         // Create image services
         uploadTask.getImageryComponent().createImageServices();
+        
+        // Calculate bounding boxes
+        product.updateBoundingBox();
 
         ODMStatusServer.sendEmail(uploadTask);
       }
@@ -528,7 +530,7 @@ public class ODMStatusServer
     }
 
 //    @Transaction
-    public void runInTrans() throws ZipException, SpecialException
+    public Product runInTrans() throws ZipException, SpecialException, InterruptedException
     {
       List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
 
@@ -575,8 +577,7 @@ public class ODMStatusServer
         {
           if (Thread.interrupted())
           {
-            Thread.currentThread().interrupt();
-            return;
+            throw new InterruptedException();
           }
 
           File parentDir = new File(unzippedParentFolder, config.odmFolderName);
@@ -611,28 +612,28 @@ public class ODMStatusServer
             raw.addGeneratedProduct(product);
           }
         }
-
+        
+        return product;
       }
       finally
       {
         if (DevProperties.runOrtho())
         {
           FileUtils.deleteQuietly(zip);
+          removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
         FileUtils.deleteQuietly(unzippedParentFolder);
-        removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
       }
     }
 
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents)
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents) throws InterruptedException
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
       {
         if (Thread.interrupted())
         {
-          Thread.currentThread().interrupt();
-          return;
+          throw new InterruptedException();
         }
 
         String name = child.getName();

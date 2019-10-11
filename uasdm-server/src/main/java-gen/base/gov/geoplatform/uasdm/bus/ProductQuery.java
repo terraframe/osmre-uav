@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1081394649)
+@com.runwaysdk.business.ClassSignature(hash = -1659923330)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.Product.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getBoundingBox()
+  {
+    return getBoundingBox(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, displayLabel);
+
   }
   public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
@@ -611,6 +628,9 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public interface ProductQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
+    public com.runwaysdk.query.SelectableChar getBoundingBox();
+    public com.runwaysdk.query.SelectableChar getBoundingBox(String alias);
+    public com.runwaysdk.query.SelectableChar getBoundingBox(String alias, String displayLabel);
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
@@ -740,6 +760,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
       return this.NE(product.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getBoundingBox()
+  {
+    return getBoundingBox(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, displayLabel);
+
+  }
   public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
     return getComponent(null);
@@ -1254,6 +1291,9 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public interface ProductQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
+    public com.runwaysdk.query.SelectableChar getBoundingBox();
+    public com.runwaysdk.query.SelectableChar getBoundingBox(String alias);
+    public com.runwaysdk.query.SelectableChar getBoundingBox(String alias, String displayLabel);
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
     public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
@@ -1379,6 +1419,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getBoundingBox()
+  {
+    return getBoundingBox(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getBoundingBox(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.Product.BOUNDINGBOX, alias, displayLabel);
+
   }
   public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
   {
