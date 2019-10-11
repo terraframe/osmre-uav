@@ -28,6 +28,16 @@
  --theme-button-color-hover: #007276;
  --theme-button-color-border: lightgrey;
  --theme-button-black: #767676;
+ 
+ --theme-button-secondary-color: grey;
+ --theme-button-secondary-color-hover: lightgrey;
+ --theme-button-secondary-background: #efefef;;
+ --theme-button-secondary-background-hover: #e9e9e9;
+
+ --theme-button-default-color: grey;
+ --theme-button-default-color-hover: #007276;
+ --theme-button-default-background: white;
+ --theme-button-default-background-hover: #f8f8f8;
 
  --theme-cancel-button-color: grey;
  --theme-cancel-button-color-hover: #007276;
@@ -35,7 +45,7 @@
  --theme-submit-button-color: #007276;
  --theme-submit-button-color-hover: #00adb3;
  --theme-submit-button-color-light: #B6D7D8;
- --theme-submit-button-color-light-hover: #deeded;
+ --theme-submit-button-color-light-hover: #98c6c8;
 
  --theme-alert-button-color: #e30000;
 

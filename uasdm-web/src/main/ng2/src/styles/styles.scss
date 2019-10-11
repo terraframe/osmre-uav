@@ -280,13 +280,21 @@ a.active {
   color: #007276;
 }
 
-.fa.fa-caret-down:hover {
+.fa.expand-arrow-ico:hover {
     color: #007276;
+    transform: rotate(270deg);
 }
 .fa.fa-pencil-alt:hover {
     color: #007276;
 }
 
+
+.form-control:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(0,114,118,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(0,114,118,.6);
+}
 
 .location-management-widget-section .search-input,
 .location-management-widget-section > input[type="text"],

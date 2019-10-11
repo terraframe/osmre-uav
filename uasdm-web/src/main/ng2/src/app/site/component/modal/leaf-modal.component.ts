@@ -1,4 +1,15 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import {
+    trigger,
+    state,
+    style,
+    animate,
+    transition,
+    group, 
+    query, 
+    stagger,
+    keyframes
+} from '@angular/animations';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -18,7 +29,26 @@ declare var acp: string;
 @Component( {
     selector: 'leaf-modal',
     templateUrl: './leaf-modal.component.html',
-    styleUrls: []
+    styleUrls: [],
+    animations: [
+       trigger('slide', [
+            transition(':enter', [
+                style({transform: 'translateX(-100%)', opacity: '1'}),
+                animate(200)
+            ]),
+            transition(':leave', [
+                group([
+                    animate('0.2s ease', style({
+                        transform: 'translate(150px,25px)'
+                    })),
+                    animate('0.5s 0.2s ease', style({
+                        opacity: 0
+                    }))
+                ])
+            ])
+        ]),
+
+    ]
 } )
 export class LeafModalComponent implements OnInit {
     entity: SiteEntity;

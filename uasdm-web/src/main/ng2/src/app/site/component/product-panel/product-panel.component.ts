@@ -140,9 +140,9 @@ export class ProductPanelComponent {
         this.pService.getDetail( product.id ).then( detail => {
             this.bsModalRef = this.modalService.show( ProductModalComponent, {
                 animated: true,
-                backdrop: false,
-                ignoreBackdropClick: false,
-                'class': 'image-preview-modal'
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'product-info-modal'
             } );
             this.bsModalRef.content.init( detail );
 
