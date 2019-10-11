@@ -255,7 +255,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } );
 
         // MapboxGL doesn't have a good way to detect when moving off the map
-        let sidebar = document.getElementById( "location-explorer-list" );
+        let sidebar = document.getElementById( "navigator-left-sidebar" );
         sidebar.addEventListener( "mouseenter", function() {
             let mousemovePanel = document.getElementById( "mousemove-panel" );
             mousemovePanel.textContent = "";

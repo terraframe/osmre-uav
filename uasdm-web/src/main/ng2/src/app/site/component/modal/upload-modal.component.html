@@ -13,6 +13,7 @@
 
 <div class="confirm-modal ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable com-runwaysdk-ui-factory-jquery-Dialog com-runwaysdk-ui-factory-runway-Widget ui-dialog-buttons" tabindex="-1" role="dialog">
     
+
     <div *ngIf="message != null && message.length > 0" class="row error-container">
         <div class="col-md-2"></div>
         <div class="col-md-8">
@@ -35,8 +36,11 @@
 <!-- 
           <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'FILE'}" >Upload</li>
  -->        
-          <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'CATEGORY'}">Categories</li>
-          <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'SUMMARY'}">Finalize</li>
+
+          <modal-step-indicator [stepConfig]="modalStepConfig"></modal-step-indicator>
+
+          <!-- <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'CATEGORY'}">Categories</li> -->
+          <!-- <li class="list-group-item" [ngClass]="{'list-group-item-success':page.type === 'SUMMARY'}">Finalize</li> -->
         </ol>                    
       </div>    
     </div>

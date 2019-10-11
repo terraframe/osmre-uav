@@ -11,7 +11,7 @@ import { HubComponent } from './core/component/hub/hub.component';
 const routes: Routes = [
     {
         path: 'menu',
-        redirectTo: '/site/tasks',
+        redirectTo: '/site/viewer',
     },
     {
         path: 'login',
@@ -39,7 +39,7 @@ const routes: Routes = [
     },
     {
         path: '**',
-        redirectTo: '/site/tasks',
+        redirectTo: '/site/viewer',
     }
 ];
 
