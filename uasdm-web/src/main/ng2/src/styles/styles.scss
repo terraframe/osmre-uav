@@ -274,6 +274,12 @@ a.thumbnail.non-clickable:focus {
 
 // ----- //
 
+a:hover,
+a:active,
+a.active {
+  color: #007276;
+}
+
 .fa.fa-caret-down:hover {
     color: #007276;
 }

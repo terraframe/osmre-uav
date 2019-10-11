@@ -108,6 +108,7 @@ export class Product {
     entities: SiteEntity[];
     imageKey: string;
     mapKey: string;
+    orthoMapped?: boolean;
 }
 
 export class ProductDetail extends Product {
