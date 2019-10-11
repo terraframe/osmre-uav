@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
     trigger,
     state,
@@ -9,11 +8,7 @@ import {
 } from '@angular/animations';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
-import { saveAs as importedSaveAs } from "file-saver";
 import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
-import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';

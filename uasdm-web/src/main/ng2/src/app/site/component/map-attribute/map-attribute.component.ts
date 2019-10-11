@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+
 
 import { SiteEntity } from '../../model/management';
 import { MapService } from '../../service/map.service';
@@ -54,7 +53,40 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         latitude: number
     } = { longitude: null, latitude: null };
 
-    constructor( private mapService: MapService ) { }
+    /* 
+     * Datasource to get search responses
+     */
+    dataSource: Observable<any>;
+
+    /* 
+     * Model for text being searched
+     */
+    search: string = "";
+
+    constructor( private mapService: MapService ) { 
+        this.dataSource = Observable.create(( observer: any ) => {
+
+            this.mapService.mbForwardGeocode( this.search ).then( response => {
+                const match = response.features;
+                let results = [];
+
+                // Add Mapbox results to any local results
+                match.forEach( obj => {
+                    let newObj = {
+                        id: obj.id,
+                        hierarchy: [],
+                        label: obj.place_name,
+                        center: obj.center,
+                        source: "MAPBOX"
+                    }
+
+                    results.push( newObj );
+                } );
+
+                observer.next( results );
+            } );
+        } );
+    }
 
     ngOnInit(): void {
         this.refreshCoordinateFromMap();
@@ -226,4 +258,16 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
+
+    handleClick( $event: any ): void {
+        let result = $event.item;
+
+        if ( result.center ) {
+            this.map.flyTo( {
+                center: result.center,
+                zoom: 9
+            } )
+        }
+    }
+    
 }
