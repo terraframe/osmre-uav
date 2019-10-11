@@ -2767,6 +2767,7 @@ li.list-group-item.active {
     color: var(--theme-text-dark);
 }
 
+/* Buttons */
 input[type=button],
 input[type=submit],
 button.btn,
@@ -2785,6 +2786,8 @@ button.btn:active,
     outline: 0 !important;
     box-shadow: none;
 }
+
+/* Primary Buttons */
 input[type=button].btn.btn-primary, 
 input[type=submit].btn.btn-primary,
 button.btn-primary, 
@@ -2816,7 +2819,7 @@ button.btn.btn-primary:active,
     border-color: lightgrey; /* IE fallback */
     border-color: var(--theme-button-color-border);
 
-    background: #f4fcef; /* IE fallback */
+    background: #98c6c8; /* IE fallback */
     background: var(--theme-submit-button-color-light-hover);
 }
 input[type=button].btn.btn-primary:disabled, 
@@ -2828,11 +2831,14 @@ button.btn.btn-primary:disabled,
     background: var(--theme-submit-button-color-light);
 }
 
+
+/* Default Buttons */
 input[type=button].btn.btn-default, 
 input[type=submit].btn.btn-default,
 button.btn.btn-default,
 .btn.btn-default {
-    background: white;
+	background: white;
+	background: var(--theme-button-default-background);
 
     color: grey; /* IE fallback */
     color: var(--theme-cancel-button-color);
@@ -2848,17 +2854,58 @@ button.btn-default:hover,
 button.btn.btn-default:hover,
 .btn-default:hover {
     color: #007276; /* IE fallback */
-    color: var(--theme-cancel-button-color-hover);
-    background: #f8f8f8;
+    color: var(--theme-button-default-color-hover);
+	background: #f8f8f8;
+	background: var(--theme-button-default-background-hover);
 }
 
 button.btn-default:disabled:hover, 
 button.btn.btn-default:disabled:hover, 
 .btn-default:disabled:hover{
-    background: white;
-    color: grey;
-    color: var(--theme-cancel-button-color);
+    background: #f8f8f8;
+	background: var(--theme-button-default-background-hover);
+    color: #007276;
+    color: var(--theme-default-button-color-hover);
     border-color: lightgrey;
+    border-color: var(--theme-button-color-border);
+    cursor: auto;
+}
+
+/* Secondary Buttons */
+input[type=button].btn.btn-secondary, 
+input[type=submit].btn.btn-secondary,
+button.btn.btn-secondary,
+.btn.btn-secondary {
+	background: #efefef; /* IE fallback */
+	background: var(--theme-button-secondary-background);
+
+    color: grey; /* IE fallback */
+    color: var(--theme-button-secondary-color);
+
+    border-color: lightgrey; /* IE fallback */
+    border-color: var(--theme-button-color-border);
+}
+input[type=button].btn.btn-secondary:hover, 
+input[type=submit].btn.btn-secondary:hover,
+input[type=button].btn.btn-secondary:active, 
+input[type=submit].btn.btn-secondary:active,
+button.btn-secondary:hover, 
+button.btn.btn-secondary:hover,
+.btn-secondary:hover {
+    color: #007276; /* IE fallback */
+    color: var(--theme-cancel-button-color-hover);
+	background: #e9e9e9; /* IE fallback */
+	background: var(--theme-button-secondary-background-hover);
+}
+
+button.btn-secondary:disabled:hover, 
+button.btn.btn-secondary:disabled:hover, 
+.btn-secondary:disabled:hover{
+	background: #e9e9e9; /* IE fallback */
+	background: var(--theme-button-secondary-background-hover);
+    color: grey; /* IE fallback */
+    color: var(--theme-button-secondary-color-hover);
+    border-color: lightgrey; /* IE fallback */
     border-color: var(--theme-button-color-border);
     cursor: auto;
 }

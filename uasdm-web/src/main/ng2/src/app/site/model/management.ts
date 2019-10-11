@@ -10,6 +10,8 @@ export class AttributeType {
     type: string;
     required: boolean;
     immutable: boolean;
+    readonly: boolean;
+    condition: Condition;
 }
 
 export class SiteEntity {
@@ -107,6 +109,7 @@ export class Product {
     imageKey: string;
     mapKey: string;
     boundingBox: number[];
+    orthoMapped?: boolean;
 }
 
 export class ProductDetail extends Product {

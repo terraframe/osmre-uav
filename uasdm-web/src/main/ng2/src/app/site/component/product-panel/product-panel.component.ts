@@ -1,7 +1,4 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
@@ -98,6 +95,7 @@ export class ProductPanelComponent {
     }
 
     handleMapIt( product: Product ): void {
+        product.orthoMapped = !product.orthoMapped;
         this.toggleMapImage.emit( product );
     }
 
@@ -142,9 +140,9 @@ export class ProductPanelComponent {
         this.pService.getDetail( product.id ).then( detail => {
             this.bsModalRef = this.modalService.show( ProductModalComponent, {
                 animated: true,
-                backdrop: false,
-                ignoreBackdropClick: false,
-                'class': 'image-preview-modal'
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'product-info-modal'
             } );
             this.bsModalRef.content.init( detail );
 

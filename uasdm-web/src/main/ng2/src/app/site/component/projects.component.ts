@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
     trigger,
     state,
     style,
     animate,
     transition,
+    group, 
+    query, 
+    stagger,
+    keyframes
 } from '@angular/animations';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
-import { saveAs as importedSaveAs } from "file-saver";
 import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
-import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
@@ -41,9 +40,30 @@ declare var gpAppType: any;
         trigger( 'fadeIn', [
             transition( ':enter', [
                 style( { opacity: '0' } ),
-                animate( '.25s ease-out', style( { opacity: '1' } ) ),
+                animate( '.50s ease-out', style( { opacity: '1' } ) ),
+
+                // style({ transform: 'scale(0.5)', opacity: 0 }),  // initial
+                // animate('.5s cubic-bezier(.8, -0.6, 0.2, 1.5)', 
+                // style({ transform: 'scale(1)', opacity: 1 })),  // final
             ] ),
-        ] )
+        ] ),
+       trigger('slide', [
+            transition(':enter', [
+                style({transform: 'translateX(-100%)', opacity: '1'}),
+                animate(200)
+            ]),
+            transition(':leave', [
+                group([
+                    animate('0.2s ease', style({
+                        transform: 'translate(150px,25px)'
+                    })),
+                    animate('0.5s 0.2s ease', style({
+                        opacity: 0
+                    }))
+                ])
+            ])
+        ]),
+
     ]
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -255,7 +275,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         } );
 
         // MapboxGL doesn't have a good way to detect when moving off the map
-        let sidebar = document.getElementById( "location-explorer-list" );
+        let sidebar = document.getElementById( "navigator-left-sidebar" );
         sidebar.addEventListener( "mouseenter", function() {
             let mousemovePanel = document.getElementById( "mousemove-panel" );
             mousemovePanel.textContent = "";
@@ -467,8 +487,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
-                console.log( 'On Change', this );
-                console.log( 'Entity', entity );
 
                 if ( parent != null ) {
 
@@ -830,9 +848,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     showLeafModal( collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[] ): void {
         this.bsModalRef = this.modalService.show( LeafModalComponent, {
             animated: true,
-            backdrop: false,
-            ignoreBackdropClick: false,
-            class: 'image-preview-modal'
+            backdrop: true,
+            ignoreBackdropClick: true,
+            class: 'leaf-modal'
         } );
         this.bsModalRef.content.init( collection, folders, breadcrumbs );
     }
