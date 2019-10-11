@@ -203,7 +203,7 @@ public abstract class Converter
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
-
+    
     for (Document document : documents)
     {
       if (document.getName().endsWith(".png"))
@@ -218,6 +218,16 @@ public abstract class Converter
         {
           view.setMapKey(storeName);
         }
+      }
+    }
+    
+    if (view.getMapKey() != null && view.getMapKey().length() > 0)
+    {
+      String bbox = product.calculateBoundingBox(view.getMapKey());
+      
+      if (bbox != null)
+      {
+        view.setBoundingBox(bbox);
       }
     }
   }

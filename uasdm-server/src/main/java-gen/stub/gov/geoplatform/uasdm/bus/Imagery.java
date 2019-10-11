@@ -1,5 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -20,25 +27,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
-
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Imagery extends ImageryBase implements ImageryComponent
 {
@@ -332,51 +330,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
 
       try
       {
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-        TransferManager tx = new TransferManager(new StaticCredentialsProvider(awsCreds));
-
-        try
-        {
-          Upload myUpload = tx.upload(AppProperties.getBucketName(), key, tmp);
-
-          if (myUpload.isDone() == false)
-          {
-            imageryComponent.getLog().info("Transfer: " + myUpload.getDescription());
-            imageryComponent.getLog().info(" - State: " + myUpload.getState());
-            imageryComponent.getLog().info(" - Progress: " + myUpload.getProgress().getBytesTransferred());
-
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
-          }
-
-          myUpload.addProgressListener(new ProgressListener()
-          {
-            int count = 0;
-
-            @Override
-            public void progressChanged(ProgressEvent progressEvent)
-            {
-              if (count % 2000 == 0)
-              {
-                long total = myUpload.getProgress().getTotalBytesToTransfer();
-                long current = myUpload.getProgress().getBytesTransferred();
-
-                imageryComponent.getLog().info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-                count = 0;
-              }
-
-              count++;
-            }
-          });
-
-          myUpload.waitForCompletion();
-        }
-        finally
-        {
-          tx.shutdownNow();
-        }
+        Util.uploadFileToS3(tmp, key, task);
 
         Document.createIfNotExist(imageryComponent.getUasComponent(), key, name);
 

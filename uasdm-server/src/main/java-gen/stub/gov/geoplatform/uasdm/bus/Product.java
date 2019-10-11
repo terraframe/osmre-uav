@@ -2,20 +2,40 @@ package gov.geoplatform.uasdm.bus;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import net.geoprism.gis.geoserver.GeoserverFacade;
+
+import org.geotools.data.ows.CRSEnvelope;
+import org.geotools.data.ows.Layer;
+import org.geotools.data.ows.WMSCapabilities;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.json.JSONArray;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.vividsolutions.jts.geom.Coordinate;
 
 public class Product extends ProductBase
 {
   private static final long serialVersionUID = 1797567850;
-
+  
+  private static final Logger logger = LoggerFactory.getLogger(Product.class);
+  
   public Product()
   {
     super();
   }
-
+  
   @Override
   public void delete()
   {
@@ -85,7 +105,7 @@ public class Product extends ProductBase
 
     return product;
   }
-
+  
   public static Product find(UasComponent uasComponent)
   {
     ProductQuery query = new ProductQuery(new QueryFactory());
@@ -114,5 +134,91 @@ public class Product extends ProductBase
         relationship.delete();
       }
     }
+  }
+  
+  /**
+   * This method calculates a 4326 CRS bounding box for a given raster layer with the specified mapKey. This layer
+   * must exist on Geoserver before calling this method. If the bounding box cannot be calculated, for whatever
+   * reason, this method will return null.
+   * 
+   * @return A JSON array where [x1, x2, y1, y2]
+   */
+  public String calculateBoundingBox(String mapKey)
+  {
+    try
+    {
+      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(mapKey);
+      
+      List<Layer> layers = capabilities.getLayerList();
+      
+      Layer layer = null;
+      
+      if (layers.size() == 0)
+      {
+        logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
+        return null;
+      }
+      else if (layers.size() == 1)
+      {
+        layer = layers.get(0);
+      }
+      else
+      {
+        for (Layer potential : layers)
+        {
+          if (potential.getName() != null && potential.getName().equals(mapKey))
+          {
+            layer = potential;
+            break;
+          }
+        }
+        
+        if (layer == null)
+        {
+          logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
+          return null;
+        }
+      }
+      
+      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
+      
+      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
+      {
+        String code = entry.getKey();
+        CRSEnvelope envelope = entry.getValue();
+        
+        try
+        {
+          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
+          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326"); // Mapbox's docs say that it's in 3857 but it's bounding box method expects 4326.
+          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+          
+          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
+          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
+          
+          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
+          
+          JSONArray json = new JSONArray();
+          json.put(env3857.getMinX());
+          json.put(env3857.getMaxX());
+          json.put(env3857.getMinY());
+          json.put(env3857.getMaxY());
+          
+          return json.toString();
+        }
+        catch (Throwable t)
+        {
+          // Perhaps there is another bounding box we can try?
+        }
+      }
+    }
+    catch (Throwable t)
+    {
+      logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].", t);
+      return null;
+    }
+
+    logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].");
+    return null;
   }
 }

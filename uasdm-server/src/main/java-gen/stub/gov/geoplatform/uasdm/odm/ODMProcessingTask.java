@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.DevProperties;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +60,16 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
   {
     try
     {
-      NewResponse resp = ODMFacade.taskNew(images);
+      NewResponse resp;
+      
+      if (DevProperties.runOrtho())
+      {
+        resp = ODMFacade.taskNew(images);
+      }
+      else
+      {
+        resp = new NewResponse(new HTTPResponse("{\"uuid\":\"TEST\"}", 200));
+      }
 
       if (resp.getHTTPResponse().isUnreachableHost())
       {

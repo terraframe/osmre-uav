@@ -644,6 +644,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.addImageLayer( mapKey );
 
                 this.layers.push( mapKey );
+                
+                if (product.boundingBox != null)
+                {
+                  let bbox = product.boundingBox;
+                  
+                  let bounds = new LngLatBounds( [bbox[0], bbox[2]], [bbox[1], bbox[3]] );
+
+                  this.map.fitBounds( bounds, { padding: 50 } );
+                }
             }
         }
     }

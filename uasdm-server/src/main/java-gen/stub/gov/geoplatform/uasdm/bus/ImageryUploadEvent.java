@@ -15,6 +15,7 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.system.VaultFile;
 
+import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
@@ -41,7 +42,11 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.apply();
 
     Imagery imagery = task.getImagery();
-    imagery.uploadArchive(task, appRes, uploadTarget);
+    
+    if (DevProperties.uploadRaw())
+    {
+      imagery.uploadArchive(task, appRes, uploadTarget);
+    }
 
     calculateImageSize(appRes, imagery);
 

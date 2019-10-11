@@ -106,6 +106,7 @@ export class Product {
     entities: SiteEntity[];
     imageKey: string;
     mapKey: string;
+    boundingBox: number[];
 }
 
 export class ProductDetail extends Product {
