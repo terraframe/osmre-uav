@@ -10,12 +10,9 @@ import { GeoJSONSource } from 'mapbox-gl';
 
 import * as mapboxgl from 'mapbox-gl';
 
-import * as mbxGeocodingService from '@mapbox/mapbox-sdk/services/geocoding';
 
 const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
 
-// const mbxStyles = require('@mapbox/mapbox-sdk/services/geocoding');
-const geocodingService = mbxGeocodingService({ accessToken: mapboxKey });
 
 declare var acp: any;
 
