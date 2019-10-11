@@ -16,21 +16,21 @@
 
   <form #ngForm="ngForm">
     <div *ngFor="let attribute of attributes">
-      <div *ngIf="!attribute.readonly && (attribute.condition == null || evaluate(attribute.condition))" class="form-group">
+      <div *ngIf="evaluate(attribute)" class="form-group">
         <div *ngIf="attribute.type === 'text'">
           <label>{{attribute.label}}</label>
-          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [placeholder]="attribute.label" [required]="attribute.required" />
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
         <div *ngIf="attribute.type === 'list'">
           <label>{{attribute.label}}</label>
-          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" [required]="attribute.required">
+          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" [disabled]="attribute.readonly" [required]="attribute.required">
             <option></option>
             <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
           </select>
         </div>
         <div *ngIf="attribute.type === 'text-area'">
           <label>{{attribute.label}}</label>
-          <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name" class="form-control" [required]="attribute.required">
+          <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name"  [disabled]="attribute.readonly" class="form-control" [required]="attribute.required">
           </textarea>
         </div>
         <div *ngIf="attribute.type === 'point'">          

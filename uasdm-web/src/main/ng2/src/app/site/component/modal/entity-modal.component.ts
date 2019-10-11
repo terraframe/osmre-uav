@@ -67,8 +67,6 @@ export class EntityModalComponent implements OnInit {
             }
             else {
                 this.service.update( this.entity ).then( node => {
-                    console.log( 'Test', this );
-
                     this.onNodeChange.next( node );
 
                     this.bsModalRef.hide();
@@ -84,8 +82,16 @@ export class EntityModalComponent implements OnInit {
         }
     }
 
-    evaluate( condition: Condition ): boolean {
-        return this.service.evaluate( condition, this.entity );
+    evaluate( attribute: AttributeType ): boolean {
+
+        if ( this.newInstance && attribute.readonly ) {
+            return false;
+        }
+        else if ( attribute.condition != null ) {
+            return this.service.evaluate( attribute.condition, this.entity );
+        }
+        
+        return true;
     }
 
     error( err: HttpErrorResponse ): void {
