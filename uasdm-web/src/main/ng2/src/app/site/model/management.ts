@@ -10,6 +10,8 @@ export class AttributeType {
     type: string;
     required: boolean;
     immutable: boolean;
+    readonly: boolean;
+    condition: Condition;
 }
 
 export class SiteEntity {
