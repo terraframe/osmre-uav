@@ -16,6 +16,8 @@ public class ProductView
   private String         imageKey;
 
   private String         mapKey;
+  
+  private String         boundingBox;
 
   public String getId()
   {
@@ -66,6 +68,16 @@ public class ProductView
   {
     this.mapKey = mapKey;
   }
+  
+  public String getBoundingBox()
+  {
+    return mapKey;
+  }
+
+  public void setBoundingBox(String boundingBox)
+  {
+    this.boundingBox = boundingBox;
+  }
 
   public JSONObject toJSON()
   {
@@ -82,6 +94,11 @@ public class ProductView
     if (this.mapKey != null)
     {
       object.put("mapKey", this.mapKey);
+    }
+    
+    if (this.boundingBox != null && this.boundingBox.length() > 0)
+    {
+      object.put("boundingBox", new JSONArray(this.boundingBox));
     }
 
     return object;

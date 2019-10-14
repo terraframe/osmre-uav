@@ -1,5 +1,17 @@
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Document;
+import gov.geoplatform.uasdm.bus.ImageryComponent;
+import gov.geoplatform.uasdm.bus.Product;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.service.SolrService;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,6 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import net.geoprism.EmailSetting;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -18,20 +34,6 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Document;
-import gov.geoplatform.uasdm.bus.ImageryComponent;
-import gov.geoplatform.uasdm.bus.Product;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.service.SolrService;
-import net.geoprism.EmailSetting;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-
 public class ODMStatusServer
 {
   private static final Integer               ODM_STATUS_UPDATE_INTERVAL = 5000;                                          // in
@@ -42,41 +44,6 @@ public class ODMStatusServer
   private static List<S3ResultsUploadThread> uploadThreads              = new ArrayList<S3ResultsUploadThread>();
 
   private static Logger                      logger                     = LoggerFactory.getLogger(ODMStatusServer.class);
-
-  /**
-   * !Test code!
-   */
-//  public static void main(String[] args)
-//  {
-//    mainInReq();
-//  }
-//  
-//  @Request
-//  private static void mainInReq()
-//  {
-//    ODMUploadTaskQuery query = new ODMUploadTaskQuery(new QueryFactory());
-//    
-//    query.WHERE(query.getOid().EQ("d2aeebb8-e0fe-4486-b184-e07ebf0005d3"));
-//    
-//    OIterator<? extends ODMUploadTask> it = query.getIterator();
-//    
-//    ODMUploadTask task = it.next();
-//    
-//    S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + task.getOdmUUID(), task, new File("/home/rich/dev/data/odm/aukerman/all-output-dem.zip"), true);
-//    thread.start();
-//    
-//    while (!Thread.interrupted())
-//    {
-//      try
-//      {
-//        Thread.sleep(1000);
-//      }
-//      catch (InterruptedException e)
-//      {
-//        return;
-//      }
-//    }
-//  }
 
   public synchronized static void startup()
   {
@@ -290,7 +257,15 @@ public class ODMStatusServer
 
         ODMProcessingTaskIF task = it.next();
 
-        InfoResponse resp = ODMFacade.taskInfo(task.getOdmUUID());
+        InfoResponse resp;
+        if (DevProperties.runOrtho())
+        {
+          resp = ODMFacade.taskInfo(task.getOdmUUID());
+        }
+        else
+        {
+          resp = DevProperties.getMockOdmTaskInfo();
+        }
 
         if (resp.getHTTPResponse().isUnreachableHost())
         {
@@ -470,25 +445,21 @@ public class ODMStatusServer
 
     private File            unzippedParentFolder;
 
-    private Boolean         isTest = false;
-
     protected S3ResultsUploadThread(String name, ODMUploadTaskIF uploadTask)
     {
       super(name);
 
       this.uploadTask = uploadTask;
-      this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
       this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
-    }
-
-    protected S3ResultsUploadThread(String name, ODMUploadTask uploadTask, File zip, Boolean isTest)
-    {
-      super(name);
-
-      this.uploadTask = uploadTask;
-      this.zip = zip;
-      this.isTest = isTest;
-      unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
+      
+      if (DevProperties.runOrtho())
+      {
+        this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
+      }
+      else
+      {
+        this.zip = DevProperties.orthoResults();
+      }
     }
 
     @Override
@@ -509,7 +480,7 @@ public class ODMStatusServer
     {
       try
       {
-        runInTrans();
+        Product product = runInTrans();
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
@@ -518,6 +489,9 @@ public class ODMStatusServer
 
         // Create image services
         uploadTask.getImageryComponent().createImageServices();
+        
+        // Calculate bounding boxes
+        product.updateBoundingBox();
 
         ODMStatusServer.sendEmail(uploadTask);
       }
@@ -556,7 +530,7 @@ public class ODMStatusServer
     }
 
 //    @Transaction
-    public void runInTrans() throws ZipException, SpecialException
+    public Product runInTrans() throws ZipException, SpecialException, InterruptedException
     {
       List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
 
@@ -564,7 +538,8 @@ public class ODMStatusServer
        * Upload the full all.zip file to S3 for archive purposes.
        */
       String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-      if (!isTest)
+      
+      if (DevProperties.uploadAllZip())
       {
         Util.uploadFileToS3(zip, allKey, uploadTask);
       }
@@ -602,8 +577,7 @@ public class ODMStatusServer
         {
           if (Thread.interrupted())
           {
-            Thread.currentThread().interrupt();
-            return;
+            throw new InterruptedException();
           }
 
           File parentDir = new File(unzippedParentFolder, config.odmFolderName);
@@ -638,28 +612,28 @@ public class ODMStatusServer
             raw.addGeneratedProduct(product);
           }
         }
-
+        
+        return product;
       }
       finally
       {
-        if (!isTest)
+        if (DevProperties.runOrtho())
         {
           FileUtils.deleteQuietly(zip);
+          removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
         FileUtils.deleteQuietly(unzippedParentFolder);
-        removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
       }
     }
 
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents)
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents) throws InterruptedException
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
       {
         if (Thread.interrupted())
         {
-          Thread.currentThread().interrupt();
-          return;
+          throw new InterruptedException();
         }
 
         String name = child.getName();
@@ -675,10 +649,7 @@ public class ODMStatusServer
 
           String key = ic.getS3location() + s3FolderPrefix + "/" + name;
 
-          if (!isTest)
-          {
-            Util.uploadFileToS3(child, key, uploadTask);
-          }
+          Util.uploadFileToS3(child, key, uploadTask);
 
           documents.add(Document.createIfNotExist(ic.getUasComponent(), key, name));
 
@@ -721,7 +692,7 @@ public class ODMStatusServer
 
       protected boolean shouldProcessFile(File file)
       {
-        if (ArrayUtils.contains(mandatoryFiles, file.getName()))
+        if (ArrayUtils.contains(mandatoryFiles, file.getName()) && DevProperties.shouldUploadProduct(file.getName()))
         {
           processedFiles.add(file.getName());
           return true;

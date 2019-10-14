@@ -193,31 +193,34 @@ public abstract class Converter
       list.add(Converter.toSiteItem(component, false));
     }
 
-    List<Document> documents = new LinkedList<Document>();
-
-    try (OIterator<? extends Document> it = product.getAllDocuments())
-    {
-      documents.addAll(it.getAll());
-    }
-
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
-
-    for (Document document : documents)
+    
+    if (product.getImageKey() == null || product.getMapKey() == null)
     {
-      if (document.getName().endsWith(".png"))
+      product.calculateKeys(components);
+    }
+    
+    if (product.getImageKey() != null && product.getImageKey().length() > 0)
+    {
+      view.setImageKey(product.getImageKey());
+    }
+    
+    if (product.getMapKey() != null && product.getMapKey().length() > 0)
+    {
+      view.setMapKey(product.getMapKey());
+      
+      if ((product.getBoundingBox() == null || product.getBoundingBox().length() == 0))
       {
-        view.setImageKey(document.getS3location());
+        product.updateBoundingBox();
       }
-      else if (document.getName().endsWith(".tif"))
+      
+      String bbox = product.getBoundingBox();
+      
+      if (bbox != null)
       {
-        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(storeName))
-        {
-          view.setMapKey(storeName);
-        }
+        view.setBoundingBox(bbox);
       }
     }
   }

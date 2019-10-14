@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 660394878)
+@com.runwaysdk.business.ClassSignature(hash = 821033479)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,6 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ProductBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Product";
+  public static java.lang.String BOUNDINGBOX = "boundingBox";
   public static java.lang.String COMPONENT = "component";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
@@ -25,11 +26,39 @@ public abstract class ProductBase extends com.runwaysdk.business.Business
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 660394878;
+  private static final long serialVersionUID = 821033479;
   
   public ProductBase()
   {
     super();
+  }
+  
+  public String getBoundingBox()
+  {
+    return getValue(BOUNDINGBOX);
+  }
+  
+  public void validateBoundingBox()
+  {
+    this.validateAttribute(BOUNDINGBOX);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getBoundingBoxMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(BOUNDINGBOX);
+  }
+  
+  public void setBoundingBox(String value)
+  {
+    if(value == null)
+    {
+      setValue(BOUNDINGBOX, "");
+    }
+    else
+    {
+      setValue(BOUNDINGBOX, value);
+    }
   }
   
   public gov.geoplatform.uasdm.bus.UasComponent getComponent()

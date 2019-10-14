@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -40,14 +42,18 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     UasComponent collection = task.getComponent();
-    List<String> filenames = collection.uploadArchive(task, infile, uploadTarget);
+    
+    if (DevProperties.uploadRaw())
+    {
+      collection.uploadArchive(task, infile, uploadTarget);
+    }
 
     task.lock();
     task.setStatus(WorkflowTaskStatus.COMPLETE.toString());
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, outFileNamePrefix, filenames);
+    startODMProcessing(infile, task, outFileNamePrefix);
 
     if (collection instanceof Collection)
     {
@@ -57,7 +63,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    handleMetadataWorkflow(task);
   }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix, List<String> filenames)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
   {
     UasComponent component = uploadTask.getComponent();
 
