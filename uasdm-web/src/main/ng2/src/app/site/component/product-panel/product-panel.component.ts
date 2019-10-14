@@ -6,9 +6,16 @@ import { BasicConfirmModalComponent } from '../../../shared/component/modal/basi
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 import { ProductModalComponent } from '../modal/product-modal.component';
 
-import { SiteEntity, Product } from '../../model/management';
+import { Product } from '../../model/management';
 import { ProductService } from '../../service/product.service';
 import { ManagementService } from '../../service/management.service';
+
+import { 
+    fadeInOnEnterAnimation,
+    fadeOutOnLeaveAnimation,
+    bounceInOnEnterAnimation,
+    bounceOutOnLeaveAnimation
+ } from 'angular-animations';
 
 declare var acp: string;
 
@@ -16,6 +23,12 @@ declare var acp: string;
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
     styles: [],
+    animations: [ 
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        bounceInOnEnterAnimation(),
+        bounceOutOnLeaveAnimation()
+    ]
 } )
 export class ProductPanelComponent {
 
@@ -146,9 +159,9 @@ export class ProductPanelComponent {
             } );
             this.bsModalRef.content.init( detail );
 
-            this.bsModalRef.content.onGotoSite.subscribe( data => {
-                this.gotoSite.emit( data );
-            } );
+            // this.bsModalRef.content.onGotoSite.subscribe( data => {
+            //     this.gotoSite.emit( data );
+            // } );
         } );
     }
 }

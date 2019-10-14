@@ -11,6 +11,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
@@ -60,7 +61,8 @@ import '../rxjs-extensions';
         AccordionModule,
         TabsModule.forRoot(),
         SharedModule,
-        SiteRoutingModule
+        SiteRoutingModule,
+        CollapseModule.forRoot()
     ],
     declarations: [
         MapAttributeComponent,

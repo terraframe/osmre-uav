@@ -1,77 +1,85 @@
-<div class="modal-body">
+<div class="modal-body" [@fadeInOnEnter]>
   <div>
-  <div *ngIf="message != null" class="error-container">
-    <div class="label-holder">
-      <strong>Error</strong>
-    </div>
-    <div class="holder">
-      <div>
-        <p class="error-message">{{message}}</p>
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{message}}</p>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <div *ngIf="entity != null">
-    <div class="row">
-      <div class="col-md-12">
-        <h2>{{entity.name}}</h2>
+
+    <div *ngIf="entity != null">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>{{entity.name}}</h2>
+        </div>
       </div>
-    </div>
-  
-    <div class="row">
-      <div class="col-md-12">
-        <ul class="breadcrumb" style="margin-bottom: 10px;">
-          <li *ngFor="let prev of previous">
-            <span> {{prev.name}}</span>
-          </li>
-        </ul>                    
+
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="breadcrumb" style="margin-bottom: 10px;">
+            <li *ngFor="let prev of previous">
+              <span> {{prev.name}}</span>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  
-    <div class="row">
-      <tabset class="nav-full-width">
-        <tab *ngFor="let folder of folders" [heading]="folder.name" (select)="onSelect(folder)">
+
+      <div class="row">
+        <tabset class="nav-full-width">
+          <tab *ngFor="let folder of folders" [heading]="folder.name" (select)="onSelect(folder)">
             <div id="image-list-container">
 
               <ul class="list-group row">
-                  <li *ngFor="let item of items" class="list-group-item col-xs-3">
-                     <!-- <div class="" >   -->
-                        <a class="thumbnail" [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}" >
-                          <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)"/>
-                          <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false" [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
-                          <div class="caption">
-                            <h4 class="media-heading">{{item.name}}</h4>
-                          </div>
-                        </a>
-                      <!-- </div> -->
-                  </li>
+                <li *ngFor="let item of items" class="list-group-item col-xs-3">
+                  <!-- <div class="" >   -->
+                  <a class="thumbnail"
+                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
+                    <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
+                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
+                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+                      [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml"
+                      (error)="getDefaultImgURL($event)" alt="Image">
+                    <div class="caption">
+                      <h4 class="media-heading">{{item.name}}</h4>
+                    </div>
+                  </a>
+                  <!-- </div> -->
+                </li>
               </ul>
 
             </div>
-        </tab>
-      </tabset>
-    </div>
-    <div class="row">
+          </tab>
+        </tabset>
+      </div>
+      <div class="row">
 
-      <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
-        <p>{{statusMessage}}</p>
-        <p>See this process on 
-          <a routerlink="/site/tasks" routerlinkactive="active" href="#/site/tasks">your tasks page</a>
-        </p>
+        <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
+          <p>{{statusMessage}}</p>
+          <p>See this process on
+            <a routerlink="/site/tasks" routerlinkactive="active" href="#/site/tasks">your tasks page</a>
+          </p>
+        </div>
+
+        <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
+          <button type="button" class="btn btn-default" [disabled]="processRunning"
+            (click)="bsModalRef.hide()">Close</button>
+          <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
+            (click)="handleDownload()" style="margin-left: 5px;">Download all</button>
+          <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning" (click)="handleRunOrtho()"
+            class="btn btn-primary" style="margin-left: 5px;">
+            Reprocess imagery
+            <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
+              style="color:white;vertical-align: middle;margin-left: 10px;"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
-        <button type="button" class="btn btn-default" [disabled]="processRunning" (click)="bsModalRef.hide()">Close</button>
-        <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning" (click)="handleDownload()" style="margin-left: 5px;">Download all</button>
-        <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning" (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
-          Reprocess imagery
-          <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true" style="color:white;vertical-align: middle;margin-left: 10px;"></i>
-        </button>
-      </div>
-    </div>
-    
-    <!-- <div class="row">
+      <!-- <div class="row">
     </div> -->
-  </div>
+    </div>
   </div>
 </div>

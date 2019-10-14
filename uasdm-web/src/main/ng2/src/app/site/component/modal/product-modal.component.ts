@@ -1,33 +1,49 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalService } from 'ngx-bootstrap/modal';
+// import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 
+import { LeafModalComponent } from './leaf-modal.component'
+import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+
 import { NotificationModalComponent } from '../../../shared/component/modal/notification-modal.component';
 
-import { SiteEntity, AttributeType, Condition, ProductDetail, ProductDocument } from '../../model/management';
+import { ProductDetail } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
+
+import { 
+    fadeInOnEnterAnimation,
+    fadeOutOnLeaveAnimation,
+    bounceInOnEnterAnimation,
+ } from 'angular-animations';
 
 declare var acp: string;
 
 @Component( {
     selector: 'product-modal',
     templateUrl: './product-modal.component.html',
-    styleUrls: []
+    providers: [LeafModalComponent, BasicConfirmModalComponent],
+    styleUrls: [],
+    animations: [ 
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        bounceInOnEnterAnimation()
+    ]
 } )
 export class ProductModalComponent implements OnInit {
     product: ProductDetail;
 
     thumbnails: any = {};
     items: any[] = [];
-
+    showSite: boolean = false;
     message: string;
+    initData: any;
 
     public onGotoSite: Subject<ProductDetail>;
 
-    constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
+    constructor( private leafModalComponent: LeafModalComponent, private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
     ngOnInit(): void {
         this.onGotoSite = new Subject();
@@ -76,9 +92,20 @@ export class ProductModalComponent implements OnInit {
     }
 
     handleGoto(): void {
-        this.bsModalRef.hide();
+        // this.bsModalRef.hide();
 
-        this.onGotoSite.next( this.product );
+        // this.onGotoSite.next( this.product );
+
+        const entity = this.product.entities[this.product.entities.length - 1];
+        const breadcrumbs = this.product.entities;
+
+
+        this.service.getItems( entity.id, null ).then( nodes => {
+            this.initData = {"entity": entity, "folders": nodes, "previous":breadcrumbs}
+
+            this.showSite = true;
+        } );
+
     }
 
     error( err: HttpErrorResponse ): void {

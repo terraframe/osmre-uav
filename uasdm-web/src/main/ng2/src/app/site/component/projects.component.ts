@@ -1,16 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
-import {
-    trigger,
-    state,
-    style,
-    animate,
-    transition,
-    group, 
-    query, 
-    stagger,
-    keyframes
-} from '@angular/animations';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
 import { Observable } from 'rxjs/Observable';
@@ -28,6 +18,11 @@ import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 import { MetadataService } from '../service/metadata.service';
 
+import { 
+    fadeInOnEnterAnimation,
+    fadeOutOnLeaveAnimation
+ } from 'angular-animations';
+
 
 declare var acp: any;
 declare var gpAppType: any;
@@ -37,33 +32,8 @@ declare var gpAppType: any;
     templateUrl: './projects.component.html',
     styles: ['./projects.css'],
     animations: [
-        trigger( 'fadeIn', [
-            transition( ':enter', [
-                style( { opacity: '0' } ),
-                animate( '.50s ease-out', style( { opacity: '1' } ) ),
-
-                // style({ transform: 'scale(0.5)', opacity: 0 }),  // initial
-                // animate('.5s cubic-bezier(.8, -0.6, 0.2, 1.5)', 
-                // style({ transform: 'scale(1)', opacity: 1 })),  // final
-            ] ),
-        ] ),
-       trigger('slide', [
-            transition(':enter', [
-                style({transform: 'translateX(-100%)', opacity: '1'}),
-                animate(200)
-            ]),
-            transition(':leave', [
-                group([
-                    animate('0.2s ease', style({
-                        transform: 'translate(150px,25px)'
-                    })),
-                    animate('0.5s 0.2s ease', style({
-                        opacity: 0
-                    }))
-                ])
-            ])
-        ]),
-
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation() 
     ]
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -176,7 +146,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private bsModalRef: BsModalRef;
 
     constructor( private service: ManagementService, private authService: AuthService, private mapService: MapService,
-        private modalService: BsModalService, private metadataService: MetadataService ) {
+        private modalService: BsModalService, private metadataService: MetadataService, private collapseModule: CollapseModule ) {
 
         this.dataSource = Observable.create(( observer: any ) => {
 
@@ -781,6 +751,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         else {
             // this.expand( node );
             node.children = [];
+            node.active = false;
         }
     }
 

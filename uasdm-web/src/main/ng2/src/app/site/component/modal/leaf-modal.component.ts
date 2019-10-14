@@ -1,21 +1,10 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import {
-    trigger,
-    state,
-    style,
-    animate,
-    transition,
-    group, 
-    query, 
-    stagger,
-    keyframes
-} from '@angular/animations';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 
-import { NotificationModalComponent } from '../../../shared/component/modal/notification-modal.component';
+import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
 import { SiteEntity, AttributeType, Condition } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -24,34 +13,36 @@ import { MetadataService } from '../../service/metadata.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { FileItem } from 'ng2-file-upload';
 
+import { 
+    fadeInOnEnterAnimation, 
+    fadeOutOnLeaveAnimation, 
+    slideInLeftOnEnterAnimation,
+    slideInRightOnEnterAnimation,
+ } from 'angular-animations';
+import { initDomAdapter } from '@angular/platform-browser/src/browser';
+
 declare var acp: string;
 
 @Component( {
     selector: 'leaf-modal',
     templateUrl: './leaf-modal.component.html',
     styleUrls: [],
-    animations: [
-       trigger('slide', [
-            transition(':enter', [
-                style({transform: 'translateX(-100%)', opacity: '1'}),
-                animate(200)
-            ]),
-            transition(':leave', [
-                group([
-                    animate('0.2s ease', style({
-                        transform: 'translate(150px,25px)'
-                    })),
-                    animate('0.5s 0.2s ease', style({
-                        opacity: 0
-                    }))
-                ])
-            ])
-        ]),
-
+    providers: [BasicConfirmModalComponent],
+    animations: [ 
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        slideInLeftOnEnterAnimation(),
+        slideInRightOnEnterAnimation(),
     ]
 } )
 export class LeafModalComponent implements OnInit {
     entity: SiteEntity;
+
+    @Input() 
+    set initData(ins: any){
+        this.init(ins.entity, ins.folders, ins.previous)
+    }
+
 
     /* 
      * Breadcrumb of previous sites clicked on
@@ -71,7 +62,7 @@ export class LeafModalComponent implements OnInit {
     /*
      * Reference to the modal current showing
     */
-    private notificationModalRef: BsModalRef;
+    private confirmModalRef: BsModalRef;
 
 
     /*
@@ -80,7 +71,7 @@ export class LeafModalComponent implements OnInit {
     public onNodeChange: Subject<SiteEntity>;
 
     constructor( private service: ManagementService, private metadataService: MetadataService
-        , private modalService: BsModalService, public bsModalRef: BsModalRef ) { }
+        , private modalService: BsModalService, public bsModalRef: BsModalRef, private basicConfirmModalComponent: BasicConfirmModalComponent ) { }
 
     ngOnInit(): void {
         this.onNodeChange = new Subject();
@@ -216,12 +207,27 @@ export class LeafModalComponent implements OnInit {
         // this.notificationModalRef.content.submitText = 'OK';
 
 
-        this.processRunning = true;
+        event.stopPropagation();
 
-        this.service.runOrtho( this.entity.id, this.excludes ).then( data => {
-            this.processRunning = false;
-            this.statusMessage = "Your process is started.";
+        this.confirmModalRef = this.modalService.show( BasicConfirmModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
         } );
+        this.confirmModalRef.content.message = 'Running this process will replace all output products for this ' + this.entity.type + '. Are you sure you want to re-process this data?';
+        // this.bsModalRef.content.data = node;
+        this.confirmModalRef.content.type = 'DANGER';
+        this.confirmModalRef.content.submitText = "Run Process";
+
+        ( <BasicConfirmModalComponent>this.confirmModalRef.content ).onConfirm.subscribe( data => {
+            this.processRunning = true;
+
+            this.service.runOrtho( this.entity.id, this.excludes ).then( data => {
+                this.processRunning = false;
+                this.statusMessage = "Your process is started.";
+            } );
+        } );
+
     }
 
     handleDownload( ): void {

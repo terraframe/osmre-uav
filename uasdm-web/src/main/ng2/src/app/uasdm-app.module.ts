@@ -12,6 +12,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import './rxjs-extensions';
 
@@ -48,7 +49,8 @@ import { SharedModule } from './shared/shared.module';
         AccordionModule.forRoot(),
         NgxPaginationModule,
         PasswordStrengthBarModule,
-        SharedModule.forRoot()
+        SharedModule.forRoot(),
+        CollapseModule.forRoot()
     ],
     declarations: [
         UasdmAppComponent,

@@ -65,10 +65,10 @@
                       style="height: calc(100vh - 268px);overflow-y: auto;">
                         <div class="list-group">
 
-                          <div *ngFor="let node of nodes" class="list-group-item">
+                          <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
 
                             <!-- Two column layout -->
-                            <div class="card card-default clickable" *ngIf="getMetadata(node).root" (click)="select(node, null, $event)">
+                            <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="getMetadata(node).root" (click)="select(node, null, $event)">
                               <!-- <div class="card-header">Header</div> -->
                               <div class="card-body card-5-7" style="border-left: solid 15px;">
                                 <div class="card-left">
@@ -93,14 +93,14 @@
 
 
                             <!-- Single column card -->
-                            <div class="card card-default clickable" *ngIf="!getMetadata(node).root" (click)="select(node, null, $event)">
+                            <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="!getMetadata(node).root" (click)="select(node, null, $event)">
                               <div class="card-body">
-                                  <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right" [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 20px;" aria-hidden="true"></i>
+                                  <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right" [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px" aria-hidden="true"></i>
 
                                   <h4 style="word-break: break-all;">{{node.name}}</h4>
                                   <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
                                   
-                                  <div *ngIf="node.active" class="list-group" >
+                                  <div [collapse]="!node.active" class="list-group" style="margin-bottom: 0;">
                                     <div *ngFor="let child of node.children" (click)="select(child, node, $event)" class="list-group-item" style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
                                       <!-- <a (click)="select(child, $event)"> -->
                                         {{child.name}}
@@ -117,7 +117,7 @@
                           </div> 
 
                           <div *ngFor="let node of supportingData" class="list-group-item">
-                          <div class="card card-default">
+                            <div [@fadeInOnEnter] class="card card-default">
                               <div class="card-body">
                                 <h4 style="word-break: break-all;">Supporting Data</h4>
                                 <div class="list-group">
@@ -129,7 +129,7 @@
                                 </div>
                               </div>
                             </div>
-                            </div>
+                          </div>
 
                         </div>
                       </div>
@@ -162,8 +162,7 @@
             </div>
             
 
-
-            <footer class="sidebar-footer" style="" *ngIf="current != null">
+            <footer class="sidebar-footer" *ngIf="current != null">
               <div class="row" *ngIf="current != null" style="background:white;">
                 <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
                   <button (click)="handleUploadFile()" class="btn btn-primary">Upload</button>              
@@ -197,12 +196,6 @@
                 </article>
 
                 <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right" style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 22px;"></div>
-
-                <div *ngIf="active" class="cancel-layer-panel mapboxgl-ctrl mapboxgl-ctrl-group">
-                    <button (click)="cancelDraw()" class="mapboxgl-ctrl-icon ">
-                        <i class="fa fa-times-circle"></i>
-                    </button>
-                </div>
 
                 <div id="map" class="map-view-port"></div>
             </div>

@@ -9,7 +9,7 @@
 }
 .step-indicator .nav-item.active{
     /* background: darkgrey; */
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 .step-indicator .nav-item.active.enabled{
     /* background: grey; */

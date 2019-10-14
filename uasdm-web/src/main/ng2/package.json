@@ -23,6 +23,7 @@
 		"@types/geojson": "^7946.0.7",
 		"@types/mapbox-gl": "0.51.3",
 		"@types/proj4": "^2.5.0",
+		"angular-animations": "0.0.10",
 		"angular-tree-component": "^8.3.0",
 		"core-js": "^2.4.1",
 		"file-saver": "^2.0.0",

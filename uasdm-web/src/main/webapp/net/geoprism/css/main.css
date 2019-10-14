@@ -1189,11 +1189,11 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 
 /* .modal .modal-dialog .modal-content .modal-body */
 .modal-dialog{
-	width:1000px;
+	/* width:1000px;
 	margin:0 auto 30px;
 	background:none;
 	border-radius:0;
-    box-shadow:none;
+    box-shadow:none; */
     
     /* vertical-align:middle; */
 }
@@ -1205,16 +1205,13 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 } */
 
 .modal-content{
-	background: white;
+	/* background: white;
     border: 1px solid #aaa;
 	border-radius:0;
-	box-shadow:none;
+	box-shadow:none; */
 	color:#333;
-    /* padding:17px 50px 0 0; */
-    overflow-x:hidden;
-    /* overflow-y:auto; */
+    overflow-x:hidden !important;
     overflow: visible;
-	/* height:calc(95vh - 52px); */
 }
 .modal-content .heading{
 	padding:0 0 0 268px;
@@ -2911,7 +2908,7 @@ button.btn.btn-secondary:disabled:hover,
 }
 
 /* Fine Uploader Style Overrides */
-.qq-uploader{
+/* .qq-uploader{
     min-height: auto !important;
 }
 .qq-btn {
@@ -2929,10 +2926,18 @@ button.btn.btn-secondary:disabled:hover,
     border-radius: 4px !important;
     border: 1px solid transparent !important;
     box-shadow: none !important;
+} */
+
+.qq-uploader-selector.qq-uploader .buttons {
+  	bottom: 15px;
+    width: 90%;
+    z-index: 99999999;
+    display: grid;
+    position: absolute;
 }
+
 .qq-uploader:before {
-    font-size: 150% !important;
-    top: 35% !important;
+    font-size: 130% !important;
 }
 /* End Fine Uploader Style Overrides */
 

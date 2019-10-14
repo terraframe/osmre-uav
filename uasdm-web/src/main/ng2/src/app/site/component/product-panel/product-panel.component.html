@@ -1,6 +1,6 @@
 <div class="list-group">
     <div *ngFor="let product of products" class="list-group-item">
-        <div class="card card-default">
+        <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
             <div class="card-body card-8-4">
                 <h5 class="card-title" style="color:#a0a0a0">
                     {{product.name}}
@@ -26,7 +26,7 @@
                     <ul style="list-style: none;padding: 0;">
                         <li style="padding: 3px 0 3px 0;">
                             <a class="fa fa-globe" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product, $event)" title="Show on map">Map It</a>
-                            <i *ngIf="product.orthoMapped" class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
+                            <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
                             <a class="fa fa-info-circle" (click)="handleGetInfo(product, $event)" title="See details">Get Info</a>

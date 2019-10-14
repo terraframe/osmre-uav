@@ -19,6 +19,11 @@ import { MetadataService } from '../../service/metadata.service';
 
 import {StepConfig} from '../../../shared/modal/step-indicator/modal-step-indicator'
 
+import { 
+    fadeInOnEnterAnimation,
+    fadeOutOnLeaveAnimation
+ } from 'angular-animations';
+
 declare var acp: string;
 
 class Page {
@@ -31,7 +36,11 @@ class Page {
 @Component( {
     selector: 'upload-modal',
     templateUrl: './upload-modal.component.html',
-    styleUrls: ['./upload-modal.component.css']
+    styleUrls: ['./upload-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation() 
+    ]
 } )
 export class UploadModalComponent implements OnInit {
     objectKeys = Object.keys;
@@ -487,6 +496,15 @@ export class UploadModalComponent implements OnInit {
 
             if ( prevPage.type === 'CATEGORY' ) {
                 this.labels.splice( this.labels.length - 1, 1 );
+
+                this.modalStepConfig.steps.forEach(step => {
+                    if(step.label.toLowerCase() === "category" && step.enabled === false){
+                        this.modalStepConfig = {"steps": [
+                            {"label":"Category", "active":true, "enabled":true},
+                            {"label":"Final", "active":true, "enabled":false}
+                        ]};
+                    }
+                })
             }
 
             this.page = prevPage;

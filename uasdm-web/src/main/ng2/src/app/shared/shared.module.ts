@@ -10,6 +10,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import { UasdmHeaderComponent } from './component/header/header.component';
 import { ProgressBarComponent } from './component/progress-bar/progress-bar.component';
@@ -49,7 +50,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         AlertModule,
         BsDropdownModule,
         TypeaheadModule,
-        AccordionModule
+        AccordionModule,
+        CollapseModule.forRoot()
     ],
     declarations: [
         UasdmHeaderComponent,
@@ -61,7 +63,6 @@ import { HttpBackendClient } from './service/http-backend-client.service';
         ErrorModalComponent,
         LocalizeComponent,
         BooleanFieldComponent,
-        ModalStepIndicatorComponent,
         ModalStepIndicatorComponent,
         KeysPipe,
         LocalizePipe,

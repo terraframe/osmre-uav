@@ -2,6 +2,11 @@ import { Component, Input, ChangeDetectionStrategy, SimpleChanges } from '@angul
 
 import { Step, StepConfig } from './modal-step-indicator';
 
+import { 
+    fadeInOnEnterAnimation,
+    fadeOutOnLeaveAnimation
+ } from 'angular-animations';
+
 // HOW TO USE:
 // Set the component in a template:
 //
@@ -18,6 +23,10 @@ import { Step, StepConfig } from './modal-step-indicator';
     selector: 'modal-step-indicator',
     templateUrl: './modal-step-indicator.component.html',
     styleUrls: ['./modal-step-indicator.css'],
+        animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation() 
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class ModalStepIndicatorComponent {
