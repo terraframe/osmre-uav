@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { TabsetComponent } from 'ngx-bootstrap';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
 import { Observable } from 'rxjs/Observable';
@@ -33,10 +34,12 @@ declare var gpAppType: any;
     styles: ['./projects.css'],
     animations: [
         fadeInOnEnterAnimation(),
-        fadeOutOnLeaveAnimation() 
+        fadeOutOnLeaveAnimation()
     ]
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    @ViewChild('staticTabs') staticTabs: TabsetComponent;
 
     // imageToShow: any;
     userName: string = "";
@@ -627,11 +630,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 if ( index !== -1 ) {
                     this.layers.splice( index, 1 );
                 }
+
+                product.orthoMapped = false;
             }
             else {
                 this.addImageLayer( mapKey );
 
                 this.layers.push( mapKey );
+
+                product.orthoMapped = true;
                 
                 if (product.boundingBox != null)
                 {
@@ -791,6 +798,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.current = null;
                 this.breadcrumbs = [];
                 this.setNodes( nodes );
+                this.staticTabs.tabs[0].active = true;
             } );
         }
     }

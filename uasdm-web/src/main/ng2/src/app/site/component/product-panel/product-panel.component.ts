@@ -108,7 +108,6 @@ export class ProductPanelComponent {
     }
 
     handleMapIt( product: Product ): void {
-        product.orthoMapped = !product.orthoMapped;
         this.toggleMapImage.emit( product );
     }
 
