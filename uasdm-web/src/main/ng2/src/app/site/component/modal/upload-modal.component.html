@@ -78,7 +78,7 @@
             </div>
          </div>    
         </div>
-        <div [@fadeInOnEnter] [@fadeOutOnLeave] *ngIf="page.selection.isNew" class="form-group">
+        <div [@fadeInOnEnter] *ngIf="page.selection.isNew" class="form-group">
           <div class="row">
             <div class="col-md-8">
               <input autofocus [(ngModel)]="page.selection.label" name="label" type="input" class="form-control" [placeholder]="page.selection.type + ' name...'" required />
@@ -89,7 +89,7 @@
               </button>
             </div>
          </div>    
-         <div [@fadeInOnEnter] [@fadeOutOnLeave] class="row" *ngIf="hasField('platform')">
+         <div [@fadeInOnEnter] class="row" *ngIf="hasField('platform')">
            <div class="col-md-8">
              <label for="platform" style="margin-top: 10px;">Platform:</label>
              <select [(ngModel)]="page.selection.platform" name="platform" type="input" required>                               
@@ -98,7 +98,7 @@
              </select>            
            </div>
          </div>    
-         <div [@fadeInOnEnter] [@fadeOutOnLeave] class="row" *ngIf="hasField('sensor')">
+         <div [@fadeInOnEnter] class="row" *ngIf="hasField('sensor')">
            <div class="col-md-8">
              <label for="sensor" style="margin-top: 10px;">Sensor:</label>
              <select [(ngModel)]="page.selection.sensor" name="sensor" type="input" required>                               
@@ -129,7 +129,7 @@
     </div>
     
 
-    <div [@fadeInOnEnter] [@fadeOutOnLeave] [hidden]="page.type !== 'FILE' && page.type !== 'SUMMARY'" class="row">
+    <div [@fadeInOnEnter] [hidden]="page.type !== 'FILE' && page.type !== 'SUMMARY'" class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
 
