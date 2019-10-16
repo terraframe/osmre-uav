@@ -84,11 +84,11 @@
                           <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
 
                             <!-- Two column layout -->
-                            <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="getMetadata(node).root" [ngClass]="{'active': hoverFeatureId === node.id}"
+                            <div [@fadeInOnEnter] style="border-left: solid 15px;" class="card card-default clickable" *ngIf="getMetadata(node).root" [ngClass]="{'active': hoverFeatureId === node.id}"
                                 (click)="select(node, null, $event)" (mouseenter)="onListEntityHover($event, node)" (mouseleave)="onListEntityHoverOff()">
                               
                                 <!-- <div class="card-header">Header</div> -->
-                              <div class="card-body card-5-7" style="border-left: solid 15px;">
+                              <div class="card-body card-5-7" >
                                 <div class="card-left">
                                   <!-- <img src="https://via.placeholder.com/75x75" class="img-responsive"> -->
                                    <i class="fas fa-map-marker-alt" style="font-size: 50px;"></i>
@@ -99,7 +99,7 @@
                                       {{node.name}}
                                     <!-- </a> -->
                                   </h4>
-                                  <span *ngIf="node.type !== 'folder'" class="pull-right button-column" style="top: 0;position: absolute;right: 0;">
+                                  <span *ngIf="node.type !== 'folder'" class="pull-right button-column floating" style="top: 0;position: absolute;right: 0;">
                                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
                                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>                                   
                                   </span>  
