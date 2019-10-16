@@ -43,12 +43,9 @@ export class ProductModalComponent implements OnInit {
     initData: any;
     rawImagePreviewModal: BsModalRef;
 
-    public onGotoSite: Subject<ProductDetail>;
-
     constructor( private leafModalComponent: LeafModalComponent, private service: ManagementService, public bsModalRef: BsModalRef, private modalService: BsModalService ) { }
 
     ngOnInit(): void {
-        this.onGotoSite = new Subject();
     }
 
     init( product: ProductDetail ): void {
@@ -94,10 +91,6 @@ export class ProductModalComponent implements OnInit {
     }
 
     handleGoto(): void {
-        // this.bsModalRef.hide();
-
-        // this.onGotoSite.next( this.product );
-
         const entity = this.product.entities[this.product.entities.length - 1];
         const breadcrumbs = this.product.entities;
 

@@ -49,31 +49,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     @ViewChild( 'confirmTemplate' ) public confirmTemplate: TemplateRef<any>;
 
-    //    /*
-    //     * Template for tree node menu
-    //     */
-    //    @ViewChild( 'nodeMenu' ) public nodeMenuComponent: ContextMenuComponent;
-    //
-    //    /*
-    //     * Template for folder node menu
-    //     */
-    //    @ViewChild( 'folderMenu' ) public folderMenuComponent: ContextMenuComponent;
-    //
-    //    /*
-    //     * Template for site items
-    //     */
-    //    @ViewChild( 'siteMenu' ) public siteMenuComponent: ContextMenuComponent;
-    //
-    //    /*
-    //     * Template for leaf menu
-    //     */
-    //    @ViewChild( 'leafMenu' ) public leafMenuComponent: ContextMenuComponent;
-    //
-    //    /*
-    //     * Template for object items
-    //     */
-    //    @ViewChild( 'objectMenu' ) public objectMenuComponent: ContextMenuComponent;
-
     /* 
      * Datasource to get search responses
      */
@@ -143,6 +118,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     baselayerIconHover = false;
 
+    hoverFeatureId: string;
+
     /*
      * Reference to the modal current showing
     */
@@ -189,12 +166,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
 
-        // setTimeout(() => {
-        //     if ( this.tree ) {
-        //         this.tree.treeModel.expandAll();
-        //     }
-        // }, 1000 );
-
         this.map = new Map( {
             container: 'map',
             style: 'mapbox://styles/mapbox/outdoors-v11',
@@ -223,7 +194,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add zoom and rotation controls to the map.
         this.map.addControl( new NavigationControl() );
 
-        this.map.on( 'mousemove', function( e ) {
+        this.map.on( 'mousemove', e => {
             // e.point is the x, y coordinates of the mousemove event relative
             // to the top-left corner of the map.
             // e.lngLat is the longitude, latitude geographical position of the event
@@ -237,6 +208,26 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             let text = "Lat: " + coord.lat + " Long: " + coord.lng;
             let mousemovePanel = document.getElementById( "mousemove-panel" );
             mousemovePanel.textContent = text;
+
+
+            let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
+            
+            if(features.length > 0){
+                let focusFeatureId = features[0].properties.oid; // just the first
+                this.map.setFilter('hover-points', [ 'all',
+                    [ '==', 'oid', focusFeatureId ]
+                ])
+
+                this.highlightListItem(focusFeatureId)
+            }
+            else {
+                this.map.setFilter('hover-points', [ 'all',
+                    [ '==', 'oid', "NONE" ]
+                ])
+
+                this.clearHighlightListItem();
+            }
+ 
         } );
 
         this.map.on( 'zoomend', ( e ) => {
@@ -265,6 +256,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         } );
 
+
         // Point layer
         this.map.addLayer( {
             "id": "points",
@@ -277,6 +269,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 "circle-stroke-color": '#FFFFFF'
             }
         } );
+
+        // Hover style
+        this.map.addLayer( {
+            "id": "hover-points",
+            "type": "circle",
+            "source": 'sites',
+            "paint": {
+                "circle-radius": 13,
+                "circle-color": '#cf0000',
+                "circle-stroke-width": 2,
+                "circle-stroke-color": '#FFFFFF'
+            },
+            filter: [ 'all',
+                [ '==', 'id', 'NONE' ] // start with a filter that doesn't select anything
+            ]
+        } );
+
 
         // Label layer
         this.map.addLayer( {
@@ -602,9 +611,50 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
 
-    highlight( match: any, query: string[] | string ): string {
-        return 'Test';
+    highlightMapFeature(id: string): void {
+
+        this.map.setFilter('hover-points', [ 'all',
+            [ '==', 'oid', id ]
+        ])
+  
     }
+
+    clearHighlightMapFeature(): void {
+
+        this.map.setFilter('hover-points', [ 'all',
+            [ '==', 'oid', "NONE"]
+        ])
+  
+    }
+
+    onListEntityHover(event: any, site: SiteEntity): void {
+        this.highlightMapFeature(site.id);
+
+    }
+
+    onListEntityHoverOff(): void {
+        this.clearHighlightMapFeature();
+
+    }
+
+    highlightListItem(id: string): void {
+        this.nodes.forEach(node => {
+            if(node.id === id){
+                this.hoverFeatureId = id;
+            }
+        })
+    }
+
+    clearHighlightListItem(): void {
+        if(this.hoverFeatureId){
+            this.nodes.forEach(node => {
+                if(node.id === this.hoverFeatureId){
+                    this.hoverFeatureId = null;
+                }
+            })
+        }
+    }
+
 
     handleClick( $event: any ): void {
         let result = $event.item;

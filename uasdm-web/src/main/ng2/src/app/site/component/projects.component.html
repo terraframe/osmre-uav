@@ -68,8 +68,10 @@
                           <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
 
                             <!-- Two column layout -->
-                            <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="getMetadata(node).root" (click)="select(node, null, $event)">
-                              <!-- <div class="card-header">Header</div> -->
+                            <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="getMetadata(node).root" [ngClass]="{'active': hoverFeatureId === node.id}"
+                                (click)="select(node, null, $event)" (mouseenter)="onListEntityHover($event, node)" (mouseleave)="onListEntityHoverOff()">
+                              
+                                <!-- <div class="card-header">Header</div> -->
                               <div class="card-body card-5-7" style="border-left: solid 15px;">
                                 <div class="card-left">
                                   <!-- <img src="https://via.placeholder.com/75x75" class="img-responsive"> -->
@@ -153,7 +155,7 @@
                     <tab *ngIf="current != null" heading="Products">
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
                       style="height: calc(100vh - 268px);overflow-y: auto;">
-                        <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)" (gotoSite)="handleGotoSite($event)"></product-panel>           
+                        <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)"></product-panel>           
                       </div>
                     </tab>
                   </tabset>

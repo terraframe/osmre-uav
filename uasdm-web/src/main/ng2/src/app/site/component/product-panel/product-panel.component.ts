@@ -36,8 +36,6 @@ export class ProductPanelComponent {
 
     @Output() public toggleMapImage = new EventEmitter<Product>();
 
-    @Output() public gotoSite = new EventEmitter<Product>();
-
     /* 
      * List of products for the current node
      */
@@ -157,10 +155,6 @@ export class ProductPanelComponent {
                 'class': 'product-info-modal'
             } );
             this.bsModalRef.content.init( detail );
-
-            // this.bsModalRef.content.onGotoSite.subscribe( data => {
-            //     this.gotoSite.emit( data );
-            // } );
         } );
     }
 }
