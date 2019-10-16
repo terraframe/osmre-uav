@@ -1183,6 +1183,10 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 	opacity:0.9;
 }
 
+.modal{
+	background: rgba(255,255,255,.7);
+}
+
 .modal-title-container {
     padding: 15px 0 20px 0;
 }

@@ -213,6 +213,7 @@ export class LeafModalComponent implements OnInit {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
+            'class': 'confirmation-modal'
         } );
         this.confirmModalRef.content.message = 'Running this process will replace all output products for this ' + this.entity.type + '. Are you sure you want to re-process this data?';
         // this.bsModalRef.content.data = node;

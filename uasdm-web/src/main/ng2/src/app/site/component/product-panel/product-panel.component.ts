@@ -141,7 +141,7 @@ export class ProductPanelComponent {
 
         this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
             animated: true,
-            backdrop: false,
+            backdrop: true,
             ignoreBackdropClick: false,
             'class': 'image-preview-modal'
         } );
