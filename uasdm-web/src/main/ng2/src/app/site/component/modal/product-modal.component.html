@@ -68,7 +68,7 @@
             <ul class="list-group row">
               <li *ngFor="let item of product.documents" class="list-group-item col-xs-3" style="background:none;">
                 <div class="" *ngIf="thumbnails[item.id] != null">
-                  <a class="thumbnail non-clickable">
+                  <a class="thumbnail" (click)="previewImage(item)">
                     <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                     <div class="caption">
                       <h4 class="media-heading">{{item.name}}</h4>

@@ -186,6 +186,7 @@ public class Document extends DocumentBase
     object.put("id", this.getOid());
     object.put("key", this.getS3location());
     object.put("name", this.getName());
+    object.put("component", this.getComponentOid());
 
     return object;
   }

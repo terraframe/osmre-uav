@@ -1,15 +1,16 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-// import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Subject } from 'rxjs/Subject';
 
 import { LeafModalComponent } from './leaf-modal.component'
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 
 import { NotificationModalComponent } from '../../../shared/component/modal/notification-modal.component';
 
-import { ProductDetail } from '../../model/management';
+import { ProductDetail, Product, SiteEntity } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
@@ -40,10 +41,11 @@ export class ProductModalComponent implements OnInit {
     showSite: boolean = false;
     message: string;
     initData: any;
+    rawImagePreviewModal: BsModalRef;
 
     public onGotoSite: Subject<ProductDetail>;
 
-    constructor( private leafModalComponent: LeafModalComponent, private service: ManagementService, public bsModalRef: BsModalRef ) { }
+    constructor( private leafModalComponent: LeafModalComponent, private service: ManagementService, public bsModalRef: BsModalRef, private modalService: BsModalService ) { }
 
     ngOnInit(): void {
         this.onGotoSite = new Subject();
@@ -107,6 +109,18 @@ export class ProductModalComponent implements OnInit {
         } );
 
     }
+
+    previewImage( image: SiteEntity ): void {
+
+        this.rawImagePreviewModal = this.modalService.show( ImagePreviewModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: false,
+            'class': 'image-preview-modal'
+        } );
+        this.rawImagePreviewModal.content.init( image.component, image.key );
+    }
+
 
     error( err: HttpErrorResponse ): void {
         // Handle error
