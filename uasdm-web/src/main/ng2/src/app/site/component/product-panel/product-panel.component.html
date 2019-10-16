@@ -1,4 +1,9 @@
 <div class="list-group">
+
+    <div *ngIf="products.length < 1" [@fadeInOnEnter] style="padding: 10px;text-align: center;color: grey;">
+        <h4>No data found</h4>
+    </div>
+
     <div *ngFor="let product of products" class="list-group-item">
         <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
             <div class="card-body card-8-4">

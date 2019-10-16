@@ -65,6 +65,22 @@
                       style="height: calc(100vh - 268px);overflow-y: auto;">
                         <div class="list-group">
 
+                          <!-- If -->
+                          <div *ngIf="nodes.length < 1 && breadcrumbs.length === 0" [@fadeInOnEnter] style="padding: 20px;text-align: center;color: grey;">
+                            <h4>No Sites in this area.</h4>
+                            <p>
+                              Zoom out to find sites in other areas of the map.
+                            </p>
+                          </div>
+
+                          <!-- Else -->
+                          <div *ngIf="nodes.length < 1 && breadcrumbs.length > 0" [@fadeInOnEnter] style="padding: 20px;text-align: center;color: grey;">
+                            <h4>No data at this level.</h4>
+                            <p>
+                              Create data containers as part of the upload process.
+                            </p>
+                          </div>
+
                           <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
 
                             <!-- Two column layout -->

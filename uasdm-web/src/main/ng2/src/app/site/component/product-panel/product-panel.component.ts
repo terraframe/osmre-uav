@@ -157,4 +157,5 @@ export class ProductPanelComponent {
             this.bsModalRef.content.init( detail );
         } );
     }
+
 }
