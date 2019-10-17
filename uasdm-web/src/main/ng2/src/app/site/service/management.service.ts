@@ -272,7 +272,7 @@ export class ManagementService {
             this.eventService.start();
         }
 
-        return this.http.get<Blob>( acp + '/project/download', { params: params, responseType: 'blob' as 'json' } )
+        return this.noErrorHttpClient.get<Blob>( acp + '/project/download', { params: params, responseType: 'blob' as 'json' } )
             .finally(() => {
                 if ( useSpinner ) {
                     this.eventService.complete();
@@ -290,7 +290,7 @@ export class ManagementService {
             this.eventService.start();
         }
 
-        return this.http.get<Blob>( acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' } )
+        return this.noErrorHttpClient.get<Blob>( acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' } )
             .finally(() => {
                 if ( useSpinner ) {
                     this.eventService.complete();
