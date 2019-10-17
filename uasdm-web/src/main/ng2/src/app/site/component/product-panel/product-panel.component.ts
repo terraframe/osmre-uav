@@ -94,6 +94,9 @@ export class ProductPanelComponent {
                 this.createImageFromBlob( blob, product );
             }, error => {
                 console.log( error );
+
+                this.thumbnails[product.id] = acp + "/net/geoprism/images/thumbnail-default.png";
+
             } );
         }
         else{
