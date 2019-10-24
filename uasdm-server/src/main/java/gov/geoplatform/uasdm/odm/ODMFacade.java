@@ -123,10 +123,13 @@ public class ODMFacade
       dtm.put("value", "true");
       arr.put(dtm);
       
-      JSONObject multispectral = new JSONObject();
-      multispectral.put("name", "multispectral");
-      multispectral.put("value", String.valueOf(isMultispectral));
-      arr.put(multispectral);
+      if (isMultispectral)
+      {
+        JSONObject multispectral = new JSONObject();
+        multispectral.put("name", "multispectral");
+        multispectral.put("value", String.valueOf(isMultispectral));
+        arr.put(multispectral);
+      }
       
       parts[1] = new StringPart("options", arr.toString());
       
