@@ -13,11 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.Sensor.WaveLength;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
@@ -41,11 +40,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    UasComponent collection = task.getComponent();
+    UasComponent component = task.getComponent();
     
     if (DevProperties.uploadRaw())
     {
-      collection.uploadArchive(task, infile, uploadTarget);
+      component.uploadArchive(task, infile, uploadTarget);
     }
 
     task.lock();
@@ -53,17 +52,27 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, outFileNamePrefix);
+    startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
 
-    if (collection instanceof Collection)
+    if (component instanceof Collection)
     {
-      calculateImageSize(infile, (Collection) collection);
+      calculateImageSize(infile, (Collection) component);
     }
 
 //    handleMetadataWorkflow(task);
   }
+  
+  public boolean isMultispectral(UasComponent uasc)
+  {
+    if (uasc instanceof Collection)
+    {
+      return ((Collection) uasc).getSensor().isMultiSpectral();
+    }
+    
+    return false;
+  }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix, boolean isMultispectral)
   {
     UasComponent component = uploadTask.getComponent();
 
@@ -77,7 +86,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setFilePrefix(outFileNamePrefix);
     task.apply();
 
-    task.initiate(infile);
+    task.initiate(infile, isMultispectral);
   }
 
   private void calculateImageSize(ApplicationResource zip, Collection collection)

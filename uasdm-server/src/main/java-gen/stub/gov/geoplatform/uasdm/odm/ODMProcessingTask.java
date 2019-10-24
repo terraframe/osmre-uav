@@ -1,7 +1,5 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.DevProperties;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
+
+import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.bus.AbstractUploadTaskBase;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskBase;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskBase;
+import net.geoprism.GeoprismUser;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -56,7 +64,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     return list;
   }
 
-  public void initiate(ApplicationResource images)
+  public void initiate(ApplicationResource images, boolean isMultispectral)
   {
     try
     {
@@ -64,7 +72,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       
       if (DevProperties.runOrtho())
       {
-        resp = ODMFacade.taskNew(images);
+        resp = ODMFacade.taskNew(images, isMultispectral);
       }
       else
       {

@@ -1,12 +1,20 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.geoprism.gis.geoserver.GeoserverFacade;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
@@ -14,17 +22,16 @@ import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.json.JSONArray;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.vividsolutions.jts.geom.Coordinate;
+
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Product extends ProductBase
 {
@@ -141,6 +148,52 @@ public class Product extends ProductBase
     }
   }
   
+  // This code fixes java.security.cert.CertificateException: No subject alternative names present
+  // When run in dev environments
+  private static void disableSslVerification() {
+      try
+      {
+          // Create a trust manager that does not validate certificate chains
+          TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+              public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                  return null;
+              }
+              public void checkClientTrusted(X509Certificate[] certs, String authType) {
+              }
+              public void checkServerTrusted(X509Certificate[] certs, String authType) {
+              }
+          }
+          };
+  
+          // Install the all-trusting trust manager
+          SSLContext sc = SSLContext.getInstance("SSL");
+          sc.init(null, trustAllCerts, new java.security.SecureRandom());
+          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+  
+          // Create all-trusting host name verifier
+          HostnameVerifier allHostsValid = new HostnameVerifier() {
+              public boolean verify(String hostname, SSLSession session) {
+                  return true;
+              }
+          };
+  
+          // Install the all-trusting host verifier
+          HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+      } catch (NoSuchAlgorithmException e) {
+          e.printStackTrace();
+      } catch (KeyManagementException e) {
+          e.printStackTrace();
+      }
+  }
+  
+  static
+  {
+    if (Boolean.valueOf(System.getProperty("com.sun.jndi.ldap.object.disableEndpointIdentification")))
+    {
+      disableSslVerification();
+    }
+  }
+  
   /**
    * This method calculates a 4326 CRS bounding box for a given raster layer with the specified mapKey. This layer
    * must exist on Geoserver before calling this method. If the bounding box cannot be calculated, for whatever
@@ -195,7 +248,7 @@ public class Product extends ProductBase
         try
         {
           CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326"); // Mapbox's docs say that it's in 3857 but it's bounding box method expects 4326.
+          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326"); // Mapbox's docs say that it's in 3857 but its bounding box method expects 4326.
           MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
           
           com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();

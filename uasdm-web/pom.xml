@@ -93,6 +93,7 @@
                     -Daws.secretKey=INAmfvwRcO8pUPCTeJAROpvzVGHMP1RsDnu58SL2
                     -Denvcfg=${project.basedir}/../envcfg
                     -Dproject.basedir=${project.basedir}
+                    -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true
                   </cargo.jvmargs>
                 </properties>
               </configuration>

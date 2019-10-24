@@ -331,7 +331,7 @@ public class ProjectManagementService
     task.setFilenames(array.toString());
     task.apply();
 
-    task.initiate(new FileResource(zip));
+    task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
   }
 
   @Request(RequestType.SESSION)

@@ -525,6 +525,8 @@ public class ODMStatusServer
       processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", Collection.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
 
       processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", Collection.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+      
+      processingConfigs.add(new ODMFolderProcessingConfig("micasense", "micasense", null));
 
       return processingConfigs;
     }
@@ -692,6 +694,11 @@ public class ODMStatusServer
 
       protected boolean shouldProcessFile(File file)
       {
+        if (this.mandatoryFiles == null)
+        {
+          return true;
+        }
+        
         if (ArrayUtils.contains(mandatoryFiles, file.getName()) && DevProperties.shouldUploadProduct(file.getName()))
         {
           processedFiles.add(file.getName());
@@ -704,7 +711,12 @@ public class ODMStatusServer
       protected List<String> getUnprocessedFiles()
       {
         ArrayList<String> unprocessed = new ArrayList<String>();
-
+        
+        if (mandatoryFiles == null)
+        {
+          return unprocessed;
+        }
+        
         for (String file : mandatoryFiles)
         {
           if (!processedFiles.contains(file))
