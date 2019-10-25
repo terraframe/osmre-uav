@@ -1,7 +1,7 @@
 package gov.geoplatform.uasdm.view;
 
-import gov.geoplatform.uasdm.bus.Mission;
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class MissionConverter extends Converter
 {
@@ -11,19 +11,19 @@ public class MissionConverter extends Converter
   }
 
   @Override
-  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
+  protected UasComponentIF convert(SiteItem siteItem, UasComponentIF uasComponent)
   {
     return super.convert(siteItem, uasComponent);
   }
 
   @Override
-  protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
+  protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
   {
     return super.convert(uasComponent, metadata, hasChildren);
   }
 
-  protected Mission convertNew(UasComponent uasComponent, SiteItem siteItem)
+  protected MissionIF convertNew(UasComponentIF uasComponent, SiteItem siteItem)
   {
-    return (Mission) super.convertNew(uasComponent, siteItem);
+    return (MissionIF) super.convertNew(uasComponent, siteItem);
   }
 }

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1549444291)
+@com.runwaysdk.business.ClassSignature(hash = 1994852035)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -124,27 +124,21 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.ImageryUploadEvent.GEOPRISMUSER, mdAttributeIF, this, alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery()
+  public com.runwaysdk.query.SelectableUUID getImagery()
   {
     return getImagery(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias)
   {
-
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY);
-
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, mdAttributeIF, this, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias, String displayLabel)
   {
-
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY);
-
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, mdAttributeIF, this, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -351,10 +345,6 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     {
        return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
-    else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY)) 
-    {
-       return new gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
     else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.LASTUPDATEDBY)) 
     {
        return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
@@ -418,9 +408,9 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery();
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias);
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getImagery();
+    public com.runwaysdk.query.SelectableUUID getImagery(String alias);
+    public com.runwaysdk.query.SelectableUUID getImagery(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -554,21 +544,21 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.GEOPRISMUSER,  alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery()
+  public com.runwaysdk.query.SelectableUUID getImagery()
   {
     return getImagery(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY,  alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -757,10 +747,6 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     {
        return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
-    else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY)) 
-    {
-       return new gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
     else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.LASTUPDATEDBY)) 
     {
        return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
@@ -801,9 +787,9 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery();
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias);
-    public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getImagery();
+    public com.runwaysdk.query.SelectableUUID getImagery(String alias);
+    public com.runwaysdk.query.SelectableUUID getImagery(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -986,21 +972,21 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.GEOPRISMUSER,  alias, displayLabel);
 
   }
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery()
+  public com.runwaysdk.query.SelectableUUID getImagery()
   {
     return getImagery(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF getImagery(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getImagery(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY,  alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -1188,10 +1174,6 @@ public  class ImageryUploadEventQuery extends com.runwaysdk.query.GeneratedBusin
     else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.GEOPRISMUSER)) 
     {
        return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-    else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.IMAGERY)) 
-    {
-       return new gov.geoplatform.uasdm.bus.ImageryQuery.ImageryQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.ImageryUploadEvent.LASTUPDATEDBY)) 
     {

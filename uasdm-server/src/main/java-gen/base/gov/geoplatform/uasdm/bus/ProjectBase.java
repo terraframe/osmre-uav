@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ProjectBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Project";
-  private static final long serialVersionUID = -1222044431;
+  public static final long serialVersionUID = -1222044431;
   
   public ProjectBase()
   {

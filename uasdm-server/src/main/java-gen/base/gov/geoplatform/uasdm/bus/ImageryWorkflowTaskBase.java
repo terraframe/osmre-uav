@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 827174512)
+@com.runwaysdk.business.ClassSignature(hash = 1511816338)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,26 +12,14 @@ public abstract class ImageryWorkflowTaskBase extends gov.geoplatform.uasdm.bus.
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.ImageryWorkflowTask";
   public static java.lang.String IMAGERY = "imagery";
-  private static final long serialVersionUID = 827174512;
+  private static final long serialVersionUID = 1511816338;
   
   public ImageryWorkflowTaskBase()
   {
     super();
   }
   
-  public gov.geoplatform.uasdm.bus.Imagery getImagery()
-  {
-    if (getValue(IMAGERY).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Imagery.get(getValue(IMAGERY));
-    }
-  }
-  
-  public String getImageryOid()
+  public String getImagery()
   {
     return getValue(IMAGERY);
   }
@@ -41,13 +29,13 @@ public abstract class ImageryWorkflowTaskBase extends gov.geoplatform.uasdm.bus.
     this.validateAttribute(IMAGERY);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getImageryMd()
+  public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getImageryMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.ImageryWorkflowTask.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(IMAGERY);
+    return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(IMAGERY);
   }
   
-  public void setImagery(gov.geoplatform.uasdm.bus.Imagery value)
+  public void setImagery(String value)
   {
     if(value == null)
     {
@@ -55,19 +43,7 @@ public abstract class ImageryWorkflowTaskBase extends gov.geoplatform.uasdm.bus.
     }
     else
     {
-      setValue(IMAGERY, value.getOid());
-    }
-  }
-  
-  public void setImageryId(java.lang.String oid)
-  {
-    if(oid == null)
-    {
-      setValue(IMAGERY, "");
-    }
-    else
-    {
-      setValue(IMAGERY, oid);
+      setValue(IMAGERY, value);
     }
   }
   

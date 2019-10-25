@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public class WorkflowAction extends WorkflowActionBase
 {
-  private static final long serialVersionUID = -893446595;
+  public static final long serialVersionUID = -893446595;
 
   public WorkflowAction()
   {

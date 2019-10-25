@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public interface ODMProcessingTaskIF extends ImageryWorkflowTaskIF
 {

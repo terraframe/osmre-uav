@@ -3,7 +3,7 @@ package gov.geoplatform.uasdm.odm;
 
 public class ODMUploadTask extends ODMUploadTaskBase implements ODMUploadTaskIF
 {
-  private static final long serialVersionUID = 1872276502;
+  public static final long serialVersionUID = 1872276502;
   
   public ODMUploadTask()
   {
@@ -12,7 +12,7 @@ public class ODMUploadTask extends ODMUploadTaskBase implements ODMUploadTaskIF
   
   public String getImageryComponentOid()
   {
-    return this.getComponentOid();
+    return this.getComponent();
   }
   
   public void setProcessingTask(ODMProcessingTaskIF odmProcessingTask)

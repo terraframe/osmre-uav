@@ -5,8 +5,8 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -25,7 +25,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
-    obj.put("collection", this.getComponentOid());
+    obj.put("collection", this.getComponent());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
@@ -41,11 +41,16 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
    */
   public String getComponentLabel()
   {
-    return this.getComponent().getName();
+    return this.getImageryComponent().getName();
   }
 
   public ImageryComponent getImageryComponent()
   {
-    return (ImageryComponent) this.getComponent();
+    return (ImageryComponent) getComponentInstance();
+  }
+
+  public UasComponent getComponentInstance()
+  {
+    return UasComponent.get(this.getComponent());
   }
 }

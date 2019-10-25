@@ -12,6 +12,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import net.geoprism.GeoprismUser;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF

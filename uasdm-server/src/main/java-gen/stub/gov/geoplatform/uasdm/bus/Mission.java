@@ -1,7 +1,5 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +7,11 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
-public class Mission extends MissionBase
+import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.view.SiteObject;
+
+public class Mission extends MissionBase implements MissionIF
 {
   private static final long  serialVersionUID   = -112103870;
 
@@ -56,7 +58,7 @@ public class Mission extends MissionBase
    */
   @Transaction
   @Override
-  public void applyWithParent(UasComponent parent)
+  public void applyWithParent(UasComponentIF parent)
   {
     super.applyWithParent(parent);
 

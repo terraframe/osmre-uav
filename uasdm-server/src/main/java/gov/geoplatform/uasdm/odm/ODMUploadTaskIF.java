@@ -1,8 +1,8 @@
 package gov.geoplatform.uasdm.odm;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.ImageryComponent;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public interface ODMUploadTaskIF extends ImageryWorkflowTaskIF
 { 

@@ -1,4 +1,6 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.model;
+
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 
 public interface AbstractWorkflowTaskIF
 {

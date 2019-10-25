@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm;
 public abstract class UserInfoDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInfo";
-  private static final long serialVersionUID = -1004506690;
+  public static final long serialVersionUID = -1004506690;
   
   protected UserInfoDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

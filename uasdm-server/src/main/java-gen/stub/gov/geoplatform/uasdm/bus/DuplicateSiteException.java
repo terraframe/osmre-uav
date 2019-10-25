@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class DuplicateSiteException extends DuplicateSiteExceptionBase
 {
-  private static final long serialVersionUID = -1715465549;
+  public static final long serialVersionUID = -1715465549;
   
   public DuplicateSiteException()
   {

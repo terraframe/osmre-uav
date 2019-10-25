@@ -17,7 +17,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
   public static java.lang.String SENSOR = "sensor";
-  private static final long serialVersionUID = 1599470764;
+  public static final long serialVersionUID = 1599470764;
   
   public CollectionBase()
   {

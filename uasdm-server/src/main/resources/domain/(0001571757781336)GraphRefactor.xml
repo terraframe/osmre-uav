@@ -1,0 +1,95 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version_gis.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.graph.UasComponent" label="UAS Component" isAbstract="true">
+        <attributes>
+          <char name="name" required="true" label="Name" size="256" />
+          <char name="s3location" required="false" label="Name" size="4096" />
+          <char name="folderName" label="Folder Name" size="256" immutable="true" required="true" />
+          <text name="description" required="false" label="Description" />
+          <reference name="owner" label="Owner" required="true" type="com.runwaysdk.system.Actor" />
+          <point name="geoPoint" dimension="2" srid="4326" required="false" label="Point" />
+        </attributes>
+      </mdVertex>
+
+      <mdVertex name="gov.geoplatform.uasdm.graph.Site" label="Site" extends="gov.geoplatform.uasdm.graph.UasComponent" >
+        <attributes>
+          <reference name="bureau" label="Bureau" required="true" type="gov.geoplatform.uasdm.bus.Bureau" />
+          <char name="otherBureauTxt" required="false" label="Bureau Name" size="256" />
+        </attributes>
+      </mdVertex>
+
+      <mdVertex name="gov.geoplatform.uasdm.graph.Project" label="Project" extends="gov.geoplatform.uasdm.graph.UasComponent" >
+      </mdVertex>
+
+      <mdVertex name="gov.geoplatform.uasdm.graph.Mission" label="Mission" extends="gov.geoplatform.uasdm.graph.UasComponent" >
+      </mdVertex>
+
+      <mdVertex name="gov.geoplatform.uasdm.graph.Collection" label="Collection" extends="gov.geoplatform.uasdm.graph.UasComponent" >
+        <attributes>
+          <boolean name="metadataUploaded" label="Metadata Uploaded" positiveLabel="Uploaded " negativeLabel="Not Uploaded " defaultValue="false" description="Flag indicating whether metadata XML file has been uploaded for the collection." />
+          <integer name="imageHeight" required="false" />
+          <integer name="imageWidth" required="false" />
+          <enumeration name="privilegeType" selectMultiple="false" label="Privilege Type" required="false" type="gov.geoplatform.uasdm.bus.AllPrivilegeType" defaultValueKey="OWNER" />            
+          <reference name="sensor" label="Sensor" required="false" type="gov.geoplatform.uasdm.bus.Sensor" />      
+          <reference name="platform" label="Platform" required="false" type="gov.geoplatform.uasdm.bus.Platform" />                
+        </attributes>      
+      </mdVertex>
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.Document" label="Document" generateController="false">
+        <attributes>
+          <char name="s3location" label="Name" size="4096" required="true" indexType="unique index" />
+          <char name="name" label="Folder Name" size="256" required="true" />
+        </attributes>
+      </mdVertex>    
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.Product" label="Document" generateController="false">
+        <attributes>
+          <char name="name" label="Name" size="256" required="true" />
+          <text name="boundingBox" label="boundingBox" required="false" />          
+        </attributes>
+      </mdVertex>    
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ComponentHasDocument" label="Component Has Document" parent="gov.geoplatform.uasdm.graph.UasComponent" child="gov.geoplatform.uasdm.graph.Document">
+      </mdEdge>      
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ComponentHasProduct" label="Component Has Product" parent="gov.geoplatform.uasdm.graph.UasComponent" child="gov.geoplatform.uasdm.graph.Product">
+      </mdEdge>      
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProductHasDocument" label="Product Has Document"  child="gov.geoplatform.uasdm.graph.Document" parent="gov.geoplatform.uasdm.graph.Product">
+      </mdEdge>      
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.DocumentGeneratedProduct" label="Document Generated Product" parent="gov.geoplatform.uasdm.graph.Document" child="gov.geoplatform.uasdm.graph.Product">
+      </mdEdge>      
+
+      <mdEdge name="gov.geoplatform.uasdm.graph.SiteHasProject" label="Site Has Project" parent="gov.geoplatform.uasdm.graph.Site" child="gov.geoplatform.uasdm.graph.Project">
+      </mdEdge>
+
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProjectHasMission" label="Site Has Project" parent="gov.geoplatform.uasdm.graph.Project" child="gov.geoplatform.uasdm.graph.Mission">
+      </mdEdge>
+
+      <mdEdge name="gov.geoplatform.uasdm.graph.MissionHasCollection" label="Mission Has Collection" parent="gov.geoplatform.uasdm.graph.Mission" child="gov.geoplatform.uasdm.graph.Collection">
+      </mdEdge>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.MissionHasCollection" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ProjectHasMission" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.SiteHasProject" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.DocumentGeneratedProduct" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ProductHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ComponentHasProduct" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ComponentHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
+      
+      <object key="gov.geoplatform.uasdm.graph.Product" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.Document" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.Collection" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.Mission" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.Project" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.Site" type="com.runwaysdk.system.metadata.MdVertex" />
+      <object key="gov.geoplatform.uasdm.graph.UasComponent" type="com.runwaysdk.system.metadata.MdVertex" />
+    </delete>
+  </undoIt>
+</version>

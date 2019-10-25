@@ -25,7 +25,7 @@ public abstract class BureauBase extends com.runwaysdk.business.Business
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -1876748245;
+  public static final long serialVersionUID = -1876748245;
   
   public BureauBase()
   {

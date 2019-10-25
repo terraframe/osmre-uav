@@ -12,7 +12,7 @@ public abstract class InvalidUserInviteTokenBase extends com.runwaysdk.business.
 {
   public final static String CLASS = "gov.geoplatform.uasdm.InvalidUserInviteToken";
   public static java.lang.String OID = "oid";
-  private static final long serialVersionUID = -181708514;
+  public static final long serialVersionUID = -181708514;
   
   public InvalidUserInviteTokenBase()
   {

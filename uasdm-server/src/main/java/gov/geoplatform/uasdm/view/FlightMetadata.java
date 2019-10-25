@@ -12,13 +12,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
-import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.UasComponent;
 
 public class FlightMetadata

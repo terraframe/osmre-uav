@@ -3,10 +3,6 @@ package gov.geoplatform.uasdm.view;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.runwaysdk.business.BusinessFacade;
-import com.runwaysdk.constants.EntityInfo;
-import com.runwaysdk.dataaccess.EntityDAO;
-import com.runwaysdk.dataaccess.attributes.entity.Attribute;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.session.Session;
 import com.vividsolutions.jts.geom.Geometry;
@@ -16,12 +12,14 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.Imagery;
-import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.Product;
-import gov.geoplatform.uasdm.bus.Project;
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import net.geoprism.gis.geoserver.GeoserverFacade;
+import gov.geoplatform.uasdm.graph.Site;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.ProjectIF;
+import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public abstract class Converter
 {
@@ -31,7 +29,7 @@ public abstract class Converter
 
   }
 
-  protected SiteItem convert(UasComponent uasComponent, boolean metadata, boolean hasChildren)
+  protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
   {
     SiteItem siteItem = new SiteItem();
 
@@ -61,7 +59,7 @@ public abstract class Converter
     return siteItem;
   }
 
-  protected UasComponent convert(SiteItem siteItem, UasComponent uasComponent)
+  protected UasComponentIF convert(SiteItem siteItem, UasComponentIF uasComponent)
   {
     List<AttributeType> attributes = uasComponent.attributes();
 
@@ -80,7 +78,7 @@ public abstract class Converter
     return uasComponent;
   }
 
-  protected UasComponent convertNew(UasComponent uasComponent, SiteItem siteItem)
+  protected UasComponentIF convertNew(UasComponentIF uasComponent, SiteItem siteItem)
   {
     List<AttributeType> attributes = uasComponent.attributes();
 
@@ -100,9 +98,9 @@ public abstract class Converter
     // initially.
     if (siteItem.getId() != null)
     {
-      EntityDAO entityDAO = (EntityDAO) BusinessFacade.getEntityDAO(uasComponent);
-      Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
-      attribute.setValue(siteItem.getId());
+//      EntityDAO entityDAO = (EntityDAO) BusinessFacade.getEntityDAO(uasComponent);
+//      Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
+//      attribute.setValue(siteItem.getId());
     }
 
     return uasComponent;
@@ -115,9 +113,9 @@ public abstract class Converter
    * @param siteItem
    * @return
    */
-  public static UasComponent toNewUasComponent(UasComponent parent, SiteItem siteItem)
+  public static UasComponentIF toNewUasComponent(UasComponentIF parent, SiteItem siteItem)
   {
-    UasComponent newChild = parent != null ? parent.createChild(siteItem.getType()) : new Site();
+    UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : new Site();
 
     if (newChild != null)
     {
@@ -129,38 +127,38 @@ public abstract class Converter
     }
   }
 
-  public static UasComponent toExistingUasComponent(SiteItem siteItem)
+  public static UasComponentIF toExistingUasComponent(SiteItem siteItem)
   {
-    UasComponent uasComponent = UasComponent.get(siteItem.getId());
+    UasComponentIF uasComponent = UasComponent.get(siteItem.getId());
 
     return factory(uasComponent).convert(siteItem, uasComponent);
   }
 
-  public static SiteItem toSiteItem(UasComponent uasComponent, boolean metadata)
+  public static SiteItem toSiteItem(UasComponentIF uasComponent, boolean metadata)
   {
     return toSiteItem(uasComponent, metadata, false);
   }
 
-  public static SiteItem toSiteItem(UasComponent uasComponent, boolean metadata, boolean hasChildren)
+  public static SiteItem toSiteItem(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
   {
     return factory(uasComponent).convert(uasComponent, metadata, hasChildren);
   }
 
-  private static Converter factory(UasComponent uasComponent)
+  private static Converter factory(UasComponentIF uasComponent)
   {
-    if (uasComponent instanceof Site)
+    if (uasComponent instanceof SiteIF)
     {
       return new SiteConverter();
     }
-    else if (uasComponent instanceof Project)
+    else if (uasComponent instanceof ProjectIF)
     {
       return new ProjectConverter();
     }
-    else if (uasComponent instanceof Mission)
+    else if (uasComponent instanceof MissionIF)
     {
       return new MissionConverter();
     }
-    else if (uasComponent instanceof Collection)
+    else if (uasComponent instanceof CollectionIF)
     {
       return new CollectionConverter();
     }
@@ -175,7 +173,7 @@ public abstract class Converter
     }
   }
 
-  public static ProductView toView(Product product, List<UasComponent> components)
+  public static ProductView toView(Product product, List<UasComponentIF> components)
   {
     ProductView view = new ProductView();
 
@@ -184,11 +182,11 @@ public abstract class Converter
     return view;
   }
 
-  protected static void populate(ProductView view, Product product, List<UasComponent> components)
+  protected static void populate(ProductView view, Product product, List<UasComponentIF> components)
   {
     List<SiteItem> list = new LinkedList<SiteItem>();
 
-    for (UasComponent component : components)
+    for (UasComponentIF component : components)
     {
       list.add(Converter.toSiteItem(component, false));
     }
@@ -196,28 +194,28 @@ public abstract class Converter
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
-    
+
     if (product.getImageKey() == null || product.getMapKey() == null)
     {
-      product.calculateKeys(components);
+      product.calculateKeys(new LinkedList<UasComponentIF>(components));
     }
-    
+
     if (product.getImageKey() != null && product.getImageKey().length() > 0)
     {
       view.setImageKey(product.getImageKey());
     }
-    
+
     if (product.getMapKey() != null && product.getMapKey().length() > 0)
     {
       view.setMapKey(product.getMapKey());
-      
-      if ((product.getBoundingBox() == null || product.getBoundingBox().length() == 0))
+
+      if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
       {
         product.updateBoundingBox();
       }
-      
+
       String bbox = product.getBoundingBox();
-      
+
       if (bbox != null)
       {
         view.setBoundingBox(bbox);
@@ -225,7 +223,7 @@ public abstract class Converter
     }
   }
 
-  public static ProductDetailView toDetailView(Product product, List<UasComponent> components, List<Document> generated)
+  public static ProductDetailView toDetailView(Product product, List<UasComponentIF> components, List<Document> generated)
   {
     ProductDetailView view = new ProductDetailView();
 

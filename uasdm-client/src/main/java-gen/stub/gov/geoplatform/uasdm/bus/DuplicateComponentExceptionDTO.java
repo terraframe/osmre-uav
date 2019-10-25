@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class DuplicateComponentExceptionDTO extends DuplicateComponentExceptionDTOBase
 {
-  private static final long serialVersionUID = 388136673;
+  public static final long serialVersionUID = 388136673;
   
   public DuplicateComponentExceptionDTO(com.runwaysdk.constants.ClientRequestIF clientRequestIF)
   {

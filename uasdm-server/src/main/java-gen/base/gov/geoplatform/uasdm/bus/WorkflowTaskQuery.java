@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1782796692)
+@com.runwaysdk.business.ClassSignature(hash = -1968419316)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -38,43 +38,23 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   {
     return gov.geoplatform.uasdm.bus.WorkflowTask.CLASS;
   }
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
+  public com.runwaysdk.query.SelectableUUID getComponent()
   {
     return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias)
   {
-
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT);
-
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, mdAttributeIF, this, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
-
-    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT);
-
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, mdAttributeIF, this, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
-  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
-  {
-    String name = mdAttributeIF.definesAttribute();
-    
-    if (name.equals(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT)) 
-    {
-       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-    else 
-    {
-      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-  }
-
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
    * on this query object. 
@@ -107,9 +87,9 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   public interface WorkflowTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.AbstractUploadTaskQuery.AbstractUploadTaskQueryReferenceIF
   {
 
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getComponent();
+    public com.runwaysdk.query.SelectableUUID getComponent(String alias);
+    public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.WorkflowTask workflowTask);
 
@@ -145,37 +125,23 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
       return this.NE(workflowTask.getOid());
     }
 
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
+  public com.runwaysdk.query.SelectableUUID getComponent()
   {
     return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT,  alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
-  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
-  {
-    String name = mdAttributeIF.definesAttribute();
-    
-    if (name.equals(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT)) 
-    {
-       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-    else 
-    {
-      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-  }
-
   }
 
 /**
@@ -185,9 +151,9 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   public interface WorkflowTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.AbstractUploadTaskQuery.AbstractUploadTaskQueryMultiReferenceIF
   {
 
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent();
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias);
-    public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getComponent();
+    public com.runwaysdk.query.SelectableUUID getComponent(String alias);
+    public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
@@ -272,36 +238,22 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
 
       return this.containsExactly(itemIdArray);
   }
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent()
+  public com.runwaysdk.query.SelectableUUID getComponent()
   {
     return getComponent(null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias)
   {
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, null);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, null);
 
   }
  
-  public gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF getComponent(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
-    return (gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT,  alias, displayLabel);
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
-  protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
-  {
-    String name = mdAttributeIF.definesAttribute();
-    
-    if (name.equals(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT)) 
-    {
-       return new gov.geoplatform.uasdm.bus.UasComponentQuery.UasComponentQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-    else 
-    {
-      return super.referenceFactory(mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
-    }
-  }
-
   }
 }

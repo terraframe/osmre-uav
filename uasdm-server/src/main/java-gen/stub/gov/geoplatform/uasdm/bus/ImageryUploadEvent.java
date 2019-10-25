@@ -12,10 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.system.VaultFile;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
@@ -41,8 +40,8 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    Imagery imagery = task.getImagery();
-    
+    Imagery imagery = task.getImageryInstance();
+
     if (DevProperties.uploadRaw())
     {
       imagery.uploadArchive(task, appRes, uploadTarget);
@@ -65,13 +64,15 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
   private void startODMProcessing(ApplicationResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
   {
+    final Imagery imagery = uploadTask.getImageryInstance();
+
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
-    task.setImageryId(uploadTask.getImageryOid());
+    task.setImagery(imagery.getOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("UAV data orthorectification for imagery [" + task.getImagery().getName() + "]");
-    task.setMessage("The images uploaded to ['" + task.getImagery().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setTaskLabel("UAV data orthorectification for imagery [" + imagery.getName() + "]");
+    task.setMessage("The images uploaded to ['" + imagery.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilePrefix(outFileNamePrefix);
     task.apply();
 

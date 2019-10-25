@@ -1,0 +1,143 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+<!-- 
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.ImageryUploadEvent" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.CollectionUploadEvent" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.WorkflowAction" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.ImageryWorkflowTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.AbstractUploadTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+    </delete>  
+ -->  
+  
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractUploadTask" extends="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="true" generateSource="true"  >
+        <attributes>
+          <char name="uploadId"  required="true" label="Upload ID" size="256" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractUploadTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+        <attributes>
+          <uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowAction" label="Action" cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+        <attributes>
+          <reference name="workflowTask" label="Task" required="true" immutable="true" type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask" indexType="non-unique index" />
+          <!-- In the interest of being Agile, we will not make type an enumeration, but rather a string to make it easier to change -->
+          <char name="actionType"  required="true" label="Type" size="256" />
+          <!-- An optional field to provide additional information, such as how far along an upload is.  -->
+          <clob name="description" required="false" label="Description" />
+        </attributes>
+      </mdBusiness>    
+      
+      <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryWorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractUploadTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true">
+        <attributes>
+          <uuid name="imagery" label="Imagery" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.Imagery" indexType="non-unique index" />
+        </attributes>
+      </mdBusiness>      
+      
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" exported="false" publish="false" >
+	      <attributes>
+            <uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
+	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
+	        <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
+	      </attributes>
+      </mdBusiness>
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryUploadEvent" exported="false" publish="false">
+	      <attributes>
+	        <uuid name="imagery" type="gov.geoplatform.uasdm.bus.Imagery"/>
+	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
+	        <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
+	      </attributes>
+      </mdBusiness>
+
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <text name="odmOutput" label="output" />
+          <char name="filePrefix" label="filePrefix" size="300"/>   
+          <char name="filenames" size="4096" label="File Names"/>                
+        </attributes>
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMUploadTask" label="ODM Upload" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <reference name="processingTask" type="gov.geoplatform.uasdm.odm.ODMProcessingTask" />         
+        </attributes>
+      </mdBusiness>  
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ImageryODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <text name="odmOutput" label="output" />
+          <char name="filePrefix" label="filePrefix" size="300"/>
+        </attributes>
+      </mdBusiness>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ImageryODMUploadTask" label="ODM Upload" extends="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+        <attributes>
+          <char name="odmUUID" size="64" label="UUID"/>
+          <reference name="processingTask" type="gov.geoplatform.uasdm.odm.ImageryODMProcessingTask" />
+        </attributes>
+      </mdBusiness>
+          
+    </create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowAction">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractUploadTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionUploadEvent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.ImageryWorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.WorkflowAction">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractUploadTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionUploadEvent">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.ImageryUploadEvent" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.CollectionUploadEvent" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.WorkflowAction" type="com.runwaysdk.system.metadata.MdBusiness" />    
+      <object key="gov.geoplatform.uasdm.bus.ImageryWorkflowTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+      <object key="gov.geoplatform.uasdm.bus.AbstractUploadTask" type="com.runwaysdk.system.metadata.MdBusiness" />
+    </delete>  
+<!-- 
+-->  
+  </undoIt>
+</version>

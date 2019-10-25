@@ -1,0 +1,360 @@
+package gov.geoplatform.uasdm.graph;
+
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.system.SingleActor;
+
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionQuery;
+import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
+import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
+import gov.geoplatform.uasdm.bus.DocumentQuery;
+import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.GeoprismUser;
+
+public class Collection extends CollectionBase implements ImageryComponent, CollectionIF
+{
+  public static final long    serialVersionUID = 166854005;
+
+  private static final String PARENT_EDGE      = "gov.geoplatform.uasdm.graph.MissionHasCollection";
+
+  final Logger                log              = LoggerFactory.getLogger(Collection.class);
+
+  public Collection()
+  {
+    super();
+  }
+
+  @Override
+  public UasComponent createDefaultChild()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String getSolrIdField()
+  {
+    return "collectionId";
+  }
+
+  @Override
+  public String getSolrNameField()
+  {
+    return "collectionName";
+  }
+
+  @Override
+  protected MdEdgeDAOIF getParentMdEdge()
+  {
+    return MdEdgeDAO.getMdEdgeDAO(PARENT_EDGE);
+  }
+
+  @Override
+  protected MdEdgeDAOIF getChildMdEdge()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<UasComponent> getChildren()
+  {
+    return new LinkedList<UasComponent>();
+  }
+
+  private JSONObject toMetadataMessage()
+  {
+    JSONObject object = new JSONObject();
+    object.put("collectionId", this.getOid());
+    object.put("message", "Metadata missing for collection [" + this.getName() + "]");
+
+    if (this.getImageHeight() != null)
+    {
+      object.put("imageHeight", this.getImageHeight());
+    }
+    if (this.getImageWidth() != null)
+    {
+      object.put("imageWidth", this.getImageWidth());
+    }
+
+    return object;
+  }
+
+  /**
+   * Creates the object and builds the relationship with the parent.
+   * 
+   * Creates directory in S3.
+   * 
+   * @param parent
+   */
+  @Transaction
+  @Override
+  public void applyWithParent(UasComponentIF parent)
+  {
+    super.applyWithParent(parent);
+
+    if (this.isNew())
+    {
+      this.createS3Folder(this.buildRawKey());
+
+      this.createS3Folder(this.buildPointCloudKey());
+
+      this.createS3Folder(this.buildDemKey());
+
+      this.createS3Folder(this.buildOrthoKey());
+    }
+  }
+
+  @Transaction
+  public void delete()
+  {
+    List<AbstractWorkflowTask> tasks = this.getTasks();
+
+    for (AbstractWorkflowTask task : tasks)
+    {
+      task.delete();
+    }
+
+    List<CollectionUploadEvent> events = this.getEvents();
+
+    for (CollectionUploadEvent event : events)
+    {
+      event.delete();
+    }
+
+    super.delete();
+
+    if (!this.getS3location().trim().equals(""))
+    {
+      this.deleteS3Folder(this.buildRawKey(), RAW);
+
+      this.deleteS3Folder(this.buildPointCloudKey(), PTCLOUD);
+
+      this.deleteS3Folder(this.buildDemKey(), DEM);
+
+      this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
+    }
+  }
+
+  protected void deleteS3Object(String key)
+  {
+    Imagery.deleteS3Object(key, this);
+  }
+
+  public List<AbstractWorkflowTask> getTasks()
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this.getOid()));
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      return new LinkedList<AbstractWorkflowTask>(iterator.getAll());
+    }
+  }
+
+  public List<CollectionUploadEvent> getEvents()
+  {
+    CollectionUploadEventQuery query = new CollectionUploadEventQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this.getOid()));
+
+    try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
+    {
+      return new LinkedList<CollectionUploadEvent>(iterator.getAll());
+    }
+  }
+
+  public String buildRawKey()
+  {
+    return this.getS3location() + RAW + "/";
+  }
+
+  public String buildPointCloudKey()
+  {
+    return this.getS3location() + PTCLOUD + "/";
+  }
+
+  public String buildDemKey()
+  {
+    return this.getS3location() + DEM + "/";
+  }
+
+  public String buildOrthoKey()
+  {
+    return this.getS3location() + ORTHO + "/";
+  }
+
+  @Override
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  {
+    return Imagery.uploadArchive(task, archive, this, uploadTarget);
+  }
+
+  @Override
+  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  {
+    return Imagery.uploadZipArchive(task, archive, this, uploadTarget);
+  }
+
+  @Override
+  public List<SiteObject> getSiteObjects(String folder)
+  {
+    List<SiteObject> objects = new LinkedList<SiteObject>();
+
+    if (folder == null)
+    {
+      SiteObject raw = new SiteObject();
+      raw.setId(this.getOid() + "-" + RAW);
+      raw.setName(RAW);
+      raw.setComponentId(this.getOid());
+      raw.setKey(this.buildRawKey());
+      raw.setType(SiteObject.FOLDER);
+
+      SiteObject ptCloud = new SiteObject();
+      ptCloud.setId(this.getOid() + "-" + PTCLOUD);
+      ptCloud.setName(PTCLOUD);
+      ptCloud.setComponentId(this.getOid());
+      ptCloud.setKey(this.buildPointCloudKey());
+      ptCloud.setType(SiteObject.FOLDER);
+
+      SiteObject dem = new SiteObject();
+      dem.setId(this.getOid() + "-" + DEM);
+      dem.setName(DEM);
+      dem.setComponentId(this.getOid());
+      dem.setKey(this.buildDemKey());
+      dem.setType(SiteObject.FOLDER);
+
+      SiteObject ortho = new SiteObject();
+      ortho.setId(this.getOid() + "-" + ORTHO);
+      ortho.setName(ORTHO);
+      ortho.setComponentId(this.getOid());
+      ortho.setKey(this.buildOrthoKey());
+      ortho.setType(SiteObject.FOLDER);
+
+      objects.add(raw);
+      objects.add(ptCloud);
+      objects.add(dem);
+      objects.add(ortho);
+    }
+    else
+    {
+      this.getSiteObjects(folder, objects);
+    }
+
+    return objects;
+  }
+
+  @Override
+  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  {
+    super.getSiteObjects(folder, objects);
+
+    Imagery.getSiteObjects(folder, objects, this);
+  }
+
+  public void createImageServices()
+  {
+    Imagery.createImageServices(this);
+  }
+
+  @Override
+  public Integer getNumberOfChildren()
+  {
+//    int count = 0;
+//    count += this.getItemCount(this.buildRawKey());
+//    count += this.getItemCount(this.buildPointCloudKey());
+//    count += this.getItemCount(this.buildDemKey());
+//    count += this.getItemCount(this.buildOrthoKey());
+
+    DocumentQuery query = new DocumentQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this.getOid()));
+
+    return new Long(query.getCount()).intValue();
+  }
+
+  public UasComponentIF getUasComponent()
+  {
+    return this;
+  }
+
+  public Logger getLog()
+  {
+    return this.log;
+  }
+
+  @Override
+  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  {
+    WorkflowTask workflowTask = new WorkflowTask();
+    workflowTask.setUploadId(uploadId);
+    workflowTask.setComponent(this.getOid());
+    workflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
+
+    return workflowTask;
+  }
+
+  public static java.util.Collection<Collection> getMissingMetadata()
+  {
+    java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
+
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+
+    if (singleActor != null)
+    {
+      QueryFactory qf = new QueryFactory();
+
+      CollectionQuery cQ = new CollectionQuery(qf);
+
+      CollectionUploadEventQuery eQ = new CollectionUploadEventQuery(qf);
+
+      // Get Events created by the current user
+      eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
+
+      // Get Collections associated with those tasks
+      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent()));
+
+      // Get the Missions of those Collections;
+      cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
+
+//      try (OIterator<? extends Collection> i = cQ.getIterator())
+//      {
+//        for (Collection collection : i)
+//        {
+//          collectionList.add(collection);
+//        }
+//      }
+    }
+
+    return collectionList;
+  }
+
+  public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)
+  {
+    JSONArray messages = new JSONArray();
+
+    for (Collection collection : collections)
+    {
+      messages.put(collection.toMetadataMessage());
+    }
+
+    return messages;
+  }
+}

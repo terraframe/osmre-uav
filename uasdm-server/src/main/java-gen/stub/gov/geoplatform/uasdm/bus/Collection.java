@@ -15,14 +15,17 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.GeoprismUser;
 
-public class Collection extends CollectionBase implements ImageryComponent
+public class Collection extends CollectionBase implements ImageryComponent, CollectionIF
 {
-  private static final long serialVersionUID = 1371809368;
+  public static final long serialVersionUID = 1371809368;
 
-  final Logger              log              = LoggerFactory.getLogger(Collection.class);
+  final Logger             log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -75,7 +78,7 @@ public class Collection extends CollectionBase implements ImageryComponent
       eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
 
       // Get Collections associated with those tasks
-      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent().getOid()));
+      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent()));
 
       // Get the Missions of those Collections;
       cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
@@ -131,7 +134,7 @@ public class Collection extends CollectionBase implements ImageryComponent
    */
   @Transaction
   @Override
-  public void applyWithParent(UasComponent parent)
+  public void applyWithParent(UasComponentIF parent)
   {
     super.applyWithParent(parent);
 
@@ -186,7 +189,7 @@ public class Collection extends CollectionBase implements ImageryComponent
   public List<AbstractWorkflowTask> getTasks()
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getComponent().EQ(this));
+    query.WHERE(query.getComponent().EQ(this.getOid()));
 
     try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
     {
@@ -197,7 +200,7 @@ public class Collection extends CollectionBase implements ImageryComponent
   public List<CollectionUploadEvent> getEvents()
   {
     CollectionUploadEventQuery query = new CollectionUploadEventQuery(new QueryFactory());
-    query.WHERE(query.getComponent().EQ(this));
+    query.WHERE(query.getComponent().EQ(this.getOid()));
 
     try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
     {
@@ -322,4 +325,17 @@ public class Collection extends CollectionBase implements ImageryComponent
   {
     return this.log;
   }
+
+  @Override
+  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  {
+    WorkflowTask workflowTask = new WorkflowTask();
+    workflowTask.setUploadId(uploadId);
+    workflowTask.setComponent(this.getOid());
+    workflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
+
+    return workflowTask;
+  }
+
 }

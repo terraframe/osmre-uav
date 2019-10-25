@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
-  private static final long serialVersionUID = 361010444;
+  public static final long serialVersionUID = 361010444;
   
   protected WorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

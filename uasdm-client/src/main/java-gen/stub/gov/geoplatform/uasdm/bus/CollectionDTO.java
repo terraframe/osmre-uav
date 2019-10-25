@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class CollectionDTO extends CollectionDTOBase
 {
-  private static final long serialVersionUID = -2058508328;
+  public static final long serialVersionUID = -2058508328;
   
   public CollectionDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

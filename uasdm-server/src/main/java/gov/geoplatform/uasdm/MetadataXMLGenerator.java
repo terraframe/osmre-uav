@@ -28,9 +28,8 @@ import com.runwaysdk.transport.conversion.ConversionException;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
-import net.geoprism.GeoprismProperties;
 
 public class MetadataXMLGenerator
 {
@@ -71,7 +70,7 @@ public class MetadataXMLGenerator
 
   public void generate(OutputStream out)
   {
-    List<UasComponent> ancestors = collection.getAncestors();
+    List<UasComponentIF> ancestors = collection.getAncestors();
 
     Element e = null;
 
@@ -91,14 +90,14 @@ public class MetadataXMLGenerator
     e.setAttribute("email", pointOfContact.getString("email"));
     root.appendChild(e);
 
-    UasComponent proj = ancestors.get(1);
+    UasComponentIF proj = ancestors.get(1);
     e = dom.createElement("Project");
     e.setAttribute("name", proj.getName());
     e.setAttribute("shortName", proj.getName());
     e.setAttribute("description", proj.getDescription());
     root.appendChild(e);
 
-    UasComponent mission = ancestors.get(0);
+    UasComponentIF mission = ancestors.get(0);
     e = dom.createElement("Mission");
     e.setAttribute("name", mission.getName());
     e.setAttribute("description", mission.getDescription());

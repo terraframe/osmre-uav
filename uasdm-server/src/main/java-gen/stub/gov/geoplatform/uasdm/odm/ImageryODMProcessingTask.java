@@ -21,7 +21,7 @@ import gov.geoplatform.uasdm.bus.Imagery;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
-  private static final long serialVersionUID = -897837399;
+  public static final long serialVersionUID = -897837399;
 
   final Logger              log              = LoggerFactory.getLogger(ImageryODMProcessingTask.class);
 
@@ -32,7 +32,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
   public String getImageryComponentOid()
   {
-    return this.getImageryOid();
+    return this.getImagery();
   }
 
   @Override
@@ -105,7 +105,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
    */
   public void writeODMtoS3(JSONArray odmOutput)
   {
-    Imagery imagery = this.getImagery();
+    Imagery imagery = this.getImageryInstance();
 
     StringBuilder sb = new StringBuilder();
 

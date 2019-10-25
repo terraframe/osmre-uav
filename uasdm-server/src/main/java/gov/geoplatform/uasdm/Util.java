@@ -1,8 +1,5 @@
 package gov.geoplatform.uasdm;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.odm.ODMStatusServer;
-
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -14,6 +11,9 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+
+import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.odm.ODMStatusServer;
 
 public class Util
 {

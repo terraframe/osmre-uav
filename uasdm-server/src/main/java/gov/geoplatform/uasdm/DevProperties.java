@@ -1,9 +1,5 @@
 package gov.geoplatform.uasdm;
 
-import gov.geoplatform.uasdm.odm.HTTPResponse;
-import gov.geoplatform.uasdm.odm.InfoResponse;
-import gov.geoplatform.uasdm.odm.ODMStatus;
-
 import java.io.File;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,6 +7,10 @@ import org.json.simple.JSONObject;
 
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
+
+import gov.geoplatform.uasdm.odm.HTTPResponse;
+import gov.geoplatform.uasdm.odm.InfoResponse;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 
 /**
  * Useful for disabling features to make testing faster / easier.

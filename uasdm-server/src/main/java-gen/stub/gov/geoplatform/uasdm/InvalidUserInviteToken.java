@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm;
 
 public class InvalidUserInviteToken extends InvalidUserInviteTokenBase
 {
-  private static final long serialVersionUID = -828429407;
+  public static final long serialVersionUID = -828429407;
   
   public InvalidUserInviteToken()
   {

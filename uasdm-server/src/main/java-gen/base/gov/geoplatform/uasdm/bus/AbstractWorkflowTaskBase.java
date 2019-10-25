@@ -27,7 +27,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public static java.lang.String STATUS = "status";
   public static java.lang.String TASKLABEL = "taskLabel";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 1973421191;
+  public static final long serialVersionUID = 1973421191;
   
   public AbstractWorkflowTaskBase()
   {

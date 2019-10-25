@@ -6,9 +6,12 @@ import java.util.List;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.system.metadata.MdBusiness;
 
-public class Project extends ProjectBase
+import gov.geoplatform.uasdm.model.ProjectIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+
+public class Project extends ProjectBase implements ProjectIF
 {
-  private static final long serialVersionUID = 935245787;
+  public static final long serialVersionUID = 935245787;
 
   public Project()
   {
@@ -20,23 +23,23 @@ public class Project extends ProjectBase
   {
     return this.createMission();
   }
-  
+
   public Mission createMission()
   {
     return new Mission();
   }
- 
+
   public Imagery createImagery()
   {
     return new Imagery();
   }
-  
-  
+
   /**
    * Create the child of the given type.
    * 
-   * @param return the child of the given type. It assumes the type is valid. It is the type name of the
-   * Runway {@link MdBusiness}.
+   * @param return
+   *          the child of the given type. It assumes the type is valid. It is
+   *          the type name of the Runway {@link MdBusiness}.
    * 
    * @return a new {@link UasComponent} of the correct type.
    */
@@ -44,7 +47,7 @@ public class Project extends ProjectBase
   public UasComponent createChild(String typeName)
   {
     MdBusiness imageryMdBusiness = MdBusiness.getMdBusiness(Imagery.CLASS);
-    
+
     if (typeName != null && typeName.equals(imageryMdBusiness.getTypeName()))
     {
       return this.createImagery();
@@ -53,9 +56,9 @@ public class Project extends ProjectBase
     {
       return this.createDefaultChild();
     }
-      
+
   }
-  
+
   @Override
   public String getSolrIdField()
   {
@@ -72,7 +75,7 @@ public class Project extends ProjectBase
   {
     if (uasComponent instanceof Imagery)
     {
-      return this.addImagery((Imagery)uasComponent);
+      return this.addImagery((Imagery) uasComponent);
     }
     else
     {
@@ -89,7 +92,7 @@ public class Project extends ProjectBase
    */
   @Transaction
   @Override
-  public void applyWithParent(UasComponent parent)
+  public void applyWithParent(UasComponentIF parent)
   {
     super.applyWithParent(parent);
   }

@@ -15,13 +15,13 @@ import com.runwaysdk.system.scheduler.ExecutionContext;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParser;
 
@@ -29,7 +29,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
   private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
   
-  private static final long serialVersionUID = -339555201;
+  public static final long serialVersionUID = -339555201;
   
   public ImageryProcessingJob()
   {

@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class BureauDTO extends BureauDTOBase
 {
-  private static final long serialVersionUID = -1084027606;
+  public static final long serialVersionUID = -1084027606;
   
   public BureauDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

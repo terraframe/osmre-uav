@@ -145,7 +145,7 @@ public class WorkflowTaskTest
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
-    task.setComponent(collection);
+    task.setComponent(collection.getOid());
     task.setUploadId("testID");
     task.setStatus("Test Status");
     task.setTaskLabel("Test label");

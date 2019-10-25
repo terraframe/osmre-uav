@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public abstract class UasComponentDTO extends UasComponentDTOBase
 {
-  private static final long serialVersionUID = 837322124;
+  public static final long serialVersionUID = 837322124;
   
   public UasComponentDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

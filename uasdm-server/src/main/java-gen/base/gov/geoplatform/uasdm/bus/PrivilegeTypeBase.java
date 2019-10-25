@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class PrivilegeTypeBase extends com.runwaysdk.system.EnumerationMaster
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.PrivilegeType";
-  private static final long serialVersionUID = -1613571845;
+  public static final long serialVersionUID = -1613571845;
   
   public PrivilegeTypeBase()
   {

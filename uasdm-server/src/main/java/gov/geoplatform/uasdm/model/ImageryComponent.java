@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.model;
 
 import java.util.List;
 
@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 
 import com.runwaysdk.resource.ApplicationResource;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 /**
@@ -34,11 +36,11 @@ public interface ImageryComponent
 
   public Logger getLog();
 
-  public List<UasComponent> getAncestors();
+  public List<UasComponentIF> getAncestors();
 
   public String buildRawKey();
 
-  public UasComponent getUasComponent();
+  public UasComponentIF getUasComponent();
 
   public String getStoreName(String key);
 
@@ -49,13 +51,13 @@ public interface ImageryComponent
   public String getS3location();
 
   public String getName();
-  
+
   /**
    * If the @param uploadTarget is null or blank, then return the raw key.
    * 
    * @param uploadTarget
    * 
-   * @return S3 upload key or the raw upload key 
+   * @return S3 upload key or the raw upload key
    */
   public default String buildUploadKey(String uploadTarget)
   {
@@ -68,4 +70,6 @@ public interface ImageryComponent
       return this.buildRawKey();
     }
   }
+
+  public String getOid();
 }

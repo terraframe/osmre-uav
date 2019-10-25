@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class InvalidUasComponentNameExceptionDTOBase extends com.runwaysdk.business.SmartExceptionDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.InvalidUasComponentNameException";
-  private static final long serialVersionUID = 1506060597;
+  public static final long serialVersionUID = 1506060597;
   
   public InvalidUasComponentNameExceptionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequestIF)
   {

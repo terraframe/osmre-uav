@@ -6,41 +6,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.geoprism.gis.geoserver.GeoserverFacade;
-
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.json.JSONArray;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.vividsolutions.jts.geom.Coordinate;
 
-public class Product extends ProductBase
+import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+import net.geoprism.gis.geoserver.GeoserverFacade;
+
+public class Product extends ProductBase implements ProductIF
 {
-  private static final long serialVersionUID = 1797567850;
-  
-  private static final Logger logger = LoggerFactory.getLogger(Product.class);
-  
-  private String imageKey = null;
-  
-  private String mapKey = null;
-  
+  private static final long   serialVersionUID = 1797567850;
+
+  private static final Logger logger           = LoggerFactory.getLogger(Product.class);
+
+  private String              imageKey         = null;
+
+  private String              mapKey           = null;
+
   public Product()
   {
     super();
   }
-  
+
   @Override
   public void delete()
   {
@@ -96,25 +95,25 @@ public class Product extends ProductBase
     return null;
   }
 
-  public static Product createIfNotExist(UasComponent uasComponent)
+  public static Product createIfNotExist(UasComponentIF uasComponent)
   {
     Product product = find(uasComponent);
 
     if (product == null)
     {
       product = new Product();
-      product.setComponent(uasComponent);
+      product.setComponent((UasComponent) uasComponent);
       product.setName(uasComponent.getName());
       product.apply();
     }
 
     return product;
   }
-  
-  public static Product find(UasComponent uasComponent)
+
+  public static Product find(UasComponentIF uasComponent)
   {
     ProductQuery query = new ProductQuery(new QueryFactory());
-    query.WHERE(query.getComponent().EQ(uasComponent));
+    query.WHERE(query.getComponent().EQ((UasComponent) uasComponent));
 
     try (OIterator<? extends Product> iterator = query.getIterator())
     {
@@ -140,10 +139,11 @@ public class Product extends ProductBase
       }
     }
   }
-  
+
   /**
-   * This method calculates a 4326 CRS bounding box for a given raster layer with the specified mapKey. This layer
-   * must exist on Geoserver before calling this method. If the bounding box cannot be calculated, for whatever
+   * This method calculates a 4326 CRS bounding box for a given raster layer
+   * with the specified mapKey. This layer must exist on Geoserver before
+   * calling this method. If the bounding box cannot be calculated, for whatever
    * reason, this method will return null.
    * 
    * @return A JSON array where [x1, x2, y1, y2]
@@ -153,11 +153,11 @@ public class Product extends ProductBase
     try
     {
       WMSCapabilities capabilities = GeoserverFacade.getCapabilities(mapKey);
-      
+
       List<Layer> layers = capabilities.getLayerList();
-      
+
       Layer layer = null;
-      
+
       if (layers.size() == 0)
       {
         logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
@@ -177,38 +177,40 @@ public class Product extends ProductBase
             break;
           }
         }
-        
+
         if (layer == null)
         {
           logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
           return null;
         }
       }
-      
+
       Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
-      
+
       for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
       {
         String code = entry.getKey();
         CRSEnvelope envelope = entry.getValue();
-        
+
         try
         {
+          // Mapbox's docs say that it's in 3857 but it's bounding box method
+          // expects 4326.
           CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326"); // Mapbox's docs say that it's in 3857 but it's bounding box method expects 4326.
+          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
           MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-          
+
           com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
           jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
-          
+
           com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
-          
+
           JSONArray json = new JSONArray();
           json.put(env3857.getMinX());
           json.put(env3857.getMaxX());
           json.put(env3857.getMinY());
           json.put(env3857.getMaxY());
-          
+
           return json.toString();
         }
         catch (Throwable t)
@@ -231,20 +233,20 @@ public class Product extends ProductBase
   {
     UasComponent component = this.getComponent();
 
-    List<UasComponent> components = component.getAncestors();
+    List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
 
     components.add(component);
-    
+
     if (this.getImageKey() == null || this.getMapKey() == null)
     {
       this.calculateKeys(components);
     }
-    
+
     if (this.getMapKey() != null && this.getMapKey().length() > 0)
     {
       String bbox = this.calculateBoundingBox(this.getMapKey());
-      
+
       if (bbox != null)
       {
         this.lock();
@@ -253,18 +255,18 @@ public class Product extends ProductBase
       }
     }
   }
-  
+
   public String getImageKey()
   {
     return this.imageKey;
   }
-  
+
   public String getMapKey()
   {
     return this.mapKey;
   }
-  
-  public void calculateKeys(List<UasComponent> components)
+
+  public void calculateKeys(List<UasComponentIF> components)
   {
     List<Document> documents = new LinkedList<Document>();
 
@@ -272,7 +274,7 @@ public class Product extends ProductBase
     {
       documents.addAll(it.getAll());
     }
-    
+
     for (Document document : documents)
     {
       if (document.getName().endsWith(".png"))

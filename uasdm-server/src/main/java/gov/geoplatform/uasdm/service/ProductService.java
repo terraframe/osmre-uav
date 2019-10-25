@@ -13,6 +13,7 @@ import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.ProductQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
@@ -42,14 +43,14 @@ public class ProductService
         Product product = iterator.next();
         UasComponent component = product.getComponent();
 
-        List<UasComponent> components = component.getAncestors();
+        List<UasComponentIF> components = component.getAncestors();
         Collections.reverse(components);
 
         components.add(component);
 
         boolean valid = false;
 
-        for (UasComponent com : components)
+        for (UasComponentIF com : components)
         {
           if (com.getOid().equals(parent.getOid()))
           {
@@ -74,7 +75,7 @@ public class ProductService
 
     UasComponent component = product.getComponent();
 
-    List<UasComponent> components = component.getAncestors();
+    List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
 
     components.add(component);

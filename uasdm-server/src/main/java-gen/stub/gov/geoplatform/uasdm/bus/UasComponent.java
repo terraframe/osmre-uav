@@ -36,29 +36,31 @@ import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
-import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
-import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.system.Actor;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.GeoprismUser;
 import net.geoprism.JSONStringImpl;
 
-public abstract class UasComponent extends UasComponentBase
+public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
-  private static final long serialVersionUID = -2027002868;
+  public static final long serialVersionUID = -2027002868;
 
   public UasComponent()
   {
@@ -104,7 +106,7 @@ public abstract class UasComponent extends UasComponentBase
    * @param parent
    */
   @Transaction
-  public void applyWithParent(UasComponent parent)
+  public void applyWithParent(UasComponentIF parent)
   {
     boolean isNew = this.isNew();
 
@@ -165,7 +167,7 @@ public abstract class UasComponent extends UasComponentBase
 
     if (parent != null)
     {
-      this.addComponent(parent).apply();
+      this.addComponent((UasComponent) parent).apply();
     }
 
     if (isNew)
@@ -221,9 +223,9 @@ public abstract class UasComponent extends UasComponentBase
     }
 
     // Delete all of the documents
-    List<Document> documents = this.getDocuments();
+    List<DocumentIF> documents = this.getDocuments();
 
-    for (Document document : documents)
+    for (DocumentIF document : documents)
     {
       document.delete();
     }
@@ -246,7 +248,7 @@ public abstract class UasComponent extends UasComponentBase
    *          null if no parent
    * @return a key for S3 that conforms to the directory structure requirements.
    */
-  public String buildS3Key(UasComponent parent)
+  public String buildS3Key(UasComponentIF parent)
   {
     String key = new String();
 
@@ -385,30 +387,6 @@ public abstract class UasComponent extends UasComponentBase
     return false;
   }
 
-  public static void validateFolderName(String parentId, String name)
-  {
-    if (!isValidName(name))
-    {
-      MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
-      MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.NAME);
-
-      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The component name has an invalid character");
-      ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
-    }
-    else if (isDuplicateFolderName(parentId, null, name))
-    {
-      UasComponent parent = UasComponent.get(parentId);
-      MdClassDAOIF mdClass = MdClassDAO.getMdClassDAO(Collection.CLASS);
-
-      DuplicateComponentException e = new DuplicateComponentException();
-      e.setParentName(parent.getName());
-      e.setChildComponentLabel(mdClass.getDisplayLabel(Session.getCurrentLocale()));
-      e.setChildName(name);
-
-      throw e;
-    }
-  }
-
   public List<SiteObject> getSiteObjects(String folder)
   {
     return new LinkedList<SiteObject>();
@@ -526,9 +504,9 @@ public abstract class UasComponent extends UasComponentBase
     return count;
   }
 
-  public List<UasComponent> getAncestors()
+  public List<UasComponentIF> getAncestors()
   {
-    List<UasComponent> ancestors = new LinkedList<UasComponent>();
+    List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
 
     List<UasComponent> parents = new LinkedList<>();
 
@@ -711,6 +689,12 @@ public abstract class UasComponent extends UasComponentBase
    */
   public abstract List<AbstractWorkflowTask> getTasks();
 
+  @Override
+  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  {
+    throw new UnsupportedOperationException();
+  }
+
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
     throw new UnsupportedOperationException();
@@ -757,14 +741,14 @@ public abstract class UasComponent extends UasComponentBase
     return this.getOid() + "-" + baseName;
   }
 
-  public List<Document> getDocuments()
+  public List<DocumentIF> getDocuments()
   {
     DocumentQuery query = new DocumentQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
 
     try (OIterator<? extends Document> iterator = query.getIterator())
     {
-      return new LinkedList<Document>(iterator.getAll());
+      return new LinkedList<DocumentIF>(iterator.getAll());
     }
   }
 

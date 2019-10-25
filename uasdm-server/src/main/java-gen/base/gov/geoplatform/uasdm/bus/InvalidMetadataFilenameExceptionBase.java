@@ -12,7 +12,7 @@ public abstract class InvalidMetadataFilenameExceptionBase extends com.runwaysdk
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.InvalidMetadataFilenameException";
   public static java.lang.String OID = "oid";
-  private static final long serialVersionUID = -552422720;
+  public static final long serialVersionUID = -552422720;
   
   public InvalidMetadataFilenameExceptionBase()
   {

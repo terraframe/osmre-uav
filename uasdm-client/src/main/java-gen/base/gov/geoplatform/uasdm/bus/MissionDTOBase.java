@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class MissionDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Mission";
-  private static final long serialVersionUID = 230435699;
+  public static final long serialVersionUID = 230435699;
   
   protected MissionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

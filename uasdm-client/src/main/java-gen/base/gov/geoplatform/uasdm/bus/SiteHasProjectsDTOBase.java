@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class SiteHasProjectsDTOBase extends gov.geoplatform.uasdm.bus.ComponentHasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.SiteHasProjects";
-  private static final long serialVersionUID = 2145746959;
+  public static final long serialVersionUID = 2145746959;
   
   public SiteHasProjectsDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String parentOid, java.lang.String childOid)
   {

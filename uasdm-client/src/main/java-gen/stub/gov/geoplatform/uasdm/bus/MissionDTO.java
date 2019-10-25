@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class MissionDTO extends MissionDTOBase
 {
-  private static final long serialVersionUID = -798396478;
+  public static final long serialVersionUID = -798396478;
   
   public MissionDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

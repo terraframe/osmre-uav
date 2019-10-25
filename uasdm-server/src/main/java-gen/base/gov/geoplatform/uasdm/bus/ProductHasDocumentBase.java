@@ -23,7 +23,7 @@ public abstract class ProductHasDocumentBase extends com.runwaysdk.business.Rela
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -1251975074;
+  public static final long serialVersionUID = -1251975074;
   
   public ProductHasDocumentBase(String parentOid, String childOid)
   {

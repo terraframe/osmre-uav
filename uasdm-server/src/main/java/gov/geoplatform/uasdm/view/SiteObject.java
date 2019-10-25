@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
 {
@@ -123,7 +123,7 @@ public class SiteObject implements TreeComponent
     return json;
   }
 
-  public static SiteObject create(UasComponent component, String prefix, S3ObjectSummary summary)
+  public static SiteObject create(UasComponentIF component, String prefix, S3ObjectSummary summary)
   {
     String key = summary.getKey();
     String name = key.replaceFirst(prefix + "/", "");

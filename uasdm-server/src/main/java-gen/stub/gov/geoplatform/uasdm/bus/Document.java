@@ -20,10 +20,13 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
-public class Document extends DocumentBase
+public class Document extends DocumentBase implements DocumentIF
 {
-  private static final long serialVersionUID = -877956259;
+  public static final long serialVersionUID = -877956259;
 
   public Document()
   {
@@ -116,7 +119,7 @@ public class Document extends DocumentBase
     return this.getS3location();
   }
 
-  public static Document createIfNotExist(UasComponent uasComponent, String key, String name)
+  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name)
   {
     Document document = Document.find(key);
 
@@ -130,7 +133,7 @@ public class Document extends DocumentBase
       document.appLock();
     }
 
-    document.setComponent(uasComponent);
+    document.setComponent((UasComponent) uasComponent);
     document.setName(name);
     document.apply();
 
@@ -153,21 +156,21 @@ public class Document extends DocumentBase
     return null;
   }
 
-  public void addGeneratedProduct(Product product)
+  public void addGeneratedProduct(ProductIF product)
   {
     DocumentGeneratedProduct pd = this.getDocumentGeneratedProduct(product);
 
     if (pd == null)
     {
-      this.addGeneratedProducts(product).apply();
+      this.addGeneratedProducts((Product) product).apply();
     }
   }
 
-  public DocumentGeneratedProduct getDocumentGeneratedProduct(Product product)
+  public DocumentGeneratedProduct getDocumentGeneratedProduct(ProductIF product)
   {
     DocumentGeneratedProductQuery query = new DocumentGeneratedProductQuery(new QueryFactory());
     query.WHERE(query.getParent().EQ(this));
-    query.AND(query.getChild().EQ(product));
+    query.AND(query.getChild().EQ((Product) product));
 
     try (OIterator<? extends DocumentGeneratedProduct> iterator = query.getIterator())
     {

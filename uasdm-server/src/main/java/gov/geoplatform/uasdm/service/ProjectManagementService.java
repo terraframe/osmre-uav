@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -24,29 +23,23 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.ImageryComponent;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.SiteQuery;
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Site;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.postgis.ST_WITHIN;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -72,16 +65,9 @@ public class ProjectManagementService
 
     UasComponent uasComponent = UasComponent.get(parentid);
 
-    OIterator<? extends UasComponent> i = uasComponent.getAllComponents();
+    final List<UasComponent> i = uasComponent.getChildren();
+    i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
 
-    try
-    {
-      i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
-    }
-    finally
-    {
-      i.close();
-    }
     return children;
   }
 
@@ -90,92 +76,65 @@ public class ProjectManagementService
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
-    QueryFactory qf = new QueryFactory();
-    SiteQuery q = new SiteQuery(qf);
-
-    if (bounds != null && bounds.length() > 0)
-    {
-      // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
-      JSONObject object = new JSONObject(bounds);
-
-      JSONObject sw = object.getJSONObject("_sw");
-      JSONObject ne = object.getJSONObject("_ne");
-
-      double x1 = sw.getDouble("lng");
-      double x2 = ne.getDouble("lng");
-      double y1 = sw.getDouble("lat");
-      double y2 = ne.getDouble("lat");
-
-      Envelope envelope = new Envelope(x1, x2, y1, y2);
-      GeometryFactory factory = new GeometryFactory();
-      Geometry geometry = factory.toGeometry(envelope);
-
-      q.WHERE(new ST_WITHIN(q.getGeoPoint(), geometry));
-    }
-
-    q.ORDER_BY_ASC(q.getName());
-
-    try (OIterator<? extends Site> i = q.getIterator())
-    {
-      i.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
-    }
+    List<Site> sites = Site.getSites(bounds);
+    sites.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
 
     if (id != null)
     {
-      UasComponent component = UasComponent.get(id);
-
-      TreeComponent child = Converter.toSiteItem(component, false, true);
-
-      List<UasComponent> ancestors = component.getAncestors();
-
-      for (int j = 0; j < ancestors.size(); j++)
-      {
-        TreeComponent parent = null;
-
-        if (j == ( ancestors.size() - 1 ))
-        {
-          /*
-           * The last ancestor in the list should be the root tree node, which
-           * should already be in the roots list. As such use the root list node
-           * instead and add children to it.
-           */
-          UasComponent root = ancestors.get(ancestors.size() - 1);
-
-          for (TreeComponent r : roots)
-          {
-            if (r.getId().equals(root.getOid()))
-            {
-              parent = r;
-            }
-          }
-        }
-        else
-        {
-          parent = Converter.toSiteItem(ancestors.get(j), false);
-        }
-
-        if (parent instanceof SiteItem)
-        {
-          /*
-           * For each ancestor get all of its children TreeComponents
-           */
-          List<TreeComponent> children = this.items(parent.getId(), null);
-
-          for (TreeComponent chi : children)
-          {
-            if (!chi.getId().equals(child.getId()))
-            {
-              parent.addChild(chi);
-            }
-            else
-            {
-              parent.addChild(child);
-            }
-          }
-
-          child = parent;
-        }
-      }
+//      UasComponent component = UasComponent.get(id);
+//
+//      TreeComponent child = Converter.toSiteItem(component, false, true);
+//
+//      List<UasComponentIF> ancestors = component.getAncestors();
+//
+//      for (int j = 0; j < ancestors.size(); j++)
+//      {
+//        TreeComponent parent = null;
+//
+//        if (j == ( ancestors.size() - 1 ))
+//        {
+//          /*
+//           * The last ancestor in the list should be the root tree node, which
+//           * should already be in the roots list. As such use the root list node
+//           * instead and add children to it.
+//           */
+//          UasComponent root = ancestors.get(ancestors.size() - 1);
+//
+//          for (TreeComponent r : roots)
+//          {
+//            if (r.getId().equals(root.getOid()))
+//            {
+//              parent = r;
+//            }
+//          }
+//        }
+//        else
+//        {
+//          parent = Converter.toSiteItem(ancestors.get(j), false);
+//        }
+//
+//        if (parent instanceof SiteItem)
+//        {
+//          /*
+//           * For each ancestor get all of its children TreeComponents
+//           */
+//          List<TreeComponent> children = this.items(parent.getId(), null);
+//
+//          for (TreeComponent chi : children)
+//          {
+//            if (!chi.getId().equals(child.getId()))
+//            {
+//              parent.addChild(chi);
+//            }
+//            else
+//            {
+//              parent.addChild(child);
+//            }
+//          }
+//
+//          child = parent;
+//        }
+//      }
     }
 
     return roots;
@@ -255,7 +214,7 @@ public class ProjectManagementService
   {
     UasComponent parent = parentId != null ? UasComponent.get(parentId) : null;
 
-    UasComponent child = Converter.toNewUasComponent(parent, siteItem);
+    UasComponentIF child = Converter.toNewUasComponent(parent, siteItem);
 
     if (child != null)
     {
@@ -323,11 +282,11 @@ public class ProjectManagementService
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(id);
-    task.setComponentId(collection.getOid());
+    task.setComponent(collection.getOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + task.getComponent().getName() + "]");
-    task.setMessage("The images uploaded to ['" + task.getComponent().getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
+    task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilenames(array.toString());
     task.apply();
 
@@ -382,13 +341,13 @@ public class ProjectManagementService
   {
     UasComponent uasComponent = UasComponent.get(siteItem.getId());
 
-    uasComponent.lock();
+//    uasComponent.lock();
 
-    uasComponent = Converter.toExistingUasComponent(siteItem);
+    uasComponent = (UasComponent) Converter.toExistingUasComponent(siteItem);
 
     uasComponent.apply();
 
-    uasComponent.unlock();
+//    uasComponent.unlock();
 
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
@@ -442,16 +401,16 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void validate(String sessionId, RequestParser parser)
   {
-    Map<String, String> params = parser.getCustomParams();
-    Boolean createCollection = new Boolean(params.get("create"));
-
-    if (createCollection)
-    {
-      String missionId = params.get("mission");
-      String folderName = params.get("folderName");
-
-      UasComponent.validateFolderName(missionId, folderName);
-    }
+//    Map<String, String> params = parser.getCustomParams();
+//    Boolean createCollection = new Boolean(params.get("create"));
+//
+//    if (createCollection)
+//    {
+//      String missionId = params.get("mission");
+//      String folderName = params.get("folderName");
+//
+//      UasComponent.validateFolderName(missionId, folderName);
+//    }
   }
 
   @Request(RequestType.SESSION)

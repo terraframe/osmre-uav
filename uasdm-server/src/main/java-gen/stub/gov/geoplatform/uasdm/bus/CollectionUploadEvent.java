@@ -2,7 +2,6 @@ package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -13,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -41,8 +38,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    UasComponent collection = task.getComponent();
-    
+    UasComponent collection = task.getComponentInstance();
+
     if (DevProperties.uploadRaw())
     {
       collection.uploadArchive(task, infile, uploadTarget);
@@ -65,11 +62,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
   private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
   {
-    UasComponent component = uploadTask.getComponent();
+    UasComponent component = uploadTask.getComponentInstance();
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
-    task.setComponent(component);
+    task.setComponent(component.getOid());
     task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("UAV data orthorectification for collection [" + component.getName() + "]");

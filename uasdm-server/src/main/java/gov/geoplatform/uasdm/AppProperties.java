@@ -2,10 +2,8 @@ package gov.geoplatform.uasdm;
 
 import java.io.File;
 
-import com.google.common.io.Files;
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
-import com.runwaysdk.constants.DeployProperties;
 
 import net.geoprism.GeoprismProperties;
 

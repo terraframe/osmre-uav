@@ -1,7 +1,5 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.DevProperties;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,11 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
 
+import gov.geoplatform.uasdm.DevProperties;
+
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
-  private static final long serialVersionUID = -90821820;
+  public static final long serialVersionUID = -90821820;
 
-  private static Logger     logger           = LoggerFactory.getLogger(ODMStatusServer.class);
+  private static Logger    logger           = LoggerFactory.getLogger(ODMStatusServer.class);
 
   public ODMProcessingTask()
   {
@@ -25,7 +25,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
   public String getImageryComponentOid()
   {
-    return this.getComponentOid();
+    return this.getComponent();
   }
 
   @Override
@@ -61,7 +61,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     try
     {
       NewResponse resp;
-      
+
       if (DevProperties.runOrtho())
       {
         resp = ODMFacade.taskNew(images);

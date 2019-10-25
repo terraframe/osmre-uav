@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class ImageryWorkflowTaskQueryDTO extends gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQueryDTO
 {
-private static final long serialVersionUID = 355654253;
+public static final long serialVersionUID = 355654253;
 
   protected ImageryWorkflowTaskQueryDTO(String type)
   {

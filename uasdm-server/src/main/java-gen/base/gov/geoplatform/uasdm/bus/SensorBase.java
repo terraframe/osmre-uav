@@ -28,7 +28,7 @@ public abstract class SensorBase extends com.runwaysdk.business.Business
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
   public static java.lang.String WAVELENGTH = "waveLength";
-  private static final long serialVersionUID = -273173233;
+  public static final long serialVersionUID = -273173233;
   
   public SensorBase()
   {

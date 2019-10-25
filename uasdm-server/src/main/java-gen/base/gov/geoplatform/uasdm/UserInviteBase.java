@@ -28,7 +28,7 @@ public abstract class UserInviteBase extends com.runwaysdk.business.Business
   public static java.lang.String STARTTIME = "startTime";
   public static java.lang.String TOKEN = "token";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -1302217304;
+  public static final long serialVersionUID = -1302217304;
   
   public UserInviteBase()
   {

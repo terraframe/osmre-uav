@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class ImageryDTO extends ImageryDTOBase
 {
-  private static final long serialVersionUID = 2077776553;
+  public static final long serialVersionUID = 2077776553;
   
   public ImageryDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

@@ -12,7 +12,7 @@ public abstract class MissionBase extends gov.geoplatform.uasdm.bus.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Mission";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  private static final long serialVersionUID = 1419697395;
+  public static final long serialVersionUID = 1419697395;
   
   public MissionBase()
   {

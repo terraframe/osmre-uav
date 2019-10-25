@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -2068068643)
+@com.runwaysdk.business.ClassSignature(hash = 92640853)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,26 +12,14 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
   public static java.lang.String COMPONENT = "component";
-  private static final long serialVersionUID = -2068068643;
+  private static final long serialVersionUID = 92640853;
   
   public WorkflowTaskBase()
   {
     super();
   }
   
-  public gov.geoplatform.uasdm.bus.UasComponent getComponent()
-  {
-    if (getValue(COMPONENT).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.UasComponent.get(getValue(COMPONENT));
-    }
-  }
-  
-  public String getComponentOid()
+  public String getComponent()
   {
     return getValue(COMPONENT);
   }
@@ -41,13 +29,13 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
     this.validateAttribute(COMPONENT);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getComponentMd()
+  public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getComponentMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(COMPONENT);
+    return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(COMPONENT);
   }
   
-  public void setComponent(gov.geoplatform.uasdm.bus.UasComponent value)
+  public void setComponent(String value)
   {
     if(value == null)
     {
@@ -55,19 +43,7 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
     }
     else
     {
-      setValue(COMPONENT, value.getOid());
-    }
-  }
-  
-  public void setComponentId(java.lang.String oid)
-  {
-    if(oid == null)
-    {
-      setValue(COMPONENT, "");
-    }
-    else
-    {
-      setValue(COMPONENT, oid);
+      setValue(COMPONENT, value);
     }
   }
   

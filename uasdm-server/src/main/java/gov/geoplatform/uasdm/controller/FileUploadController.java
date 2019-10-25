@@ -1,11 +1,5 @@
 package gov.geoplatform.uasdm.controller;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.service.WorkflowService;
-import gov.geoplatform.uasdm.view.MultipartUploadParser;
-import gov.geoplatform.uasdm.view.RequestParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +31,12 @@ import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.service.WorkflowService;
+import gov.geoplatform.uasdm.view.MultipartUploadParser;
+import gov.geoplatform.uasdm.view.RequestParser;
+
 @Controller(url = "file")
 public class FileUploadController
 {
@@ -45,7 +45,7 @@ public class FileUploadController
     /**
      * 
      */
-    private static final long serialVersionUID = 4441513458265403462L;
+    public static final long serialVersionUID = 4441513458265403462L;
 
     MergePartsException(String message)
     {

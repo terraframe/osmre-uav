@@ -5,30 +5,35 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements ImageryWorkflowTaskIF
 {
-  private static final long serialVersionUID = 214749939;
-  
+  public static final long serialVersionUID = 214749939;
+
   public ImageryWorkflowTask()
   {
     super();
   }
-  
+
   public ImageryComponent getImageryComponent()
   {
-    return this.getImagery();
-  } 
-  
+    return this.getImageryInstance();
+  }
+
+  public Imagery getImageryInstance()
+  {
+    return Imagery.get(this.getImagery());
+  }
+
   public JSONObject toJSON()
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
 
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
-    obj.put("imagery", this.getImageryOid());
+    obj.put("imagery", this.getImagery());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
@@ -44,6 +49,6 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
    */
   public String getComponentLabel()
   {
-    return this.getImagery().getName();
+    return this.getImageryInstance().getName();
   }
 }

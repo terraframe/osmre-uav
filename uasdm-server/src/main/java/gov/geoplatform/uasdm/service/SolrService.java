@@ -34,12 +34,13 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
 public class SolrService
 {
 
-  public static void deleteDocuments(UasComponent component)
+  public static void deleteDocuments(UasComponentIF component)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -63,21 +64,21 @@ public class SolrService
       }
     }
   }
-  
-  public static void deleteDocument(UasComponent component, String key)
+
+  public static void deleteDocument(UasComponentIF component, String key)
   {
     if (AppProperties.isSolrEnabled())
     {
       SolrDocument existing = SolrService.find(component, key);
-      
+
       try
       {
         HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
-        
+
         try
         {
           client.deleteById((String) existing.getFieldValue("id"));
-          
+
           client.commit();
         }
         finally
@@ -92,17 +93,17 @@ public class SolrService
     }
   }
 
-  public static void updateOrCreateDocument(List<UasComponent> ancestors, UasComponent component, String key, String name)
+  public static void updateOrCreateDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name)
   {
     if (AppProperties.isSolrEnabled())
     {
 
       SolrDocument existing = SolrService.find(component, key);
-      
+
       try
       {
         HttpSolrClient client = new HttpSolrClient.Builder(AppProperties.getSolrUrl()).build();
-        
+
         try
         {
           SolrInputDocument document = new SolrInputDocument();
@@ -112,7 +113,7 @@ public class SolrService
           document.setField("key", key);
           document.setField("filename", name);
 
-          for (UasComponent ancestor : ancestors)
+          for (UasComponentIF ancestor : ancestors)
           {
             document.setField(ancestor.getSolrIdField(), ancestor.getOid());
             document.setField(ancestor.getSolrNameField(), ancestor.getName());
@@ -142,7 +143,7 @@ public class SolrService
     }
   }
 
-  public static void updateOrCreateMetadataDocument(List<UasComponent> ancestors, UasComponent component, String key, String name, File metadata)
+  public static void updateOrCreateMetadataDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name, File metadata)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -174,7 +175,7 @@ public class SolrService
             iDocument.setField("filename", name);
             iDocument.setField("content", writer.toString());
 
-            for (UasComponent ancestor : ancestors)
+            for (UasComponentIF ancestor : ancestors)
             {
               iDocument.setField(ancestor.getSolrIdField(), ancestor.getOid());
               iDocument.setField(ancestor.getSolrNameField(), ancestor.getName());
@@ -209,7 +210,7 @@ public class SolrService
     }
   }
 
-  public static SolrDocument find(UasComponent component, String key)
+  public static SolrDocument find(UasComponentIF component, String key)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -251,7 +252,7 @@ public class SolrService
     return null;
   }
 
-  public static void updateName(UasComponent component)
+  public static void updateName(UasComponentIF component)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -296,7 +297,7 @@ public class SolrService
     }
   }
 
-  public static void updateComponent(UasComponent component)
+  public static void updateComponent(UasComponentIF component)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -353,7 +354,7 @@ public class SolrService
     return partialUpdate;
   }
 
-  public static void createDocument(List<UasComponent> ancestors, UasComponent component)
+  public static void createDocument(List<UasComponentIF> ancestors, UasComponentIF component)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -375,7 +376,7 @@ public class SolrService
             iDocument.setField(Site.BUREAU, ( (Site) component ).getBureau().getName());
           }
 
-          for (UasComponent ancestor : ancestors)
+          for (UasComponentIF ancestor : ancestors)
           {
             iDocument.setField(ancestor.getSolrIdField(), ancestor.getOid());
             iDocument.setField(ancestor.getSolrNameField(), ancestor.getName());

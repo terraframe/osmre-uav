@@ -1,17 +1,5 @@
 package gov.geoplatform.uasdm.odm;
 
-import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Document;
-import gov.geoplatform.uasdm.bus.ImageryComponent;
-import gov.geoplatform.uasdm.bus.Product;
-import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.service.SolrService;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,10 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import net.geoprism.EmailSetting;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -33,6 +17,23 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.bus.Document;
+import gov.geoplatform.uasdm.bus.Product;
+import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.service.SolrService;
+import net.geoprism.EmailSetting;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
 {
@@ -381,7 +382,7 @@ public class ODMStatusServer
       {
         ImageryODMUploadTask imageryOdmUploadTask = new ImageryODMUploadTask();
         imageryOdmUploadTask.setUploadId(task.getUploadId());
-        imageryOdmUploadTask.setImageryId(task.getImageryComponentOid());
+        imageryOdmUploadTask.setImagery(task.getImageryComponent().getOid());
         imageryOdmUploadTask.setGeoprismUser(task.getGeoprismUser());
         imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
         imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
@@ -397,7 +398,7 @@ public class ODMStatusServer
       {
         ODMUploadTask odmUploadTask = new ODMUploadTask();
         odmUploadTask.setUploadId(task.getUploadId());
-        odmUploadTask.setComponentId(task.getImageryComponentOid());
+        odmUploadTask.setComponent(task.getImageryComponent().getOid());
         odmUploadTask.setGeoprismUser(task.getGeoprismUser());
         odmUploadTask.setOdmUUID(task.getOdmUUID());
         odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
@@ -451,7 +452,7 @@ public class ODMStatusServer
 
       this.uploadTask = uploadTask;
       this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
-      
+
       if (DevProperties.runOrtho())
       {
         this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
@@ -489,7 +490,7 @@ public class ODMStatusServer
 
         // Create image services
         uploadTask.getImageryComponent().createImageServices();
-        
+
         // Calculate bounding boxes
         product.updateBoundingBox();
 
@@ -538,7 +539,7 @@ public class ODMStatusServer
        * Upload the full all.zip file to S3 for archive purposes.
        */
       String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-      
+
       if (DevProperties.uploadAllZip())
       {
         Util.uploadFileToS3(zip, allKey, uploadTask);
@@ -548,9 +549,9 @@ public class ODMStatusServer
 
       // Determine the raw documents which were used for to generate this ODM
       // output
-      UasComponent component = ic.getUasComponent();
+      UasComponentIF component = ic.getUasComponent();
 
-      List<Document> raws = component.getDocuments().stream().filter(doc -> {
+      List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
         return doc.getS3location().contains("/raw/");
       }).collect(Collectors.toList());
 
@@ -605,14 +606,14 @@ public class ODMStatusServer
 
         product.addDocuments(documents);
 
-        for (Document raw : raws)
+        for (DocumentIF raw : raws)
         {
           if (list.size() == 0 || list.contains(raw.getName()))
           {
             raw.addGeneratedProduct(product);
           }
         }
-        
+
         return product;
       }
       finally
@@ -664,7 +665,7 @@ public class ODMStatusServer
 
     private class SpecialException extends Exception
     {
-      private static final long serialVersionUID = 1L;
+      public static final long serialVersionUID = 1L;
 
       public SpecialException(String string, ZipException e)
       {

@@ -1,12 +1,16 @@
-package gov.geoplatform.uasdm.bus;
-
-import gov.geoplatform.uasdm.view.RequestParser;
+package gov.geoplatform.uasdm.model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.dataaccess.DataAccessException;
+
+import gov.geoplatform.uasdm.bus.AbstractUploadTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.view.RequestParser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
 {
@@ -42,7 +46,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
    *         then return the component or return null.
    */
-  public static UasComponent getOrCreateUasComponentFromRequestParser(RequestParser parser)
+  public static UasComponentIF getOrCreateUasComponentFromRequestParser(RequestParser parser)
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
