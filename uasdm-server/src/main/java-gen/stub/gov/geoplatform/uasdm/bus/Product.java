@@ -21,6 +21,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -65,10 +66,12 @@ public class Product extends ProductBase implements ProductIF
     super.delete();
   }
 
-  public void addDocuments(List<Document> documents)
+  public void addDocuments(List<DocumentIF> documents)
   {
-    for (Document document : documents)
+    for (DocumentIF doc : documents)
     {
+      Document document = (Document) doc;
+
       ProductHasDocument pd = getProductHasDocument(document);
 
       if (pd == null)
@@ -93,6 +96,19 @@ public class Product extends ProductBase implements ProductIF
     }
 
     return null;
+  }
+
+  @Override
+  public List<DocumentIF> getGeneratedFromDocuments()
+  {
+    List<DocumentIF> generated = new LinkedList<DocumentIF>();
+
+    try (OIterator<? extends Document> it = this.getAllGeneratedDocuments())
+    {
+      generated.addAll(it.getAll());
+    }
+
+    return generated;
   }
 
   public static Product createIfNotExist(UasComponentIF uasComponent)

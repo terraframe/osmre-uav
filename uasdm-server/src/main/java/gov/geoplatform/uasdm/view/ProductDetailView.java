@@ -6,17 +6,17 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.bus.Document;
+import gov.geoplatform.uasdm.model.DocumentIF;
 
 public class ProductDetailView extends ProductView
 {
-  private List<Document> documents;
+  private List<DocumentIF> documents;
 
-  private String         pilotName;
+  private String           pilotName;
 
-  private Date           dateTime;
+  private Date             dateTime;
 
-  private String         sensor;
+  private String           sensor;
 
   public String getPilotName()
   {
@@ -48,12 +48,12 @@ public class ProductDetailView extends ProductView
     this.sensor = sensor;
   }
 
-  public List<Document> getDocuments()
+  public List<DocumentIF> getDocuments()
   {
     return documents;
   }
 
-  public void setDocuments(List<Document> documents)
+  public void setDocuments(List<DocumentIF> documents)
   {
     this.documents = documents;
   }
@@ -62,7 +62,7 @@ public class ProductDetailView extends ProductView
   {
     JSONArray array = new JSONArray();
 
-    for (Document document : documents)
+    for (DocumentIF document : documents)
     {
       array.put(document.toJSON());
     }

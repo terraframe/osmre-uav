@@ -9,8 +9,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.business.graph.VertexQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -18,14 +21,14 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.CollectionQuery;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
-import gov.geoplatform.uasdm.bus.DocumentQuery;
 import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -109,6 +112,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void applyWithParent(UasComponentIF parent)
   {
+    if (this.isNew())
+    {
+      this.setMetadataUploaded(false);
+    }
+
     super.applyWithParent(parent);
 
     if (this.isNew())
@@ -277,16 +285,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public Integer getNumberOfChildren()
   {
-//    int count = 0;
-//    count += this.getItemCount(this.buildRawKey());
-//    count += this.getItemCount(this.buildPointCloudKey());
-//    count += this.getItemCount(this.buildDemKey());
-//    count += this.getItemCount(this.buildOrthoKey());
-
-    DocumentQuery query = new DocumentQuery(new QueryFactory());
-    query.WHERE(query.getComponent().EQ(this.getOid()));
-
-    return new Long(query.getCount()).intValue();
+    return this.getDocuments().size();
   }
 
   public UasComponentIF getUasComponent()
@@ -313,37 +312,34 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public static java.util.Collection<Collection> getMissingMetadata()
   {
-    java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
-
     SingleActor singleActor = GeoprismUser.getCurrentUser();
 
     if (singleActor != null)
     {
-      QueryFactory qf = new QueryFactory();
+      final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
+      final MdVertexDAOIF mdDocument = mdEdge.getChildMdVertex();
+      final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
 
-      CollectionQuery cQ = new CollectionQuery(qf);
+      StringBuilder builder = new StringBuilder();
+      builder.append("SELECT EXPAND (");
+      builder.append(" IN (" + mdEdge.getDBClassName() + ")");
+      builder.append(" [");
+      builder.append(" @class=:class");
+      builder.append(" AND " + METADATAUPLOADED + " = :metadataUploaded");
+      builder.append(" AND " + OWNER + " = :owner");
+      builder.append(" ]");
+      builder.append(")");
+      builder.append(" FROM " + mdDocument.getDBClassName());
 
-      CollectionUploadEventQuery eQ = new CollectionUploadEventQuery(qf);
+      final VertexQuery<Collection> query = new VertexQuery<Collection>(builder.toString());
+      query.setParameter("class", mdCollection.getDBClassName());
+      query.setParameter("metadataUploaded", false);
+      query.setParameter("owner", singleActor.getOid());
 
-      // Get Events created by the current user
-      eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
-
-      // Get Collections associated with those tasks
-      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent()));
-
-      // Get the Missions of those Collections;
-      cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
-
-//      try (OIterator<? extends Collection> i = cQ.getIterator())
-//      {
-//        for (Collection collection : i)
-//        {
-//          collectionList.add(collection);
-//        }
-//      }
+      return query.getResults();
     }
 
-    return collectionList;
+    return new LinkedHashSet<Collection>();
   }
 
   public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)

@@ -494,9 +494,10 @@ public class Imagery extends ImageryBase implements ImageryComponent
       {
         Util.uploadFileToS3(tmp, key, task);
 
-        Document.createIfNotExist(imageryComponent.getUasComponent(), key, name);
+        final UasComponentIF component = imageryComponent.getUasComponent();
+        component.createDocumentIfNotExist(key, name);
 
-        SolrService.updateOrCreateDocument(ancestors, imageryComponent.getUasComponent(), key, name);
+        SolrService.updateOrCreateDocument(ancestors, component, key, name);
 
         return true;
       }

@@ -2,7 +2,9 @@ package gov.geoplatform.uasdm.model;
 
 import java.util.List;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
+import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.Actor;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -50,4 +52,14 @@ public interface UasComponentIF
   public AbstractWorkflowTask createWorkflowTask(String uuid);
 
   public Actor getOwner();
+
+  public List<UasComponentIF> getAncestors();
+
+  public S3Object download(String key);
+
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
+
+  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
+
+  public DocumentIF createDocumentIfNotExist(String key, String name);
 }

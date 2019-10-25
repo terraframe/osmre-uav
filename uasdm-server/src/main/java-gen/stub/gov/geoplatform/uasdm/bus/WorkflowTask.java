@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -49,8 +50,8 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     return (ImageryComponent) getComponentInstance();
   }
 
-  public UasComponent getComponentInstance()
+  public UasComponentIF getComponentInstance()
   {
-    return UasComponent.get(this.getComponent());
+    return gov.geoplatform.uasdm.graph.UasComponent.get(this.getComponent());
   }
 }

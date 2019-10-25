@@ -43,7 +43,6 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
-import com.runwaysdk.system.Actor;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -55,7 +54,6 @@ import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.GeoprismUser;
 import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
@@ -680,6 +678,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     bboxArr.put(49.5904);
 
     return bboxArr;
+  }
+
+  @Override
+  public DocumentIF createDocumentIfNotExist(String key, String name)
+  {
+    return Document.createIfNotExist(this, key, name);
   }
 
   /**

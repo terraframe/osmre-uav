@@ -15,6 +15,7 @@ import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
@@ -38,7 +39,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    UasComponent collection = task.getComponentInstance();
+    UasComponentIF collection = task.getComponentInstance();
 
     if (DevProperties.uploadRaw())
     {
@@ -62,7 +63,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
   private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
   {
-    UasComponent component = uploadTask.getComponentInstance();
+    UasComponentIF component = uploadTask.getComponentInstance();
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());

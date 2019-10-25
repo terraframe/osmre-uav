@@ -14,6 +14,7 @@ import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.DocumentQuery;
 import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.ProductQuery;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 public class CollectionDocumentMigration implements Runnable
@@ -46,8 +47,8 @@ public class CollectionDocumentMigration implements Runnable
         {
           String[] folders = new String[] { Collection.RAW, Collection.PTCLOUD, Collection.DEM, Collection.ORTHO };
 
-          List<Document> rDocuments = new LinkedList<Document>();
-          List<Document> pDocuments = new LinkedList<Document>();
+          List<DocumentIF> rDocuments = new LinkedList<DocumentIF>();
+          List<DocumentIF> pDocuments = new LinkedList<DocumentIF>();
 
           for (String folder : folders)
           {
@@ -73,7 +74,7 @@ public class CollectionDocumentMigration implements Runnable
             Product product = Product.createIfNotExist(col);
             product.addDocuments(pDocuments);
 
-            for (Document document : rDocuments)
+            for (DocumentIF document : rDocuments)
             {
               document.addGeneratedProduct(product);
             }

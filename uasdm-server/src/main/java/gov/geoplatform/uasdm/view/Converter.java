@@ -3,20 +3,19 @@ package gov.geoplatform.uasdm.view;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.runwaysdk.query.OIterator;
 import com.runwaysdk.session.Session;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.Imagery;
-import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -173,7 +172,7 @@ public abstract class Converter
     }
   }
 
-  public static ProductView toView(Product product, List<UasComponentIF> components)
+  public static ProductView toView(ProductIF product, List<UasComponentIF> components)
   {
     ProductView view = new ProductView();
 
@@ -182,7 +181,7 @@ public abstract class Converter
     return view;
   }
 
-  protected static void populate(ProductView view, Product product, List<UasComponentIF> components)
+  protected static void populate(ProductView view, ProductIF product, List<UasComponentIF> components)
   {
     List<SiteItem> list = new LinkedList<SiteItem>();
 
@@ -223,18 +222,13 @@ public abstract class Converter
     }
   }
 
-  public static ProductDetailView toDetailView(Product product, List<UasComponentIF> components, List<Document> generated)
+  public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated)
   {
     ProductDetailView view = new ProductDetailView();
 
     populate(view, product, components);
 
-    List<Document> documents = new LinkedList<Document>();
-
-    try (OIterator<? extends Document> it = product.getAllGeneratedDocuments())
-    {
-      documents.addAll(it.getAll());
-    }
+    List<DocumentIF> documents = product.getGeneratedFromDocuments();
 
     // Get metadata
     FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);

@@ -16,7 +16,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class FlightMetadata
 {
@@ -443,7 +443,7 @@ public class FlightMetadata
     return null;
   }
 
-  public static FlightMetadata get(UasComponent component, String folderName, String filename)
+  public static FlightMetadata get(UasComponentIF component, String folderName, String filename)
   {
     FlightMetadata metadata = new FlightMetadata();
 

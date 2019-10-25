@@ -31,9 +31,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class Document extends DocumentBase implements DocumentIF
 {
-  private static final long   serialVersionUID       = -1445705168;
-
-  private static final String COMPONENT_HAS_DOCUMENT = "gov.geoplatform.uasdm.graph.ComponentHasDocument";
+  private static final long serialVersionUID = -1445705168;
 
   public Document()
   {
@@ -43,9 +41,14 @@ public class Document extends DocumentBase implements DocumentIF
   @Transaction
   public void apply(UasComponentIF component)
   {
+    final boolean isNew = this.isNew();
+
     this.apply();
 
-    this.addParent((UasComponent) component, COMPONENT_HAS_DOCUMENT);
+    if (isNew)
+    {
+      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_DOCUMENT);
+    }
   }
 
   @Override
@@ -67,7 +70,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   public UasComponent getComponent()
   {
-    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(COMPONENT_HAS_DOCUMENT);
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
     final List<UasComponent> parents = this.getParents(mdEdge, UasComponent.class);
 
     return parents.get(0);

@@ -720,7 +720,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public List<UasComponent> getChildren()
   {
-    return this.getParents(this.getChildMdEdge(), UasComponent.class);
+    return this.getChildren(this.getChildMdEdge(), UasComponent.class);
   }
 
   public UasComponent getChild(String name)
@@ -750,7 +750,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       StringBuilder statement = new StringBuilder();
       statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
       statement.append("FROM :rid \n");
-      statement.append("WHERE out.folderName = :folderName )" + "\n");
+      statement.append("WHERE out.folderName = :folderName" + "\n");
 
       final VertexQuery<UasComponent> query = new VertexQuery<UasComponent>(statement.toString());
       query.setParameter("folderName", folderName);
@@ -767,6 +767,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
 
     return false;
+  }
+
+  @Override
+  public DocumentIF createDocumentIfNotExist(String key, String name)
+  {
+    return Document.createIfNotExist(this, key, name);
   }
 
 }

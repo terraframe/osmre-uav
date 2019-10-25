@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +22,7 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -44,9 +46,14 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void apply(UasComponentIF component)
   {
+    final boolean isNew = this.isNew();
+
     this.apply();
 
-    this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT);
+    if (isNew)
+    {
+      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT);
+    }
   }
 
   @Override
@@ -59,9 +66,9 @@ public class Product extends ProductBase implements ProductIF
   public void delete(boolean removeFromS3)
   {
     // Delete all of the documents
-    List<Document> documents = this.getDocuments();
+    List<DocumentIF> documents = this.getDocuments();
 
-    for (Document document : documents)
+    for (DocumentIF document : documents)
     {
       document.delete(removeFromS3);
     }
@@ -76,23 +83,23 @@ public class Product extends ProductBase implements ProductIF
     return parents.get(0);
   }
 
-  public List<Document> getDocuments()
+  public List<DocumentIF> getDocuments()
   {
-    return this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, Document.class);
+    return this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, DocumentIF.class);
   }
 
-  public List<Document> getGeneratedFromDocuments()
+  public List<DocumentIF> getGeneratedFromDocuments()
   {
-    return this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, Document.class);
+    return this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, DocumentIF.class);
   }
 
-  public void addDocuments(List<Document> documents)
+  public void addDocuments(List<DocumentIF> documents)
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);
 
-    for (Document document : documents)
+    for (DocumentIF document : documents)
     {
-      this.addChild(document, mdEdge);
+      this.addChild((Document) document, mdEdge);
     }
   }
 
@@ -260,11 +267,12 @@ public class Product extends ProductBase implements ProductIF
     return this.mapKey;
   }
 
+  @Override
   public void calculateKeys(List<UasComponentIF> components)
   {
-    List<Document> documents = this.getDocuments();
+    List<DocumentIF> documents = this.getDocuments();
 
-    for (Document document : documents)
+    for (DocumentIF document : documents)
     {
       if (document.getName().endsWith(".png"))
       {
@@ -280,5 +288,12 @@ public class Product extends ProductBase implements ProductIF
         }
       }
     }
+  }
+
+  @Override
+  public Date getLastUpdateDate()
+  {
+    // TODO Auto-generated method stub
+    return new Date();
   }
 }

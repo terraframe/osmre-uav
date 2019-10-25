@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.bus.Document;
-import gov.geoplatform.uasdm.bus.Product;
-import gov.geoplatform.uasdm.bus.ProductQuery;
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ProductDetailView;
@@ -31,37 +31,37 @@ public class ProductService
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
+
     UasComponent parent = UasComponent.get(oid);
 
-    ProductQuery query = new ProductQuery(new QueryFactory());
-    query.ORDER_BY_ASC(query.getName());
+    final String statement = "SELECT FROM " + mdVertex.getDBClassName() + " ORDER BY name";
+    final VertexQuery<Product> query = new VertexQuery<Product>(statement);
 
-    try (OIterator<? extends Product> iterator = query.getIterator())
+    final List<Product> products = query.getResults();
+
+    for (Product product : products)
     {
-      while (iterator.hasNext())
+      UasComponent component = product.getComponent();
+
+      List<UasComponentIF> components = component.getAncestors();
+      Collections.reverse(components);
+
+      components.add(component);
+
+      boolean valid = false;
+
+      for (UasComponentIF com : components)
       {
-        Product product = iterator.next();
-        UasComponent component = product.getComponent();
-
-        List<UasComponentIF> components = component.getAncestors();
-        Collections.reverse(components);
-
-        components.add(component);
-
-        boolean valid = false;
-
-        for (UasComponentIF com : components)
+        if (com.getOid().equals(parent.getOid()))
         {
-          if (com.getOid().equals(parent.getOid()))
-          {
-            valid = true;
-          }
+          valid = true;
         }
+      }
 
-        if (valid)
-        {
-          list.add(Converter.toView(product, components));
-        }
+      if (valid)
+      {
+        list.add(Converter.toView(product, components));
       }
     }
 
@@ -73,19 +73,14 @@ public class ProductService
   {
     Product product = Product.get(id);
 
-    UasComponent component = product.getComponent();
+    UasComponentIF component = product.getComponent();
 
     List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
 
     components.add(component);
 
-    List<Document> generated = new LinkedList<Document>();
-
-    try (OIterator<? extends Document> it = product.getAllGeneratedDocuments())
-    {
-      generated.addAll(it.getAll());
-    }
+    final List<DocumentIF> generated = product.getGeneratedFromDocuments();
 
     return Converter.toDetailView(product, components, generated);
   }

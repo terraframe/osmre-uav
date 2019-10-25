@@ -22,13 +22,13 @@ import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
-import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Document;
-import gov.geoplatform.uasdm.bus.Product;
-import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 import net.geoprism.EmailSetting;
@@ -481,7 +481,7 @@ public class ODMStatusServer
     {
       try
       {
-        Product product = runInTrans();
+        ProductIF product = runInTrans();
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
@@ -521,17 +521,17 @@ public class ODMStatusServer
     {
       List<ODMFolderProcessingConfig> processingConfigs = new ArrayList<ODMFolderProcessingConfig>();
 
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_dem", Collection.DEM, new String[] { "dsm.tif", "dtm.tif" }));
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
 
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", Collection.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
 
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", Collection.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+      processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
 
       return processingConfigs;
     }
 
 //    @Transaction
-    public Product runInTrans() throws ZipException, SpecialException, InterruptedException
+    public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
     {
       List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
 
@@ -572,7 +572,7 @@ public class ODMStatusServer
           throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }
 
-        List<Document> documents = new LinkedList<Document>();
+        List<DocumentIF> documents = new LinkedList<DocumentIF>();
 
         for (ODMFolderProcessingConfig config : processingConfigs)
         {
@@ -601,7 +601,7 @@ public class ODMStatusServer
         ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
         List<String> list = processingTask.getFileList();
 
-        Product product = Product.createIfNotExist(ic.getUasComponent());
+        ProductIF product = Product.createIfNotExist(ic.getUasComponent());
         product.clear();
 
         product.addDocuments(documents);
@@ -627,7 +627,7 @@ public class ODMStatusServer
       }
     }
 
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<Document> documents) throws InterruptedException
+    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<DocumentIF> documents) throws InterruptedException
     {
       File[] children = parentDir.listFiles();
       for (File child : children)
