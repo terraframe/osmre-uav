@@ -5,9 +5,9 @@ The primary source this project contains is a Dockerfile and also a batch.py. Ba
 
 # How to run the Dockerfile
 
-If you haven't put data into the out directory yet, do so now. Look at the instructions in the next section for more info.
+First and foremost, you must install git-lfs if you don't yet have it. Next, open a terminal, cd to this directory, and run init.sh. This script will fetch Micasense automatically for you and configure it to run correctly with this project.
 
-Upon a fresh checkout of this project, simply open a terminal, cd to this directory, and run init.sh. This script will fetch Micasense automatically for you and configure it to run correctly with this project.
+Next, put whatever image data you want to process into the ./out directory. Look at the instructions in the next section for more info.
 
 To build, simply run build.sh. When you want to run it, run test.sh. Both scripts must be run with superuser.
 
