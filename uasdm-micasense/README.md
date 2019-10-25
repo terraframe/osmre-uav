@@ -1,15 +1,15 @@
 # What is this project?
 
-The primary source this project contains is a Dockerfile and also a batch.py. The rest of the files are either notes or tutorials copied/pasted directly from the Micasense project. Batch.py is the primary entrypoint of the Dockerfile and is the primary entrypoint for running Micasense. The easiest way to get started with this project is to build and run the Dockerfile (because it takes care of all the environment setup for you), however I have included the direct python instructions for completeness.
+The primary source this project contains is a Dockerfile and also a batch.py. Batch.py is the primary entrypoint of the Dockerfile and is the primary entrypoint for running Micasense. The easiest way to get started with this project is to build and run the Dockerfile (because it takes care of all the environment setup for you), however I have included the direct python instructions for completeness.
 
 
 # How to run the Dockerfile
 
-1. If you haven't put data into the out directory yet, do so now. Look at the batch.py instructions for more info.
-2. Open a terminal
-3. cd to this project
-4. Run `sudo ./build.sh`
-5. Run `sudo ./test.sh`
+If you haven't put data into the out directory yet, do so now. Look at the instructions in the next section for more info.
+
+Upon a fresh checkout of this project, simply open a terminal, cd to this directory, and run init.sh. This script will fetch Micasense automatically for you and configure it to run correctly with this project.
+
+To build, simply run build.sh. This script will replace all modified ODM source and then build the projects.  When you want to run it, run test.sh. Both scripts must be run with superuser.
 
 
 # How to run batch.py

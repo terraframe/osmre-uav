@@ -1,26 +1,25 @@
 
-# build server was a t2.micro
-
-
 def main():
     import os, glob
-    import micasense.capture as capture
     import cv2
     import numpy as np
-    import micasense.imageutils as imageutils
-    import micasense.plotutils as plotutils
     import pathlib
     import subprocess
-    import micasense.imageset as imageset
     import multiprocessing
+    import exiftool
+    import datetime
     import re
+    import micasense.imageset as imageset
+    import micasense.imageutils as imageutils
+    import micasense.plotutils as plotutils
+    import micasense.capture as capture
 
     global micasense_batch_warp_mode
 
     useDLS = True
     overwrite = True # usefult to set to false to continue interrupted processing
     generateThumbnails = True
-    micasense_batch_warp_mode = cv2.MOTION_AFFINE # MOTION_HOMOGRAPHY or MOTION_AFFINE. For Altum images only use HOMOGRAPHY  TODO : Detect what the images are and set this intelligently based on it
+    micasense_batch_warp_mode = cv2.MOTION_HOMOGRAPHY # MOTION_HOMOGRAPHY or MOTION_AFFINE. For Altum images only use HOMOGRAPHY  TODO : Detect what the images are and set this intelligently based on it
 
     imagePath = pathlib.Path(os.environ['MICASENSE_IN'])
 
@@ -102,9 +101,6 @@ def main():
             if len(panelNames) > 0:
                 print("Will process 0000 as panel")
 
-    import exiftool
-    import datetime
-
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)
     if generateThumbnails and not os.path.exists(thumbnailPath):
@@ -135,7 +131,7 @@ def main():
         generatedOut.append(fullThumbnailPath)
 
         if (not os.path.exists(fullOutputPath)) or overwrite:
-            cap.create_aligned_capture(irradiance_list=irradiance, warp_matrices=warp_matrices, normalize=False, motion_type=micasense_batch_warp_mode)
+            cap.create_aligned_capture(irradiance_list=irradiance, warp_matrices=warp_matrices, normalize=False) # TODO : motion_type=micasense_batch_warp_mode
             cap.save_capture_as_stack(fullOutputPath)
             if generateThumbnails:
                 cap.save_capture_as_rgb(fullThumbnailPath)
@@ -210,8 +206,6 @@ def main():
     fullCsvPath = os.path.join(outputPath,'log.csv')
     with open(fullCsvPath, 'w') as csvfile: #create CSV
         csvfile.writelines(lines)
-
-    import subprocess
 
     old_dir = os.getcwd()
     os.chdir(outputPath)

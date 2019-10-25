@@ -39,12 +39,9 @@ WORKDIR /root/imageprocessing
 # Install Mikasense python dependencies
 RUN /opt/conda/bin/conda env create -f micasense_conda_env.yml
 
-# Download Mikasense python tools
-COPY . /root/imageprocessing
-
-# Fix a bug in the micasense source code (https://github.com/micasense/imageprocessing/issues/41#issuecomment-542488514)
-#RUN sed -i '160s/.*/            cc, warp_matrix = cv2.findTransformECC(grad1, grad2, warp_matrix, warp_mode, criteria, None, 5)/' micasense/imageutils.py
-#RUN sed -i '6s/.*/  - opencv=3.4.4/' micasense_conda_env.yml
+# Copy our source over
+COPY batch.py /root/imageprocessing/batch.py
+COPY imageprocessing /root/imageprocessing/
 
 # Add conda and exiftool to the shell PATH
 ENV PATH="/opt/conda/bin:${PATH}"
@@ -54,7 +51,7 @@ RUN chmod +x /root/program/exiftool/Image-ExifTool-10.98/bin/exiftool
 ENV exiftoolpath="/root/program/exiftool/Image-ExifTool-10.98/bin/exiftool"
 
 # Run the mikasense test code
-#RUN source /root/.bashrc && source activate micasense && pytest .
+RUN source /root/.bashrc && source activate micasense && pytest .
 
 # By default, when they run this docker image, run our processing python script.
 CMD source activate micasense && python ./batch.py
