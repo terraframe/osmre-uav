@@ -9,7 +9,7 @@ If you haven't put data into the out directory yet, do so now. Look at the instr
 
 Upon a fresh checkout of this project, simply open a terminal, cd to this directory, and run init.sh. This script will fetch Micasense automatically for you and configure it to run correctly with this project.
 
-To build, simply run build.sh. This script will replace all modified ODM source and then build the projects.  When you want to run it, run test.sh. Both scripts must be run with superuser.
+To build, simply run build.sh. When you want to run it, run test.sh. Both scripts must be run with superuser.
 
 
 # How to run batch.py
