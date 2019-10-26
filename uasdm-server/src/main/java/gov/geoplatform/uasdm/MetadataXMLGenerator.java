@@ -25,9 +25,10 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
-import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 
@@ -39,7 +40,7 @@ public class MetadataXMLGenerator
 
   private JSONObject         json;
 
-  private Collection         collection;
+  private CollectionIF       collection;
 
   public MetadataXMLGenerator(String json)
   {
@@ -201,12 +202,12 @@ public class MetadataXMLGenerator
       String fileName = this.collection.getName() + FILENAME;
       String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
-
-      gov.geoplatform.uasdm.bus.Document.createIfNotExist(this.collection, key, fileName);
+      
+      this.collection.createDocumentIfNotExist(key, fileName);
 
       SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
 
-      this.collection.appLock();
+//      this.collection.appLock();
       this.collection.setMetadataUploaded(true);
       this.collection.apply();
     }
