@@ -18,7 +18,7 @@ cd ../NodeODM
 docker build -t uasdm-nodeodm .
 
 cd ../
-docker rm -f $(docker ps -a -q --filter=name=uasdm-nodeodm) || true
+docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
 docker run -d -p 3000:3000 -v /var/www/data:/var/www/data -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name uasdm-nodeodm uasdm-nodeodm
 
 echo "The server should be running at http://localhost:3000/"
