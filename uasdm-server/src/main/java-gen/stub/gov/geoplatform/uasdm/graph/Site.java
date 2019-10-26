@@ -131,25 +131,26 @@ public class Site extends SiteBase implements SiteIF
 
   public static boolean isDuplicateSiteName(String oid, String name)
   {
-//    QueryFactory qf = new QueryFactory();
-//    SiteQuery query = new SiteQuery(qf);
-//
-//    query.WHERE(query.getName().EQ(name));
-//
-//    if (oid != null)
-//    {
-//      query.AND(query.getOid().NE(oid));
-//    }
-//
-//    try (OIterator<? extends UasComponent> i = query.getIterator())
-//    {
-//      if (i.hasNext())
-//      {
-//        return true;
-//      }
-//    }
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
-    return false;
+    final StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE " + NAME + " = :name");
+
+    if (oid != null)
+    {
+      statement.append(" AND " + OID + " != :oid");
+    }
+
+    final VertexQuery<Site> query = new VertexQuery<Site>(statement.toString());
+    query.setParameter("name", name);
+
+    if (oid != null)
+    {
+      query.setParameter("oid", oid);
+    }
+
+    return ( query.getResults().size() > 0 );
   }
 
   public static List<Site> getSites(String bounds)
