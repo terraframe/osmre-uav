@@ -19,4 +19,4 @@ docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
 docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest
 
 # Pull & Run the custom UASDM NodeODM container
-docker run -d -p 3000:3000 --name uasdm-nodeodm 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker run -d -p 3000:3000 -v /var/www/data:/var/www/data -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name uasdm-nodeodm 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
