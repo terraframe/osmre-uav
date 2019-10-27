@@ -55,6 +55,7 @@ import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
@@ -106,6 +107,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
    * @return The name of the solr field for the components name.
    */
   public abstract String getSolrNameField();
+
+  protected abstract String buildProductExpandClause();
 
   @Override
   public Object getObjectValue(String name)
@@ -706,6 +709,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
+  public List<Product> getDerivedProducts()
+  {
+    String expand = this.buildProductExpandClause();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(" + expand + ")");
+    statement.append(" FROM :rid");
+
+    final VertexQuery<Product> query = new VertexQuery<Product>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
+  }
+
   public void addComponent(UasComponentIF parent)
   {
     final MdEdgeDAOIF mdEdge = this.getParentMdEdge();
@@ -726,14 +743,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public UasComponent getChild(String name)
   {
     final MdEdgeDAOIF mdEdge = this.getChildMdEdge();
-    final MdVertexDAOIF mdVertex = mdEdge.getChildMdVertex();
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName());
-    statement.append(" WHERE name = :name");
+    statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "')[name=:name])\n");
+    statement.append("FROM :rid \n");
 
     final VertexQuery<UasComponent> query = new VertexQuery<UasComponent>(statement.toString());
     query.setParameter("name", name);
+    query.setParameter("rid", this.getRID());
 
     return query.getSingleResult();
   }
@@ -773,6 +790,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public DocumentIF createDocumentIfNotExist(String key, String name)
   {
     return Document.createIfNotExist(this, key, name);
+  }
+
+  @Override
+  public ProductIF createProductIfNotExist()
+  {
+    return Product.createIfNotExist(this);
   }
 
 }

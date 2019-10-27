@@ -20,6 +20,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.AttributeListType;
@@ -129,6 +130,12 @@ public class Site extends SiteBase implements SiteIF
     return new LinkedList<UasComponent>();
   }
 
+  @Override
+  protected String buildProductExpandClause()
+  {
+    return Site.expandClause();
+  }
+
   public static boolean isDuplicateSiteName(String oid, String name)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
@@ -194,4 +201,10 @@ public class Site extends SiteBase implements SiteIF
     return query.getResults();
   }
 
+  public static String expandClause()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.SITE_HAS_PROJECT);
+
+    return "OUT('" + mdEdge.getDBClassName() + "')." + Project.expandClause();
+  }
 }

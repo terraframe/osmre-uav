@@ -119,10 +119,10 @@ public class Product extends ProductBase implements ProductIF
 
   public static Product find(UasComponentIF component)
   {
-    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND( IN('" + mdEdge.getDBClassName() + "'))\n");
+    statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
     statement.append("FROM :rid \n");
 
     final VertexQuery<Product> query = new VertexQuery<Product>(statement.toString());

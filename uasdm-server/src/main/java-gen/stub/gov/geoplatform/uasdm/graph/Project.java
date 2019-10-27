@@ -9,6 +9,7 @@ import com.runwaysdk.system.metadata.MdBusiness;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProjectIF;
 
 public class Project extends ProjectBase implements ProjectIF
@@ -40,6 +41,12 @@ public class Project extends ProjectBase implements ProjectIF
     return new Imagery();
   }
 
+  @Override
+  protected String buildProductExpandClause()
+  {
+    return Project.expandClause();
+  }
+
   /**
    * Create the child of the given type.
    * 
@@ -65,7 +72,6 @@ public class Project extends ProjectBase implements ProjectIF
     }
 
   }
-  
 
   @Override
   protected MdEdgeDAOIF getParentMdEdge()
@@ -95,6 +101,13 @@ public class Project extends ProjectBase implements ProjectIF
   public List<AbstractWorkflowTask> getTasks()
   {
     return new LinkedList<AbstractWorkflowTask>();
+  }
+
+  public static String expandClause()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PROJECT_HAS_MISSION);
+
+    return "OUT('" + mdEdge.getDBClassName() + "')." + Mission.expandClause();
   }
 
 }

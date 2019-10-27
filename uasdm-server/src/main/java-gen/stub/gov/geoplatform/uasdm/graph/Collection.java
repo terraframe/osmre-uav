@@ -83,6 +83,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return new LinkedList<UasComponent>();
   }
 
+  @Override
+  protected String buildProductExpandClause()
+  {
+    return Collection.expandClause();
+  }
+
   private JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
@@ -353,4 +359,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return messages;
   }
+
+  public static String expandClause()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+
+    return "OUT('" + mdEdge.getDBClassName() + "')";
+  }
+
 }

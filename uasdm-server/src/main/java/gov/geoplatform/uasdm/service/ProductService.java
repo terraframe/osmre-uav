@@ -31,14 +31,8 @@ public class ProductService
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
-
-    UasComponent parent = UasComponent.get(oid);
-
-    final String statement = "SELECT FROM " + mdVertex.getDBClassName() + " ORDER BY name";
-    final VertexQuery<Product> query = new VertexQuery<Product>(statement);
-
-    final List<Product> products = query.getResults();
+    final UasComponent parent = UasComponent.get(oid);
+    final List<Product> products = parent.getDerivedProducts();
 
     for (Product product : products)
     {
@@ -46,23 +40,9 @@ public class ProductService
 
       List<UasComponentIF> components = component.getAncestors();
       Collections.reverse(components);
-
       components.add(component);
 
-      boolean valid = false;
-
-      for (UasComponentIF com : components)
-      {
-        if (com.getOid().equals(parent.getOid()))
-        {
-          valid = true;
-        }
-      }
-
-      if (valid)
-      {
-        list.add(Converter.toView(product, components));
-      }
+      list.add(Converter.toView(product, components));
     }
 
     return list;

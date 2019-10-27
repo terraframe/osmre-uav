@@ -49,6 +49,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
@@ -684,6 +685,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public DocumentIF createDocumentIfNotExist(String key, String name)
   {
     return Document.createIfNotExist(this, key, name);
+  }
+
+  @Override
+  public ProductIF createProductIfNotExist()
+  {
+    return Product.createIfNotExist(this);
   }
 
   /**

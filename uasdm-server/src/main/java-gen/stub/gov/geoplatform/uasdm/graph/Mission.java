@@ -9,8 +9,8 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.MissionIF;
-import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -60,6 +60,12 @@ public class Mission extends MissionBase implements MissionIF
   protected MdEdgeDAOIF getChildMdEdge()
   {
     return MdEdgeDAO.getMdEdgeDAO(CHILD_EDGE);
+  }
+
+  @Override
+  protected String buildProductExpandClause()
+  {
+    return Mission.expandClause();
   }
 
   /**
@@ -125,5 +131,12 @@ public class Mission extends MissionBase implements MissionIF
   public List<AbstractWorkflowTask> getTasks()
   {
     return new LinkedList<AbstractWorkflowTask>();
+  }
+
+  public static String expandClause()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.MISSION_HAS_COLLECTION);
+
+    return "OUT('" + mdEdge.getDBClassName() + "')." + Collection.expandClause();
   }
 }

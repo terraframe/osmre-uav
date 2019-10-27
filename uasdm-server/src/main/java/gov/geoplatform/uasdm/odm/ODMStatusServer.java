@@ -601,7 +601,7 @@ public class ODMStatusServer
         ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
         List<String> list = processingTask.getFileList();
 
-        ProductIF product = Product.createIfNotExist(ic.getUasComponent());
+        ProductIF product = ic.getUasComponent().createProductIfNotExist();
         product.clear();
 
         product.addDocuments(documents);

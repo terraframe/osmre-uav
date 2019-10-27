@@ -62,4 +62,6 @@ public interface UasComponentIF
   public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
   public DocumentIF createDocumentIfNotExist(String key, String name);
+
+  public ProductIF createProductIfNotExist();
 }
