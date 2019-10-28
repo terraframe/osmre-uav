@@ -5,6 +5,7 @@ from opendm import log
 from opendm import system
 from opendm import context
 from opendm import types
+import time
 import shlex
 import glob
 import shutil
@@ -16,15 +17,16 @@ class ODMMicasenseStage(types.ODM_Stage):
         log.ODM_INFO("args.multispectral = " + str(args.multispectral))
 
         if (args.multispectral):
-            import subprocess
-
             tree = outputs['tree']
 
-            micasense = io.join_paths(tree.root_path, 'micasense')
-            micain = io.join_paths(micasense, 'in')
-            micaout = io.join_paths(micasense, 'out')
+            micasense_host_binding = os.environ['MICASENSE_HOST_BINDING']
+            micasense_working = os.path.abspath('/opt/micasense') # People running this docker image should have bound the micasense_host_binding directory to /opt/micasense.
+            micain = io.join_paths(micasense_working, 'in')
+            micaout = io.join_paths(micasense_working, 'out')
             micathumb = io.join_paths(micaout, 'thumbnails')
-            odmImages = tree.input_images
+
+            odmImages = tree.input_images # This is the path that ODM expects the input images to exist in (which is our micasense output)
+            odmMicasense = io.join_paths(tree.root_path, 'micasense')
 
             if not io.dir_exists(micain):
                 log.ODM_INFO("Micasense in directory %s doesn't exist. Creating it now. " % micain)
@@ -37,10 +39,9 @@ class ODMMicasenseStage(types.ODM_Stage):
                 shutil.move(filePath, micain);
 
             # Wait for the OS to actually move the files...
-            import time
             time.sleep(1)
 
-            cmd = 'docker run --rm --mount type=bind,src=' + micasense + ',dst=/opt/micawork -e MICASENSE_OUT=/opt/micawork/out -e MICASENSE_IN=/opt/micawork/in micasense-docker'
+            cmd = 'docker run --rm --mount type=bind,src=' + micasense_host_binding + ',dst=/opt/micawork -e MICASENSE_OUT=/opt/micawork/out -e MICASENSE_IN=/opt/micawork/in micasense-docker'
             log.ODM_INFO("Running command " + cmd)
 
             #subprocess.check_call(cmd, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.STDOUT)
@@ -52,7 +53,7 @@ class ODMMicasenseStage(types.ODM_Stage):
             for filePath in glob.glob(micathumb + '/*.jpg'):
                 log.ODM_INFO("Copying file " + filePath + " to " + odmImages + ".")
                 shutil.copy(filePath, odmImages);
-                shutil.copy(filePath, micasense);
+                shutil.copy(filePath, odmMicasense);
 
             log.ODM_INFO("Removing directory " + micain)
             shutil.rmtree(micain)
