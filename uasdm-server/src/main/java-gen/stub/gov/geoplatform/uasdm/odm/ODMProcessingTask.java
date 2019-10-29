@@ -56,7 +56,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     return list;
   }
 
-  public void initiate(ApplicationResource images)
+  public void initiate(ApplicationResource images, boolean isMultispectral)
   {
     try
     {
@@ -64,7 +64,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
       if (DevProperties.runOrtho())
       {
-        resp = ODMFacade.taskNew(images);
+        resp = ODMFacade.taskNew(images, isMultispectral);
       }
       else
       {

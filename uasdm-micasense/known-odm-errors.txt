@@ -1,0 +1,23 @@
+1. Issue with overlap on the dataset (either too much or too little). Unable to create orthomosaic.
+
+https://github.com/OpenDroneMap/ODM/issues/524
+
+Traceback (most recent call last):
+File "/code/SuperBuild/src/opensfm/bin/opensfm", line 34, in
+command.run(args)
+File "/code/SuperBuild/src/opensfm/opensfm/commands/mesh.py", line 22, in run
+reconstructions = data.load_reconstruction()
+File "/code/SuperBuild/src/opensfm/opensfm/dataset.py", line 336, in load_reconstruction
+with open(self.__reconstruction_file(filename)) as fin:
+IOError: [Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'
+
+
+2. Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'
+
+Not enough supported images in %s
+
+3. Success
+
+[INFO]    Running ODM OrthoPhoto Cell - Finished
+[INFO]    OpenDroneMap app finished - Wed Oct 23 15:51:09  2019
+Compressing all.zip

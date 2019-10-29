@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.model;
 import java.util.List;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.bus.Sensor;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -17,4 +18,6 @@ public interface CollectionIF extends UasComponentIF
   public void setMetadataUploaded(Boolean metadataUploaded);
 
   public void apply();
+
+  public Sensor getSensor();
 }

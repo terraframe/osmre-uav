@@ -61,7 +61,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       startODMProcessing(appRes, task, outFileNamePrefix);
     }
   }
-
+  
   private void startODMProcessing(ApplicationResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
   {
     final Imagery imagery = uploadTask.getImageryInstance();

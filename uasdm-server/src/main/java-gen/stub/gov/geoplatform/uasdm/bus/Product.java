@@ -1,11 +1,24 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+<<<<<<< HEAD
+=======
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+>>>>>>> refs/remotes/origin/dev
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
@@ -20,6 +33,11 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+<<<<<<< HEAD
+=======
+
+import net.geoprism.gis.geoserver.GeoserverFacade;
+>>>>>>> refs/remotes/origin/dev
 
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -155,7 +173,7 @@ public class Product extends ProductBase implements ProductIF
       }
     }
   }
-
+  
   /**
    * This method calculates a 4326 CRS bounding box for a given raster layer
    * with the specified mapKey. This layer must exist on Geoserver before
@@ -214,6 +232,7 @@ public class Product extends ProductBase implements ProductIF
           // expects 4326.
           CoordinateReferenceSystem sourceCRS = CRS.decode(code);
           CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+          
           MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
 
           com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();

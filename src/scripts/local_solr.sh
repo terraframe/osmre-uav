@@ -20,7 +20,7 @@
 # This script will start a local docker instance that you can use for testing and development
 # Run it with sudo
 
-docker rm -f $(docker ps -a -q --filter=name=solr)
+# docker rm -f $(docker ps -a -q --filter=name=solr)
 
 set -e
 set -x

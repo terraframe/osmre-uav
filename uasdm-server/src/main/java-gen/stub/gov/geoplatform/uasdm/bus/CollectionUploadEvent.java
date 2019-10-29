@@ -15,6 +15,7 @@ import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -39,11 +40,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    UasComponentIF collection = task.getComponentInstance();
+    UasComponentIF component = task.getComponentInstance();
 
     if (DevProperties.uploadRaw())
     {
-      collection.uploadArchive(task, infile, uploadTarget);
+      component.uploadArchive(task, infile, uploadTarget);
     }
 
     task.lock();
@@ -51,17 +52,27 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, outFileNamePrefix);
+    startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
 
-    if (collection instanceof Collection)
+    if (component instanceof Collection)
     {
-      calculateImageSize(infile, (Collection) collection);
+      calculateImageSize(infile, (Collection) component);
     }
 
 //    handleMetadataWorkflow(task);
   }
+  
+  public boolean isMultispectral(UasComponentIF uasc)
+  {
+    if (uasc instanceof CollectionIF)
+    {
+      return ((CollectionIF) uasc).getSensor().isMultiSpectral();
+    }
+    
+    return false;
+  }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix, boolean isMultispectral)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
@@ -75,7 +86,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setFilePrefix(outFileNamePrefix);
     task.apply();
 
-    task.initiate(infile);
+    task.initiate(infile, isMultispectral);
   }
 
   private void calculateImageSize(ApplicationResource zip, Collection collection)

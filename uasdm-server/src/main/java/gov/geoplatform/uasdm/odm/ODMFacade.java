@@ -9,6 +9,8 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +101,7 @@ public class ODMFacade
     }
   }
   
-  public static NewResponse taskNew(ApplicationResource images)
+  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
   {
     initialize();
     
@@ -109,14 +111,27 @@ public class ODMFacade
       
       parts[0] = new FilePart("images", fImages, "application/octet-stream", "UTF-8");
       
-      parts[1] = new StringPart("options", "[{\n" + 
-          "  \"name\": \"dsm\",\n" + 
-          "  \"value\": \"true\"\n" + 
-          "},\n" + 
-          "{\n" + 
-          "  \"name\": \"dtm\",\n" + 
-          "  \"value\": \"true\"\n" + 
-          "}]");
+      JSONArray arr = new JSONArray();
+      
+      JSONObject dsm = new JSONObject();
+      dsm.put("name", "dsm");
+      dsm.put("value", "true");
+      arr.put(dsm);
+      
+      JSONObject dtm = new JSONObject();
+      dtm.put("name", "dtm");
+      dtm.put("value", "true");
+      arr.put(dtm);
+      
+      if (isMultispectral)
+      {
+        JSONObject multispectral = new JSONObject();
+        multispectral.put("name", "multispectral");
+        multispectral.put("value", String.valueOf(isMultispectral));
+        arr.put(multispectral);
+      }
+      
+      parts[1] = new StringPart("options", arr.toString());
       
       HTTPResponse resp = connector.postAsMultipart("task/new", parts);
       
