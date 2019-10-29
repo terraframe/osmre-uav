@@ -111,8 +111,10 @@ public class Product extends ProductBase implements ProductIF
     {
       product = new Product();
       product.setName(uasComponent.getName());
-      product.apply(uasComponent);
     }
+
+    product.setLastUpdateDate(new Date());
+    product.apply(uasComponent);
 
     return product;
   }
@@ -288,12 +290,5 @@ public class Product extends ProductBase implements ProductIF
         }
       }
     }
-  }
-
-  @Override
-  public Date getLastUpdateDate()
-  {
-    // TODO Auto-generated method stub
-    return new Date();
   }
 }

@@ -110,12 +110,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected abstract String buildProductExpandClause();
 
-  @Override
-  public Object getObjectValue(String name)
-  {
-    return super.getValue(name);
-  }
-
   /**
    * Creates the object and builds the relationship with the parent.
    * 

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1902489425)
+@com.runwaysdk.business.ClassSignature(hash = -595410498)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,10 +12,11 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Product";
   public static java.lang.String BOUNDINGBOX = "boundingBox";
+  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -1902489425;
+  private static final long serialVersionUID = -595410498;
   
   public ProductBase()
   {
@@ -24,7 +25,7 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   
   public String getBoundingBox()
   {
-    return (String) this.getValue(BOUNDINGBOX);
+    return (String) this.getObjectValue(BOUNDINGBOX);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getBoundingBoxMd()
@@ -38,9 +39,25 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
     this.setValue(BOUNDINGBOX, value);
   }
   
+  public java.util.Date getLastUpdateDate()
+  {
+    return (java.util.Date) this.getObjectValue(LASTUPDATEDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getLastUpdateDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(LASTUPDATEDATE);
+  }
+  
+  public void setLastUpdateDate(java.util.Date value)
+  {
+    this.setValue(LASTUPDATEDATE, value);
+  }
+  
   public String getName()
   {
-    return (String) this.getValue(NAME);
+    return (String) this.getObjectValue(NAME);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getNameMd()
@@ -56,7 +73,7 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   
   public String getOid()
   {
-    return (String) this.getValue(OID);
+    return (String) this.getObjectValue(OID);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getOidMd()
@@ -67,7 +84,7 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   
   public Long getSeq()
   {
-    return (Long) this.getValue(SEQ);
+    return (Long) this.getObjectValue(SEQ);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeLongDAOIF getSeqMd()

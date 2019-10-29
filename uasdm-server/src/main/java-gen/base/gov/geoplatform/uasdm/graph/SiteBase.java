@@ -22,19 +22,19 @@ public abstract class SiteBase extends gov.geoplatform.uasdm.graph.UasComponent
   
   public gov.geoplatform.uasdm.bus.Bureau getBureau()
   {
-    if (getValue(BUREAU) == null)
+    if (this.getObjectValue(BUREAU) == null)
     {
       return null;
     }
     else
     {
-      return gov.geoplatform.uasdm.bus.Bureau.get( (String) this.getValue(BUREAU));
+      return gov.geoplatform.uasdm.bus.Bureau.get( (String) this.getObjectValue(BUREAU));
     }
   }
   
   public String getBureauOid()
   {
-    return (String) this.getValue(BUREAU);
+    return (String) this.getObjectValue(BUREAU);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getBureauMd()
@@ -55,7 +55,7 @@ public abstract class SiteBase extends gov.geoplatform.uasdm.graph.UasComponent
   
   public String getOtherBureauTxt()
   {
-    return (String) this.getValue(OTHERBUREAUTXT);
+    return (String) this.getObjectValue(OTHERBUREAUTXT);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getOtherBureauTxtMd()

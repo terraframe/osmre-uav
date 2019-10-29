@@ -24,7 +24,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   
   public String getName()
   {
-    return (String) this.getValue(NAME);
+    return (String) this.getObjectValue(NAME);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getNameMd()
@@ -40,7 +40,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   
   public String getOid()
   {
-    return (String) this.getValue(OID);
+    return (String) this.getObjectValue(OID);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getOidMd()
@@ -51,7 +51,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   
   public String getS3location()
   {
-    return (String) this.getValue(S3LOCATION);
+    return (String) this.getObjectValue(S3LOCATION);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getS3locationMd()
@@ -67,7 +67,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   
   public Long getSeq()
   {
-    return (Long) this.getValue(SEQ);
+    return (Long) this.getObjectValue(SEQ);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeLongDAOIF getSeqMd()

@@ -28,7 +28,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public String getDescription()
   {
-    return (String) this.getValue(DESCRIPTION);
+    return (String) this.getObjectValue(DESCRIPTION);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getDescriptionMd()
@@ -44,7 +44,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public String getFolderName()
   {
-    return (String) this.getValue(FOLDERNAME);
+    return (String) this.getObjectValue(FOLDERNAME);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getFolderNameMd()
@@ -60,7 +60,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public com.vividsolutions.jts.geom.Point getGeoPoint()
   {
-    return (com.vividsolutions.jts.geom.Point) this.getValue(GEOPOINT);
+    return (com.vividsolutions.jts.geom.Point) this.getObjectValue(GEOPOINT);
   }
   
   public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getGeoPointMd()
@@ -76,7 +76,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public String getName()
   {
-    return (String) this.getValue(NAME);
+    return (String) this.getObjectValue(NAME);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getNameMd()
@@ -92,7 +92,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public String getOid()
   {
-    return (String) this.getValue(OID);
+    return (String) this.getObjectValue(OID);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getOidMd()
@@ -103,19 +103,19 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public com.runwaysdk.system.Actor getOwner()
   {
-    if (getValue(OWNER) == null)
+    if (this.getObjectValue(OWNER) == null)
     {
       return null;
     }
     else
     {
-      return com.runwaysdk.system.Actor.get( (String) this.getValue(OWNER));
+      return com.runwaysdk.system.Actor.get( (String) this.getObjectValue(OWNER));
     }
   }
   
   public String getOwnerOid()
   {
-    return (String) this.getValue(OWNER);
+    return (String) this.getObjectValue(OWNER);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getOwnerMd()
@@ -136,7 +136,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public String getS3location()
   {
-    return (String) this.getValue(S3LOCATION);
+    return (String) this.getObjectValue(S3LOCATION);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getS3locationMd()
@@ -152,7 +152,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   
   public Long getSeq()
   {
-    return (Long) this.getValue(SEQ);
+    return (Long) this.getObjectValue(SEQ);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeLongDAOIF getSeqMd()

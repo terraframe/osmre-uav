@@ -26,7 +26,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   
   public Integer getImageHeight()
   {
-    return (Integer) this.getValue(IMAGEHEIGHT);
+    return (Integer) this.getObjectValue(IMAGEHEIGHT);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getImageHeightMd()
@@ -42,7 +42,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   
   public Integer getImageWidth()
   {
-    return (Integer) this.getValue(IMAGEWIDTH);
+    return (Integer) this.getObjectValue(IMAGEWIDTH);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getImageWidthMd()
@@ -58,7 +58,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   
   public Boolean getMetadataUploaded()
   {
-    return (Boolean) this.getValue(METADATAUPLOADED);
+    return (Boolean) this.getObjectValue(METADATAUPLOADED);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getMetadataUploadedMd()
@@ -74,19 +74,19 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   
   public gov.geoplatform.uasdm.bus.Platform getPlatform()
   {
-    if (getValue(PLATFORM) == null)
+    if (this.getObjectValue(PLATFORM) == null)
     {
       return null;
     }
     else
     {
-      return gov.geoplatform.uasdm.bus.Platform.get( (String) this.getValue(PLATFORM));
+      return gov.geoplatform.uasdm.bus.Platform.get( (String) this.getObjectValue(PLATFORM));
     }
   }
   
   public String getPlatformOid()
   {
-    return (String) this.getValue(PLATFORM);
+    return (String) this.getObjectValue(PLATFORM);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getPlatformMd()
@@ -140,19 +140,19 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   
   public gov.geoplatform.uasdm.bus.Sensor getSensor()
   {
-    if (getValue(SENSOR) == null)
+    if (this.getObjectValue(SENSOR) == null)
     {
       return null;
     }
     else
     {
-      return gov.geoplatform.uasdm.bus.Sensor.get( (String) this.getValue(SENSOR));
+      return gov.geoplatform.uasdm.bus.Sensor.get( (String) this.getObjectValue(SENSOR));
     }
   }
   
   public String getSensorOid()
   {
-    return (String) this.getValue(SENSOR);
+    return (String) this.getObjectValue(SENSOR);
   }
   
   public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getSensorMd()
