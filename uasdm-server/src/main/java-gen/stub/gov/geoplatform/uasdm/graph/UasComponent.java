@@ -247,6 +247,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       document.delete();
     }
 
+    // Delete all of the child components
+    List<UasComponentIF> children = this.getChildren();
+
+    for (UasComponentIF child : children)
+    {
+      child.delete();
+    }
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
