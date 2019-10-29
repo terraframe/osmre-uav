@@ -21,7 +21,14 @@
 
       <mdVertex name="gov.geoplatform.uasdm.graph.Project" label="Project" extends="gov.geoplatform.uasdm.graph.UasComponent" >
       </mdVertex>
-
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.Imagery" label="Imagery" extends="gov.geoplatform.uasdm.graph.UasComponent" >
+        <attributes>
+          <integer name="imageHeight" required="false" />
+          <integer name="imageWidth" required="false" />
+        </attributes>      
+      </mdVertex>
+      
       <mdVertex name="gov.geoplatform.uasdm.graph.Mission" label="Mission" extends="gov.geoplatform.uasdm.graph.UasComponent" >
       </mdVertex>
 
@@ -66,7 +73,10 @@
       <mdEdge name="gov.geoplatform.uasdm.graph.SiteHasProject" label="Site Has Project" parent="gov.geoplatform.uasdm.graph.Site" child="gov.geoplatform.uasdm.graph.Project">
       </mdEdge>
 
-      <mdEdge name="gov.geoplatform.uasdm.graph.ProjectHasMission" label="Site Has Project" parent="gov.geoplatform.uasdm.graph.Project" child="gov.geoplatform.uasdm.graph.Mission">
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProjectHasMission" label="Project Has Mission" parent="gov.geoplatform.uasdm.graph.Project" child="gov.geoplatform.uasdm.graph.Mission">
+      </mdEdge>
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProjectHasImagery" label="Project Has Imagery" parent="gov.geoplatform.uasdm.graph.Project" child="gov.geoplatform.uasdm.graph.Imagery">
       </mdEdge>
 
       <mdEdge name="gov.geoplatform.uasdm.graph.MissionHasCollection" label="Mission Has Collection" parent="gov.geoplatform.uasdm.graph.Mission" child="gov.geoplatform.uasdm.graph.Collection">
@@ -96,6 +106,9 @@
           <mdBusinessPermission type="gov.geoplatform.uasdm.graph.Product">
             <operation name="ALL" />
           </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.Imagery">
+            <operation name="ALL" />
+          </mdBusinessPermission>
           <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasDocument">
             <operation name="ALL" />
           </mdRelationshipPermission>
@@ -115,6 +128,9 @@
             <operation name="ALL" />
           </mdRelationshipPermission>
           <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.MissionHasCollection">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProjectHasImagery">
             <operation name="ALL" />
           </mdRelationshipPermission>
         </grant>
@@ -143,6 +159,9 @@
           <mdBusinessPermission type="gov.geoplatform.uasdm.graph.Product">
             <operation name="ALL" />
           </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.Imagery">
+            <operation name="ALL" />
+          </mdBusinessPermission>          
           <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasDocument">
             <operation name="ALL" />
           </mdRelationshipPermission>
@@ -164,12 +183,16 @@
           <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.MissionHasCollection">
             <operation name="ALL" />
           </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProjectHasImagery">
+            <operation name="ALL" />
+          </mdRelationshipPermission>          
         </grant>
       </role>
     </permissions>
   </doIt>
   <undoIt>
     <delete>
+      <object key="gov.geoplatform.uasdm.graph.ProjectHasImagery" type="com.runwaysdk.system.metadata.MdEdge" />
       <object key="gov.geoplatform.uasdm.graph.MissionHasCollection" type="com.runwaysdk.system.metadata.MdEdge" />
       <object key="gov.geoplatform.uasdm.graph.ProjectHasMission" type="com.runwaysdk.system.metadata.MdEdge" />
       <object key="gov.geoplatform.uasdm.graph.SiteHasProject" type="com.runwaysdk.system.metadata.MdEdge" />
@@ -178,6 +201,7 @@
       <object key="gov.geoplatform.uasdm.graph.ComponentHasProduct" type="com.runwaysdk.system.metadata.MdEdge" />
       <object key="gov.geoplatform.uasdm.graph.ComponentHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
       
+      <object key="gov.geoplatform.uasdm.graph.Imagery" type="com.runwaysdk.system.metadata.MdVertex" />
       <object key="gov.geoplatform.uasdm.graph.Product" type="com.runwaysdk.system.metadata.MdVertex" />
       <object key="gov.geoplatform.uasdm.graph.Document" type="com.runwaysdk.system.metadata.MdVertex" />
       <object key="gov.geoplatform.uasdm.graph.Collection" type="com.runwaysdk.system.metadata.MdVertex" />

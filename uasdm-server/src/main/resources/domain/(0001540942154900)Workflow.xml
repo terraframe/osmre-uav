@@ -22,7 +22,7 @@
       </mdBusiness>      
       <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractUploadTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
         <attributes>
-          <reference name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
+          <uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
         </attributes>
       </mdBusiness>
       <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowAction" label="Action" cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
@@ -36,6 +36,7 @@
       </mdBusiness>
       
       <timestamp version="0001569862596380"></timestamp>
+      <timestamp version="0001571844750045"></timestamp>
     </create>
     <update></update>
   </doIt>

@@ -3,7 +3,7 @@
     <create>
       <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryUploadEvent" exported="false" publish="false">
 	      <attributes>
-	        <reference name="imagery" type="gov.geoplatform.uasdm.bus.Imagery"/>
+	        <uuid name="imagery" type="gov.geoplatform.uasdm.bus.Imagery"/>
 	        <char name="uploadId"  required="true" label="Upload ID" size="256" />
 	        <reference name="geoprismUser" label="User" required="true" immutable="false" type="net.geoprism.GeoprismUser" indexType="non-unique index" />
 	      </attributes>
