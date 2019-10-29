@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class SiteHasProjectsQueryDTO extends gov.geoplatform.uasdm.bus.ComponentHasComponentQueryDTO
 {
-public static final long serialVersionUID = 1965346072;
+private static final long serialVersionUID = 1965346072;
 
   protected SiteHasProjectsQueryDTO(String type)
   {

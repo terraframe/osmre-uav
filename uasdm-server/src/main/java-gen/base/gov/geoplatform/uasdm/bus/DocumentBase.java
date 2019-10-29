@@ -26,7 +26,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.Business
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  public static final long serialVersionUID = 1250122350;
+  private static final long serialVersionUID = 1250122350;
   
   public DocumentBase()
   {

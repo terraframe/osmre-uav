@@ -5,7 +5,7 @@ import com.runwaysdk.query.QueryFactory;
 
 public class AbstractUploadTask extends AbstractUploadTaskBase
 {
-  public static final long serialVersionUID = 1447500757;
+  private static final long serialVersionUID = 1447500757;
 
   public AbstractUploadTask()
   {

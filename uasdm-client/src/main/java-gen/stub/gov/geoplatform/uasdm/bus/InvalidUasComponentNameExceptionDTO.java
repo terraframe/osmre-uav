@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class InvalidUasComponentNameExceptionDTO extends InvalidUasComponentNameExceptionDTOBase
 {
-  public static final long serialVersionUID = 644373112;
+  private static final long serialVersionUID = 644373112;
   
   public InvalidUasComponentNameExceptionDTO(com.runwaysdk.constants.ClientRequestIF clientRequestIF)
   {

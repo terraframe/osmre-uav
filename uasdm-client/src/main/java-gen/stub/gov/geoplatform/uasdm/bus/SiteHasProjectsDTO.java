@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class SiteHasProjectsDTO extends SiteHasProjectsDTOBase
 {
-  public static final long serialVersionUID = -925440302;
+  private static final long serialVersionUID = -925440302;
   
   public SiteHasProjectsDTO(com.runwaysdk.constants.ClientRequestIF clientRequest, String parentOid, String childOid)
   {

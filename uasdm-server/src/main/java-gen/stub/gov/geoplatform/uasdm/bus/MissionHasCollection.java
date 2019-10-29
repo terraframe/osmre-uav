@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class MissionHasCollection extends MissionHasCollectionBase
 {
-  public static final long serialVersionUID = 1677126317;
+  private static final long serialVersionUID = 1677126317;
   
   public MissionHasCollection(String parentOid, String childOid)
   {

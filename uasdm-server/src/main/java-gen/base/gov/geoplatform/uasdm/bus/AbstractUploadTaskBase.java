@@ -12,7 +12,7 @@ public abstract class AbstractUploadTaskBase extends gov.geoplatform.uasdm.bus.A
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractUploadTask";
   public static java.lang.String UPLOADID = "uploadId";
-  public static final long serialVersionUID = -944722350;
+  private static final long serialVersionUID = -944722350;
   
   public AbstractUploadTaskBase()
   {

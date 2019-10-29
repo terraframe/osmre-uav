@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ProjectHasMissionBase extends gov.geoplatform.uasdm.bus.ComponentHasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.ProjectHasMission";
-  public static final long serialVersionUID = -927277904;
+  private static final long serialVersionUID = -927277904;
   
   public ProjectHasMissionBase(String parentOid, String childOid)
   {

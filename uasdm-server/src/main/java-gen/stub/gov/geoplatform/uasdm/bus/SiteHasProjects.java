@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class SiteHasProjects extends SiteHasProjectsBase
 {
-  public static final long serialVersionUID = -1157135022;
+  private static final long serialVersionUID = -1157135022;
   
   public SiteHasProjects(String parentOid, String childOid)
   {

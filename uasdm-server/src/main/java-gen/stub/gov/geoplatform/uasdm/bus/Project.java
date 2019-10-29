@@ -11,7 +11,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class Project extends ProjectBase implements ProjectIF
 {
-  public static final long serialVersionUID = 935245787;
+  private static final long serialVersionUID = 935245787;
 
   public Project()
   {

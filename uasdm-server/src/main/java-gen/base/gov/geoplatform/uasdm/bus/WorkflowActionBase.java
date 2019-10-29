@@ -26,7 +26,7 @@ public abstract class WorkflowActionBase extends com.runwaysdk.business.Business
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
   public static java.lang.String WORKFLOWTASK = "workflowTask";
-  public static final long serialVersionUID = -712799176;
+  private static final long serialVersionUID = -712799176;
   
   public WorkflowActionBase()
   {

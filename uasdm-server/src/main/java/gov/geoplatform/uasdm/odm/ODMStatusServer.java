@@ -665,7 +665,7 @@ public class ODMStatusServer
 
     private class SpecialException extends Exception
     {
-      public static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
       public SpecialException(String string, ZipException e)
       {

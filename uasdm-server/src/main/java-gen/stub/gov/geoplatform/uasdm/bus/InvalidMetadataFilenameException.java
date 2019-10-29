@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class InvalidMetadataFilenameException extends InvalidMetadataFilenameExceptionBase
 {
-  public static final long serialVersionUID = -1414110205;
+  private static final long serialVersionUID = -1414110205;
   
   public InvalidMetadataFilenameException()
   {

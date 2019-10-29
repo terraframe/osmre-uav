@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm;
 public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
-  public static final long serialVersionUID = 668863528;
+  private static final long serialVersionUID = 668863528;
   
   protected UserInviteDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

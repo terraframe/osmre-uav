@@ -15,7 +15,7 @@ public abstract class DuplicateComponentExceptionBase extends com.runwaysdk.busi
   public static java.lang.String CHILDNAME = "childName";
   public static java.lang.String OID = "oid";
   public static java.lang.String PARENTNAME = "parentName";
-  public static final long serialVersionUID = 428458116;
+  private static final long serialVersionUID = 428458116;
   
   public DuplicateComponentExceptionBase()
   {

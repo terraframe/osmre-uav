@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class MissionHasCollectionDTO extends MissionHasCollectionDTOBase
 {
-  public static final long serialVersionUID = 390306093;
+  private static final long serialVersionUID = 390306093;
   
   public MissionHasCollectionDTO(com.runwaysdk.constants.ClientRequestIF clientRequest, String parentOid, String childOid)
   {

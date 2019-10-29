@@ -26,7 +26,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class Document extends DocumentBase implements DocumentIF
 {
-  public static final long serialVersionUID = -877956259;
+  private static final long serialVersionUID = -877956259;
 
   public Document()
   {

@@ -14,7 +14,7 @@ public abstract class ImageryODMProcessingTaskBase extends gov.geoplatform.uasdm
   public static java.lang.String FILEPREFIX = "filePrefix";
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
-  public static final long serialVersionUID = 174799052;
+  private static final long serialVersionUID = 174799052;
   
   public ImageryODMProcessingTaskBase()
   {

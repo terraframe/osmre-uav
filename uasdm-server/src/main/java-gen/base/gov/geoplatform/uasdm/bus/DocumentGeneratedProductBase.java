@@ -23,7 +23,7 @@ public abstract class DocumentGeneratedProductBase extends com.runwaysdk.busines
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  public static final long serialVersionUID = 1111348025;
+  private static final long serialVersionUID = 1111348025;
   
   public DocumentGeneratedProductBase(String parentOid, String childOid)
   {

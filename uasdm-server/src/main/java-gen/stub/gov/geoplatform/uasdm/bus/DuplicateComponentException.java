@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class DuplicateComponentException extends DuplicateComponentExceptionBase
 {
-  public static final long serialVersionUID = -581529503;
+  private static final long serialVersionUID = -581529503;
   
   public DuplicateComponentException()
   {

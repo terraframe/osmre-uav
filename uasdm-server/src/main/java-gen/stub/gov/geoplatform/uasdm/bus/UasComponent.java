@@ -59,7 +59,7 @@ import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
-  public static final long serialVersionUID = -2027002868;
+  private static final long serialVersionUID = -2027002868;
 
   public UasComponent()
   {

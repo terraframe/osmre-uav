@@ -23,7 +23,7 @@ public abstract class ComponentHasComponentBase extends com.runwaysdk.business.R
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  public static final long serialVersionUID = -1848843062;
+  private static final long serialVersionUID = -1848843062;
   
   public ComponentHasComponentBase(String parentOid, String childOid)
   {

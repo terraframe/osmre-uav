@@ -13,7 +13,7 @@ public abstract class SiteBase extends gov.geoplatform.uasdm.bus.UasComponent
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Site";
   public static java.lang.String BUREAU = "bureau";
   public static java.lang.String OTHERBUREAUTXT = "otherBureauTxt";
-  public static final long serialVersionUID = 1298418041;
+  private static final long serialVersionUID = 1298418041;
   
   public SiteBase()
   {

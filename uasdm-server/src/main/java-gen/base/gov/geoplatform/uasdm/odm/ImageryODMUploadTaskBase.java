@@ -13,7 +13,7 @@ public abstract class ImageryODMUploadTaskBase extends gov.geoplatform.uasdm.bus
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ImageryODMUploadTask";
   public static java.lang.String ODMUUID = "odmUUID";
   public static java.lang.String PROCESSINGTASK = "processingTask";
-  public static final long serialVersionUID = -4166497;
+  private static final long serialVersionUID = -4166497;
   
   public ImageryODMUploadTaskBase()
   {

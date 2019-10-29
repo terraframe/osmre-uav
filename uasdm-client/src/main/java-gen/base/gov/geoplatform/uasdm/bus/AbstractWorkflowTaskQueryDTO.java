@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class AbstractWorkflowTaskQueryDTO extends com.runwaysdk.business.BusinessQueryDTO
 {
-public static final long serialVersionUID = 421286800;
+private static final long serialVersionUID = 421286800;
 
   protected AbstractWorkflowTaskQueryDTO(String type)
   {

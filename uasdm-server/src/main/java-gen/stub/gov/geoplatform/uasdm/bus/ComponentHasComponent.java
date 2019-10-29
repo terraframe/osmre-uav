@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public abstract class ComponentHasComponent extends ComponentHasComponentBase
 {
-  public static final long serialVersionUID = 39531277;
+  private static final long serialVersionUID = 39531277;
   
   public ComponentHasComponent(String parentOid, String childOid)
   {

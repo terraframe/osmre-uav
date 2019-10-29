@@ -29,7 +29,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
   private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
   
-  public static final long serialVersionUID = -339555201;
+  private static final long serialVersionUID = -339555201;
   
   public ImageryProcessingJob()
   {

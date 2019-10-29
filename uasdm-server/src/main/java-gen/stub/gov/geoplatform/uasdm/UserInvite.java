@@ -21,7 +21,7 @@ import net.geoprism.GeoprismUser;
 
 public class UserInvite extends UserInviteBase
 {
-  public static final long serialVersionUID = 1734240010;
+  private static final long serialVersionUID = 1734240010;
 
   private static final int  expireTime       = AppProperties.getInviteUserTokenExpireTime(); // in
                                                                                              // hours

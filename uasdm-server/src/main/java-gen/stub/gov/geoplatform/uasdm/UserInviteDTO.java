@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm;
 
 public class UserInviteDTO extends UserInviteDTOBase
 {
-  public static final long serialVersionUID = -1806510710;
+  private static final long serialVersionUID = -1806510710;
   
   public UserInviteDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

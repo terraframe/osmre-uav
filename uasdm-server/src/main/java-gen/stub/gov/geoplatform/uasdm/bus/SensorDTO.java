@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class SensorDTO extends SensorDTOBase
 {
-  public static final long serialVersionUID = -1721059410;
+  private static final long serialVersionUID = -1721059410;
   
   public SensorDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

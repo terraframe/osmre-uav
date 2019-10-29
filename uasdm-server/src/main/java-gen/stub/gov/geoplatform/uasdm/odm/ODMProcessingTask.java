@@ -14,7 +14,7 @@ import gov.geoplatform.uasdm.DevProperties;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
-  public static final long serialVersionUID = -90821820;
+  private static final long serialVersionUID = -90821820;
 
   private static Logger    logger           = LoggerFactory.getLogger(ODMStatusServer.class);
 

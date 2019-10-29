@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class InvalidUasComponentNameException extends InvalidUasComponentNameExceptionBase
 {
-  public static final long serialVersionUID = -579618568;
+  private static final long serialVersionUID = -579618568;
   
   public InvalidUasComponentNameException()
   {

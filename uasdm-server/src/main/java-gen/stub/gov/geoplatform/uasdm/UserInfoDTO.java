@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm;
 
 public class UserInfoDTO extends UserInfoDTOBase
 {
-  public static final long serialVersionUID = -592863717;
+  private static final long serialVersionUID = -592863717;
   
   public UserInfoDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

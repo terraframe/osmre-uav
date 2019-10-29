@@ -13,7 +13,7 @@ public abstract class DuplicateSiteExceptionBase extends com.runwaysdk.business.
   public final static String CLASS = "gov.geoplatform.uasdm.bus.DuplicateSiteException";
   public static java.lang.String FOLDERNAME = "folderName";
   public static java.lang.String OID = "oid";
-  public static final long serialVersionUID = -2129289808;
+  private static final long serialVersionUID = -2129289808;
   
   public DuplicateSiteExceptionBase()
   {

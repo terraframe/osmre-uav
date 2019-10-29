@@ -3,7 +3,7 @@ package gov.geoplatform.uasdm.odm;
 
 public class ODMUploadTask extends ODMUploadTaskBase implements ODMUploadTaskIF
 {
-  public static final long serialVersionUID = 1872276502;
+  private static final long serialVersionUID = 1872276502;
   
   public ODMUploadTask()
   {

@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class CollectionQueryDTO extends gov.geoplatform.uasdm.bus.UasComponentQueryDTO
 {
-public static final long serialVersionUID = -838960861;
+private static final long serialVersionUID = -838960861;
 
   protected CollectionQueryDTO(String type)
   {

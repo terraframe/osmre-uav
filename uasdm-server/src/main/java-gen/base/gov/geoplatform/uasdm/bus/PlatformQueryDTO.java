@@ -10,7 +10,7 @@ package gov.geoplatform.uasdm.bus;
  */
 public class PlatformQueryDTO extends com.runwaysdk.business.BusinessQueryDTO
 {
-public static final long serialVersionUID = 146467640;
+private static final long serialVersionUID = 146467640;
 
   protected PlatformQueryDTO(String type)
   {

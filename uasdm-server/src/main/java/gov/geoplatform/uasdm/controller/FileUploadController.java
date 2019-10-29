@@ -45,7 +45,7 @@ public class FileUploadController
     /**
      * 
      */
-    public static final long serialVersionUID = 4441513458265403462L;
+    private static final long serialVersionUID = 4441513458265403462L;
 
     MergePartsException(String message)
     {

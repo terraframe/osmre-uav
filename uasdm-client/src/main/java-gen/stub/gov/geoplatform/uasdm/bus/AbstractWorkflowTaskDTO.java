@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public abstract class AbstractWorkflowTaskDTO extends AbstractWorkflowTaskDTOBase
 {
-  public static final long serialVersionUID = -1203150262;
+  private static final long serialVersionUID = -1203150262;
   
   public AbstractWorkflowTaskDTO(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

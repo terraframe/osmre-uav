@@ -13,7 +13,7 @@ public abstract class InvalidUasComponentNameExceptionBase extends com.runwaysdk
   public final static String CLASS = "gov.geoplatform.uasdm.bus.InvalidUasComponentNameException";
   public static java.lang.String ATTRIBUTENAME = "attributeName";
   public static java.lang.String OID = "oid";
-  public static final long serialVersionUID = 876407578;
+  private static final long serialVersionUID = 876407578;
   
   public InvalidUasComponentNameExceptionBase()
   {

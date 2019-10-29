@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ImageryDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Imagery";
-  public static final long serialVersionUID = 1014746709;
+  private static final long serialVersionUID = 1014746709;
   
   protected ImageryDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

@@ -23,7 +23,7 @@ import net.geoprism.GeoprismUser;
 
 public class Collection extends CollectionBase implements ImageryComponent, CollectionIF
 {
-  public static final long serialVersionUID = 1371809368;
+  private static final long serialVersionUID = 1371809368;
 
   final Logger             log              = LoggerFactory.getLogger(Collection.class);
 

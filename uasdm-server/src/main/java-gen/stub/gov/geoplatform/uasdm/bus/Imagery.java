@@ -42,7 +42,7 @@ import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Imagery extends ImageryBase implements ImageryComponent
 {
-  public static final long serialVersionUID = -134374478;
+  private static final long serialVersionUID = -134374478;
 
   final Logger             log              = LoggerFactory.getLogger(Imagery.class);
 

@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class SiteDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Site";
-  public static final long serialVersionUID = -928911555;
+  private static final long serialVersionUID = -928911555;
   
   protected SiteDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {

@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class ProjectHasImagery extends ProjectHasImageryBase
 {
-  public static final long serialVersionUID = -2017450119;
+  private static final long serialVersionUID = -2017450119;
   
   public ProjectHasImagery(String parentOid, String childOid)
   {

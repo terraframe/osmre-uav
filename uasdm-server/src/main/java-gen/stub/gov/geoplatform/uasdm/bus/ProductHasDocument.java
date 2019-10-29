@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 public class ProductHasDocument extends ProductHasDocumentBase
 {
-  public static final long serialVersionUID = 576174881;
+  private static final long serialVersionUID = 576174881;
 
   public ProductHasDocument(String parentOid, String childOid)
   {

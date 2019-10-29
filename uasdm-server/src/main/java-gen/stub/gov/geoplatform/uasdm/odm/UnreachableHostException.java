@@ -2,7 +2,7 @@ package gov.geoplatform.uasdm.odm;
 
 public class UnreachableHostException extends UnreachableHostExceptionBase
 {
-  public static final long serialVersionUID = -1527022276;
+  private static final long serialVersionUID = -1527022276;
   
   public UnreachableHostException()
   {

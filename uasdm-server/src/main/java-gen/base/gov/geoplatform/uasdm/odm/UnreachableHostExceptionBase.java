@@ -12,7 +12,7 @@ public abstract class UnreachableHostExceptionBase extends com.runwaysdk.busines
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.UnreachableHostException";
   public static java.lang.String OID = "oid";
-  public static final long serialVersionUID = -10692359;
+  private static final long serialVersionUID = -10692359;
   
   public UnreachableHostExceptionBase()
   {

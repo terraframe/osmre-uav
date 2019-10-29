@@ -10,7 +10,7 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements ImageryWorkflowTaskIF
 {
-  public static final long serialVersionUID = 214749939;
+  private static final long serialVersionUID = 214749939;
 
   public ImageryWorkflowTask()
   {

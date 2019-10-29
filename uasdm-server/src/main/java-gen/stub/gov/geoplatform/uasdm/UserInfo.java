@@ -20,7 +20,7 @@ import net.geoprism.GeoprismUserQuery;
 
 public class UserInfo extends UserInfoBase
 {
-  public static final long serialVersionUID = 984575899;
+  private static final long serialVersionUID = 984575899;
 
   public UserInfo()
   {

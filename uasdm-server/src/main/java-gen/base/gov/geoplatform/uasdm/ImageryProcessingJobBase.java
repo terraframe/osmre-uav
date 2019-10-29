@@ -15,7 +15,7 @@ public abstract class ImageryProcessingJobBase extends com.runwaysdk.system.sche
   public static java.lang.String OUTFILENAMEPREFIX = "outFileNamePrefix";
   public static java.lang.String UPLOADTARGET = "uploadTarget";
   public static java.lang.String WORKFLOWTASK = "workflowTask";
-  public static final long serialVersionUID = 1804637686;
+  private static final long serialVersionUID = 1804637686;
   
   public ImageryProcessingJobBase()
   {

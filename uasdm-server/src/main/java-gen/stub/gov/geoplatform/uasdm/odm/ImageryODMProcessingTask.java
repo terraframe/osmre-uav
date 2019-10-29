@@ -21,7 +21,7 @@ import gov.geoplatform.uasdm.bus.Imagery;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
-  public static final long serialVersionUID = -897837399;
+  private static final long serialVersionUID = -897837399;
 
   final Logger              log              = LoggerFactory.getLogger(ImageryODMProcessingTask.class);
 

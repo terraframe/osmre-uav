@@ -13,7 +13,7 @@ public abstract class ImageryBase extends gov.geoplatform.uasdm.bus.UasComponent
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Imagery";
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
-  public static final long serialVersionUID = -1534076186;
+  private static final long serialVersionUID = -1534076186;
   
   public ImageryBase()
   {

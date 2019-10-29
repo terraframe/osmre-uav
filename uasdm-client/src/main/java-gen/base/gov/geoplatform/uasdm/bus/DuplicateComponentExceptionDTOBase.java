@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class DuplicateComponentExceptionDTOBase extends com.runwaysdk.business.SmartExceptionDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.DuplicateComponentException";
-  public static final long serialVersionUID = 1398124292;
+  private static final long serialVersionUID = 1398124292;
   
   public DuplicateComponentExceptionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequestIF)
   {
