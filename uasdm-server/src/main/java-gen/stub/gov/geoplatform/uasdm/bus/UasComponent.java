@@ -498,6 +498,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
 
+    List<UasComponent> parents = this.getParents();
+
+    ancestors.addAll(parents);
+
+    for (UasComponent parent : parents)
+    {
+      ancestors.addAll(parent.getAncestors());
+    }
+
+    return ancestors;
+  }
+
+  public List<UasComponent> getParents()
+  {
     List<UasComponent> parents = new LinkedList<>();
 
     OIterator<? extends UasComponent> it = this.getAllComponent();
@@ -511,14 +525,19 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       it.close();
     }
 
-    ancestors.addAll(parents);
+    return parents;
+  }
 
-    for (UasComponent parent : parents)
+  public UasComponent getParent()
+  {
+    final List<UasComponent> parents = this.getParents();
+
+    if (parents.size() > 0)
     {
-      ancestors.addAll(parent.getAncestors());
+      return parents.get(0);
     }
 
-    return ancestors;
+    return null;
   }
 
   public List<AttributeType> attributes()
