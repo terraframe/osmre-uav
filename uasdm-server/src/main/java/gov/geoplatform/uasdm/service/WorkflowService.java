@@ -14,6 +14,8 @@ import com.runwaysdk.session.RequestType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentFactory;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -165,7 +167,7 @@ public class WorkflowService
   public JSONObject getTasks(String sessionId)
   {
     List<AbstractWorkflowTask> tasks = AbstractWorkflowTask.getUserTasks();
-    java.util.Collection<Collection> missions = Collection.getMissingMetadata();
+    java.util.Collection<CollectionIF> missions = ComponentFactory.getMissingMetadata();
 
     JSONObject response = new JSONObject();
     response.put("tasks", AbstractWorkflowTask.serialize(tasks));
@@ -177,7 +179,7 @@ public class WorkflowService
   @Request(RequestType.SESSION)
   public JSONArray getMissingMetadata(String sessionId)
   {
-    java.util.Collection<Collection> missions = Collection.getMissingMetadata();
+    java.util.Collection<CollectionIF> missions = ComponentFactory.getMissingMetadata();
 
     return Collection.toMetadataMessage(missions);
   }

@@ -5,7 +5,9 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.model.ComponentFactory;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 
 public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements ImageryWorkflowTaskIF
@@ -22,9 +24,9 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
     return this.getImageryInstance();
   }
 
-  public Imagery getImageryInstance()
+  public ImageryIF getImageryInstance()
   {
-    return Imagery.get(this.getImagery());
+    return ComponentFactory.getImagery(this.getImagery());
   }
 
   public JSONObject toJSON()

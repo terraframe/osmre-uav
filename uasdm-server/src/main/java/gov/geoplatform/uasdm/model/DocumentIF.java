@@ -2,7 +2,9 @@ package gov.geoplatform.uasdm.model;
 
 import org.json.JSONObject;
 
-public interface DocumentIF
+import com.runwaysdk.ComponentIF;
+
+public interface DocumentIF extends ComponentIF
 {
 
   public String getS3location();

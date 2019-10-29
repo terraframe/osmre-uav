@@ -20,14 +20,13 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
-import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -78,9 +77,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<UasComponent> getChildren()
+  public List<UasComponentIF> getChildren()
   {
-    return new LinkedList<UasComponent>();
+    return new LinkedList<UasComponentIF>();
   }
 
   @Override
@@ -89,7 +88,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return Collection.expandClause();
   }
 
-  private JSONObject toMetadataMessage()
+  public JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
     object.put("collectionId", this.getOid());
@@ -170,7 +169,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   protected void deleteS3Object(String key)
   {
-    Imagery.deleteS3Object(key, this);
+    Util.deleteS3Object(key, this);
   }
 
   public List<AbstractWorkflowTask> getTasks()
@@ -218,13 +217,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    return Imagery.uploadArchive(task, archive, this, uploadTarget);
+    return Util.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
   public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    return Imagery.uploadZipArchive(task, archive, this, uploadTarget);
+    return Util.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
   @Override
@@ -280,12 +279,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super.getSiteObjects(folder, objects);
 
-    Imagery.getSiteObjects(folder, objects, this);
+    Util.getSiteObjects(folder, objects, this);
   }
 
   public void createImageServices()
   {
-    Imagery.createImageServices(this);
+    Util.createImageServices(this);
   }
 
   @Override
@@ -316,43 +315,36 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return workflowTask;
   }
 
-  public static java.util.Collection<Collection> getMissingMetadata()
+  public static java.util.Collection<CollectionIF> getMissingMetadata()
   {
     SingleActor singleActor = GeoprismUser.getCurrentUser();
 
     if (singleActor != null)
     {
       final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
-      final MdVertexDAOIF mdDocument = mdEdge.getChildMdVertex();
       final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
 
       StringBuilder builder = new StringBuilder();
-      builder.append("SELECT EXPAND (");
-      builder.append(" IN (" + mdEdge.getDBClassName() + ")");
-      builder.append(" [");
-      builder.append(" @class=:class");
-      builder.append(" AND " + METADATAUPLOADED + " = :metadataUploaded");
+      builder.append("SELECT FROM " + mdCollection.getDBClassName());
+      builder.append(" WHERE " + METADATAUPLOADED + " = :metadataUploaded");
       builder.append(" AND " + OWNER + " = :owner");
-      builder.append(" ]");
-      builder.append(")");
-      builder.append(" FROM " + mdDocument.getDBClassName());
+      builder.append(" AND outE('" + mdEdge.getDBClassName() + "').size() > 0");
 
-      final VertexQuery<Collection> query = new VertexQuery<Collection>(builder.toString());
-      query.setParameter("class", mdCollection.getDBClassName());
+      final VertexQuery<CollectionIF> query = new VertexQuery<CollectionIF>(builder.toString());
       query.setParameter("metadataUploaded", false);
       query.setParameter("owner", singleActor.getOid());
 
       return query.getResults();
     }
 
-    return new LinkedHashSet<Collection>();
+    return new LinkedHashSet<CollectionIF>();
   }
 
-  public static JSONArray toMetadataMessage(java.util.Collection<Collection> collections)
+  public static JSONArray toMetadataMessage(java.util.Collection<CollectionIF> collections)
   {
     JSONArray messages = new JSONArray();
 
-    for (Collection collection : collections)
+    for (CollectionIF collection : collections)
     {
       messages.put(collection.toMetadataMessage());
     }

@@ -3,8 +3,13 @@ package gov.geoplatform.uasdm.model;
 import java.util.Date;
 import java.util.List;
 
-public interface ProductIF
+import com.runwaysdk.ComponentIF;
+import com.runwaysdk.dataaccess.MdClassDAOIF;
+
+public interface ProductIF extends ComponentIF
 {
+  public MdClassDAOIF getMdClass();
+
   public String getOid();
 
   public String getName();
@@ -28,4 +33,7 @@ public interface ProductIF
   public List<DocumentIF> getGeneratedFromDocuments();
 
   public void calculateKeys(List<UasComponentIF> components);
+
+  public void delete();
+
 }

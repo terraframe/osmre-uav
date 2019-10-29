@@ -15,6 +15,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -95,7 +96,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return collectionList;
   }
 
-  private JSONObject toMetadataMessage()
+  public JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
     object.put("collectionId", this.getOid());
@@ -183,7 +184,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   protected void deleteS3Object(String key)
   {
-    Imagery.deleteS3Object(key, this);
+    Util.deleteS3Object(key, this);
   }
 
   public List<AbstractWorkflowTask> getTasks()
@@ -231,13 +232,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    return Imagery.uploadArchive(task, archive, this, uploadTarget);
+    return Util.uploadArchive(task, archive, this, uploadTarget);
   }
 
   @Override
   public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
   {
-    return Imagery.uploadZipArchive(task, archive, this, uploadTarget);
+    return Util.uploadZipArchive(task, archive, this, uploadTarget);
   }
 
   @Override
@@ -293,12 +294,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super.getSiteObjects(folder, objects);
 
-    Imagery.getSiteObjects(folder, objects, this);
+    Util.getSiteObjects(folder, objects, this);
   }
 
   public void createImageServices()
   {
-    Imagery.createImageServices(this);
+    Util.createImageServices(this);
   }
 
   @Override

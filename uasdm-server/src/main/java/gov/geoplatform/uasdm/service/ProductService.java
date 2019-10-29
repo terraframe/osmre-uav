@@ -4,15 +4,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.runwaysdk.business.graph.VertexQuery;
-import com.runwaysdk.dataaccess.MdVertexDAOIF;
-import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ComponentFactory;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ProductDetailView;
@@ -23,7 +22,7 @@ public class ProductService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    Product.get(oid).delete();
+    ComponentFactory.getProduct(oid).delete();
   }
 
   @Request(RequestType.SESSION)
@@ -31,12 +30,12 @@ public class ProductService
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
-    final UasComponent parent = UasComponent.get(oid);
-    final List<Product> products = parent.getDerivedProducts();
+    final UasComponentIF parent = ComponentFactory.getComponent(oid);
+    final List<ProductIF> products = parent.getDerivedProducts();
 
-    for (Product product : products)
+    for (ProductIF product : products)
     {
-      UasComponent component = product.getComponent();
+      UasComponentIF component = product.getComponent();
 
       List<UasComponentIF> components = component.getAncestors();
       Collections.reverse(components);
@@ -51,7 +50,7 @@ public class ProductService
   @Request(RequestType.SESSION)
   public ProductDetailView getProductDetail(String sessionId, String id)
   {
-    Product product = Product.get(id);
+    ProductIF product = ComponentFactory.getProduct(id);
 
     UasComponentIF component = product.getComponent();
 

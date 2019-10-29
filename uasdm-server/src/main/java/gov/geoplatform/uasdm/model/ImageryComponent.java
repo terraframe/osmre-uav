@@ -18,8 +18,6 @@ import gov.geoplatform.uasdm.view.SiteObject;
  */
 public interface ImageryComponent
 {
-  public static final int    BUFFER_SIZE = 1024;
-
   public static final String RAW         = "raw";
 
   public static final String PTCLOUD     = "ptcloud";
@@ -29,6 +27,8 @@ public interface ImageryComponent
   public static final String ORTHO       = "ortho";
 
   public static final String GEOREF      = "georef";
+
+  public String getOid();
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
@@ -71,5 +71,4 @@ public interface ImageryComponent
     }
   }
 
-  public String getOid();
 }

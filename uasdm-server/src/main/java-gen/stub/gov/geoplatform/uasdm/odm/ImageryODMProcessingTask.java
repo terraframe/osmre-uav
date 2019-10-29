@@ -17,7 +17,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.model.ImageryIF;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -105,7 +105,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
    */
   public void writeODMtoS3(JSONArray odmOutput)
   {
-    Imagery imagery = this.getImageryInstance();
+    ImageryIF imagery = this.getImageryInstance();
 
     StringBuilder sb = new StringBuilder();
 

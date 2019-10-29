@@ -3,17 +3,21 @@ package gov.geoplatform.uasdm.view;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.runwaysdk.ComponentIF;
+import com.runwaysdk.business.rbac.Operation;
+import com.runwaysdk.session.ReadPermissionException;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.graph.Site;
-import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentFactory;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.ProjectIF;
@@ -30,6 +34,13 @@ public abstract class Converter
 
   protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
   {
+    final SessionIF session = Session.getCurrentSession();
+
+    if (!session.checkTypeAccess(Operation.READ, uasComponent.getMdClass()))
+    {
+      throw new ReadPermissionException("User does not have read access", (ComponentIF) uasComponent, session.getUser());
+    }
+
     SiteItem siteItem = new SiteItem();
 
     siteItem.setId(uasComponent.getOid());
@@ -128,7 +139,7 @@ public abstract class Converter
 
   public static UasComponentIF toExistingUasComponent(SiteItem siteItem)
   {
-    UasComponentIF uasComponent = UasComponent.get(siteItem.getId());
+    UasComponentIF uasComponent = ComponentFactory.getComponent(siteItem.getId());
 
     return factory(uasComponent).convert(siteItem, uasComponent);
   }
@@ -161,7 +172,7 @@ public abstract class Converter
     {
       return new CollectionConverter();
     }
-    else if (uasComponent instanceof Imagery)
+    else if (uasComponent instanceof ImageryIF)
     {
       return new ImageryConverter();
     }
@@ -174,6 +185,13 @@ public abstract class Converter
 
   public static ProductView toView(ProductIF product, List<UasComponentIF> components)
   {
+    final SessionIF session = Session.getCurrentSession();
+
+    if (!session.checkTypeAccess(Operation.READ, product.getMdClass()))
+    {
+      throw new ReadPermissionException("User does not have read access", (ComponentIF) product, session.getUser());
+    }
+
     ProductView view = new ProductView();
 
     populate(view, product, components);
@@ -224,6 +242,13 @@ public abstract class Converter
 
   public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated)
   {
+    final SessionIF session = Session.getCurrentSession();
+
+    if (!session.checkTypeAccess(Operation.READ, product.getMdClass()))
+    {
+      throw new ReadPermissionException("User does not have read access", (ComponentIF) product, session.getUser());
+    }
+
     ProductDetailView view = new ProductDetailView();
 
     populate(view, product, components);

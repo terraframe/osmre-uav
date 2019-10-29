@@ -125,9 +125,9 @@ public class Site extends SiteBase implements SiteIF
   }
 
   @Override
-  public List<UasComponent> getParents()
+  public List<UasComponentIF> getParents()
   {
-    return new LinkedList<UasComponent>();
+    return new LinkedList<UasComponentIF>();
   }
 
   @Override
@@ -160,7 +160,7 @@ public class Site extends SiteBase implements SiteIF
     return ( query.getResults().size() > 0 );
   }
 
-  public static List<Site> getSites(String bounds)
+  public static List<SiteIF> getSites(String bounds)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
@@ -196,7 +196,7 @@ public class Site extends SiteBase implements SiteIF
 //      q.WHERE(new ST_WITHIN(q.getGeoPoint(), geometry));
     }
 
-    final VertexQuery<Site> query = new VertexQuery<Site>(statement.toString(), parameters);
+    final VertexQuery<SiteIF> query = new VertexQuery<SiteIF>(statement.toString(), parameters);
 
     return query.getResults();
   }

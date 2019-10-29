@@ -131,7 +131,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       String name = this.getFolderName();
 
-      if (!isValidName(name))
+      if (!UasComponentIF.isValidName(name))
       {
         MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
         MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
@@ -367,16 +367,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   }
 
-  public static boolean isValidName(String name)
-  {
-    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
-    {
-      return false;
-    }
-
-    return true;
-  }
-
   public List<SiteObject> getSiteObjects(String folder)
   {
     return new LinkedList<SiteObject>();
@@ -498,11 +488,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
 
-    List<UasComponent> parents = getParents();
+    List<UasComponentIF> parents = getParents();
 
     ancestors.addAll(parents);
 
-    for (UasComponent parent : parents)
+    for (UasComponentIF parent : parents)
     {
       ancestors.addAll(parent.getAncestors());
     }
@@ -703,7 +693,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public List<Product> getDerivedProducts()
+  public List<ProductIF> getDerivedProducts()
   {
     String expand = this.buildProductExpandClause();
 
@@ -711,7 +701,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     statement.append("SELECT EXPAND(" + expand + ")");
     statement.append(" FROM :rid");
 
-    final VertexQuery<Product> query = new VertexQuery<Product>(statement.toString());
+    final VertexQuery<ProductIF> query = new VertexQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();
@@ -724,17 +714,17 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     this.addParent((UasComponent) parent, mdEdge);
   }
 
-  public List<UasComponent> getParents()
+  public List<UasComponentIF> getParents()
   {
-    return this.getParents(this.getParentMdEdge(), UasComponent.class);
+    return this.getParents(this.getParentMdEdge(), UasComponentIF.class);
   }
 
-  public List<UasComponent> getChildren()
+  public List<UasComponentIF> getChildren()
   {
-    return this.getChildren(this.getChildMdEdge(), UasComponent.class);
+    return this.getChildren(this.getChildMdEdge(), UasComponentIF.class);
   }
 
-  public UasComponent getChild(String name)
+  public UasComponentIF getChild(String name)
   {
     final MdEdgeDAOIF mdEdge = this.getChildMdEdge();
 

@@ -15,6 +15,7 @@ import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
@@ -40,7 +41,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-    Imagery imagery = task.getImageryInstance();
+    ImageryIF imagery = task.getImageryInstance();
 
     if (DevProperties.uploadRaw())
     {
@@ -61,10 +62,10 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       startODMProcessing(appRes, task, outFileNamePrefix);
     }
   }
-  
+
   private void startODMProcessing(ApplicationResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
   {
-    final Imagery imagery = uploadTask.getImageryInstance();
+    final ImageryIF imagery = uploadTask.getImageryInstance();
 
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
@@ -79,7 +80,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.initiate(appRes);
   }
 
-  private void calculateImageSize(ApplicationResource zip, Imagery imagery)
+  private void calculateImageSize(ApplicationResource zip, ImageryIF imagery)
   {
     try
     {
@@ -100,7 +101,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
             int width = bimg.getWidth();
             int height = bimg.getHeight();
 
-            imagery.appLock();
+//            imagery.appLock();
             imagery.setImageHeight(height);
             imagery.setImageWidth(width);
             imagery.apply();

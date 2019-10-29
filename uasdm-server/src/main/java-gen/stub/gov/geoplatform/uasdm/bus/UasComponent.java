@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,7 +119,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       String name = this.getFolderName();
 
-      if (!isValidName(name))
+      if (!UasComponentIF.isValidName(name))
       {
         MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
         MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
@@ -347,16 +348,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   protected void deleteS3Object(String objectKey)
   {
 
-  }
-
-  public static boolean isValidName(String name)
-  {
-    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
-    {
-      return false;
-    }
-
-    return true;
   }
 
   public static boolean isDuplicateFolderName(String parentId, String oid, String folderName)
@@ -724,6 +715,15 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
   }
 
+  @Override
+  public List<UasComponentIF> getChildren()
+  {
+    try (OIterator<? extends UasComponent> children = this.getAllComponents())
+    {
+      return new LinkedList<UasComponentIF>(children.getAll());
+    }
+  }
+
   public UasComponent getChild(String name)
   {
     QueryFactory factory = new QueryFactory();
@@ -772,5 +772,45 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       return new LinkedList<Product>(iterator.getAll());
     }
+  }
+
+  @Override
+  public List<ProductIF> getDerivedProducts()
+  {
+    List<ProductIF> list = new LinkedList<ProductIF>();
+
+    ProductQuery query = new ProductQuery(new QueryFactory());
+    query.ORDER_BY_ASC(query.getName());
+
+    try (OIterator<? extends Product> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        Product product = iterator.next();
+        UasComponent component = product.getComponent();
+
+        List<UasComponentIF> components = this.getAncestors();
+        Collections.reverse(components);
+
+        components.add(component);
+
+        boolean valid = false;
+
+        for (UasComponentIF com : components)
+        {
+          if (com.getOid().equals(this.getOid()))
+          {
+            valid = true;
+          }
+        }
+
+        if (valid)
+        {
+          list.add(product);
+        }
+      }
+    }
+
+    return list;
   }
 }

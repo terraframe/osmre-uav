@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.model;
 import java.util.List;
 
 import com.amazonaws.services.s3.model.S3Object;
+import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.Actor;
@@ -11,13 +12,21 @@ import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.SiteObject;
 
-public interface UasComponentIF
+public interface UasComponentIF extends ComponentIF
 {
+  public void apply();
+
+  public void delete();
+
+  public void delete(String key);
 
   public String getOid();
 
   public String getName();
+
+  public void setName(String name);
 
   public String getDescription();
 
@@ -47,6 +56,8 @@ public interface UasComponentIF
 
   public String getS3location();
 
+  public List<SiteObject> getSiteObjects(String key);
+
   public List<DocumentIF> getDocuments();
 
   public AbstractWorkflowTask createWorkflowTask(String uuid);
@@ -64,4 +75,23 @@ public interface UasComponentIF
   public DocumentIF createDocumentIfNotExist(String key, String name);
 
   public ProductIF createProductIfNotExist();
+
+  public List<ProductIF> getDerivedProducts();
+
+  public List<UasComponentIF> getChildren();
+
+  public UasComponentIF getChild(String name);
+
+  public UasComponentIF createDefaultChild();
+
+  public static boolean isValidName(String name)
+  {
+    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
+    {
+      return false;
+    }
+
+    return true;
+  }
+
 }

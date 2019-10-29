@@ -197,7 +197,6 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
     super.addChild(product, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
   }
   
-  @SuppressWarnings("unchecked")
   public java.util.List<gov.geoplatform.uasdm.graph.Product> getComponentHasProductChildProducts()
   {
     return super.getChildren("gov.geoplatform.uasdm.graph.ComponentHasProduct",gov.geoplatform.uasdm.graph.Product.class);

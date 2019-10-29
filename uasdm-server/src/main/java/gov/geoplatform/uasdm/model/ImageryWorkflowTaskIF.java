@@ -50,14 +50,14 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
-      return UasComponent.get(parser.getUasComponentOid());
+      return ComponentFactory.getComponent(parser.getUasComponentOid());
     }
     else if (parser.getSelections() != null)
     {
       JSONArray selections = parser.getSelections();
 
       // The root object will always already be created
-      UasComponent component = UasComponent.get(selections.getJSONObject(0).getString("value"));
+      UasComponentIF component = ComponentFactory.getComponent(selections.getJSONObject(0).getString("value"));
 
       for (int i = 1; i < selections.length(); i++)
       {
@@ -68,7 +68,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           String name = selection.getString("label");
 
           // Try to find a component with the same name and parent
-          UasComponent child = component.getChild(name);
+          UasComponentIF child = component.getChild(name);
 
           if (child == null)
           {

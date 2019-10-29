@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.graph;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,37 +7,39 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.GeoprismUser;
 
-public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
+public class Imagery extends ImageryBase implements ImageryIF
 {
-  private static final long serialVersionUID = -134374478;
+  private static final long   serialVersionUID = 1836149418;
 
-  final Logger              log              = LoggerFactory.getLogger(Imagery.class);
+  private static final String PARENT_EDGE      = "gov.geoplatform.uasdm.graph.ProjectHasImagery";
+
+  final Logger                log              = LoggerFactory.getLogger(Imagery.class);
 
   public Imagery()
   {
     super();
   }
 
-  /**
-   * Returns null, as a Imagery cannot have a child.
-   */
   @Override
   public UasComponent createDefaultChild()
   {
-    // TODO throw exception.
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -53,9 +55,21 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
   }
 
   @Override
-  public ComponentHasComponent addComponent(UasComponent uasComponent)
+  protected MdEdgeDAOIF getParentMdEdge()
   {
-    return this.addProject((Project) uasComponent);
+    return MdEdgeDAO.getMdEdgeDAO(PARENT_EDGE);
+  }
+
+  @Override
+  protected MdEdgeDAOIF getChildMdEdge()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  protected String buildProductExpandClause()
+  {
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -220,4 +234,5 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
 
     return task;
   }
+
 }

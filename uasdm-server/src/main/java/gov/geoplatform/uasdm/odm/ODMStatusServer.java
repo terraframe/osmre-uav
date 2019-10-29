@@ -526,7 +526,7 @@ public class ODMStatusServer
       processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
 
       processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
-      
+
       processingConfigs.add(new ODMFolderProcessingConfig("micasense", "micasense", null));
 
       return processingConfigs;
@@ -646,7 +646,7 @@ public class ODMStatusServer
           name = filePrefix + "_" + name;
         }
 
-        if (!child.isDirectory() && UasComponent.isValidName(name) && config.shouldProcessFile(child))
+        if (!child.isDirectory() && UasComponentIF.isValidName(name) && config.shouldProcessFile(child))
         {
           ImageryComponent ic = uploadTask.getImageryComponent();
 
@@ -654,7 +654,7 @@ public class ODMStatusServer
 
           Util.uploadFileToS3(child, key, uploadTask);
 
-          documents.add(Document.createIfNotExist(ic.getUasComponent(), key, name));
+          documents.add(ic.getUasComponent().createDocumentIfNotExist(key, name));
 
           SolrService.updateOrCreateDocument(ic.getAncestors(), (UasComponent) ic, key, name);
         }
@@ -699,7 +699,7 @@ public class ODMStatusServer
         {
           return true;
         }
-        
+
         if (ArrayUtils.contains(mandatoryFiles, file.getName()) && DevProperties.shouldUploadProduct(file.getName()))
         {
           processedFiles.add(file.getName());
@@ -712,12 +712,12 @@ public class ODMStatusServer
       protected List<String> getUnprocessedFiles()
       {
         ArrayList<String> unprocessed = new ArrayList<String>();
-        
+
         if (mandatoryFiles == null)
         {
           return unprocessed;
         }
-        
+
         for (String file : mandatoryFiles)
         {
           if (!processedFiles.contains(file))
