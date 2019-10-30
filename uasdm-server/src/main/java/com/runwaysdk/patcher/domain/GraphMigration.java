@@ -61,6 +61,7 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.Document dest, Document source)
     {
+      dest.getGraphObjectDAO().getAttribute(Document.OID).setValueInternal(source.getOid());
       dest.setName(source.getName());
       dest.setS3location(source.getS3location());
     }
@@ -87,6 +88,7 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.Product dest, Product source)
     {
+      dest.getGraphObjectDAO().getAttribute(Document.OID).setValueInternal(source.getOid());
       dest.setName(source.getName());
       dest.setBoundingBox(source.getBoundingBox());
       dest.setLastUpdateDate(source.getLastUpdateDate());
@@ -129,6 +131,7 @@ public class GraphMigration
   {
     protected void populate(gov.geoplatform.uasdm.graph.UasComponent dest, UasComponent source)
     {
+      dest.getGraphObjectDAO().getAttribute(Document.OID).setValueInternal(source.getOid());
       dest.setDescription(source.getDescription());
       dest.setFolderName(source.getFolderName());
       dest.setGeoPoint(source.getGeoPoint());
