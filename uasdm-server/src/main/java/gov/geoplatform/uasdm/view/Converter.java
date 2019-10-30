@@ -15,7 +15,7 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentFactory;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.MissionIF;
@@ -125,7 +125,7 @@ public abstract class Converter
    */
   public static UasComponentIF toNewUasComponent(UasComponentIF parent, SiteItem siteItem)
   {
-    UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : ComponentFactory.newRoot();
+    UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : ComponentFacade.newRoot();
 
     if (newChild != null)
     {
@@ -139,7 +139,7 @@ public abstract class Converter
 
   public static UasComponentIF toExistingUasComponent(SiteItem siteItem)
   {
-    UasComponentIF uasComponent = ComponentFactory.getComponent(siteItem.getId());
+    UasComponentIF uasComponent = ComponentFacade.getComponent(siteItem.getId());
 
     return factory(uasComponent).convert(siteItem, uasComponent);
   }

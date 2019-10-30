@@ -49,14 +49,14 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
-      return ComponentFactory.getComponent(parser.getUasComponentOid());
+      return ComponentFacade.getComponent(parser.getUasComponentOid());
     }
     else if (parser.getSelections() != null)
     {
       JSONArray selections = parser.getSelections();
 
       // The root object will always already be created
-      UasComponentIF component = ComponentFactory.getComponent(selections.getJSONObject(0).getString("value"));
+      UasComponentIF component = ComponentFacade.getComponent(selections.getJSONObject(0).getString("value"));
 
       for (int i = 1; i < selections.length(); i++)
       {
@@ -91,7 +91,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
         }
         else
         {
-          component = ComponentFactory.getComponent(selection.getString("value"));
+          component = ComponentFacade.getComponent(selection.getString("value"));
         }
       }
 

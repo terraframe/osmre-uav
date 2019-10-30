@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.model.ComponentFactory;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -53,6 +53,6 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public UasComponentIF getComponentInstance()
   {
-    return ComponentFactory.getComponent(this.getComponent());
+    return ComponentFacade.getComponent(this.getComponent());
   }
 }

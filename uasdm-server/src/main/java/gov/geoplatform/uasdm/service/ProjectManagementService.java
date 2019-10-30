@@ -35,7 +35,7 @@ import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentFactory;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -64,7 +64,7 @@ public class ProjectManagementService
   {
     LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
 
-    UasComponentIF uasComponent = ComponentFactory.getComponent(parentid);
+    UasComponentIF uasComponent = ComponentFacade.getComponent(parentid);
 
     final List<UasComponentIF> i = uasComponent.getChildren();
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
@@ -77,7 +77,7 @@ public class ProjectManagementService
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
-    List<SiteIF> sites = ComponentFactory.getSites(bounds);
+    List<SiteIF> sites = ComponentFacade.getSites(bounds);
     sites.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
 
     if (id != null)
@@ -153,7 +153,7 @@ public class ProjectManagementService
   {
     if (parentId != null)
     {
-      UasComponentIF uasComponent = ComponentFactory.getComponent(parentId);
+      UasComponentIF uasComponent = ComponentFacade.getComponent(parentId);
 
       UasComponentIF childUasComponent = uasComponent.createDefaultChild();
 
@@ -168,7 +168,7 @@ public class ProjectManagementService
     }
     else
     {
-      return Converter.toSiteItem(ComponentFactory.newRoot(), true);
+      return Converter.toSiteItem(ComponentFacade.newRoot(), true);
     }
   }
 
@@ -184,7 +184,7 @@ public class ProjectManagementService
   {
     if (parentId != null)
     {
-      UasComponentIF uasComponent = ComponentFactory.getComponent(parentId);
+      UasComponentIF uasComponent = ComponentFacade.getComponent(parentId);
 
       UasComponentIF childUasComponent = uasComponent.createChild(childType);
 
@@ -199,7 +199,7 @@ public class ProjectManagementService
     }
     else
     {
-      return Converter.toSiteItem(ComponentFactory.newRoot(), true);
+      return Converter.toSiteItem(ComponentFacade.newRoot(), true);
     }
   }
 
@@ -213,7 +213,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem applyWithParent(String sessionId, SiteItem siteItem, String parentId)
   {
-    UasComponentIF parent = parentId != null ? ComponentFactory.getComponent(parentId) : null;
+    UasComponentIF parent = parentId != null ? ComponentFacade.getComponent(parentId) : null;
 
     UasComponentIF child = Converter.toNewUasComponent(parent, siteItem);
 
@@ -238,7 +238,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem edit(String sessionId, String id)
   {
-    UasComponentIF uasComponent = ComponentFactory.getComponent(id);
+    UasComponentIF uasComponent = ComponentFacade.getComponent(id);
 
     return Converter.toSiteItem(uasComponent, true);
   }
@@ -246,7 +246,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void runOrtho(String sessionId, String id, String excludes)
   {
-    CollectionIF collection = ComponentFactory.getCollection(id);
+    CollectionIF collection = ComponentFacade.getCollection(id);
 
     /*
      * Predicate for filtering out files from the zip file to send to ODM
@@ -340,7 +340,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem update(String sessionId, SiteItem siteItem)
   {
-    UasComponentIF uasComponent = ComponentFactory.getComponent(siteItem.getId());
+    UasComponentIF uasComponent = ComponentFacade.getComponent(siteItem.getId());
 
 //    uasComponent.lock();
 
@@ -358,7 +358,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String id)
   {
-    UasComponentIF uasComponent = ComponentFactory.getComponent(id);
+    UasComponentIF uasComponent = ComponentFacade.getComponent(id);
 
     uasComponent.delete();
   }
@@ -366,7 +366,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void removeObject(String sessionId, String id, String key)
   {
-    UasComponentIF uasComponent = ComponentFactory.getComponent(id);
+    UasComponentIF uasComponent = ComponentFacade.getComponent(id);
 
     uasComponent.delete(key);
   }
@@ -428,7 +428,7 @@ public class ProjectManagementService
 
   public List<SiteObject> getObjects(String id, String key)
   {
-    UasComponentIF component = ComponentFactory.getComponent(id);
+    UasComponentIF component = ComponentFacade.getComponent(id);
 
     return component.getSiteObjects(key);
   }
@@ -436,7 +436,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public S3Object download(String sessionId, String id, String key)
   {
-    UasComponentIF component = ComponentFactory.getComponent(id);
+    UasComponentIF component = ComponentFacade.getComponent(id);
 
     return component.download(key);
   }
@@ -452,7 +452,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public JSONObject features(String sessionId) throws IOException
   {
-    return ComponentFactory.features();
+    return ComponentFacade.features();
   }
 
   @Request(RequestType.SESSION)
@@ -481,7 +481,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public JSONArray bbox(String sessionId)
   {
-    return ComponentFactory.bbox();
+    return ComponentFacade.bbox();
   }
 
   @Request(RequestType.SESSION)
@@ -497,7 +497,7 @@ public class ProjectManagementService
 
     if (id != null && id.length() > 0)
     {
-      UasComponentIF component = ComponentFactory.getComponent(id);
+      UasComponentIF component = ComponentFacade.getComponent(id);
 
       if (component instanceof CollectionIF)
       {
@@ -512,7 +512,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteItem get(String sessionId, String id)
   {
-    UasComponentIF component = ComponentFactory.getComponent(id);
+    UasComponentIF component = ComponentFacade.getComponent(id);
 
     return Converter.toSiteItem(component, false);
   }

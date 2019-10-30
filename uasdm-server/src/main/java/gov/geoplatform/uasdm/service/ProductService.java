@@ -7,7 +7,7 @@ import java.util.List;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.model.ComponentFactory;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -20,7 +20,7 @@ public class ProductService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    ComponentFactory.getProduct(oid).delete();
+    ComponentFacade.getProduct(oid).delete();
   }
 
   @Request(RequestType.SESSION)
@@ -28,7 +28,7 @@ public class ProductService
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
-    final UasComponentIF parent = ComponentFactory.getComponent(oid);
+    final UasComponentIF parent = ComponentFacade.getComponent(oid);
     final List<ProductIF> products = parent.getDerivedProducts();
 
     for (ProductIF product : products)
@@ -48,7 +48,7 @@ public class ProductService
   @Request(RequestType.SESSION)
   public ProductDetailView getProductDetail(String sessionId, String id)
   {
-    ProductIF product = ComponentFactory.getProduct(id);
+    ProductIF product = ComponentFacade.getProduct(id);
 
     UasComponentIF component = product.getComponent();
 

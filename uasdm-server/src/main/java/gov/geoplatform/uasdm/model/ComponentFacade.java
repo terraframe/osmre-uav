@@ -6,72 +6,72 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ComponentFactory
+public class ComponentFacade
 {
-  private static ComponentStrategy INSTANCE = new GraphStrategy();
+  private static ComponentStrategy STRATEGY = new GraphStrategy();
 
   public static UasComponentIF getComponent(String oid)
   {
-    return INSTANCE.getComponent(oid);
+    return STRATEGY.getComponent(oid);
   }
 
   public static SiteIF getSite(String oid)
   {
-    return INSTANCE.getSite(oid);
+    return STRATEGY.getSite(oid);
   }
 
   public static ProjectIF getProject(String oid)
   {
-    return INSTANCE.getProject(oid);
+    return STRATEGY.getProject(oid);
   }
 
   public static MissionIF getMission(String oid)
   {
-    return INSTANCE.getMission(oid);
+    return STRATEGY.getMission(oid);
   }
 
   public static CollectionIF getCollection(String oid)
   {
-    return INSTANCE.getCollection(oid);
+    return STRATEGY.getCollection(oid);
   }
 
   public static ImageryIF getImagery(String oid)
   {
-    return INSTANCE.getImagery(oid);
+    return STRATEGY.getImagery(oid);
   }
 
   public static ProductIF getProduct(String oid)
   {
-    return INSTANCE.getProduct(oid);
+    return STRATEGY.getProduct(oid);
   }
 
   public static DocumentIF getDocument(String oid)
   {
-    return INSTANCE.getDocument(oid);
+    return STRATEGY.getDocument(oid);
   }
 
   public static List<SiteIF> getSites(String bounds)
   {
-    return INSTANCE.getSites(bounds);
+    return STRATEGY.getSites(bounds);
   }
 
   public static java.util.Collection<CollectionIF> getMissingMetadata()
   {
-    return INSTANCE.getMissingMetadata();
+    return STRATEGY.getMissingMetadata();
   }
 
   public static UasComponentIF newRoot()
   {
-    return INSTANCE.newRoot();
+    return STRATEGY.newRoot();
   }
 
   public static JSONObject features() throws IOException
   {
-    return INSTANCE.features();
+    return STRATEGY.features();
   }
 
   public static JSONArray bbox()
   {
-    return INSTANCE.bbox();
+    return STRATEGY.bbox();
   }
 }

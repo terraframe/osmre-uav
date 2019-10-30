@@ -29,7 +29,7 @@ import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentFactory;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 
@@ -67,7 +67,7 @@ public class MetadataXMLGenerator
   {
     json = new JSONObject(sJson);
 
-    this.collection = ComponentFactory.getCollection(json.getString("collectionId"));
+    this.collection = ComponentFacade.getCollection(json.getString("collectionId"));
   }
 
   public void generate(OutputStream out)
