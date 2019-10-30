@@ -25,10 +25,16 @@ import gov.geoplatform.uasdm.bus.ProjectQuery;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.EdgeType;
 
 public class GraphMigration
 {
   private static Map<String, gov.geoplatform.uasdm.graph.UasComponent> COMPONENTS = new HashMap<>();
+
+  private static Map<String, gov.geoplatform.uasdm.graph.Document>     DOCUMENTS  = new HashMap<>();
+
+  private static Map<String, gov.geoplatform.uasdm.graph.Product>      PRODUCTS   = new HashMap<>();
 
   private abstract static class Converter<T, K>
   {
@@ -65,6 +71,8 @@ public class GraphMigration
       final gov.geoplatform.uasdm.graph.UasComponent component = COMPONENTS.get(source.getComponentOid());
 
       dest.apply(component);
+
+      DOCUMENTS.put(source.getOid(), dest);
     }
 
     @Override
@@ -90,6 +98,24 @@ public class GraphMigration
       final gov.geoplatform.uasdm.graph.UasComponent component = COMPONENTS.get(source.getComponentOid());
 
       dest.apply(component);
+
+      PRODUCTS.put(source.getOid(), dest);
+
+      // Assign the generated documents
+      final List<DocumentIF> generatedFromDocuments = source.getGeneratedFromDocuments();
+
+      for (DocumentIF document : generatedFromDocuments)
+      {
+        DOCUMENTS.get(document.getOid()).addGeneratedProduct(dest);
+      }
+
+      // Assign the documents
+      final List<? extends Document> docs = source.getAllDocuments().getAll();
+
+      for (Document doc : docs)
+      {
+        dest.addChild(DOCUMENTS.get(doc.getOid()), EdgeType.PRODUCT_HAS_DOCUMENT);
+      }
     }
 
     @Override
