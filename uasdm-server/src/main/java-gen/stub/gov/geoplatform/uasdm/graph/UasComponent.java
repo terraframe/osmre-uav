@@ -122,7 +122,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     boolean isNew = this.isNew();
 
-    if (isNew)
+    if (isNew && this.getFolderName() == null)
     {
       this.setFolderName(UUID.randomUUID().toString().replaceAll("-", ""));
     }
@@ -195,7 +195,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     boolean needsUpdate = this.needsUpdate();
     boolean isNew = this.isNew();
 
-    if (isNew)
+    if (isNew && this.getOwnerOid() == null)
     {
       this.setOwner(GeoprismUser.getCurrentUser());
     }

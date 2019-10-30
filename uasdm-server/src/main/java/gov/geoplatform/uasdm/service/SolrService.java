@@ -34,6 +34,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -324,9 +325,9 @@ public class SolrService
             iDocument.setField("id", document.getFieldValue("id"));
             iDocument.setField(UasComponent.DESCRIPTION, partialUpdate(component.getDescription()));
 
-            if (component instanceof Site)
+            if (component instanceof SiteIF)
             {
-              iDocument.setField(Site.BUREAU, partialUpdate( ( (Site) component ).getBureau().getName()));
+              iDocument.setField(Site.BUREAU, partialUpdate( ( (SiteIF) component ).getBureau().getName()));
             }
 
             client.add(iDocument);
@@ -371,9 +372,9 @@ public class SolrService
           iDocument.setField(component.getSolrNameField(), component.getName());
           iDocument.setField(UasComponent.DESCRIPTION, component.getDescription());
 
-          if (component instanceof Site)
+          if (component instanceof SiteIF)
           {
-            iDocument.setField(Site.BUREAU, ( (Site) component ).getBureau().getName());
+            iDocument.setField(Site.BUREAU, ( (SiteIF) component ).getBureau().getName());
           }
 
           for (UasComponentIF ancestor : ancestors)

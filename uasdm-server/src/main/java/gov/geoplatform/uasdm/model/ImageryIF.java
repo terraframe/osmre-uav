@@ -11,4 +11,6 @@ public interface ImageryIF extends ImageryComponent
 
   public void apply();
 
+  public void appLock();
+
 }

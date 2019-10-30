@@ -808,7 +808,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         Product product = iterator.next();
         UasComponent component = product.getComponent();
 
-        List<UasComponentIF> components = this.getAncestors();
+        List<UasComponentIF> components = component.getAncestors();
         Collections.reverse(components);
 
         components.add(component);

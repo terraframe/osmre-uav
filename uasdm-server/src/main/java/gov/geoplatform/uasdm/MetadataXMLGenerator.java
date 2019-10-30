@@ -208,7 +208,7 @@ public class MetadataXMLGenerator
 
       SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
 
-//      this.collection.appLock();
+      this.collection.appLock();
       this.collection.setMetadataUploaded(true);
       this.collection.apply();
     }

@@ -9,7 +9,6 @@ import com.runwaysdk.dataaccess.DataAccessException;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.RequestParser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
@@ -75,12 +74,12 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             child = component.createChild(selection.getString("type"));
             child.setName(name);
 
-            if (child instanceof Collection && selection.has(Collection.PLATFORM))
+            if (child instanceof CollectionIF && selection.has(Collection.PLATFORM))
             {
               child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
             }
 
-            if (child instanceof Collection && selection.has(Collection.SENSOR))
+            if (child instanceof CollectionIF && selection.has(Collection.SENSOR))
             {
               child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
             }
@@ -92,7 +91,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
         }
         else
         {
-          component = UasComponent.get(selection.getString("value"));
+          component = ComponentFactory.getComponent(selection.getString("value"));
         }
       }
 

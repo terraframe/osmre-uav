@@ -26,7 +26,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 {
   private static final long serialVersionUID = 1371809368;
 
-  final Logger             log              = LoggerFactory.getLogger(Collection.class);
+  final Logger              log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -61,9 +61,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return this.addMission((Mission) uasComponent);
   }
 
-  public static java.util.Collection<Collection> getMissingMetadata()
+  public static java.util.Collection<CollectionIF> getMissingMetadata()
   {
-    java.util.Collection<Collection> collectionList = new LinkedHashSet<Collection>();
+    java.util.Collection<CollectionIF> collectionList = new LinkedHashSet<CollectionIF>();
 
     SingleActor singleActor = GeoprismUser.getCurrentUser();
 

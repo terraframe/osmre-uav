@@ -61,14 +61,16 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
 //    handleMetadataWorkflow(task);
   }
-  
+
   public boolean isMultispectral(UasComponentIF uasc)
   {
     if (uasc instanceof CollectionIF)
     {
-      return ((CollectionIF) uasc).getSensor().isMultiSpectral();
+      final Sensor sensor = ( (CollectionIF) uasc ).getSensor();
+
+      return sensor.isMultiSpectral();
     }
-    
+
     return false;
   }
 

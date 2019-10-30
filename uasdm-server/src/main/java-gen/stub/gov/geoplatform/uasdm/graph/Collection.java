@@ -45,6 +45,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
+  
+  @Override
+  public void appLock()
+  {
+    // Balk
+  }
 
   @Override
   public UasComponent createDefaultChild()

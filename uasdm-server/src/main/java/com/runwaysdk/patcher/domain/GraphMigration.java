@@ -1,9 +1,15 @@
 package com.runwaysdk.patcher.domain;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.CollectionQuery;
 import gov.geoplatform.uasdm.bus.Document;
@@ -22,6 +28,8 @@ import gov.geoplatform.uasdm.bus.UasComponent;
 
 public class GraphMigration
 {
+  private static Map<String, gov.geoplatform.uasdm.graph.UasComponent> COMPONENTS = new HashMap<>();
+
   private abstract static class Converter<T, K>
   {
     public K convert(T source)
@@ -47,7 +55,6 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.Document dest, Document source)
     {
-      dest.setValue(Document.OID, source.getOid());
       dest.setName(source.getName());
       dest.setS3location(source.getS3location());
     }
@@ -55,7 +62,9 @@ public class GraphMigration
     @Override
     protected void persist(gov.geoplatform.uasdm.graph.Document dest, Document source)
     {
-      dest.apply(source.getComponent());
+      final gov.geoplatform.uasdm.graph.UasComponent component = COMPONENTS.get(source.getComponentOid());
+
+      dest.apply(component);
     }
 
     @Override
@@ -70,7 +79,6 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.Product dest, Product source)
     {
-      dest.setValue(Product.OID, source.getOid());
       dest.setName(source.getName());
       dest.setBoundingBox(source.getBoundingBox());
       dest.setLastUpdateDate(source.getLastUpdateDate());
@@ -79,7 +87,9 @@ public class GraphMigration
     @Override
     protected void persist(gov.geoplatform.uasdm.graph.Product dest, Product source)
     {
-      dest.apply(source.getComponent());
+      final gov.geoplatform.uasdm.graph.UasComponent component = COMPONENTS.get(source.getComponentOid());
+
+      dest.apply(component);
     }
 
     @Override
@@ -93,7 +103,6 @@ public class GraphMigration
   {
     protected void populate(gov.geoplatform.uasdm.graph.UasComponent dest, UasComponent source)
     {
-      dest.setValue(UasComponent.OID, source.getOid());
       dest.setDescription(source.getDescription());
       dest.setFolderName(source.getFolderName());
       dest.setGeoPoint(source.getGeoPoint());
@@ -105,7 +114,13 @@ public class GraphMigration
     @Override
     protected void persist(gov.geoplatform.uasdm.graph.UasComponent dest, UasComponent source)
     {
-      dest.applyWithParent(source.getParent());
+      final UasComponent p = source.getParent();
+
+      final gov.geoplatform.uasdm.graph.UasComponent parent = p != null ? COMPONENTS.get(p.getOid()) : null;
+
+      dest.applyWithParent(parent);
+
+      COMPONENTS.put(source.getOid(), dest);
     }
 
     protected abstract gov.geoplatform.uasdm.graph.UasComponent newInstance();
@@ -152,12 +167,21 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.UasComponent dest, UasComponent source)
     {
-      dest.setValue(Collection.IMAGEHEIGHT, source.getValue(Collection.IMAGEHEIGHT));
-      dest.setValue(Collection.IMAGEWIDTH, source.getValue(Collection.IMAGEWIDTH));
-      dest.setValue(Collection.METADATAUPLOADED, source.getValue(Collection.METADATAUPLOADED));
+      Collection cSource = (Collection) source;
+      gov.geoplatform.uasdm.graph.Collection cDest = (gov.geoplatform.uasdm.graph.Collection) dest;
+
+      dest.setValue(Collection.IMAGEHEIGHT, cSource.getImageHeight());
+      dest.setValue(Collection.IMAGEWIDTH, cSource.getImageWidth());
+      dest.setValue(Collection.METADATAUPLOADED, cSource.getMetadataUploaded());
       dest.setValue(Collection.PLATFORM, source.getValue(Collection.PLATFORM));
-      dest.setValue(Collection.PRIVILEGETYPE, source.getValue(Collection.PRIVILEGETYPE));
       dest.setValue(Collection.SENSOR, source.getValue(Collection.SENSOR));
+
+      final List<AllPrivilegeType> privilegeTypes = cSource.getPrivilegeType();
+
+      for (AllPrivilegeType privilegeType : privilegeTypes)
+      {
+        cDest.addPrivilegeType(privilegeType);
+      }
 
       super.populate(dest, source);
     }
@@ -174,8 +198,10 @@ public class GraphMigration
     @Override
     protected void populate(gov.geoplatform.uasdm.graph.UasComponent dest, UasComponent source)
     {
-      dest.setValue(Imagery.IMAGEHEIGHT, source.getValue(Imagery.IMAGEHEIGHT));
-      dest.setValue(Imagery.IMAGEWIDTH, source.getValue(Imagery.IMAGEWIDTH));
+      Imagery cSource = (Imagery) source;
+
+      dest.setValue(Collection.IMAGEHEIGHT, cSource.getImageHeight());
+      dest.setValue(Collection.IMAGEWIDTH, cSource.getImageWidth());
 
       super.populate(dest, source);
     }
@@ -221,8 +247,14 @@ public class GraphMigration
     migrate();
   }
 
-  @Transaction
+  @Request
   public static void migrate()
+  {
+    migrate_Transaction();
+  }
+
+  @Transaction
+  public static void migrate_Transaction()
   {
     migrateSites();
     migrateProjects();

@@ -125,7 +125,7 @@ public abstract class Converter
    */
   public static UasComponentIF toNewUasComponent(UasComponentIF parent, SiteItem siteItem)
   {
-    UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : new Site();
+    UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : ComponentFactory.newRoot();
 
     if (newChild != null)
     {

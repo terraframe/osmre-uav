@@ -22,9 +22,6 @@ import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
-import gov.geoplatform.uasdm.graph.Document;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -649,14 +646,15 @@ public class ODMStatusServer
         if (!child.isDirectory() && UasComponentIF.isValidName(name) && config.shouldProcessFile(child))
         {
           ImageryComponent ic = uploadTask.getImageryComponent();
+          final UasComponentIF component = ic.getUasComponent();
 
           String key = ic.getS3location() + s3FolderPrefix + "/" + name;
 
           Util.uploadFileToS3(child, key, uploadTask);
 
-          documents.add(ic.getUasComponent().createDocumentIfNotExist(key, name));
+          documents.add(component.createDocumentIfNotExist(key, name));
 
-          SolrService.updateOrCreateDocument(ic.getAncestors(), (UasComponent) ic, key, name);
+          SolrService.updateOrCreateDocument(ic.getAncestors(), component, key, name);
         }
         else if (child.isDirectory())
         {

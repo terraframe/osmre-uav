@@ -101,7 +101,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
             int width = bimg.getWidth();
             int height = bimg.getHeight();
 
-//            imagery.appLock();
+            imagery.appLock();
             imagery.setImageHeight(height);
             imagery.setImageWidth(width);
             imagery.apply();

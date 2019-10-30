@@ -37,6 +37,12 @@ public class Imagery extends ImageryBase implements ImageryIF
   }
 
   @Override
+  public void appLock()
+  {
+    // Balk
+  }
+
+  @Override
   public UasComponent createDefaultChild()
   {
     throw new UnsupportedOperationException();

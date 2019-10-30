@@ -34,8 +34,6 @@ import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Site;
-import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFactory;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -170,7 +168,7 @@ public class ProjectManagementService
     }
     else
     {
-      return Converter.toSiteItem(new Site(), true);
+      return Converter.toSiteItem(ComponentFactory.newRoot(), true);
     }
   }
 
@@ -201,7 +199,7 @@ public class ProjectManagementService
     }
     else
     {
-      return Converter.toSiteItem(new Site(), true);
+      return Converter.toSiteItem(ComponentFactory.newRoot(), true);
     }
   }
 
@@ -248,7 +246,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void runOrtho(String sessionId, String id, String excludes)
   {
-    Collection collection = (Collection) ComponentFactory.getComponent(id);
+    CollectionIF collection = ComponentFactory.getCollection(id);
 
     /*
      * Predicate for filtering out files from the zip file to send to ODM
@@ -454,7 +452,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public JSONObject features(String sessionId) throws IOException
   {
-    return UasComponent.features();
+    return ComponentFactory.features();
   }
 
   @Request(RequestType.SESSION)
@@ -483,7 +481,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public JSONArray bbox(String sessionId)
   {
-    return UasComponent.bbox();
+    return ComponentFactory.bbox();
   }
 
   @Request(RequestType.SESSION)

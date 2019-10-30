@@ -24,4 +24,6 @@ public interface CollectionIF extends UasComponentIF
   public Sensor getSensor();
 
   public JSONObject toMetadataMessage();
+
+  public void appLock();
 }

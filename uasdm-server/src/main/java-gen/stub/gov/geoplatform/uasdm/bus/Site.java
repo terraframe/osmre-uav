@@ -132,7 +132,7 @@ public class Site extends SiteBase implements SiteIF
     return new LinkedList<AbstractWorkflowTask>();
   }
 
-  public static List<Site> getSites(String bounds)
+  public static List<SiteIF> getSites(String bounds)
   {
     QueryFactory qf = new QueryFactory();
     SiteQuery q = new SiteQuery(qf);
@@ -161,7 +161,7 @@ public class Site extends SiteBase implements SiteIF
 
     try (OIterator<? extends Site> i = q.getIterator())
     {
-      return new LinkedList<Site>(i.getAll());
+      return new LinkedList<SiteIF>(i.getAll());
     }
   }
 
