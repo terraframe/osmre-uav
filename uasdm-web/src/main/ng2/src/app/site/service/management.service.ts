@@ -32,6 +32,15 @@ export class ManagementService {
             .toPromise()
     }
 
+    view( id: string ): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
+
+        return this.http
+            .get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>( acp + '/project/view', { params: params } )
+            .toPromise()
+    }
+
     getItems( id: string, key: string ): Promise<SiteEntity[]> {
         let params: HttpParams = new HttpParams();
         params = params.set( 'id', id );

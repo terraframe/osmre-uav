@@ -19,10 +19,10 @@ import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 import { MetadataService } from '../service/metadata.service';
 
-import { 
+import {
     fadeInOnEnterAnimation,
     fadeOutOnLeaveAnimation
- } from 'angular-animations';
+} from 'angular-animations';
 
 
 declare var acp: any;
@@ -39,7 +39,7 @@ declare var gpAppType: any;
 } )
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild('staticTabs') staticTabs: TabsetComponent;
+    @ViewChild( 'staticTabs' ) staticTabs: TabsetComponent;
 
     // imageToShow: any;
     userName: string = "";
@@ -210,24 +210,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             mousemovePanel.textContent = text;
 
 
-            let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
-            
-            if(features.length > 0){
-                let focusFeatureId = features[0].properties.oid; // just the first
-                this.map.setFilter('hover-points', [ 'all',
-                    [ '==', 'oid', focusFeatureId ]
-                ])
+            let features = this.map.queryRenderedFeatures( e.point, { layers: ['points'] } );
 
-                this.highlightListItem(focusFeatureId)
+            if ( features.length > 0 ) {
+                let focusFeatureId = features[0].properties.oid; // just the first
+                this.map.setFilter( 'hover-points', ['all',
+                    ['==', 'oid', focusFeatureId]
+                ] )
+
+                this.highlightListItem( focusFeatureId )
             }
             else {
-                this.map.setFilter('hover-points', [ 'all',
-                    [ '==', 'oid', "NONE" ]
-                ])
+                this.map.setFilter( 'hover-points', ['all',
+                    ['==', 'oid', "NONE"]
+                ] )
 
                 this.clearHighlightListItem();
             }
- 
+
         } );
 
         this.map.on( 'zoomend', ( e ) => {
@@ -281,8 +281,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 "circle-stroke-width": 2,
                 "circle-stroke-color": '#FFFFFF'
             },
-            filter: [ 'all',
-                [ '==', 'id', 'NONE' ] // start with a filter that doesn't select anything
+            filter: ['all',
+                ['==', 'id', 'NONE'] // start with a filter that doesn't select anything
             ]
         } );
 
@@ -358,56 +358,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     handleOnUpdateData(): void {
         //        this.tree.treeModel.expandAll();
     }
-
-    //    handleOnMenu( node: any, $event: any ): void {
-    //
-    //        if ( node.data.type === "object" ) {
-    //            this.contextMenuService.show.next( {
-    //                contextMenu: this.objectMenuComponent,
-    //                event: $event,
-    //                item: node,
-    //            } );
-    //            $event.preventDefault();
-    //            $event.stopPropagation();
-    //        }
-    //        else if ( node.data.type !== "folder" ) {
-    //            if ( node.data.type === "Site" ) {
-    //                node.data.childType = "Project"
-    //            }
-    //            else if ( node.data.type === "Project" ) {
-    //                node.data.childType = "Mission"
-    //            }
-    //            else if ( node.data.type === "Mission" ) {
-    //                node.data.childType = "Collection"
-    //            }
-    //            else if ( node.data.type === "Collection" ) {
-    //                node.data.childType = null
-    //            }
-    //            else if ( node.data.type === "Imagery" ) {
-    //                node.data.childType = null
-    //            }
-    //
-    //            if ( node.data.type !== "Site" || this.admin ) {
-    //                this.contextMenuService.show.next( {
-    //                    contextMenu: this.nodeMenuComponent,
-    //                    event: $event,
-    //                    item: node,
-    //                } );
-    //                $event.preventDefault();
-    //                $event.stopPropagation();
-    //            }
-    //
-    //        }
-    //        else {
-    //            this.contextMenuService.show.next( {
-    //                contextMenu: this.folderMenuComponent,
-    //                event: $event,
-    //                item: node
-    //            } );
-    //            $event.preventDefault();
-    //            $event.stopPropagation();
-    //        }
-    //    }
 
 
     handleUploadFile( item: SiteEntity ): void {
@@ -504,7 +454,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 'class': 'edit-modal'
             } );
             this.bsModalRef.content.init( false, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
-            
+
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Update the node
                 entity.children = node.children;
@@ -611,24 +561,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
     }
 
-    highlightMapFeature(id: string): void {
+    highlightMapFeature( id: string ): void {
 
-        this.map.setFilter('hover-points', [ 'all',
-            [ '==', 'oid', id ]
-        ])
-  
+        this.map.setFilter( 'hover-points', ['all',
+            ['==', 'oid', id]
+        ] )
+
     }
 
     clearHighlightMapFeature(): void {
 
-        this.map.setFilter('hover-points', [ 'all',
-            [ '==', 'oid', "NONE"]
-        ])
-  
+        this.map.setFilter( 'hover-points', ['all',
+            ['==', 'oid', "NONE"]
+        ] )
+
     }
 
-    onListEntityHover(event: any, site: SiteEntity): void {
-        this.highlightMapFeature(site.id);
+    onListEntityHover( event: any, site: SiteEntity ): void {
+        this.highlightMapFeature( site.id );
 
     }
 
@@ -637,21 +587,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    highlightListItem(id: string): void {
-        this.nodes.forEach(node => {
-            if(node.id === id){
+    highlightListItem( id: string ): void {
+        this.nodes.forEach( node => {
+            if ( node.id === id ) {
                 this.hoverFeatureId = id;
             }
-        })
+        } )
     }
 
     clearHighlightListItem(): void {
-        if(this.hoverFeatureId){
-            this.nodes.forEach(node => {
-                if(node.id === this.hoverFeatureId){
+        if ( this.hoverFeatureId ) {
+            this.nodes.forEach( node => {
+                if ( node.id === this.hoverFeatureId ) {
                     this.hoverFeatureId = null;
                 }
-            })
+            } )
         }
     }
 
@@ -664,6 +614,32 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 center: result.center,
                 zoom: 9
             } )
+        }
+        else {
+            const index = result.hierarchy.length - 1;
+
+            const selected = result.hierarchy[index];
+
+            this.service.view( selected.id ).then( response => {
+                console.log( response );
+
+                const node = response.item;
+                const breadcrumbs = response.breadcrumbs;
+
+                if ( this.getMetadata( node ).leaf ) {
+                    this.breadcrumbs = breadcrumbs;
+                    this.current = breadcrumbs[breadcrumbs.length - 1];
+                    this.nodes = this.current.children;
+
+                    this.select( node, null, null );
+                }
+                else {
+                    const parent = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
+                    this.breadcrumbs = breadcrumbs;
+
+                    this.select( node, parent, null );
+                }
+            } );
         }
     }
 
@@ -689,14 +665,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.layers.push( mapKey );
 
                 product.orthoMapped = true;
-                
-                if (product.boundingBox != null)
-                {
-                  let bbox = product.boundingBox;
-                  
-                  let bounds = new LngLatBounds( [bbox[0], bbox[2]], [bbox[1], bbox[3]] );
 
-                  this.map.fitBounds( bounds, { padding: 50 } );
+                if ( product.boundingBox != null ) {
+                    let bbox = product.boundingBox;
+
+                    let bounds = new LngLatBounds( [bbox[0], bbox[2]], [bbox[1], bbox[3]] );
+
+                    this.map.fitBounds( bounds, { padding: 50 } );
                 }
             }
         }
@@ -768,18 +743,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             // Do nothing there are no children
             //                return this.service.getItems( node.data.id, node.data.name );
         }
-        // else if ( metadata.expandable ) {
-        //     if ( node.children == null || node.children.length == 0 ) {
-        //         this.service.getItems( node.id, null ).then( nodes => {
-        //             node.children = nodes;
-
-        //             this.expand( node );
-        //         } );
-        //     }
-        //     else {
-        //         this.expand( node );
-        //     }
-        // }
         else {
             this.service.getItems( node.id, null ).then( nodes => {
                 this.current = node;

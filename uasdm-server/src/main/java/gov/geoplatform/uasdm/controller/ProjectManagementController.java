@@ -60,6 +60,14 @@ public class ProjectManagementController
     return new RestBodyResponse(SiteItem.serialize(children));
   }
 
+  @Endpoint(url = "view", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF view(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    JSONObject response = this.service.view(request.getSessionId(), id);
+
+    return new RestBodyResponse(response);
+  }
+
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "bounds") String bounds)
   {

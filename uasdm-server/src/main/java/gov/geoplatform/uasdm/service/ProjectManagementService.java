@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -37,6 +38,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
@@ -70,6 +72,38 @@ public class ProjectManagementService
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
 
     return children;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject view(String sessionId, String id)
+  {
+    LinkedList<TreeComponent> ancestors = new LinkedList<TreeComponent>();
+
+    UasComponentIF uasComponent = ComponentFacade.getComponent(id);
+
+    final List<UasComponentIF> i = uasComponent.getAncestors();
+    i.forEach(c -> ancestors.add(Converter.toSiteItem(c, false)));
+
+    if (uasComponent instanceof CollectionIF || uasComponent instanceof ImageryIF)
+    {
+      final UasComponentIF parent = i.get(0);
+      final TreeComponent item = ancestors.get(0);
+
+      final List<UasComponentIF> children = parent.getChildren();
+
+      for (UasComponentIF child : children)
+      {
+        item.addChild(Converter.toSiteItem(child, false));
+      }
+    }
+
+    Collections.reverse(ancestors);
+
+    JSONObject response = new JSONObject();
+    response.put("breadcrumbs", SiteItem.serialize(ancestors));
+    response.put("item", Converter.toSiteItem(uasComponent, false).toJSON());
+
+    return response;
   }
 
   @Request(RequestType.SESSION)
