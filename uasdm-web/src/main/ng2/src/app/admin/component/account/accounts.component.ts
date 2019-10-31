@@ -26,10 +26,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 import { PageResult } from '../../../shared/model/page';
 
-import { User } from '../../model/account';
+import { User, Account } from '../../model/account';
 import { AccountService } from '../../service/account.service';
-
-declare let acp: string;
+import { AccountComponent } from './account.component';
 
 @Component( {
     selector: 'accounts',
@@ -82,11 +81,35 @@ export class AccountsComponent implements OnInit {
     }
 
     edit( user: User ): void {
-        this.router.navigate( ['/admin/account', user.oid] );
+        this.service.edit( user.oid ).then( account => {
+            this.bsModalRef = this.modalService.show( AccountComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'upload-modal'
+            } );
+            this.bsModalRef.content.init( account );
+
+            this.bsModalRef.content.onAccountChange.subscribe( entity => {
+                this.onPageChange( this.p );
+            } );
+        } );
     }
 
     newInstance( pageNumber: number ): void {
-        this.router.navigate( ['/admin/account', 'NEW'] );
+        this.service.newInvite().then( account => {
+            this.bsModalRef = this.modalService.show( AccountComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+                'class': 'upload-modal'
+            } );
+            this.bsModalRef.content.init( account );
+
+            this.bsModalRef.content.onAccountChange.subscribe( entity => {
+                this.onPageChange( this.p );
+            } );
+        } );
     }
 
     onPageChange( pageNumber: number ): void {

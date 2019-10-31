@@ -1,11 +1,24 @@
-<div>
-  <uasdm-header></uasdm-header>
+<div *ngIf="account != null" class="modal-body">
+  <div *ngIf="message != null" class="error-container">
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
+      </div>
+    </div>
+  </div>
   
-  <form #form="ngForm" style="height:calc(100vh - 144px);padding-bottom: 20px;" class="modal-form" (ngSubmit)="form.valid && onSubmit()">    
-    <div class="modal-dialog" style="height: 100%;">
-      <div class="modal-content" style="height: 100%;overflow-y: auto;">
+  <div *ngIf="newInstance" class="modal-title-container">
+      <h3 >Account</h3>
+  </div>
+  
+  <form #form="ngForm" style="height:calc(100vh - 144px);padding-bottom: 20px;" (ngSubmit)="form.valid && onSubmit()">    
+<!--     <div class="modal-dialog" style="height: 100%;"> -->
+<!--       <div class="modal-content" style="height: 100%;overflow-y: auto;"> -->
         <fieldset>            
-          <div class="heading">
+          <div >
             <h3><localize key="account.user.heading"></localize></h3>
           </div>      
           <hr>        
@@ -68,7 +81,7 @@
               </span>
             </div>
           </div>          
-          <div class="heading">
+          <div >
             <h3><localize key="account.info.heading"></localize></h3>
           </div>      
           <hr>          
@@ -83,12 +96,12 @@
             </div>
           </div>
           <div *ngIf="!account.user.newInstance" class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.changePassword"></localize></label>
-            </div>          
             <div class="holder" >
               <boolean-field [(value)]="account.changePassword"></boolean-field>
             </div>
+            <div class="label-holder">
+              <label><localize key="account.changePassword"></localize></label>
+            </div>          
           </div>                        
           <div *ngIf="account.changePassword || account.user.newInstance">
             <div class="row-holder">
@@ -120,28 +133,31 @@
           </div>
           <div *ngIf="!(!account.user.newInstance && account.user.username === 'admin')">
             <div class="row-holder">
-              <div class="label-holder">
-                <label><localize key="account.inactive"></localize></label>
-              </div>
               <div class="holder">
                 <boolean-field [(value)]="account.user.inactive"></boolean-field>
+              </div>
+              <div class="label-holder">
+                <label><localize key="account.inactive"></localize></label>
               </div>
             </div>
           </div>
           <div *ngFor="let group of account.groups">
-            <div class="heading">
+            <div >
               <h3><localize [key]="'com.runwaysdk.ui.userstable.UsersTable.' + group.name"></localize></h3>
             </div>                          
             <hr>
             <div *ngFor="let role of group.roles" class="row-holder">
-              <div class="label-holder">
-                <label>{{role.displayLabel}}</label>
-              </div>          
               <div class="holder" >
                 <boolean-field [(value)]="role.assigned"></boolean-field>
               </div>
+              <div class="label-holder">
+                <label>{{role.displayLabel}}</label>
+              </div>          
             </div>              
           </div>
+        </fieldset>
+            <hr>
+        
           <div class="row-holder">
             <div class="label-holder">
             </div>                    
@@ -152,8 +168,8 @@
               </div>
             </div>
           </div>
-        </fieldset>
-      </div>
-    </div>
+        
+<!--       </div> -->
+<!--     </div> -->
   </form>
 </div>

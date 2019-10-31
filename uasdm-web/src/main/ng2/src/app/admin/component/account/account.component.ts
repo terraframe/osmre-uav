@@ -20,38 +20,15 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Location } from '@angular/common';
-
+import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import 'rxjs/add/operator/switchMap';
 
-import { Account } from '../../model/account';
+import { Account, User } from '../../model/account';
 
 import { EventService } from '../../../shared/service/event.service';
 import { AccountService } from '../../service/account.service';
-
-
-export class AccountResolver implements Resolve<Account> {
-    constructor( @Inject( AccountService ) private accountService: AccountService, @Inject( EventService ) private eventService: EventService ) { }
-
-    resolve( route: ActivatedRouteSnapshot, state: RouterStateSnapshot ): Promise<Account> {
-        let oid = route.params['oid'];
-
-        if ( oid === 'NEW' ) {
-            return this.accountService.newInvite().catch(( error: any ) => {
-                //        this.eventService.onError(error); 
-
-                return Promise.reject( error );
-            } );
-        }
-        else {
-            return this.accountService.edit( oid ).catch(( error: any ) => {
-                //        this.eventService.onError(error); 
-
-                return Promise.reject( error );
-            } );
-        }
-    }
-}
 
 @Component( {
     selector: 'account',
@@ -61,23 +38,28 @@ export class AccountResolver implements Resolve<Account> {
 export class AccountComponent implements OnInit {
     account: Account;
 
-    constructor(
-        private service: AccountService,
-        private route: ActivatedRoute,
-        private location: Location ) {
-    }
+    /*
+     * Observable subject for Account changes.  Called when create is successful 
+     */
+    public onAccountChange: Subject<User>;
+
+    constructor( private service: AccountService, public bsModalRef: BsModalRef ) { }
 
     ngOnInit(): void {
-        this.account = this.route.snapshot.data['account'];
+        this.onAccountChange = new Subject();
+    }
+
+    init( account: Account ): void {
+        this.account = account;
     }
 
     cancel(): void {
         if ( this.account.user.newInstance === true ) {
-            this.location.back();
+            this.bsModalRef.hide();
         }
         else {
             this.service.unlock( this.account.user.oid ).then( response => {
-                this.location.back();
+                this.bsModalRef.hide();
             } );
         }
     }
@@ -102,7 +84,8 @@ export class AccountComponent implements OnInit {
         }
 
         this.service.apply( this.account.user, roleIds ).then( response => {
-            this.location.back();
+            this.onAccountChange.next(response);
+            this.bsModalRef.hide();
         } );
     }  
 }
