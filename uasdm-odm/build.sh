@@ -15,9 +15,9 @@ cp -f ./src/nodeodm/libs/Task.js NodeODM/libs/Task.js
 
 # Build ODM
 cd ./ODM
-docker build -t uasdm-odm .
+sudo docker build -t uasdm-odm .
 
 cd ../NodeODM
-docker build -t uasdm-nodeodm .
+sudo docker build -t uasdm-nodeodm .
 
 cd ../
