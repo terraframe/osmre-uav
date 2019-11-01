@@ -39,7 +39,7 @@ import { AdminHeaderComponent } from './component/admin-header/admin-header.comp
 import { AccountsComponent } from './component/account/accounts.component';
 import { AccountInviteComponent } from './component/account/account-invite.component';
 import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
-import { AccountComponent, AccountResolver } from './component/account/account.component';
+import { AccountComponent } from './component/account/account.component';
 import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';

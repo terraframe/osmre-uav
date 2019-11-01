@@ -8,7 +8,7 @@ import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
 import { AccountsComponent } from './component/account/accounts.component';
 import { AccountInviteComponent } from './component/account/account-invite.component';
 import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
-import { AccountComponent, AccountResolver } from './component/account/account.component';
+import { AccountComponent } from './component/account/account.component';
 import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
@@ -44,9 +44,6 @@ const routes: Routes = [
     {
         path: 'account/:oid',
         component: AccountComponent,
-        resolve: {
-            account: AccountResolver
-        },
         canActivate: [AdminGuardService],
         data: { title: 'account.title' }
     },
@@ -71,8 +68,7 @@ const routes: Routes = [
     imports: [RouterModule.forChild( routes )],
     exports: [RouterModule],
     providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy },
-        AccountResolver
+        { provide: LocationStrategy, useClass: HashLocationStrategy }
     ]
 } )
 export class AdminRoutingModule { }
