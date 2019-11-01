@@ -16,8 +16,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
@@ -44,8 +42,6 @@ public class Product extends ProductBase
   private String imageKey = null;
   
   private String mapKey = null;
-  
-  private String thumbKey = null;
   
   public Product()
   {
@@ -311,29 +307,11 @@ public class Product extends ProductBase
     }
   }
   
-  /**
-   * Returns the S3 location of the products thumbnail. Must call "calculateKeys" first
-   * before calling this method. 
-   */
-  public String getThumbKey()
-  {
-    return this.thumbKey;
-  }
-  
-  /**
-   * Returns the S3 location of the product image. Must call "calculateKeys" first
-   * before calling this method.
-   */
   public String getImageKey()
   {
     return this.imageKey;
   }
   
-  /**
-   * Returns the GeoServer store name of the OrtohoPhoto for the product. If the ortoho does not exist,
-   * or it is not yet deployed to GeoServer this method returns null. Must call "calculateKeys" first
-   * before calling this method.
-   */
   public String getMapKey()
   {
     return this.mapKey;
@@ -348,30 +326,19 @@ public class Product extends ProductBase
       documents.addAll(it.getAll());
     }
     
-    final String[] validExts = new String[] {"jpeg", "jpg", "png", "gif", "bmp", "fits", "gray", "graya", "jng", "mono", "ico", "jbig", "tga", "tiff", "tif"};
-    
     for (Document document : documents)
     {
-      String name = document.getName().toLowerCase();
-      String ext = FilenameUtils.getExtension(name);
-      String base = FilenameUtils.getBaseName(name);
-      
       if (document.getName().endsWith(".png"))
       {
         this.imageKey = document.getS3location();
       }
-      else if (base.equals("odm_orthophoto")
-                && ArrayUtils.contains(validExts, ext))
+      else if (document.getName().endsWith(".tif"))
       {
         String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
 
         if (GeoserverFacade.layerExists(storeName))
         {
           this.mapKey = storeName;
-        }
-        if (this.imageKey == null)
-        {
-          this.imageKey = document.getS3location();
         }
       }
     }
