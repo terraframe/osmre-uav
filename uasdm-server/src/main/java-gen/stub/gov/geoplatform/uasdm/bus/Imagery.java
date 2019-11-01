@@ -1,10 +1,5 @@
 package gov.geoplatform.uasdm.bus;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -37,6 +30,12 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Imagery extends ImageryBase implements ImageryComponent
 {
@@ -352,7 +351,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
   }
 
   @Override
-  public List<SiteObject> getSiteObjects(String folder)
+  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -385,18 +384,25 @@ public class Imagery extends ImageryBase implements ImageryComponent
     }
     else
     {
-      this.getSiteObjects(folder, objects);
+      return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return objects;
+    return new SiteObjectsResultSet(objects.size(), pageNumber, pageSize, objects, folder);
   }
 
   @Override
-  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
   {
-    super.getSiteObjects(folder, objects);
-
+    if (!folder.equals(RAW) && (pageNumber != null || pageSize != null) )
+    {
+      throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
+    }
+    
+    SiteObjectsResultSet rs = super.getSiteObjects(folder, objects, pageNumber, pageSize);
+    
     Imagery.getSiteObjects(folder, objects, this);
+    
+    return rs;
   }
 
   protected static void getSiteObjects(String folder, List<SiteObject> objects, ImageryComponent imageryComponent)
@@ -453,7 +459,7 @@ public class Imagery extends ImageryBase implements ImageryComponent
   {
     try
     {
-      List<SiteObject> objects = imageryComponent.getSiteObjects(ORTHO);
+      List<SiteObject> objects = imageryComponent.getSiteObjects(ORTHO, null, null).getObjects();
 
       Imagery.getSiteObjects(ORTHO, objects, imageryComponent);
 

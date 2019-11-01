@@ -6,7 +6,7 @@ import { Subject } from 'rxjs/Subject';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
-import { SiteEntity, AttributeType, Condition } from '../../model/management';
+import { SiteEntity, AttributeType, Condition, SiteObjectsResultSet } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
@@ -50,7 +50,6 @@ export class LeafModalComponent implements OnInit {
     previous = [] as SiteEntity[];
     folders: SiteEntity[] = [];
     thumbnails: any = {};
-    items: any[] = [];
     processRunning: boolean = false;
     message: string;
     statusMessage: string;
@@ -58,6 +57,14 @@ export class LeafModalComponent implements OnInit {
     excludes: string[] = [];
     enableSelectableImages: boolean = false;
     folder: SiteEntity;
+    
+    constPageSize: number = 50; 
+    page: SiteObjectsResultSet = {
+        count: 0,
+        pageNumber: 1,
+        pageSize: this.constPageSize,
+        results: []
+    };
 
     /*
      * Reference to the modal current showing
@@ -111,7 +118,8 @@ export class LeafModalComponent implements OnInit {
 
         let rootPath: string = image.key.substr( 0, image.key.lastIndexOf( "/" ) );
         let fileName: string = /[^/]*$/.exec( image.key )[0];
-        let thumbKey: string = rootPath + "/thumbnails/" + fileName;
+        const lastPeriod: number = fileName.lastIndexOf(".");
+        const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
         this.service.download( image.component, thumbKey, false ).subscribe( blob => {
             this.createImageFromBlob( blob, image );
@@ -119,10 +127,13 @@ export class LeafModalComponent implements OnInit {
             console.log( error );
         } );
     }
+    
+    onPageChange( pageNumber: number ): void {
+    	this.getData(this.folder.component, this.folder.name, pageNumber, this.page.pageSize);
+    }
 
     onSelect( folder: SiteEntity ): void {
-        // clear any existing items
-        this.items = [];
+        this.page.results = [];
 
         if(folder.name === "raw"){
             this.enableSelectableImages = true;
@@ -130,25 +141,47 @@ export class LeafModalComponent implements OnInit {
             this.enableSelectableImages = false;
         }
 
-        this.service.getItems( folder.component, folder.name ).then( items => {
-            //this.images = [items[0]]; // not yet handling different types of files
+		let pn: number = null;
+		let ps: number = null;
+		
+		if (folder.name === "raw")
+		{
+			if (this.page.pageNumber == null)
+			{
+				pn = 1;
+			}
+			else
+			{
+				pn = this.page.pageNumber;
+			}
+			ps = this.constPageSize;
+		}
+		
+		this.excludes = []; // clear excludes if toggling between tabs
 
-            // this.images = items;
+		this.folder = folder;
 
-            this.items = items;
+		this.getData(folder.component, folder.name, pn, ps);
+    }
+    
+    getData(component: string, folder: string, pageNumber: number, pageSize: number)
+    {
+    	this.service.getObjects( component, folder, pageNumber, pageSize ).then( resultSet => {
+            this.page = resultSet;
 
-            this.excludes = []; // clear excludes if toggling between tabs
-
-            for ( let i = 0; i < items.length; ++i ) {
-                let item = items[i];
+            for ( let i = 0; i < this.page.results.length; ++i ) {
+                let item = this.page.results[i];
 
                 if ( this.isImage( item ) ) {
                     this.getThumbnail( item );
+                    
+                    if (this.excludes.indexOf(item.name) != -1)
+                    {
+                    	item.excludeFromProcess = true;
+                    }
                 }
 
             }
-            
-            this.folder = folder;
         } );
     }
 

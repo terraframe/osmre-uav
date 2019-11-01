@@ -26,7 +26,8 @@ exports.handler = function(event, context, callback) {
     if (srcKey.indexOf("/") != -1)
     {
 	  var lastIndex = srcKey.lastIndexOf("/");
-	  dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex);
+	  var lastPeriod = srcKey.lastIndexOf(".");
+	  dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex, lastPeriod) + ".png";
     }
     else
     {
@@ -75,7 +76,7 @@ exports.handler = function(event, context, callback) {
 
                 // Transform the image buffer in memory.
                 this.resize(width, height)
-                    .toBuffer(imageType, function(err, buffer) {
+                    .toBuffer('PNG', function(err, buffer) {
                         if (err) {
                             next(err);
                         } else {
@@ -90,7 +91,7 @@ exports.handler = function(event, context, callback) {
                     Bucket: dstBucket,
                     Key: dstKey,
                     Body: data,
-                    ContentType: contentType
+                    ContentType: "image/png"
                 },
                 next);
         }

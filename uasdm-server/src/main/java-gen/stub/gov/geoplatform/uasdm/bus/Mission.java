@@ -93,7 +93,7 @@ public class Mission extends MissionBase
   }
 
   @Override
-  public List<SiteObject> getSiteObjects(String folder)
+  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -110,10 +110,10 @@ public class Mission extends MissionBase
     }
     else
     {
-      this.getSiteObjects(folder, objects);
+      return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return objects;
+    return new SiteObjectsResultSet(objects.size(), pageNumber, pageSize, objects, folder);
   }
 
   @Override

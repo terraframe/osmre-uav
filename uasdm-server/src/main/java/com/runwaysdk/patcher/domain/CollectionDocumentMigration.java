@@ -51,7 +51,7 @@ public class CollectionDocumentMigration implements Runnable
 
           for (String folder : folders)
           {
-            List<SiteObject> objects = col.getSiteObjects(folder);
+            List<SiteObject> objects = col.getSiteObjects(folder, null, null).getObjects();
 
             for (SiteObject object : objects)
             {

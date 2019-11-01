@@ -14,6 +14,14 @@ export class AttributeType {
     condition: Condition;
 }
 
+export class SiteObjectsResultSet {
+	count: number;
+	pageNumber: number;
+	pageSize: number;
+	results: SiteEntity[];
+	folder: string;
+}
+
 export class SiteEntity {
     id: string;
     name: string;

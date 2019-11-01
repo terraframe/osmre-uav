@@ -42,7 +42,7 @@ public interface ImageryComponent
 
   public String getStoreName(String key);
 
-  public List<SiteObject> getSiteObjects(String folder);
+  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize);
 
   public void createImageServices();
 

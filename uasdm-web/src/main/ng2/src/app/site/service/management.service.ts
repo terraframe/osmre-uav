@@ -11,7 +11,7 @@ import { AuthService } from '../../shared/service/auth.service';
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, Product } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, Product, SiteObjectsResultSet } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 
@@ -29,6 +29,25 @@ export class ManagementService {
 
         return this.http
             .get<SiteEntity[]>( acp + '/project/get-children', { params: params } )
+            .toPromise()
+    }
+    
+    getObjects( id: string, key: string, pageNumber: number, pageSize: number ): Promise<SiteObjectsResultSet> {
+        let params: HttpParams = new HttpParams();
+        params = params.set( 'id', id );
+
+        if ( key != null ) {
+          params = params.set( 'key', key );
+        }
+        if ( pageNumber != null ) {
+          params = params.set( 'pageNumber', pageNumber.toString() );
+        }
+        if ( pageSize != null ) {
+          params = params.set( 'pageSize', pageSize.toString() );
+        }
+
+        return this.http
+            .get<SiteObjectsResultSet>( acp + '/project/objects', { params: params } )
             .toPromise()
     }
 

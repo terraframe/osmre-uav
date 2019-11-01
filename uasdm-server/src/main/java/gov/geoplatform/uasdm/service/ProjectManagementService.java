@@ -42,6 +42,7 @@ import gov.geoplatform.uasdm.bus.ImageryComponent;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.Site;
+import gov.geoplatform.uasdm.bus.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.bus.SiteQuery;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
@@ -120,6 +121,8 @@ public class ProjectManagementService
       i.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
     }
 
+    // TODO : This code is never run. The front-end always specifys a null id.
+    //        And why would we want to fetch all imagery ? That could be really expensive.
     if (id != null)
     {
       UasComponent component = UasComponent.get(id);
@@ -342,7 +345,7 @@ public class ProjectManagementService
 
   private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate)
   {
-    List<SiteObject> items = getObjects(id, key);
+    List<SiteObject> items = getObjects(id, key, null, null).getObjects();
 
     List<String> filenames = new LinkedList<String>();
 
@@ -461,16 +464,16 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<SiteObject> getItems(String sessionId, String id, String key)
+  public String getObjects(String sessionId, String id, String key, Integer pageNumber, Integer pageSize)
   {
-    return this.getObjects(id, key);
+    return this.getObjects(id, key, pageNumber, pageSize).toJSON().toString();
   }
 
-  public List<SiteObject> getObjects(String id, String key)
+  public SiteObjectsResultSet getObjects(String id, String key, Integer pageNumber, Integer pageSize)
   {
     UasComponent component = UasComponent.get(id);
 
-    return component.getSiteObjects(key);
+    return component.getSiteObjects(key, pageNumber, pageSize);
   }
 
   @Request(RequestType.SESSION)
@@ -508,11 +511,11 @@ public class ProjectManagementService
     if (key == null || key.length() == 0)
     {
       items.addAll(this.getChildren(id));
-      items.addAll(this.getObjects(id, null));
+      items.addAll(this.getObjects(id, null, null, null).getObjects());
     }
     else
     {
-      items.addAll(this.getObjects(id, key));
+      items.addAll(this.getObjects(id, key, null, null).getObjects());
     }
 
     return items;

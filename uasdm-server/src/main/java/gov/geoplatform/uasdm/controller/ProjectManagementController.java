@@ -249,6 +249,14 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
+  
+  @Endpoint(url = "objects", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF objects(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
+  {
+    String response = this.service.getObjects(request.getSessionId(), id, key, pageNumber, pageSize);
+
+    return new RestBodyResponse(response);
+  }
 
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
