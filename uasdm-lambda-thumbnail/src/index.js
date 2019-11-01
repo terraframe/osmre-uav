@@ -25,8 +25,8 @@ exports.handler = function(event, context, callback) {
     var dstKey = "";
     if (srcKey.indexOf("/") != -1)
     {
-      var lastIndex = srcKey.lastIndexOf("/");
-      dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex);
+	  var lastIndex = srcKey.lastIndexOf("/");
+	  dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex);
     }
     else
     {
@@ -47,9 +47,9 @@ exports.handler = function(event, context, callback) {
         return;
     }
     var imageType = typeMatch[1].toLowerCase();
-    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff', 'tif'];
-    if (imageType.indexOf(imageType) == -1) {
-        callback('Unsupported image type: ${imageType}');
+    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp']; // Supported by gm, but not web browsers : 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff', 'tif'
+    if (supportedFormats.indexOf(imageType) == -1) {
+        callback('Unsupported image type: ' + imageType);
         return;
     }
 
@@ -93,7 +93,7 @@ exports.handler = function(event, context, callback) {
                     ContentType: contentType
                 },
                 next);
-            }
+        }
         ], function (err) {
             if (err) {
                 console.error(

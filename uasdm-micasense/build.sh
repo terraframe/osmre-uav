@@ -1,1 +1,1 @@
-docker build -t uasdm-micasense .
+sudo docker build -t uasdm-micasense .

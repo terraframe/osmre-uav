@@ -48,3 +48,7 @@ Two major changes were made in this file. The first is adding the new micasense 
 4. EDIT dataset.py
 
 The previously mentioned initialization code was pulled out of dataset.py and moved into the bottom of odm_app.py
+
+5. NodeODM : Task.js
+
+Line 316, micasense (and the ortho png) were added to the allPaths, which includes them into the resultant zip.

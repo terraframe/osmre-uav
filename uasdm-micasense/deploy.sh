@@ -5,9 +5,9 @@
 
 set -e
 
-docker tag uasdm-nodeodm:latest 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker tag uasdm-micasense:latest 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest
 
 export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
 export AWS_SECRET_ACCESS_KEY=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
 eval $(aws ecr get-login --no-include-email --region us-west-2)
-docker push 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker push 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest
