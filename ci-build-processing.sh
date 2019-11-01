@@ -7,7 +7,6 @@ if [ "$build_micasense" == "true" ]; then
 	cd $WORKSPACE/uasdm/uasdm-micasense
 	./init.sh
 	./build.sh
-	./test.sh
 	sudo ./deploy.sh
 fi
 
