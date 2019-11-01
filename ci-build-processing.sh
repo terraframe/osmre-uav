@@ -1,5 +1,5 @@
 
-sudo apt-get install git-lfs
+sudo apt-get update -y && apt-get install -y git-lfs
 
 if [ "$build_micasense" == "true" ]; then
 	cd $WORKSPACE/uasdm/uasdm-micasense
