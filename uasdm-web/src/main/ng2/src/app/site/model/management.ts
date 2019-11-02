@@ -38,6 +38,7 @@ export class SiteEntity {
     imageKey: string;
     children: SiteEntity[];
     active: boolean;
+    excludeFromProcess: boolean;
 }
 
 export class CollectionHierarchy {

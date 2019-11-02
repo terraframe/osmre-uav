@@ -59,12 +59,8 @@ export class LeafModalComponent implements OnInit {
     folder: SiteEntity;
     
     constPageSize: number = 50; 
-    page: SiteObjectsResultSet = {
-        count: 0,
-        pageNumber: 1,
-        pageSize: this.constPageSize,
-        results: []
-    };
+    
+    page: SiteObjectsResultSet = new SiteObjectsResultSet();
 
     /*
      * Reference to the modal current showing
@@ -84,6 +80,11 @@ export class LeafModalComponent implements OnInit {
         this.onNodeChange = new Subject();
 
         this.excludes = []; // clear excludes if toggling between tabs
+        
+        this.page.count = 0;
+        this.page.pageNumber =1 ;
+        this.page.pageSize = this.constPageSize;
+        this.page.results = [];
     }
 
     init( entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[] ): void {
