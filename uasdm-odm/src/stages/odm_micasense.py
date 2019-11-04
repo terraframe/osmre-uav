@@ -31,6 +31,7 @@ class ODMMicasenseStage(types.ODM_Stage):
             shutil.rmtree(micain, ignore_errors=True)
             shutil.rmtree(micaout, ignore_errors=True)
             system.mkdir_p(micain)
+            system.mkdir_p(odmMicasense)
 
             try:
                 log.ODM_INFO("Copying all files in " + odmImages)

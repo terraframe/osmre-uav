@@ -40,6 +40,12 @@ exports.handler = function(event, context, callback) {
       callback("Rejecting key [" + srcKey + "] because it is inside the thumbnails directory");
       return;
     }
+    // Skip the dem directory
+    if (srcKey.indexOf("dem/") != -1)
+    {
+      callback("Rejecting key [" + srcKey + "] because it is inside the dem directory");
+      return;
+    }
 
     // Infer the image type.
     var typeMatch = srcKey.match(/\.([^.]*)$/);
@@ -48,7 +54,7 @@ exports.handler = function(event, context, callback) {
         return;
     }
     var imageType = typeMatch[1].toLowerCase();
-    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp']; // Supported by gm, but not web browsers : 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff', 'tif'
+    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'tif', 'tiff']; // Supported by gm, but not web browsers : 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga'
     if (supportedFormats.indexOf(imageType) == -1) {
         callback('Unsupported image type: ' + imageType);
         return;
