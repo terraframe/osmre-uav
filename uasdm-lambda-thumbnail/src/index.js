@@ -72,6 +72,13 @@ exports.handler = function(event, context, callback) {
             },
         function transform(response, next) {
             gm(response.Body).size(function(err, size) {
+            	if (err) {
+                    callback(
+                        'Unable to determine size of ' + srcBucket + '/' + srcKey +
+                        ' due to an error: ' + err
+                    );
+                }
+            	
                 // Infer the scaling factor to avoid stretching the image unnaturally.
                 var scalingFactor = Math.min(
                     MAX_WIDTH / size.width,
