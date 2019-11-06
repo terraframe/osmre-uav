@@ -113,10 +113,15 @@ public class ProjectManagementService
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
     List<SiteIF> sites = ComponentFacade.getSites(bounds);
-    sites.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
+
+    for (SiteIF s : sites)
+    {
+      roots.add(Converter.toSiteItem(s, false));
+    }
 
     // TODO : This code is never run. The front-end always specifys a null id.
-    //        And why would we want to fetch all imagery ? That could be really expensive.
+    // And why would we want to fetch all imagery ? That could be really
+    // expensive.
     if (id != null)
     {
 //      UasComponent component = ComponentFactory.getComponent(id);
@@ -473,7 +478,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public S3Object download(String sessionId, String id, String key)
   {
-    UasComponentIF component = ComponentFacade.getComponent(id); 
+    UasComponentIF component = ComponentFacade.getComponent(id);
 
     return component.download(key);
   }
