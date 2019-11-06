@@ -61,6 +61,7 @@ import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
 import net.geoprism.JSONStringImpl;
 
@@ -375,13 +376,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   }
 
-  public List<SiteObject> getSiteObjects(String folder)
+  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
   {
-    return new LinkedList<SiteObject>();
+    return new SiteObjectsResultSet(0, pageNumber, pageSize, new LinkedList<SiteObject>(), folder);
   }
 
-  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
   {
+    final int maxKeys = 500;
     String key = this.getS3location() + folder;
 
     BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
@@ -390,22 +392,43 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     String bucketName = AppProperties.getBucketName();
 
     ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+    listObjectsRequest.setMaxKeys(maxKeys);
+
+    int curIndex = 0;
+
+    int pageIndexStart = 0;
+    int pageIndexStop = 0;
+    if (pageNumber != null && pageSize != null)
+    {
+      pageIndexStart = ( pageNumber - 1 ) * pageSize;
+      pageIndexStop = pageNumber * pageSize;
+    }
+    int awsPageNum = 1;
 
     ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
     while (true)
     {
-      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+      List<S3ObjectSummary> list = objectListing.getObjectSummaries();
+      Iterator<S3ObjectSummary> objIter = list.iterator();
 
-      while (objIter.hasNext())
+      if (pageNumber == null || pageSize == null || ( pageIndexStart >= maxKeys * ( awsPageNum - 1 ) && pageIndexStop <= maxKeys * awsPageNum ))
       {
-        S3ObjectSummary summary = objIter.next();
-
-        String summaryKey = summary.getKey();
-
-        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
+        while (objIter.hasNext())
         {
-          objects.add(SiteObject.create(this, key, summary));
+          S3ObjectSummary summary = objIter.next();
+
+          String summaryKey = summary.getKey();
+
+          if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
+          {
+            if ( ( pageSize == null || ( curIndex >= pageIndexStart && curIndex < pageIndexStop ) ))
+            {
+              objects.add(SiteObject.create(this, key, summary));
+            }
+
+            curIndex++;
+          }
         }
       }
 
@@ -415,12 +438,15 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       if (objectListing.isTruncated())
       {
         objectListing = client.listNextBatchOfObjects(objectListing);
+        awsPageNum++;
       }
       else
       {
         break;
       }
     }
+
+    return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
   }
 
   public void delete(String key)

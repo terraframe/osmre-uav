@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 
 import com.runwaysdk.resource.ApplicationResource;
 
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
+
 /**
  * Assumes that this is implemented ONLY by {@link UasComponent}
  * 

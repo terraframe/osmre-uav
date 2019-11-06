@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.business.graph.VertexQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -31,6 +32,7 @@ import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
 
 public class Collection extends CollectionBase implements ImageryComponent, CollectionIF
@@ -233,7 +235,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<SiteObject> getSiteObjects(String folder)
+  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -274,18 +276,25 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
     else
     {
-      this.getSiteObjects(folder, objects);
+      return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return objects;
+    return new SiteObjectsResultSet(objects.size(), pageNumber, pageSize, objects, folder);
   }
 
   @Override
-  protected void getSiteObjects(String folder, List<SiteObject> objects)
+  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
   {
-    super.getSiteObjects(folder, objects);
+    if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
+    {
+      throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
+    }
+
+    SiteObjectsResultSet rs = super.getSiteObjects(folder, objects, pageNumber, pageSize);
 
     Util.getSiteObjects(folder, objects, this);
+
+    return rs;
   }
 
   public void createImageServices()

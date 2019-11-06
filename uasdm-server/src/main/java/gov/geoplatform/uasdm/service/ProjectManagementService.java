@@ -34,7 +34,6 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
-import gov.geoplatform.uasdm.bus.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -49,6 +48,7 @@ import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.view.TreeComponent;
 import net.geoprism.GeoprismUser;
 

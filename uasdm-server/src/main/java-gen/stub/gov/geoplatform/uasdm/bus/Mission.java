@@ -10,6 +10,7 @@ import com.runwaysdk.query.QueryFactory;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class Mission extends MissionBase implements MissionIF
 {

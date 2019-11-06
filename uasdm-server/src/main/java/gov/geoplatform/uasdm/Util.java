@@ -113,7 +113,7 @@ public class Util
   {
     try
     {
-      List<SiteObject> objects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO);
+      List<SiteObject> objects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects();
 
       Util.getSiteObjects(ImageryComponent.ORTHO, objects, imageryComponent);
 

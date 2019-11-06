@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 /**
  * Assumes that this is implemented ONLY by {@link UasComponent}

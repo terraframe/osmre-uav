@@ -56,6 +56,7 @@ import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF

@@ -1,13 +1,9 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.view;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
-
-import gov.geoplatform.uasdm.view.SiteItem;
-import gov.geoplatform.uasdm.view.SiteObject;
-import gov.geoplatform.uasdm.view.TreeComponent;
 
 public class SiteObjectsResultSet
 {
