@@ -77,7 +77,8 @@ export class ProductModalComponent implements OnInit {
         const component: string = this.product.entities[this.product.entities.length - 1].id;
         const rootPath: string = key.substr( 0, key.lastIndexOf( "/" ) );
         const fileName: string = /[^/]*$/.exec( key )[0];
-        const thumbKey: string = rootPath + "/thumbnails/" + fileName;
+        const lastPeriod: number = fileName.lastIndexOf(".");
+        const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
         this.service.download( component, thumbKey, false ).subscribe( blob => {
             this.createImageFromBlob( blob, id );

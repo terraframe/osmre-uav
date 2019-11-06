@@ -34,21 +34,37 @@
             <div id="image-list-container">
 
               <ul class="list-group row">
-                <li *ngFor="let item of items" class="list-group-item col-xs-3">
-                  <!-- <div class="" >   -->
-                  <a class="thumbnail"
-                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
-                    <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
-                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
-                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
-                      [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml"
-                      (error)="getDefaultImgURL($event)" alt="Image">
-                    <div class="caption">
-                      <h4 class="media-heading">{{item.name}}</h4>
-                    </div>
-                  </a>
-                  <!-- </div> -->
-                </li>
+                <div *ngIf="folder.name != 'raw'">
+	                <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+	                  <a class="thumbnail"
+	                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
+	                    <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
+	                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
+	                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+	                      [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml"
+	                      (error)="getDefaultImgURL($event)" alt="Image">
+	                    <div class="caption">
+	                      <h4 class="media-heading">{{item.name}}</h4>
+	                    </div>
+	                  </a>
+	                </li>
+                </div>
+                
+                <div *ngIf="folder.name === 'raw'">
+	                <li *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }" class="list-group-item col-xs-3">
+	                  <a class="thumbnail"
+	                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
+	                    <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
+	                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
+	                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+	                      [ngClass]="{'img-disabled' : item.excludeFromProcess}" [src]="thumbnails[item.key] | safeHtml"
+	                      (error)="getDefaultImgURL($event)" alt="Image">
+	                    <div class="caption">
+	                      <h4 class="media-heading">{{item.name}}</h4>
+	                    </div>
+	                  </a>
+	                </li>
+                </div>
               </ul>
 
             </div>
@@ -56,6 +72,8 @@
         </tabset>
       </div>
       <div class="row">
+      
+      	<pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
 
         <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
           <p>{{statusMessage}}</p>
@@ -77,7 +95,12 @@
           </button>
         </div>
       </div>
-
+	  <div class="row" *ngIf="folder.name === 'raw'">
+      	These images will be ignored : 
+      	<div *ngFor="let exclude of excludes">
+      	  {{exclude}}
+      	</div>
+      </div>
       <!-- <div class="row">
     </div> -->
     </div>

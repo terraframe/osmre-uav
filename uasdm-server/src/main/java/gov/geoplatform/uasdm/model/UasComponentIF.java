@@ -11,8 +11,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.SiteObject;
 
 public interface UasComponentIF extends ComponentIF
 {
@@ -56,7 +56,7 @@ public interface UasComponentIF extends ComponentIF
 
   public String getS3location();
 
-  public List<SiteObject> getSiteObjects(String key);
+  public SiteObjectsResultSet getSiteObjects(String key, Integer pageNumber, Integer pageSize);
 
   public List<DocumentIF> getDocuments();
 

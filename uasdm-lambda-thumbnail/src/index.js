@@ -26,7 +26,8 @@ exports.handler = function(event, context, callback) {
     if (srcKey.indexOf("/") != -1)
     {
 	  var lastIndex = srcKey.lastIndexOf("/");
-	  dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex);
+	  var lastPeriod = srcKey.lastIndexOf(".");
+	  dstKey = srcKey.slice(0, lastIndex) + "/thumbnails" + srcKey.slice(lastIndex, lastPeriod) + ".png";
     }
     else
     {
@@ -39,6 +40,12 @@ exports.handler = function(event, context, callback) {
       callback("Rejecting key [" + srcKey + "] because it is inside the thumbnails directory");
       return;
     }
+    // Skip the dem directory
+    if (srcKey.indexOf("dem/") != -1)
+    {
+      callback("Rejecting key [" + srcKey + "] because it is inside the dem directory");
+      return;
+    }
 
     // Infer the image type.
     var typeMatch = srcKey.match(/\.([^.]*)$/);
@@ -47,7 +54,7 @@ exports.handler = function(event, context, callback) {
         return;
     }
     var imageType = typeMatch[1].toLowerCase();
-    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp']; // Supported by gm, but not web browsers : 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga', 'tiff', 'tif'
+    var supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'tif', 'tiff']; // Supported by gm, but not web browsers : 'fits', 'gray', 'graya', 'jng', 'mono', 'ico', 'jbig', 'tga'
     if (supportedFormats.indexOf(imageType) == -1) {
         callback('Unsupported image type: ' + imageType);
         return;
@@ -65,6 +72,13 @@ exports.handler = function(event, context, callback) {
             },
         function transform(response, next) {
             gm(response.Body).size(function(err, size) {
+            	if (err) {
+                    callback(
+                        'Unable to determine size of ' + srcBucket + '/' + srcKey +
+                        ' due to an error: ' + err
+                    );
+                }
+            	
                 // Infer the scaling factor to avoid stretching the image unnaturally.
                 var scalingFactor = Math.min(
                     MAX_WIDTH / size.width,
@@ -75,7 +89,7 @@ exports.handler = function(event, context, callback) {
 
                 // Transform the image buffer in memory.
                 this.resize(width, height)
-                    .toBuffer(imageType, function(err, buffer) {
+                    .toBuffer('PNG', function(err, buffer) {
                         if (err) {
                             next(err);
                         } else {
@@ -90,7 +104,7 @@ exports.handler = function(event, context, callback) {
                     Bucket: dstBucket,
                     Key: dstKey,
                     Body: data,
-                    ContentType: contentType
+                    ContentType: "image/png"
                 },
                 next);
         }

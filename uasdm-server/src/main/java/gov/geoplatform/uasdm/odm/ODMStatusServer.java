@@ -314,7 +314,7 @@ public class ODMStatusServer
 
             long millis = resp.getProcessingTime();
 
-            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.MINUTES.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
 
             task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
             task.apply();
@@ -355,7 +355,7 @@ public class ODMStatusServer
           {
             long millis = resp.getProcessingTime();
 
-            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.MINUTES.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
 
             task.appLock();
             task.setStatus(resp.getStatus().getLabel());
@@ -629,6 +629,13 @@ public class ODMStatusServer
     private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<DocumentIF> documents) throws InterruptedException
     {
       File[] children = parentDir.listFiles();
+      
+      if (children == null)
+      {
+        logger.error("Problem occurred while listing files of directory [" + parentDir.getAbsolutePath() + "].");
+        return;
+      }
+      
       for (File child : children)
       {
         if (Thread.interrupted())

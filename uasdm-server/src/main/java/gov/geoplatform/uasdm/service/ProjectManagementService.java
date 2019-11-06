@@ -34,6 +34,7 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.bus.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -114,6 +115,8 @@ public class ProjectManagementService
     List<SiteIF> sites = ComponentFacade.getSites(bounds);
     sites.forEach(s -> roots.add(Converter.toSiteItem(s, false)));
 
+    // TODO : This code is never run. The front-end always specifys a null id.
+    //        And why would we want to fetch all imagery ? That could be really expensive.
     if (id != null)
     {
 //      UasComponent component = ComponentFactory.getComponent(id);
@@ -336,7 +339,7 @@ public class ProjectManagementService
 
   private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate)
   {
-    List<SiteObject> items = getObjects(id, key);
+    List<SiteObject> items = getObjects(id, key, null, null).getObjects();
 
     List<String> filenames = new LinkedList<String>();
 
@@ -455,22 +458,22 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<SiteObject> getItems(String sessionId, String id, String key)
+  public String getObjects(String sessionId, String id, String key, Integer pageNumber, Integer pageSize)
   {
-    return this.getObjects(id, key);
+    return this.getObjects(id, key, pageNumber, pageSize).toJSON().toString();
   }
 
-  public List<SiteObject> getObjects(String id, String key)
+  public SiteObjectsResultSet getObjects(String id, String key, Integer pageNumber, Integer pageSize)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    return component.getSiteObjects(key);
+    return component.getSiteObjects(key, pageNumber, pageSize);
   }
 
   @Request(RequestType.SESSION)
   public S3Object download(String sessionId, String id, String key)
   {
-    UasComponentIF component = ComponentFacade.getComponent(id);
+    UasComponentIF component = ComponentFacade.getComponent(id); 
 
     return component.download(key);
   }
@@ -502,11 +505,11 @@ public class ProjectManagementService
     if (key == null || key.length() == 0)
     {
       items.addAll(this.getChildren(id));
-      items.addAll(this.getObjects(id, null));
+      items.addAll(this.getObjects(id, null, null, null).getObjects());
     }
     else
     {
-      items.addAll(this.getObjects(id, key));
+      items.addAll(this.getObjects(id, key, null, null).getObjects());
     }
 
     return items;

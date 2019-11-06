@@ -88,7 +88,8 @@ export class ProductPanelComponent {
             const component: string = product.entities[product.entities.length - 1].id;
             const rootPath: string = product.imageKey.substr( 0, product.imageKey.lastIndexOf( "/" ) );
             const fileName: string = /[^/]*$/.exec( product.imageKey )[0];
-            const thumbKey: string = rootPath + "/thumbnails/" + fileName;
+            const lastPeriod: number = fileName.lastIndexOf(".");
+        	const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
             this.mService.download( component, thumbKey, false ).subscribe( blob => {
                 this.createImageFromBlob( blob, product );
