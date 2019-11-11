@@ -52,7 +52,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (isNew)
     {
-      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT);
+      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT).apply();
     }
   }
 
@@ -99,7 +99,7 @@ public class Product extends ProductBase implements ProductIF
 
     for (DocumentIF document : documents)
     {
-      this.addChild((Document) document, mdEdge);
+      this.addChild((Document) document, mdEdge).apply();
     }
   }
 

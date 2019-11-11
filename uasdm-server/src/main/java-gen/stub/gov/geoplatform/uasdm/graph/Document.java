@@ -47,7 +47,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     if (isNew)
     {
-      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_DOCUMENT);
+      this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_DOCUMENT).apply();
     }
   }
 
@@ -180,7 +180,7 @@ public class Document extends DocumentBase implements DocumentIF
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_GENERATED_PRODUCT);
 
-    this.addChild((Product) product, mdEdge);
+    this.addChild((Product) product, mdEdge).apply();
   }
 
   public JSONObject toJSON()

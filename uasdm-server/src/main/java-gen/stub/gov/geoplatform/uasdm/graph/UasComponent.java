@@ -745,7 +745,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     final MdEdgeDAOIF mdEdge = this.getParentMdEdge();
 
-    this.addParent((UasComponent) parent, mdEdge);
+    this.addParent((UasComponent) parent, mdEdge).apply();
   }
 
   public List<UasComponentIF> getParents()
