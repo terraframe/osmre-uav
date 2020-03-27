@@ -543,8 +543,8 @@ public class ProjectManagementService
 
       if (component instanceof CollectionIF)
       {
-        response.put("platform", component.getObjectValue(Collection.PLATFORM));
-        response.put("sensor", component.getObjectValue(Collection.SENSOR));
+        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
+        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
       }
     }
 

@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -47,7 +47,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
-  
+
   @Override
   public void appLock()
   {
@@ -345,7 +345,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       builder.append(" AND " + OWNER + " = :owner");
       builder.append(" AND outE('" + mdEdge.getDBClassName() + "').size() > 0");
 
-      final VertexQuery<CollectionIF> query = new VertexQuery<CollectionIF>(builder.toString());
+      final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(builder.toString());
       query.setParameter("metadataUploaded", false);
       query.setParameter("owner", singleActor.getOid());
 

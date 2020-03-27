@@ -16,7 +16,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
-import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
@@ -170,7 +170,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     String statement = "SELECT FROM " + mdVertex.getDBClassName() + " WHERE s3location = :s3location";
 
-    final VertexQuery<Document> query = new VertexQuery<Document>(statement);
+    final GraphQuery<Document> query = new GraphQuery<Document>(statement);
     query.setParameter("s3location", key);
 
     return query.getSingleResult();

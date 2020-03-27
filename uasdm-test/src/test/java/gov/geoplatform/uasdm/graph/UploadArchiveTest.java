@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
 
@@ -7,15 +7,19 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.UserInfo;
 import com.runwaysdk.dataaccess.DuplicateDataException;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.WorkflowAction;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
@@ -28,24 +32,24 @@ public class UploadArchiveTest
 //
 //  private static String                   missionId1;
 
-  private static String                   collectionId1;
+  private static String       collectionId1;
 
   /**
    * The test user object
    */
-  private static GeoprismUser             newUser;
+  private static GeoprismUser newUser;
 
   /**
    * The username for the user
    */
-  private final static String             USERNAME     = "btables";
+  private final static String USERNAME     = "btables";
 
   /**
    * The password for the user
    */
-  private final static String             PASSWORD     = "1234";
+  private final static String PASSWORD     = "1234";
 
-  private final static int                sessionLimit = 2;
+  private final static int    sessionLimit = 2;
 
   @BeforeClass
   @Request
@@ -81,9 +85,12 @@ public class UploadArchiveTest
       newUser = GeoprismUser.getByUsername(USERNAME);
     }
 
+    Bureau bureau = Bureau.getByKey("OSMRE");
+
     Site site = new Site();
     site.setName("Site_Unit_Test");
     site.setFolderName("Site_Unit_Test");
+    site.setBureau(bureau);
     site.applyWithParent(null);
     // System.out.println("S3: "+site.getS3location());
 //    siteId = site.getOid();
@@ -125,26 +132,18 @@ public class UploadArchiveTest
   @Transaction
   public static void classTearDownTransaction()
   {
-    QueryFactory qf = new QueryFactory();
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
-    SiteQuery sq = new SiteQuery(qf);
+    final StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
 
-    OIterator<? extends Site> i = sq.getIterator();
+    final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString());
+    final List<Site> sites = query.getResults();
 
-    try
+    for (Site site : sites)
     {
-      for (Site site : i)
-      {
-        if (!site.getName().equals(Site.DEFAULT_SITE_NAME))
-        {
-          site.delete();
-          System.out.println("Site deleted: " + site.getName());
-        }
-      }
-    }
-    finally
-    {
-      i.close();
+      site.delete();
+      System.out.println("Site deleted: " + site.getName());
     }
 
     if (newUser.isAppliedToDB())

@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
 import java.util.Locale;
@@ -10,19 +10,20 @@ import org.junit.Test;
 
 import com.runwaysdk.business.BusinessFacade;
 import com.runwaysdk.business.SmartExceptionDTO;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.UserDAO;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.DuplicateDataException;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.SessionFacade;
-import com.runwaysdk.system.SingleActor;
-import com.runwaysdk.system.metadata.MdBusiness;
 
+import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
@@ -39,8 +40,6 @@ public class TestSiteHierarchy
 
   private static String                   missionId1;
 
-  private static String                   imageryId1;
-  
   /**
    * The test user object
    */
@@ -57,9 +56,7 @@ public class TestSiteHierarchy
   private final static String             PASSWORD     = "1234";
 
   private final static int                sessionLimit = 2;
-  
-  private static String                   IMAGERY_CLASS_NAME;
-  
+
   @BeforeClass
   @Request
   public static void classSetUp()
@@ -92,13 +89,9 @@ public class TestSiteHierarchy
     {
 
     }
-    
-    MdBusiness imageryMdBusiness = MdBusiness.getMdBusiness(Imagery.CLASS);
-    
-    IMAGERY_CLASS_NAME = imageryMdBusiness.getTypeName();
 
     Bureau bureau = Bureau.getByKey("OSMRE");
-    
+
     Site site = new Site();
     site.setValue(UasComponent.NAME, "Site_Unit_Test");
     site.setValue(UasComponent.FOLDERNAME, "Site_Unit_Test");
@@ -131,13 +124,13 @@ public class TestSiteHierarchy
     collection1.setValue(UasComponent.FOLDERNAME, "Collection1");
     collection1.applyWithParent(mission1);
     // System.out.println("S3: "+collection1.getS3location());
-    
-    Imagery imagery1 = new Imagery();
-    imagery1.setValue(UasComponent.NAME, "Imagery1");
-    imagery1.setValue(UasComponent.FOLDERNAME, "Imagery1");
-    imagery1.applyWithParent(project1);
-    // System.out.println("S3: "+imageryId1.getS3location());
-    imageryId1 = imagery1.getOid();
+
+//    Imagery imagery1 = new Imagery();
+//    imagery1.setValue(UasComponent.NAME, "Imagery1");
+//    imagery1.setValue(UasComponent.FOLDERNAME, "Imagery1");
+//    imagery1.applyWithParent(project1);
+//    // System.out.println("S3: "+imageryId1.getS3location());
+//    imageryId1 = imagery1.getOid();
   }
 
   @AfterClass
@@ -150,26 +143,18 @@ public class TestSiteHierarchy
   @Transaction
   public static void classTearDownTransaction()
   {
-    QueryFactory qf = new QueryFactory();
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
-    SiteQuery sq = new SiteQuery(qf);
+    final StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
 
-    OIterator<? extends Site> i = sq.getIterator();
+    final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString());
+    final List<Site> sites = query.getResults();
 
-    try
+    for (Site site : sites)
     {
-      for (Site site : i)
-      {
-        if (!site.getValue(UasComponent.NAME).equals(Site.DEFAULT_SITE_NAME))
-        {
-          site.delete();
-          System.out.println("Site deleted: " + site.getValue(UasComponent.NAME));
-        }
-      }
-    }
-    finally
-    {
-      i.close();
+      site.delete();
+      System.out.println("Site deleted: " + site.getName());
     }
 
     if (newUser.isAppliedToDB())
@@ -184,28 +169,24 @@ public class TestSiteHierarchy
   {
     Site site = Site.get(siteId);
 
-    OIterator<? extends Project> projects = site.getAllProjects();
+    final List<UasComponentIF> projects = site.getChildren();
 
     int projectCount = 0;
     int missionCount = 0;
     int collectionCount = 0;
-    for (Project project : projects)
+    for (UasComponentIF project : projects)
     {
       projectCount++;
 
-      OIterator<? extends Mission> missions = project.getAllMissions();
+      final List<UasComponentIF> missions = project.getChildren();
 
-      for (Mission mission : missions)
+      for (UasComponentIF mission : missions)
       {
         missionCount++;
 
-        OIterator<? extends Collection> collections = mission.getAllCollections();
+        final List<UasComponentIF> collections = mission.getChildren();
 
-        for (@SuppressWarnings("unused")
-        Collection collection : collections)
-        {
-          collectionCount++;
-        }
+        collectionCount += collections.size();
       }
     }
 
@@ -259,7 +240,7 @@ public class TestSiteHierarchy
     try
     {
       SiteItem newProject = service.newDefaultChild(sessionId, siteId);
-      newProject.setValue(UasComponent.NAME, "Project1223");
+      newProject.setValue(UasComponent.NAME, "Project 1223");
       newProject.setValue(UasComponent.FOLDERNAME, "Project ");
       newProject = service.applyWithParent(sessionId, newProject, siteId);
       projectId = newProject.getId();
@@ -285,16 +266,17 @@ public class TestSiteHierarchy
   {
     String sessionId = this.logInAdmin();
 
-    String projectId = null;
+    String sitId = null;
 
     try
     {
-      SiteItem newProject = service.newDefaultChild(sessionId, siteId);
-      newProject.setValue(UasComponent.NAME, "Project1");
-      newProject.setValue(UasComponent.FOLDERNAME, "Project1");
-      newProject = service.applyWithParent(sessionId, newProject, siteId);
-      projectId = newProject.getId();
-      Assert.fail("A Project was created with a duplicate name");
+      SiteItem newSite = service.newDefaultChild(sessionId, null);
+      newSite.setValue(UasComponent.NAME, "Site_Unit_Test");
+      newSite.setValue(UasComponent.FOLDERNAME, "Site_Unit_Test");
+      newSite = service.applyWithParent(sessionId, newSite, null);
+      sitId = newSite.getId();
+
+      Assert.fail("A Site was created with a duplicate name");
     }
     catch (SmartExceptionDTO re)
     {
@@ -302,9 +284,9 @@ public class TestSiteHierarchy
     }
     finally
     {
-      if (projectId != null)
+      if (sitId != null)
       {
-        service.remove(sessionId, projectId);
+        service.remove(sessionId, sitId);
       }
 
       logOutAdmin(sessionId);
@@ -331,8 +313,8 @@ public class TestSiteHierarchy
 
       newProject.setValue(UasComponent.NAME, "ProjectX");
       newProject.setValue(UasComponent.FOLDERNAME, "ProjectX");
-      projectId = newProject.getId();
       newProject = service.applyWithParent(sessionId, newProject, siteId);
+      projectId = newProject.getId();
 
       Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
 
@@ -344,8 +326,8 @@ public class TestSiteHierarchy
 
       newMission.setValue(UasComponent.NAME, "MissionX");
       newMission.setValue(UasComponent.FOLDERNAME, "MissionX");
+      newMission = service.applyWithParent(sessionId, newMission, projectId);
       missionId = newMission.getId();
-      service.applyWithParent(sessionId, newMission, projectId);
 
       Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
 
@@ -357,8 +339,8 @@ public class TestSiteHierarchy
 
       newCollection.setValue(UasComponent.NAME, "CollectionX");
       newCollection.setValue(UasComponent.FOLDERNAME, "CollectionX");
+      newCollection = service.applyWithParent(sessionId, newCollection, missionId);
       collectionId = newCollection.getId();
-      service.applyWithParent(sessionId, newCollection, missionId);
 
       Assert.assertTrue(1 == service.getChildren(sessionId, missionId).size());
 
@@ -391,70 +373,68 @@ public class TestSiteHierarchy
       logOutAdmin(sessionId);
     }
   }
-  
-  @Test
-  public void testServiceNewImagery()
-  {
-    String sessionId = this.logInAdmin();
 
-    String projectId = null;
-
-    String imageryId = null;
-
-    try
-    {
-      int siteChildren = service.getChildren(sessionId, siteId).size();
-      SiteItem newProject = service.newDefaultChild(sessionId, siteId);
-
-//      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
-
-      newProject.setValue(UasComponent.NAME, "ProjectX1");
-      newProject.setValue(UasComponent.FOLDERNAME, "ProjectX1");
-      projectId = newProject.getId();
-      newProject = service.applyWithParent(sessionId, newProject, siteId);
-
-      Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
-
-      Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
-
-      
-      
-      SiteItem newImagery = service.newChild(sessionId, projectId1, IMAGERY_CLASS_NAME);
-
-//      Assert.assertTrue("HasChildren property on Imagery should be true but returned false.", newImagery.getHasChildren());
-
-      newImagery.setValue(UasComponent.NAME, "ImageryX");
-      newImagery.setValue(UasComponent.FOLDERNAME, "MissionX");
-      imageryId = newImagery.getId();
-      service.applyWithParent(sessionId, newImagery, projectId);
-
-      Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
-
-      Assert.assertTrue(0 == service.getChildren(sessionId, imageryId).size());
-
-      newProject = service.edit(sessionId, projectId);
-//      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
-
-    }
-    catch (RuntimeException re)
-    {
-      re.printStackTrace();
-    }
-    finally
-    {
-      if (imageryId != null)
-      {
-        service.remove(sessionId, imageryId);
-      }
-
-      if (projectId != null)
-      {
-        service.remove(sessionId, projectId);
-      }
-
-      logOutAdmin(sessionId);
-    }
-  }
+//  @Test
+//  public void testServiceNewImagery()
+//  {
+//    String sessionId = this.logInAdmin();
+//
+//    String projectId = null;
+//
+//    String imageryId = null;
+//
+//    try
+//    {
+//      int siteChildren = service.getChildren(sessionId, siteId).size();
+//      SiteItem newProject = service.newDefaultChild(sessionId, siteId);
+//
+////      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
+//
+//      newProject.setValue(UasComponent.NAME, "ProjectX1");
+//      newProject.setValue(UasComponent.FOLDERNAME, "ProjectX1");
+//      projectId = newProject.getId();
+//      newProject = service.applyWithParent(sessionId, newProject, siteId);
+//
+//      Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
+//
+//      Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
+//
+//      SiteItem newImagery = service.newChild(sessionId, projectId1, IMAGERY_CLASS_NAME);
+//
+////      Assert.assertTrue("HasChildren property on Imagery should be true but returned false.", newImagery.getHasChildren());
+//
+//      newImagery.setValue(UasComponent.NAME, "ImageryX");
+//      newImagery.setValue(UasComponent.FOLDERNAME, "MissionX");
+//      imageryId = newImagery.getId();
+//      service.applyWithParent(sessionId, newImagery, projectId);
+//
+//      Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
+//
+//      Assert.assertTrue(0 == service.getChildren(sessionId, imageryId).size());
+//
+//      newProject = service.edit(sessionId, projectId);
+////      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
+//
+//    }
+//    catch (RuntimeException re)
+//    {
+//      re.printStackTrace();
+//    }
+//    finally
+//    {
+//      if (imageryId != null)
+//      {
+//        service.remove(sessionId, imageryId);
+//      }
+//
+//      if (projectId != null)
+//      {
+//        service.remove(sessionId, projectId);
+//      }
+//
+//      logOutAdmin(sessionId);
+//    }
+//  }
 
   @Test
   public void testUploadMetadataCheck()
@@ -469,8 +449,9 @@ public class TestSiteHierarchy
 
       newCollection.setValue(UasComponent.NAME, "CollectionTest");
       newCollection.setValue(UasComponent.FOLDERNAME, "CollectionTest");
+      newCollection = service.applyWithParent(sessionId, newCollection, missionId1);
+
       collectionId = newCollection.getId();
-      service.applyWithParent(sessionId, newCollection, missionId1);
 
       this.checkMetadata(sessionId, collectionId);
     }

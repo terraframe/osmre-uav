@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 import org.json.JSONObject;
 
-import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
@@ -149,7 +149,7 @@ public class Site extends SiteBase implements SiteIF
       statement.append(" AND " + OID + " != :oid");
     }
 
-    final VertexQuery<Site> query = new VertexQuery<Site>(statement.toString());
+    final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString());
     query.setParameter("name", name);
 
     if (oid != null)
@@ -196,7 +196,7 @@ public class Site extends SiteBase implements SiteIF
 //      q.WHERE(new ST_WITHIN(q.getGeoPoint(), geometry));
     }
 
-    final VertexQuery<SiteIF> query = new VertexQuery<SiteIF>(statement.toString(), parameters);
+    final GraphQuery<SiteIF> query = new GraphQuery<SiteIF>(statement.toString(), parameters);
 
     return query.getResults();
   }

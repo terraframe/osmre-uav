@@ -46,7 +46,7 @@ public interface UasComponentIF extends ComponentIF
 
   public MdClassDAOIF getMdClass();
 
-  public Object getObjectValue(String name);
+  public <T> T getObjectValue(String name);
 
   public Geometry getGeoPoint();
 

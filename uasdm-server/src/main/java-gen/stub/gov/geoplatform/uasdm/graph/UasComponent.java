@@ -34,8 +34,9 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
-import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -45,6 +46,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -128,14 +130,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       this.setFolderName(UUID.randomUUID().toString().replaceAll("-", ""));
     }
 
-    if (this.isModified(UasComponent.FOLDERNAME))
+    if (isNew || this.isModified(UasComponent.FOLDERNAME))
     {
       String name = this.getFolderName();
 
       if (!UasComponentIF.isValidName(name))
       {
-        MdBusinessDAOIF mdBusiness = MdBusinessDAO.getMdBusinessDAO(UasComponent.CLASS);
-        MdAttributeConcreteDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
+        MdVertexDAOIF mdBusiness = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+        MdAttributeDAOIF mdAttribute = mdBusiness.definesAttribute(UasComponent.FOLDERNAME);
 
         InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
         ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
@@ -198,7 +200,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (isNew && this.getOwnerOid() == null)
     {
-      this.setOwner(GeoprismUser.getCurrentUser());
+      final SingleActor user = GeoprismUser.getCurrentUser();
+
+      if (user != null)
+      {
+        this.setOwner(user);
+      }
     }
 
     super.apply();
@@ -585,7 +592,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
-    final VertexQuery<Site> query = new VertexQuery<Site>("SELECT FROM " + mdVertex.getDBClassName());
+    final GraphQuery<Site> query = new GraphQuery<Site>("SELECT FROM " + mdVertex.getDBClassName());
     final List<Site> sites = query.getResults();
 
     writer.object();
@@ -735,7 +742,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     statement.append("SELECT EXPAND(" + expand + ")");
     statement.append(" FROM :rid");
 
-    final VertexQuery<ProductIF> query = new VertexQuery<ProductIF>(statement.toString());
+    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();
@@ -766,7 +773,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "')[name=:name])\n");
     statement.append("FROM :rid \n");
 
-    final VertexQuery<UasComponent> query = new VertexQuery<UasComponent>(statement.toString());
+    final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
     query.setParameter("name", name);
     query.setParameter("rid", this.getRID());
 
@@ -787,7 +794,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       statement.append("FROM :rid \n");
       statement.append("WHERE out.folderName = :folderName" + "\n");
 
-      final VertexQuery<UasComponent> query = new VertexQuery<UasComponent>(statement.toString());
+      final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
       query.setParameter("folderName", folderName);
       query.setParameter("rid", component.getRID());
 

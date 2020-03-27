@@ -17,7 +17,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.business.graph.VertexQuery;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -127,7 +127,7 @@ public class Product extends ProductBase implements ProductIF
     statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
     statement.append("FROM :rid \n");
 
-    final VertexQuery<Product> query = new VertexQuery<Product>(statement.toString());
+    final GraphQuery<Product> query = new GraphQuery<Product>(statement.toString());
     query.setParameter("rid", ( (UasComponent) component ).getRID());
 
     return query.getSingleResult();

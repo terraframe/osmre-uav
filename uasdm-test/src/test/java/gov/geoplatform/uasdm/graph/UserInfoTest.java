@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.bus;
+package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
 
