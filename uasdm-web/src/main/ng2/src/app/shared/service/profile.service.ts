@@ -20,8 +20,8 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/finally';
+// import 'rxjs/add/operator/toPromise';
+import { finalize } from 'rxjs/operators';
 
 import { EventService } from './event.service';
 
@@ -56,9 +56,9 @@ export class ProfileService {
 
         return this.http
             .post<Profile>( acp + '/account/apply', JSON.stringify( { account: profile } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -72,9 +72,9 @@ export class ProfileService {
 
         return this.http
             .post<void>( acp + '/account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 }

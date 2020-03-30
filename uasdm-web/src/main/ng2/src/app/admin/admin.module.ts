@@ -19,17 +19,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { FormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
-import { FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
-import { CustomFormsModule } from 'ng2-validation'
+import { FileUploadModule } from 'ng2-file-upload';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 
 import { SystemLogoService } from './service/system-logo.service';
 import { EmailService } from './service/email.service';
@@ -49,45 +46,39 @@ import { AdminRoutingModule } from './admin-routing.module';
 
 import { SharedModule } from '../shared/shared.module';
 
-import '../rxjs-extensions';
-
-@NgModule( {
-    imports: [
-        CommonModule,
-        RouterModule,
-        FormsModule,
-        ReactiveFormsModule,
-        FileUploadModule,
-        NgxPaginationModule,
-        PasswordStrengthBarModule,
-        CustomFormsModule,
-        //        ModalModule,
-        AlertModule,
-        BsDropdownModule,
-        TypeaheadModule,
-        AccordionModule,
-        SharedModule,
-        AdminRoutingModule
-    ],
-    declarations: [
-        AdminHeaderComponent,
-        SystemLogoComponent,
-        SystemLogosComponent,
-        AccountsComponent,
-        AccountInviteComponent,
-        AccountInviteCompleteComponent,
-        AccountComponent,
-        SystemLogoComponent,
-        SystemLogosComponent,
-        EmailComponent,
-        SystemInfoComponent
-    ],
-    providers: [
-        SystemLogoService,
-        EmailService,
-        AccountService
-    ],
-    entryComponents: [
-    ]
-} )
+@NgModule({
+	imports: [
+		CommonModule,
+		RouterModule,
+		FormsModule,
+		FileUploadModule,
+		NgxPaginationModule,
+		AlertModule,
+		BsDropdownModule,
+		TypeaheadModule,
+		AccordionModule,
+		SharedModule,
+		AdminRoutingModule
+	],
+	declarations: [
+		AdminHeaderComponent,
+		SystemLogoComponent,
+		SystemLogosComponent,
+		AccountsComponent,
+		AccountInviteComponent,
+		AccountInviteCompleteComponent,
+		AccountComponent,
+		SystemLogoComponent,
+		SystemLogosComponent,
+		EmailComponent,
+		SystemInfoComponent
+	],
+	providers: [
+		SystemLogoService,
+		EmailService,
+		AccountService
+	],
+	entryComponents: [
+	]
+})
 export class AdminModule { }

@@ -600,9 +600,8 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 .checkbox-label {
 	float: left;
 	display: block;
-	margin-left: 7px;
+	margin: 7px 11px 0 0;
 }
-
 .com-runwaysdk-ui-factory-runway-checkbox-CheckBox{
 	cursor: pointer;
 }
@@ -2994,29 +2993,42 @@ input.ghost-input:active {
     box-shadow: none !important;
 }
 
-input[type="text"] {
+input[type="text"], 
+input[type="password"], 
+input[type="email"] {
 	width:100%;
 	margin:0;
 	/* float:left; */
 }
-input[type="text"]::-moz-placeholder{
+input[type="text"]::-moz-placeholder, 
+input[type="password"]::-moz-placeholder, 
+input[type="email"]::-moz-placeholder{
 	color:#333;
 	opacity:1;
 }
-input[type="text"]:focus {
-   
-}
-input[type="text"][disabled] {
+input[type="text"][disabled],
+input[type="password"][disabled],
+input[type="email"][disabled] {
     color: #999;
 }
-input[type="text"]:-ms-input-placeholder{color:#333;}
-input[type="text"]::-webkit-input-placeholder{color:#333;}
-input[type="text"]:-moz-placeholder{color:#333;}
+input[type="text"]:-ms-input-placeholder,
+input[type="password"]:-ms-input-placeholder,
+input[type="email"]:-ms-input-placeholder{
+	color:#333;
+}
+input[type="text"]::-webkit-input-placeholder,
+input[type="password"]::-webkit-input-placeholder,
+input[type="email"]::-webkit-input-placeholder{color:#333;}
+input[type="text"]:-moz-placeholder,
+input[type="password"]:-moz-placeholder,
+input[type="email"]:-moz-placeholder{color:#333;}
 /* input[type="text"]:focus{
     border-color: #007276; 
     border-color:var(--theme-input-text-border-active);
 } */
-input[type="text"]:disabled {
+input[type="text"]:disabled,
+input[type="password"]:disabled,
+input[type="email"]:disabled {
     color: #999;
     box-shadow: none;
     border-color: #767676;

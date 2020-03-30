@@ -3,15 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { TreeModule } from 'angular-tree-component';
+//import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
-import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
-import { PasswordStrengthBarModule } from 'ng2-password-strength-bar';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import './rxjs-extensions';
@@ -40,7 +38,7 @@ import { SharedModule } from './shared/shared.module';
         ReactiveFormsModule,
         HttpClientModule,
         UasdmAppRoutingModule,
-        TreeModule.forRoot(),
+//        TreeModule.forRoot(),
         ContextMenuModule.forRoot(),
         //        ModalModule.forRoot(),
         AlertModule.forRoot(),
@@ -48,7 +46,6 @@ import { SharedModule } from './shared/shared.module';
         TypeaheadModule.forRoot(),
         AccordionModule.forRoot(),
         NgxPaginationModule,
-        PasswordStrengthBarModule,
         SharedModule.forRoot(),
         CollapseModule.forRoot()
     ],

@@ -1,10 +1,9 @@
-import { Component, OnInit, Input, AfterViewInit, Inject, ViewChild, ElementRef, KeyValueDiffers, DoCheck, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, KeyValueDiffers, HostListener } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import 'rxjs/Rx';
-import { Observable } from 'rxjs/Rx';
-import { Subject } from 'rxjs/Subject';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+
+import { interval, Subject } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
@@ -188,12 +187,12 @@ export class UploadModalComponent implements OnInit {
                         if ( that.currentTask && !that.pollingIsSet ) {
                             that.pollingIsSet = true;
 
-                            that.taskPolling = Observable.interval( 2000 )
-                                .switchMap(() => {
+                            that.taskPolling = interval( 2000 ).pipe(switchMap(() => {
                                     if ( that.currentTask ) {
                                         return that.service.task( that.currentTask.oid );
                                     }
-                                } ).map(( data ) => data )
+                                } ))
+                                .pipe(map(( data ) => data ))
                                 .subscribe(( data ) => {
                                     that.currentTask = data.task
                                 } );

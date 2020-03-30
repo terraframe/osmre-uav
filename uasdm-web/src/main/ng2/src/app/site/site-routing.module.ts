@@ -1,7 +1,7 @@
 import { NgModule, Injectable, Inject } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';

@@ -17,75 +17,70 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Location } from '@angular/common';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import 'rxjs/add/operator/switchMap';
+import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { Account, User } from '../../model/account';
 
-import { EventService } from '../../../shared/service/event.service';
 import { AccountService } from '../../service/account.service';
 
-@Component( {
-    selector: 'account',
-    templateUrl: './account.component.html',
-    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
-} )
+@Component({
+	selector: 'account',
+	templateUrl: './account.component.html',
+	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
+})
 export class AccountComponent implements OnInit {
-    account: Account;
-
+	account: Account;
+	certainPassword: string;
     /*
      * Observable subject for Account changes.  Called when create is successful 
      */
-    public onAccountChange: Subject<User>;
+	public onAccountChange: Subject<User>;
 
-    constructor( private service: AccountService, public bsModalRef: BsModalRef ) { }
+	constructor(private service: AccountService, public bsModalRef: BsModalRef) { }
 
-    ngOnInit(): void {
-        this.onAccountChange = new Subject();
-    }
+	ngOnInit(): void {
+		this.onAccountChange = new Subject();
+	}
 
-    init( account: Account ): void {
-        this.account = account;
-    }
+	init(account: Account): void {
+		this.account = account;
+	}
 
-    cancel(): void {
-        if ( this.account.user.newInstance === true ) {
-            this.bsModalRef.hide();
-        }
-        else {
-            this.service.unlock( this.account.user.oid ).then( response => {
-                this.bsModalRef.hide();
-            } );
-        }
-    }
+	cancel(): void {
+		if (this.account.user.newInstance === true) {
+			this.bsModalRef.hide();
+		}
+		else {
+			this.service.unlock(this.account.user.oid).then(response => {
+				this.bsModalRef.hide();
+			});
+		}
+	}
 
-    onSubmit(): void {
-        let roleIds: string[] = [];
+	onSubmit(): void {
+		let roleIds: string[] = [];
 
-        for ( let i = 0; i < this.account.groups.length; i++ ) {
-            let group = this.account.groups[i];
+		for (let i = 0; i < this.account.groups.length; i++) {
+			let group = this.account.groups[i];
 
-            for ( let j = 0; j < group.roles.length; j++ ) {
-                let role = group.roles[j];
+			for (let j = 0; j < group.roles.length; j++) {
+				let role = group.roles[j];
 
-                if ( role.assigned ) {
-                    roleIds.push( role.roleId );
-                }
-            }
-        }
+				if (role.assigned) {
+					roleIds.push(role.roleId);
+				}
+			}
+		}
 
-        if ( !this.account.changePassword && !this.account.user.newInstance ) {
-            delete this.account.user.password;
-        }
+		if (!this.account.changePassword && !this.account.user.newInstance) {
+			delete this.account.user.password;
+		}
 
-        this.service.apply( this.account.user, roleIds ).then( response => {
-            this.onAccountChange.next(response);
-            this.bsModalRef.hide();
-        } );
-    }  
+		this.service.apply(this.account.user, roleIds).then(response => {
+			this.onAccountChange.next(response);
+			this.bsModalRef.hide();
+		});
+	}
 }

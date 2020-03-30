@@ -1,18 +1,24 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { formatNumber, ParsedNumber } from 'libphonenumber-js';
+import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 
 @Pipe({
-  name: 'phone'
+	name: 'phone'
 })
 export class PhonePipe implements PipeTransform {
 
-  transform(value: ParsedNumber, args?: string): any {
-    if (!value) {
-      return value;
-    }
+	transform(value: any, args?: string): any {
+		const phoneUtil = PhoneNumberUtil.getInstance();
 
-    return formatNumber({ country: 'US', phone: value.toString() }, 'International');
-  }
+		if (value != null) {
+			const number = phoneUtil.parseAndKeepRawInput(value, 'US');
+
+			if (phoneUtil.isValidNumber(number)) {
+				return phoneUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
+			}
+		}
+
+		return value;
+	}
 
 }

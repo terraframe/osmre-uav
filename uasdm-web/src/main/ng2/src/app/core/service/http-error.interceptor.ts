@@ -4,15 +4,14 @@ import {
     HttpInterceptor,
     HttpHandler,
     HttpRequest,
-    HttpResponse,
     HttpResponseBase,
     HttpErrorResponse
 } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { Observable } from 'rxjs';
-import 'rxjs/add/operator/do';
+import { tap } from 'rxjs/operators';
 
 import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
 
@@ -31,7 +30,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
     intercept( request: HttpRequest<any>, next: HttpHandler ): Observable<HttpEvent<any>> {
 
-        return next.handle( request ).do(( event: HttpEvent<any> ) => {
+        return next.handle( request ).pipe(tap(( event: HttpEvent<any> ) => {
             if ( event instanceof HttpResponseBase ) {
                 const response = event as HttpResponseBase;
                 if ( response.status === 302 ) {
@@ -51,6 +50,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
                 }
             }
-        } );
+        } ));
     }
 }

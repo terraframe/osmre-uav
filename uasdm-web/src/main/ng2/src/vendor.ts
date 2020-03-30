@@ -20,7 +20,7 @@ import 'ngx-bootstrap/alert';
 import 'ngx-bootstrap/accordion';
 
 // Tree Widget
-import 'angular-tree-component';
+// import 'angular-tree-component';
 
 // Context menu
 import 'ngx-contextmenu';

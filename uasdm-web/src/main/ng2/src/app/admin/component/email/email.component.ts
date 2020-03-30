@@ -21,7 +21,7 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, View
 import { HttpErrorResponse } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { Email } from '../../model/email';
 import { EmailService } from '../../service/email.service';

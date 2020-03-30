@@ -17,20 +17,16 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
-
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/switchMap';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
 
-import { Account, User } from '../../model/account';
+import { User } from '../../model/account';
 
 import { AccountService } from '../../service/account.service';
 

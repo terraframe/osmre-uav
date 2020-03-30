@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/finally';
+import { map } from 'rxjs/operators';
+// import 'rxjs/add/operator/toPromise';
+import { finalize } from 'rxjs/operators';
 
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
@@ -37,9 +37,9 @@ export class ProductService {
 
         return this.http
             .get<ProductDetail>( acp + '/product/detail', { params: params } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -53,9 +53,9 @@ export class ProductService {
 
         return this.http
             .post<void>( acp + '/product/remove', JSON.stringify( { id: id } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 

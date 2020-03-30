@@ -1,13 +1,9 @@
 import {
     trigger,
-    state,
     style,
     animate,
     transition,
-    group, 
-    query, 
-    stagger,
-    keyframes
+    group
 } from '@angular/animations';
 
 

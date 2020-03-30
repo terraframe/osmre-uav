@@ -17,18 +17,13 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, OnInit, ViewChild, ElementRef, Inject, Input } from '@angular/core';
-import { ActivatedRoute, Params, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { FileSelectDirective, FileDropDirective, FileUploader, FileUploaderOptions } from 'ng2-file-upload/ng2-file-upload';
-
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/switchMap';
+import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
 import { EventService } from '../../../shared/service/event.service';
-import { SystemLogoService } from '../../service/system-logo.service';
-import { SystemLogo } from '../../model/system-logo';
 
 declare var acp: any;
 
@@ -39,7 +34,7 @@ declare var acp: any;
     styles: []
 } )
 export class SystemLogoComponent implements OnInit {
-    oid: SystemLogo;
+    oid: string;
     message: string = null;
 
     public uploader: FileUploader;
@@ -52,10 +47,8 @@ export class SystemLogoComponent implements OnInit {
     context: string;
 
     constructor(
-        private router: Router,
         private route: ActivatedRoute,
         private location: Location,
-        private iconService: SystemLogoService,
         private eventService: EventService ) {
         this.context = acp as string;
     }

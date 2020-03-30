@@ -20,7 +20,8 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
-import 'rxjs/add/operator/toPromise';
+// import 'rxjs/add/operator/toPromise';
+import { finalize } from 'rxjs/operators';
 
 import { EventService } from '../../shared/service/event.service'
 
@@ -40,9 +41,9 @@ export class ForgotPasswordCompleteService {
 
         return this.http
             .post<void>( acp + '/forgotpassword/complete', JSON.stringify( { newPassword: newPassword, token: token } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise();
     }
 }

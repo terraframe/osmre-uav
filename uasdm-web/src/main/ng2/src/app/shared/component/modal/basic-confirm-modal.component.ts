@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { Subject } from 'rxjs/Subject';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Subject } from 'rxjs';
 import { ModalTypes } from '../../model/modal';
 
 @Component( {
@@ -18,7 +18,7 @@ export class BasicConfirmModalComponent {
 
     @Input() submitText: string = 'Submit';
 
-    @Input() cancelText: string = 'Cancel';
+    @Input() cancelText: string = 'Cancel'; 
 
     @Input() type: ModalTypes = ModalTypes.warning;
 

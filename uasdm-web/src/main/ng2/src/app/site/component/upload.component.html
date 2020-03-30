@@ -156,7 +156,7 @@
                     <div *ngIf="showFileSelectPanel" class="uploader-container" style="margin-top: 20px;" #uploader></div>
 
                     <button type="button btn btn-primary" [disabled]="!ngForm.valid || disabled" class="btn btn-primary"
-                        style="margin-top: 20px;" (click)="handleUpload($event)">
+                        style="margin-top: 20px;" (click)="handleUpload()">
                         <i class="icon-upload icon-white"></i>
                         Upload
                     </button>

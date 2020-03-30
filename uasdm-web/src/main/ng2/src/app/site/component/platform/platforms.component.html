@@ -22,8 +22,8 @@
 					<tr *ngFor="let platform of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
 						class="fade-ngRepeat-item">
 						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(platform, $event)" title="Edit platform"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform, $event)" title="Remove platform"></a>
+						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(platform)" title="Edit platform"></a>
+						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform)" title="Remove platform"></a>
 					    </td>
 						<td class="label-column">{{ platform.name }}</td>
 						<td class="label-column">{{ platform.displayLabel }}</td>

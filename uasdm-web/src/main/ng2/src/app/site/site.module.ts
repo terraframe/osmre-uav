@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TreeModule } from 'angular-tree-component';
+//import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -52,7 +52,7 @@ import '../rxjs-extensions';
         FormsModule,
         ReactiveFormsModule,
         NgxPaginationModule,
-        TreeModule,
+//        TreeModule,
         ContextMenuModule,
         //        ModalModule.forRoot(),
         AlertModule,

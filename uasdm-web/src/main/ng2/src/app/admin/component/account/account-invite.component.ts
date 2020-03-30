@@ -17,16 +17,12 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/switchMap';
 
 import { Account, UserInvite } from '../../model/account';
 
 import { AccountService } from '../../service/account.service';
-import { AccountComponent } from './account.component';
 
 @Component( {
     selector: 'account-invite',

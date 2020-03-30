@@ -18,10 +18,10 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/finally';
+// import 'rxjs/add/operator/toPromise';
+import { finalize } from 'rxjs/operators';
 
 import { EventService } from './event.service';
 
@@ -33,48 +33,48 @@ declare var acp: any;
 @Injectable()
 export class SessionService {
 
-    constructor( private eventService: EventService, private http: HttpClient, private authService: AuthService ) {
-    }
+	constructor(private eventService: EventService, private http: HttpClient, private authService: AuthService) {
+	}
 
-    login( username: string, password: string ): Promise<User> {
+	login(username: string, password: string): Promise<User> {
 
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .post<User>( acp + '/session/login', JSON.stringify( { username: username, password: password } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
-            .toPromise()
-            .then(( user: User ) => {
-                this.authService.setUser( user );
+		return this.http
+			.post<User>(acp + '/session/login', JSON.stringify({ username: username, password: password }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+			.then((user: User) => {
+				this.authService.setUser(user);
 
-                return user;
-            } )
-    }
+				return user;
+			})
+	}
 
-    logout(): Promise<void> {
+	logout(): Promise<void> {
 
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .post<void>( acp + '/session/logout', { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
-            .toPromise()
-            .then(() => {
-                this.authService.setUser( null );
+		return this.http
+			.post<void>(acp + '/session/logout', { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+			.then(() => {
+				this.authService.setUser(null);
 
-                return;
-            } )
-    }
+				return;
+			})
+	}
 }

@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { LngLatBounds } from 'mapbox-gl';
 import { Observable } from 'rxjs';
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/finally';
+// import 'rxjs/add/operator/toPromise';
+import { finalize, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../../shared/service/auth.service';
 import { EventService } from '../../shared/service/event.service';
 import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, Product, SiteObjectsResultSet } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 
@@ -37,8 +36,9 @@ export class ManagementService {
         params = params.set( 'id', id );
 
         if ( key != null ) {
-          params = params.set( 'key', key );
+          params = params.set( 'key', key);
         }
+
         if ( pageNumber != null ) {
           params = params.set( 'pageNumber', pageNumber.toString() );
         }
@@ -99,9 +99,9 @@ export class ManagementService {
 
         return this.http
             .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/edit', JSON.stringify( { id: id } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -115,9 +115,9 @@ export class ManagementService {
 
         return this.http
             .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + '/project/run-ortho', JSON.stringify( { id: id, excludes: excludes } ), { headers: headers } )
-            .finally(() => {
-                //   this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+//				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -131,9 +131,9 @@ export class ManagementService {
 
         return this.noErrorHttpClient
             .post<SiteEntity>( acp + '/project/update', JSON.stringify( { entity: entity } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -163,9 +163,9 @@ export class ManagementService {
 
         return this.http
             .post<{ item: SiteEntity, attributes: AttributeType[] }>( acp + url, JSON.stringify( params ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -189,9 +189,9 @@ export class ManagementService {
 
         return this.noErrorHttpClient
             .post<SiteEntity>( acp + '/project/apply-with-parent', JSON.stringify( params ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -230,9 +230,9 @@ export class ManagementService {
 
         return this.http
             .post<void>( acp + '/project/remove', JSON.stringify( { id: id } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -246,9 +246,9 @@ export class ManagementService {
 
         return this.http
             .post<void>( acp + '/project/removeObject', JSON.stringify( { id: componentId, key: key } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -262,9 +262,9 @@ export class ManagementService {
 
         return this.http
             .post<void>( acp + '/project/remove-task', JSON.stringify( { uploadId: uploadId } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 
@@ -301,11 +301,11 @@ export class ManagementService {
         }
 
         return this.noErrorHttpClient.get<Blob>( acp + '/project/download', { params: params, responseType: 'blob' as 'json' } )
-            .finally(() => {
+			.pipe(finalize(() => {
                 if ( useSpinner ) {
-                    this.eventService.complete();
+				this.eventService.complete();
                 }
-            } )
+			}))
     }
 
     downloadAll( id: string, key: string, useSpinner: boolean ): Observable<Blob> {
@@ -319,17 +319,18 @@ export class ManagementService {
         }
 
         return this.noErrorHttpClient.get<Blob>( acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' } )
-            .finally(() => {
+			.pipe(finalize(() => {
                 if ( useSpinner ) {
                     this.eventService.complete();
                 }
-            } )
+			}))
     }
 
     search( terms: Observable<string> ) {
-        return terms.debounceTime( 400 )
-            .distinctUntilChanged()
-            .switchMap( term => this.searchEntries( term ) );
+        return terms
+            .pipe(debounceTime( 400 ))
+            .pipe(distinctUntilChanged())
+            .pipe(switchMap( term => this.searchEntries( term ) ));
     }
 
     searchEntries( term: string ): Observable<string> {
@@ -361,9 +362,9 @@ export class ManagementService {
 
         return this.noErrorHttpClient
             .post<void>( acp + '/project/submit-metadata', JSON.stringify( { json: metaObj } ), { headers: headers } )
-            .finally(() => {
-                this.eventService.complete();
-            } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
             .toPromise()
     }
 

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/cor
 import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 
 import { SiteEntity } from '../../model/management';

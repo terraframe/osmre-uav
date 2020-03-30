@@ -1,17 +1,15 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { Subject } from 'rxjs/Subject';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Subject } from 'rxjs';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 
-import { SiteEntity, AttributeType, Condition, SiteObjectsResultSet } from '../../model/management';
+import { SiteEntity, SiteObjectsResultSet } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
 
-import { ImagePreviewModalComponent } from './image-preview-modal.component';
-import { FileItem } from 'ng2-file-upload';
 
 import { 
     fadeInOnEnterAnimation, 
@@ -19,7 +17,6 @@ import {
     slideInLeftOnEnterAnimation,
     slideInRightOnEnterAnimation,
  } from 'angular-animations';
-import { initDomAdapter } from '@angular/platform-browser/src/browser';
 
 declare var acp: string;
 

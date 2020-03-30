@@ -30,11 +30,11 @@
                 <div class="card-right">   
                     <ul style="list-style: none;padding: 0;">
                         <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-globe" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product, $event)" title="Show on map">Map It</a>
+                            <a class="fa fa-globe" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product)" title="Show on map">Map It</a>
                             <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-info-circle" (click)="handleGetInfo(product, $event)" title="See details">Get Info</a>
+                            <a class="fa fa-info-circle" (click)="handleGetInfo(product)" title="See details">Get Info</a>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
                             <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)" title="Delete">Delete</a>

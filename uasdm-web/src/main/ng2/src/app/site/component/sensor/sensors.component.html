@@ -23,8 +23,8 @@
 					<tr *ngFor="let sensor of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
 						class="fade-ngRepeat-item">
 						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(sensor, $event)" title="Edit sensor"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(sensor, $event)" title="Remove sensor"></a>
+						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(sensor)" title="Edit sensor"></a>
+						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(sensor)" title="Remove sensor"></a>
 					    </td>
 						<td class="label-column">{{ sensor.name }}</td>
 						<td class="label-column">{{ sensor.displayLabel }}</td>

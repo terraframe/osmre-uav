@@ -1,4 +1,4 @@
-import 'core-js/client/shim.min.js';
+import 'core-js/features/reflect';
 import 'web-animations-js';
 import 'zone.js/dist/zone';
 

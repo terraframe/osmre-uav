@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { TabsetComponent } from 'ngx-bootstrap';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { Map, LngLatBounds, NavigationControl, ImageSource, MapboxEvent } from 'mapbox-gl';
-import { Observable } from 'rxjs/Observable';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Map, LngLatBounds, NavigationControl, MapboxEvent } from 'mapbox-gl';
+import { Observable } from 'rxjs';
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
@@ -26,7 +26,6 @@ import {
 
 
 declare var acp: any;
-declare var gpAppType: any;
 
 @Component( {
     selector: 'projects',
@@ -360,7 +359,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    handleUploadFile( item: SiteEntity ): void {
+    handleUploadFile(): void {
 
         this.bsModalRef = this.modalService.show( UploadModalComponent, {
             animated: true,
@@ -411,7 +410,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ignoreBackdropClick: true,
                 'class': 'upload-modal'
             } );
-            this.bsModalRef.content.init( true, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
+            this.bsModalRef.content.init( true, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
 
 
             if ( parent != null ) {
@@ -453,7 +452,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ignoreBackdropClick: true,
                 'class': 'edit-modal'
             } );
-            this.bsModalRef.content.init( false, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
+            this.bsModalRef.content.init( false, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom() );
 
             this.bsModalRef.content.onNodeChange.subscribe( entity => {
                 // Update the node
