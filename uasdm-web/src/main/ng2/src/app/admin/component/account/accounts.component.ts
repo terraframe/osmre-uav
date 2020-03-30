@@ -29,98 +29,108 @@ import { PageResult } from '../../../shared/model/page';
 import { User, Account } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 import { AccountComponent } from './account.component';
+import { AccountInviteComponent } from './account-invite.component';
 
-@Component( {
-    selector: 'accounts',
-    templateUrl: './accounts.component.html',
-    styles: ['./accounts.css']
-} )
+@Component({
+	selector: 'accounts',
+	templateUrl: './accounts.component.html',
+	styles: ['./accounts.css']
+})
 export class AccountsComponent implements OnInit {
-    res: PageResult<User> = {
-        resultSet: [],
-        count: 0,
-        pageNumber: 1,
-        pageSize: 10
-    };
-    p: number = 1;
+	res: PageResult<User> = {
+		resultSet: [],
+		count: 0,
+		pageNumber: 1,
+		pageSize: 10
+	};
+	p: number = 1;
 
     /*
      * Reference to the modal current showing
     */
-    private bsModalRef: BsModalRef;
+	private bsModalRef: BsModalRef;
 
 
-    constructor( private router: Router, private service: AccountService, private modalService: BsModalService ) { }
+	constructor(private router: Router, private service: AccountService, private modalService: BsModalService) { }
 
-    ngOnInit(): void {
-        this.service.page( this.p ).then( res => {
-            this.res = res;
-        } );
-    }
+	ngOnInit(): void {
+		this.service.page(this.p).then(res => {
+			this.res = res;
+		});
+	}
 
-    handleDelete( user: User ): void {
-        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-        } );
-        this.bsModalRef.content.message = 'Are you sure you want to delete the user [' + user.username + ']?';
-        this.bsModalRef.content.data = user;
-        this.bsModalRef.content.type = 'DANGER';
-        this.bsModalRef.content.submitText = 'Delete';
+	handleDelete(user: User): void {
+		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+		});
+		this.bsModalRef.content.message = 'Are you sure you want to delete the user [' + user.username + ']?';
+		this.bsModalRef.content.data = user;
+		this.bsModalRef.content.type = 'DANGER';
+		this.bsModalRef.content.submitText = 'Delete';
 
-        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
-            this.remove( data );
-        } );
-    }
+		(<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
+			this.remove(data);
+		});
+	}
 
-    remove( user: User ): void {
-        this.service.remove( user.oid ).then( response => {
-            this.res.resultSet = this.res.resultSet.filter( h => h.oid !== user.oid );
-        } );
-    }
+	remove(user: User): void {
+		this.service.remove(user.oid).then(response => {
+			this.res.resultSet = this.res.resultSet.filter(h => h.oid !== user.oid);
+		});
+	}
 
-    edit( user: User ): void {
-        this.service.edit( user.oid ).then( account => {
-            this.bsModalRef = this.modalService.show( AccountComponent, {
-                animated: true,
-                backdrop: true,
-                ignoreBackdropClick: true,
-                'class': 'upload-modal'
-            } );
-            this.bsModalRef.content.init( account );
+	edit(user: User): void {
+		this.service.edit(user.oid).then(account => {
+			this.bsModalRef = this.modalService.show(AccountComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				'class': 'upload-modal'
+			});
+			this.bsModalRef.content.init(account);
 
-            this.bsModalRef.content.onAccountChange.subscribe( entity => {
-                this.onPageChange( this.p );
-            } );
-        } );
-    }
+			this.bsModalRef.content.onAccountChange.subscribe(entity => {
+				this.onPageChange(this.p);
+			});
+		});
+	}
 
-    newInstance( pageNumber: number ): void {
-        this.service.newInvite().then( account => {
-            this.bsModalRef = this.modalService.show( AccountComponent, {
-                animated: true,
-                backdrop: true,
-                ignoreBackdropClick: true,
-                'class': 'upload-modal'
-            } );
-            this.bsModalRef.content.init( account );
+	newInstance(pageNumber: number): void {
+		this.service.newInvite().then(account => {
+			this.bsModalRef = this.modalService.show(AccountComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				'class': 'upload-modal'
+			});
+			this.bsModalRef.content.init(account);
 
-            this.bsModalRef.content.onAccountChange.subscribe( entity => {
-                this.onPageChange( this.p );
-            } );
-        } );
-    }
+			this.bsModalRef.content.onAccountChange.subscribe(entity => {
+				this.onPageChange(this.p);
+			});
+		});
+	}
 
-    onPageChange( pageNumber: number ): void {
-        this.service.page( pageNumber ).then( res => {
-            this.res = res;
+	onPageChange(pageNumber: number): void {
+		this.service.page(pageNumber).then(res => {
+			this.res = res;
 
-            this.p = pageNumber;
-        } );
-    }
+			this.p = pageNumber;
+		});
+	}
 
-    inviteUsers(): void {
-        this.router.navigate( ['/admin/invite'] );
-    }
+	inviteUsers(): void {
+
+		this.service.newInvite().then((account: Account) => {
+			this.bsModalRef = this.modalService.show(AccountInviteComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				'class': 'upload-modal'
+			});
+			this.bsModalRef.content.init(account.groups, account.bureaus);
+		});
+	}
 }

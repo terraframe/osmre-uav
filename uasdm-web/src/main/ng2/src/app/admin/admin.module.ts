@@ -32,7 +32,6 @@ import { SystemLogoService } from './service/system-logo.service';
 import { EmailService } from './service/email.service';
 import { AccountService } from './service/account.service';
 
-import { AdminHeaderComponent } from './component/admin-header/admin-header.component';
 import { AccountsComponent } from './component/account/accounts.component';
 import { AccountInviteComponent } from './component/account/account-invite.component';
 import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
@@ -61,7 +60,6 @@ import { SharedModule } from '../shared/shared.module';
 		AdminRoutingModule
 	],
 	declarations: [
-		AdminHeaderComponent,
 		SystemLogoComponent,
 		SystemLogosComponent,
 		AccountsComponent,

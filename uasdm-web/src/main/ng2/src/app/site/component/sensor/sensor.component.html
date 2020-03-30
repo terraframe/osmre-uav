@@ -34,7 +34,7 @@
     <div class="form-group">
       <label>Wave Length</label>
       <div *ngFor="let wavelength of waveLengths">
-        <input type="checkbox" [value]="wavelength" [name]="wavelength" [checked]="(sensor.waveLength && (-1 !== sensor.waveLength.indexOf(wavelength)) ? 'checked' : '')" (change)="updateSelectedWaveLength($event)" />{{wavelength}}
+        <boolean-field [value]="sensor.waveLength && (-1 !== sensor.waveLength.indexOf(wavelength))" [label]="wavelength" (valueChange)="updateSelectedWaveLength(wavelength, $event)"></boolean-field>
       </div>
     </div>
     <div class="btn-holder" style="text-align: right;">

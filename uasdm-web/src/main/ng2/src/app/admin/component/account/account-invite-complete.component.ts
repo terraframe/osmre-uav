@@ -32,55 +32,56 @@ import { AccountService } from '../../service/account.service';
 
 declare let acp: string;
 
-@Component( {
-    selector: 'account-invite-complete',
-    templateUrl: './account-invite-complete.component.html',
-    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
-} )
+@Component({
+	selector: 'account-invite-complete',
+	templateUrl: './account-invite-complete.component.html',
+	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
+})
 export class AccountInviteCompleteComponent implements OnInit {
-    user: User;
-    private sub: any;
-    token: string;
+	user: User;
+	private sub: any;
+	token: string;
 
     /*
      * Reference to the modal current showing
     */
-    private bsModalRef: BsModalRef;
+	private bsModalRef: BsModalRef;
 
-    constructor(
-        private service: AccountService,
-        private route: ActivatedRoute,
-        private modalService: BsModalService ) {
-    }
+	constructor(
+		private service: AccountService,
+		private route: ActivatedRoute,
+		private modalService: BsModalService) {
+	}
 
-    ngOnInit(): void {
-        this.service.uasdmNewInstance().then(( user: User ) => {
-            this.user = user;
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
+	ngOnInit(): void {
+		this.service.uasdmNewInstance().then((user: User) => {
+			this.user = user;
+			this.user.phoneNumber = '';
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
 
-        this.sub = this.route.params.subscribe( params => {
-            this.token = params['token'];
-        } );
-    }
+		this.sub = this.route.params.subscribe(params => {
+			this.token = params['token'];
+		});
+	}
 
-    cancel(): void {
-        window.location.href = acp;
-    }
+	cancel(): void {
+		window.location.href = acp;
+	}
 
-    onSubmit(): void {
-        this.service.inviteComplete( this.user, this.token ).then( response => {
-            window.location.href = acp;
-        } );
-    }
+	onSubmit(): void {
+		this.service.inviteComplete(this.user, this.token).then(response => {
+			window.location.href = acp;
+		});
+	}
 
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-            this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
-    }
+	error(err: HttpErrorResponse): void {
+		// Handle error
+		if (err !== null) {
+			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+			this.bsModalRef.content.message = (err.error.localizedMessage || err.error.message || err.message);
+		}
+	}
 
 }

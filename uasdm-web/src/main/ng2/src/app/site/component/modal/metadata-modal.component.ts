@@ -11,188 +11,190 @@ import { Platform } from '../../model/platform';
 
 declare var acp: string;
 
-@Component( {
-    selector: 'metadata-modal',
-    templateUrl: './metadata-modal.component.html',
-    styleUrls: []
-} )
+@Component({
+	selector: 'metadata-modal',
+	templateUrl: './metadata-modal.component.html',
+	styleUrls: []
+})
 export class MetadataModalComponent {
     /*
      * collectionId for the metadata
      */
-    collectionId: string;
+	collectionId: string;
 
-    message: string = null;
+	message: string = null;
 
-    disabled: boolean = false;
+	disabled: boolean = false;
 
-    // imageHeight: string;
+	// imageHeight: string;
 
-    // imageWidth: string;
+	// imageWidth: string;
 
-    metaObject: any = {
-        collectionId: "",
-        // agency:{
-        //     name:"Department of Interior",
-        //     shortName: "",
-        //     fieldCenter: ""
-        // },
-        pointOfContact: {
-            name: "",
-            email: ""
-        },
-        // project: {
-        //     name:"",
-        //     shortName:"",
-        //     description:""
-        // },
-        // mission: {
-        //     name:"",
-        //     description:""
-        // },
-        // collect: {
-        //     name:"",
-        //     description:""
-        // },
-        platform: {
-            name: "",
-            otherName: "",
-            class: "",
-            type: "",
-            serialNumber: "",
-            faaIdNumber: ""
-        },
-        sensor: {
-            name: "",
-            otherName: "",
-            type: "",
-            model: "",
-            wavelength: [],
-            // imageWidth:"",
-            // imageHeight:"",
-            sensorWidth: "",
-            sensorHeight: "",
-            pixelSizeWidth: "",
-            pixelSizeHeight: ""
-        },
-        upload: {
-            dataType: "raw"
-        }
-    };
+	metaObject: any = {
+		collectionId: "",
+		// agency:{
+		//     name:"Department of Interior",
+		//     shortName: "",
+		//     fieldCenter: ""
+		// },
+		pointOfContact: {
+			name: "",
+			email: ""
+		},
+		// project: {
+		//     name:"",
+		//     shortName:"",
+		//     description:""
+		// },
+		// mission: {
+		//     name:"",
+		//     description:""
+		// },
+		// collect: {
+		//     name:"",
+		//     description:""
+		// },
+		platform: {
+			name: "",
+			otherName: "",
+			class: "",
+			type: "",
+			serialNumber: "",
+			faaIdNumber: ""
+		},
+		sensor: {
+			name: "",
+			otherName: "",
+			type: "",
+			model: "",
+			wavelength: [],
+			// imageWidth:"",
+			// imageHeight:"",
+			sensorWidth: "",
+			sensorHeight: "",
+			pixelSizeWidth: "",
+			pixelSizeHeight: ""
+		},
+		upload: {
+			dataType: "raw"
+		}
+	};
 
     /*
      * Observable subject called when metadata upload is successful
      */
-    public onMetadataChange: Subject<string>;
+	public onMetadataChange: Subject<string>;
 
-    sensors: Sensor[] = [];
-    platforms: Platform[] = [];
-    wavelengths: string[] = WAVELENGTHS;
+	sensors: Sensor[] = [];
+	platforms: Platform[] = [];
+	wavelengths: string[] = WAVELENGTHS;
 
-    otherSensorId: string = "";
-    otherPlatformId: string = "";
+	otherSensorId: string = "";
+	otherPlatformId: string = "";
 
-    constructor( public bsModalRef: BsModalRef, private service: ManagementService ) { }
+	constructor(public bsModalRef: BsModalRef, private service: ManagementService) { }
 
-    init( collectionId: string ): void {
-        this.collectionId = collectionId;
-        
-        this.onMetadataChange = new Subject();
+	init(collectionId: string): void {
+		this.collectionId = collectionId;
 
-        this.service.getMetadataOptions( this.collectionId ).then(( options ) => {
-            this.sensors = options.sensors;
-            this.platforms = options.platforms;
+		this.onMetadataChange = new Subject();
 
-            this.metaObject.pointOfContact.name = options.name;
-            this.metaObject.pointOfContact.email = options.email;
-            this.metaObject.sensor.name = options.sensor;
-            this.metaObject.platform.name = options.platform;
+		this.service.getMetadataOptions(this.collectionId).then((options) => {
+			this.sensors = options.sensors;
+			this.platforms = options.platforms;
 
-            this.sensors.forEach( sensor => {
-                if ( sensor.name === 'OTHER' ) {
-                    this.otherSensorId = sensor.oid;
-                }
-            } );
+			this.metaObject.pointOfContact.name = options.name;
+			this.metaObject.pointOfContact.email = options.email;
+			this.metaObject.sensor.name = options.sensor;
+			this.metaObject.platform.name = options.platform;
 
-            this.platforms.forEach( platform => {
-                if ( platform.name === 'OTHER' ) {
-                    this.otherPlatformId = platform.oid;
-                }
-            } );
-            
-            this.handleSensorSelect();
-            this.handlePlatformSelect();
-            
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
-    }
+			this.sensors.forEach(sensor => {
+				if (sensor.name === 'OTHER') {
+					this.otherSensorId = sensor.oid;
+				}
+			});
 
-    handleSensorSelect(): void {
-        if ( this.metaObject.sensor.name != null && this.metaObject.sensor.name !== "" && this.metaObject.sensor.name !== this.otherSensorId ) {
-            const sensor = this.getSelectedSensor();
+			this.platforms.forEach(platform => {
+				if (platform.name === 'OTHER') {
+					this.otherPlatformId = platform.oid;
+				}
+			});
 
-            this.metaObject.sensor.type = sensor.sensorType;
-            this.metaObject.sensor.model = sensor.model;
-            this.metaObject.sensor.wavelength = sensor.waveLength;
-        }
-    }
+			this.handleSensorSelect();
+			this.handlePlatformSelect();
 
-    handlePlatformSelect(): void {
-        if ( this.metaObject.platform.name != null  && this.metaObject.platform.name !== "" && this.metaObject.platform.name !== this.otherPlatformId ) {
-            const platform = this.getSelectedPlatform();
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
 
-            this.metaObject.platform.type = platform.platformType;
-        }
-    }
+	handleSensorSelect(): void {
+		if (this.metaObject.sensor.name != null && this.metaObject.sensor.name !== "" && this.metaObject.sensor.name !== this.otherSensorId) {
+			const sensor = this.getSelectedSensor();
 
-    getSelectedSensor(): Sensor {
-        var indexOf = this.sensors.findIndex( i => i.oid === this.metaObject.sensor.name );
+			this.metaObject.sensor.type = sensor.sensorType;
+			this.metaObject.sensor.model = sensor.model;
+			this.metaObject.sensor.wavelength = [...sensor.waveLength];
 
-        return this.sensors[indexOf];
-    }
+			console.log(this.metaObject.sensor);
+		}
+	}
 
-    getSelectedPlatform(): Platform {
-        var indexOf = this.platforms.findIndex( i => i.oid === this.metaObject.platform.name );
+	handlePlatformSelect(): void {
+		if (this.metaObject.platform.name != null && this.metaObject.platform.name !== "" && this.metaObject.platform.name !== this.otherPlatformId) {
+			const platform = this.getSelectedPlatform();
 
-        return this.platforms[indexOf];
-    }
+			this.metaObject.platform.type = platform.platformType;
+		}
+	}
 
-    updateSelectedWaveLength( event ) {
+	getSelectedSensor(): Sensor {
+		var indexOf = this.sensors.findIndex(i => i.oid === this.metaObject.sensor.name);
 
-        const indexOf = this.metaObject.sensor.wavelength.indexOf( event.target.name )
+		return this.sensors[indexOf];
+	}
 
-        if ( event.target.checked ) {
+	getSelectedPlatform(): Platform {
+		var indexOf = this.platforms.findIndex(i => i.oid === this.metaObject.platform.name);
 
-            if ( indexOf < 0 ) {
-                this.metaObject.sensor.wavelength.push( event.target.name );
+		return this.platforms[indexOf];
+	}
 
-            }
-        } else {
-            if ( indexOf > -1 ) {
-                this.metaObject.sensor.wavelength.splice( indexOf, 1 );
-            }
-        }
-    }
+	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
 
-    handleSubmit(): void {
+		const indexOf = this.metaObject.sensor.wavelength.indexOf(wavelength)
 
-        this.metaObject.collectionId = this.collectionId;
-        // this.metaObject.imageWidth = this.imageWidth;
-        // this.metaObject.imageHeight = this.imageHeight;
+		if (checked) {
 
-        this.service.submitCollectionMetadata( this.metaObject ).then(() => {
-            this.bsModalRef.hide();
-            this.onMetadataChange.next( this.collectionId );
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
-    }
+			if (indexOf < 0) {
+				this.metaObject.sensor.wavelength.push(wavelength);
 
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.message = ( err.error.localizedMessage || err.error.message || err.message );
-        }
-    }
+			}
+		} else {
+			if (indexOf > -1) {
+				this.metaObject.sensor.wavelength.splice(indexOf, 1);
+			}
+		}
+	}
+
+	handleSubmit(): void {
+
+		this.metaObject.collectionId = this.collectionId;
+		// this.metaObject.imageWidth = this.imageWidth;
+		// this.metaObject.imageHeight = this.imageHeight;
+
+		this.service.submitCollectionMetadata(this.metaObject).then(() => {
+			this.bsModalRef.hide();
+			this.onMetadataChange.next(this.collectionId);
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
+
+	error(err: HttpErrorResponse): void {
+		// Handle error
+		if (err !== null) {
+			this.message = (err.error.localizedMessage || err.error.message || err.message);
+		}
+	}
 }

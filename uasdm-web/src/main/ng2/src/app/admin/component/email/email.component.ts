@@ -17,51 +17,40 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, Inject, ViewChild } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Location } from '@angular/common';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Component, OnInit } from '@angular/core';
 
 import { Email } from '../../model/email';
 import { EmailService } from '../../service/email.service';
 
 
-@Component( {
+@Component({
 
-    selector: 'email',
-    templateUrl: './email.component.html',
-    styleUrls: []
-} )
+	selector: 'email',
+	templateUrl: './email.component.html',
+	styleUrls: []
+})
 export class EmailComponent implements OnInit {
-    public email: Email = {
-        oid: '',
-        server: '',
-        username: '',
-        password: '',
-        port: 0,
-        from: '',
-        to: '',
-    };
+	public email: Email = {
+		oid: '',
+		server: '',
+		username: '',
+		password: '',
+		port: 0,
+		from: '',
+		to: '',
+	};
 
-    constructor(
-        private service: EmailService,
-        private location: Location ) {
-    }
+	constructor(private service: EmailService) { }
 
-    ngOnInit(): void {
-        this.service.getInstance().then( email => {
-            this.email = email;
-        } );
-    }
+	ngOnInit(): void {
+		this.service.getInstance().then(email => {
+			this.email = email;
+		});
+	}
 
-    cancel(): void {
-        this.location.back();
-    }
-
-    onSubmit(): void {
-        this.service.apply( this.email ).then( email => {
-            this.location.back();
-        } );
-    }
+	onSubmit(): void {
+		this.service.apply(this.email).then(email => {
+			this.email = email;
+		});
+	}
 }

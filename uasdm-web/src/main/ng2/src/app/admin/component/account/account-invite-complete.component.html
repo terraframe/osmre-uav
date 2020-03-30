@@ -1,114 +1,80 @@
 <div>
   <uasdm-header></uasdm-header>
-  
-  <form #form="ngForm" style="height:calc(100vh - 144px);padding-bottom: 20px;" class="modal-form" (ngSubmit)="form.valid && onSubmit()">    
-    <div class="modal-dialog" style="height: 100%;">
-      <div class="modal-content" style="height: 100%;overflow-y: auto;">
-        <fieldset>            
-          <div class="heading">
-            <h3><localize key="user.heading"></localize></h3>
-          </div>      
-          <hr>        
-          <div class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.firstname"></localize></label>
-            </div>          
-            <div class="holder" >
-              <span class="text">
-                <input type="text" [(ngModel)]="user.firstName" name="firstname" required>
-              </span>
-            </div>
-          </div>          
-          <div class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.lastname"></localize></label>
-            </div>          
-            <div class="holder" >
-              <span class="text">
-                <input type="text" [(ngModel)]="user.lastName" name="lastname" required>
-              </span>
-            </div>
-          </div>  
-          <div class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.phonenumber"></localize></label>
-            </div>          
-            <div class="holder" >
-              <span class="text">
-                <input type="text" [(ngModel)]="user.phoneNumber" name="phoneNumber" >
-              </span>
-<!--               <div *ngIf="aphone.errors?.phone" class="inline-error-message"> -->
-<!--                 <localize key="account.phone.validation"></localize> -->
-<!--               </div>                                           -->
-            </div>
-          </div>           
-          <div class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.email"></localize></label>
-            </div>          
-            <div class="holder" >
-              <span class="text">
-                <input type="text" [(ngModel)]="user.email" name="email" required #aemail="ngModel" email>
-              </span>
-              <div *ngIf="aemail.errors?.email && user.email && user.email.length > 0" class="inline-error-message">
-                <localize key="account.email.validation"></localize>
-              </div>                                          
-            </div>
-          </div>          
-          <div class="heading">
-            <h3><localize key="account.info.heading"></localize></h3>
-          </div>      
-          <hr>          
-          <div class="row-holder">
-            <div class="label-holder">
-              <label><localize key="account.username"></localize></label>
-            </div>          
-            <div class="holder" >
-              <span class="text">
-                <input type="text" [disabled]="!user.newInstance && user.username === 'admin'" [(ngModel)]="user.username" name="username" required>
-              </span>
-            </div>
+
+  <div *ngIf="user != null" class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-8">
+      <form #form="ngForm" (ngSubmit)="form.valid && onSubmit()" [mustMatch]="['password', 'certainPassword']">
+        <div>
+          <h3>User Information</h3>
+        </div>
+        <hr>
+        <div class="form-group">
+          <label>
+            <localize key="account.firstname"></localize>
+          </label>
+          <input type="text" [(ngModel)]="user.firstName" name="firstname" required>
+        </div>
+        <div class="form-group">
+          <label>
+            <localize key="account.lastname"></localize>
+          </label>
+          <input type="text" [(ngModel)]="user.lastName" name="lastname" required>
+        </div>
+        <div class="form-group">
+          <label>
+            <localize key="account.phonenumber"></localize>
+          </label>
+          <input type="text" [(ngModel)]="user.phoneNumber" name="phoneNumber" phoneNumber #phoneNumber="ngModel">
+          <div *ngIf="phoneNumber.errors?.phoneNumber" class="inline-error-message">Invalid phone number</div>
+        </div>
+        <div class="form-group">
+          <label>
+            <localize key="account.email"></localize>
+          </label>
+          <input type="email" [(ngModel)]="user.email" name="email" #aemail="ngModel" required email>
+          <div *ngIf="aemail.errors?.email && user.email && user.email.length > 0" class="inline-error-message">
+            <localize key="account.email.validation"></localize>
           </div>
-          <div>
-            <div class="row-holder">
-              <div class="label-holder">
-                <label><localize key="account.password"></localize></label>
-              </div>          
-              <div class="holder" >
-                <span class="text">
-                  <input type="password" [(ngModel)]="user.password" name="password" #password="ngModel" required minlength="5" maxlength="50" >
-                  <password-strength-bar
-                    [passwordToCheck]="user.password">
-                  </password-strength-bar>                              
-                </span>
-              </div>
-            </div>  
-            <div class="row-holder">
-              <div class="label-holder">
-                <label><localize key="account.certainPassword"></localize></label>
-              </div>          
-              <div class="holder" >
-                <span class="text">
-                  <input type="password" ngModel name="certainPassword" #certainPassword="ngModel" [value]="password"/>
-                </span>
-                <div *ngIf="certainPassword.errors?.equalTo" class="inline-error-message">
-                  <localize key="account.certainPassword.validation"></localize>
-                </div>                                                       
-              </div>
-            </div>  
+        </div>
+        <div>
+          <h3>
+            <localize key="account.info.heading"></localize>
+          </h3>
+        </div>
+        <hr>
+        <div class="form-group">
+          <label>
+            <localize key="account.username"></localize>
+          </label>
+          <input type="text" [disabled]="!user.newInstance && user.username === 'admin'" [(ngModel)]="user.username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label>
+            <localize key="account.password"></localize>
+          </label>
+          <input type="password" [(ngModel)]="user.password" name="password" #password="ngModel" required minlength="5" maxlength="50">
+          <password-strength-bar [passwordToCheck]="user.password"></password-strength-bar>
+        </div>
+        <div class="form-group">
+          <label>
+            <localize key="account.certainPassword"></localize>
+          </label>
+          <input type="password" name="certainPassword" [ngModel]="certainPassword" #certainPassword="ngModel" required />
+          <div *ngIf="certainPassword.errors?.mustMatch" class="inline-error-message">
+            <localize key="account.certainPassword.validation"></localize>
           </div>
-          <div class="row-holder">
-            <div class="label-holder">
-            </div>                    
-            <div class="holder">
-              <div class="button-holder">
-                <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />              
-                <input type="submit" [value]="'dataset.submit' | localize" class="btn btn-primary" [disabled]="!(form.valid)" />
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
+        </div>
+
+        <hr>
+
+        <div class="btn-holder" style="text-align: right;">
+          <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />
+          <input type="submit" [value]="'dataset.submit' | localize" class="btn btn-primary" [disabled]="!(form.valid)" />
+        </div>
+      </form>
     </div>
-  </form>
+    <div class="col-lg-2"></div>
+  </div>
+
 </div>

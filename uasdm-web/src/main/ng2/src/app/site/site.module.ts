@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 //import { TreeModule } from 'angular-tree-component';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -43,14 +43,11 @@ import { MetadataService } from './service/metadata.service';
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
 
-import '../rxjs-extensions';
-
 @NgModule( {
     imports: [
         CommonModule,
         RouterModule,
         FormsModule,
-        ReactiveFormsModule,
         NgxPaginationModule,
 //        TreeModule,
         ContextMenuModule,

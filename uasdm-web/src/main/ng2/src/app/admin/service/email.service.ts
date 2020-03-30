@@ -32,32 +32,32 @@ declare var acp: any;
 @Injectable()
 export class EmailService {
 
-    constructor( private eventService: EventService, private http: HttpClient ) { }
+	constructor(private eventService: EventService, private http: HttpClient) { }
 
-    getInstance(): Promise<Email> {
+	getInstance(): Promise<Email> {
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .get<Email>( acp + '/email/getInstance' )
+		return this.http
+			.get<Email>(acp + '/email/getInstance')
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-            .toPromise()
-    }
+			.toPromise()
+	}
 
-    apply( email: Email ): Promise<Email> {
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
+	apply(email: Email): Promise<Email> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .post<Email>( acp + '/email/apply', JSON.stringify( { setting: email } ), { headers: headers } )
+		return this.http
+			.post<Email>(acp + '/email/apply', JSON.stringify({ setting: email }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-            .toPromise()
-    }
+			.toPromise()
+	}
 }

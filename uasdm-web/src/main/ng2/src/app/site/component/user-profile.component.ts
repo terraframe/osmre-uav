@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { ContextMenuService } from 'ngx-contextmenu';
 
 import { HttpClient } from '@angular/common/http';
 import { interval } from 'rxjs';
@@ -41,7 +40,7 @@ export class UserProfileComponent implements OnInit {
      */
 	tasks: Task[];
 
-	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService, private contextMenuService: ContextMenuService) {
+	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
 		this.taskPolling = interval(5000).pipe(
 			switchMap(() => http.get<any>(acp + '/project/tasks')))
@@ -115,22 +114,22 @@ export class UserProfileComponent implements OnInit {
 		}
 
 		// Add new tasks
-		let newTasks = data.tasks.filter(o => !this.tasks.find(o2 => o.oid === o2.oid));
+		let newTasks = data.tasks.filter((o: Task) => !this.tasks.find(o2 => o.oid === o2.oid));
 		if (newTasks && newTasks.length > 0) {
-			newTasks.forEach((tsk) => {
+			newTasks.forEach((tsk: Task) => {
 				this.tasks.unshift(tsk);
 			})
 		}
 	}
 
 
-	getTotalActionsCount(tasks: Task[]) {
+	getTotalActionsCount(tasks: Task[]): number {
 		let count = 0;
 		tasks.forEach((task) => {
 			count = count + task.actions.length;
 		})
 
-		return count
+		return count;
 	}
 
 	handleMessage(message: Message): void {
@@ -142,7 +141,7 @@ export class UserProfileComponent implements OnInit {
 		});
 		this.bsModalRef.content.init(message.collectionId);
 
-		this.bsModalRef.content.onMetadataChange.subscribe((collectionId) => {
+		this.bsModalRef.content.onMetadataChange.subscribe((collectionId: string) => {
 
 			let index = -1;
 			for (let i = 0; i < this.messages.length; i++) {

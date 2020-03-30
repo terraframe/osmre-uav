@@ -53,8 +53,8 @@
                     <h3>Remaining Tasks</h3>
                 
                     <hr>
-                    <a href="#" *ngFor="let message of messages">
-                        <alert type="danger" (click)="handleMessage(message)" >
+                    <a *ngFor="let message of messages" (click)="handleMessage(message)">
+                        <alert type="danger">
                             {{message.message}}
                         </alert>
                     </a>

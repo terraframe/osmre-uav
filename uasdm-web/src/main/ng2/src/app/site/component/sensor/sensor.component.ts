@@ -7,80 +7,80 @@ import { Sensor, WAVELENGTHS } from '../../model/sensor';
 import { SensorService } from '../../service/sensor.service';
 
 
-@Component( {
-    selector: 'sensor',
-    templateUrl: './sensor.component.html',
-    styleUrls: []
-} )
+@Component({
+	selector: 'sensor',
+	templateUrl: './sensor.component.html',
+	styleUrls: []
+})
 export class SensorComponent implements OnInit {
-    sensor: Sensor;
-    newInstance: boolean = false;
+	sensor: Sensor;
+	newInstance: boolean = false;
 
-    message: string = null;
+	message: string = null;
 
-    waveLengths: string[] = WAVELENGTHS;
+	waveLengths: string[] = WAVELENGTHS;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 
      */
-    public onSensorChange: Subject<Sensor>;
+	public onSensorChange: Subject<Sensor>;
 
-    constructor( private service: SensorService, public bsModalRef: BsModalRef ) { }
+	constructor(private service: SensorService, public bsModalRef: BsModalRef) { }
 
-    ngOnInit(): void {
-        this.onSensorChange = new Subject();
-    }
+	ngOnInit(): void {
+		this.onSensorChange = new Subject();
+	}
 
-    handleOnSubmit(): void {
-        this.message = null;
+	handleOnSubmit(): void {
+		this.message = null;
 
-        this.service.apply( this.sensor ).then( data => {
-            this.onSensorChange.next( data );
-            this.bsModalRef.hide();
-        } ).catch(( err: HttpErrorResponse ) => {
-            this.error( err );
-        } );
-    }
+		this.service.apply(this.sensor).then(data => {
+			this.onSensorChange.next(data);
+			this.bsModalRef.hide();
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
 
-    handleOnCancel(): void {
-        this.message = null;
+	handleOnCancel(): void {
+		this.message = null;
 
-        if ( this.newInstance ) {
-            this.bsModalRef.hide();
-        }
-        else {
-            this.service.unlock( this.sensor.oid ).then( data => {
-                this.bsModalRef.hide();
-            } ).catch(( err: HttpErrorResponse ) => {
-                this.error( err );
-            } );
-        }
-    }
+		if (this.newInstance) {
+			this.bsModalRef.hide();
+		}
+		else {
+			this.service.unlock(this.sensor.oid).then(data => {
+				this.bsModalRef.hide();
+			}).catch((err: HttpErrorResponse) => {
+				this.error(err);
+			});
+		}
+	}
 
-    updateSelectedWaveLength( event ) {
+	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
 
-        const indexOf = this.sensor.waveLength.indexOf( event.target.name )
+		const indexOf = this.sensor.waveLength.indexOf(wavelength)
 
-        if ( event.target.checked ) {
+		if (checked) {
 
-            if ( indexOf < 0 ) {
-                this.sensor.waveLength.push( event.target.name );
+			if (indexOf < 0) {
+				this.sensor.waveLength.push(wavelength);
 
-            }
-        } else {
-            if ( indexOf > -1 ) {
-                this.sensor.waveLength.splice( indexOf, 1 );
-            }
-        }
-    }
+			}
+		} else {
+			if (indexOf > -1) {
+				this.sensor.waveLength.splice(indexOf, 1);
+			}
+		}
+	}
 
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.message = ( err.error.localizedMessage || err.error.message || err.message );
+	error(err: HttpErrorResponse): void {
+		// Handle error
+		if (err !== null) {
+			this.message = (err.error.localizedMessage || err.error.message || err.message);
 
-            console.log( this.message );
-        }
-    }
+			console.log(this.message);
+		}
+	}
 
 }
