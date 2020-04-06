@@ -81,11 +81,8 @@
       </div>
     </div>
 
-    <div *ngIf="!(!account.user.newInstance && account.user.username === 'admin')" class="form-group">
-      <label>
-        <localize key="account.inactive"></localize>
-      </label>
-      <boolean-field [(value)]="account.user.inactive"></boolean-field>
+    <div *ngIf="(!account.user.newInstance && account.user.username === 'admin')" class="form-group">
+      <boolean-field [(value)]="account.user.inactive" [label]="'account.inactive' | localize"></boolean-field>
     </div>
 
     <div *ngFor="let group of account.groups">

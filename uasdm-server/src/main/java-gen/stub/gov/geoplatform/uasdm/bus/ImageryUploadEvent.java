@@ -19,7 +19,7 @@ import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 
 public class ImageryUploadEvent extends ImageryUploadEventBase
 {

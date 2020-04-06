@@ -23,50 +23,50 @@ import { User } from '../model/user';
 
 @Injectable()
 export class AuthService {
-    private user: User = {
-        loggedIn: false,
-        userName: '',
-        roles: []
-    };
+	private user: User = {
+		loggedIn: false,
+		userName: '',
+		roles: []
+	};
 
-    constructor( private service: CookieService ) {
-        let cookie = service.get( 'user' );
+	constructor(private service: CookieService) {
 
-        if ( this.service.check( "user" ) ) {
-            let cookieData: string = this.service.get( "user" )
-            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+		if (this.service.check("user")) {
+			let cookieData: string = this.service.get("user")
 
-            this.user.userName = cookieDataJSON.userName;
-            this.user.roles = cookieDataJSON.roles;
-            this.user.loggedIn = true;
-        }
-    }
+			let cookieDataJSON: any = JSON.parse(cookieData);
 
-    setUser( user: User ): void {
-        this.user = user;
-    }
+			this.user.userName = cookieDataJSON.userName;
+			this.user.roles = cookieDataJSON.roles;
+			this.user.loggedIn = true;
+		}
+	}
 
-    removeUser(): void {
-        this.user = {
-            loggedIn: false,
-            userName: '',
-            roles: []
-        };
-    }
+	setUser(user: User): void {
+		this.user = user;
+	}
 
-    getUserName(): string {
-        return this.user.userName;
-    }
+	removeUser(): void {
+		this.user = {
+			loggedIn: false,
+			userName: '',
+			roles: []
+		};
+	}
 
-    isLoggedIn(): boolean {
-        return this.user.loggedIn;
-    }
+	getUserName(): string {
+		return this.user.userName;
+	}
 
-    isAdmin(): boolean {
-        return this.user.roles.indexOf( "geoprism.admin.Administrator" ) !== -1;
-    }
+	isLoggedIn(): boolean {
+		return this.user.loggedIn;
+	}
 
-    isWorker(): boolean {
-        return this.isAdmin() || this.user.roles.indexOf( "geoprism.admin.DashboardBuilder" ) !== -1;
-    }
+	isAdmin(): boolean {
+		return this.user.roles.indexOf("geoprism.admin.Administrator") !== -1;
+	}
+
+	isWorker(): boolean {
+		return this.isAdmin() || this.user.roles.indexOf("geoprism.admin.DashboardBuilder") !== -1;
+	}
 }

@@ -352,8 +352,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-
-
     handleOnUpdateData(): void {
         //        this.tree.treeModel.expandAll();
     }
@@ -515,7 +513,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     remove( node: SiteEntity ): void {
-        this.service.remove( node.id ).then( response => {
+        this.service.remove( node.id ).then( () => {
             this.nodes = this.nodes.filter(( n: any ) => n.id !== node.id );
 
             this.nodes.forEach( n => {
