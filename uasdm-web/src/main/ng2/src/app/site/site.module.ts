@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 //import { TreeModule } from 'angular-tree-component';
-import { ContextMenuModule } from 'ngx-contextmenu';
+//import { ContextMenuModule } from 'ngx-contextmenu';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
@@ -50,7 +50,7 @@ import { SharedModule } from '../shared/shared.module';
         FormsModule,
         NgxPaginationModule,
 //        TreeModule,
-        ContextMenuModule,
+//        ContextMenuModule,
         //        ModalModule.forRoot(),
         AlertModule,
         BsDropdownModule,

@@ -35,14 +35,9 @@ body {
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
 <!-- CSS imports -->
-<jwr:style src="/bundles/datatable.css" useRandomParam="false" />
-<jwr:style src="/bundles/main.css" useRandomParam="false" />
-<jwr:style src="/bundles/administration.css" useRandomParam="false" />
 
 <!-- Default imports -->
 <jwr:script src="/bundles/runway.js" useRandomParam="false" />
-<jwr:script src="/bundles/main.js" useRandomParam="false" />
-<jwr:script src="/bundles/localization.js" useRandomParam="false" />
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/net/geoprism/Localized.js.jsp"></script>
 

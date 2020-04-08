@@ -1,7 +1,19 @@
+$fa-font-path : '~@fortawesome/fontawesome-free/webfonts';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+
+@import "~bootstrap/dist/css/bootstrap.css";
+
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
+@import 'theme.css';
+@import 'main.css';
+@import 'admin-pages.css';
 
 body {
   overflow-y: auto;

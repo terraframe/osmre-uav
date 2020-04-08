@@ -23,7 +23,7 @@ import 'ngx-bootstrap/accordion';
 // import 'angular-tree-component';
 
 // Context menu
-import 'ngx-contextmenu';
+// import 'ngx-contextmenu';
 
 // Cookie service
 import 'ngx-cookie-service';
