@@ -1,0 +1,19 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.bus.UasComponentDeleteException" 
+                   label="UasComponentDeleteException" 
+                   description="Thrown when a user tries to delete a component in which they are not the owner" 
+                   message="Cannot delete the [{typeLabel}][{componentName}].  Only the creator of a {typeLabel} can delete it.">
+          <attributes>
+            <text name="typeLabel" required="false" label="Type Label" />
+            <text name="componentName" required="false" label="Component Name" />
+          </attributes>                   
+      </mdException>
+    
+    </create>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

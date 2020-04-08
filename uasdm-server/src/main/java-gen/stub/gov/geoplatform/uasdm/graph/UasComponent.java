@@ -46,6 +46,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -55,6 +56,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
+import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -64,6 +66,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
+import net.geoprism.DefaultConfiguration;
 import net.geoprism.GeoprismUser;
 import net.geoprism.JSONStringImpl;
 
@@ -232,6 +235,19 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Transaction
   public void delete()
   {
+    // Ensure that a component can only be deleted by an admin or the owner of
+    // the component
+    final SessionIF session = Session.getCurrentSession();
+
+    if (! ( session.userHasRole(DefaultConfiguration.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
+    {
+      final UasComponentDeleteException ex = new UasComponentDeleteException();
+      ex.setTypeLabel(this.getClassDisplayLabel());
+      ex.setComponentName(this.getName());
+
+      throw ex;
+    }
+
     List<AbstractWorkflowTask> tasks = this.getTasks();
 
     for (AbstractWorkflowTask task : tasks)
