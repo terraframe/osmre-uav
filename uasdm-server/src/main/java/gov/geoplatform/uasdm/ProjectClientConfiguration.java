@@ -25,12 +25,13 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
 
     List<GeoprismApplication> applications = new LinkedList<GeoprismApplication>();
     applications.add(management);
-    
+
     return applications;
   }
 
   /*
-   * Expose public endpoints to allow non-logged in users to hit controller endpoints
+   * Expose public endpoints to allow non-logged in users to hit controller
+   * endpoints
    */
   @Override
   public Set<String> getPublicEndpoints()
@@ -41,10 +42,16 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
     endpoints.add("uasdm-account/newInstance");
     return endpoints;
   }
-  
+
   @Override
   public String getHomeUrl()
   {
     return "/project/management";
+  }
+
+  @Override
+  public String getLoginUrl()
+  {
+    return "/project/management#/login";
   }
 }

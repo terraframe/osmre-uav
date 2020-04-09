@@ -20,7 +20,7 @@ public interface UasComponentIF extends ComponentIF
 
   public void delete();
 
-  public void delete(String key);
+  public void deleteObject(String key);
 
   public String getOid();
 

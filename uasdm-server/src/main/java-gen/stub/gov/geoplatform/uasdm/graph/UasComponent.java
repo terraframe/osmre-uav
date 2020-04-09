@@ -17,23 +17,18 @@ import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.S3VersionSummary;
-import com.amazonaws.services.s3.model.VersionListing;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
@@ -53,10 +48,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.S3ClientFactory;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
+import gov.geoplatform.uasdm.command.S3DeleteCommand;
+import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
+import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -73,6 +72,8 @@ import net.geoprism.JSONStringImpl;
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
   private static final long serialVersionUID = -1526604195;
+
+  private Logger            log              = LoggerFactory.getLogger(UasComponent.class);
 
   public UasComponent()
   {
@@ -235,17 +236,45 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Transaction
   public void delete()
   {
+    log.info("Deleting component [" + this.getName() + "]");
+
     // Ensure that a component can only be deleted by an admin or the owner of
     // the component
     final SessionIF session = Session.getCurrentSession();
 
-    if (! ( session.userHasRole(DefaultConfiguration.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
+    if (session != null && ! ( session.userHasRole(DefaultConfiguration.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
     {
       final UasComponentDeleteException ex = new UasComponentDeleteException();
       ex.setTypeLabel(this.getClassDisplayLabel());
       ex.setComponentName(this.getName());
 
       throw ex;
+    }
+
+    CompositeDeleteException exception = new CompositeDeleteException();
+
+    // Delete all of the child components
+    List<UasComponentIF> children = this.getChildren();
+
+    for (UasComponentIF child : children)
+    {
+      try
+      {
+        child.delete();
+      }
+      catch (UasComponentDeleteException e)
+      {
+        exception.add(e);
+      }
+      catch (CompositeDeleteException e)
+      {
+        exception.addAll(e.getExceptions());
+      }
+    }
+
+    if (exception.hasExceptions())
+    {
+      throw exception;
     }
 
     List<AbstractWorkflowTask> tasks = this.getTasks();
@@ -271,14 +300,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       document.delete();
     }
 
-    // Delete all of the child components
-    List<UasComponentIF> children = this.getChildren();
-
-    for (UasComponentIF child : children)
-    {
-      child.delete();
-    }
-
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -286,7 +307,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       this.deleteS3Folder(this.getS3location(), null);
     }
 
-    SolrService.deleteDocuments(this);
+    final SolrDeleteDocumentsCommand command = new SolrDeleteDocumentsCommand(this.getSolrIdField(), this.getOid());
+    command.doIt();
   }
 
   /**
@@ -313,8 +335,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected void createS3Folder(String key)
   {
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+    AmazonS3 client = S3ClientFactory.createClient();
 
     // create meta-data for your folder and set content-length to 0
     ObjectMetadata metadata = new ObjectMetadata();
@@ -331,67 +352,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected void deleteS3Folder(String key, String folderName)
   {
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
-
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-    while (true)
-    {
-      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
-
-      while (objIter.hasNext())
-      {
-        String objectKey = objIter.next().getKey();
-
-        client.deleteObject(bucketName, objectKey);
-
-        this.deleteS3Object(objectKey);
-      }
-
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated. If so, retrieve the next page of
-      // objects
-      // and delete them.
-      if (objectListing.isTruncated())
-      {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    // Delete all object versions (required for versioned buckets).
-    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withPrefix(key));
-    while (true)
-    {
-      Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
-      while (versionIter.hasNext())
-      {
-        S3VersionSummary vs = versionIter.next();
-        client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
-      }
-
-      if (versionList.isTruncated())
-      {
-        versionList = client.listNextBatchOfVersions(versionList);
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
-
-    client.deleteObjects(multiObjectDeleteRequest);
+    new S3DeleteCommand(key).doIt();
   }
 
   protected void deleteS3Object(String objectKey)
@@ -409,8 +370,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final int maxKeys = 500;
     String key = this.getS3location() + folder;
 
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+    AmazonS3 client = S3ClientFactory.createClient();
 
     String bucketName = AppProperties.getBucketName();
 
@@ -472,10 +432,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
   }
 
-  public void delete(String key)
+  public void deleteObject(String key)
   {
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+    AmazonS3 client = S3ClientFactory.createClient();
     String bucketName = AppProperties.getBucketName();
 
     DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
@@ -487,8 +446,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public S3Object download(String key)
   {
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+    AmazonS3 client = S3ClientFactory.createClient();
     String bucketName = AppProperties.getBucketName();
 
     GetObjectRequest request = new GetObjectRequest(bucketName, key);
@@ -500,8 +458,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     int count = 0;
 
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+    AmazonS3 client = S3ClientFactory.createClient();
 
     String bucketName = AppProperties.getBucketName();
 

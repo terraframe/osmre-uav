@@ -18,12 +18,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -51,8 +48,7 @@ public class Util
   {
     try
     {
-      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-      TransferManager tx = new TransferManager(new StaticCredentialsProvider(awsCreds));
+      TransferManager tx = S3ClientFactory.createTransferManager();
 
       try
       {
@@ -167,8 +163,7 @@ public class Util
   {
     try
     {
-      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-      AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
+      AmazonS3 client = S3ClientFactory.createClient();
 
       String bucketName = AppProperties.getBucketName();
 

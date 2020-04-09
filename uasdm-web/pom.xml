@@ -178,36 +178,6 @@
 							<value>${local.host}</value>
 						</configuration>
 					</execution>
-					<execution>
-						<id>replace-prism.jsp</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-						<inherited>false</inherited>
-						<configuration>
-							<file>src/main/webapp/WEB-INF/net/geoprism/prism/prism.jsp</file>
-							<outputFile>target/uasdm/WEB-INF/net/geoprism/prism/prism.jsp</outputFile>
-							<regex>false</regex>
-							<token>$local.host$</token>
-							<value>${local.host}</value>
-						</configuration>
-					</execution>
-					<execution>
-						<id>replace-admin.jsp</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-						<inherited>false</inherited>
-						<configuration>
-							<file>src/main/webapp/WEB-INF/net/geoprism/prism/admin.jsp</file>
-							<outputFile>target/uasdm/WEB-INF/net/geoprism/prism/admin.jsp</outputFile>
-							<regex>false</regex>
-							<token>$local.host$</token>
-							<value>${local.host}</value>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>

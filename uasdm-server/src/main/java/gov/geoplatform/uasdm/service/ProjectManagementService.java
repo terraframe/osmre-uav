@@ -34,9 +34,11 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -402,7 +404,24 @@ public class ProjectManagementService
   {
     UasComponentIF uasComponent = ComponentFacade.getComponent(id);
 
-    uasComponent.delete();
+    try
+    {
+      uasComponent.delete();
+    }
+    catch (ProgrammingErrorException e)
+    {
+      if (e.getCause() instanceof CompositeDeleteException)
+      {
+        final CompositeDeleteException cause = (CompositeDeleteException) e.getCause();
+
+        final UasComponentCompositeDeleteException ex = new UasComponentCompositeDeleteException();
+        ex.setTypeLabel(uasComponent.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
+        ex.setComponents(cause.toLabel());
+        throw ex;
+      }
+
+      throw e;
+    }
   }
 
   @Request(RequestType.SESSION)
@@ -410,7 +429,7 @@ public class ProjectManagementService
   {
     UasComponentIF uasComponent = ComponentFacade.getComponent(id);
 
-    uasComponent.delete(key);
+    uasComponent.deleteObject(key);
   }
 
   @Request(RequestType.SESSION)
