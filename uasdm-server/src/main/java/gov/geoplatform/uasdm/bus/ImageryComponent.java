@@ -16,17 +16,7 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
  */
 public interface ImageryComponent
 {
-  public static final int    BUFFER_SIZE = 1024;
-
-  public static final String RAW         = "raw";
-
-  public static final String PTCLOUD     = "ptcloud";
-
-  public static final String DEM         = "dem";
-
-  public static final String ORTHO       = "ortho";
-
-  public static final String GEOREF      = "georef";
+  public static final int BUFFER_SIZE = 1024;
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
@@ -49,13 +39,13 @@ public interface ImageryComponent
   public String getS3location();
 
   public String getName();
-  
+
   /**
    * If the @param uploadTarget is null or blank, then return the raw key.
    * 
    * @param uploadTarget
    * 
-   * @return S3 upload key or the raw upload key 
+   * @return S3 upload key or the raw upload key
    */
   public default String buildUploadKey(String uploadTarget)
   {

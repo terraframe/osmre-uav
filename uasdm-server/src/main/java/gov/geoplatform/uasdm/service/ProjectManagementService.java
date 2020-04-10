@@ -448,7 +448,7 @@ public class ProjectManagementService
   {
     try
     {
-      ImageryProcessingJob.processImages(parser, infile);
+      ImageryProcessingJob.processFiles(parser, infile);
     }
     catch (Throwable t)
     {

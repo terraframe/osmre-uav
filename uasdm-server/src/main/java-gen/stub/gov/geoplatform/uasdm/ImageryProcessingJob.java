@@ -36,7 +36,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     super();
   }
   
-  public static void processImages(RequestParser parser, File imageryZip) throws FileNotFoundException
+  public static void processFiles(RequestParser parser, File imageryZip) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     

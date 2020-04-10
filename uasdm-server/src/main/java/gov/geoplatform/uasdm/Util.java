@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +208,20 @@ public class Util
     GeoserverFacade.removeCoverageStore(storeName);
   }
 
+  public static boolean isVideoFile(String path)
+  {
+    final String ext = FilenameUtils.getExtension(path);
+
+    if (ext.equals("mp4"))
+    {
+      return true;
+    }
+
+    String mimeType = URLConnection.guessContentTypeFromName(path);
+
+    return mimeType != null && mimeType.startsWith("video");
+  }
+
   public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
   {
     String extension = archive.getNameExtension();
@@ -249,8 +265,9 @@ public class Util
 
           // Upload the file to S3
           String filename = entry.getName();
+          String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.RAW_VIDEO : ImageryComponent.RAW;
 
-          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
           if (success)
           {
@@ -319,7 +336,9 @@ public class Util
               }
 
               // Upload the file to S3
-              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+              String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.RAW_VIDEO : ImageryComponent.RAW;
+
+              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
               if (success)
               {

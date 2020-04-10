@@ -167,6 +167,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     {
       this.deleteS3Folder(this.buildRawKey(), RAW);
 
+      this.deleteS3Folder(this.buildRawVideoKey(), RAW_VIDEO);
+
       this.deleteS3Folder(this.buildPointCloudKey(), PTCLOUD);
 
       this.deleteS3Folder(this.buildDemKey(), DEM);
@@ -205,6 +207,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public String buildRawKey()
   {
     return this.getS3location() + RAW + "/";
+  }
+
+  public String buildRawVideoKey()
+  {
+    return this.getS3location() + RAW_VIDEO + "/";
   }
 
   public String buildPointCloudKey()
@@ -248,6 +255,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       raw.setKey(this.buildRawKey());
       raw.setType(SiteObject.FOLDER);
 
+      SiteObject rawVideo = new SiteObject();
+      rawVideo.setId(this.getOid() + "-" + RAW_VIDEO);
+      rawVideo.setName(RAW_VIDEO);
+      rawVideo.setComponentId(this.getOid());
+      rawVideo.setKey(this.buildRawVideoKey());
+      rawVideo.setType(SiteObject.FOLDER);
+
       SiteObject ptCloud = new SiteObject();
       ptCloud.setId(this.getOid() + "-" + PTCLOUD);
       ptCloud.setName(PTCLOUD);
@@ -270,6 +284,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       ortho.setType(SiteObject.FOLDER);
 
       objects.add(raw);
+      objects.add(rawVideo);
       objects.add(ptCloud);
       objects.add(dem);
       objects.add(ortho);

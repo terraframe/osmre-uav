@@ -97,6 +97,7 @@ export class Task {
 	actions: Action[];
 	uploadId: string;
 	odmOutput: string;
+	visible?: boolean;
 }
 
 export class Message {

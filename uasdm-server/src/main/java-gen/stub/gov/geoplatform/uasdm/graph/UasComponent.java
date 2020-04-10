@@ -374,7 +374,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     String bucketName = AppProperties.getBucketName();
 
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key + "/");
     listObjectsRequest.setMaxKeys(maxKeys);
 
     int curIndex = 0;

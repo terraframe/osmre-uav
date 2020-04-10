@@ -19,15 +19,17 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
  */
 public interface ImageryComponent
 {
-  public static final String RAW     = "raw";
+  public static final String RAW       = "raw";
 
-  public static final String PTCLOUD = "ptcloud";
+  public static final String RAW_VIDEO = "raw_video";
 
-  public static final String DEM     = "dem";
+  public static final String PTCLOUD   = "ptcloud";
 
-  public static final String ORTHO   = "ortho";
+  public static final String DEM       = "dem";
 
-  public static final String GEOREF  = "georef";
+  public static final String ORTHO     = "ortho";
+
+  public static final String GEOREF    = "georef";
 
   public String getOid();
 
