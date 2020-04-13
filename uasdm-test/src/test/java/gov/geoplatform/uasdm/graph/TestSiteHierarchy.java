@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,6 +25,9 @@ import com.runwaysdk.session.SessionFacade;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.MockRemoteFileService;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
@@ -57,6 +61,8 @@ public class TestSiteHierarchy
 
   private final static int                sessionLimit = 2;
 
+  private MockRemoteFileService           fService;
+
   @BeforeClass
   @Request
   public static void classSetUp()
@@ -64,6 +70,14 @@ public class TestSiteHierarchy
     createSiteHierarchyTransaction();
 
     service = new ProjectManagementService();
+  }
+
+  @Before
+  public void setup()
+  {
+    fService = new MockRemoteFileService();
+
+    RemoteFileFacade.setService(fService);
   }
 
   @Transaction

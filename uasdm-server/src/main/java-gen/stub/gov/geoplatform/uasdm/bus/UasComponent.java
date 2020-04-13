@@ -1,12 +1,9 @@
 package gov.geoplatform.uasdm.bus;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -19,15 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
@@ -41,13 +29,14 @@ import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.S3ClientFactory;
-import gov.geoplatform.uasdm.command.S3DeleteCommand;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
@@ -262,29 +251,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected void createS3Folder(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    // create meta-data for your folder and set content-length to 0
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(0);
-
-    // create empty content
-    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-
-    PutObjectRequest putObjectRequest = new PutObjectRequest(AppProperties.getBucketName(), key, emptyContent, metadata);
-
-    // send request to S3 to create folder
-    client.putObject(putObjectRequest);
+    RemoteFileFacade.createFolder(key);
   }
 
   protected void deleteS3Folder(String key, String folderName)
   {
-    new S3DeleteCommand(key).doIt();
-  }
-
-  protected void deleteS3Object(String objectKey)
-  {
-
+    new RemoteFileDeleteCommand(key).doIt();
   }
 
   public static boolean isDuplicateFolderName(String parentId, String oid, String folderName)
@@ -321,135 +293,30 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
   {
-    final int maxKeys = 500;
-    String key = this.getS3location() + folder;
-
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-    listObjectsRequest.setMaxKeys(maxKeys);
-
-    int curIndex = 0;
-
-    int pageIndexStart = 0;
-    int pageIndexStop = 0;
-    if (pageNumber != null && pageSize != null)
-    {
-      pageIndexStart = ( pageNumber - 1 ) * pageSize;
-      pageIndexStop = pageNumber * pageSize;
-    }
-    int awsPageNum = 1;
-
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-    while (true)
-    {
-      List<S3ObjectSummary> list = objectListing.getObjectSummaries();
-      Iterator<S3ObjectSummary> objIter = list.iterator();
-
-      if (pageNumber == null || pageSize == null || ( pageIndexStart >= maxKeys * ( awsPageNum - 1 ) && pageIndexStop <= maxKeys * awsPageNum ))
-      {
-        while (objIter.hasNext())
-        {
-          S3ObjectSummary summary = objIter.next();
-
-          String summaryKey = summary.getKey();
-
-          if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
-          {
-            if ( ( pageSize == null || ( curIndex >= pageIndexStart && curIndex < pageIndexStop ) ))
-            {
-              objects.add(SiteObject.create(this, key, summary));
-            }
-
-            curIndex++;
-          }
-        }
-      }
-
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated.
-      if (objectListing.isTruncated())
-      {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-        awsPageNum++;
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
+    return RemoteFileFacade.getSiteObjects(this, folder, objects, pageNumber, pageSize);
   }
 
   public void deleteObject(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
-
-    DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
-
-    client.deleteObject(request);
+    RemoteFileFacade.deleteObject(key);
 
     SolrService.deleteDocument(this, key);
   }
 
-  public S3Object download(String key)
+  public RemoteFileObject download(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
-
-    GetObjectRequest request = new GetObjectRequest(bucketName, key);
-
-    return client.getObject(request);
+    return RemoteFileFacade.download(key);
+  }
+  
+  @Override
+  public RemoteFileObject download(String key, List<Range> ranges)
+  {
+    return RemoteFileFacade.download(key, ranges);
   }
 
   public int getItemCount(String key)
   {
-    int count = 0;
-
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-    while (true)
-    {
-      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
-
-      while (objIter.hasNext())
-      {
-        S3ObjectSummary summary = objIter.next();
-
-        String summaryKey = summary.getKey();
-
-        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
-        {
-          count++;
-        }
-      }
-
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated.
-      if (objectListing.isTruncated())
-      {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    return count;
+    return RemoteFileFacade.getItemCount(key);
   }
 
   public List<UasComponentIF> getAncestors()

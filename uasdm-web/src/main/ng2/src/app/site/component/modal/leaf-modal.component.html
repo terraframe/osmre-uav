@@ -31,27 +31,23 @@
       <div class="row">
         <tabset class="nav-full-width">
           <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
-            <div id="image-list-container">
-
-              <ul class="list-group row">
-                <div *ngIf="folder.name != 'raw'">
+          
+            <div id="image-list-container" [ngSwitch]="folder.name">
+                <div *ngSwitchDefault>
+                  <ul class="list-group row">
 	                <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-	                  <a class="thumbnail"
-	                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
-	                    <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
-	                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
-	                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
-	                      [ngClass]="{'img-disabled' : item.excludeFromProcess}"
-                          [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : defaultImage()"
-                          alt="Image">
+	                  <a class="thumbnail non-clickable">
+	                    <img [src]="defaultImage" alt="Image">
 	                    <div class="caption">
 	                      <h4 class="media-heading">{{item.name}}</h4>
 	                    </div>
 	                  </a>
 	                </li>
+                  </ul>
                 </div>
                 
-                <div *ngIf="folder.name === 'raw'">
+                <div *ngSwitchCase="'raw'">
+                  <ul class="list-group row">
 	                <li *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }" class="list-group-item col-xs-3">
 	                  <a class="thumbnail"
 	                    [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
@@ -59,20 +55,45 @@
 	                      [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
 	                    <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
 	                      [ngClass]="{'img-disabled' : item.excludeFromProcess}" 
-                          [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : defaultImage()"
+                          [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : defaultImage"
 	                      alt="Image">
 	                    <div class="caption">
 	                      <h4 class="media-heading">{{item.name}}</h4>
 	                    </div>
 	                  </a>
 	                </li>
-                </div>
-              </ul>
+                  </ul>
+                </div>                
+                
+                <div *ngSwitchCase="'video'">
+                  <div *ngIf="video.src !== null">
+                    <div class="row" style="padding-left:20px;">
+                      <h3>
+                        {{video.name}} <a (click)="handleDownloadFile(video.src)"><i class="fas fa-download"></i></a>
+                      </h3>
+                    </div>
+                    <div class="row">
+                      <video-player [src]="video.src"></video-player>              
+                    </div>
+                  </div>
+                
+                  <ul class="list-group row">
+	                <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+	                  <a class="thumbnail" (click)="showVideo(item, $event)">
+	                    <img [src]="defaultImage" alt="Image">
+	                    <div class="caption">
+	                      <h4 class="media-heading">{{item.name}}</h4>
+	                    </div>
+	                  </a>
+	                </li>
+                  </ul>
+                </div>                
 
             </div>
           </tab>
         </tabset>
       </div>
+      
       <div class="row">
       
       	<pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>

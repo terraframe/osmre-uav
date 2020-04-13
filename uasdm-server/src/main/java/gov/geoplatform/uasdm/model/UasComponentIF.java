@@ -2,7 +2,6 @@ package gov.geoplatform.uasdm.model;
 
 import java.util.List;
 
-import com.amazonaws.services.s3.model.S3Object;
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.resource.ApplicationResource;
@@ -11,6 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -66,7 +66,9 @@ public interface UasComponentIF extends ComponentIF
 
   public List<UasComponentIF> getAncestors();
 
-  public S3Object download(String key);
+  public RemoteFileObject download(String key);
+
+  public RemoteFileObject download(String key, List<Range> ranges);
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 

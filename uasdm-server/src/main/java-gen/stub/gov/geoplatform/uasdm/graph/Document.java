@@ -11,7 +11,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
-import gov.geoplatform.uasdm.command.S3DeleteCommand;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -66,7 +66,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   protected void deleteS3File(String key)
   {
-    final S3DeleteCommand command = new S3DeleteCommand(key);
+    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key);
     command.doIt();
   }
 

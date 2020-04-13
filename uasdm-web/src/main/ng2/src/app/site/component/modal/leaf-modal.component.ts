@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
@@ -22,7 +22,7 @@ declare var acp: string;
 @Component({
 	selector: 'leaf-modal',
 	templateUrl: './leaf-modal.component.html',
-	styleUrls: [],
+	styles: [],
 	providers: [BasicConfirmModalComponent],
 	animations: [
 		fadeInOnEnterAnimation(),
@@ -38,7 +38,6 @@ export class LeafModalComponent implements OnInit {
 	set initData(ins: any) {
 		this.init(ins.entity, ins.folders, ins.previous)
 	}
-
 
     /* 
      * Breadcrumb of previous sites clicked on
@@ -69,7 +68,12 @@ export class LeafModalComponent implements OnInit {
      */
 	public onNodeChange: Subject<SiteEntity>;
 
-	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) { }
+	video: { src: string, name: string } = { src: null, name: null };
+	defaultImage: string;
+
+	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
+		this.defaultImage = acp + "/net/geoprism/images/thumbnail-default.png";
+	}
 
 	ngOnInit(): void {
 		this.onNodeChange = new Subject();
@@ -156,6 +160,9 @@ export class LeafModalComponent implements OnInit {
 
 		this.folder = folder;
 
+		this.video.src = null;
+		this.video.name = null;
+
 		this.getData(folder.component, folder.name, pn, ps);
 	}
 
@@ -186,14 +193,6 @@ export class LeafModalComponent implements OnInit {
 			return true;
 		}
 		return false;
-	}
-
-	getDefaultImgURL(event: any): void {
-		event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
-	}
-
-	defaultImage(): string {
-      return acp + "/net/geoprism/images/thumbnail-default.png";
 	}
 
 	previewImage(event: any, image: any): void {
@@ -272,6 +271,17 @@ export class LeafModalComponent implements OnInit {
 		//      } );
 	}
 
+	handleDownloadFile(src:string): void {
+
+		window.location.href = src;
+	}
+
+	showVideo(item: SiteEntity, event: any): void {
+		event.stopPropagation();
+
+		this.video.name = item.name;
+		this.video.src = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key + "#" + Math.random();
+	}
 
 
 

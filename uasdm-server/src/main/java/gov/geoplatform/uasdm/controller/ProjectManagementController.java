@@ -3,7 +3,10 @@ package gov.geoplatform.uasdm.controller;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,10 +22,13 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.mvc.ViewResponse;
+import com.runwaysdk.request.ServletRequestIF;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.S3GetResponse;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
+import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProductService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
@@ -257,7 +263,7 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "objects", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF objects(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {
@@ -267,9 +273,19 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF download(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
-    return new S3GetResponse(this.service.download(request.getSessionId(), id, key));
+    // Handle video data
+//    if (sRequest.getHeader("Range") != null)
+//    {
+//      String range = sRequest.getHeader("Range");
+//
+//      final List<Range> ranges = Range.decodeRange(range);
+//
+//      return new RemoteFileGetRangeResponse(this.service.download(request.getSessionId(), id, key, ranges));
+//    }
+
+    return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key));
   }
 
   @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)

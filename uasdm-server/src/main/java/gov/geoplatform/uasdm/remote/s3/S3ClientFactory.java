@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.remote.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+
+import gov.geoplatform.uasdm.AppProperties;
 
 public class S3ClientFactory
 {

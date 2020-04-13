@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,8 +21,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.FileResource;
@@ -41,10 +40,12 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -359,18 +360,19 @@ public class ProjectManagementService
     {
       for (SiteObject item : items)
       {
-        S3Object s3Obj = download(sessionId, id, item.getKey());
-
-        try (S3ObjectInputStream istream = s3Obj.getObjectContent())
+        try (RemoteFileObject remoteFile = download(sessionId, id, item.getKey()))
         {
-          zos.putNextEntry(new ZipEntry(item.getName()));
+          try (InputStream istream = remoteFile.getObjectContent())
+          {
+            zos.putNextEntry(new ZipEntry(item.getName()));
 
-          IOUtils.copy(istream, zos);
+            IOUtils.copy(istream, zos);
 
-          zos.closeEntry();
+            zos.closeEntry();
+          }
+
+          filenames.add(item.getName());
         }
-
-        filenames.add(item.getName());
       }
     }
     catch (IOException e)
@@ -495,11 +497,19 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public S3Object download(String sessionId, String id, String key)
+  public RemoteFileObject download(String sessionId, String id, String key)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
     return component.download(key);
+  }
+
+  @Request(RequestType.SESSION)
+  public RemoteFileObject download(String sessionId, String id, String key, List<Range> ranges)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    return component.download(key, ranges);
   }
 
   @Request(RequestType.SESSION)

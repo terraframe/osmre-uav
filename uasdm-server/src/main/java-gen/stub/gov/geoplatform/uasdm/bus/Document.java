@@ -6,7 +6,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
-import gov.geoplatform.uasdm.command.S3DeleteCommand;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -39,7 +39,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   protected void deleteS3File(String key)
   {
-    new S3DeleteCommand(key).doIt();
+    new RemoteFileDeleteCommand(key).doIt();
   }
 
   @Override
