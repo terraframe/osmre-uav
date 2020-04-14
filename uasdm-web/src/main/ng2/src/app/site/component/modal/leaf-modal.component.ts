@@ -271,19 +271,22 @@ export class LeafModalComponent implements OnInit {
 		//      } );
 	}
 
-	handleDownloadFile(src:string): void {
+	handleDownloadFile(src: string): void {
 
 		window.location.href = src;
 	}
 
-	showVideo(item: SiteEntity, event: any): void {
-		event.stopPropagation();
+	showVideo(item: SiteEntity): void {
+		this.video.name = null;
+		this.video.src = null;
 
-		this.video.name = item.name;
-		this.video.src = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key + "#" + Math.random();
+		// We have to null out the video and then set it after angular has refereshed
+		// Otherwise the video tag does not register that the src has changed.
+		setTimeout(() => {
+			this.video.name = item.name;
+			this.video.src = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key; // + "#" + Math.random();
+		}, 200);
 	}
-
-
 
 	error(err: HttpErrorResponse): void {
 		// Handle error

@@ -91,7 +91,7 @@
                   <div class="image-list-container">              
                     <ul class="list-group row">
 	                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-	                    <a class="thumbnail" (click)="showVideo(item, $event)">
+	                    <a class="thumbnail" (click)="showVideo(item)">
 	                      <img [src]="defaultImage" alt="Image">
 	                      <div class="caption">
 	                        <h4 class="media-heading">{{item.name}}</h4>
