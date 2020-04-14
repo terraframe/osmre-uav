@@ -14,7 +14,6 @@ import { UasdmHeaderComponent } from './component/header/header.component';
 import { LocalizeComponent } from './component/localize/localize.component';
 import { LoadingBarComponent } from './component/loading-bar/loading-bar.component';
 import { BooleanFieldComponent } from './component/boolean-field/boolean-field.component';
-import { VideoPlayerComponent } from './component/video-player/video-player.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { ErrorModalComponent } from './component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from './component/modal/basic-confirm-modal.component';
@@ -62,7 +61,6 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		ErrorModalComponent,
 		LocalizeComponent,
 		BooleanFieldComponent,
-		VideoPlayerComponent,
 		ModalStepIndicatorComponent,
 		PasswordStrengthBarComponent,
 		KeysPipe,
@@ -80,7 +78,6 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		NotificationModalComponent,
 		ErrorModalComponent,
 		BooleanFieldComponent,
-		VideoPlayerComponent,
 		LocalizeComponent,
 		ModalStepIndicatorComponent,
 		PasswordStrengthBarComponent,

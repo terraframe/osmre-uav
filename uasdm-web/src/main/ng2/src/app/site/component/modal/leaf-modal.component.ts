@@ -288,6 +288,11 @@ export class LeafModalComponent implements OnInit {
 		}, 200);
 	}
 
+	closeVideo(): void {
+		this.video.name = null;
+		this.video.src = null;
+	}
+
 	error(err: HttpErrorResponse): void {
 		// Handle error
 		if (err !== null) {

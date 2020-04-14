@@ -67,11 +67,13 @@
                 
                 <div *ngSwitchCase="'video'">
                   <div *ngIf="video.src !== null">
-                    <div class="row" style="padding-left:20px;">
+                    <div class="row">
                       <div class="col-md-1"></div>
                       <div class="col-md-10">
                         <h3>
-                          {{video.name}} <a (click)="handleDownloadFile(video.src)"><i class="fas fa-download"></i></a>
+                          {{video.name}} 
+                          <a (click)="handleDownloadFile(video.src)"><i class="fas fa-download"></i></a>
+                          <a class="pull-right" (click)="closeVideo()"><i class="fa fa-times" aria-hidden="true"></i></a>
                         </h3>
                       </div>
                       <div class="col-md-1"></div>
@@ -79,8 +81,8 @@
                     <div class="row">
                       <div class="col-md-1"></div>
                       <div class="col-md-10">
-                        <video style="width:100%" controls #videoPlayer>
-                          <source *ngIf="video.src != null" [src]="video.src" type="video/mp4" />
+                        <video style="width:100%" controls>
+                          <source [src]="video.src" type="video/mp4" />
                           Browser not supported
                         </video>                      
                       </div>
