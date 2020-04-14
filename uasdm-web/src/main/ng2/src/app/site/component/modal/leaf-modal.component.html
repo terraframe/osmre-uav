@@ -32,8 +32,8 @@
         <tabset class="nav-full-width">
           <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
           
-            <div id="image-list-container" [ngSwitch]="folder.name">
-                <div *ngSwitchDefault>
+            <div [ngSwitch]="folder.name">
+                <div class="image-list-container" *ngSwitchDefault>
                   <ul class="list-group row">
 	                <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
 	                  <a class="thumbnail non-clickable">
@@ -46,7 +46,7 @@
                   </ul>
                 </div>
                 
-                <div *ngSwitchCase="'raw'">
+                <div class="image-list-container" *ngSwitchCase="'raw'">
                   <ul class="list-group row">
 	                <li *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }" class="list-group-item col-xs-3">
 	                  <a class="thumbnail"
@@ -68,25 +68,38 @@
                 <div *ngSwitchCase="'video'">
                   <div *ngIf="video.src !== null">
                     <div class="row" style="padding-left:20px;">
-                      <h3>
-                        {{video.name}} <a (click)="handleDownloadFile(video.src)"><i class="fas fa-download"></i></a>
-                      </h3>
+                      <div class="col-md-1"></div>
+                      <div class="col-md-10">
+                        <h3>
+                          {{video.name}} <a (click)="handleDownloadFile(video.src)"><i class="fas fa-download"></i></a>
+                        </h3>
+                      </div>
+                      <div class="col-md-1"></div>
                     </div>
                     <div class="row">
-                      <video-player [src]="video.src"></video-player>              
+                      <div class="col-md-1"></div>
+                      <div class="col-md-10">
+                        <video style="width:100%" controls #videoPlayer>
+                          <source *ngIf="video.src != null" [src]="video.src" type="video/mp4" />
+                          Browser not supported
+                        </video>                      
+                      </div>
+                      <div class="col-md-1"></div>
                     </div>
                   </div>
-                
-                  <ul class="list-group row">
-	                <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-	                  <a class="thumbnail" (click)="showVideo(item, $event)">
-	                    <img [src]="defaultImage" alt="Image">
-	                    <div class="caption">
-	                      <h4 class="media-heading">{{item.name}}</h4>
-	                    </div>
-	                  </a>
-	                </li>
-                  </ul>
+                  
+                  <div class="image-list-container">              
+                    <ul class="list-group row">
+	                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+	                    <a class="thumbnail" (click)="showVideo(item, $event)">
+	                      <img [src]="defaultImage" alt="Image">
+	                      <div class="caption">
+	                        <h4 class="media-heading">{{item.name}}</h4>
+	                      </div>
+	                    </a>
+	                  </li>
+                    </ul>
+                  </div>
                 </div>                
 
             </div>

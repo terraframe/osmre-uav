@@ -186,15 +186,15 @@ button.create-site-btn {
     // text-align: right;
 }
 
-#image-list-container {
+.image-list-container {
     overflow-y: auto;
     height: 300px;
     border-top: solid 1px lightgrey;
 }
-#image-list-container > .list-group {
+.image-list-container > .list-group {
     margin: 0;
 }
-#image-list-container .list-group .list-group-item {
+.image-list-container .list-group .list-group-item {
     background-color: rgba(255,255,255,.5);
 }
 
