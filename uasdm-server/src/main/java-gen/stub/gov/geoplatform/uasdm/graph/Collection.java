@@ -172,6 +172,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       this.deleteS3Folder(this.buildDemKey(), DEM);
 
       this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
+
+      this.deleteS3Folder(this.buildVideoKey(), VIDEO);
     }
   }
 
@@ -205,6 +207,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public String buildRawKey()
   {
     return this.getS3location() + RAW + "/";
+  }
+
+  public String buildVideoKey()
+  {
+    return this.getS3location() + VIDEO + "/";
   }
 
   public String buildPointCloudKey()
@@ -269,10 +276,18 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       ortho.setKey(this.buildOrthoKey());
       ortho.setType(SiteObject.FOLDER);
 
+      SiteObject video = new SiteObject();
+      video.setId(this.getOid() + "-" + VIDEO);
+      video.setName(VIDEO);
+      video.setComponentId(this.getOid());
+      video.setKey(this.buildVideoKey());
+      video.setType(SiteObject.FOLDER);
+
       objects.add(raw);
       objects.add(ptCloud);
       objects.add(dem);
       objects.add(ortho);
+      objects.add(video);
     }
     else
     {

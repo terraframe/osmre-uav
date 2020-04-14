@@ -41,7 +41,7 @@ import gov.geoplatform.uasdm.view.QueryResult;
 public class SolrService
 {
 
-  public static void deleteDocuments(UasComponentIF component)
+  public static void deleteDocuments(String fieldId, String oid)
   {
     if (AppProperties.isSolrEnabled())
     {
@@ -51,7 +51,7 @@ public class SolrService
 
         try
         {
-          client.deleteByQuery(component.getSolrIdField() + ":" + ClientUtils.escapeQueryChars(component.getOid()));
+          client.deleteByQuery(fieldId + ":" + ClientUtils.escapeQueryChars(oid));
           client.commit();
         }
         finally

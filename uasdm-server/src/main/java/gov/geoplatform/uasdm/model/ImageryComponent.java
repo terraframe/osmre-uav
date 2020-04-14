@@ -8,7 +8,6 @@ import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 /**
@@ -20,6 +19,8 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 public interface ImageryComponent
 {
   public static final String RAW     = "raw";
+
+  public static final String VIDEO   = "video";
 
   public static final String PTCLOUD = "ptcloud";
 

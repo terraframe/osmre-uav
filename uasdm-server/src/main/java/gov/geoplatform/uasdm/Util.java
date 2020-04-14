@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,20 +15,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
@@ -36,77 +25,18 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.ODMStatusServer;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Util
 {
-  private static Logger   logger      = LoggerFactory.getLogger(ODMStatusServer.class);
-
   public static final int BUFFER_SIZE = 1024;
 
   public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
   {
-    try
-    {
-      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-      TransferManager tx = new TransferManager(new StaticCredentialsProvider(awsCreds));
-
-      try
-      {
-        Upload myUpload = tx.upload(AppProperties.getBucketName(), key, child);
-
-        if (myUpload.isDone() == false)
-        {
-          logger.info("Source: " + child.getAbsolutePath());
-          logger.info("Destination: " + myUpload.getDescription());
-
-          if (task != null)
-          {
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
-          }
-        }
-
-        myUpload.addProgressListener(new ProgressListener()
-        {
-          int count = 0;
-
-          @Override
-          public void progressChanged(ProgressEvent progressEvent)
-          {
-            if (count % 2000 == 0)
-            {
-              long total = myUpload.getProgress().getTotalBytesToTransfer();
-              long current = myUpload.getProgress().getBytesTransferred();
-
-              logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-              count = 0;
-            }
-
-            count++;
-          }
-        });
-
-        myUpload.waitForCompletion();
-      }
-      finally
-      {
-        tx.shutdownNow();
-      }
-    }
-    catch (Exception e)
-    {
-      if (task != null)
-      {
-        task.createAction(e.getMessage(), "error");
-      }
-      logger.error("Exception occured while uploading [" + key + "].", e);
-    }
+    RemoteFileFacade.uploadFile(child, key, task);
   }
 
   public static void createImageServices(ImageryComponent imageryComponent)
@@ -167,17 +97,9 @@ public class Util
   {
     try
     {
-      BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-      AmazonS3 client = new AmazonS3Client(new StaticCredentialsProvider(awsCreds));
-
-      String bucketName = AppProperties.getBucketName();
-
-      GetObjectRequest request = new GetObjectRequest(bucketName, key);
-
-      S3Object s3Obj = client.getObject(request);
-
       File temp = Files.createTempFile("geotiff-" + storeName, ".tif").toFile();
-      IOUtils.copy(s3Obj.getObjectContent(), new FileOutputStream(temp));
+
+      RemoteFileFacade.download(key, temp);
 
       return temp;
     }
@@ -209,6 +131,20 @@ public class Util
     GeoserverFacade.removeStyle(storeName);
     GeoserverFacade.forceRemoveLayer(storeName);
     GeoserverFacade.removeCoverageStore(storeName);
+  }
+
+  public static boolean isVideoFile(String path)
+  {
+    final String ext = FilenameUtils.getExtension(path);
+
+    if (ext.equals("mp4"))
+    {
+      return true;
+    }
+
+    String mimeType = URLConnection.guessContentTypeFromName(path);
+
+    return mimeType != null && mimeType.startsWith("video");
   }
 
   public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
@@ -254,8 +190,9 @@ public class Util
 
           // Upload the file to S3
           String filename = entry.getName();
+          String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
 
-          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
           if (success)
           {
@@ -324,7 +261,9 @@ public class Util
               }
 
               // Upload the file to S3
-              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(uploadTarget), filename, tmp, imageryComponent);
+              String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
+
+              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
               if (success)
               {

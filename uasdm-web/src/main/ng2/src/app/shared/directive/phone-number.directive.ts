@@ -25,7 +25,7 @@ export class PhoneNumberValidatorDirective implements Validator {
 					return null;
 				}
 			} catch (e) {
-				console.log(e);
+				console.log(e, control.value);
 				return {
 					phoneNumber: true
 				};

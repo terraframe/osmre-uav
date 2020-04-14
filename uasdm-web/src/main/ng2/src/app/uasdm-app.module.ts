@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 //import { TreeModule } from 'angular-tree-component';
-import { ContextMenuModule } from 'ngx-contextmenu';
+//import { ContextMenuModule } from 'ngx-contextmenu';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
@@ -39,7 +39,7 @@ import { SharedModule } from './shared/shared.module';
         HttpClientModule,
         UasdmAppRoutingModule,
 //        TreeModule.forRoot(),
-        ContextMenuModule.forRoot(),
+//        ContextMenuModule.forRoot(),
         //        ModalModule.forRoot(),
         AlertModule.forRoot(),
         BsDropdownModule.forRoot(),

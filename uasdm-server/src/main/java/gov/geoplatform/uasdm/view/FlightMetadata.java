@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.view;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,11 +13,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class FlightMetadata
 {
@@ -449,25 +449,22 @@ public class FlightMetadata
 
     String key = component.getS3location() + folderName + "/" + component.getName() + filename;
 
-    try
+    try (RemoteFileObject object = component.download(key))
     {
-      S3Object object = component.download(key);
-
       if (object != null)
       {
-        try (S3ObjectInputStream istream = object.getObjectContent())
+        try (InputStream istream = object.getObjectContent())
         {
-
           DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
           Document document = builder.parse(istream);
 
           metadata.parse(document);
         }
-        catch (IOException | ParserConfigurationException | SAXException e)
-        {
-          throw new ProgrammingErrorException(e);
-        }
       }
+    }
+    catch (IOException | ParserConfigurationException | SAXException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
     catch (AmazonClientException e)
     {

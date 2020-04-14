@@ -1,7 +1,19 @@
+$fa-font-path : '~@fortawesome/fontawesome-free/webfonts';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+
+@import "~bootstrap/dist/css/bootstrap.css";
+
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
+@import 'theme.css';
+@import 'main.css';
+@import 'admin-pages.css';
 
 body {
   overflow-y: auto;
@@ -174,15 +186,15 @@ button.create-site-btn {
     // text-align: right;
 }
 
-#image-list-container {
+.image-list-container {
     overflow-y: auto;
     height: 300px;
     border-top: solid 1px lightgrey;
 }
-#image-list-container > .list-group {
+.image-list-container > .list-group {
     margin: 0;
 }
-#image-list-container .list-group .list-group-item {
+.image-list-container .list-group .list-group-item {
     background-color: rgba(255,255,255,.5);
 }
 
@@ -324,7 +336,7 @@ a.active {
 }
 .nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4),
 .nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4) ~ li {
-  width: 25%;
+  width: 20%;
 }
 
 .nav-full-width .nav-tabs>li>a {

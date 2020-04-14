@@ -1,0 +1,32 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.bus.UasComponentDeleteException" 
+                   label="UasComponentDeleteException" 
+                   description="Thrown when a user tries to delete a component in which they are not the owner" 
+                   message="The [{typeLabel}][{componentName}] can not be delete because it is not owned by you.">
+          <attributes>
+            <text name="typeLabel" required="false" label="Type Label" />
+            <text name="componentName" required="false" label="Component Name" />
+          </attributes>                   
+      </mdException>
+      <mdException name="gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException" 
+                   label="UasComponentCompositeDeleteException" 
+                   description="Thrown when a user tries to delete a component in which they are not the owner" 
+                   message="This [{typeLabel}] can not be deleted because data within it is not owned by you. Contact the owners of [{components}] to request deletion of this data before trying again.">
+          <attributes>
+            <text name="typeLabel" required="false" label="Type Label" />
+            <text name="components" required="false" label="Components" />
+          </attributes>                   
+      </mdException>
+    
+    </create>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.UasComponentDeleteException" type="com.runwaysdk.system.metadata.MdException" />    
+      <object key="gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException" type="com.runwaysdk.system.metadata.MdException" />    
+      
+    </delete>
+  </undoIt>
+</version>

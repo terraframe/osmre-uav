@@ -8,8 +8,6 @@ import { Observable } from 'rxjs';
 import { SiteEntity } from '../../model/management';
 import { MapService } from '../../service/map.service';
 
-declare var acp: any;
-declare var gpAppType: any;
 
 @Component( {
     selector: 'map-attribute',

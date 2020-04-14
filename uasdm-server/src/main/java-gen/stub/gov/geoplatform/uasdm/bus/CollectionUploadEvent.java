@@ -20,7 +20,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {

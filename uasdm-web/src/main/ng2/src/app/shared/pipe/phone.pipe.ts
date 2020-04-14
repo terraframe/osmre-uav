@@ -10,7 +10,7 @@ export class PhonePipe implements PipeTransform {
 	transform(value: any, args?: string): any {
 		const phoneUtil = PhoneNumberUtil.getInstance();
 
-		if (value != null) {
+		if (value != null && value !== '') {
 			const number = phoneUtil.parseAndKeepRawInput(value, 'US');
 
 			if (phoneUtil.isValidNumber(number)) {

@@ -68,7 +68,7 @@
                   <div *ngFor="let task of tasks; let i=index" class="panel panel-default">
                     <div class="panel-heading clickable">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse{{i}}">
+                        <a data-toggle="collapse" (click)="task.visible = !task.visible" [attr.aria-expanded]="!task.visible" [attr.aria-controls]="'task'+ i">
                           <ul class="list-inline" style="margin: 0;">
                             <li style="max-width: 80%;">{{task.label}}</li>
                             <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:#e30000; max-width: 20%;"> <b>{{task.status}}</b></li>
@@ -78,7 +78,7 @@
                         </a>
                       </h4>
                     </div>
-                    <div id="collapse{{i}}" class="panel-collapse collapse">
+                    <div [id]="'task'+ i" [isAnimated]="false" [collapse]="!task.visible">
                       <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="panel-body">
                         <ul class="list-unstyled" style="margin: 0;">
                           <li>Status: <b>{{task.status}}</b></li>
