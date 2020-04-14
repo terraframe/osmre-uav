@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.graph;
+package gov.geoplatform.uasdm.remote;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,7 +7,8 @@ import org.junit.Test;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.Bureau;
-import gov.geoplatform.uasdm.remote.MockRemoteFileService;
+import gov.geoplatform.uasdm.graph.Site;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class RemoteFileServiceTest
