@@ -48,16 +48,20 @@ public class Range
     List<Range> ranges = new ArrayList<>();
     String byteRangeSetRegex = "(((?<byteRangeSpec>(?<firstBytePos>\\d+)-(?<lastBytePos>\\d+)?)|(?<suffixByteRangeSpec>-(?<suffixLength>\\d+)))(,|$))";
     String byteRangesSpecifierRegex = "bytes=(?<byteRangeSet>" + byteRangeSetRegex + "{1,})";
+
     Pattern byteRangeSetPattern = Pattern.compile(byteRangeSetRegex);
     Pattern byteRangesSpecifierPattern = Pattern.compile(byteRangesSpecifierRegex);
     Matcher byteRangesSpecifierMatcher = byteRangesSpecifierPattern.matcher(rangeHeader);
+
     if (byteRangesSpecifierMatcher.matches())
     {
       String byteRangeSet = byteRangesSpecifierMatcher.group("byteRangeSet");
       Matcher byteRangeSetMatcher = byteRangeSetPattern.matcher(byteRangeSet);
+
       while (byteRangeSetMatcher.find())
       {
         Range range = new Range();
+
         if (byteRangeSetMatcher.group("byteRangeSpec") != null)
         {
           String start = byteRangeSetMatcher.group("firstBytePos");
@@ -71,14 +75,15 @@ public class Range
         }
         else
         {
-          throw new RuntimeException("Invalid range header");
+          throw new InvalidRangeException(rangeHeader);
         }
+
         ranges.add(range);
       }
     }
     else
     {
-      throw new RuntimeException("Invalid range header");
+      throw new InvalidRangeException(rangeHeader);
     }
 
     return ranges;

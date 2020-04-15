@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.remote.s3;
 
+import java.util.Date;
+
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
@@ -41,5 +43,17 @@ public class ObjectMetadataWrapper implements RemoteFileMetadata
   public String getContentEncoding()
   {
     return this.metadata.getContentEncoding();
+  }
+
+  @Override
+  public String getETag()
+  {
+    return this.metadata.getETag();
+  }
+
+  @Override
+  public Date getLastModified()
+  {
+    return this.metadata.getLastModified();
   }
 }
