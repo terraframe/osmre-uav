@@ -43,6 +43,5 @@ module.exports = webpackMerge(commonConfig, {
 	},
 
 	plugins : [ 
-		new BundleAnalyzerPlugin()
     ]
 });
