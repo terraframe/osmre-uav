@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.remote;
 
+import java.util.Date;
+
 public class MockRemoteFileMetadata implements RemoteFileMetadata
 {
 
@@ -30,7 +32,19 @@ public class MockRemoteFileMetadata implements RemoteFileMetadata
   @Override
   public String getContentEncoding()
   {
-    return "";
+    return "video/mp4";
+  }
+
+  @Override
+  public String getETag()
+  {
+    return null;
+  }
+
+  @Override
+  public Date getLastModified()
+  {
+    return null;
   }
 
 }

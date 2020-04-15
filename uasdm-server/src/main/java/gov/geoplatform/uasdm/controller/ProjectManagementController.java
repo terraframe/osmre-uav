@@ -15,6 +15,7 @@ import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
+import com.runwaysdk.mvc.ErrorRestResponse;
 import com.runwaysdk.mvc.ErrorSerialization;
 import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
@@ -26,6 +27,7 @@ import com.runwaysdk.request.ServletRequestIF;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
@@ -275,15 +277,22 @@ public class ProjectManagementController
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
-    // Handle video data
-//    if (sRequest.getHeader("Range") != null)
-//    {
-//      String range = sRequest.getHeader("Range");
-//
-//      final List<Range> ranges = Range.decodeRange(range);
-//
-//      return new RemoteFileGetRangeResponse(this.service.download(request.getSessionId(), id, key, ranges));
-//    }
+    // Handle range requests
+    if (sRequest.getHeader("Range") != null)
+    {
+      String range = sRequest.getHeader("Range");
+
+      try
+      {
+        final List<Range> ranges = Range.decodeRange(range);
+
+        return new RemoteFileGetRangeResponse(this.service.download(request.getSessionId(), id, key, ranges));
+      }
+      catch (InvalidRangeException e)
+      {
+        return new ErrorCodeResponse(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "Invalid range [" + e.getRange() + "]");
+      }
+    }
 
     return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key));
   }

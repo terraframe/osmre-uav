@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.runwaysdk.controller.RequestManager;
 import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.request.ServletResponseIF;
+import com.runwaysdk.request.ResponseDecorator;
 
 public class RemoteFileGetResponse implements ResponseIF
 {
@@ -28,11 +28,14 @@ public class RemoteFileGetResponse implements ResponseIF
     {
       RemoteFileMetadata metadata = this.object.getObjectMetadata();
 
-      ServletResponseIF resp = manager.getResp();
+      ResponseDecorator resp = (ResponseDecorator) manager.getResp();
       resp.setStatus(200);
       resp.setContentType(metadata.getContentType());
       resp.setHeader("Content-Encoding", metadata.getContentEncoding());
       resp.setHeader("Content-Disposition", metadata.getContentDisposition());
+      resp.setHeader("Content-Length", Long.toString(metadata.getContentLength()));
+      resp.setHeader("ETag", metadata.getETag());
+      resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
 
       try (OutputStream ostream = resp.getOutputStream())
       {
