@@ -14,6 +14,8 @@ import org.junit.Test;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.odm.ODMFacade.CloseablePair;
+
 public class ODMFacadeTest
 {
 
@@ -24,9 +26,9 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final CloseableFile result = ODMFacade.filter(resource))
+    try (final CloseablePair result = ODMFacade.filter(resource))
     {
-      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(result)))
+      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(result.getFile())))
       {
         ZipEntry entry;
 
@@ -48,9 +50,9 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final CloseableFile result = ODMFacade.filter(resource))
+    try (final CloseablePair result = ODMFacade.filter(resource))
     {
-      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(result)))
+      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(result.getFile())))
       {
         ZipEntry entry;
 
