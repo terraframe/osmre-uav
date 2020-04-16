@@ -34,7 +34,7 @@ import gov.geoplatform.uasdm.Util;
 
 public class ODMFacade
 {
-  private static class CloseablePair implements AutoCloseable
+  public static class CloseablePair implements AutoCloseable
   {
     private CloseableFile file;
 
