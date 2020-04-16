@@ -34,6 +34,35 @@ import gov.geoplatform.uasdm.Util;
 
 public class ODMFacade
 {
+  private static class CloseablePair implements AutoCloseable
+  {
+    private CloseableFile file;
+
+    private int           itemCount;
+
+    public CloseablePair(CloseableFile file, int itemCount)
+    {
+      super();
+      this.file = file;
+      this.itemCount = itemCount;
+    }
+
+    public CloseableFile getFile()
+    {
+      return file;
+    }
+
+    public int getItemCount()
+    {
+      return itemCount;
+    }
+
+    public void close()
+    {
+      this.file.close();
+    }
+  }
+
   private static HTTPConnector connector;
 
   private static final Logger  logger = LoggerFactory.getLogger(ODMFacade.class);
@@ -117,37 +146,44 @@ public class ODMFacade
   {
     initialize();
 
-    try (CloseableFile filtered = filter(images))
+    try (CloseablePair filtered = filter(images))
     {
-      Part[] parts = new Part[2];
-
-      parts[0] = new FilePart("images", filtered, "application/octet-stream", "UTF-8");
-
-      JSONArray arr = new JSONArray();
-
-      JSONObject dsm = new JSONObject();
-      dsm.put("name", "dsm");
-      dsm.put("value", "true");
-      arr.put(dsm);
-
-      JSONObject dtm = new JSONObject();
-      dtm.put("name", "dtm");
-      dtm.put("value", "true");
-      arr.put(dtm);
-
-      if (isMultispectral)
+      if (filtered.getItemCount() > 0)
       {
-        JSONObject multispectral = new JSONObject();
-        multispectral.put("name", "multispectral");
-        multispectral.put("value", String.valueOf(isMultispectral));
-        arr.put(multispectral);
+        Part[] parts = new Part[2];
+
+        parts[0] = new FilePart("images", filtered.getFile(), "application/octet-stream", "UTF-8");
+
+        JSONArray arr = new JSONArray();
+
+        JSONObject dsm = new JSONObject();
+        dsm.put("name", "dsm");
+        dsm.put("value", "true");
+        arr.put(dsm);
+
+        JSONObject dtm = new JSONObject();
+        dtm.put("name", "dtm");
+        dtm.put("value", "true");
+        arr.put(dtm);
+
+        if (isMultispectral)
+        {
+          JSONObject multispectral = new JSONObject();
+          multispectral.put("name", "multispectral");
+          multispectral.put("value", String.valueOf(isMultispectral));
+          arr.put(multispectral);
+        }
+
+        parts[1] = new StringPart("options", arr.toString());
+
+        HTTPResponse resp = connector.postAsMultipart("task/new", parts);
+
+        return new NewResponse(resp);
       }
-
-      parts[1] = new StringPart("options", arr.toString());
-
-      HTTPResponse resp = connector.postAsMultipart("task/new", parts);
-
-      return new NewResponse(resp);
+      else
+      {
+        throw new EmptyFileSetException();
+      }
     }
     catch (IOException e)
     {
@@ -164,7 +200,7 @@ public class ODMFacade
     return new InfoResponse(resp);
   }
 
-  public static CloseableFile filter(ApplicationResource archive) throws IOException
+  public static CloseablePair filter(ApplicationResource archive) throws IOException
   {
     String extension = archive.getNameExtension();
 
@@ -180,9 +216,10 @@ public class ODMFacade
     throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
   }
 
-  private static CloseableFile filterTarGzArchive(ApplicationResource archive) throws IOException
+  private static CloseablePair filterTarGzArchive(ApplicationResource archive) throws IOException
   {
     File zip = File.createTempFile("filtered", ".zip");
+    int itemCount = 0;
 
     byte data[] = new byte[Util.BUFFER_SIZE];
 
@@ -214,6 +251,8 @@ public class ODMFacade
               }
 
               zos.closeEntry();
+
+              itemCount++;
             }
 
           }
@@ -221,12 +260,13 @@ public class ODMFacade
       }
     }
 
-    return new CloseableFile(zip);
+    return new CloseablePair(new CloseableFile(zip), itemCount);
   }
 
-  private static CloseableFile filterZipArchive(ApplicationResource archive) throws IOException
+  private static CloseablePair filterZipArchive(ApplicationResource archive) throws IOException
   {
     File zip = File.createTempFile("filtered", ".zip");
+    int itemCount = 0;
 
     try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zip))))
     {
@@ -253,12 +293,14 @@ public class ODMFacade
             }
 
             zos.closeEntry();
+
+            itemCount++;
           }
         }
       }
     }
 
-    return new CloseableFile(zip);
+    return new CloseablePair(new CloseableFile(zip), itemCount);
   }
 
 }

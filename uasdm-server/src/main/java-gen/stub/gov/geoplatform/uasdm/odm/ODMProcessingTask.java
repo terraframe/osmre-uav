@@ -16,7 +16,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 {
   private static final long serialVersionUID = -90821820;
 
-  private static Logger    logger           = LoggerFactory.getLogger(ODMStatusServer.class);
+  private static Logger     logger           = LoggerFactory.getLogger(ODMStatusServer.class);
 
   public ODMProcessingTask()
   {
@@ -100,6 +100,13 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
         ODMStatusServer.addTask(this);
       }
+    }
+    catch (EmptyFileSetException e)
+    {
+      this.appLock();
+      this.setStatus(ODMStatus.COMPLETED.getLabel());
+      this.setMessage("No image files to be processed.");
+      this.apply();
     }
     catch (Throwable t)
     {
