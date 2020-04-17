@@ -274,11 +274,17 @@ public class Product extends ProductBase implements ProductIF
   {
     List<DocumentIF> documents = this.getDocuments();
 
+    logger.info("Calculating image keys for product [" + this.getOid() + "] with [" + documents.size() + "]");
+
     for (DocumentIF document : documents)
     {
+      logger.info("Checking document [" + document.getName() + "]");
+
       if (document.getName().endsWith(".png"))
       {
         this.imageKey = document.getS3location();
+
+        logger.info("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
       }
       else if (document.getName().endsWith(".tif"))
       {
@@ -287,6 +293,8 @@ public class Product extends ProductBase implements ProductIF
         if (GeoserverFacade.layerExists(storeName))
         {
           this.mapKey = storeName;
+
+          logger.info("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
         }
       }
     }
