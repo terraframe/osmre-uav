@@ -22,6 +22,7 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.SSLDevConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -142,6 +143,11 @@ public class Product extends ProductBase implements ProductIF
     {
       this.removeParent(document, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
+  }
+  
+  static
+  {
+    SSLDevConfiguration.performCheck();
   }
 
   /**
