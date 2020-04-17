@@ -2,6 +2,8 @@ package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
@@ -43,23 +46,28 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
     ImageryIF imagery = task.getImageryInstance();
 
+    List<String> files = new LinkedList<String>();
+
     if (DevProperties.uploadRaw())
     {
-      imagery.uploadArchive(task, appRes, uploadTarget);
+      files = imagery.uploadArchive(task, appRes, uploadTarget);
     }
 
-    calculateImageSize(appRes, imagery);
-
-    task.lock();
-    task.setStatus("Complete");
-    task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
-    task.apply();
-
-    // Only initialize an ortho job if imagery has been uploaded to the raw
-    // folder.
-    if (uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW))
+    if (!DevProperties.uploadRaw() || Util.hasImages(files))
     {
-      startODMProcessing(appRes, task, outFileNamePrefix);
+      calculateImageSize(appRes, imagery);
+
+      task.lock();
+      task.setStatus("Complete");
+      task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
+      task.apply();
+
+      // Only initialize an ortho job if imagery has been uploaded to the raw
+      // folder.
+      if (uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW))
+      {
+        startODMProcessing(appRes, task, outFileNamePrefix);
+      }
     }
   }
 

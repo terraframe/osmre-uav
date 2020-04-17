@@ -2,6 +2,8 @@ package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -42,9 +45,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     UasComponentIF component = task.getComponentInstance();
 
+    List<String> uploadedFiles = new LinkedList<String>();
+
     if (DevProperties.uploadRaw())
     {
-      component.uploadArchive(task, infile, uploadTarget);
+      uploadedFiles = component.uploadArchive(task, infile, uploadTarget);
     }
 
     task.lock();
@@ -52,11 +57,16 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
     task.apply();
 
-    startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
-
-    if (component instanceof Collection)
+    // Only upload to ODM if there are valid image files which were successfully
+    // uploaded to s3
+    if (!DevProperties.uploadRaw() || Util.hasImages(uploadedFiles))
     {
-      calculateImageSize(infile, (Collection) component);
+      startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
+
+      if (component instanceof Collection)
+      {
+        calculateImageSize(infile, (Collection) component);
+      }
     }
 
 //    handleMetadataWorkflow(task);
