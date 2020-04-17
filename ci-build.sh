@@ -9,6 +9,8 @@ sed -i -e "s/clean_db=true/clean_db=$clean_db/g" geoprism-platform/ansible/inven
 sed -i -e "s/clean_db=false/clean_db=$clean_db/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_solr=true/clean_solr=$clean_solr/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_solr=false/clean_solr=$clean_solr/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
+sed -i -e "s/clean_orientdb=true/clean_orientdb=$clean_orientdb/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
+sed -i -e "s/clean_orientdb=false/clean_orientdb=$clean_orientdb/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 
 #sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 mdillon/postgis:9.5
 
