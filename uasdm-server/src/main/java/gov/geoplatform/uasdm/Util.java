@@ -137,7 +137,7 @@ public class Util
   {
     final String ext = FilenameUtils.getExtension(path);
 
-    if (ext.equals("mp4"))
+    if (ext.equalsIgnoreCase("mp4"))
     {
       return true;
     }
