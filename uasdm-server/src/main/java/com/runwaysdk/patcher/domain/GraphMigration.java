@@ -37,8 +37,8 @@ import gov.geoplatform.uasdm.model.EdgeType;
 
 public class GraphMigration
 {
-  private static final Logger logger = LoggerFactory.getLogger(GraphMigration.class);
-  
+  private static final Logger                                          logger     = LoggerFactory.getLogger(GraphMigration.class);
+
   private static Map<String, gov.geoplatform.uasdm.graph.UasComponent> COMPONENTS = new HashMap<>();
 
   private static Map<String, gov.geoplatform.uasdm.graph.Document>     DOCUMENTS  = new HashMap<>();
@@ -125,7 +125,7 @@ public class GraphMigration
 
       for (Document doc : docs)
       {
-        dest.addChild(DOCUMENTS.get(doc.getOid()), EdgeType.PRODUCT_HAS_DOCUMENT);
+        dest.addChild(DOCUMENTS.get(doc.getOid()), EdgeType.PRODUCT_HAS_DOCUMENT).apply();
       }
     }
 
@@ -284,7 +284,7 @@ public class GraphMigration
   {
     migrate();
   }
-  
+
   @Request
   public static void migrate()
   {
