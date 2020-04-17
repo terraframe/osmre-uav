@@ -31,6 +31,7 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class ODMFacade
 {
@@ -239,7 +240,7 @@ public class ODMFacade
             if (entry.isDirectory())
             {
             }
-            else if (!ext.equalsIgnoreCase("mp4"))
+            else if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
             {
               int count;
 
@@ -281,7 +282,7 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename);
 
-          if (!ext.equalsIgnoreCase("mp4"))
+          if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
           {
             int len;
 

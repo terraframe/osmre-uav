@@ -320,4 +320,15 @@ public class Util
     return false;
   }
 
+  public static boolean hasImages(List<String> files)
+  {
+    boolean hasImages = files.parallelStream().anyMatch(filename -> {
+      final String extension = FilenameUtils.getExtension(filename);
+
+      return !extension.equalsIgnoreCase("mp4");
+    });
+
+    return hasImages;
+  }
+
 }
