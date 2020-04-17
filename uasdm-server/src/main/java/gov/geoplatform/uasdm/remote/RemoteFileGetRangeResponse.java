@@ -32,7 +32,6 @@ public class RemoteFileGetRangeResponse implements ResponseIF
       final Long end = metadata.getContentRange()[1];
       final String contentRange = "bytes " + start + "-" + end + "/*";
       final String contentType = metadata.getContentType();
-//      final String contentType = "video/mp4";
       final String contentEncoding = metadata.getContentEncoding();
 
       ResponseDecorator resp = (ResponseDecorator) manager.getResp();
@@ -47,8 +46,6 @@ public class RemoteFileGetRangeResponse implements ResponseIF
       resp.setHeader("Content-Type", contentType);
       resp.setHeader("ETag", metadata.getETag());
       resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
-
-//      resp.setContentType(contentType);
 
       try (OutputStream ostream = resp.getOutputStream())
       {

@@ -239,7 +239,7 @@ public class ODMFacade
             if (entry.isDirectory())
             {
             }
-            else if (!ext.equals("mp4"))
+            else if (!ext.equalsIgnoreCase("mp4"))
             {
               int count;
 
@@ -281,7 +281,7 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename);
 
-          if (!ext.equals("mp4"))
+          if (!ext.equalsIgnoreCase("mp4"))
           {
             int len;
 
