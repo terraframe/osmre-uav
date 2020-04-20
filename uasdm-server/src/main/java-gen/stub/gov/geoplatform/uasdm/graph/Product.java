@@ -144,7 +144,7 @@ public class Product extends ProductBase implements ProductIF
       this.removeParent(document, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
   }
-  
+
   static
   {
     SSLDevConfiguration.performCheck();
@@ -280,17 +280,17 @@ public class Product extends ProductBase implements ProductIF
   {
     List<DocumentIF> documents = this.getDocuments();
 
-    logger.info("Calculating image keys for product [" + this.getOid() + "] with [" + documents.size() + "]");
+    logger.trace("Calculating image keys for product [" + this.getOid() + "] with [" + documents.size() + "]");
 
     for (DocumentIF document : documents)
     {
-      logger.info("Checking document [" + document.getName() + "]");
+      logger.trace("Checking document [" + document.getName() + "]");
 
       if (document.getName().endsWith(".png"))
       {
         this.imageKey = document.getS3location();
 
-        logger.info("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
+        logger.trace("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
       }
       else if (document.getName().endsWith(".tif"))
       {
@@ -300,7 +300,7 @@ public class Product extends ProductBase implements ProductIF
         {
           this.mapKey = storeName;
 
-          logger.info("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
+          logger.trace("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
         }
       }
     }
