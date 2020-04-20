@@ -55,6 +55,7 @@ export class SensorsComponent implements OnInit {
             ignoreBackdropClick: true,
         } );
         this.bsModalRef.content.message = "Are you sure you want to remove the sensor [" + sensor.name + "]";
+		this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = "Delete";
 
         this.bsModalRef.content.onConfirm.subscribe( data => {
