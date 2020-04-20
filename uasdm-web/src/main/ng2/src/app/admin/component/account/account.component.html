@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <div *ngIf="(!account.user.newInstance && account.user.username === 'admin')" class="form-group">
+    <div *ngIf="(!account.user.newInstance && account.user.username !== 'admin')" class="form-group">
       <boolean-field [(value)]="account.user.inactive" [label]="'account.inactive' | localize"></boolean-field>
     </div>
 
