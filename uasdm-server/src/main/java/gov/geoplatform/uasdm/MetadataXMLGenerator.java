@@ -119,8 +119,8 @@ public class MetadataXMLGenerator
     e.setAttribute("name", platformName);
     e.setAttribute("class", jPlatform.getString("class"));
     e.setAttribute("type", jPlatform.getString("type"));
-    e.setAttribute("serialNumber", jPlatform.getString("serialNumber"));
-    e.setAttribute("faaIdNumber", jPlatform.getString("faaIdNumber"));
+    e.setAttribute("serialNumber", jPlatform.get("serialNumber").toString());
+    e.setAttribute("faaIdNumber", jPlatform.get("faaIdNumber").toString());
     root.appendChild(e);
 
     JSONObject jSensor = json.getJSONObject("sensor");
@@ -154,10 +154,10 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("imageHeight", "");
     }
-    e.setAttribute("sensorWidth", jSensor.getString("sensorWidth"));
-    e.setAttribute("sensorHeight", jSensor.getString("sensorHeight"));
-    e.setAttribute("pixelSizeWidth", jSensor.getString("pixelSizeWidth"));
-    e.setAttribute("pixelSizeHeight", jSensor.getString("pixelSizeHeight"));
+    e.setAttribute("sensorWidth", jSensor.get("sensorWidth").toString());
+    e.setAttribute("sensorHeight", jSensor.get("sensorHeight").toString());
+    e.setAttribute("pixelSizeWidth", jSensor.get("pixelSizeWidth").toString());
+    e.setAttribute("pixelSizeHeight", jSensor.get("pixelSizeHeight").toString());
     root.appendChild(e);
 
     e = dom.createElement("Upload");
@@ -203,7 +203,7 @@ public class MetadataXMLGenerator
       String fileName = this.collection.getName() + FILENAME;
       String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
-      
+
       this.collection.createDocumentIfNotExist(key, fileName);
 
       SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
