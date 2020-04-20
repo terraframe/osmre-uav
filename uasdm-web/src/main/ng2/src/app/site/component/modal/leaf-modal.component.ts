@@ -69,10 +69,10 @@ export class LeafModalComponent implements OnInit {
 	public onNodeChange: Subject<SiteEntity>;
 
 	video: { src: string, name: string } = { src: null, name: null };
-	defaultImage: string;
+	context: string;
 
 	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
-		this.defaultImage = acp + "/net/geoprism/images/thumbnail-default.png";
+		this.context = acp;
 	}
 
 	ngOnInit(): void {
@@ -271,9 +271,13 @@ export class LeafModalComponent implements OnInit {
 		//      } );
 	}
 
-	handleDownloadFile(src: string): void {
+	handleDownloadVideo(src: string): void {
 
 		window.location.href = src;
+	}
+
+	handleDownloadFile(item: SiteEntity): void {
+		window.location.href = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key;
 	}
 
 	showVideo(item: SiteEntity): void {
