@@ -314,10 +314,34 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
 		if (this.current == null) {
-			this.service.roots(null, this.map.getBounds()).then(nodes => {
-				this.nodes = nodes;
-			});
+			const bounds = this.map.getBounds();
+
+			// Sometimes bounds aren't valid for 4326, so validate it before sending to server
+			if (this.isValidBounds(bounds)) {
+				this.service.roots(null, bounds).then(nodes => {
+					this.nodes = nodes;
+				});
+			}
+			else {
+				// console.log("Invalid bounds", bounds);
+			}
 		}
+	}
+
+	isValidBounds(bounds: LngLatBounds): boolean {
+
+		const ne = bounds.getNorthEast();
+		const sw = bounds.getSouthWest();
+
+		if (Math.abs(ne.lng) > 180 || Math.abs(sw.lng) > 180) {
+			return false;
+		}
+
+		if (Math.abs(ne.lat) > 90 || Math.abs(sw.lat) > 90) {
+			return false;
+		}
+
+		return true;
 	}
 
 	refresh(zoom: boolean): void {
