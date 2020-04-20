@@ -11,7 +11,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-public class SSLConfiguration
+public class SSLDevConfiguration
 {
   // This code fixes java.security.cert.CertificateException: No subject
   // alternative names present
@@ -64,7 +64,7 @@ public class SSLConfiguration
     }
   }
 
-  static
+  public static void performCheck()
   {
     if (Boolean.valueOf(System.getProperty("com.sun.jndi.ldap.object.disableEndpointIdentification")))
     {
