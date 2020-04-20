@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { TabsetComponent } from 'ngx-bootstrap';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from 'mapbox-gl';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, map, distinctUntilChanged } from "rxjs/operators";
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
@@ -119,13 +119,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	hoverFeatureId: string;
 
+	/* 
+     * debounced subject for map extent change events
+     */
+	subject: Subject<MapboxEvent<MouseEvent | TouchEvent | WheelEvent>>;
+
     /*
      * Reference to the modal current showing
     */
 	private bsModalRef: BsModalRef;
 
 	constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
-		private modalService: BsModalService, private metadataService: MetadataService, private collapseModule: CollapseModule) {
+		private modalService: BsModalService, private metadataService: MetadataService) {
+
+		this.subject = new Subject();
+		this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
 
 		this.dataSource = Observable.create((observer: any) => {
 
@@ -232,11 +240,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		});
 
 		this.map.on('zoomend', (e) => {
-			this.handleExtentChange(e);
+			this.subject.next(e);
 		});
 
 		this.map.on('moveend', (e) => {
-			this.handleExtentChange(e);
+			this.subject.next(e);
 		});
 
 		// MapboxGL doesn't have a good way to detect when moving off the map
