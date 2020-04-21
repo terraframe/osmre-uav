@@ -32,13 +32,6 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>geoserver</artifactId>
-      <version>${geoserver.version}</version>
-      <type>war</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>net.jawr</groupId>
       <artifactId>jawr-core</artifactId>
       <version>3.7</version>
