@@ -192,7 +192,7 @@ public class UserInfo extends UserInfoBase
     return result;
   }
 
-  private static GeoprismUser deserialize(JSONObject account)
+  public static GeoprismUser deserialize(JSONObject account)
   {
     GeoprismUser user = null;
 

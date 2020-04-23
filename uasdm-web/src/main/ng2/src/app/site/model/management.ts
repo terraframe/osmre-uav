@@ -15,11 +15,14 @@ export class AttributeType {
 	options?: { value: string, label: string }[];
 }
 
-export class SiteObjectsResultSet {
+export class Page<T> {
 	count: number;
 	pageNumber: number;
 	pageSize: number;
-	results: SiteEntity[];
+	results: T[];
+}
+
+export class SiteObjectsResultSet extends Page<SiteEntity> {
 	folder: string;
 }
 
@@ -127,5 +130,5 @@ export class ProductDetail extends Product {
 	pilotName: string;
 	dateTime: string;
 	sensor: string;
-	documents: ProductDocument[];
+	page?: Page<ProductDocument>;
 }

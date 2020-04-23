@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.ComponentIF;
 
-public interface DocumentIF extends ComponentIF
+public interface DocumentIF extends ComponentIF, JSONSerializable
 {
 
   public String getS3location();

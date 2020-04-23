@@ -1,16 +1,15 @@
 package gov.geoplatform.uasdm.view;
 
 import java.util.Date;
-import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.Page;
 
 public class ProductDetailView extends ProductView
 {
-  private List<DocumentIF> documents;
+  private Page<DocumentIF> page;
 
   private String           pilotName;
 
@@ -48,30 +47,23 @@ public class ProductDetailView extends ProductView
     this.sensor = sensor;
   }
 
-  public List<DocumentIF> getDocuments()
+  public Page<DocumentIF> getPage()
   {
-    return documents;
+    return page;
   }
 
-  public void setDocuments(List<DocumentIF> documents)
+  public void setPage(Page<DocumentIF> page)
   {
-    this.documents = documents;
+    this.page = page;
   }
 
   public JSONObject toJSON()
   {
-    JSONArray array = new JSONArray();
-
-    for (DocumentIF document : documents)
-    {
-      array.put(document.toJSON());
-    }
-
     JSONObject object = super.toJSON();
     object.put("pilotName", this.pilotName);
     object.put("dateTime", this.dateTime);
     object.put("sensor", this.sensor);
-    object.put("documents", array);
+    object.put("page", page.toJSON());
 
     return object;
   }

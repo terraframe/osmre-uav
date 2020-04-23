@@ -46,7 +46,7 @@ public class ProductService
   }
 
   @Request(RequestType.SESSION)
-  public ProductDetailView getProductDetail(String sessionId, String id)
+  public ProductDetailView getProductDetail(String sessionId, String id, Integer pageNumber, Integer pageSize)
   {
     ProductIF product = ComponentFacade.getProduct(id);
 
@@ -59,6 +59,6 @@ public class ProductService
 
     final List<DocumentIF> generated = product.getGeneratedFromDocuments();
 
-    return Converter.toDetailView(product, components, generated);
+    return Converter.toDetailView(product, components, generated, pageNumber, pageSize);
   }
 }

@@ -32,6 +32,8 @@ public interface ProductIF extends ComponentIF
 
   public List<DocumentIF> getGeneratedFromDocuments();
 
+  public Page<DocumentIF> getGeneratedFromDocuments(Integer pageNumber, Integer pageSize);
+
   public void calculateKeys(List<UasComponentIF> components);
 
   public void delete();

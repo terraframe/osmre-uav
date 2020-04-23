@@ -22,6 +22,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -109,6 +110,14 @@ public class Product extends ProductBase implements ProductIF
     }
 
     return generated;
+  }
+
+  @Override
+  public Page<DocumentIF> getGeneratedFromDocuments(Integer pageNumber, Integer pageSize)
+  {
+    final List<DocumentIF> documents = this.getGeneratedFromDocuments();
+
+    return new Page<DocumentIF>(1, 1, 1, documents);
   }
 
   public static Product createIfNotExist(UasComponentIF uasComponent)

@@ -19,7 +19,6 @@ import { UasdmAppRoutingModule, routedComponents } from './uasdm-app-routing.mod
 
 import { HubService } from './core/service/hub.service';
 import { ForgotPasswordService } from './core/service/forgotpassword.service';
-import { ForgotPasswordCompleteService } from './core/service/forgotpassword-complete.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpErrorInterceptor } from './core/service/http-error.interceptor';
@@ -65,7 +64,6 @@ import { SharedModule } from './shared/shared.module';
         },
         CookieService,
         ForgotPasswordService,
-        ForgotPasswordCompleteService,
         HubService
     ],
     bootstrap: [UasdmAppComponent],

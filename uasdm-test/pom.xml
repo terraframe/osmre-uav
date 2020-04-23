@@ -17,7 +17,7 @@
     <root.user>postgres</root.user>
     <root.pass>postgres</root.pass>
 
-    <geoserver.version>2.15.0.1</geoserver.version>
+    <geoserver.version>2.14.2</geoserver.version>
   </properties>
 
   <dependencies>

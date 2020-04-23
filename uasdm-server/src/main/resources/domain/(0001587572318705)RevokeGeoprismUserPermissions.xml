@@ -1,0 +1,15 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <permissions>
+      <role roleName="PUBLIC">
+        <revoke>
+          <mdBusinessPermission type="net.geoprism.GeoprismUser">
+            <operation name="CREATE" />
+          </mdBusinessPermission>
+        </revoke>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+  </undoIt>
+</version>
