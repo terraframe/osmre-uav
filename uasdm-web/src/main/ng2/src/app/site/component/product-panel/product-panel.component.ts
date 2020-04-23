@@ -151,7 +151,7 @@ export class ProductPanelComponent {
     }
 
     handleGetInfo( product: Product ): void {
-        this.pService.getDetail( product.id ).then( detail => {
+        this.pService.getDetail( product.id, 1, 20 ).then( detail => {
             this.bsModalRef = this.modalService.show( ProductModalComponent, {
                 animated: true,
                 backdrop: true,

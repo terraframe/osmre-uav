@@ -88,9 +88,9 @@ public class UASDMAccountController
   }
 
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF inviteComplete(ClientRequestIF request, @RequestParamter(name = "user", parser = ParseType.BASIC_JSON) GeoprismUserDTO user, @RequestParamter(name = "token") String token) throws JSONException
+  public ResponseIF inviteComplete(ClientRequestIF request, @RequestParamter(name = "user") String user, @RequestParamter(name = "token") String token) throws JSONException
   {
-    UserInviteDTO.complete(request, token, user);
+    this.service.inviteComplete(request.getSessionId(), token, user);
 
     return new RestResponse();
   }

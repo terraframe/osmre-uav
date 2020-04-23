@@ -66,7 +66,7 @@
           <div id="image-list-container">
             <h3>Raw Images</h3>
             <ul class="list-group row">
-              <li *ngFor="let item of product.documents" class="list-group-item col-xs-3" style="background:none;">
+              <li *ngFor="let item of product.page.results | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
                 <div class="" *ngIf="thumbnails[item.id] != null">
                   <a class="thumbnail" (click)="previewImage(item)">
                     <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
@@ -80,7 +80,9 @@
           </div>
         </div>
       </div>
-
+      <div class="row">
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      </div>
 
 
       <div class="row" style="background-color: #ececec;">

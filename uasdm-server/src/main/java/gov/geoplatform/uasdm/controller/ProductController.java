@@ -36,9 +36,12 @@ public class ProductController
   }
 
   @Endpoint(url = "detail", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF detail(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  public ResponseIF detail(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize) throws IOException
   {
-    ProductDetailView detail = service.getProductDetail(request.getSessionId(), id);
+    pageNumber = pageNumber != null ? pageNumber : 1;
+    pageSize = pageSize != null ? pageSize : 20;
+
+    ProductDetailView detail = service.getProductDetail(request.getSessionId(), id, pageNumber, pageSize);
 
     return new RestBodyResponse(detail.toJSON());
   }

@@ -1,63 +1,57 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 
-import { map } from 'rxjs/operators';
-// import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
 
 import { EventService } from '../../shared/service/event.service';
-import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
 
 import { Product, ProductDetail } from '../model/management';
-import { Sensor } from '../model/sensor';
-import { Platform } from '../model/platform';
 
 declare var acp: any;
 
 @Injectable()
 export class ProductService {
 
-    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
+	constructor(private http: HttpClient, private eventService: EventService) { }
 
-    getProducts( id: string ): Promise<Product[]> {
-        let params: HttpParams = new HttpParams();
-        params = params.set( 'id', id );
+	getProducts(id: string): Promise<Product[]> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
 
-        return this.http
-            .get<Product[]>( acp + '/product/get-all', { params: params } )
-            .toPromise()
-    }
+		return this.http.get<Product[]>(acp + '/product/get-all', { params: params }).toPromise();
+	}
 
-    getDetail( id: string ): Promise<ProductDetail> {
-        let params: HttpParams = new HttpParams();
-        params = params.set( 'id', id );
+	getDetail(id: string, pageNumber: number, pageSize: number): Promise<ProductDetail> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+		params = params.set('pageNumber', pageNumber.toString());
+		params = params.set('pageSize', pageSize.toString());
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .get<ProductDetail>( acp + '/product/detail', { params: params } )
+		return this.http
+			.get<ProductDetail>(acp + '/product/detail', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-            .toPromise()
-    }
+			.toPromise();
+	}
 
-    remove( id: string ): Promise<void> {
+	remove(id: string): Promise<void> {
 
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        this.eventService.start();
+		this.eventService.start();
 
-        return this.http
-            .post<void>( acp + '/product/remove', JSON.stringify( { id: id } ), { headers: headers } )
+		return this.http
+			.post<void>(acp + '/product/remove', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-            .toPromise()
-    }
+			.toPromise()
+	}
 
 
 }

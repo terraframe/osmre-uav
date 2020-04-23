@@ -25,6 +25,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -92,6 +93,39 @@ public class Product extends ProductBase implements ProductIF
   public List<DocumentIF> getGeneratedFromDocuments()
   {
     return this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, DocumentIF.class);
+  }
+
+  @Override
+  public Page<DocumentIF> getGeneratedFromDocuments(Integer pageNumber, Integer pageSize)
+  {
+    final Integer count = this.getCountGeneratedFromDocuments();
+
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_GENERATED_PRODUCT);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(IN('" + mdEdge.getDBClassName() + "'))");
+    statement.append(" FROM :rid");
+    statement.append(" ORDER BY name");
+    statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
+
+    final GraphQuery<DocumentIF> query = new GraphQuery<DocumentIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return new Page<DocumentIF>(count, pageNumber, pageSize, query.getResults());
+  }
+
+  public Integer getCountGeneratedFromDocuments()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_GENERATED_PRODUCT);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT IN('" + mdEdge.getDBClassName() + "').size()");
+    statement.append(" FROM :rid");
+
+    final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getSingleResult();
   }
 
   public void addDocuments(List<DocumentIF> documents)

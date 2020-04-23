@@ -13,12 +13,12 @@ import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
-import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -240,7 +240,7 @@ public abstract class Converter
     }
   }
 
-  public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated)
+  public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated, Integer pageNumber, Integer pageSize)
   {
     final SessionIF session = Session.getCurrentSession();
 
@@ -253,7 +253,7 @@ public abstract class Converter
 
     populate(view, product, components);
 
-    List<DocumentIF> documents = product.getGeneratedFromDocuments();
+    Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
     FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);
@@ -265,7 +265,7 @@ public abstract class Converter
     }
 
     view.setDateTime(product.getLastUpdateDate());
-    view.setDocuments(documents);
+    view.setPage(page);
 
     return view;
   }
