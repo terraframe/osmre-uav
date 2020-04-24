@@ -4,7 +4,7 @@ import { TabsetComponent } from 'ngx-bootstrap';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from 'mapbox-gl';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, map, distinctUntilChanged } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
 import { AuthService } from '../../shared/service/auth.service';
@@ -221,22 +221,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 			let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
 
-			if (features.length > 0) {
-				let focusFeatureId = features[0].properties.oid; // just the first
-				this.map.setFilter('hover-points', ['all',
-					['==', 'oid', focusFeatureId]
-				])
+			if (this.current == null) {
+				if (features.length > 0) {
+					let focusFeatureId = features[0].properties.oid; // just the first
+					this.map.setFilter('hover-points', ['all',
+						['==', 'oid', focusFeatureId]
+					])
 
-				this.highlightListItem(focusFeatureId)
+					this.highlightListItem(focusFeatureId)
+				}
+				else {
+					this.map.setFilter('hover-points', ['all',
+						['==', 'oid', "NONE"]
+					])
+
+					this.clearHighlightListItem();
+				}
 			}
-			else {
-				this.map.setFilter('hover-points', ['all',
-					['==', 'oid', "NONE"]
-				])
-
-				this.clearHighlightListItem();
-			}
-
 		});
 
 		this.map.on('zoomend', (e) => {
@@ -609,15 +610,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	onListEntityHover(event: any, site: SiteEntity): void {
-		if (this.current.type === 'Site') {
+		if (this.current == null) {
 			this.highlightMapFeature(site.id);
 		}
 	}
 
 	onListEntityHoverOff(): void {
-		if (this.current.type === 'Site') {
-			this.clearHighlightMapFeature();
-		}
+		this.clearHighlightMapFeature();
 	}
 
 	highlightListItem(id: string): void {
