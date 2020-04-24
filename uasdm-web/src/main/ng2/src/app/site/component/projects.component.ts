@@ -609,13 +609,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	onListEntityHover(event: any, site: SiteEntity): void {
-		this.highlightMapFeature(site.id);
-
+		if (this.current.type === 'Site') {
+			this.highlightMapFeature(site.id);
+		}
 	}
 
 	onListEntityHoverOff(): void {
-		this.clearHighlightMapFeature();
-
+		if (this.current.type === 'Site') {
+			this.clearHighlightMapFeature();
+		}
 	}
 
 	highlightListItem(id: string): void {

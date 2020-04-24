@@ -6,9 +6,11 @@ import java.util.Set;
 
 import com.runwaysdk.constants.ClientRequestIF;
 
+import gov.geoplatform.uasdm.service.SessionEventService;
 import net.geoprism.ClientConfigurationIF;
 import net.geoprism.DefaultClientConfiguration;
 import net.geoprism.GeoprismApplication;
+import net.geoprism.SessionEvent;
 import net.geoprism.localization.LocalizationFacadeDTO;
 
 public class ProjectClientConfiguration extends DefaultClientConfiguration implements ClientConfigurationIF
@@ -53,5 +55,12 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
   public String getLoginUrl()
   {
     return "/project/management#/login";
+  }
+
+  @Override
+  public void handleSessionEvent(SessionEvent event)
+  {
+    SessionEventService service = new SessionEventService();
+    service.handleSessionEvent(event);
   }
 }

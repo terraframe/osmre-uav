@@ -1,3 +1,5 @@
+import { PageResult } from '../../shared/model/page';
+
 export class Condition {
 	name: string;
 	value: string;
@@ -15,14 +17,11 @@ export class AttributeType {
 	options?: { value: string, label: string }[];
 }
 
-export class Page<T> {
+export class SiteObjectsResultSet {
 	count: number;
 	pageNumber: number;
 	pageSize: number;
-	results: T[];
-}
-
-export class SiteObjectsResultSet extends Page<SiteEntity> {
+	results: SiteEntity[];
 	folder: string;
 }
 
@@ -130,5 +129,5 @@ export class ProductDetail extends Product {
 	pilotName: string;
 	dateTime: string;
 	sensor: string;
-	page?: Page<ProductDocument>;
+	page?: PageResult<ProductDocument>;
 }

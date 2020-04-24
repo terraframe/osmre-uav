@@ -31,7 +31,9 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { SystemLogoService } from './service/system-logo.service';
 import { EmailService } from './service/email.service';
 import { AccountService } from './service/account.service';
+import { SessionEventService } from './service/session-event.service';
 
+import { SessionEventComponent } from './component/session-event/session-event.component';
 import { AccountsComponent } from './component/account/accounts.component';
 import { AccountInviteComponent } from './component/account/account-invite.component';
 import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
@@ -69,12 +71,14 @@ import { SharedModule } from '../shared/shared.module';
 		SystemLogoComponent,
 		SystemLogosComponent,
 		EmailComponent,
-		SystemInfoComponent
+		SystemInfoComponent,
+		SessionEventComponent
 	],
 	providers: [
 		SystemLogoService,
 		EmailService,
-		AccountService
+		AccountService,
+		SessionEventService
 	],
 	entryComponents: [
 	]

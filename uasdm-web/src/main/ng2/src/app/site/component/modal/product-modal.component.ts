@@ -52,7 +52,7 @@ export class ProductModalComponent implements OnInit {
 			this.getThumbnail(this.product.id, this.product.imageKey);
 		}
 
-		this.product.page.results.forEach(pDocument => {
+		this.product.page.resultSet.forEach(pDocument => {
 			this.getThumbnail(pDocument.id, pDocument.key);
 		});
 	}

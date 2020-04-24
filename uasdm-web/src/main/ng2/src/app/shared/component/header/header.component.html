@@ -39,6 +39,12 @@
               </a>
             </li>
             <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/admin/session-events" routerLinkActive="active">
+                <i></i>
+                Session event log
+              </a>
+            </li>            
+            <li *ngIf="admin" role="menuitem">
               <a class="dropdown-item" routerLink="/admin/logos" routerLinkActive="active">
                 <i></i>
                 <localize key="Icons"></localize>

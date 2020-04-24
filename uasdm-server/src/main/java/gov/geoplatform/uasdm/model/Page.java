@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public class Page<T extends JSONSerializable>
 {
-  private Integer count;
+  private Long    count;
 
   private Integer pageNumber;
 
@@ -22,6 +22,11 @@ public class Page<T extends JSONSerializable>
 
   public Page(Integer count, Integer pageNumber, Integer pageSize, List<T> results)
   {
+    this(count.longValue(), pageNumber, pageSize, results);
+  }
+
+  public Page(Long count, Integer pageNumber, Integer pageSize, List<T> results)
+  {
     super();
     this.count = count;
     this.pageNumber = pageNumber;
@@ -29,12 +34,12 @@ public class Page<T extends JSONSerializable>
     this.results = results;
   }
 
-  public Integer getCount()
+  public Long getCount()
   {
     return count;
   }
 
-  public void setCount(Integer count)
+  public void setCount(Long count)
   {
     this.count = count;
   }
@@ -82,7 +87,7 @@ public class Page<T extends JSONSerializable>
     object.put("count", this.count);
     object.put("pageNumber", this.pageNumber);
     object.put("pageSize", this.pageSize);
-    object.put("results", array);
+    object.put("resultSet", array);
 
     return object;
   }

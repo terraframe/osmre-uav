@@ -1,0 +1,50 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.SessionEventLog" publish="false">
+        <attributes>
+          <char name="username" label="Username" required="true" size="255" />        
+          <dateTime name="eventDate" label="Event date" required="true" />
+          <char name="eventType" label="Event Type" required="true" size="255" />        
+          <reference name="geoprismUser" label="user" required="false" type="net.geoprism.GeoprismUser" />
+          <reference name="bureau" label="Bureau" required="false" type="gov.geoplatform.uasdm.bus.Bureau" />
+        </attributes>
+        <mdMethod name="log" label="Log Event" static="true" returnType="void">
+          <mdParameter name="eventType" label="Event Type" order="0" type="java.lang.String"/>
+          <mdParameter name="username" label="User name" order="1" type="java.lang.String"/>
+          <mdParameter name="userId" label="User Id" order="2" type="java.lang.String"/>        
+        </mdMethod>        
+      </mdBusiness>    
+    </create>
+    <permissions>
+      <role roleName="PUBLIC">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.SessionEventLog">
+            <mdMethodPermission methodName="log">  
+              <operation name="EXECUTE" />
+            </mdMethodPermission>
+          </mdBusinessPermission>          
+        </grant>
+      </role>            
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.SessionEventLog">
+            <operation name="ALL" />
+          </mdBusinessPermission>          
+        </grant>
+      </role>            
+      <method methodName="log" type="gov.geoplatform.uasdm.SessionEventLog">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.SessionEventLog">
+            <operation name="CREATE" />
+          </mdBusinessPermission>
+        </grant>
+      </method>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.SessionEventLog" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </undoIt>
+</version>

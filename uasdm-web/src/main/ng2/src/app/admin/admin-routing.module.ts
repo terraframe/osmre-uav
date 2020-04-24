@@ -1,10 +1,10 @@
-import { NgModule, Injectable, Inject } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Routes, RouterModule } from '@angular/router';
 
-import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
+import { AdminGuardService } from '../shared/service/guard.service';
 
+import { SessionEventComponent } from './component/session-event/session-event.component';
 import { AccountsComponent } from './component/account/accounts.component';
 import { AccountInviteComponent } from './component/account/account-invite.component';
 import { AccountInviteCompleteComponent } from './component/account/account-invite-complete.component';
@@ -56,6 +56,12 @@ const routes: Routes = [
         path: 'invite-complete/:token',
         component: AccountInviteCompleteComponent,
         data: { title: 'account.title' }
+    },
+    {
+        path: 'session-events',
+        canActivate: [AdminGuardService],
+        component: SessionEventComponent,
+        data: {}
     },
     {
         path: 'system-info',
