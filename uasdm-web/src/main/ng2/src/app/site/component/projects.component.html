@@ -11,21 +11,15 @@
             
                   <!-- IF at Site level -->
                   <div class="row" *ngIf="!current">
-                    <div class="col-md-6">
+                    <div class="col-md-6" style="height: 56px;">
                       <h3>UAS Sites</h3>
-                    </div>
-                    <div class="col-md-6">
-                      <button (click)="handleCreate(null,null)" class="btn btn-primary create-site-btn pull-right">Add new site</button>
-                      <!-- 
-                                                <button (click)="handleGoto()" class="btn btn-primary create-site-btn pull-right">View map image</button>
-                                                -->
                     </div>
                   </div>
             
                   <!-- IF lower than Site -->
                   <div class="row" *ngIf="current">
-                    <div class="col-md-12">
-                      <ul class="breadcrumb" style="background-color: white; height: 22px">
+                    <div class="col-md-12" style="height: 56px; overflow: scroll;">
+                      <ul class="breadcrumb" style="background-color: white;">
                         <li>
                           <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
                           <a (click)="back(null)" style="color: #007276;">UAS Sites</a>
@@ -60,7 +54,7 @@
                   <tabset #staticTabs class="nav-full-width">
                     <tab heading="Data">                
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
-                      style="height: calc(100vh - 268px);overflow-y: auto;">
+                      style="height: calc(100vh - 290px);overflow-y: auto;">
                         <div class="list-group">
 
                           <!-- If -->
@@ -168,7 +162,7 @@
                     </tab>
                     <tab *ngIf="current != null" heading="Products">
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
-                      style="height: calc(100vh - 268px);overflow-y: auto;">
+                      style="height: calc(100vh - 290px);overflow-y: auto;">
                         <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)"></product-panel>           
                       </div>
                     </tab>
@@ -178,10 +172,15 @@
             </div>
             
 
-            <footer class="sidebar-footer" *ngIf="current != null">
+            <footer class="sidebar-footer">
               <div class="row" *ngIf="current != null" style="background:white;">
                 <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
                   <button (click)="handleUploadFile()" class="btn btn-primary">Upload</button>              
+                </div>
+              </div>
+              <div class="row" *ngIf="current == null" style="background:white;">
+                <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
+                  <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
                 </div>
               </div>
             </footer>
