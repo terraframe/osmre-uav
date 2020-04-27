@@ -131,6 +131,7 @@
                     -Denvcfg=${project.basedir}/../envcfg
                     -Dproject.basedir=${project.basedir}
                     -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true
+                    -DGEOSERVER_DATA_DIR=${project.basedir}/../geoserver-data
                   </cargo.jvmargs>
                 </properties>
               </configuration>
