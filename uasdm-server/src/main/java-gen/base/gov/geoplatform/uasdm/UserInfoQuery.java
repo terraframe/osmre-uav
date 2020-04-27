@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 2045142695)
+@com.runwaysdk.business.ClassSignature(hash = 1722861101)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -145,6 +145,23 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.UserInfo.GEOPRISMUSER);
 
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.UserInfo.GEOPRISMUSER, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getInformation()
+  {
+    return getInformation(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -404,6 +421,9 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getInformation();
+    public com.runwaysdk.query.SelectableChar getInformation(String alias);
+    public com.runwaysdk.query.SelectableChar getInformation(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -549,6 +569,23 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
   {
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.UserInfo.GEOPRISMUSER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getInformation()
+  {
+    return getInformation(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -767,6 +804,9 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
     public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getInformation();
+    public com.runwaysdk.query.SelectableChar getInformation(String alias);
+    public com.runwaysdk.query.SelectableChar getInformation(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -961,6 +1001,23 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
   {
     return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.UserInfo.GEOPRISMUSER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getInformation()
+  {
+    return getInformation(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getInformation(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.UserInfo.INFORMATION, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()

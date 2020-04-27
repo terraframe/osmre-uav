@@ -72,7 +72,7 @@ import { SharedModule } from '../shared/shared.module';
 		SystemLogosComponent,
 		EmailComponent,
 		SystemInfoComponent,
-		SessionEventComponent
+		SessionEventComponent,
 	],
 	providers: [
 		SystemLogoService,

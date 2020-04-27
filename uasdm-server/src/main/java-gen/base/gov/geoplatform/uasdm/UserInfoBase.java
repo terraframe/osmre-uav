@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 572932926)
+@com.runwaysdk.business.ClassSignature(hash = -1667084170)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -16,6 +16,7 @@ public abstract class UserInfoBase extends com.runwaysdk.business.Business
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String GEOPRISMUSER = "geoprismUser";
+  public static java.lang.String INFORMATION = "information";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
@@ -25,7 +26,7 @@ public abstract class UserInfoBase extends com.runwaysdk.business.Business
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 572932926;
+  private static final long serialVersionUID = -1667084170;
   
   public UserInfoBase()
   {
@@ -229,6 +230,34 @@ public abstract class UserInfoBase extends com.runwaysdk.business.Business
     else
     {
       setValue(GEOPRISMUSER, oid);
+    }
+  }
+  
+  public String getInformation()
+  {
+    return getValue(INFORMATION);
+  }
+  
+  public void validateInformation()
+  {
+    this.validateAttribute(INFORMATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getInformationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.UserInfo.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(INFORMATION);
+  }
+  
+  public void setInformation(String value)
+  {
+    if(value == null)
+    {
+      setValue(INFORMATION, "");
+    }
+    else
+    {
+      setValue(INFORMATION, value);
     }
   }
   

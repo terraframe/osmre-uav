@@ -28,7 +28,8 @@ import { FilterPipe } from './pipe/filter.pipe';
 import { SafeHtmlPipe } from './pipe/safe-html.pipe';
 
 import { MustMatchDirective } from './directive/must-match.directive';
-import { PhoneNumberValidatorDirective } from './directive/phone-number.directive';
+import { PhoneNumberValidatorDirective } from './directive/phone-number.directive'; 
+import { PasswordValidatorDirective } from './directive/password-validator.directive';
 
 import { ProgressService } from './service/progress.service';
 import { EventService } from './service/event.service';
@@ -69,7 +70,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		FilterPipe,
 		SafeHtmlPipe,
 		MustMatchDirective,
-		PhoneNumberValidatorDirective
+		PhoneNumberValidatorDirective,
+		PasswordValidatorDirective
 	],
 	exports: [
 		UasdmHeaderComponent,
@@ -87,7 +89,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		FilterPipe,
 		SafeHtmlPipe,
 		MustMatchDirective,
-		PhoneNumberValidatorDirective
+		PhoneNumberValidatorDirective,
+		PasswordValidatorDirective
 	],
 	entryComponents: [
 		ErrorModalComponent,

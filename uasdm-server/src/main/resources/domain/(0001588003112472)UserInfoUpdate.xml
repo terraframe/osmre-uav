@@ -1,0 +1,28 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.bus.InvalidPasswordException" 
+                   label="Invalid Password" 
+                   description="Thrown when a user enters a password which does not conform to the spec." 
+                   message="The password must be at least 14 characters in length and must contain at least: Two uppercase letters [A-Z], two lowercase letters [a-z], two digits [0-9], and two special characters [e.g.: !@#$*&amp;]">
+          <attributes>
+          </attributes>                   
+      </mdException>    
+    </create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.UserInfo" publish="true">
+        <create>
+          <attributes>
+            <text name="information" label="Information" required="false" />        
+          </attributes>
+        </create>
+      </mdBusiness>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.UserInfo.information" type="com.runwaysdk.system.metadata.MdAttribute" />
+    </delete>
+  
+  </undoIt>
+</version>

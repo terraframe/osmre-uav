@@ -13,9 +13,8 @@ import { PhoneNumberUtil } from 'google-libphonenumber';
 export class PhoneNumberValidatorDirective implements Validator {
 
 	validate(control: AbstractControl): { [key: string]: any } | null {
-		if (control.value !== '') {
+		if (control.value != null && control.value !== '') {
 			try {
-
 				const phoneUtil = PhoneNumberUtil.getInstance();
 				const phoneNumber = '' + control.value + '';
 				const pNumber = phoneUtil.parseAndKeepRawInput(phoneNumber, 'US');

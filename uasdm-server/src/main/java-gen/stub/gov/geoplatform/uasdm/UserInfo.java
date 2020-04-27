@@ -152,6 +152,8 @@ public class UserInfo extends UserInfoBase
       info.setGeoprismUser(user);
     }
 
+    info.setInformation(account.get(UserInfo.INFORMATION).toString());
+
     if (account.has(UserInfo.BUREAU))
     {
       String bureauId = account.getString(UserInfo.BUREAU);
@@ -185,6 +187,7 @@ public class UserInfo extends UserInfoBase
     if (info != null)
     {
       result.put(UserInfo.BUREAU, info.getBureauOid());
+      result.put(UserInfo.INFORMATION, info.getInformation());
     }
 
     result.put("newInstance", user.isNew());

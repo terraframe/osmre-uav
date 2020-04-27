@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Mutable;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.facade.FacadeUtil;
 import com.runwaysdk.mvc.conversion.BasicJSONToBusinessDTO;
 import com.runwaysdk.mvc.conversion.BasicJSONToComponentDTO;
@@ -16,6 +17,7 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInvite;
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.InvalidPasswordException;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserDTO;
@@ -58,6 +60,11 @@ public class AccountService
   @Request(RequestType.SESSION)
   public JSONObject apply(String sessionId, JSONObject account, String roleIds)
   {
+    if (!isValidPassword(account.getString(GeoprismUser.PASSWORD)))
+    {
+      throw new InvalidPasswordException();
+    }
+
     return UserInfo.applyUserWithRoles(account, roleIds);
   }
 
@@ -72,8 +79,49 @@ public class AccountService
   {
     final JSONObject object = new JSONObject(json);
 
+    if (!isValidPassword(object.getString(GeoprismUser.PASSWORD)))
+    {
+      throw new InvalidPasswordException();
+    }
+
     final GeoprismUser user = UserInfo.deserialize(object);
 
     UserInvite.complete(token, user);
+  }
+
+  public static boolean isValidPassword(String password)
+  {
+    // Must be at least 14 characters in length.
+    // Two uppercase letters [A-Z]
+    // Two lowercase letters [a-z]
+    // Two digits [0-9]
+    // Two special characters [e.g.: !@#$&*]
+
+    if (password.length() < 14)
+    {
+      return false;
+    }
+
+    if (!password.matches("(?=.*[0-9].*[0-9]).*"))
+    {
+      return false;
+    }
+
+    if (!password.matches("(?=.*[a-z].*[a-z]).*"))
+    {
+      return false;
+    }
+
+    if (!password.matches("(?=.*[A-Z].*[A-Z]).*"))
+    {
+      return false;
+    }
+
+    if (!password.matches("(?=.*[~!@#$%^&*()_-].*[~!@#$%^&*()_-]).*"))
+    {
+      return false;
+    }
+
+    return true;
   }
 }

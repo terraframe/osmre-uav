@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1004506690)
+@com.runwaysdk.business.ClassSignature(hash = -1992560138)
 public abstract class UserInfoDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInfo";
-  private static final long serialVersionUID = -1004506690;
+  private static final long serialVersionUID = -1992560138;
   
   protected UserInfoDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -32,6 +32,7 @@ public abstract class UserInfoDTOBase extends com.runwaysdk.business.BusinessDTO
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String GEOPRISMUSER = "geoprismUser";
+  public static java.lang.String INFORMATION = "information";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
@@ -248,6 +249,43 @@ public abstract class UserInfoDTOBase extends com.runwaysdk.business.BusinessDTO
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getGeoprismUserMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(GEOPRISMUSER).getAttributeMdDTO();
+  }
+  
+  public String getInformation()
+  {
+    return getValue(INFORMATION);
+  }
+  
+  public void setInformation(String value)
+  {
+    if(value == null)
+    {
+      setValue(INFORMATION, "");
+    }
+    else
+    {
+      setValue(INFORMATION, value);
+    }
+  }
+  
+  public boolean isInformationWritable()
+  {
+    return isWritable(INFORMATION);
+  }
+  
+  public boolean isInformationReadable()
+  {
+    return isReadable(INFORMATION);
+  }
+  
+  public boolean isInformationModified()
+  {
+    return isModified(INFORMATION);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getInformationMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(INFORMATION).getAttributeMdDTO();
   }
   
   public String getKeyName()
