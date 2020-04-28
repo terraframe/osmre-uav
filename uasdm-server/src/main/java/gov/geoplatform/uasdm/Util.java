@@ -300,7 +300,14 @@ public class Util
 
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
-    return component.createDocumentIfNotExist(key, fileName);
+    final DocumentIF document = component.createDocumentIfNotExist(key, fileName);
+
+    if (document.isNew())
+    {
+      SolrService.updateOrCreateDocument(component.getAncestors(), component, key, fileName);
+    }
+
+    return document;
   }
 
   @Transaction

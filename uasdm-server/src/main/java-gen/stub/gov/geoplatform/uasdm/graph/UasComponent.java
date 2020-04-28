@@ -42,6 +42,7 @@ import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.command.SolrDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -351,11 +352,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final Document document = Document.find(key);
     document.delete();
 
-//    SolrService.deleteDocument(this, key);
+    new SolrDeleteDocumentCommand(this, key).doIt();
   }
 
   public RemoteFileObject download(String key)
   {
+    if (!key.startsWith(this.getS3location()))
+    {
+      return RemoteFileFacade.download(this.getS3location() + key);
+    }
+
     return RemoteFileFacade.download(key);
   }
 

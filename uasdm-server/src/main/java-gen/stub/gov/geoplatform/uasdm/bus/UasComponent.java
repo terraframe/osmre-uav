@@ -31,6 +31,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.command.SolrDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -298,11 +299,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return RemoteFileFacade.getSiteObjects(this, folder, objects, pageNumber, pageSize);
   }
 
+  @Transaction
   public void deleteObject(String key)
   {
-    RemoteFileFacade.deleteObject(key);
+    final Document document = Document.find(key);
+    document.delete();
 
-    SolrService.deleteDocument(this, key);
+    new SolrDeleteDocumentCommand(this, key).doIt();
   }
 
   public RemoteFileObject download(String key)
@@ -542,7 +545,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {

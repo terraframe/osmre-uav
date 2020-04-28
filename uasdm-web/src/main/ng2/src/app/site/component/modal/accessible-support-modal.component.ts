@@ -35,7 +35,7 @@ export class AccessibleSupportModalComponent implements OnInit {
     ngOnInit(): void {
         this.page.count = 0;
         this.page.pageNumber = 1;
-        this.page.pageSize = 2;
+        this.page.pageSize = 10;
         this.page.results = [];
     }
 

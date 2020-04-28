@@ -118,6 +118,12 @@ export class ProductModalComponent implements OnInit {
 		this.rawImagePreviewModal.content.init(image.component, image.key);
 	}
 
+    handleDownload(): void {
+        const entity = this.product.entities[this.product.entities.length - 1];        
+
+        window.location.href = acp + '/project/download-last?id=' + entity.id + "&key=odm_all";
+    }
+
 
 	error(err: HttpErrorResponse): void {
 		// Handle error
