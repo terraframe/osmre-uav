@@ -23,3 +23,5 @@
 hs_err_pid*
 
 /uasdm-web/volume/**
+/logs/
+/geoserver-data/
