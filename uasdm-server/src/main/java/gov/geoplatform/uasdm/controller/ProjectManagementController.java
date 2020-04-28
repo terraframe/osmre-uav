@@ -1,9 +1,9 @@
 package gov.geoplatform.uasdm.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,10 +12,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.constants.ClientRequestIF;
+import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorRestResponse;
 import com.runwaysdk.mvc.ErrorSerialization;
 import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
@@ -29,6 +29,7 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProductService;
@@ -314,5 +315,19 @@ public class ProjectManagementController
     List<ProductView> products = service.getProducts(request.getSessionId(), id);
 
     return new RestBodyResponse(ProductView.serialize(products));
+  }
+
+  @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF upload(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder, @RequestParamter(name = "file") MultipartFileParameter file) throws IOException
+  {
+    try (InputStream stream = file.getInputStream())
+    {
+      final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
+      final String fileName = file.getFilename();
+
+      JSONObject response = this.service.putFile(request.getSessionId(), id, folder, fileName, metadata, stream);
+
+      return new RestBodyResponse(response);
+    }
   }
 }

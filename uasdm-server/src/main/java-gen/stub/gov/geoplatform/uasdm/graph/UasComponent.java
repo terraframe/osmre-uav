@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.LinkedList;
@@ -35,6 +36,7 @@ import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
@@ -48,6 +50,7 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
@@ -342,11 +345,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return RemoteFileFacade.getSiteObjects(this, folder, objects, pageNumber, pageSize);
   }
 
+  @Transaction
   public void deleteObject(String key)
   {
-    RemoteFileFacade.deleteObject(key);
+    final Document document = Document.find(key);
+    document.delete();
 
-    SolrService.deleteDocument(this, key);
+//    SolrService.deleteDocument(this, key);
   }
 
   public RemoteFileObject download(String key)
@@ -540,6 +545,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public AbstractWorkflowTask createWorkflowTask(String uploadId)
   {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  {
+    return Util.putFile(this, folder, fileName, metadata, stream);
   }
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)

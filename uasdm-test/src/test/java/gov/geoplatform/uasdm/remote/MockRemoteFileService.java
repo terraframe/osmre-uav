@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.remote;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -78,6 +79,12 @@ public class MockRemoteFileService implements RemoteFileService
 
   @Override
   public void uploadFile(File file, String key, AbstractWorkflowTaskIF task)
+  {
+    this.uploads.add(key);
+  }
+
+  @Override
+  public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
   {
     this.uploads.add(key);
   }

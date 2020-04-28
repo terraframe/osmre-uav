@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.remote;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
@@ -31,5 +32,7 @@ public interface RemoteFileService
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize);
 
   public void uploadFile(File file, String key, AbstractWorkflowTaskIF task);
+
+  public void putFile(String key, RemoteFileMetadata metadata, InputStream stream);
 
 }

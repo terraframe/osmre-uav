@@ -38,6 +38,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.Range;
@@ -45,6 +46,7 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -586,6 +588,15 @@ public class ProjectManagementService
     UasComponentIF component = ComponentFacade.getComponent(id);
 
     return Converter.toSiteItem(component, false);
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject putFile(String sessionId, String id, String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+    DocumentIF doc = component.putFile(folder, fileName, metadata, stream);
+
+    return doc.toJSON();
   }
 
 //  public void logLoginAttempt(String sessionId, String username)

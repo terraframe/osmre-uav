@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.remote;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
@@ -64,6 +65,11 @@ public class RemoteFileFacade
   public static void uploadFile(File child, String key, AbstractWorkflowTaskIF task)
   {
     service.uploadFile(child, key, task);
+  }
+
+  public static void uploadFile(String key, RemoteFileMetadata metadata, InputStream stream)
+  {
+    service.putFile(key, metadata, stream);
   }
 
 }

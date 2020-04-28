@@ -95,7 +95,7 @@ public class Document extends DocumentBase implements DocumentIF
     return document;
   }
 
-  private static Document find(String key)
+  public static Document find(String key)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Document.CLASS);
 

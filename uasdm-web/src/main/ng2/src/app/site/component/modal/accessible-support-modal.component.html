@@ -1,0 +1,81 @@
+<div class="modal-body">
+  <div>
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{message}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="entity != null">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>{{entity.name}}</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="breadcrumb" style="margin-bottom: 10px;">
+            <li *ngFor="let prev of previous">
+              <span> {{prev.name}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <tabset class="nav-full-width">
+          <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
+            <div class="image-list-container">
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                  Drag & Drop File
+                  <button type="button" (click)="openFileSelector()">Browse Files</button>
+                </ng-template>
+              </ngx-file-drop>
+              
+              <div>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Date uploaded</th>
+                      <th scope="col">User</th>
+                    </tr>
+                  </thead>
+                  <tbody class="upload-name-style">
+                    <tr *ngFor="let item of page.results  | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }">
+                      <td class="button-column">
+                        <a class="fa fa-download" (click)="handleDownloadFile(item)" title="Download"></a>
+                        <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(item)" title="Remove"></a>
+                      </td>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.lastModified }}</td>
+                      <td>{{ item.ownerName }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>            
+            </div>
+          </tab>
+        </tabset>
+      </div>
+      
+      <div class="row">      
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      </div>
+
+      <div class="row">      
+        <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
+          <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+          <button type="button" class="btn btn-secondary" (click)="handleDownload()" style="margin-left: 5px;">Download all</button>
+        </div>
+      </div>
+  </div>
+</div>

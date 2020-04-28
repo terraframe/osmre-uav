@@ -14,6 +14,7 @@ import { SiteEntity, Product } from '../model/management';
 import { EntityModalComponent } from './modal/entity-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
 import { LeafModalComponent } from './modal/leaf-modal.component';
+import { AccessibleSupportModalComponent } from './modal/accessible-support-modal.component';
 
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
@@ -870,13 +871,25 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
-		this.bsModalRef = this.modalService.show(LeafModalComponent, {
-			animated: true,
-			backdrop: true,
-			ignoreBackdropClick: true,
-			class: 'leaf-modal'
-		});
-		this.bsModalRef.content.init(collection, folders, breadcrumbs);
+
+		if (collection.type === 'Mission') {
+			this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				class: 'leaf-modal'
+			});
+			this.bsModalRef.content.init(collection, folders, breadcrumbs);
+		}
+		else {
+			this.bsModalRef = this.modalService.show(LeafModalComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				class: 'leaf-modal'
+			});
+			this.bsModalRef.content.init(collection, folders, breadcrumbs);
+		}
 	}
 
 

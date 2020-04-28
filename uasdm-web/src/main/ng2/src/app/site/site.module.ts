@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 //import { TreeModule } from 'angular-tree-component';
 //import { ContextMenuModule } from 'ngx-contextmenu';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
@@ -20,6 +20,7 @@ import { MetadataModalComponent } from './component/modal/metadata-modal.compone
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
 import { LeafModalComponent } from './component/modal/leaf-modal.component';
+import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
 import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
@@ -43,61 +44,63 @@ import { MetadataService } from './service/metadata.service';
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
 
-@NgModule( {
-    imports: [
-        CommonModule,
-        RouterModule,
-        FormsModule,
-        NgxPaginationModule,
-//        TreeModule,
-//        ContextMenuModule,
-        //        ModalModule.forRoot(),
-        AlertModule,
-        BsDropdownModule,
-        TypeaheadModule,
-        AccordionModule,
-        TabsModule.forRoot(),
-        SharedModule,
-        SiteRoutingModule,
-        CollapseModule.forRoot()
-    ],
-    declarations: [
-        MapAttributeComponent,
-        ProductPanelComponent,
-        EntityModalComponent,
-        MetadataModalComponent,
-        ImagePreviewModalComponent,
-        UploadModalComponent,
-        LeafModalComponent,
-        ProductModalComponent,
-        ProjectsComponent,
-        UploadComponent,
-        UserProfileComponent,
-        ForbiddenNameDirective,
-        OnlyNumber,
-        SensorComponent,
-        SensorsComponent,
-        PlatformComponent,
-        PlatformsComponent,
-    ],
-    providers: [
-        CanDeactivateGuardService,
-        ManagementService,
-        ProductService,
-        MapService,
-        SensorService,
-        PlatformService,
-        MetadataService
-    ],
-    entryComponents: [
-        UploadModalComponent,
-        EntityModalComponent,
-        ImagePreviewModalComponent,
-        MetadataModalComponent,
-        SensorComponent,
-        LeafModalComponent,
-        ProductModalComponent,
-        PlatformComponent
-    ]
-} )
+@NgModule({
+	imports: [
+		CommonModule,
+		RouterModule,
+		FormsModule,
+		NgxPaginationModule,
+		//        TreeModule,
+		//        ContextMenuModule,
+		//        ModalModule.forRoot(),
+		AlertModule,
+		BsDropdownModule,
+		TypeaheadModule,
+		AccordionModule,
+		TabsModule.forRoot(),
+		CollapseModule.forRoot(),
+		SharedModule,
+		SiteRoutingModule,
+		NgxFileDropModule
+	],
+	declarations: [
+		MapAttributeComponent,
+		ProductPanelComponent,
+		EntityModalComponent,
+		MetadataModalComponent,
+		ImagePreviewModalComponent,
+		UploadModalComponent,
+		LeafModalComponent,
+		AccessibleSupportModalComponent,
+		ProductModalComponent,
+		ProjectsComponent,
+		UploadComponent,
+		UserProfileComponent,
+		ForbiddenNameDirective,
+		OnlyNumber,
+		SensorComponent,
+		SensorsComponent,
+		PlatformComponent,
+		PlatformsComponent
+	],
+	providers: [
+		CanDeactivateGuardService,
+		ManagementService,
+		ProductService,
+		MapService,
+		SensorService,
+		PlatformService,
+		MetadataService
+	],
+	entryComponents: [
+		UploadModalComponent,
+		EntityModalComponent,
+		ImagePreviewModalComponent,
+		MetadataModalComponent,
+		SensorComponent,
+		LeafModalComponent,
+		ProductModalComponent,
+		PlatformComponent
+	]
+})
 export class SiteModule { }

@@ -30,18 +30,19 @@ export class SiteEntity {
 	name: string;
 	folderName: string;
 	type: string;
-	geometry: any;
+    component: string;
+    key: string;    
+	geometry?: any;
 	numberOfChildren: number;
-	ownerName: string;
-	ownerPhone: string;
-	ownerEmail: string;
-	privilegeType: string;
-	component: string;
-	key: string;
-	imageKey: string;
-	children: SiteEntity[];
-	active: boolean;
-	excludeFromProcess: boolean;
+	lastModified?: string;
+	ownerName?: string;
+	ownerPhone?: string;
+	ownerEmail?: string;
+	privilegeType?: string;
+	imageKey?: string;
+	children?: SiteEntity[];
+	active?: boolean;
+	excludeFromProcess?: boolean;
 }
 
 export class CollectionHierarchy {

@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.LinkedList;
@@ -22,10 +23,13 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -287,6 +291,16 @@ public class Util
     }
 
     return filenames;
+  }
+
+  @Transaction
+  public static DocumentIF putFile(UasComponent component, String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  {
+    String key = component.getS3location() + folder + "/" + fileName;
+
+    RemoteFileFacade.uploadFile(key, metadata, stream);
+
+    return component.createDocumentIfNotExist(key, fileName);
   }
 
   @Transaction

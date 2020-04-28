@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.AdminCondition;
@@ -307,7 +309,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return RemoteFileFacade.download(key);
   }
-  
+
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {
@@ -537,6 +539,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     throw new UnsupportedOperationException();
   }

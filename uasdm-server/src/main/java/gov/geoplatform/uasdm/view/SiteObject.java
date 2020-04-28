@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.view;
 
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -11,17 +12,19 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
 {
-  public static final String KEY       = "key";
+  public static final String KEY               = "key";
 
-  public static final String NAME      = "name";
+  public static final String NAME              = "name";
 
-  public static final String COMPONENT = "component";
+  public static final String COMPONENT         = "component";
 
-  public static final String FOLDER    = "folder";
+  public static final String FOLDER            = "folder";
 
-  public static final String OBJECT    = "object";
+  public static final String OBJECT            = "object";
 
-  public static final String IMAGE_KEY = "imageKey";
+  public static final String IMAGE_KEY         = "imageKey";
+
+  public static final String LAST_MODIFIED_KEY = "lastModified";
 
   private String             id;
 
@@ -34,6 +37,8 @@ public class SiteObject implements TreeComponent
   private String             type;
 
   private String             imageKey;
+
+  private Date               lastModified;
 
   public String getId()
   {
@@ -95,6 +100,16 @@ public class SiteObject implements TreeComponent
     this.imageKey = imageKey;
   }
 
+  public Date getLastModified()
+  {
+    return lastModified;
+  }
+
+  public void setLastModified(Date lastModified)
+  {
+    this.lastModified = lastModified;
+  }
+
   @Override
   public void addChild(TreeComponent child)
   {
@@ -109,6 +124,7 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.NAME, this.name);
     json.put(SiteObject.KEY, this.key);
     json.put(SiteObject.COMPONENT, this.componentId);
+    json.put(SiteObject.LAST_MODIFIED_KEY, this.lastModified);
 
 //    if (this.type.equals(SiteObject.FOLDER))
 //    {
@@ -134,6 +150,7 @@ public class SiteObject implements TreeComponent
     object.setComponentId(component.getOid());
     object.setKey(key);
     object.setType(SiteObject.OBJECT);
+    object.setLastModified(summary.getLastModified());
 
     return object;
   }

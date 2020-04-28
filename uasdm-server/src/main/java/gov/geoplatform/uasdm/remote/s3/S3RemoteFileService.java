@@ -14,6 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
@@ -32,11 +34,13 @@ import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.RemoteFileService;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -304,6 +308,32 @@ public class S3RemoteFileService implements RemoteFileService
     }
 
     return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
+  }
+
+  @Override
+  public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
+  {
+    try
+    {
+      String bucketName = AppProperties.getBucketName();
+
+      ObjectMetadata oMetadata = new ObjectMetadata();
+      oMetadata.setContentType(metadata.getContentType());
+      oMetadata.setContentLength(metadata.getContentLength());
+
+      PutObjectRequest request = new PutObjectRequest(bucketName, key, stream, oMetadata);
+
+      AmazonS3 client = S3ClientFactory.createClient();
+      client.putObject(request);
+    }
+    catch (AmazonServiceException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
   }
 
   @Override

@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.model;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.runwaysdk.ComponentIF;
@@ -10,6 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -74,6 +76,8 @@ public interface UasComponentIF extends ComponentIF
 
   public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
+  public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream);
+
   public DocumentIF createDocumentIfNotExist(String key, String name);
 
   public ProductIF createProductIfNotExist();
@@ -95,5 +99,4 @@ public interface UasComponentIF extends ComponentIF
 
     return true;
   }
-
 }
