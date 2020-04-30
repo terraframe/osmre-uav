@@ -12,4 +12,6 @@ public interface RemoteFileObject extends AutoCloseable
 
   public void close() throws IOException;
 
+  public String getFilename();
+
 }

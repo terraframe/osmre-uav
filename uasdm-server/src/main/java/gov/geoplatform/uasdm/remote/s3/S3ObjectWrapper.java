@@ -3,6 +3,8 @@ package gov.geoplatform.uasdm.remote.s3;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.amazonaws.services.s3.model.S3Object;
 
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
@@ -33,6 +35,12 @@ public class S3ObjectWrapper implements RemoteFileObject
   public void close() throws IOException
   {
     this.object.close();
+  }
+
+  @Override
+  public String getFilename()
+  {
+    return FilenameUtils.getName(this.object.getKey());
   }
 
 }

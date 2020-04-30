@@ -1,0 +1,67 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <createOrUpdate>
+      <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.header">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="login.header" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="splash.header">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="splash.header" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="project.management.title">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="project.management.title" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM Data Management" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="splash.logoalt">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="splash.logoalt" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM logo" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="projects.landing">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="projects.landing" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM Data Management" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="splash.pagetitle">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="splash.pagetitle" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.title">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="login.title" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM Login" />
+          </attributeStruct>
+        </object>
+        <object type="com.runwaysdk.localization.LocalizedValueStore" key="login.page.title">
+          <attribute name="storeTag" value="UIText" />
+          <attribute name="storeKey" value="login.page.title" />
+          <attributeStruct name="storeValue">
+            <attribute name="defaultLocale" value="IDM Data Manager" />
+          </attributeStruct>
+        </object>
+        
+    </createOrUpdate>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

@@ -27,12 +27,18 @@ public class RemoteFileGetResponse implements ResponseIF
     try
     {
       RemoteFileMetadata metadata = this.object.getObjectMetadata();
+      String contentDisposition = metadata.getContentDisposition();
+
+      if (contentDisposition == null)
+      {
+        contentDisposition = "attachment; filename=\"" + this.object.getFilename() + "\"";
+      }
 
       ResponseDecorator resp = (ResponseDecorator) manager.getResp();
       resp.setStatus(200);
       resp.setContentType(metadata.getContentType());
       resp.setHeader("Content-Encoding", metadata.getContentEncoding());
-      resp.setHeader("Content-Disposition", metadata.getContentDisposition());
+      resp.setHeader("Content-Disposition", contentDisposition);
       resp.setHeader("Content-Length", Long.toString(metadata.getContentLength()));
       resp.setHeader("ETag", metadata.getETag());
       resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());

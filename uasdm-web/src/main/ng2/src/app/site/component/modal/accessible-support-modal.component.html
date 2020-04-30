@@ -31,22 +31,14 @@
       <div class="row">
         <tabset class="nav-full-width">
           <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
-            <div class="image-list-container">
-              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
-                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                  Drag & Drop File
-                  <button type="button" (click)="openFileSelector()">Browse Files</button>
-                </ng-template>
-              </ngx-file-drop>
-              
-              <div>
+            <div class="row image-list-container">              
+              <div class="col-sm-8">
                 <table class="table table-striped">
                   <thead>
                     <tr>
                       <th scope="col"></th>
                       <th scope="col">Name</th>
                       <th scope="col">Date uploaded</th>
-                      <th scope="col">User</th>
                     </tr>
                   </thead>
                   <tbody class="upload-name-style">
@@ -57,11 +49,18 @@
                       </td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.lastModified }}</td>
-                      <td>{{ item.ownerName }}</td>
                     </tr>
                   </tbody>
                 </table>
-              </div>            
+              </div>
+              <div class="col-sm-4">
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                    Drag & Drop File
+                    <button type="button" (click)="openFileSelector()">Browse Files</button>
+                  </ng-template>
+                </ngx-file-drop>
+              </div>                        
             </div>
           </tab>
         </tabset>

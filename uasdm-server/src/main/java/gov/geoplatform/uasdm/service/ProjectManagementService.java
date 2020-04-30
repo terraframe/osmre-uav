@@ -507,6 +507,31 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
+  public RemoteFileObject downloadLast(String sessionId, String id, String key)
+  {
+    List<SiteObject> items = getObjects(id, key, null, null).getObjects();
+
+    SiteObject last = null;
+
+    for (SiteObject item : items)
+    {
+      if (last == null || item.getLastModified().after(last.getLastModified()))
+      {
+        last = item;
+      }
+    }
+
+    if (last != null)
+    {
+      return this.download(sessionId, id, last.getKey());
+    }
+    else
+    {
+      throw new ProgrammingErrorException("No files exist");
+    }
+  }
+
+  @Request(RequestType.SESSION)
   public RemoteFileObject download(String sessionId, String id, String key, List<Range> ranges)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
