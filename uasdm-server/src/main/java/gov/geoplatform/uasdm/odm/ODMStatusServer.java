@@ -486,7 +486,7 @@ public class ODMStatusServer
         uploadTask.apply();
 
         // Create image services
-        uploadTask.getImageryComponent().createImageServices();
+        product.createImageService();
 
         // Calculate bounding boxes
         product.updateBoundingBox();
@@ -629,13 +629,13 @@ public class ODMStatusServer
     private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<DocumentIF> documents) throws InterruptedException
     {
       File[] children = parentDir.listFiles();
-      
+
       if (children == null)
       {
         logger.error("Problem occurred while listing files of directory [" + parentDir.getAbsolutePath() + "].");
         return;
       }
-      
+
       for (File child : children)
       {
         if (Thread.interrupted())

@@ -63,6 +63,12 @@ public class BusinessStrategy implements ComponentStrategy
     return Site.getSites(bounds);
   }
 
+  @Override
+  public List<ProductIF> getProducts()
+  {
+    return Product.getProduct();
+  }
+
   public java.util.Collection<CollectionIF> getMissingMetadata()
   {
     return Collection.getMissingMetadata();

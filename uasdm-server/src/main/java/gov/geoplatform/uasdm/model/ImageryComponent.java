@@ -48,8 +48,6 @@ public interface ImageryComponent
 
   public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize);
 
-  public void createImageServices();
-
   public String getS3location();
 
   public String getName();

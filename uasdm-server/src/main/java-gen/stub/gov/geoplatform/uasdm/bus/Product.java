@@ -21,11 +21,15 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.gis.geoserver.GeoserverFacade;
+import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -42,6 +46,16 @@ public class Product extends ProductBase implements ProductIF
     super();
   }
 
+  public String getImageKey()
+  {
+    return this.imageKey;
+  }
+
+  public String getMapKey()
+  {
+    return this.mapKey;
+  }
+
   @Override
   public void delete()
   {
@@ -52,6 +66,9 @@ public class Product extends ProductBase implements ProductIF
   public void delete(boolean removeFromS3)
   {
     // Delete all of the documents
+    UasComponent component = this.getComponent();
+    String workspace = this.getWorkspace();
+
     List<Document> documents = new LinkedList<Document>();
 
     try (OIterator<? extends Document> it = this.getAllDocuments())
@@ -62,6 +79,16 @@ public class Product extends ProductBase implements ProductIF
     for (Document document : documents)
     {
       document.delete(removeFromS3);
+
+      if (document.getName().endsWith(".tif"))
+      {
+        String storeName = component.getStoreName(document.getS3location());
+
+        if (GeoserverFacade.layerExists(workspace, storeName))
+        {
+          new GeoserverRemoveCoverageCommand(workspace, storeName).doIt();
+        }
+      }
     }
 
     super.delete();
@@ -282,19 +309,66 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public String getImageKey()
+  @Override
+  public boolean isPublished()
   {
-    return this.imageKey;
+    return this.getPublished() == null || this.getPublished();
   }
 
-  public String getMapKey()
+  @Override
+  public String getWorkspace()
   {
-    return this.mapKey;
+    if (isPublished())
+    {
+      return AppProperties.getPublicWorkspace();
+    }
+
+    return GeoserverProperties.getWorkspace();
+  }
+
+  @Override
+  public void createImageService()
+  {
+    Util.createImageServices(this.getWorkspace(), this.getComponent());
+  }
+
+  @Override
+  @Transaction
+  public void togglePublished()
+  {
+    String existing = this.getWorkspace();
+
+    this.appLock();
+    this.setPublished(!this.isPublished());
+    this.apply();
+
+    UasComponent component = this.getComponent();
+
+    try (OIterator<? extends Document> it = this.getAllDocuments())
+    {
+      while (it.hasNext())
+      {
+        Document document = it.next();
+
+        if (document.getName().endsWith(".tif"))
+        {
+          String storeName = component.getStoreName(document.getS3location());
+
+          if (GeoserverFacade.layerExists(existing, storeName))
+          {
+            Util.removeCoverageStore(existing, storeName);
+          }
+        }
+      }
+    }
+
+    Util.createImageServices(this.getWorkspace(), component);
   }
 
   public void calculateKeys(List<UasComponentIF> components)
   {
     List<Document> documents = new LinkedList<Document>();
+    String workspace = this.getWorkspace();
 
     try (OIterator<? extends Document> it = this.getAllDocuments())
     {
@@ -311,11 +385,21 @@ public class Product extends ProductBase implements ProductIF
       {
         String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
 
-        if (GeoserverFacade.layerExists(storeName))
+        if (GeoserverFacade.layerExists(workspace, storeName))
         {
           this.mapKey = storeName;
         }
       }
+    }
+  }
+
+  public static List<ProductIF> getProduct()
+  {
+    ProductQuery query = new ProductQuery(new QueryFactory());
+
+    try (OIterator<? extends Product> it = query.getIterator())
+    {
+      return new LinkedList<ProductIF>(it.getAll());
     }
   }
 }

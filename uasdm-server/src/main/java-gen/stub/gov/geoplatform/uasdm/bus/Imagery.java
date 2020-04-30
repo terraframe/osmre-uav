@@ -196,11 +196,6 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
     return rs;
   }
 
-  public void createImageServices()
-  {
-    Util.createImageServices(this);
-  }
-
   public String getStoreName(String key)
   {
     String baseName = FilenameUtils.getBaseName(key);

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 821033479)
+@com.runwaysdk.business.ClassSignature(hash = 1607889406)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -23,10 +23,11 @@ public abstract class ProductBase extends com.runwaysdk.business.Business
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PUBLISHED = "published";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 821033479;
+  private static final long serialVersionUID = 1607889406;
   
   public ProductBase()
   {
@@ -402,6 +403,34 @@ public abstract class ProductBase extends com.runwaysdk.business.Business
     else
     {
       setValue(OWNER, oid);
+    }
+  }
+  
+  public Boolean getPublished()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PUBLISHED));
+  }
+  
+  public void validatePublished()
+  {
+    this.validateAttribute(PUBLISHED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getPublishedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PUBLISHED);
+  }
+  
+  public void setPublished(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PUBLISHED, "");
+    }
+    else
+    {
+      setValue(PUBLISHED, java.lang.Boolean.toString(value));
     }
   }
   

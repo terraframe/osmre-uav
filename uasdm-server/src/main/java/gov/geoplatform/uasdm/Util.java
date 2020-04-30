@@ -43,7 +43,7 @@ public class Util
     RemoteFileFacade.uploadFile(child, key, task);
   }
 
-  public static void createImageServices(ImageryComponent imageryComponent)
+  public static void createImageServices(String workspace, UasComponentIF imageryComponent)
   {
     try
     {
@@ -59,14 +59,21 @@ public class Util
         {
           String storeName = imageryComponent.getStoreName(key);
 
-          if (GeoserverFacade.layerExists(storeName))
+          if (GeoserverFacade.layerExists(workspace, storeName))
           {
-            Util.removeCoverageStore(storeName);
+            Util.removeCoverageStore(workspace, storeName);
           }
 
           File geotiff = Util.download(key, storeName);
 
-          GeoserverFacade.publishGeoTiff(storeName, geotiff);
+          try
+          {
+            GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
+          }
+          finally
+          {
+            FileUtils.deleteQuietly(geotiff);
+          }
         }
       }
     }
@@ -76,25 +83,25 @@ public class Util
     }
   }
 
-  public static void getSiteObjects(String folder, List<SiteObject> objects, ImageryComponent imageryComponent)
+  public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
   {
-    if (folder.equals(ImageryComponent.ORTHO))
-    {
-      for (SiteObject object : objects)
-      {
-        String key = object.getKey();
-
-        if (key.endsWith(".tif"))
-        {
-          String storeName = imageryComponent.getStoreName(key);
-
-          if (GeoserverFacade.layerExists(storeName))
-          {
-            object.setImageKey(storeName);
-          }
-        }
-      }
-    }
+//    if (folder.equals(ImageryComponent.ORTHO))
+//    {
+//      for (SiteObject object : objects)
+//      {
+//        String key = object.getKey();
+//
+//        if (key.endsWith(".tif"))
+//        {
+//          String storeName = imageryComponent.getStoreName(key);
+//
+//          if (GeoserverFacade.layerExists(storeName))
+//          {
+//            object.setImageKey(storeName);
+//          }
+//        }
+//      }
+//    }
   }
 
   public static File download(String key, String storeName)
@@ -115,26 +122,27 @@ public class Util
 
   public static void deleteS3Object(String key, ImageryComponent imageryComponent)
   {
-    if (key.endsWith(".tif"))
-    {
-      String[] paths = key.split("/");
-      if (paths.length > 1)
-      {
-        if (paths[paths.length - 2].startsWith(ImageryComponent.ORTHO))
-        {
-          String storeName = imageryComponent.getStoreName(key);
-
-          Util.removeCoverageStore(storeName);
-        }
-      }
-    }
+//    if (key.endsWith(".tif"))
+//    {
+//      String[] paths = key.split("/");
+//
+//      if (paths.length > 1)
+//      {
+//        if (paths[paths.length - 2].startsWith(ImageryComponent.ORTHO))
+//        {
+//          String storeName = imageryComponent.getStoreName(key);
+//
+//          Util.removeCoverageStore(workspace, storeName);
+//        }
+//      }
+//    }
   }
 
-  public static void removeCoverageStore(String storeName)
+  public static void removeCoverageStore(String workspace, String storeName)
   {
-    GeoserverFacade.removeStyle(storeName);
-    GeoserverFacade.forceRemoveLayer(storeName);
-    GeoserverFacade.removeCoverageStore(storeName);
+//    GeoserverFacade.removeStyle(storeName);
+//    GeoserverFacade.forceRemoveLayer(workspace, storeName);
+    GeoserverFacade.removeCoverageStore(workspace, storeName);
   }
 
   public static boolean isVideoFile(String path)

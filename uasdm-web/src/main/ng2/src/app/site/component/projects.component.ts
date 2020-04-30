@@ -114,7 +114,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		id: 'streets-v11'
 	}];
 
-	layers: any[] = [];
+	layers: {workspace:string, mapKey:string}[] = [];
 
 	baselayerIconHover = false;
 
@@ -316,9 +316,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 				"text-size": 12,
 			}
 		});
-
-		this.layers.forEach(imageKey => {
-			this.addImageLayer(imageKey);
+        
+		this.layers.forEach(layer => {
+			this.addImageLayer(layer.workspace, layer.mapKey);
 		});
 	}
 
@@ -685,7 +685,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 				this.map.removeLayer(mapKey);
 				this.map.removeSource(mapKey);
 
-				var index = this.layers.indexOf(mapKey);
+				var index = this.layers.findIndex(layer => layer.mapKey === mapKey);
 				if (index !== -1) {
 					this.layers.splice(index, 1);
 				}
@@ -693,9 +693,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 				product.orthoMapped = false;
 			}
 			else {
-				this.addImageLayer(mapKey);
+				this.addImageLayer(product.workspace, mapKey);
 
-				this.layers.push(mapKey);
+				this.layers.push({workspace: product.workspace, mapKey: mapKey});
 
 				product.orthoMapped = true;
 
@@ -710,8 +710,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 
-	addImageLayer(imageKey: string) {
-		const workspace = encodeURI('uasdm');
+	addImageLayer(wkspace:string, imageKey: string) {
+		const workspace = encodeURI(wkspace);
 		const layerName = encodeURI(workspace + ':' + imageKey);
 
 		this.map.addLayer({
@@ -850,8 +850,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	expand(node: SiteEntity) {
-		const cMetadata = this.metadataService.getMetadata(this.current);
-
 		node.active = true;
 		this.current = node;
 	}

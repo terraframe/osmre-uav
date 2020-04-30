@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1659923330)
+@com.runwaysdk.business.ClassSignature(hash = -632326475)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -276,6 +276,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.Product.OWNER);
 
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.Product.OWNER, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getPublished()
+  {
+    return getPublished(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()
@@ -664,6 +681,9 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getPublished();
+    public com.runwaysdk.query.SelectableBoolean getPublished(String alias);
+    public com.runwaysdk.query.SelectableBoolean getPublished(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -962,6 +982,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Product.OWNER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getPublished()
+  {
+    return getPublished(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()
@@ -1327,6 +1364,9 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getPublished();
+    public com.runwaysdk.query.SelectableBoolean getPublished(String alias);
+    public com.runwaysdk.query.SelectableBoolean getPublished(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -1622,6 +1662,23 @@ public  class ProductQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.Product.OWNER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getPublished()
+  {
+    return getPublished(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getPublished(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.Product.PUBLISHED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()

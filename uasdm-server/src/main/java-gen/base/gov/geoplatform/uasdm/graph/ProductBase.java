@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -595410498)
+@com.runwaysdk.business.ClassSignature(hash = -1915085003)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -15,8 +15,9 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
+  public static java.lang.String PUBLISHED = "published";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -595410498;
+  private static final long serialVersionUID = -1915085003;
   
   public ProductBase()
   {
@@ -82,6 +83,22 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
   }
   
+  public Boolean getPublished()
+  {
+    return (Boolean) this.getObjectValue(PUBLISHED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getPublishedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PUBLISHED);
+  }
+  
+  public void setPublished(Boolean value)
+  {
+    this.setValue(PUBLISHED, value);
+  }
+  
   public Long getSeq()
   {
     return (Long) this.getObjectValue(SEQ);
@@ -103,14 +120,14 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
     return CLASS;
   }
   
-  public void addProductHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
+  public com.runwaysdk.business.graph.EdgeObject addProductHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addChild(document, "gov.geoplatform.uasdm.graph.ProductHasDocument");
+    return super.addChild(document, "gov.geoplatform.uasdm.graph.ProductHasDocument");
   }
   
   public void removeProductHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addChild(document, "gov.geoplatform.uasdm.graph.ProductHasDocument");
+    super.removeChild(document, "gov.geoplatform.uasdm.graph.ProductHasDocument");
   }
   
   @SuppressWarnings("unchecked")
@@ -119,14 +136,14 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
     return super.getChildren("gov.geoplatform.uasdm.graph.ProductHasDocument",gov.geoplatform.uasdm.graph.Document.class);
   }
   
-  public void addComponentHasProductParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
+  public com.runwaysdk.business.graph.EdgeObject addComponentHasProductParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
-    super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
+    return super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
   }
   
   public void removeComponentHasProductParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
-    super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
+    super.removeParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
   }
   
   @SuppressWarnings("unchecked")
@@ -135,14 +152,14 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
     return super.getParents("gov.geoplatform.uasdm.graph.ComponentHasProduct", gov.geoplatform.uasdm.graph.UasComponent.class);
   }
   
-  public void addDocumentGeneratedProductParent(gov.geoplatform.uasdm.graph.Document document)
+  public com.runwaysdk.business.graph.EdgeObject addDocumentGeneratedProductParent(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addParent(document, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
+    return super.addParent(document, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
   }
   
   public void removeDocumentGeneratedProductParent(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addParent(document, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
+    super.removeParent(document, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
   }
   
   @SuppressWarnings("unchecked")

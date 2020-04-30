@@ -10,26 +10,26 @@ import { Product } from '../../model/management';
 import { ProductService } from '../../service/product.service';
 import { ManagementService } from '../../service/management.service';
 
-import { 
+import {
     fadeInOnEnterAnimation,
     fadeOutOnLeaveAnimation,
     bounceInOnEnterAnimation,
     bounceOutOnLeaveAnimation
- } from 'angular-animations';
+} from 'angular-animations';
 
 declare var acp: string;
 
-@Component( {
+@Component({
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
     styles: [],
-    animations: [ 
+    animations: [
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation(),
         bounceInOnEnterAnimation(),
         bounceOutOnLeaveAnimation()
     ]
-} )
+})
 export class ProductPanelComponent {
 
     @Input() id: string;
@@ -49,117 +49,130 @@ export class ProductPanelComponent {
     private bsModalRef: BsModalRef;
 
 
-    constructor( private pService: ProductService, private mService: ManagementService, private modalService: BsModalService ) { }
+    constructor(private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
 
-    ngOnChanges( changes: SimpleChanges ) {
+    ngOnChanges(changes: SimpleChanges) {
 
-        this.refreshProducts( changes['id'].currentValue );
+        this.refreshProducts(changes['id'].currentValue);
     }
 
-    refreshProducts( id: string ): void {
+    refreshProducts(id: string): void {
         this.products = [];
         this.thumbnails = {};
 
-        this.pService.getProducts( id ).then( products => {
+        this.pService.getProducts(id).then(products => {
             this.products = products;
 
-            this.products.forEach( product => {
-                this.getThumbnail( product );
-            } );
-        } );
+            this.products.forEach(product => {
+                this.getThumbnail(product);
+            });
+        });
     }
 
-    createImageFromBlob( image: Blob, product: Product ) {
+    createImageFromBlob(image: Blob, product: Product) {
         let reader = new FileReader();
-        reader.addEventListener( "load", () => {
+        reader.addEventListener("load", () => {
             // this.imageToShow = reader.result;
             this.thumbnails[product.id] = reader.result;
-        }, false );
+        }, false);
 
-        if ( image ) {
-            reader.readAsDataURL( image );
+        if (image) {
+            reader.readAsDataURL(image);
         }
     }
 
-    getThumbnail( product: Product ): void {
+    getThumbnail(product: Product): void {
 
         // imageKey only exists if an image actually exists on s3
-        if(product.imageKey){
+        if (product.imageKey) {
             const component: string = product.entities[product.entities.length - 1].id;
-            const rootPath: string = product.imageKey.substr( 0, product.imageKey.lastIndexOf( "/" ) );
-            const fileName: string = /[^/]*$/.exec( product.imageKey )[0];
+            const rootPath: string = product.imageKey.substr(0, product.imageKey.lastIndexOf("/"));
+            const fileName: string = /[^/]*$/.exec(product.imageKey)[0];
             const lastPeriod: number = fileName.lastIndexOf(".");
-        	const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
+            const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
-            this.mService.download( component, thumbKey, false ).subscribe( blob => {
-                this.createImageFromBlob( blob, product );
+            this.mService.download(component, thumbKey, false).subscribe(blob => {
+                this.createImageFromBlob(blob, product);
             }, error => {
-                console.log( error );
+                console.log(error);
 
                 this.thumbnails[product.id] = acp + "/net/geoprism/images/thumbnail-default.png";
 
-            } );
+            });
         }
-        else{
+        else {
             this.thumbnails[product.id] = acp + "/net/geoprism/images/thumbnail-default.png";
         }
     }
 
-    getDefaultImgURL( event: any ): void {
+    getDefaultImgURL(event: any): void {
         event.target.src = acp + "/net/geoprism/images/thumbnail-default.png";
     }
 
-    handleMapIt( product: Product ): void {
-        this.toggleMapImage.emit( product );
+    handleMapIt(product: Product): void {
+        this.toggleMapImage.emit(product);
     }
 
-    handleDelete( product: Product, event: any ): void {
+    handleDelete(product: Product, event: any): void {
 
         event.stopPropagation();
 
-        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
+        this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        } );
+        });
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + product.name + ']?';
         this.bsModalRef.content.data = product;
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
 
-        ( <BasicConfirmModalComponent>this.bsModalRef.content ).onConfirm.subscribe( data => {
-            this.remove( data );
-        } );
+        (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
+            this.remove(data);
+        });
     }
 
-    remove( product: Product ): void {
-        this.pService.remove( product.id ).then( response => {
-            this.products = this.products.filter(( n: any ) => n.id !== product.id );
-        } );
+    remove(product: Product): void {
+        this.pService.remove(product.id).then(response => {
+            this.products = this.products.filter((n: any) => n.id !== product.id);
+        });
     }
 
-    previewImage( product: Product ): void {
+    previewImage(product: Product): void {
         const component: string = product.entities[product.entities.length - 1].id;
 
-        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
+        this.bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: false,
             'class': 'image-preview-modal'
-        } );
-        this.bsModalRef.content.init( component, product.imageKey );
+        });
+        this.bsModalRef.content.init(component, product.imageKey);
     }
 
-    handleGetInfo( product: Product ): void {
-        this.pService.getDetail( product.id, 1, 20 ).then( detail => {
-            this.bsModalRef = this.modalService.show( ProductModalComponent, {
+    handleGetInfo(product: Product): void {
+        this.pService.getDetail(product.id, 1, 20).then(detail => {
+            this.bsModalRef = this.modalService.show(ProductModalComponent, {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'product-info-modal'
-            } );
-            this.bsModalRef.content.init( detail );
-        } );
+            });
+            this.bsModalRef.content.init(detail);
+        });
     }
 
+    handleTogglePublish(product: Product): void {
+        this.pService.togglePublish(product.id).then(p => {
+            if (product.orthoMapped) {
+                this.toggleMapImage.emit(product);
+            }
+
+            product.workspace = p.workspace;
+            product.mapKey = p.mapKey;
+            product.published = p.published;
+
+            this.toggleMapImage.emit(product);
+        });
+    }
 }

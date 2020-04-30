@@ -1,7 +1,7 @@
 package gov.geoplatform.uasdm;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.model.ProductIF;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import net.geoprism.PluginUtil;
 import net.geoprism.context.ServerContextListener;
 import net.geoprism.gis.geoserver.GeoserverFacade;
-import net.geoprism.gis.geoserver.GeoserverInitializerIF;
 import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverInitializer implements UncaughtExceptionHandler, ServerContextListener
@@ -89,18 +89,31 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
     @Request
     private void runInRequest()
     {
-      if (!GeoserverFacade.workspaceExists())
+      boolean rebuild = false;
+
+      if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
+      {
+        GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
+
+        rebuild = true;
+      }
+
+      if (!GeoserverFacade.workspaceExists(GeoserverProperties.getWorkspace()))
+      {
+        GeoserverFacade.publishWorkspace();
+
+        rebuild = true;
+      }
+
+      if (rebuild)
       {
         logger.info("Geoserver workspace and store not found.  Republishing layers.");
 
-        GeoserverFacade.publishWorkspace();
-        GeoserverFacade.publishStore();
+        List<ProductIF> products = ComponentFacade.getProducts();
 
-        Collection<GeoserverInitializerIF> initializers = PluginUtil.getGeoserverInitializers();
-
-        for (GeoserverInitializerIF initializer : initializers)
+        for (ProductIF product : products)
         {
-          initializer.initialize();
+          product.createImageService();
         }
       }
     }

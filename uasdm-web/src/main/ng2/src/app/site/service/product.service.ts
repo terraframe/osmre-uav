@@ -53,5 +53,19 @@ export class ProductService {
 			.toPromise()
 	}
 
+	togglePublish(id: string): Promise<ProductDetail> {
 
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<ProductDetail>(acp + '/product/toggle-publish', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 }

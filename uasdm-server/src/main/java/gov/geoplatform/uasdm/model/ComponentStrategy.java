@@ -25,6 +25,8 @@ public interface ComponentStrategy
 
   public DocumentIF getDocument(String oid);
 
+  public List<ProductIF> getProducts();
+
   public List<SiteIF> getSites(String bounds);
 
   public Collection<CollectionIF> getMissingMetadata();
@@ -34,4 +36,5 @@ public interface ComponentStrategy
   public JSONObject features() throws IOException;
 
   public JSONArray bbox();
+
 }

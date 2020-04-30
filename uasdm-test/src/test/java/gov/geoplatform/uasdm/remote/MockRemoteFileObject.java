@@ -24,5 +24,11 @@ public class MockRemoteFileObject implements RemoteFileObject
   public void close() throws IOException
   {
   }
+  
+  @Override
+  public String getFilename()
+  {
+    return "";
+  }
 
 }

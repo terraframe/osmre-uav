@@ -63,6 +63,12 @@ public class GraphStrategy implements ComponentStrategy
     return Site.getSites(bounds);
   }
 
+  @Override
+  public List<ProductIF> getProducts()
+  {
+    return Product.getProducts();
+  }
+
   public java.util.Collection<CollectionIF> getMissingMetadata()
   {
     return Collection.getMissingMetadata();

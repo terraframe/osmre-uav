@@ -16,7 +16,11 @@ public class ProductView
   private String         imageKey;
 
   private String         mapKey;
-  
+
+  private boolean        published;
+
+  private String         workspace;
+
   private String         boundingBox;
 
   public String getId()
@@ -68,7 +72,7 @@ public class ProductView
   {
     this.mapKey = mapKey;
   }
-  
+
   public String getBoundingBox()
   {
     return mapKey;
@@ -79,12 +83,33 @@ public class ProductView
     this.boundingBox = boundingBox;
   }
 
+  public String getWorkspace()
+  {
+    return workspace;
+  }
+
+  public void setWorkspace(String workspace)
+  {
+    this.workspace = workspace;
+  }
+
+  public boolean isPublished()
+  {
+    return published;
+  }
+
+  public void setPublished(boolean published)
+  {
+    this.published = published;
+  }
+
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
     object.put("id", this.id);
     object.put("name", this.name);
     object.put("entities", SiteItem.serializeItems(this.components));
+    object.put("published", this.published);
 
     if (this.imageKey != null)
     {
@@ -95,7 +120,12 @@ public class ProductView
     {
       object.put("mapKey", this.mapKey);
     }
-    
+
+    if (this.workspace != null)
+    {
+      object.put("workspace", this.workspace);
+    }
+
     if (this.boundingBox != null && this.boundingBox.length() > 0)
     {
       object.put("boundingBox", new JSONArray(this.boundingBox));

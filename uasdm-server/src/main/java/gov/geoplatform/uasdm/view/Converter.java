@@ -211,6 +211,7 @@ public abstract class Converter
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
+    view.setPublished(product.isPublished());
 
     if (product.getImageKey() == null || product.getMapKey() == null)
     {
@@ -224,6 +225,7 @@ public abstract class Converter
 
     if (product.getMapKey() != null && product.getMapKey().length() > 0)
     {
+      view.setWorkspace(product.getWorkspace());
       view.setMapKey(product.getMapKey());
 
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))

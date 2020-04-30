@@ -39,6 +39,12 @@
                         <li style="padding: 3px 0 3px 0;">
                             <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)" title="Delete">Delete</a>
                         </li>
+                        <li *ngIf="product.published" style="padding: 3px 0 3px 0;">
+                            <a class="fa fa-arrow-alt-circle-down" (click)="handleTogglePublish(product)" title="Unpublish">Unpublish</a>
+                        </li>
+                        <li *ngIf="!product.published" style="padding: 3px 0 3px 0;">
+                            <a class="fa fa-arrow-alt-circle-up" (click)="handleTogglePublish(product)" title="Publish">Publish</a>
+                        </li>
                     </ul>             
                 </div>
             </div>
