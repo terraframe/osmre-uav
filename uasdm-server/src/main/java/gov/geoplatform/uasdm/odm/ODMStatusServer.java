@@ -254,119 +254,140 @@ public class ODMStatusServer
         }
 
         ODMProcessingTaskIF task = it.next();
-
-        InfoResponse resp;
-        if (DevProperties.runOrtho())
+  
+        InfoResponse resp = null;
+        try
         {
-          resp = ODMFacade.taskInfo(task.getOdmUUID());
+          if (DevProperties.runOrtho())
+          {
+            resp = ODMFacade.taskInfo(task.getOdmUUID());
+          }
+          else
+          {
+            resp = DevProperties.getMockOdmTaskInfo();
+          }
+  
+          if (resp.getHTTPResponse().isUnreachableHost())
+          {
+            String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
+            logger.error(msg);
+            UnreachableHostException ex = new UnreachableHostException(msg);
+  
+            task.appLock();
+            task.setStatus(ODMStatus.FAILED.getLabel());
+            task.setMessage(ex.getLocalizedMessage());
+            task.apply();
+  
+            it.remove();
+  
+            sendEmail(task);
+  
+  //          throw ex;
+            continue;
+          }
+          else if (resp.hasError())
+          {
+            task.appLock();
+            task.setStatus(ODMStatus.FAILED.getLabel());
+            task.setMessage(resp.getError());
+            task.apply();
+  
+            it.remove();
+  
+            sendEmail(task);
+          }
+          else if (!resp.hasError() && resp.getHTTPResponse().isError())
+          {
+            task.appLock();
+            task.setStatus(ODMStatus.FAILED.getLabel());
+            task.setMessage("The job encountered an unspecified error.");
+            task.apply();
+  
+            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+  
+            it.remove();
+          }
+          else
+          {
+            if (resp.getStatus().equals(ODMStatus.RUNNING))
+            {
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+  
+              long millis = resp.getProcessingTime();
+  
+              String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+  
+              task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+              task.apply();
+            }
+            else if (resp.getStatus().equals(ODMStatus.QUEUED))
+            {
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+              task.setMessage("Job is queued."); // TODO : Position in queue?
+              task.apply();
+            }
+            else if (resp.getStatus().equals(ODMStatus.CANCELED))
+            {
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+              task.setMessage("Job was canceled.");
+              task.apply();
+  
+              it.remove();
+  
+              // TODO : Remove from ODM?
+            }
+            else if (resp.getStatus().equals(ODMStatus.FAILED))
+            {
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+              task.setMessage(resp.getStatusError());
+              addOutputToTask(task);
+              task.apply();
+  
+              it.remove();
+  
+              sendEmail(task);
+  
+              removeFromOdm(task, task.getOdmUUID());
+            }
+            else if (resp.getStatus().equals(ODMStatus.COMPLETED))
+            {
+              long millis = resp.getProcessingTime();
+  
+              String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+  
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+              task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
+              addOutputToTask(task);
+              task.apply();
+  
+              it.remove();
+  
+              uploadResultsToS3(task);
+            }
+          }
         }
-        else
-        {
-          resp = DevProperties.getMockOdmTaskInfo();
-        }
-
-        if (resp.getHTTPResponse().isUnreachableHost())
-        {
-          String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
-          logger.error(msg);
-          UnreachableHostException ex = new UnreachableHostException(msg);
-
-          task.appLock();
-          task.setStatus(ODMStatus.FAILED.getLabel());
-          task.setMessage(ex.getLocalizedMessage());
-          task.apply();
-
-          it.remove();
-
-          sendEmail(task);
-
-//          throw ex;
-          continue;
-        }
-        else if (resp.hasError())
-        {
-          task.appLock();
-          task.setStatus(ODMStatus.FAILED.getLabel());
-          task.setMessage(resp.getError());
-          task.apply();
-
-          it.remove();
-
-          sendEmail(task);
-        }
-        else if (!resp.hasError() && resp.getHTTPResponse().isError())
+        catch (Throwable t)
         {
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
           task.setMessage("The job encountered an unspecified error.");
           task.apply();
 
-          task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+          if (resp != null && resp.getHTTPResponse() != null)
+          {
+            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+          }
+          else
+          {
+            task.setOdmOutput("HTTP communication with ODM has failed.");
+          }
 
           it.remove();
-        }
-        else
-        {
-          if (resp.getStatus().equals(ODMStatus.RUNNING))
-          {
-            task.appLock();
-            task.setStatus(resp.getStatus().getLabel());
-
-            long millis = resp.getProcessingTime();
-
-            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-
-            task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
-            task.apply();
-          }
-          else if (resp.getStatus().equals(ODMStatus.QUEUED))
-          {
-            task.appLock();
-            task.setStatus(resp.getStatus().getLabel());
-            task.setMessage("Job is queued."); // TODO : Position in queue?
-            task.apply();
-          }
-          else if (resp.getStatus().equals(ODMStatus.CANCELED))
-          {
-            task.appLock();
-            task.setStatus(resp.getStatus().getLabel());
-            task.setMessage("Job was canceled.");
-            task.apply();
-
-            it.remove();
-
-            // TODO : Remove from ODM?
-          }
-          else if (resp.getStatus().equals(ODMStatus.FAILED))
-          {
-            task.appLock();
-            task.setStatus(resp.getStatus().getLabel());
-            task.setMessage(resp.getStatusError());
-            addOutputToTask(task);
-            task.apply();
-
-            it.remove();
-
-            sendEmail(task);
-
-            removeFromOdm(task, task.getOdmUUID());
-          }
-          else if (resp.getStatus().equals(ODMStatus.COMPLETED))
-          {
-            long millis = resp.getProcessingTime();
-
-            String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-
-            task.appLock();
-            task.setStatus(resp.getStatus().getLabel());
-            task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
-            addOutputToTask(task);
-            task.apply();
-
-            it.remove();
-
-            uploadResultsToS3(task);
-          }
         }
       }
     }
