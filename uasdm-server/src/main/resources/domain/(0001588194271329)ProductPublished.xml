@@ -1,0 +1,25 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Product" label="Document" generateController="false">
+        <create>
+          <attributes>
+            <boolean name="published" label="Published" required="false" />
+          </attributes>
+        </create>
+      </mdBusiness>    
+      <mdVertex name="gov.geoplatform.uasdm.graph.Product" label="Document" generateController="false">
+        <create>
+          <attributes>
+            <boolean name="published" label="Published" required="false" />
+          </attributes>
+        </create>
+      </mdVertex>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.Product.published" type="com.runwaysdk.system.metadata.MdAttribute" />
+    </delete>
+  </undoIt>
+</version>
