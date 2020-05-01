@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
-import { UserProfileComponent } from './component/user-profile.component';
+import { TasksComponent } from './component/tasks.component';
 import { SensorsComponent } from './component/sensor/sensors.component';
 import { PlatformsComponent } from './component/platform/platforms.component';
 
@@ -16,7 +16,7 @@ const routes: Routes = [
     {
         path: '',
         canActivate: [AuthGuard],
-        component: UserProfileComponent
+        component: ProjectsComponent
     },
     {
         path: 'viewer',
@@ -31,7 +31,7 @@ const routes: Routes = [
     {
         path: 'tasks',
         canActivate: [AuthGuard],
-        component: UserProfileComponent
+        component: TasksComponent
     },
     {
         path: 'sensors',

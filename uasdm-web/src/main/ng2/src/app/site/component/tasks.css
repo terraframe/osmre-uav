@@ -8,3 +8,30 @@
     border-color: #ac2925 !important;
 
 }
+
+#app-container {
+    background: #f7f7f7;
+}
+
+#tasks-container {
+    padding: 20px;
+    background: white;
+    border-radius: 6px;
+}
+
+#tasks .panel-body {
+    background: #e9e9e9;
+}
+#tasks .panel-footer {
+    background: #e9e9e9;
+}
+
+.panel-body{
+    background: white;
+}
+.panel-body.collapse{
+    padding: 0;
+}
+.panel-body.collapse.in.show{
+    padding: 20px;
+}

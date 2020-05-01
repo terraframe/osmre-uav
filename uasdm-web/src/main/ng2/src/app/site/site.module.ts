@@ -24,7 +24,7 @@ import { AccessibleSupportModalComponent } from './component/modal/accessible-su
 import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
-import { UserProfileComponent } from './component/user-profile.component';
+import { TasksComponent } from './component/tasks.component';
 import { SensorsComponent } from './component/sensor/sensors.component';
 import { SensorComponent } from './component/sensor/sensor.component';
 import { PlatformsComponent } from './component/platform/platforms.component';
@@ -75,7 +75,7 @@ import { SharedModule } from '../shared/shared.module';
 		ProductModalComponent,
 		ProjectsComponent,
 		UploadComponent,
-		UserProfileComponent,
+		TasksComponent,
 		ForbiddenNameDirective,
 		OnlyNumber,
 		SensorComponent,

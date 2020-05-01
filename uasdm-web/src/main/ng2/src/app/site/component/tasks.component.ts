@@ -8,22 +8,28 @@ import { switchMap } from 'rxjs/operators';
 
 import { MetadataModalComponent } from './modal/metadata-modal.component';
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
-import { Message, Task } from '../model/management';
+import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
 
 declare var acp: any;
 
 @Component({
-	selector: 'user-profile',
-	templateUrl: './user-profile.component.html',
-	styleUrls: ['./user-profile.css']
+	selector: 'tasks',
+	templateUrl: './tasks.component.html',
+	styleUrls: ['./tasks.css']
 })
-export class UserProfileComponent implements OnInit {
+export class TasksComponent implements OnInit {
 
 	userName: string = "";
 	totalTaskCount: number = 0;
 	totalActionsCount: number = 0;
 	taskPolling: any;
+	activeTab: string = "action-required";
+	showSite: boolean = false;
+	initData: any;
+	showUploads: boolean = false;
+	showProcess: boolean = false;
+	showStore: boolean = false;
 
     /*
      * Reference to the modal current showing
@@ -40,13 +46,15 @@ export class UserProfileComponent implements OnInit {
      */
 	tasks: Task[];
 
+	taskGroups: TaskGroup[] = [];
+
 	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
-		this.taskPolling = interval(5000).pipe(
-			switchMap(() => http.get<any>(acp + '/project/tasks')))
-			.subscribe((data) => {
-				this.updateTaskData(data);
-			});
+		// this.taskPolling = interval(5000).pipe(
+		// 	switchMap(() => http.get<any>(acp + '/project/tasks')))
+		// 	.subscribe((data) => {
+		// 		this.updateTaskData(data);
+		// 	});
 	}
 
 	ngOnInit(): void {
@@ -65,6 +73,10 @@ export class UserProfileComponent implements OnInit {
 		}
 	}
 
+	onTabClick(tab: string): void {
+		this.activeTab = tab;
+	}
+
 	setTaskData(data: any): void {
 		this.messages = data.messages;
 
@@ -72,9 +84,23 @@ export class UserProfileComponent implements OnInit {
 
 		this.totalActionsCount = this.getTotalActionsCount(data.tasks);
 
-		this.tasks = data.tasks.sort((a: any, b: any) =>
-			new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-		);
+		for(let i=0; i<data.tasks.length; i++){
+			let task = data.tasks[i];
+			let position = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
+			if(position > -1){
+				this.taskGroups[position].group.push(task)
+			}
+			else{
+				this.taskGroups.push({label: task.collectionLabel, group:[task]});
+			}
+			console.log(position)
+		}
+		
+		console.log(this.taskGroups)
+
+		// this.tasks = data.tasks.sort((a: any, b: any) =>
+		// 	new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+		// );
 	}
 
 	updateTaskData(data: any): void {
@@ -155,6 +181,22 @@ export class UserProfileComponent implements OnInit {
 				this.messages.splice(index, 1);
 			}
 
+		});
+
+	}
+
+	handleGoto(collectionId: string): void {
+		// const entity = this.product.entities[this.product.entities.length - 1];
+		// const breadcrumbs = this.product.entities;
+
+		this.managementService.getItems("71ac9976-1a3b-4707-800d-4769520005bf", null).then(nodes => {
+
+			let entity = {"numberOfChildren":82,"ownerName":"admin","ownerPhone":"","name":"Copper collect","description":"","typeLabel":"Collection","id":"71ac9976-1a3b-4707-800d-4769520005bf","folderName":"b71a7425b2754c5e9127a773971c53d3","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}
+			let breadcrumbs = [{"numberOfChildren":1,"name":"Copper","otherBureauTxt":"","description":"","typeLabel":"Site","geometry":{"coordinates":[-107.3016,43.0521],"type":"Point"},"id":"b220b1c9-aee0-41cb-b99c-875d830005bc","folderName":"cbbdc906312645ecb269d6d5f17db924","bureau":"adb54227-b659-4243-81b6-3aaa8b0005ba","type":"Site","geoPoint":"POINT (-107.3016159523629 43.05214347865024)"},{"numberOfChildren":1,"name":"Copper proj","description":"","typeLabel":"Project","id":"4aeb9cfb-d9c5-404f-98d0-1fae550005bd","folderName":"92493681cf144704973ba0e2936df9bf","type":"Project"},{"numberOfChildren":2,"name":"Copper Miss","description":"","typeLabel":"Mission","id":"031508cd-d442-4ab6-bcf2-c365a90005be","folderName":"8930cf209283412bb42cd76e472c034d","type":"Mission"},{"numberOfChildren":82,"ownerName":"admin","ownerPhone":"","name":"Copper collect","description":"","typeLabel":"Collection","id":"71ac9976-1a3b-4707-800d-4769520005bf","folderName":"b71a7425b2754c5e9127a773971c53d3","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}]
+			
+			this.initData = { "entity": entity, "folders": nodes, "previous": breadcrumbs }
+
+			this.showSite = true;
 		});
 
 	}

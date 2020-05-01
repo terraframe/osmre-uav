@@ -101,6 +101,15 @@ export class Task {
 	uploadId: string;
 	odmOutput: string;
 	visible?: boolean;
+	collection: string;
+	collectionLabel: string;
+	type: string;
+}
+
+export class TaskGroup {
+	label: string;
+	visible?: boolean;
+	group: Task[];
 }
 
 export class Message {
