@@ -1,14 +1,21 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.text.DateFormat;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import net.geoprism.GeoprismUser;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -20,6 +27,19 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   {
     super();
   }
+  
+  public static List<WorkflowTask> getUserWorkflowTasks()
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+    query.ORDER_BY_ASC(query.getComponent());
+    query.ORDER_BY_ASC(query.getLastUpdateDate());
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      return new LinkedList<WorkflowTask>(iterator.getAll());
+    }
+  }
 
   public JSONObject toJSON()
   {
@@ -28,12 +48,26 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
     obj.put("collection", this.getComponent());
+    obj.put("collectionLabel", this.getComponentLabel());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
     obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("type", this.getType());
 
     return obj;
+  }
+  
+  public static JSONArray serializeWorkflowTasks(List<WorkflowTask> tasks)
+  {
+    JSONArray array = new JSONArray();
+
+    for (WorkflowTask task : tasks)
+    {
+      array.put(task.toJSON());
+    }
+
+    return array;
   }
 
   /**
