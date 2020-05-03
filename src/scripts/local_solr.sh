@@ -25,27 +25,26 @@
 set -e
 set -x
 
-BASEDIR=$(dirname "$0")
+BASEDIR=$(pwd)
+
+# Kill any running containers by name of what we're about to run
+docker rm -f $(docker ps -a -q --filter="name=solr") || true
+docker system prune
 
 
 # Install preqreqs (assumes you're on Ubuntu!)
 #apt-get -y update
 #apt-get -y install tesseract-ocr libgdal-java
 
+rm -rf ../../target/solr
 
-docker run -d -p 8983:8983 --name solr solr:6.6.5
-sleep 8
 
-docker exec solr bash -c '/opt/solr/bin/solr create_core -c uasdm'
+docker run -d -p 8983:8983 -v $BASEDIR/../../src/solr/configsets/uasdm:/opt/solr/server/solr/configsets/uasdm:ro -v $BASEDIR/../../target/solr/mycores/uasdm/data:/data --name solr solr:6.6.5 solr-precreate uasdm /opt/solr/server/solr/configsets/uasdm
 
-# Install our USDM core
-docker cp $BASEDIR/../../solr-core/uasdm 'solr:/opt/solr/server/solr/uasdm/../staging'
-docker exec -u root solr bash -c 'cp -rf /opt/solr/server/solr/uasdm/../staging/* /opt/solr/server/solr/uasdm'
-docker exec -u root solr bash -c 'rm -rf /opt/solr/server/solr/uasdm/../staging'
-docker exec -u root solr bash -c 'chown -R solr:solr /opt/solr/server/solr/uasdm'
+sleep 3;
 
-docker restart solr
-sleep 8
-docker logs solr
 
-echo "Solr should now be running at http://127.0.0.1:8983 . Don't forget to run the indexer!"
+docker exec --user root solr bash -c 'mv /opt/solr/server/solr/mycores/uasdm/data/* /data/ && rm -rf /opt/solr/server/solr/mycores/uasdm/data && ln -s /data /opt/solr/server/solr/mycores/uasdm/data && chown -R solr:solr /opt/solr/server/solr/mycores/uasdm/data && chown -R solr:solr /data' 
+
+
+echo "Solr should now be running at http://127.0.0.1:8983."
