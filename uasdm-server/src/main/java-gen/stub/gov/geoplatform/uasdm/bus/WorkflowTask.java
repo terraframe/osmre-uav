@@ -1,14 +1,21 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.text.DateFormat;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONObject;
 
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import net.geoprism.GeoprismUser;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -21,6 +28,34 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     super();
   }
 
+  public static Page<WorkflowTask> getUserWorkflowTasks(String status, Integer pageNumber, Integer pageSize)
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+
+    if (status != null)
+    {
+      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(status).name()));
+    }
+
+    query.ORDER_BY_ASC(query.getComponent());
+    query.ORDER_BY_ASC(query.getLastUpdateDate());
+
+    if (pageNumber != null && pageSize != null)
+    {
+      query.restrictRows(pageSize, pageNumber);
+    }
+
+    final long count = query.getCount();
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
+
+      return new Page<WorkflowTask>(count, pageNumber, pageSize, results);
+    }
+  }
+
   public JSONObject toJSON()
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
@@ -28,10 +63,12 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
     obj.put("collection", this.getComponent());
+    obj.put("collectionLabel", this.getComponentLabel());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
     obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("type", this.getType());
 
     return obj;
   }

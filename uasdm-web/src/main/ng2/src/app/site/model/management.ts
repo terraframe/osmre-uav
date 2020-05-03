@@ -89,17 +89,33 @@ export class Action {
 }
 
 export class Task {
-    oid: string;
-    label: string;
-    createDate: string;
-    lastUpdateDate: string;
-    lastUpdatedDate: string;
+	oid: string;
+	label: string;
+	createDate: string;
+	lastUpdateDate: string;
+	lastUpdatedDate: string;
+	status: string;
+	message: string;
+	actions: Action[];
+	uploadId: string;
+	odmOutput: string;
+	visible?: boolean;
+	collection: string;
+	collectionLabel: string;
+	type: string;
+}
+
+export class TaskGroup {
+	label: string;
+	visible?: boolean;
+    groups: TaskGroupType[];
     status: string;
-    message: string;
-    actions: Action[];
-    uploadId: string;
-    odmOutput: string;
-    visible?: boolean;
+}
+
+export class TaskGroupType {
+    tasks: Task[];
+    status: string;
+    type: string;
 }
 
 export class Message {

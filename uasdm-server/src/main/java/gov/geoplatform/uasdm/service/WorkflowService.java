@@ -11,6 +11,7 @@ import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -104,68 +105,11 @@ public class WorkflowService
       task.apply();
     }
   }
-
-// Heads up: Clean up    
-//  // Determine if a collection needs to be created
-//  public Collection getCollection(String sessionId, RequestParser parser)
-//  {
-//    Map<String, String> params = parser.getCustomParams();
-//    Boolean createCollection = new Boolean(params.get("create"));
-//
-//    if (createCollection)
-//    {
-//      String missionId = params.get("mission");
-//      String name = params.get("name");
-//
-//      SiteItem item = new SiteItem();
-//      item.setValue(UasComponent.NAME, name);
-//      item.setValue(UasComponent.FOLDERNAME, name);
-//      item.setValue(UasComponent.DESCRIPTION, "");
-//
-//      item = new ProjectManagementService().applyWithParent(sessionId, item, missionId);
-//
-//      return Collection.get(item.getId());
-//    }
-//    else
-//    {
-//      String collectionId = params.get("collection");
-//
-//      return Collection.get(collectionId);
-//    }
-//  }
-// 
-//  // Determine if a Imagery needs to be created
-//  public Imagery getImagery(String sessionId, RequestParser parser)
-//  {
-//    Map<String, String> params = parser.getCustomParams();
-//    Boolean createCollection = new Boolean(params.get("create"));
-//
-//    if (createCollection)
-//    {
-//      String projectId = params.get("project");
-//      String name = params.get("name");
-//
-//      SiteItem item = new SiteItem();
-//      item.setValue(UasComponent.NAME, name);
-//      item.setValue(UasComponent.FOLDERNAME, name);
-//      item.setValue(UasComponent.DESCRIPTION, "");
-//
-//      item = new ProjectManagementService().applyWithParent(sessionId, item, projectId);
-//
-//      return Imagery.get(item.getId());
-//    }
-//    else
-//    {
-//      String imageryId = params.get("imagery");
-//
-//      return Imagery.get(imageryId);
-//    }
-//  }
-
+  
   @Request(RequestType.SESSION)
   public JSONObject getTasks(String sessionId, String status, Integer pageNumber, Integer pageSize)
   {
-    Page<AbstractWorkflowTask> page = AbstractWorkflowTask.getUserTasks(status, pageNumber, pageSize);
+    Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(status, pageNumber, pageSize);
     java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
 
     JSONObject response = new JSONObject();

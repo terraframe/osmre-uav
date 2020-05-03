@@ -129,10 +129,6 @@ tree-node-expander{
   font-size: 18px;
 }
 
-// .panel-heading:hover {
-//   background-color: #e0e0e0;
-// }
-
 
 .breadcrumb {
   padding: 2px;
@@ -282,13 +278,8 @@ a.thumbnail.non-clickable:focus {
     vertical-align: middle;
 }
 
-.panel-group {
-    margin-bottom: 0;
-}
 
-.panel-heading.clickable:hover {
-    background-color: #e0e0e0;
-}
+
 
 
 
@@ -386,9 +377,6 @@ a.active {
     background: none;
 }
 
-.nav-tabs > li > a:hover {
-  background-color: #e4e4e4;
-}
 
 /* === card component ====== 
  * Variation of the panel component
