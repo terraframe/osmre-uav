@@ -9,6 +9,7 @@ import { BasicConfirmModalComponent } from '../../../shared/component/modal/basi
 import { SiteEntity, SiteObjectsResultSet } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 import { MetadataService } from '../../service/metadata.service';
+import { MetadataModalComponent } from './metadata-modal.component';
 
 import {
 	fadeInOnEnterAnimation,
@@ -279,6 +280,21 @@ export class LeafModalComponent implements OnInit {
 	handleDownloadFile(item: SiteEntity): void {
 		window.location.href = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key;
 	}
+
+    handleSetMetadata(): void {
+        let modalRef = this.modalService.show(MetadataModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            'class': 'upload-modal'
+        });
+        modalRef.content.init(this.entity.id);
+
+        modalRef.content.onMetadataChange.subscribe(() => {
+//            this.entity.hasMetadata = true;
+        });
+    }
+
 
 	showVideo(item: SiteEntity): void {
 		this.video.name = null;
