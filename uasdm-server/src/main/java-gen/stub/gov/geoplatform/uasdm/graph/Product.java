@@ -165,6 +165,7 @@ public class Product extends ProductBase implements ProductIF
     {
       product = new Product();
       product.setName(uasComponent.getName());
+      product.setPublished(false);
     }
 
     product.setLastUpdateDate(new Date());
@@ -215,7 +216,7 @@ public class Product extends ProductBase implements ProductIF
   {
     try
     {
-      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(mapKey);
+      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(this.getWorkspace(), mapKey);
 
       List<Layer> layers = capabilities.getLayerList();
 
@@ -341,7 +342,7 @@ public class Product extends ProductBase implements ProductIF
   @Override
   public boolean isPublished()
   {
-    return this.getPublished() == null || this.getPublished();
+    return this.getPublished() != null && this.getPublished();
   }
 
   @Override
