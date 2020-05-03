@@ -298,6 +298,12 @@ public class ProjectManagementController
     return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key));
   }
 
+  @Endpoint(url = "download-last", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadLast(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  {
+    return new RemoteFileGetResponse(this.service.downloadLast(request.getSessionId(), id, key));
+  }
+  
   @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF features(ClientRequestIF request) throws IOException
   {

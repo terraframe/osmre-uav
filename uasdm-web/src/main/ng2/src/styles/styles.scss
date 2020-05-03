@@ -278,16 +278,8 @@ a.thumbnail.non-clickable:focus {
     vertical-align: middle;
 }
 
-.panel-group {
-    margin-bottom: 0;
-}
 
-.panel-heading{
-  background-color: #e9e9e9 !important;
-}
-// .panel-heading.clickable:hover {
-//     background-color: #e0e0e0;
-// }
+
 
 
 
@@ -385,11 +377,6 @@ a.active {
     background: none;
 }
 
-.nav-tabs > li > a:hover {
-  background-color: #e4e4e4;
-  cursor: pointer !important;
-  color: #007276 !important;
-}
 
 /* === card component ====== 
  * Variation of the panel component

@@ -312,11 +312,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return rs;
   }
 
-  public void createImageServices()
-  {
-    Util.createImageServices(this);
-  }
-
   @Override
   public Integer getNumberOfChildren()
   {

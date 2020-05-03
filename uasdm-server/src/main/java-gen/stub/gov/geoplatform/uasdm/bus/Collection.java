@@ -17,6 +17,7 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -321,11 +322,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     Util.getSiteObjects(folder, objects, this);
 
     return rs;
-  }
-
-  public void createImageServices()
-  {
-    Util.createImageServices(this);
   }
 
   @Override

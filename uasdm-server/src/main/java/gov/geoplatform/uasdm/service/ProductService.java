@@ -54,11 +54,26 @@ public class ProductService
 
     List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
-
     components.add(component);
 
     final List<DocumentIF> generated = product.getGeneratedFromDocuments();
 
     return Converter.toDetailView(product, components, generated, pageNumber, pageSize);
   }
+
+  @Request(RequestType.SESSION)
+  public ProductView togglePublish(String sessionId, String id)
+  {
+    ProductIF product = ComponentFacade.getProduct(id);
+    product.togglePublished();
+
+    UasComponentIF component = product.getComponent();
+
+    List<UasComponentIF> components = component.getAncestors();
+    Collections.reverse(components);
+    components.add(component);
+
+    return Converter.toView(product, components);
+  }
+
 }

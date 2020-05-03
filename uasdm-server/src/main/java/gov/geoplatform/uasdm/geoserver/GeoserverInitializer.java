@@ -1,19 +1,26 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.geoserver;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.model.ProductIF;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import net.geoprism.PluginUtil;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import net.geoprism.context.ServerContextListener;
 import net.geoprism.gis.geoserver.GeoserverFacade;
-import net.geoprism.gis.geoserver.GeoserverInitializerIF;
 import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverInitializer implements UncaughtExceptionHandler, ServerContextListener
@@ -89,22 +96,82 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
     @Request
     private void runInRequest()
     {
-      if (!GeoserverFacade.workspaceExists())
+      boolean rebuild = false;
+
+      if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
+      {
+        GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
+
+        rebuild = true;
+      }
+
+      if (!GeoserverFacade.workspaceExists(GeoserverProperties.getWorkspace()))
+      {
+        GeoserverFacade.publishWorkspace();
+
+        rebuild = true;
+      }
+
+      if (rebuild)
       {
         logger.info("Geoserver workspace and store not found.  Republishing layers.");
 
-        GeoserverFacade.publishWorkspace();
-        GeoserverFacade.publishStore();
+        List<ProductIF> products = ComponentFacade.getProducts();
 
-        Collection<GeoserverInitializerIF> initializers = PluginUtil.getGeoserverInitializers();
-
-        for (GeoserverInitializerIF initializer : initializers)
+        for (ProductIF product : products)
         {
-          initializer.initialize();
+          product.createImageService();
         }
       }
-    }
 
+      // Setup the public image mosaic data store if it doesn't exist
+      final GeoServerRESTPublisher publisher = GeoserverProperties.getPublisher();
+      final String workspace = AppProperties.getPublicWorkspace();
+      final String layerName = "image-public";
+
+      if (!GeoserverFacade.layerExists(workspace, layerName))
+      {
+        final GSLayerEncoder layerEnc = new GSLayerEncoder();
+        layerEnc.setDefaultStyle("raster");
+
+        String geoserverData = System.getProperty("GEOSERVER_DATA_DIR");
+
+        if (geoserverData == null)
+        {
+          throw new ProgrammingErrorException("Unable to find geoserver data directory: Please set the JVM arg GEOSERVER_DATA_DIR");
+        }
+
+        final File baseDir = new File(geoserverData + "/data/" + AppProperties.getPublicWorkspace());
+
+        // coverage encoder
+        final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
+        coverageEnc.setName("image-public");
+        coverageEnc.setTitle("image-public");
+        // coverageEnc.setMaxAllowedTiles(Integer.MAX_VALUE);
+
+        // ... many other options are supported
+
+        // create a new ImageMosaic layer...
+        try
+        {
+          final boolean published = publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
+
+          // check the results
+          if (!published)
+          {
+            logger.error("Error creating the new store: " + "image-public");
+          }
+        }
+        catch (IOException e)
+        {
+          logger.error("Error creating the new store: " + "image-public", e);
+        }
+      }
+      else
+      {
+        logger.info("Layer already exists: " + layerName);
+      }
+    }
   }
 
   /**

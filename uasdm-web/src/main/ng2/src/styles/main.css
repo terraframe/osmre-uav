@@ -1843,38 +1843,6 @@ option[selected]{ font-weight:bold}
 }
 
 
-/* Geo Object Editor specific */
-.geobject-editor-tab-holder {
-	margin: 0 auto;
-	margin-bottom: 20px;
-}
-
-.btn-group.geobject-editor-tab-holder {
-    margin: 0 auto;
-    display: block;
-    margin-bottom: 50px;
-}
-.btn-group.geobject-editor-tab-holder .btn.full-width-radio-button {
-    width: 50%;
-    background: white; /* IE fallback */
-    background: var(--theme-button-color);
-
-    color: #767676; /* IE fallback */
-    color: var(--theme-button-text-color);  
-    border-color: var(--theme-button-color-border);
-}
-.btn-group.geobject-editor-tab-holder .btn.full-width-radio-button:active{
-    background: #B6D7D8 !important; /* IE fallback */
-    background: var(--theme-submit-button-color-light) !important;
-}
-.btn-group.geobject-editor-tab-holder .btn.full-width-radio-button.active,
-.btn-group.geobject-editor-tab-holder .btn.full-width-radio-button:focus{
-    color: #007276 !important; /* IE fallback */
-    color: var(--theme-button-color-hover) !important;
-    box-shadow: none;
-}
-
-
 .modal-form .table.table-bordered {
     font-size: 12px;
 }
@@ -2754,27 +2722,6 @@ button.btn.btn-secondary:disabled:hover,
     border-color: var(--theme-button-color-border);
     cursor: auto;
 }
-
-/* Fine Uploader Style Overrides */
-/* .qq-uploader{
-    min-height: auto !important;
-}
-.qq-btn {
-    box-shadow: none !important;
-}
-.qq-upload-button {
-    display: inline-block !important;
-    width: 110px !important;
-    margin-bottom: 10px !important;
-    padding: 6px 12px !important;
-    text-align: center !important;
-    float: left !important;
-    background: #B6D7D8 !important;
-    color: #007276 !important;
-    border-radius: 4px !important;
-    border: 1px solid transparent !important;
-    box-shadow: none !important;
-} */
 
 .qq-uploader-selector.qq-uploader .buttons {
   	bottom: 15px;

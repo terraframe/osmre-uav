@@ -38,4 +38,12 @@ public interface ProductIF extends ComponentIF
 
   public void delete();
 
+  public void createImageService();
+
+  public String getWorkspace();
+
+  public boolean isPublished();
+
+  public void togglePublished();
+
 }

@@ -45,6 +45,11 @@ public class ComponentFacade
     return STRATEGY.getProduct(oid);
   }
 
+  public static List<ProductIF> getProducts()
+  {
+    return STRATEGY.getProducts();
+  }
+
   public static DocumentIF getDocument(String oid)
   {
     return STRATEGY.getDocument(oid);
@@ -74,4 +79,5 @@ public class ComponentFacade
   {
     return STRATEGY.bbox();
   }
+
 }

@@ -46,6 +46,14 @@ public class ProductController
     return new RestBodyResponse(detail.toJSON());
   }
 
+  @Endpoint(url = "toggle-publish", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF togglePublish(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    ProductView view = service.togglePublish(request.getSessionId(), id);
+
+    return new RestBodyResponse(view.toJSON());
+  }
+
   @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
   {

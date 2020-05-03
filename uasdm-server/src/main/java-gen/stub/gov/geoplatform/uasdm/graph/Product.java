@@ -19,16 +19,22 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.gis.geoserver.GeoserverFacade;
+import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -68,11 +74,24 @@ public class Product extends ProductBase implements ProductIF
   public void delete(boolean removeFromS3)
   {
     // Delete all of the documents
+    UasComponent component = this.getComponent();
+    String workspace = this.getWorkspace();
+
     List<DocumentIF> documents = this.getDocuments();
 
     for (DocumentIF document : documents)
     {
       document.delete(removeFromS3);
+
+      if (document.getName().endsWith(".tif"))
+      {
+        String storeName = component.getStoreName(document.getS3location());
+
+        if (GeoserverFacade.layerExists(workspace, storeName))
+        {
+          new GeoserverRemoveCoverageCommand(workspace, storeName).doIt();
+        }
+      }
     }
 
     super.delete();
@@ -309,10 +328,62 @@ public class Product extends ProductBase implements ProductIF
     return this.mapKey;
   }
 
+  public String getWorkspace()
+  {
+    if (isPublished())
+    {
+      return AppProperties.getPublicWorkspace();
+    }
+
+    return GeoserverProperties.getWorkspace();
+  }
+
+  @Override
+  public boolean isPublished()
+  {
+    return this.getPublished() == null || this.getPublished();
+  }
+
+  @Override
+  public void createImageService()
+  {
+    Util.createImageServices(this.getWorkspace(), this.getComponent());
+  }
+
+  @Override
+  @Transaction
+  public void togglePublished()
+  {
+    String existing = this.getWorkspace();
+
+    this.setPublished(!this.isPublished());
+    this.apply();
+
+    UasComponent component = this.getComponent();
+
+    List<DocumentIF> documents = this.getDocuments();
+
+    for (DocumentIF document : documents)
+    {
+      if (document.getName().endsWith(".tif"))
+      {
+        String storeName = component.getStoreName(document.getS3location());
+
+        if (GeoserverFacade.layerExists(existing, storeName))
+        {
+          Util.removeCoverageStore(existing, storeName);
+        }
+      }
+    }
+
+    Util.createImageServices(this.getWorkspace(), component);
+  }
+
   @Override
   public void calculateKeys(List<UasComponentIF> components)
   {
     List<DocumentIF> documents = this.getDocuments();
+    String workspace = this.getWorkspace();
 
     logger.trace("Calculating image keys for product [" + this.getOid() + "] with [" + documents.size() + "]");
 
@@ -330,7 +401,7 @@ public class Product extends ProductBase implements ProductIF
       {
         String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
 
-        if (GeoserverFacade.layerExists(storeName))
+        if (GeoserverFacade.layerExists(workspace, storeName))
         {
           this.mapKey = storeName;
 
@@ -339,4 +410,17 @@ public class Product extends ProductBase implements ProductIF
       }
     }
   }
+
+  public static List<ProductIF> getProducts()
+  {
+    final MdGraphClassDAOIF mdEdge = MdGraphClassDAO.getMdGraphClassDAO(Product.CLASS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdEdge.getDBClassName() + " \n");
+
+    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+
+    return query.getResults();
+  }
+
 }

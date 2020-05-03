@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 143883143)
+@com.runwaysdk.business.ClassSignature(hash = 703435646)
 public abstract class ProductDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Product";
-  private static final long serialVersionUID = 143883143;
+  private static final long serialVersionUID = 703435646;
   
   protected ProductDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -39,6 +39,7 @@ public abstract class ProductDTOBase extends com.runwaysdk.business.BusinessDTO
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PUBLISHED = "published";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
@@ -459,6 +460,43 @@ public abstract class ProductDTOBase extends com.runwaysdk.business.BusinessDTO
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public Boolean getPublished()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PUBLISHED));
+  }
+  
+  public void setPublished(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PUBLISHED, "");
+    }
+    else
+    {
+      setValue(PUBLISHED, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isPublishedWritable()
+  {
+    return isWritable(PUBLISHED);
+  }
+  
+  public boolean isPublishedReadable()
+  {
+    return isReadable(PUBLISHED);
+  }
+  
+  public boolean isPublishedModified()
+  {
+    return isModified(PUBLISHED);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getPublishedMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(PUBLISHED).getAttributeMdDTO();
   }
   
   public Long getSeq()

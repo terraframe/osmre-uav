@@ -69,7 +69,7 @@ public class Document extends DocumentBase implements DocumentIF
     return document;
   }
 
-  private static Document find(String key)
+  public static Document find(String key)
   {
     DocumentQuery query = new DocumentQuery(new QueryFactory());
     query.WHERE(query.getS3location().EQ(key));

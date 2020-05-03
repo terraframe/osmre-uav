@@ -73,8 +73,24 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
-	onTabClick(tab: string): void {
+	onTabClick(event: any, tab: string): void {
 		this.activeTab = tab;
+
+		if(!event.target.parentNode.classList.contains("active")){
+
+			let lis = event.target.parentNode.parentNode.getElementsByTagName("li");
+			for(let i = 0; i<lis.length; i++){
+				let li = lis[i];
+
+				li.classList.forEach(cls => {
+					if(cls === 'active'){
+						li.classList.remove('active');
+					}
+				})
+			}
+
+			event.target.parentNode.classList.add('active');
+		}
 	}
 
 	setTaskData(data: any): void {
@@ -86,14 +102,90 @@ export class TasksComponent implements OnInit {
 
 		for(let i=0; i<data.tasks.length; i++){
 			let task = data.tasks[i];
-			let position = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
-			if(position > -1){
-				this.taskGroups[position].group.push(task)
+			let collectPosition = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
+			if(collectPosition > -1){
+
+				if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
+
+					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'UPLOAD' } ); 
+
+					if(taskGroupTypeIndex === -1){
+						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'UPLOAD' })
+					}
+					else{
+						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
+
+						if(task.status === 'Failed' || task.status === 'Pending'){
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+						}
+					}
+
+				}
+				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
+
+					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'PROCESS' } ); 
+
+					if(taskGroupTypeIndex === -1){
+						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'PROCESS' })
+					}
+					else{
+						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
+
+						if(task.status === 'Failed' || task.status === 'Pending'){
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+						}
+					}
+
+				}
+				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
+
+					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'STORE' } );
+
+					if(taskGroupTypeIndex === -1){
+						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'STORE' })
+					}
+					else{
+						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
+
+						if(task.status === 'Failed' || task.status === 'Pending'){
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+						}
+					}
+				}
+
+
+				if(task.status === 'Failed' || task.status === 'Pending'){
+					this.taskGroups[collectPosition].status = task.status
+				}
 			}
 			else{
-				this.taskGroups.push({label: task.collectionLabel, group:[task]});
+
+				if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
+
+					this.taskGroups.push({
+						label: task.collectionLabel, 
+						groups: [{ tasks:[task], status:task.status, type: 'UPLOAD' }],
+						status:task.status 
+					});
+				}
+				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
+
+					this.taskGroups.push({
+						label: task.collectionLabel, 
+						groups: [{ tasks:[task], status:task.status, type: 'PROCESS' }],
+						status:task.status 
+					});
+				}
+				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
+
+					this.taskGroups.push({
+						label: task.collectionLabel, 
+						groups: [{ tasks:[task], status:task.status, type: 'STORE' }],
+						status:task.status 
+					});
+				}
+
 			}
-			console.log(position)
 		}
 		
 		console.log(this.taskGroups)
