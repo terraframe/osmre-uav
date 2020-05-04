@@ -20,7 +20,6 @@ export class TasksComponent implements OnInit {
 
 	userName: string = "";
 	totalTaskCount: number = 0;
-	totalActionsCount: number = 0;
 	taskPolling: any;
 	activeTab: string = "action-required";
 	showSite: boolean = false;
@@ -94,10 +93,6 @@ export class TasksComponent implements OnInit {
 	setTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
 		this.messages = data.messages;
 
-		this.totalTaskCount = data.tasks.count;
-
-		this.totalActionsCount = this.getTotalActionsCount(data.tasks.resultSet);
-
 		for(let i=0; i<data.tasks.resultSet.length; i++){
 			let task = data.tasks.resultSet[i];
 			let collectPosition = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
@@ -115,7 +110,7 @@ export class TasksComponent implements OnInit {
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
 						if(task.status === 'Failed' || task.status === 'Pending'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
 
@@ -131,7 +126,7 @@ export class TasksComponent implements OnInit {
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
 						if(task.status === 'Failed' || task.status === 'Pending'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
 
@@ -147,7 +142,7 @@ export class TasksComponent implements OnInit {
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
 						if(task.status === 'Failed' || task.status === 'Pending'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex] = task.status
+							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
 				}
@@ -199,8 +194,6 @@ export class TasksComponent implements OnInit {
 
 		this.totalTaskCount = data.tasks.count;
 
-		this.totalActionsCount = this.getTotalActionsCount(data.tasks);
-
 		// Update existing tasks
 		for (let i = 0; i < data.tasks.length; i++) {
 			let newTask = data.tasks[i];
@@ -239,15 +232,6 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
-
-	getTotalActionsCount(tasks: Task[]): number {
-		let count = 0;
-		tasks.forEach((task) => {
-			count = count + task.actions.length;
-		})
-
-		return count;
-	}
 
 	handleMessage(message: Message): void {
 		this.bsModalRef = this.modalService.show(MetadataModalComponent, {
@@ -330,8 +314,6 @@ export class TasksComponent implements OnInit {
 				this.getMissingMetadata();
 
 				this.totalTaskCount = this.tasks.count;
-
-				this.totalActionsCount = this.getTotalActionsCount(this.tasks.resultSet);
 
 			});
 	}
