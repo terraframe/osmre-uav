@@ -1415,7 +1415,7 @@ input :focus::-moz-placeholder{opacity:0 !important;}
 	font-size:13px;
 	line-height:16px;
 	font-weight:normal;
-	margin:26px 5px 0;
+	margin:14px 5px 0;
 	color:#333;
 	width:110px;
 }
