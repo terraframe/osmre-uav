@@ -122,27 +122,27 @@
           </p>
         </div>
 
-        <div class="btn-holder" style="text-align: right;margin: 20px 20px 10px 20px;">
-          <button type="button" class="btn btn-default" [disabled]="processRunning"
-            (click)="bsModalRef.hide()">Close</button>
-          <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
-            (click)="handleDownload()" style="margin-left: 5px;">Download all</button>
-          <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning" (click)="handleRunOrtho()"
-            class="btn btn-primary" style="margin-left: 5px;">
-            Reprocess imagery
-            <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
-              style="color:white;vertical-align: middle;margin-left: 10px;"></i>
-          </button>
+        <div class="btn-holder" style="margin: 20px 20px 10px 20px;">
+          <div class="row">
+            <div class="col-sm-2">
+              <button type="button" class="btn btn-warning" [disabled]="processRunning" (click)="handleSetMetadata()">
+                Set metadata
+              </button>            
+            </div>            
+            <div class="col-md-10" style="text-align: right;">
+              <button type="button" class="btn btn-default" [disabled]="processRunning" (click)="bsModalRef.hide()">Close</button>
+              <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning" (click)="handleDownload()" style="margin-left: 5px;">
+                Download all
+              </button>
+              <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning" (click)="handleRunOrtho()"
+                class="btn btn-primary" style="margin-left: 5px;"> 
+                  Reprocess imagery
+                  <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true" style="color:white;vertical-align: middle;margin-left: 10px;"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-	  <div class="row" *ngIf="folder.name === 'raw'">
-      	These images will be ignored : 
-      	<div *ngFor="let exclude of excludes">
-      	  {{exclude}}
-      	</div>
-      </div>
-      <!-- <div class="row">
-    </div> -->
     </div>
   </div>
 </div>

@@ -1,7 +1,5 @@
 package gov.geoplatform.uasdm.service;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.RequestParser;
 
@@ -106,15 +105,15 @@ public class WorkflowService
       task.apply();
     }
   }
-
+  
   @Request(RequestType.SESSION)
-  public JSONObject getTasks(String sessionId)
+  public JSONObject getTasks(String sessionId, String status, Integer pageNumber, Integer pageSize)
   {
-    List<WorkflowTask> tasks = WorkflowTask.getUserWorkflowTasks();
+    Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(status, pageNumber, pageSize);
     java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
 
     JSONObject response = new JSONObject();
-    response.put("tasks", WorkflowTask.serializeWorkflowTasks(tasks));
+    response.put("tasks", page.toJSON());
     response.put("messages", Collection.toMetadataMessage(missions));
 
     return response;

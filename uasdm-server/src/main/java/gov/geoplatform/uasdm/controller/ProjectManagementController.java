@@ -226,9 +226,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getTasks(ClientRequestIF request)
+  public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "status") String status, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {
-    JSONObject response = new WorkflowService().getTasks(request.getSessionId());
+    JSONObject response = new WorkflowService().getTasks(request.getSessionId(), status, pageNumber, pageSize);
 
     return new RestBodyResponse(response);
   }
