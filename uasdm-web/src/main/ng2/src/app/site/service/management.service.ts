@@ -13,6 +13,7 @@ import { HttpBackendClient } from '../../shared/service/http-backend-client.serv
 import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
+import { PageResult } from '../../shared/model/page';
 
 declare var acp: any;
 
@@ -284,9 +285,9 @@ export class ManagementService {
             .toPromise();
     }
 
-    tasks(): Promise<{ messages: Message[], tasks: Task[] }> {
+    tasks(): Promise<{ messages: Message[], tasks: PageResult<Task>}> {
         return this.http
-            .get<{ messages: Message[], tasks: Task[] }>(acp + '/project/tasks')
+            .get<{ messages: Message[], tasks: PageResult<Task> }>(acp + '/project/tasks')
             .toPromise()
     }
 
