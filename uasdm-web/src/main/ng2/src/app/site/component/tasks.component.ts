@@ -2,12 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { HttpClient } from '@angular/common/http';
-import { interval } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
 import { MetadataModalComponent } from './modal/metadata-modal.component';
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
+import { PageResult } from '../../shared/model/page';
+
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
 
@@ -44,11 +42,11 @@ export class TasksComponent implements OnInit {
     /*
      * List of tasks
      */
-	tasks: Task[];
+	tasks: PageResult<Task>;
 
 	taskGroups: TaskGroup[] = [];
 
-	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
+	constructor(private managementService: ManagementService, private modalService: BsModalService) {
 
 		// this.taskPolling = interval(5000).pipe(
 		// 	switchMap(() => http.get<any>(acp + '/project/tasks')))
@@ -93,16 +91,17 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
-	setTaskData(data: any): void {
+	setTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
 		this.messages = data.messages;
 
-		this.totalTaskCount = data.tasks.length;
+		this.totalTaskCount = data.tasks.count;
 
-		this.totalActionsCount = this.getTotalActionsCount(data.tasks);
+		this.totalActionsCount = this.getTotalActionsCount(data.tasks.resultSet);
 
-		for(let i=0; i<data.tasks.length; i++){
-			let task = data.tasks[i];
+		for(let i=0; i<data.tasks.resultSet.length; i++){
+			let task = data.tasks.resultSet[i];
 			let collectPosition = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
+            
 			if(collectPosition > -1){
 
 				if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
@@ -198,7 +197,7 @@ export class TasksComponent implements OnInit {
 	updateTaskData(data: any): void {
 		this.messages = data.messages;
 
-		this.totalTaskCount = data.tasks.length;
+		this.totalTaskCount = data.tasks.count;
 
 		this.totalActionsCount = this.getTotalActionsCount(data.tasks);
 
@@ -206,7 +205,7 @@ export class TasksComponent implements OnInit {
 		for (let i = 0; i < data.tasks.length; i++) {
 			let newTask = data.tasks[i];
 
-			for (let i2 = 0; i2 < this.tasks.length; i2++) {
+			for (let i2 = 0; i2 < this.tasks.resultSet.length; i2++) {
 				let existingTask = this.tasks[i2];
 				if (existingTask.oid === newTask.oid) {
 					if (existingTask.label !== newTask.label) {
@@ -232,10 +231,10 @@ export class TasksComponent implements OnInit {
 		}
 
 		// Add new tasks
-		let newTasks = data.tasks.filter((o: Task) => !this.tasks.find(o2 => o.oid === o2.oid));
+		let newTasks = data.tasks.filter((o: Task) => !this.tasks.resultSet.find(o2 => o.oid === o2.oid));
 		if (newTasks && newTasks.length > 0) {
 			newTasks.forEach((tsk: Task) => {
-				this.tasks.unshift(tsk);
+				this.tasks.resultSet.unshift(tsk);
 			})
 		}
 	}
@@ -315,7 +314,7 @@ export class TasksComponent implements OnInit {
 		this.managementService.removeTask(task.uploadId)
 			.then(() => {
 				let pos = null;
-				for (let i = 0; i < this.tasks.length; i++) {
+				for (let i = 0; i < this.tasks.resultSet.length; i++) {
 					let thisTask = this.tasks[i];
 
 					if (thisTask.uploadId === task.uploadId) {
@@ -325,14 +324,14 @@ export class TasksComponent implements OnInit {
 				}
 
 				if (pos !== null) {
-					this.tasks.splice(pos, 1);
+					this.tasks.resultSet.splice(pos, 1);
 				}
 
 				this.getMissingMetadata();
 
-				this.totalTaskCount = this.tasks.length;
+				this.totalTaskCount = this.tasks.count;
 
-				this.totalActionsCount = this.getTotalActionsCount(this.tasks);
+				this.totalActionsCount = this.getTotalActionsCount(this.tasks.resultSet);
 
 			});
 	}
