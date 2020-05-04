@@ -82,3 +82,23 @@
   cursor: pointer;
   color: #007276;
 }
+
+
+.dot {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.dot.success {
+  background-color: green;
+}
+.dot.pending {
+  background-color: orange;
+}
+.dot.fail {
+  background-color: red;
+}
