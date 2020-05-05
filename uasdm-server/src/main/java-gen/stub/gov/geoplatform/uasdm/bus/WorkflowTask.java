@@ -5,9 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -28,14 +31,24 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     super();
   }
 
-  public static Page<WorkflowTask> getUserWorkflowTasks(String status, Integer pageNumber, Integer pageSize)
+  public static Page<WorkflowTask> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
-    if (status != null)
+    if (statuses != null)
     {
-      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(status).name()));
+      List<Condition> conditions = new LinkedList<Condition>();
+
+      final JSONArray array = new JSONArray(statuses);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
+        conditions.add(query.getStatus().EQ(status.name()));
+      }
+
+      query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
     }
 
     query.ORDER_BY_ASC(query.getComponent());
