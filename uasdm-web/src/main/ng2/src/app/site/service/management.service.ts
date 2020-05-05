@@ -285,9 +285,16 @@ export class ManagementService {
             .toPromise();
     }
 
-    tasks(): Promise<{ messages: Message[], tasks: PageResult<Task>}> {
+    tasks(statuses: string[], pageSize: number, pageNumber: number): Promise<{ messages: Message[], tasks: PageResult<Task>}> {
+
+        // status options: PROCESSING, COMPLETE, ERROR, QUEUED
+        let params: HttpParams = new HttpParams();
+        params = params.set('statuses', JSON.stringify(statuses));
+        params = params.set('pageSize', pageSize.toString());
+        params = params.set('pageNumber', pageNumber.toString());
+
         return this.http
-            .get<{ messages: Message[], tasks: PageResult<Task> }>(acp + '/project/tasks')
+            .get<{ messages: Message[], tasks: PageResult<Task> }>(acp + '/project/tasks', { params: params })
             .toPromise()
     }
 

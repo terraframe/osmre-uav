@@ -62,7 +62,7 @@ export class TasksComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.userName = this.managementService.getCurrentUser();
-		this.managementService.tasks().then(data => {
+		this.managementService.tasks(["ERROR", "QUEUED", "PROCESSING"], 20, 1).then(data => {
 			this.setTaskData(data);
 		});
 	}
