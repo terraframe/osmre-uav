@@ -17,6 +17,7 @@ import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
@@ -40,7 +41,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
   public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationResource appRes, String outFileNamePrefix)
   {
     task.lock();
-    task.setStatus("Processing");
+    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("Processing archived files");
     task.apply();
 
@@ -58,7 +59,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       calculateImageSize(appRes, imagery);
 
       task.lock();
-      task.setStatus("Complete");
+      task.setStatus(WorkflowTaskStatus.COMPLETE.toString());
       task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
       task.apply();
 

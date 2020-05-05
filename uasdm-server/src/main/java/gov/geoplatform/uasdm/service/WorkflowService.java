@@ -47,7 +47,7 @@ public class WorkflowService
 
     if (task.getStatus().length() == 0)
     {
-      task.setStatus("Started");
+      task.setStatus(WorkflowTaskStatus.STARTED.toString());
     }
 
     task.setMessage(parser.getPercent() + "% complete");
@@ -73,7 +73,7 @@ public class WorkflowService
     if (task != null)
     {
       task.lock();
-      task.setStatus("Uploading");
+      task.setStatus(WorkflowTaskStatus.UPLOADING.toString());
       task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
                                                                   // + "%
                                                                   // complete"

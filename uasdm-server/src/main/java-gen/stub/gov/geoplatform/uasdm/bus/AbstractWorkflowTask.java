@@ -22,7 +22,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
   private static final long serialVersionUID = 227492042;
 
   public static enum WorkflowTaskStatus {
-    PROCESSING("Processing"), COMPLETE("Complete"), ERROR("Error"), QUEUED("Queued");
+    PROCESSING("Processing"), COMPLETE("Complete"), ERROR("Error"), QUEUED("Queued"), UPLOADING("Uploading"), STARTED("Started");
 
     private final String asString;
 

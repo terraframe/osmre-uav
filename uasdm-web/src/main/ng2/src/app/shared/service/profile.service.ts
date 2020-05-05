@@ -80,7 +80,7 @@ export class ProfileService {
 
     tasksCount(): Promise<{tasksCount:number}> {
         
-        const statuses:string[] = ['ERROR'];
+        const statuses:string[] = ['Error', 'Failed'];
 
         // status options: PROCESSING, COMPLETE, ERROR, QUEUED
         let params: HttpParams = new HttpParams();

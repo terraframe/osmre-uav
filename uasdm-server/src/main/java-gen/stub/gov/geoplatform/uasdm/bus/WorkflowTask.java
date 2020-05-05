@@ -44,8 +44,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       for (int i = 0; i < array.length(); i++)
       {
-        final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
-        conditions.add(query.getStatus().EQ(status.toString()));
+        conditions.add(query.getStatus().EQ(array.getString(i)));
       }
 
       if (conditions.size() > 0)
@@ -70,8 +69,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       for (int i = 0; i < array.length(); i++)
       {
-        final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
-        conditions.add(query.getStatus().EQ(status.toString()));
+        conditions.add(query.getStatus().EQ(array.getString(i)));
       }
 
       if (conditions.size() > 0)
