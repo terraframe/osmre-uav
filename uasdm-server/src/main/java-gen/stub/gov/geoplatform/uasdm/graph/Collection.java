@@ -31,6 +31,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -58,6 +59,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public UasComponent createDefaultChild()
   {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<AttributeType> attributes()
+  {
+    return super.attributes();
   }
 
   @Override
@@ -98,8 +105,19 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public JSONObject toMetadataMessage()
   {
+    final List<UasComponentIF> ancestors = this.getAncestors();
+
+    final JSONArray parents = new JSONArray();
+
+    for (UasComponentIF ancestor : ancestors)
+    {
+      parents.put(ancestor.getName());
+    }
+
     JSONObject object = new JSONObject();
+    object.put("collectionName", this.getName());
     object.put("collectionId", this.getOid());
+    object.put("ancestors", parents);
     object.put("message", "Metadata missing for collection [" + this.getName() + "]");
 
     if (this.getImageHeight() != null)
