@@ -26,7 +26,16 @@
                       <span class="dot pending" style="margin-left:0;"></span>
                       {{message.message}}
                     </div>
-                    <p style="margin-top:10px;margin-bottom:0;color:grey;">Bread / crumb / to / collection</p>
+                    <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                      <ul class="breadcrumb" style="color:grey;">
+                        <li *ngFor="let ancestor of message.ancestors">
+                          <span > <b>{{ancestor}}</b> </span>
+                        </li>
+                        <li class="active">
+                          <a (click)="handleGoto(message.collectionId)" style="color: #007276;"> {{message.collectionName}}</a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <div>TODO: date</div>

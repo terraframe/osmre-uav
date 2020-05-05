@@ -122,6 +122,8 @@ export class TaskGroupType {
 
 export class Message {
     collectionId: string;
+    collectionName: string;
+    ancestors: string[];
     message: string;
     imageWidth: string;
     imageHeight: string;

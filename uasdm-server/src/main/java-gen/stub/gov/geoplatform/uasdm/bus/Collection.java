@@ -17,7 +17,6 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -102,7 +101,18 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
+    final List<UasComponentIF> ancestors = this.getAncestors();
+
+    final JSONArray parents = new JSONArray();
+
+    for (UasComponentIF ancestor : ancestors)
+    {
+      parents.put(ancestor.getName());
+    }
+
+    object.put("collectionName", this.getName());
     object.put("collectionId", this.getOid());
+    object.put("ancestors", parents);
     object.put("message", "Metadata missing for collection [" + this.getName() + "]");
 
     if (this.getImageHeight() != null)
