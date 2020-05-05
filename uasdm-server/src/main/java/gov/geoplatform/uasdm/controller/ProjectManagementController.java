@@ -232,7 +232,7 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "statuses") String statuses, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {
@@ -311,7 +311,7 @@ public class ProjectManagementController
   {
     return new RemoteFileGetResponse(this.service.downloadLast(request.getSessionId(), id, key));
   }
-  
+
   @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF features(ClientRequestIF request) throws IOException
   {

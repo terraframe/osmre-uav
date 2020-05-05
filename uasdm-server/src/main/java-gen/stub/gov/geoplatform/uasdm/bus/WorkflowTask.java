@@ -36,31 +36,27 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
-//    if (statuses != null)
-//    {
-//      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(statuses).name()));
-//    }
-    
-    List<Condition> conditions = new LinkedList<Condition>();
-
-    final JSONArray array = new JSONArray(statuses);
-
-    for (int i = 0; i < array.length(); i++)
+    if (statuses != null)
     {
-      final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
-      conditions.add(query.getStatus().EQ(status.name()));
+      List<Condition> conditions = new LinkedList<Condition>();
+
+      final JSONArray array = new JSONArray(statuses);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
+        conditions.add(query.getStatus().EQ(status.toString()));
+      }
+
+      if (conditions.size() > 0)
+      {
+        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+      }
     }
 
-    if (conditions.size() > 0)
-    {
-      query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
-    }
-
-    final long count = query.getCount();
-
-    return count;
+    return query.getCount();
   }
-  
+
   public static Page<WorkflowTask> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
@@ -75,7 +71,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
       for (int i = 0; i < array.length(); i++)
       {
         final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
-        conditions.add(query.getStatus().EQ(status.name()));
+        conditions.add(query.getStatus().EQ(status.toString()));
       }
 
       if (conditions.size() > 0)

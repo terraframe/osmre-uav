@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 
 // import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
@@ -79,10 +79,12 @@ export class ProfileService {
     }
 
     tasksCount(): Promise<{tasksCount:number}> {
+        
+        const statuses:string[] = ['ERROR'];
 
         // status options: PROCESSING, COMPLETE, ERROR, QUEUED
         let params: HttpParams = new HttpParams();
-        params = params.set('statuses', '[ERROR]');
+        params = params.set('statuses', JSON.stringify(statuses));
 
         return this.http
             .get<{tasksCount:number}>(acp + '/project/tasks-count', { params: params })

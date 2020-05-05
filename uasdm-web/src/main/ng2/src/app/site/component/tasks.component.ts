@@ -292,19 +292,7 @@ export class TasksComponent implements OnInit {
 	}
 
 	handleGoto(collectionId: string): void {
-		// const entity = this.product.entities[this.product.entities.length - 1];
-		// const breadcrumbs = this.product.entities;
-
-		// this.managementService.getItems(collectionId, null).then(nodes => {
-
-		// 	let entity = {"numberOfChildren":10,"ownerName":"admin","ownerPhone":"","name":"Collection 1","typeLabel":"Collection","id":"97077d72-1897-4d90-b9b1-eae30b7d47e6","folderName":"3b64251566cd4360a64ec58c2943e9ce","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}
-			let breadcrumbs = []
-		// 	let previous = [{"numberOfChildren":1,"name":"Test 1","typeLabel":"Site","geometry":{"coordinates":[-111.6748,40.5813],"type":"Point"},"id":"822261ad-d0d9-4f9e-8ba6-7426e784cab0","folderName":"97acd34155a04ccb8a31da8368f913f4","bureau":"2af00cbf-5ce9-4681-9c27-da2f3b0005ba","type":"Site","geoPoint":"POINT (-111.67483052889057 40.581288616924496)"},{"numberOfChildren":1,"name":"Project 1","typeLabel":"Project","id":"f1992c0d-20f7-4368-888d-d844e2b6a956","folderName":"590dbe54071f44898ea08475d742a452","type":"Project"},{"numberOfChildren":5,"name":"Mission 1","typeLabel":"Mission","id":"7efd6836-9258-4410-9f77-b6254a4c2363","folderName":"9767cb51493940e4801a14496e74de1e","type":"Mission"}]
-			
-		// 	this.initData = { "entity": entity, "folders": nodes, "previous": previous }
-
-		// 	this.showSite = true;
-		// });
+		let breadcrumbs = []
 
 		this.managementService.getItems(collectionId, null).then(nodes => {
 			this.bsModalRef = this.modalService.show(LeafModalComponent, {
@@ -315,7 +303,6 @@ export class TasksComponent implements OnInit {
 			});
 			this.bsModalRef.content.init(collectionId, nodes, breadcrumbs);
 		})
-
 	}
 
 	removeTask(task: Task): void {
