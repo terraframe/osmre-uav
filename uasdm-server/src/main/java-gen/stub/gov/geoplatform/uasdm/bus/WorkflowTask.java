@@ -5,9 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -28,32 +31,57 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     super();
   }
 
-  public static long getUserWorkflowTasksCount(String status)
+  public static long getUserWorkflowTasksCount(String statuses)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
-    if (status != null)
+//    if (statuses != null)
+//    {
+//      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(statuses).name()));
+//    }
+    
+    List<Condition> conditions = new LinkedList<Condition>();
+
+    final JSONArray array = new JSONArray(statuses);
+
+    for (int i = 0; i < array.length(); i++)
     {
-      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(status).name()));
+      final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
+      conditions.add(query.getStatus().EQ(status.name()));
     }
 
-    query.ORDER_BY_ASC(query.getComponent());
-    query.ORDER_BY_ASC(query.getLastUpdateDate());
+    if (conditions.size() > 0)
+    {
+      query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+    }
 
     final long count = query.getCount();
 
     return count;
   }
   
-  public static Page<WorkflowTask> getUserWorkflowTasks(String status, Integer pageNumber, Integer pageSize)
+  public static Page<WorkflowTask> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
-    if (status != null)
+    if (statuses != null)
     {
-      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(status).name()));
+      List<Condition> conditions = new LinkedList<Condition>();
+
+      final JSONArray array = new JSONArray(statuses);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        final WorkflowTaskStatus status = WorkflowTaskStatus.valueOf(array.getString(i));
+        conditions.add(query.getStatus().EQ(status.name()));
+      }
+
+      if (conditions.size() > 0)
+      {
+        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+      }
     }
 
     query.ORDER_BY_ASC(query.getComponent());

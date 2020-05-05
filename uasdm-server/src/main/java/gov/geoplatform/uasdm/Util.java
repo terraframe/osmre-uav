@@ -23,6 +23,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -76,6 +77,9 @@ public class Util
           }
         }
       }
+
+      // Refresh the public mosaic
+      new ImageMosaicService().refresh();
     }
     catch (Exception e)
     {

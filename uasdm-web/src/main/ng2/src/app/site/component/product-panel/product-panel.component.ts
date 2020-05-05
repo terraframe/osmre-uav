@@ -164,7 +164,9 @@ export class ProductPanelComponent {
 
     handleTogglePublish(product: Product): void {
         this.pService.togglePublish(product.id).then(p => {
-            if (product.orthoMapped) {
+            const mapIt:boolean = product.orthoMapped;
+            
+            if (mapIt) {
                 this.toggleMapImage.emit(product);
             }
 
@@ -172,7 +174,9 @@ export class ProductPanelComponent {
             product.mapKey = p.mapKey;
             product.published = p.published;
 
-            this.toggleMapImage.emit(product);
+            if (mapIt) {
+                this.toggleMapImage.emit(product);
+            }
         });
     }
 }

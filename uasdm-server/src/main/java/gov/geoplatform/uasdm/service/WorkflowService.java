@@ -105,11 +105,11 @@ public class WorkflowService
       task.apply();
     }
   }
-  
+
   @Request(RequestType.SESSION)
-  public JSONObject getTasks(String sessionId, String status, Integer pageNumber, Integer pageSize)
+  public JSONObject getTasks(String sessionId, String statuses, Integer pageNumber, Integer pageSize)
   {
-    Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(status, pageNumber, pageSize);
+    Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(statuses, pageNumber, pageSize);
     java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
 
     JSONObject response = new JSONObject();
