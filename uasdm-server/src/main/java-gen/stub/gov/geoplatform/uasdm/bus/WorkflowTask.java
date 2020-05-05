@@ -48,7 +48,10 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
         conditions.add(query.getStatus().EQ(status.name()));
       }
 
-      query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+      if (conditions.size() > 0)
+      {
+        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+      }
     }
 
     query.ORDER_BY_ASC(query.getComponent());
