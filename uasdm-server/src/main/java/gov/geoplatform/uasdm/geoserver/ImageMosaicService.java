@@ -16,6 +16,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import gov.geoplatform.uasdm.AppProperties;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import net.geoprism.gis.geoserver.GeoserverFacade;
 import net.geoprism.gis.geoserver.GeoserverProperties;
@@ -138,6 +139,7 @@ public class ImageMosaicService
     final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
     coverageEnc.setName(STORE_NAME);
     coverageEnc.setTitle(STORE_NAME);
+    coverageEnc.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
     // coverageEnc.setMaxAllowedTiles(Integer.MAX_VALUE);
 
     // ... many other options are supported
