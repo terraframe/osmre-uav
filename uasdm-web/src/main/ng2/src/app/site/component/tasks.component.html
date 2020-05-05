@@ -22,8 +22,11 @@
               <div class="panel-body">
                 <div class="row">
                   <div class="col-sm-6">
-                    <div>{{message.message}}</div>
-                    <div>Bread / crumb / to / collection</div>
+                    <div>
+                      <span class="dot pending" style="margin-left:0;"></span>
+                      {{message.message}}
+                    </div>
+                    <p style="margin-top:10px;margin-bottom:0;color:grey;">Bread / crumb / to / collection</p>
                   </div>
                   <div class="col-sm-3">
                     <div>TODO: date</div>
@@ -71,22 +74,17 @@
             <div *ngFor="let taskGroup of taskGroups; let idx=index" class="panel panel-default" style="background: none;border: none;">
             
                 <div class="panel-heading clickable" style="margin-top: 20px;background-color: #e9e9e9">
-                  <span [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Pending','fail':taskGroup.status === 'Fail'}" class="dot"></span>
                   <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
                     <a data-toggle="collapse" (click)="taskGroup.visible = !taskGroup.visible" [attr.aria-expanded]="!taskGroup.visible"
                       [attr.aria-controls]="'taskGroup'+ idx">
                       <h4>{{taskGroup.label}}</h4>
-                      <!-- <ul class="list-inline" style="margin: 0;">
-                        <li style="max-width: 80%;">{{task.label}}</li>
-                        <li *ngIf="task.status === 'Failed'" class="pull-right" style="color:#e30000; max-width: 20%;">
-                          <b>{{task.status}}</b></li>
-                        <li *ngIf="task.status !== 'Complete' && task.status !== 'Failed'" class="pull-right"
-                          style="color:green; max-width: 20%;"><b>{{task.status}}...</b></li>
-                        <li *ngIf="task.status === 'Complete'" class="pull-right" style="color:grey; max-width: 20%;">
-                          <b>{{task.status}}</b></li>
-                      </ul> -->
                     </a>
                   </h4>
+                  
+                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
+
+                  <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
+
                 </div>
             
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
@@ -95,218 +93,17 @@
 
                       <!-- Upload Tasks -->
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
-                      
-                        <div class="panel-group">
-                          <div *ngFor="let task of taskGroupType.tasks; let idx=index" class="panel panel-default" style="background: none;border: none;">
-
-                            <div class="panel-heading panel-heading-light clickable" style="margin-top: 20px;">
-                              <h4 class="panel-title">
-                                <a data-toggle="collapse" (click)="showUploads = !showUploads"
-                                  [attr.aria-expanded]="!taskGroup.visible" [attr.aria-controls]="'showUploads'+ idx">
-                                  <h4>Upload</h4>
-                                </a>
-                              </h4>
-                              <span class="heading-status-label pull-right">Status: <span [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Pending','fail':taskGroup.status === 'Fail'}">{{taskGroup.status}}</span></span>
-                            </div>
-                            <div class="panel-body" [isAnimated]="false" [collapse]="!showUploads">
-                      
-                              <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <li>Status: <b>{{task.status}}</b></li>
-                                  <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                </ul>
-                                <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                              </div>
-                      
-                              <div *ngIf="task.status === 'Complete' || task.status === 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <!-- <li>Status: <b>{{task.status}}</b></li> -->
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                  <li>Message: <b>{{task.message}}</b></li>
-                                </ul>
-                      
-                                <div class="table-row">
-                                  <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                                </div>
-                                <hr>
-                      
-                                <h4 *ngIf="task.odmOutput != null">Output:</h4>
-                                <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;"
-                                  [innerHTML]="task.odmOutput"></textarea>
-                      
-                                <h4>Actions:</h4>
-                                <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
-                                <table *ngIf="task.actions.length > 0" class="table table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Type</th>
-                                      <th>Description</th>
-                                      <th>Creation Date</th>
-                                      <th>Last Updated</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
-                                      <th scope="row">{{i + 1}}</th>
-                                      <td>{{action.type}}</td>
-                                      <td>{{action.description}}</td>
-                                      <td>{{action.createDate}}</td>
-                                      <td>{{action.lastUpdatedDate}}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
                       </div>
-
 
                       <!-- Process Tasks -->
                       <div *ngIf="taskGroupType.type === 'PROCESS'">
-                      
-                        <div class="panel-group">
-                          <div *ngFor="let task of taskGroupType.tasks; let idx=index" class="panel panel-default" style="background: none;border: none;">
-                            <div class="panel-heading panel-heading-light clickable" style="margin-top: 20px;">
-                              <h4 class="panel-title">
-                                <a data-toggle="collapse" (click)="showProcess = !showProcess"
-                                  [attr.aria-expanded]="!taskGroup.visible" [attr.aria-controls]="'showProcess'+ idx">
-                                  <h4>Process</h4>
-                                </a>
-                              </h4>
-                              <span class="heading-status-label pull-right">Status: <span [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Pending','fail':taskGroup.status === 'Fail'}">{{taskGroup.status}}</span></span>
-                            </div>
-                            <div class="panel-body" [isAnimated]="false" [collapse]="!showProcess">
-                      
-                              <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <!-- <li>Status: <b>{{task.status}}</b></li> -->
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                  <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
-                                </ul>
-                                <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                              </div>
-                      
-                              <div *ngIf="task.status === 'Complete' || task.status === 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <li>Status: <b>{{task.status}}</b></li>
-                                  <li>Message: <b>{{task.message}}</b></li>
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                </ul>
-                      
-                                <div class="table-row">
-                                  <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                                </div>
-                                <hr>
-                      
-                                <h4 *ngIf="task.odmOutput != null">Output:</h4>
-                                <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;"
-                                  [innerHTML]="task.odmOutput"></textarea>
-                      
-                                <h4>Actions:</h4>
-                                <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
-                                <table *ngIf="task.actions.length > 0" class="table table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Type</th>
-                                      <th>Description</th>
-                                      <th>Creation Date</th>
-                                      <th>Last Updated</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
-                                      <th scope="row">{{i + 1}}</th>
-                                      <td>{{action.type}}</td>
-                                      <td>{{action.description}}</td>
-                                      <td>{{action.createDate}}</td>
-                                      <td>{{action.lastUpdatedDate}}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
                       </div>
-
 
                       <!-- Store Tasks -->
                       <div *ngIf="taskGroupType.type === 'STORE'">
-                      
-                        <div class="panel-group">
-                          <div *ngFor="let task of taskGroupType.tasks; let idx=index" class="panel panel-default" style="background: none;border: none;">
-                            <div class="panel-heading panel-heading-light clickable" style="margin-top: 20px;">
-                              <h4 class="panel-title">
-                                <a data-toggle="collapse" (click)="showStore = !showStore"
-                                  [attr.aria-expanded]="!taskGroup.visible" [attr.aria-controls]="'showStore'+ idx">
-                                  <h4>Store</h4>
-                                </a>
-                              </h4>
-                              <span class="heading-status-label pull-right">Status: <span [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Pending','fail':taskGroup.status === 'Fail'}">{{taskGroup.status}}</span></span>
-                            </div>
-                            <div class="panel-body" [isAnimated]="false" [collapse]="!showStore">
-                      
-                              <div *ngIf="task.status !== 'Complete' && task.status !== 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <!-- <li>Status: <b>{{task.status}}</b></li> -->
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                  <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
-                                </ul>
-                                <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                              </div>
-                      
-                              <div *ngIf="task.status === 'Complete' || task.status === 'Failed'">
-                                <ul class="list-unstyled" style="margin: 0;">
-                                  <li>Status: <b>{{task.status}}</b></li>
-                                  <li>Message: <b>{{task.message}}</b></li>
-                                  <li>Created on: <b>{{task.createDate}}</b></li>
-                                  <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
-                                </ul>
-                      
-                                <div class="table-row">
-                                  <button class="btn btn-danger" (click)="removeTask(task)">Delete Task</button>
-                                </div>
-                                <hr>
-                      
-                                <h4 *ngIf="task.odmOutput != null">Output:</h4>
-                                <textarea *ngIf="task.odmOutput != null" style="color:grey;width:500px;height:200px;"
-                                  [innerHTML]="task.odmOutput"></textarea>
-                      
-                                <h4>Actions:</h4>
-                                <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
-                                <table *ngIf="task.actions.length > 0" class="table table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Type</th>
-                                      <th>Description</th>
-                                      <th>Creation Date</th>
-                                      <th>Last Updated</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
-                                      <th scope="row">{{i + 1}}</th>
-                                      <td>{{action.type}}</td>
-                                      <td>{{action.description}}</td>
-                                      <td>{{action.createDate}}</td>
-                                      <td>{{action.lastUpdatedDate}}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
                       </div>
                 
                     </div>
@@ -331,14 +128,6 @@
     <div class="col-sm-1"></div>
 
   </div>
-
-
-
-<leaf-modal *ngIf="showSite" [initData]="initData"></leaf-modal>
-
-
-
-
 
 
 </div>

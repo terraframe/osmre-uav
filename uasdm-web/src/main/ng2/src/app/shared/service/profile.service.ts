@@ -77,4 +77,15 @@ export class ProfileService {
 			}))
             .toPromise()
     }
+
+    tasksCount(): Promise<{tasksCount:number}> {
+
+        // status options: PROCESSING, COMPLETE, ERROR, QUEUED
+        let params: HttpParams = new HttpParams();
+        params = params.set('status', 'ERROR');
+
+        return this.http
+            .get<{tasksCount:number}>(acp + '/project/tasks-count', { params: params })
+            .toPromise()
+    }
 }

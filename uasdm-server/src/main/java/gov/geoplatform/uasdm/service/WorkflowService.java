@@ -118,6 +118,18 @@ public class WorkflowService
 
     return response;
   }
+  
+  @Request(RequestType.SESSION)
+  public JSONObject getTasksCount(String sessionId, String status)
+  {
+    java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
+    long count = WorkflowTask.getUserWorkflowTasksCount(status);
+
+    JSONObject response = new JSONObject();
+    response.put("tasksCount", count + Collection.toMetadataMessage(missions).length());
+
+    return response;
+  }
 
   @Request(RequestType.SESSION)
   public JSONArray getMissingMetadata(String sessionId)

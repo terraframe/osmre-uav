@@ -12,7 +12,9 @@
       <ul class="nav navbar-nav navbar-right">
         <li dropdown>
           <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" dropdownToggle>
-            <span class="glyphicon glyphicon-menu-hamburger"></span>
+            <span class="glyphicon glyphicon-menu-hamburger">
+              <span *ngIf="notificationCount > 0" class="task-badge">{{notificationCount}}</span>
+            </span>
           </a>
 
           <ul *dropdownMenu class="dropdown-menu">

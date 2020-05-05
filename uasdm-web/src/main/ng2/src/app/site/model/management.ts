@@ -106,10 +106,12 @@ export class Task {
 }
 
 export class TaskGroup {
-	label: string;
+    label: string;
+    collectionId: string;
 	visible?: boolean;
     groups: TaskGroupType[];
     status: string;
+    lastUpdatedDate: string;
 }
 
 export class TaskGroupType {

@@ -4,7 +4,12 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { MetadataModalComponent } from './modal/metadata-modal.component';
 import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
+import { LeafModalComponent } from './modal/leaf-modal.component';
 import { PageResult } from '../../shared/model/page';
+
+import { HttpClient } from '@angular/common/http';
+import { interval } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
@@ -27,6 +32,7 @@ export class TasksComponent implements OnInit {
 	showUploads: boolean = false;
 	showProcess: boolean = false;
 	showStore: boolean = false;
+	tasks:any;
 
     /*
      * Reference to the modal current showing
@@ -41,11 +47,11 @@ export class TasksComponent implements OnInit {
     /*
      * List of tasks
      */
-	tasks: PageResult<Task>;
+	// tasks: PageResult<Task>;
 
 	taskGroups: TaskGroup[] = [];
 
-	constructor(private managementService: ManagementService, private modalService: BsModalService) {
+	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
 		// this.taskPolling = interval(5000).pipe(
 		// 	switchMap(() => http.get<any>(acp + '/project/tasks')))
@@ -57,9 +63,7 @@ export class TasksComponent implements OnInit {
 	ngOnInit(): void {
 		this.userName = this.managementService.getCurrentUser();
 		this.managementService.tasks().then(data => {
-
 			this.setTaskData(data);
-
 		});
 	}
 
@@ -109,10 +113,12 @@ export class TasksComponent implements OnInit {
 					else{
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
-						if(task.status === 'Failed' || task.status === 'Pending'){
+						if(task.status === 'Failed' || task.status === 'Queued'){
 							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
+
+					this.setGroupStatus(task, collectPosition);
 
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
@@ -125,10 +131,12 @@ export class TasksComponent implements OnInit {
 					else{
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
-						if(task.status === 'Failed' || task.status === 'Pending'){
+						if(task.status === 'Failed' || task.status === 'Queued'){
 							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
+
+					this.setGroupStatus(task, collectPosition);
 
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
@@ -141,15 +149,12 @@ export class TasksComponent implements OnInit {
 					else{
 						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 
-						if(task.status === 'Failed' || task.status === 'Pending'){
+						if(task.status === 'Failed' || task.status === 'Queued'){
 							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
 						}
 					}
-				}
 
-
-				if(task.status === 'Failed' || task.status === 'Pending'){
-					this.taskGroups[collectPosition].status = task.status
+					this.setGroupStatus(task, collectPosition);
 				}
 			}
 			else{
@@ -158,77 +163,103 @@ export class TasksComponent implements OnInit {
 
 					this.taskGroups.push({
 						label: task.collectionLabel, 
+						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'UPLOAD' }],
-						status:task.status 
+						status:task.status,
+						lastUpdatedDate: task.lastUpdatedDate
 					});
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
 
 					this.taskGroups.push({
 						label: task.collectionLabel, 
+						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'PROCESS' }],
-						status:task.status 
+						status:task.status,
+						lastUpdatedDate: task.lastUpdatedDate
 					});
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
 
 					this.taskGroups.push({
 						label: task.collectionLabel, 
+						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'STORE' }],
-						status:task.status 
+						status:task.status,
+						lastUpdatedDate: task.lastUpdatedDate
 					});
 				}
 
 			}
 		}
 		
-		console.log(this.taskGroups)
-
-		// this.tasks = data.tasks.sort((a: any, b: any) =>
-		// 	new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-		// );
+		this.taskGroups = this.taskGroups.sort((a: any, b: any) =>
+			new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+		);
 	}
 
-	updateTaskData(data: any): void {
+	setGroupStatus(task : Task, arrayPosition: number){
+		if (task.status === 'Failed' || task.status === 'Queued') {
+			this.taskGroups[arrayPosition].status = task.status
+		}
+
+		if(new Date(this.taskGroups[arrayPosition].lastUpdatedDate) < new Date(task.lastUpdatedDate)){
+			this.taskGroups[arrayPosition].lastUpdatedDate = task.lastUpdatedDate;
+		}
+	}
+
+	updateTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
 		this.messages = data.messages;
+		let noMatch = [];
 
 		this.totalTaskCount = data.tasks.count;
 
 		// Update existing tasks
-		for (let i = 0; i < data.tasks.length; i++) {
-			let newTask = data.tasks[i];
+		data.tasks.resultSet.forEach(newTask => {
 
-			for (let i2 = 0; i2 < this.tasks.resultSet.length; i2++) {
-				let existingTask = this.tasks[i2];
-				if (existingTask.oid === newTask.oid) {
-					if (existingTask.label !== newTask.label) {
-						existingTask.label = newTask.label;
+			this.taskGroups.forEach(existingTaskGrp => {
+				existingTaskGrp.groups.forEach(existingGroup => {
+
+					let matchFound: boolean = false;
+					existingGroup.tasks.forEach(existingTask => {
+						if (existingTask.oid === newTask.oid) {
+							
+							matchFound = true;
+
+							// Update props
+							if (existingTask.label !== newTask.label) {
+								existingTask.label = newTask.label;
+							}
+							if (existingTask.lastUpdateDate !== newTask.lastUpdateDate) {
+								existingTask.lastUpdateDate = newTask.lastUpdateDate;
+							}
+							if (existingTask.lastUpdatedDate !== newTask.lastUpdatedDate) {
+								existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
+								matchFound = true;
+							}
+							if (existingTask.message !== newTask.message) {
+								existingTask.message = newTask.message;
+							}
+							if (existingTask.status !== newTask.status) {
+								existingTask.status = newTask.status;
+							}
+							if (existingTask.odmOutput !== newTask.odmOutput) {
+								existingTask.odmOutput = newTask.odmOutput;
+							}
+						}
+					})
+
+					if(!matchFound){
+						noMatch.push(newTask);
 					}
-					if (existingTask.lastUpdateDate !== newTask.lastUpdateDate) {
-						existingTask.lastUpdateDate = newTask.lastUpdateDate;
-					}
-					if (existingTask.lastUpdatedDate !== newTask.lastUpdatedDate) {
-						existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
-					}
-					if (existingTask.message !== newTask.message) {
-						existingTask.message = newTask.message;
-					}
-					if (existingTask.status !== newTask.status) {
-						existingTask.status = newTask.status;
-					}
-					if (existingTask.odmOutput !== newTask.odmOutput) {
-						existingTask.odmOutput = newTask.odmOutput;
-					}
-				}
-			}
-		}
+				});
+			})
+		})
 
 		// Add new tasks
-		let newTasks = data.tasks.filter((o: Task) => !this.tasks.resultSet.find(o2 => o.oid === o2.oid));
-		if (newTasks && newTasks.length > 0) {
-			newTasks.forEach((tsk: Task) => {
-				this.tasks.resultSet.unshift(tsk);
-			})
+		// let newTasks = data.tasks.filter((o: Task) => !this.taskGroups.resultSet.find(o2 => o.oid === o2.oid));
+		if(noMatch && noMatch.length > 0) {
+			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:1, pageSize:1}})
 		}
 	}
 
@@ -264,15 +295,26 @@ export class TasksComponent implements OnInit {
 		// const entity = this.product.entities[this.product.entities.length - 1];
 		// const breadcrumbs = this.product.entities;
 
-		this.managementService.getItems("71ac9976-1a3b-4707-800d-4769520005bf", null).then(nodes => {
+		// this.managementService.getItems(collectionId, null).then(nodes => {
 
-			let entity = {"numberOfChildren":82,"ownerName":"admin","ownerPhone":"","name":"Copper collect","description":"","typeLabel":"Collection","id":"71ac9976-1a3b-4707-800d-4769520005bf","folderName":"b71a7425b2754c5e9127a773971c53d3","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}
-			let breadcrumbs = [{"numberOfChildren":1,"name":"Copper","otherBureauTxt":"","description":"","typeLabel":"Site","geometry":{"coordinates":[-107.3016,43.0521],"type":"Point"},"id":"b220b1c9-aee0-41cb-b99c-875d830005bc","folderName":"cbbdc906312645ecb269d6d5f17db924","bureau":"adb54227-b659-4243-81b6-3aaa8b0005ba","type":"Site","geoPoint":"POINT (-107.3016159523629 43.05214347865024)"},{"numberOfChildren":1,"name":"Copper proj","description":"","typeLabel":"Project","id":"4aeb9cfb-d9c5-404f-98d0-1fae550005bd","folderName":"92493681cf144704973ba0e2936df9bf","type":"Project"},{"numberOfChildren":2,"name":"Copper Miss","description":"","typeLabel":"Mission","id":"031508cd-d442-4ab6-bcf2-c365a90005be","folderName":"8930cf209283412bb42cd76e472c034d","type":"Mission"},{"numberOfChildren":82,"ownerName":"admin","ownerPhone":"","name":"Copper collect","description":"","typeLabel":"Collection","id":"71ac9976-1a3b-4707-800d-4769520005bf","folderName":"b71a7425b2754c5e9127a773971c53d3","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}]
+		// 	let entity = {"numberOfChildren":10,"ownerName":"admin","ownerPhone":"","name":"Collection 1","typeLabel":"Collection","id":"97077d72-1897-4d90-b9b1-eae30b7d47e6","folderName":"3b64251566cd4360a64ec58c2943e9ce","type":"Collection","privilegeType":"AGENCY","ownerEmail":"admin@noreply.com"}
+			let breadcrumbs = []
+		// 	let previous = [{"numberOfChildren":1,"name":"Test 1","typeLabel":"Site","geometry":{"coordinates":[-111.6748,40.5813],"type":"Point"},"id":"822261ad-d0d9-4f9e-8ba6-7426e784cab0","folderName":"97acd34155a04ccb8a31da8368f913f4","bureau":"2af00cbf-5ce9-4681-9c27-da2f3b0005ba","type":"Site","geoPoint":"POINT (-111.67483052889057 40.581288616924496)"},{"numberOfChildren":1,"name":"Project 1","typeLabel":"Project","id":"f1992c0d-20f7-4368-888d-d844e2b6a956","folderName":"590dbe54071f44898ea08475d742a452","type":"Project"},{"numberOfChildren":5,"name":"Mission 1","typeLabel":"Mission","id":"7efd6836-9258-4410-9f77-b6254a4c2363","folderName":"9767cb51493940e4801a14496e74de1e","type":"Mission"}]
 			
-			this.initData = { "entity": entity, "folders": nodes, "previous": breadcrumbs }
+		// 	this.initData = { "entity": entity, "folders": nodes, "previous": previous }
 
-			this.showSite = true;
-		});
+		// 	this.showSite = true;
+		// });
+
+		this.managementService.getItems(collectionId, null).then(nodes => {
+			this.bsModalRef = this.modalService.show(LeafModalComponent, {
+				animated: true,
+				backdrop: true,
+				ignoreBackdropClick: true,
+				class: 'leaf-modal'
+			});
+			this.bsModalRef.content.init(collectionId, nodes, breadcrumbs);
+		})
 
 	}
 

@@ -1,13 +1,19 @@
-
-#app-container {
-    background: #f7f7f7;
+.button-holder .btn {
+	margin-right: 10px;
+}
+.btn.btn-danger {
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+}
+.btn.btn-danger:hover {
+    background-color: #d2322d !important;
+    border-color: #ac2925 !important;
+}
+.btn.btn-default.caution:hover {
+	border-color: #ac2925 !important;
+	color: #ac2925 !important;
 }
 
-#tasks-container {
-    padding: 20px;
-    background: white;
-    border-radius: 6px;
-}
 
 #tasks .panel-body {
     background: #e9e9e9;
@@ -98,7 +104,6 @@ b.fail {
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
-  margin-left: 10px;
 }
 .dot.success {
   background-color: green;

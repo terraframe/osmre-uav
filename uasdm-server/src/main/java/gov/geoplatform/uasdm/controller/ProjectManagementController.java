@@ -225,6 +225,14 @@ public class ProjectManagementController
     return new RestResponse();
   }
 
+  @Endpoint(url = "tasks-count", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getTasksCount(ClientRequestIF request, @RequestParamter(name = "status") String status)
+  {
+    JSONObject response = new WorkflowService().getTasksCount(request.getSessionId(), status);
+
+    return new RestBodyResponse(response);
+  }
+  
   @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "status") String status, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {

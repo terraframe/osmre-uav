@@ -28,6 +28,24 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     super();
   }
 
+  public static long getUserWorkflowTasksCount(String status)
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+
+    if (status != null)
+    {
+      query.AND(query.getStatus().EQ(WorkflowTaskStatus.valueOf(status).name()));
+    }
+
+    query.ORDER_BY_ASC(query.getComponent());
+    query.ORDER_BY_ASC(query.getLastUpdateDate());
+
+    final long count = query.getCount();
+
+    return count;
+  }
+  
   public static Page<WorkflowTask> getUserWorkflowTasks(String status, Integer pageNumber, Integer pageSize)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());

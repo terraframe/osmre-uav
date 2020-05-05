@@ -20,6 +20,7 @@ export class UasdmHeaderComponent {
     userName: string = "";
     admin: boolean = false;
     bsModalRef: BsModalRef;
+    notificationCount: number = 0;
 
     @Input() title: string;
 
@@ -32,6 +33,12 @@ export class UasdmHeaderComponent {
 
         this.userName = this.authService.getUserName();
         this.admin = this.authService.isAdmin();
+
+        this.profileService.tasksCount().then(data => {
+
+			this.notificationCount = data.tasksCount
+
+		});
     }
 
     account(): void {

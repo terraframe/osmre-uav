@@ -2,3 +2,16 @@
 .navbar-right.user-indicator .navbar-text{
     color: white;
 }
+
+.task-badge {
+  position: absolute;
+  top: -12px;
+  right: -13px;
+  padding: 3px 7px;
+  border-radius: 50%;
+  background: orange;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: solid 3px #7c868d;
+}

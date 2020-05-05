@@ -25,10 +25,12 @@ import { ProductModalComponent } from './component/modal/product-modal.component
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
+import { TasksPanelComponent } from './component/tasks/tasks-panel.component';
 import { SensorsComponent } from './component/sensor/sensors.component';
 import { SensorComponent } from './component/sensor/sensor.component';
 import { PlatformsComponent } from './component/platform/platforms.component';
 import { PlatformComponent } from './component/platform/platform.component';
+
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -81,7 +83,8 @@ import { SharedModule } from '../shared/shared.module';
 		SensorComponent,
 		SensorsComponent,
 		PlatformComponent,
-		PlatformsComponent
+		PlatformsComponent,
+		TasksPanelComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
