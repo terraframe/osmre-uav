@@ -326,7 +326,7 @@ export class TasksComponent implements OnInit {
 		// Add new tasks
 		// let newTasks = data.tasks.filter((o: Task) => !this.collectionGroups.resultSet.find(o2 => o.oid === o2.oid));
 		if(noMatch && noMatch.length > 0) {
-			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:1, pageSize:1}})
+			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:this.taskPage.pageNumber, pageSize:this.taskPage.pageSize}})
 		}
 	}
 
