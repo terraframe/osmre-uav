@@ -15,3 +15,6 @@
   font-weight: bold;
   border: solid 3px #7c868d;
 }
+.task-badge.double-digit {
+  padding: 5px 5px;
+}
