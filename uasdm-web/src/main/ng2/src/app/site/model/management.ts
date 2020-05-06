@@ -32,6 +32,7 @@ export class SiteEntity {
     type: string;
     component: string;
     key: string;
+    metadataUploaded: boolean;
     geometry?: any;
     numberOfChildren: number;
     lastModified?: string;
@@ -89,26 +90,26 @@ export class Action {
 }
 
 export class Task {
-	oid: string;
-	label: string;
-	createDate: string;
-	lastUpdateDate: string;
-	lastUpdatedDate: string;
-	status: string;
-	message: string;
-	actions: Action[];
-	uploadId: string;
-	odmOutput: string;
-	visible?: boolean;
-	collection: string;
-	collectionLabel: string;
-	type: string;
+    oid: string;
+    label: string;
+    createDate: string;
+    lastUpdateDate: string;
+    lastUpdatedDate: string;
+    status: string;
+    message: string;
+    actions: Action[];
+    uploadId: string;
+    odmOutput: string;
+    visible?: boolean;
+    collection: string;
+    collectionLabel: string;
+    type: string;
 }
 
 export class TaskGroup {
     label: string;
     collectionId: string;
-	visible?: boolean;
+    visible?: boolean;
     groups: TaskGroupType[];
     status: string;
     lastUpdatedDate: string;

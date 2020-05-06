@@ -34,6 +34,8 @@ public class SiteItem implements TreeComponent
 
   public static String        NUMBER_OF_CHILDREN = "numberOfChildren";
 
+  public static String        METADATA_UPLOADED  = "metadataUploaded";
+
   public static String        CHILDREN           = "children";
 
   public static String        GEOMETRY           = "geometry";
@@ -52,6 +54,8 @@ public class SiteItem implements TreeComponent
 
   private String              privilegeType;
 
+  private Boolean             metadataUploaded;
+
   private Geometry            geometry;
 
   private Integer             numberOfChildren;
@@ -66,6 +70,7 @@ public class SiteItem implements TreeComponent
   {
     this.children = new LinkedList<TreeComponent>();
     this.values = new HashMap<String, Object>();
+    this.metadataUploaded = false;
   }
 
   public String getId()
@@ -138,6 +143,16 @@ public class SiteItem implements TreeComponent
     this.privilegeType = privilegeType;
   }
 
+  public Boolean getMetadataUploaded()
+  {
+    return metadataUploaded;
+  }
+
+  public void setMetadataUploaded(Boolean metadataUploaded)
+  {
+    this.metadataUploaded = metadataUploaded;
+  }
+
   public Integer getNumberOfChildren()
   {
     return numberOfChildren;
@@ -202,6 +217,7 @@ public class SiteItem implements TreeComponent
       obj.put(OWNER_NAME, this.getOwnerName());
       obj.put(OWNER_PHONE, this.getOwnerPhone());
       obj.put(OWNER_EMAIL, this.getOwnerEmail());
+      obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
       obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
 
       for (Entry<String, Object> entry : entries)

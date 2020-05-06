@@ -291,7 +291,7 @@ export class LeafModalComponent implements OnInit {
         modalRef.content.init(this.entity.id);
 
         modalRef.content.onMetadataChange.subscribe(() => {
-//            this.entity.hasMetadata = true;
+          this.entity.metadataUploaded = true;
         });
     }
 

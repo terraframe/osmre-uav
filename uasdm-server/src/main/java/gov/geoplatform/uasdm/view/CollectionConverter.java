@@ -54,6 +54,7 @@ public class CollectionConverter extends Converter
       siteItem.setOwnerName(userName);
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
+      siteItem.setMetadataUploaded(collection.getMetadataUploaded());
     }
 
     return siteItem;

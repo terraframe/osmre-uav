@@ -19,6 +19,8 @@ public interface CollectionIF extends UasComponentIF
 
   public void setMetadataUploaded(Boolean metadataUploaded);
 
+  public Boolean getMetadataUploaded();
+
   public void apply();
 
   public Sensor getSensor();
@@ -26,4 +28,5 @@ public interface CollectionIF extends UasComponentIF
   public JSONObject toMetadataMessage();
 
   public void appLock();
+
 }
