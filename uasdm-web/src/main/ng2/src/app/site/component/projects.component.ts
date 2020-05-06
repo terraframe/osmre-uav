@@ -645,7 +645,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (result.center) {
 			this.map.flyTo({
 				center: result.center,
-				zoom: 9
+				zoom: 18
 			})
 		}
 		else {
