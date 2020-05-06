@@ -654,8 +654,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 			const selected = result.hierarchy[index];
 
 			this.service.view(selected.id).then(response => {
-				console.log(response);
-
 				const node = response.item;
 				const breadcrumbs = response.breadcrumbs;
 

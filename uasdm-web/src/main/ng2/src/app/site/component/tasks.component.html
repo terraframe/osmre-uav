@@ -12,8 +12,7 @@
 
           <div id="tasks-container">
             <div class="row">
-              <h3 class="col-sm-6">Issue</h3>
-              <h3 class="col-sm-3">Upload Date</h3>
+              <h3 class="col-sm-9">Issue</h3>
               <h3 class="col-sm-3">Actions</h3>
             </div>
             <div class="panel panel-default" *ngFor="let message of messages">
@@ -21,7 +20,7 @@
           
               <div class="panel-body">
                 <div class="row">
-                  <div class="col-sm-6">
+                  <div class="col-sm-9">
                     <div>
                       <span class="dot pending" style="margin-left:0;"></span>
                       {{message.message}}
@@ -37,19 +36,15 @@
                       </ul>
                     </div>
                   </div>
-                  <div class="col-sm-3">
-                    <div>TODO: date</div>
-                  </div>
-                  <div class="col-sm-3" style="text-align: right;">
+                  <div class="col-sm-3" style="text-align: left;">
                     <div>
-                      <button class="btn btn-default" (click)="handleGoto(message.collectionId)">View Collection</button>
-                      <button class="btn btn-primary" style="margin-left: 10px;" (click)="handleMessage(message)">Add Metadata</button>
+                      <button style="width:45%" class="btn btn-default" (click)="handleGoto(message.collectionId)">View Collection</button>
+                      <button style="width:45%;margin-left: 10px;" class="btn btn-primary" (click)="handleMessage(message)">Add Metadata</button>
                     </div>
                   </div>
                 </div>
               </div>
           
-              <!-- <div class="panel-footer">Bread / crumb / to / collection</div> -->
             </div>
           </div>
           
