@@ -359,16 +359,21 @@ export class TasksComponent implements OnInit {
 	}
 
 	handleGoto(collectionId: string): void {
-		let breadcrumbs = []
+		// let breadcrumbs = []
 
-		this.managementService.getItems(collectionId, null).then(nodes => {
-			this.bsModalRef = this.modalService.show(LeafModalComponent, {
-				animated: true,
-				backdrop: true,
-				ignoreBackdropClick: true,
-				class: 'leaf-modal'
-			});
-			this.bsModalRef.content.init(collectionId, nodes, breadcrumbs);
+		this.managementService.view(collectionId).then(response => {
+			const entity = response.item;
+			const breadcrumbs = response.breadcrumbs;
+
+			this.managementService.getItems(collectionId, null).then(nodes => {
+				this.bsModalRef = this.modalService.show(LeafModalComponent, {
+					animated: true,
+					backdrop: true,
+					ignoreBackdropClick: true,
+					class: 'leaf-modal'
+				});
+				this.bsModalRef.content.init(entity, nodes, breadcrumbs);
+			})
 		})
 	}
 

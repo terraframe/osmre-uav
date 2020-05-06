@@ -560,3 +560,14 @@ input[type="checkbox"].x-box:checked:after {
     max-height: 1000px;
   }
 }
+
+
+
+.ngx-pagination {
+  padding: 10px 0;
+    background: transparent;
+}
+
+.ngx-pagination .current {
+  background: grey !important;
+}

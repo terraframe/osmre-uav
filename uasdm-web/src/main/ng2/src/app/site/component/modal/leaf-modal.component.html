@@ -29,6 +29,7 @@
       </div>
 
       <div class="row">
+        <div class="col-sm-12" style="padding: 0;">
         <tabset class="nav-full-width">
           <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
           
@@ -109,10 +110,11 @@
             </div>
           </tab>
         </tabset>
+        </div>
       </div>
       
       <div class="row">
-      
+      <div class="col-sm-12">
       	<pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
 
         <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
@@ -142,6 +144,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
