@@ -57,17 +57,18 @@ export class TasksComponent implements OnInit {
 
 	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
-		// this.taskPolling = interval(5000).pipe(
-		// 	switchMap(() => http.get<any>(acp + '/project/tasks')))
-		// 	.subscribe((data) => {
-		// 		this.updateTaskData(data);
-		// 	});
+		this.taskPolling = interval(5000).pipe(
+			switchMap(() => http.get<any>(acp + '/project/tasks')))
+			.subscribe((data) => {
+				this.updateTaskData(data);
+			});
+
 	}
 
 	ngOnInit(): void {
 		this.userName = this.managementService.getCurrentUser();
 		this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
-			this.setTaskData(data);
+			this.setTaskData(data, false);
 		});
 	}
 
@@ -85,12 +86,12 @@ export class TasksComponent implements OnInit {
 		this.taskPage.resultSet = data
 	}
 
-	onPageChange(pageNumber: number, statuses): void{
+	onPageChange(pageNumber: number, statuses: any): void{
 		this.managementService.tasks(statuses, this.taskPage.pageSize, pageNumber).then(data => {
 
 			this.updatePage(data.tasks);
 			
-			this.setTaskData(data);
+			this.setTaskData(data, false);
 		});
 	}
 
@@ -104,7 +105,7 @@ export class TasksComponent implements OnInit {
 
 				this.updatePage(data.tasks);
 				
-				this.setTaskData(data);
+				this.setTaskData(data, false);
 			});
 		}
 		else if(tab === "action-required") {
@@ -112,7 +113,7 @@ export class TasksComponent implements OnInit {
 
 				this.updatePage(data.tasks);
 
-				this.setTaskData(data);
+				this.setTaskData(data, false);
 			});
 		}
 		else if(tab === "all") {
@@ -120,7 +121,7 @@ export class TasksComponent implements OnInit {
 
 				this.updatePage(data.tasks);
 
-				this.setTaskData(data);
+				this.setTaskData(data, false);
 			});
 		}
 
@@ -141,12 +142,15 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
-	setTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
-		this.messages = data.messages;
+	setTaskData(data: {messages:Message[], tasks:PageResult<Task>}, addOnly: boolean): void {
 
-		this.updatePage(data.tasks);
+		if(!addOnly){
+			this.messages = data.messages;
 
-		this.collectionGroups = [];
+			this.updatePage(data.tasks);
+
+			this.collectionGroups = [];
+		}
 
 		for(let i=0; i<data.tasks.resultSet.length; i++){
 			let task = data.tasks.resultSet[i];
@@ -247,13 +251,13 @@ export class TasksComponent implements OnInit {
 						new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
 					);
 
-					group.status = sortedTasks[group.tasks.length - 1].status;
+					group.status = sortedTasks[0].status;
 				}
 
 				if (group.status === "Error" || group.status === "Failed") {
 					isError = true;
 				}
-				else if (group.status === "Queued" || group.status === "Processing") {
+				else if (group.status === "Queued" || group.status === "Processing" || group.status === "Running" || group.status === "Pending") {
 					isWorking = true;
 				}
 				else if (group.status === "Complete") {
@@ -284,10 +288,11 @@ export class TasksComponent implements OnInit {
 		// Update existing tasks
 		data.tasks.resultSet.forEach(newTask => {
 
+			let matchFound: boolean = false;
+
 			this.collectionGroups.forEach(existingTaskGrp => {
 				existingTaskGrp.groups.forEach(existingGroup => {
 
-					let matchFound: boolean = false;
 					existingGroup.tasks.forEach(existingTask => {
 						if (existingTask.oid === newTask.oid) {
 							
@@ -315,18 +320,18 @@ export class TasksComponent implements OnInit {
 							}
 						}
 					})
-
-					if(!matchFound){
-						noMatch.push(newTask);
-					}
 				});
-			})
+			});
+			
+			if (!matchFound) {
+				noMatch.push(newTask);
+			}
 		})
 
 		// Add new tasks
 		// let newTasks = data.tasks.filter((o: Task) => !this.collectionGroups.resultSet.find(o2 => o.oid === o2.oid));
 		if(noMatch && noMatch.length > 0) {
-			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:this.taskPage.pageNumber, pageSize:this.taskPage.pageSize}})
+			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:this.taskPage.pageNumber, pageSize:this.taskPage.pageSize}}, true)
 		}
 	}
 

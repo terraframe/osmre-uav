@@ -52,7 +52,7 @@
         <div class="form-group">
           <label [for]="page.selection.type">{{page.selection.type}}:</label>
           
-          <div class="row">
+          <div *ngIf="!page.selection.isNew" class="row">
             <div class="col-md-8">
               <select [name]="page.selection.type" [(ngModel)]="page.selection.value" [disabled]="page.selection.isNew" required>
                 <option></option>
