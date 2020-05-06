@@ -13,6 +13,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
+import { Page } from 'ngx-pagination/dist/pagination-controls.directive';
 
 declare var acp: any;
 
@@ -26,13 +27,16 @@ export class TasksComponent implements OnInit {
 	userName: string = "";
 	totalTaskCount: number = 0;
 	taskPolling: any;
-	activeTab: string = "action-required";
+	activeTab: string = "all";
 	showSite: boolean = false;
 	initData: any;
 	showUploads: boolean = false;
 	showProcess: boolean = false;
 	showStore: boolean = false;
 	tasks:any;
+	taskPage: PageResult<Task> = {count:0, pageSize: 20, pageNumber: 1, resultSet: []};
+	errorStatuses = ["Error", "Failed", "Queued", "Processing"];
+	completeStatuses = ["Complete"];
 
     /*
      * Reference to the modal current showing
@@ -49,7 +53,7 @@ export class TasksComponent implements OnInit {
      */
 	// tasks: PageResult<Task>;
 
-	taskGroups: TaskGroup[] = [];
+	collectionGroups: TaskGroup[] = [];
 
 	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
@@ -62,7 +66,7 @@ export class TasksComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.userName = this.managementService.getCurrentUser();
-		this.managementService.tasks(["Error", "Failed", "Queued", "Processing"], 20, 1).then(data => {
+		this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
 			this.setTaskData(data);
 		});
 	}
@@ -74,8 +78,51 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
+	updatePage(data: any): void{
+		this.taskPage.pageNumber = data.pageNumber;
+		this.taskPage.pageSize = data.pageSize;
+		this.taskPage.count = data.count;
+		this.taskPage.resultSet = data
+	}
+
+	onPageChange(pageNumber: number, statuses): void{
+		this.managementService.tasks(statuses, this.taskPage.pageSize, pageNumber).then(data => {
+
+			this.updatePage(data.tasks);
+			
+			this.setTaskData(data);
+		});
+	}
+
 	onTabClick(event: any, tab: string): void {
 		this.activeTab = tab;
+		this.taskPage = {count:0, pageSize: 20, pageNumber: 1, resultSet: []};
+
+		if(tab === "success"){
+
+			this.managementService.tasks(this.completeStatuses, this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
+
+				this.updatePage(data.tasks);
+				
+				this.setTaskData(data);
+			});
+		}
+		else if(tab === "action-required") {
+			this.managementService.tasks(this.errorStatuses, this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
+
+				this.updatePage(data.tasks);
+
+				this.setTaskData(data);
+			});
+		}
+		else if(tab === "all") {
+			this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
+
+				this.updatePage(data.tasks);
+
+				this.setTaskData(data);
+			});
+		}
 
 		if(!event.target.parentNode.classList.contains("active")){
 
@@ -97,71 +144,55 @@ export class TasksComponent implements OnInit {
 	setTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
 		this.messages = data.messages;
 
+		this.updatePage(data.tasks);
+
+		this.collectionGroups = [];
+
 		for(let i=0; i<data.tasks.resultSet.length; i++){
 			let task = data.tasks.resultSet[i];
-			let collectPosition = this.taskGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
+			let collectPosition = this.collectionGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
             
 			if(collectPosition > -1){
 
 				if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
 
-					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'UPLOAD' } ); 
+					let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'UPLOAD' } ); 
 
 					if(taskGroupTypeIndex === -1){
-						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'UPLOAD' })
+						this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'UPLOAD' })
 					}
 					else{
-						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-
-						if(task.status === 'Failed' || task.status === 'Queued'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
-						}
+						this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 					}
-
-					this.setGroupStatus(task, collectPosition);
-
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
 
-					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'PROCESS' } ); 
+					let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'PROCESS' } ); 
 
 					if(taskGroupTypeIndex === -1){
-						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'PROCESS' })
+						this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'PROCESS' })
 					}
 					else{
-						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-
-						if(task.status === 'Failed' || task.status === 'Queued'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
-						}
+						this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 					}
-
-					this.setGroupStatus(task, collectPosition);
-
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
 
-					let taskGroupTypeIndex = this.taskGroups[collectPosition].groups.findIndex( value => { return value.type === 'STORE' } );
+					let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'STORE' } );
 
 					if(taskGroupTypeIndex === -1){
-						this.taskGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'STORE' })
+						this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'STORE' })
 					}
 					else{
-						this.taskGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-
-						if(task.status === 'Failed' || task.status === 'Queued'){
-							this.taskGroups[collectPosition].groups[taskGroupTypeIndex].type = task.status
-						}
+						this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
 					}
-
-					this.setGroupStatus(task, collectPosition);
 				}
 			}
 			else{
 
 				if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
 
-					this.taskGroups.push({
+					this.collectionGroups.push({
 						label: task.collectionLabel, 
 						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'UPLOAD' }],
@@ -171,7 +202,7 @@ export class TasksComponent implements OnInit {
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
 
-					this.taskGroups.push({
+					this.collectionGroups.push({
 						label: task.collectionLabel, 
 						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'PROCESS' }],
@@ -181,7 +212,7 @@ export class TasksComponent implements OnInit {
 				}
 				else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
 
-					this.taskGroups.push({
+					this.collectionGroups.push({
 						label: task.collectionLabel, 
 						collectionId: task.collection,
 						groups: [{ tasks:[task], status:task.status, type: 'STORE' }],
@@ -193,20 +224,56 @@ export class TasksComponent implements OnInit {
 			}
 		}
 		
-		this.taskGroups = this.taskGroups.sort((a: any, b: any) =>
+		this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
 			new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
 		);
+
+		this.setTaskGroupStatuses();
 	}
 
-	setGroupStatus(task : Task, arrayPosition: number){
-		if (task.status === 'Failed' || task.status === 'Queued') {
-			this.taskGroups[arrayPosition].status = task.status
-		}
 
-		if(new Date(this.taskGroups[arrayPosition].lastUpdatedDate) < new Date(task.lastUpdatedDate)){
-			this.taskGroups[arrayPosition].lastUpdatedDate = task.lastUpdatedDate;
-		}
+	setTaskGroupStatuses(): void {
+
+		this.collectionGroups.forEach(collectionGroup => {
+			
+			let isError: boolean = false;
+			let isWorking: boolean = false;
+			let isComplete: boolean = false;
+
+			collectionGroup.groups.forEach(group => {
+
+				if (group.tasks.length > 0) {
+					let sortedTasks = group.tasks.sort((a: any, b: any) =>
+						new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+					);
+
+					group.status = sortedTasks[group.tasks.length - 1].status;
+				}
+
+				if (group.status === "Error" || group.status === "Failed") {
+					isError = true;
+				}
+				else if (group.status === "Queued" || group.status === "Processing") {
+					isWorking = true;
+				}
+				else if (group.status === "Complete") {
+					isComplete = true;
+				}
+			});
+
+			if(isWorking){
+				collectionGroup.status = "Processing";
+			}
+			else if(isError){
+				collectionGroup.status = "Failed";
+			}
+			else{
+				collectionGroup.status = "Complete";
+			}
+
+		})
 	}
+
 
 	updateTaskData(data: {messages:Message[], tasks:PageResult<Task>}): void {
 		this.messages = data.messages;
@@ -217,7 +284,7 @@ export class TasksComponent implements OnInit {
 		// Update existing tasks
 		data.tasks.resultSet.forEach(newTask => {
 
-			this.taskGroups.forEach(existingTaskGrp => {
+			this.collectionGroups.forEach(existingTaskGrp => {
 				existingTaskGrp.groups.forEach(existingGroup => {
 
 					let matchFound: boolean = false;
@@ -257,7 +324,7 @@ export class TasksComponent implements OnInit {
 		})
 
 		// Add new tasks
-		// let newTasks = data.tasks.filter((o: Task) => !this.taskGroups.resultSet.find(o2 => o.oid === o2.oid));
+		// let newTasks = data.tasks.filter((o: Task) => !this.collectionGroups.resultSet.find(o2 => o.oid === o2.oid));
 		if(noMatch && noMatch.length > 0) {
 			this.setTaskData({messages : data.messages, tasks: {resultSet: noMatch, count:data.tasks.count, pageNumber:1, pageSize:1}})
 		}
