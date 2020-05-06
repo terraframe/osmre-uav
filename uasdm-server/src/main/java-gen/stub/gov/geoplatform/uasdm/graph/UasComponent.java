@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +22,7 @@ import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
@@ -124,7 +124,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (isNew && this.getFolderName() == null)
     {
-      this.setFolderName(UUID.randomUUID().toString().replaceAll("-", ""));
+      String folderName = this.generateFolderName(parent);
+
+      System.out.println(folderName);
+
+      this.setFolderName(folderName);
     }
 
     if (isNew || this.isModified(UasComponent.FOLDERNAME))
@@ -219,6 +223,41 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         SolrService.updateComponent(this);
       }
     }
+  }
+
+  public String generateFolderName(UasComponentIF parent)
+  {
+    String original = this.createSafeFolderName(this.getName()).trim();
+    String folderName = new String(original);
+
+    int count = 0;
+
+    while (this.isDuplicateFolderName(parent, folderName))
+    {
+      folderName = original + count;
+
+      count++;
+    }
+
+    return folderName;
+  }
+
+  private String createSafeFolderName(String name)
+  {
+    final String lower = name.toLowerCase().replaceAll("\\s", "");
+    StringBuilder folderName = new StringBuilder();
+
+    for (int i = 0; i < lower.length(); i++)
+    {
+      final char c = lower.charAt(i);
+
+      if (UasComponentIF.isValid(c))
+      {
+        folderName.append(c);
+      }
+    }
+
+    return folderName.toString();
   }
 
   protected boolean needsUpdate()
@@ -642,18 +681,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     if (parent != null)
     {
       final MdEdgeDAOIF mdEdge = this.getParentMdEdge();
-//      final MdVertexDAOIF mdVertex = mdEdge.getParentMdVertex();
 
       UasComponent component = (UasComponent) parent;
 
       StringBuilder statement = new StringBuilder();
-      statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
+      statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "')");
+      statement.append(" [ folderName = :folderName AND oid != :oid ])\n");
       statement.append("FROM :rid \n");
-      statement.append("WHERE out.folderName = :folderName" + "\n");
+//      statement.append("WHERE out.folderName = :folderName" + "\n");
+//      statement.append("AND out.oid != :oid" + "\n");
 
       final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
       query.setParameter("folderName", folderName);
       query.setParameter("rid", component.getRID());
+      query.setParameter("oid", this.getOid());
 
       final List<UasComponent> list = query.getResults();
 
@@ -663,6 +704,24 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       }
 
       return false;
+    }
+
+    final MdGraphClassDAOIF mdGraphClass = (MdGraphClassDAOIF) this.getMdClass();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdGraphClass.getDBClassName() + " \n");
+    statement.append("WHERE folderName = :folderName" + "\n");
+    statement.append("AND oid != :oid" + "\n");
+
+    final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
+    query.setParameter("folderName", folderName);
+    query.setParameter("oid", this.getOid());
+
+    List<UasComponent> list = query.getResults();
+
+    if (list.size() > 0)
+    {
+      return true;
     }
 
     return false;

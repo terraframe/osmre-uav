@@ -99,4 +99,14 @@ public interface UasComponentIF extends ComponentIF
 
     return true;
   }
+
+  public static boolean isValid(char c)
+  {
+    if (c == ' ' || c == '<' || c == '>' || c == '-' || c == '+' || c == '=' || c == '!' || c == '@' || c == '#' || c == '$' || c == '%' || c == '^' || c == '&' || c == '*' || c == '?' || c == ';' || c == ':' || c == ',' || c == '^' || c == '{' || c == '}' || c == ']' || c == '[' || c == '`' || c == '~' || c == '|' || c == '/' || c == '\\')
+    {
+      return false;
+    }
+
+    return true;
+  }
 }
