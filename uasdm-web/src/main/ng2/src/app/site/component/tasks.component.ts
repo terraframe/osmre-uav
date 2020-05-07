@@ -7,8 +7,14 @@ import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-c
 import { LeafModalComponent } from './modal/leaf-modal.component';
 import { PageResult } from '../../shared/model/page';
 
+import { HttpClient } from '@angular/common/http';
+import { interval } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
+
+declare var acp: any;
 
 @Component({
     selector: 'tasks',
@@ -26,8 +32,8 @@ export class TasksComponent implements OnInit {
     showUploads: boolean = false;
     showProcess: boolean = false;
     showStore: boolean = false;
-    tasks: any;
-    taskPage: PageResult<Task> = { count: 0, pageSize: 20, pageNumber: 1, resultSet: [] };
+    tasks:any;
+    taskPage: PageResult<Task> = {count:0, pageSize: 20, pageNumber: 1, resultSet: []};
     errorStatuses = ["Error", "Failed", "Queued", "Processing"];
     completeStatuses = ["Complete"];
 
@@ -48,20 +54,20 @@ export class TasksComponent implements OnInit {
 
     collectionGroups: TaskGroup[] = [];
 
-    constructor(private managementService: ManagementService, private modalService: BsModalService) {
+    constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
 
-        // this.taskPolling = interval(5000).pipe(
-        // 	switchMap(() => http.get<any>(acp + '/project/tasks')))
-        // 	.subscribe((data) => {
-        // 		this.updateTaskData(data);
-        // 	});
+        this.taskPolling = interval(5000).pipe(
+            switchMap(() => http.get<any>(acp + '/project/tasks')))
+            .subscribe((data) => {
+                this.updateTaskData(data);
+            });
+
     }
 
     ngOnInit(): void {
         this.userName = this.managementService.getCurrentUser();
-
-        this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(tasks => {
-            this.setTaskData(tasks);
+        this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
+            this.setTaskData(data, false);
         });
 
         this.getMissingMetadata();
@@ -74,60 +80,60 @@ export class TasksComponent implements OnInit {
         }
     }
 
-    updatePage(data: any): void {
+    updatePage(data:PageResult<Task>): void{
         this.taskPage.pageNumber = data.pageNumber;
         this.taskPage.pageSize = data.pageSize;
         this.taskPage.count = data.count;
-        this.taskPage.resultSet = data
+        this.taskPage.resultSet = data.resultSet;
     }
 
-    onPageChange(pageNumber: number, statuses: string[]): void {
+    onPageChange(pageNumber: number, statuses: any): void{
         this.managementService.tasks(statuses, this.taskPage.pageSize, pageNumber).then(tasks => {
 
             this.updatePage(tasks);
 
-            this.setTaskData(tasks);
+            this.setTaskData(tasks, false);
         });
     }
 
     onTabClick(event: any, tab: string): void {
         this.activeTab = tab;
-        this.taskPage = { count: 0, pageSize: 20, pageNumber: 1, resultSet: [] };
+        this.taskPage = {count:0, pageSize: 20, pageNumber: 1, resultSet: []};
 
-        if (tab === "success") {
+        if(tab === "success"){
 
             this.managementService.tasks(this.completeStatuses, this.taskPage.pageSize, this.taskPage.pageNumber).then(tasks => {
 
                 this.updatePage(tasks);
-
-                this.setTaskData(tasks);
+                
+                this.setTaskData(tasks, false);
             });
         }
-        else if (tab === "action-required") {
+        else if(tab === "action-required") {
             this.managementService.tasks(this.errorStatuses, this.taskPage.pageSize, this.taskPage.pageNumber).then(tasks => {
 
                 this.updatePage(tasks);
 
-                this.setTaskData(tasks);
+                this.setTaskData(tasks, false);
             });
         }
-        else if (tab === "all") {
+        else if(tab === "all") {
             this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(tasks => {
 
                 this.updatePage(tasks);
 
-                this.setTaskData(tasks);
+                this.setTaskData(tasks, false);
             });
         }
 
-        if (!event.target.parentNode.classList.contains("active")) {
+        if(!event.target.parentNode.classList.contains("active")){
 
             let lis = event.target.parentNode.parentNode.getElementsByTagName("li");
-            for (let i = 0; i < lis.length; i++) {
+            for(let i = 0; i<lis.length; i++){
                 let li = lis[i];
 
-                li.classList.forEach((cls: string) => {
-                    if (cls === 'active') {
+                li.classList.forEach(cls => {
+                    if(cls === 'active'){
                         li.classList.remove('active');
                     }
                 })
@@ -137,92 +143,90 @@ export class TasksComponent implements OnInit {
         }
     }
 
-    setMessageDate(messages: PageResult<Message>): void {
-        this.messages = messages;
-    }
+    setTaskData(tasks:PageResult<Task>, addOnly: boolean): void {
 
-    setTaskData(tasks: PageResult<Task>): void {
+        if(!addOnly){
+            this.updatePage(tasks);
 
-        this.updatePage(tasks);
+            this.collectionGroups = [];
+        }
 
-        this.collectionGroups = [];
-
-        for (let i = 0; i < tasks.resultSet.length; i++) {
+        for(let i=0; i<tasks.resultSet.length; i++){
             let task = tasks.resultSet[i];
-            let collectPosition = this.collectionGroups.findIndex(value => { return task.collectionLabel === value.label });
+            let collectPosition = this.collectionGroups.findIndex( value => { return task.collectionLabel === value.label } ); 
+            
+            if(collectPosition > -1){
 
-            if (collectPosition > -1) {
+                if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
 
-                if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
+                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'UPLOAD' } ); 
 
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'UPLOAD' });
-
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'UPLOAD' })
+                    if(taskGroupTypeIndex === -1){
+                        this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'UPLOAD' })
                     }
-                    else {
+                    else{
                         this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
                     }
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
+                else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
 
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'PROCESS' });
+                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'PROCESS' } ); 
 
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'PROCESS' })
+                    if(taskGroupTypeIndex === -1){
+                        this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'PROCESS' })
                     }
-                    else {
+                    else{
                         this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
                     }
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
+                else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
 
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'STORE' });
+                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex( value => { return value.type === 'STORE' } );
 
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'STORE' })
+                    if(taskGroupTypeIndex === -1){
+                        this.collectionGroups[collectPosition].groups.push({ tasks:[task], status:task.status, type: 'STORE' })
                     }
-                    else {
+                    else{
                         this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
                     }
                 }
             }
-            else {
+            else{
 
-                if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
+                if(task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask'){
 
                     this.collectionGroups.push({
-                        label: task.collectionLabel,
+                        label: task.collectionLabel, 
                         collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'UPLOAD' }],
-                        status: task.status,
+                        groups: [{ tasks:[task], status:task.status, type: 'UPLOAD' }],
+                        status:task.status,
                         lastUpdatedDate: task.lastUpdatedDate
                     });
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
+                else if(task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
 
                     this.collectionGroups.push({
-                        label: task.collectionLabel,
+                        label: task.collectionLabel, 
                         collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'PROCESS' }],
-                        status: task.status,
+                        groups: [{ tasks:[task], status:task.status, type: 'PROCESS' }],
+                        status:task.status,
                         lastUpdatedDate: task.lastUpdatedDate
                     });
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
+                else if(task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask'){
 
                     this.collectionGroups.push({
-                        label: task.collectionLabel,
+                        label: task.collectionLabel, 
                         collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'STORE' }],
-                        status: task.status,
+                        groups: [{ tasks:[task], status:task.status, type: 'STORE' }],
+                        status:task.status,
                         lastUpdatedDate: task.lastUpdatedDate
                     });
                 }
 
             }
         }
-
+        
         this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
             new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
         );
@@ -234,7 +238,7 @@ export class TasksComponent implements OnInit {
     setTaskGroupStatuses(): void {
 
         this.collectionGroups.forEach(collectionGroup => {
-
+            
             let isError: boolean = false;
             let isWorking: boolean = false;
 
@@ -245,26 +249,24 @@ export class TasksComponent implements OnInit {
                         new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
                     );
 
-                    group.status = sortedTasks[group.tasks.length - 1].status;
+                    group.status = sortedTasks[0].status;
                 }
 
                 if (group.status === "Error" || group.status === "Failed") {
                     isError = true;
                 }
-                else if (group.status === "Queued" || group.status === "Processing") {
+                else if (group.status === "Queued" || group.status === "Processing" || group.status === "Running" || group.status === "Pending") {
                     isWorking = true;
-                }
-                else if (group.status === "Complete") {
                 }
             });
 
-            if (isWorking) {
+            if(isWorking){
                 collectionGroup.status = "Processing";
             }
-            else if (isError) {
+            else if(isError){
                 collectionGroup.status = "Failed";
             }
-            else {
+            else{
                 collectionGroup.status = "Complete";
             }
 
@@ -272,7 +274,7 @@ export class TasksComponent implements OnInit {
     }
 
 
-    updateTaskData(tasks: PageResult<Task>): void {
+    updateTaskData(tasks:PageResult<Task>): void {
         let noMatch = [];
 
         this.totalTaskCount = tasks.count;
@@ -280,13 +282,14 @@ export class TasksComponent implements OnInit {
         // Update existing tasks
         tasks.resultSet.forEach(newTask => {
 
+            let matchFound: boolean = false;
+
             this.collectionGroups.forEach(existingTaskGrp => {
                 existingTaskGrp.groups.forEach(existingGroup => {
 
-                    let matchFound: boolean = false;
                     existingGroup.tasks.forEach(existingTask => {
                         if (existingTask.oid === newTask.oid) {
-
+                            
                             matchFound = true;
 
                             // Update props
@@ -311,18 +314,18 @@ export class TasksComponent implements OnInit {
                             }
                         }
                     })
-
-                    if (!matchFound) {
-                        noMatch.push(newTask);
-                    }
                 });
-            })
+            });
+            
+            if (!matchFound) {
+                noMatch.push(newTask);
+            }
         })
 
         // Add new tasks
         // let newTasks = data.tasks.filter((o: Task) => !this.collectionGroups.resultSet.find(o2 => o.oid === o2.oid));
-        if (noMatch && noMatch.length > 0) {
-            this.setTaskData({ resultSet: noMatch, count: tasks.count, pageNumber: this.taskPage.pageNumber, pageSize: this.taskPage.pageSize });
+        if(noMatch && noMatch.length > 0) {
+            this.setTaskData({resultSet: noMatch, count:tasks.count, pageNumber:this.taskPage.pageNumber, pageSize:this.taskPage.pageSize}, true);
         }
     }
 
@@ -392,26 +395,27 @@ export class TasksComponent implements OnInit {
     }
 
     deleteTask(task: Task) {
-        this.managementService.removeTask(task.uploadId).then(() => {
-            let pos = null;
-            for (let i = 0; i < this.tasks.resultSet.length; i++) {
-                let thisTask = this.tasks[i];
+        this.managementService.removeTask(task.uploadId)
+            .then(() => {
+                let pos = null;
+                for (let i = 0; i < this.tasks.resultSet.length; i++) {
+                    let thisTask = this.tasks[i];
 
-                if (thisTask.uploadId === task.uploadId) {
-                    pos = i;
-                    break;
+                    if (thisTask.uploadId === task.uploadId) {
+                        pos = i;
+                        break;
+                    }
                 }
-            }
 
-            if (pos !== null) {
-                this.tasks.resultSet.splice(pos, 1);
-            }
+                if (pos !== null) {
+                    this.tasks.resultSet.splice(pos, 1);
+                }
 
-            this.getMissingMetadata();
+                this.getMissingMetadata();
 
-            this.totalTaskCount = this.tasks.count;
+                this.totalTaskCount = this.tasks.count;
 
-        });
+            });
     }
 
     getMissingMetadata(): void {
@@ -423,6 +427,4 @@ export class TasksComponent implements OnInit {
             this.messages = messages;
         });
     }
-
-
 }

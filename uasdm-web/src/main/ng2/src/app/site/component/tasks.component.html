@@ -91,7 +91,7 @@
                     </a>
                   </h4>
                   
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
+                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
@@ -121,7 +121,7 @@
                 </div>
             </div>
 
-             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event, [])"></pagination-controls>
+             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event, ['Failed'])"></pagination-controls>
           </div>
         </div>
 
@@ -137,7 +137,7 @@
                     </a>
                   </h4>
                   
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
+                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}" ></span>
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
@@ -167,7 +167,7 @@
                 </div>
             </div>
 
-             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event, [])"></pagination-controls>
+             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event, ['Complete'])"></pagination-controls>
           </div>
         </div>
 
@@ -183,7 +183,7 @@
                     </a>
                   </h4>
                   
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','pending':taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
+                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}" ></span>
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
