@@ -71,9 +71,11 @@
         <li>
           <a role="tab" data-toggle="tab" (click)="onTabClick($event, 'action-required')">Action Required</a>
         </li>
+<!-- 
         <li>
           <a role="tab" data-toggle="tab" (click)="onTabClick($event, 'success')">Successful</a>
         </li>
+ -->        
       </ul>
 
       <div class="tab-content" >
@@ -124,7 +126,7 @@
              <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
           </div>
         </div>
-
+        
         <div *ngIf="activeTab === 'success'" class="tab-pane active" id="success">
           <div class="panel-group">
             <div *ngFor="let taskGroup of collectionGroups | paginate: {id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index" class="panel panel-default" style="background: none;border: none;">
@@ -147,17 +149,14 @@
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
                     <div [id]="'task'+ grpi">
 
-                      <!-- Upload Tasks -->
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
                         <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
                       </div>
 
-                      <!-- Process Tasks -->
                       <div *ngIf="taskGroupType.type === 'PROCESS'">
                         <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
                       </div>
 
-                      <!-- Store Tasks -->
                       <div *ngIf="taskGroupType.type === 'STORE'">
                         <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
                       </div>

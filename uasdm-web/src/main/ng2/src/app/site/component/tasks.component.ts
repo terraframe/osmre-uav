@@ -30,7 +30,7 @@ export class TasksComponent implements OnInit {
     showProcess: boolean = false;
     showStore: boolean = false;
     tasks: any;
-    taskPage: PageResult<Task> = { count: 0, pageSize: 20, pageNumber: 1, resultSet: [] };
+    taskPage: PageResult<Task> = { count: 0, pageSize: 10, pageNumber: 1, resultSet: [] };
     errorStatuses = ["Error", "Failed", "Queued", "Processing"];
     completeStatuses = ["Complete"];
 
@@ -58,7 +58,9 @@ export class TasksComponent implements OnInit {
         this.taskPolling = interval(5000).pipe(
             switchMap(() => from(this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber))))
             .subscribe((data) => {
-                this.updateTaskData(data);
+                if(data.pageNumber == this.taskPage.pageNumber) {
+                    this.updateTaskData(data);
+                }
             });
 
     }
