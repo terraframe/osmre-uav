@@ -12,6 +12,12 @@ with open(self.__reconstruction_file(filename)) as fin:
 IOError: [Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'
 
 
+0.9.8:
+[ERROR]   The program could not process this dataset using the current settings. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. You could also try to increase the --min-num-features parameter.The program will now exit.
+
+
+
+
 2. Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'
 
 Not enough supported images in %s

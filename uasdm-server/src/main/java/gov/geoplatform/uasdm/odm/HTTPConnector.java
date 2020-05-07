@@ -50,6 +50,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -160,7 +161,7 @@ public class HTTPConnector
 //    }
   }
   
-  public HTTPResponse httpPost(String url, String body)
+  public HTTPResponse httpPost(String url, NameValuePair[] body)
   {
     if (!isInitialized())
     {
@@ -171,9 +172,10 @@ public class HTTPConnector
     {
       PostMethod post = new PostMethod(this.getServerUrl() + url);
       
-      post.setRequestHeader("Content-Type", "application/json");
+      post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       
-      post.setRequestEntity(new StringRequestEntity(body, null, null));
+      String sBody = org.apache.commons.httpclient.util.EncodingUtil.formUrlEncode(body, "UTF-8");
+      post.setRequestEntity(new StringRequestEntity(sBody, null, null));
       
       HTTPResponse response = this.httpRequest(this.client, post);
       
