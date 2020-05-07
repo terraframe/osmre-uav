@@ -250,9 +250,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "missing-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMissingMetadata(ClientRequestIF request)
+  public ResponseIF getMissingMetadata(ClientRequestIF request, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {
-    JSONArray response = new WorkflowService().getMissingMetadata(request.getSessionId());
+    JSONObject response = new WorkflowService().getMissingMetadata(request.getSessionId(), pageNumber, pageSize);
 
     return new RestBodyResponse(response);
   }

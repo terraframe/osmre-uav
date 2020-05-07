@@ -285,7 +285,7 @@ export class ManagementService {
             .toPromise();
     }
 
-    tasks(statuses: string[], pageSize: number, pageNumber: number): Promise<{ messages: Message[], tasks: PageResult<Task>}> {
+    tasks(statuses: string[], pageSize: number, pageNumber: number): Promise<PageResult<Task>> {
 
         // status options: PROCESSING, COMPLETE, ERROR, QUEUED
         let params: HttpParams = new HttpParams();
@@ -294,7 +294,7 @@ export class ManagementService {
         params = params.set('pageNumber', pageNumber.toString());
 
         return this.http
-            .get<{ messages: Message[], tasks: PageResult<Task> }>(acp + '/project/tasks', { params: params })
+            .get<PageResult<Task>>(acp + '/project/tasks', { params: params })
             .toPromise()
     }
 
@@ -305,13 +305,17 @@ export class ManagementService {
 
         return this.http
             .get<{ messages: Message[], task: Task }>(acp + '/project/task', { params: params })
-            .toPromise()
+            .toPromise();
     }
 
-    getMissingMetadata(): Promise<Message[]> {
-        return this.http
-            .get<Message[]>(acp + '/project/missing-metadata')
-            .toPromise()
+    getMissingMetadata(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
+
+        let params: HttpParams = new HttpParams();
+        params = params.set('pageSize', pageSize.toString());
+        params = params.set('pageNumber', pageNumber.toString());
+
+        return this.http.get<PageResult<Message>>(acp + '/project/missing-metadata', { params: params })
+            .toPromise();
     }
 
     download(id: string, key: string, useSpinner: boolean): Observable<Blob> {

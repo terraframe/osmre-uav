@@ -94,11 +94,6 @@ export class TasksPanelComponent implements OnInit {
 
 	getMissingMetadata(): void {
 
-		this.managementService.getMissingMetadata()
-			.then(messages => {
-				// this.messages = messages;
-				// TODO ^^
-			});
 	}
 
 }

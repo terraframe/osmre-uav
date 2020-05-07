@@ -63,41 +63,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return this.addMission((Mission) uasComponent);
   }
 
-  public static java.util.Collection<CollectionIF> getMissingMetadata()
-  {
-    java.util.Collection<CollectionIF> collectionList = new LinkedHashSet<CollectionIF>();
-
-    SingleActor singleActor = GeoprismUser.getCurrentUser();
-
-    if (singleActor != null)
-    {
-      QueryFactory qf = new QueryFactory();
-
-      CollectionQuery cQ = new CollectionQuery(qf);
-
-      CollectionUploadEventQuery eQ = new CollectionUploadEventQuery(qf);
-
-      // Get Events created by the current user
-      eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
-
-      // Get Collections associated with those tasks
-      cQ.WHERE(cQ.getOid().EQ(eQ.getComponent()));
-
-      // Get the Missions of those Collections;
-      cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
-
-      try (OIterator<? extends Collection> i = cQ.getIterator())
-      {
-        for (Collection collection : i)
-        {
-          collectionList.add(collection);
-        }
-      }
-    }
-
-    return collectionList;
-  }
-
   public JSONObject toMetadataMessage()
   {
     JSONObject object = new JSONObject();
@@ -369,6 +334,62 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
 
     return workflowTask;
+  }
+
+  public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)
+  {
+    java.util.Collection<CollectionIF> collectionList = new LinkedHashSet<CollectionIF>();
+
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+
+    if (singleActor != null)
+    {
+      CollectionQuery cQ = getMissingMetadataQuery(singleActor);
+
+      cQ.restrictRows(pageSize, pageNumber);
+
+      try (OIterator<? extends Collection> i = cQ.getIterator())
+      {
+        for (Collection collection : i)
+        {
+          collectionList.add(collection);
+        }
+      }
+    }
+
+    return collectionList;
+  }
+
+  public static long getMissingMetadataCount()
+  {
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+
+    if (singleActor != null)
+    {
+      return getMissingMetadataQuery(singleActor).getCount();
+    }
+
+    return 0l;
+  }
+
+  public static CollectionQuery getMissingMetadataQuery(SingleActor singleActor)
+  {
+    QueryFactory qf = new QueryFactory();
+
+    CollectionQuery cQ = new CollectionQuery(qf);
+
+    CollectionUploadEventQuery eQ = new CollectionUploadEventQuery(qf);
+
+    // Get Events created by the current user
+    eQ.WHERE(eQ.getGeoprismUser().EQ(singleActor));
+
+    // Get Collections associated with those tasks
+    cQ.WHERE(cQ.getOid().EQ(eQ.getComponent()));
+
+    // Get the Missions of those Collections;
+    cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
+
+    return cQ;
   }
 
 }

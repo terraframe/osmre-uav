@@ -29,12 +29,13 @@ public interface ComponentStrategy
 
   public List<SiteIF> getSites(String bounds);
 
-  public Collection<CollectionIF> getMissingMetadata();
+  public Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize);
+
+  public long getMissingMetadataCount();
 
   public UasComponentIF newRoot();
 
   public JSONObject features() throws IOException;
 
   public JSONArray bbox();
-
 }

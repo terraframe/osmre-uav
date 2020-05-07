@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.model;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -69,9 +70,27 @@ public class BusinessStrategy implements ComponentStrategy
     return Product.getProduct();
   }
 
-  public java.util.Collection<CollectionIF> getMissingMetadata()
+  @Override
+  public Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize)
   {
-    return Collection.getMissingMetadata();
+    java.util.Collection<CollectionIF> collections = Collection.getMissingMetadata(pageNumber, pageSize);
+
+    long count = this.getMissingMetadataCount();
+
+    List<MetadataMessage> results = new LinkedList<MetadataMessage>();
+
+    for (CollectionIF collection : collections)
+    {
+      results.add(new MetadataMessage(collection));
+    }
+
+    return new Page<MetadataMessage>(count, pageNumber, pageSize, results);
+  }
+
+  @Override
+  public long getMissingMetadataCount()
+  {
+    return Collection.getMissingMetadataCount();
   }
 
   @Override

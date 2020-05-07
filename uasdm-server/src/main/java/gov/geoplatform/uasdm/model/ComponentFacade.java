@@ -60,9 +60,14 @@ public class ComponentFacade
     return STRATEGY.getSites(bounds);
   }
 
-  public static java.util.Collection<CollectionIF> getMissingMetadata()
+  public static long getMissingMetadataCount()
   {
-    return STRATEGY.getMissingMetadata();
+    return STRATEGY.getMissingMetadataCount();
+  }
+
+  public static Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize)
+  {
+    return STRATEGY.getMissingMetadata(pageNumber, pageSize);
   }
 
   public static UasComponentIF newRoot()
