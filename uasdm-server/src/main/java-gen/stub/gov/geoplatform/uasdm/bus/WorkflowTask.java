@@ -66,10 +66,13 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public static Page<WorkflowTask> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
     List<String> components = getUserWorkflowComponents(statuses, pageNumber, pageSize);
-    Long count = getUserWorkflowComponentCount();
+    Long count = getUserWorkflowComponentCount(statuses);
 
-    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+    if (components.size() > 0)
+    {
+
+      WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+      query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
 //    if (statuses != null)
 //    {
@@ -88,10 +91,10 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 //      }
 //    }
 
-    query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
+      query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
 
-    query.ORDER_BY_ASC(query.getComponent());
-    query.ORDER_BY_ASC(query.getLastUpdateDate());
+      query.ORDER_BY_ASC(query.getComponent());
+      query.ORDER_BY_ASC(query.getLastUpdateDate());
 
 //    if (pageNumber != null && pageSize != null)
 //    {
@@ -100,15 +103,18 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 //
 //    final long count = query.getCount();
 
-    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
-    {
-      List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
+      try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+      {
+        List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
 
-      return new Page<WorkflowTask>(count, pageNumber, pageSize, results);
+        return new Page<WorkflowTask>(count, pageNumber, pageSize, results);
+      }
     }
+
+    return new Page<WorkflowTask>(count, pageNumber, pageSize, new LinkedList<>());
   }
 
-  public static Long getUserWorkflowComponentCount()
+  public static Long getUserWorkflowComponentCount(String statuses)
   {
     // Runway doesn't support doing a count distinct query so I am circumventing
     // the ORM api and doing a direct query
@@ -117,8 +123,29 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     builder.append("FROM abstract_workflow_task abstract_workflow_task_4,\n");
     builder.append("     workflow_task workflow_task_2 \n");
     builder.append("WHERE workflow_task_2.oid = abstract_workflow_task_4.oid\n");
-    builder.append("AND abstract_workflow_task_4.geoprism_user = '" + GeoprismUser.getCurrentUser().getOid() + "'");
+    builder.append("AND abstract_workflow_task_4.geoprism_user = '" + GeoprismUser.getCurrentUser().getOid() + "' ");
 
+    if (statuses != null)
+    {
+      final JSONArray array = new JSONArray(statuses);
+
+      if (array.length() > 0)
+      {
+        builder.append("AND (");
+
+        for (int i = 0; i < array.length(); i++)
+        {
+          if (i != 0)
+          {
+            builder.append(" OR");
+          }
+          builder.append(" abstract_workflow_task_4.status = '" + array.getString(i) + "'");
+        }
+
+        builder.append(") \n");
+      }
+    }
+    
     try (ResultSet rs = Database.query(builder.toString()))
     {
       if (rs.next())
