@@ -39,7 +39,7 @@
               <div class="button-holder" style="margin-top: 30px;">
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
                 <button class="btn btn-default" *ngIf="task.odmOutput" (click)="showODMOutput = !showODMOutput">Show Log Output</button>
-                <button class="btn btn-default" (click)="showError = !showError">Show Error</button>
+                <button class="btn btn-default" (click)="task.showError = !task.showError">Show Error</button>
               </div>
             </div>
           </div>
@@ -51,7 +51,7 @@
             </div>
           </div>
 
-          <div *ngIf="showError" class="row">
+          <div *ngIf="task.showError" class="row">
             <div class="col-sm-12">
               <h4>Actions:</h4>
               <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
