@@ -358,7 +358,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return workflowTask;
   }
 
-  public static java.util.Collection<CollectionIF> getMissingMetadata()
+  public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)
   {
     SingleActor singleActor = GeoprismUser.getCurrentUser();
 
@@ -372,6 +372,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       builder.append(" WHERE " + METADATAUPLOADED + " = :metadataUploaded");
       builder.append(" AND " + OWNER + " = :owner");
       builder.append(" AND outE('" + mdEdge.getDBClassName() + "').size() > 0");
+      builder.append(" ORDER BY name");
+      builder.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
 
       final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(builder.toString());
       query.setParameter("metadataUploaded", false);
@@ -381,6 +383,31 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
 
     return new LinkedHashSet<CollectionIF>();
+  }
+
+  public static long getMissingMetadataCount()
+  {
+    SingleActor singleActor = GeoprismUser.getCurrentUser();
+
+    if (singleActor != null)
+    {
+      final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
+      final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+
+      StringBuilder builder = new StringBuilder();
+      builder.append("SELECT COUNT(*) FROM " + mdCollection.getDBClassName());
+      builder.append(" WHERE " + METADATAUPLOADED + " = :metadataUploaded");
+      builder.append(" AND " + OWNER + " = :owner");
+      builder.append(" AND outE('" + mdEdge.getDBClassName() + "').size() > 0");
+
+      final GraphQuery<Long> query = new GraphQuery<Long>(builder.toString());
+      query.setParameter("metadataUploaded", false);
+      query.setParameter("owner", singleActor.getOid());
+
+      return query.getSingleResult();
+    }
+
+    return 0L;
   }
 
   public static JSONArray toMetadataMessage(java.util.Collection<CollectionIF> collections)

@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.service;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +11,9 @@ import com.runwaysdk.session.RequestType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -110,33 +108,28 @@ public class WorkflowService
   public JSONObject getTasks(String sessionId, String statuses, Integer pageNumber, Integer pageSize)
   {
     Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(statuses, pageNumber, pageSize);
-    java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
 
-    JSONObject response = new JSONObject();
-    response.put("tasks", page.toJSON());
-    response.put("messages", Collection.toMetadataMessage(missions));
-
-    return response;
+    return page.toJSON();
   }
-  
+
   @Request(RequestType.SESSION)
   public JSONObject getTasksCount(String sessionId, String status)
   {
-    java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
+    long metadataCount = ComponentFacade.getMissingMetadataCount();
     long count = WorkflowTask.getUserWorkflowTasksCount(status);
 
     JSONObject response = new JSONObject();
-    response.put("tasksCount", count + Collection.toMetadataMessage(missions).length());
+    response.put("tasksCount", count + metadataCount);
 
     return response;
   }
 
   @Request(RequestType.SESSION)
-  public JSONArray getMissingMetadata(String sessionId)
+  public JSONObject getMissingMetadata(String sessionId, Integer pageNumber, Integer pageSize)
   {
-    java.util.Collection<CollectionIF> missions = ComponentFacade.getMissingMetadata();
+    Page<MetadataMessage> page = ComponentFacade.getMissingMetadata(pageNumber, pageSize);
 
-    return Collection.toMetadataMessage(missions);
+    return page.toJSON();
   }
 
   @Request(RequestType.SESSION)

@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,10 +10,15 @@ import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.Pair;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.ValueObject;
+import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.query.ValueQuery;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -58,8 +65,84 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public static Page<WorkflowTask> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
+    List<String> components = getUserWorkflowComponents(statuses, pageNumber, pageSize);
+    Long count = getUserWorkflowComponentCount();
+
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
     query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+
+//    if (statuses != null)
+//    {
+//      List<Condition> conditions = new LinkedList<Condition>();
+//
+//      final JSONArray array = new JSONArray(statuses);
+//
+//      for (int i = 0; i < array.length(); i++)
+//      {
+//        conditions.add(query.getStatus().EQ(array.getString(i)));
+//      }
+//
+//      if (conditions.size() > 0)
+//      {
+//        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+//      }
+//    }
+
+    query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
+
+    query.ORDER_BY_ASC(query.getComponent());
+    query.ORDER_BY_ASC(query.getLastUpdateDate());
+
+//    if (pageNumber != null && pageSize != null)
+//    {
+//      query.restrictRows(pageSize, pageNumber);
+//    }
+//
+//    final long count = query.getCount();
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
+
+      return new Page<WorkflowTask>(count, pageNumber, pageSize, results);
+    }
+  }
+
+  public static Long getUserWorkflowComponentCount()
+  {
+    // Runway doesn't support doing a count distinct query so I am circumventing
+    // the ORM api and doing a direct query
+    StringBuilder builder = new StringBuilder();
+    builder.append("SELECT count (DISTINCT workflow_task_2.component) AS component_3\n");
+    builder.append("FROM abstract_workflow_task abstract_workflow_task_4,\n");
+    builder.append("     workflow_task workflow_task_2 \n");
+    builder.append("WHERE workflow_task_2.oid = abstract_workflow_task_4.oid\n");
+    builder.append("AND abstract_workflow_task_4.geoprism_user = '" + GeoprismUser.getCurrentUser().getOid() + "'");
+
+    try (ResultSet rs = Database.query(builder.toString()))
+    {
+      if (rs.next())
+      {
+        long count = rs.getLong(1);
+
+        return count;
+      }
+
+      return 0L;
+    }
+    catch (SQLException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  public static List<String> getUserWorkflowComponents(String statuses, Integer pageNumber, Integer pageSize)
+  {
+    ValueQuery vQuery = new ValueQuery(new QueryFactory());
+    WorkflowTaskQuery query = new WorkflowTaskQuery(vQuery);
+
+    vQuery.SELECT_DISTINCT(query.getComponent());
+    vQuery.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
     if (statuses != null)
     {
@@ -74,26 +157,31 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       if (conditions.size() > 0)
       {
-        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+        vQuery.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
       }
     }
 
-    query.ORDER_BY_ASC(query.getComponent());
-    query.ORDER_BY_ASC(query.getLastUpdateDate());
+//    vQuery.ORDER_BY_ASC(query.getLastUpdateDate());
 
     if (pageNumber != null && pageSize != null)
     {
-      query.restrictRows(pageSize, pageNumber);
+      vQuery.restrictRows(pageSize, pageNumber);
     }
 
-    final long count = query.getCount();
+    List<String> components = new LinkedList<String>();
 
-    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    try (OIterator<ValueObject> iterator = vQuery.getIterator(pageSize, pageNumber))
     {
-      List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
+      while (iterator.hasNext())
+      {
+        ValueObject vObject = iterator.next();
+        String component = vObject.getValue(COMPONENT);
 
-      return new Page<WorkflowTask>(count, pageNumber, pageSize, results);
+        components.add(component);
+      }
     }
+
+    return components;
   }
 
   public JSONObject toJSON()

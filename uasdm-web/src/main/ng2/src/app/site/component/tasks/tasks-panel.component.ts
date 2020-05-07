@@ -3,17 +3,10 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { PageResult } from '../../../shared/model/page';
 
-import { HttpClient } from '@angular/common/http';
-import { interval } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
-import { Message, Task, TaskGroup, TaskGroupType } from '../../model/management';
+import { Task, TaskGroup, TaskGroupType } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
-import { doesNotMatch } from 'assert';
 
-declare var acp: any;
 
 @Component({
 	selector: 'tasks-panel',
@@ -25,6 +18,7 @@ export class TasksPanelComponent implements OnInit {
 	@Input() taskGroupType: TaskGroupType;
 	@Input() groupTypeId: string;
 	@Input() taskCategory: string;
+    
 	showUploads: boolean = false;
 	showProcess: boolean = false;
 	showStore: boolean = false;
@@ -42,7 +36,7 @@ export class TasksPanelComponent implements OnInit {
      */
 	taskGroups: TaskGroup[] = [];
 
-	constructor(http: HttpClient, private managementService: ManagementService, private modalService: BsModalService) {
+	constructor(private managementService: ManagementService, private modalService: BsModalService) {
 
 	}
 
@@ -87,18 +81,6 @@ export class TasksPanelComponent implements OnInit {
 				if (pos !== null) {
 					this.taskGroupType.tasks.splice(pos, 1);
 				}
-
-				this.getMissingMetadata();
 			});
 	}
-
-	getMissingMetadata(): void {
-
-		this.managementService.getMissingMetadata()
-			.then(messages => {
-				// this.messages = messages;
-				// TODO ^^
-			});
-	}
-
 }
