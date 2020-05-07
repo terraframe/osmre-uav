@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,6 +107,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public JSONObject toMetadataMessage()
   {
     final List<UasComponentIF> ancestors = this.getAncestors();
+    Collections.reverse(ancestors);
 
     final JSONArray parents = new JSONArray();
 
