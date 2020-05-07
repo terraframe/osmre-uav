@@ -117,8 +117,11 @@ public class ODMFacade
   public static TaskRemoveResponse taskRemove(String uuid)
   {
     initialize();
+    
+    NameValuePair[] nvp = new NameValuePair[1];
+    nvp[0] = new NameValuePair("uuid", uuid);
 
-    HTTPResponse resp = connector.httpPost("task/remove", "{\"uuid\":\"" + uuid + "\"}");
+    HTTPResponse resp = connector.httpPost("task/remove", nvp);
 
     return new TaskRemoveResponse(resp);
   }

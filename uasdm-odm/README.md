@@ -11,44 +11,9 @@ and requires pulling the uasdm-odm container from our private AWS ECR. You may a
 
 # How can I build this project?
 
-This project is not a full checkout of ODM, nor does it contain NodeODM. It only contains the source which was actually modified.
-
 Upon a fresh checkout of this project, simply open a terminal, cd to this directory, and run init.sh. This script will fetch ODM and NodeODM automatically for you.
 
-To build, simply run build.sh. This script will replace all modified ODM source and then build the projects. 
+To build, simply run build.sh. This script will generate new docker images with the updated source code.
 
 I have noticed that the ODM Docker image does not build correctly on my Mac, however I have had good success on Ubuntu bionic.
 
-
-# What exactly was changed?
-
-The following files were changed:
-
-1. EDIT opendm/config.py
-
-This file was changed to add the new 'multispectral parameter'
-
-```
-parser.add_argument('--multispectral',
-        action='store_true',
-        default=False,
-        help='If set to true, ODM will assume the imagery is multispectral and Micasense will be invoked '
-        'Default: '
-        '%(default)s')
-```
-
-2. NEW stages/odm_micasense.py
-
-This new file was added. It contains the core logic for running the Micasense docker container.
-
-3. EDIT odm_app.py
-
-Two major changes were made in this file. The first is adding the new micasense stage to the list of stages and telling ODM to run it first. Second, the initialization procedure of ODM was slightly modified. Some initialization code was pulled out of dataset.py and moved into this file here, because the initialization code needed to be run before the micasense stage.
-
-4. EDIT dataset.py
-
-The previously mentioned initialization code was pulled out of dataset.py and moved into the bottom of odm_app.py
-
-5. NodeODM : Task.js
-
-Line 316, micasense (and the ortho png) were added to the allPaths, which includes them into the resultant zip.
