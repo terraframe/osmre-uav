@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -30,6 +31,7 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -117,7 +119,7 @@ public class ODMFacade
   public static TaskRemoveResponse taskRemove(String uuid)
   {
     initialize();
-    
+
     NameValuePair[] nvp = new NameValuePair[1];
     nvp[0] = new NameValuePair("uuid", uuid);
 
@@ -302,6 +304,11 @@ public class ODMFacade
           }
         }
       }
+      catch (ZipException e)
+      {
+        throw new InvalidZipException();
+      }
+
     }
 
     return new CloseablePair(new CloseableFile(zip), itemCount);

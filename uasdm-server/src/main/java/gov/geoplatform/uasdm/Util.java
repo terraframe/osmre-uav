@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -220,6 +221,12 @@ public class Util
           FileUtils.deleteQuietly(tmp);
         }
       }
+    }
+    catch (ZipException e)
+    {
+      task.createAction(e.getMessage(), "error");
+      
+      throw new InvalidZipException();
     }
     catch (IOException e)
     {

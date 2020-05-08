@@ -1,0 +1,15 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.InvalidZipException" 
+                   label="Invalid Zip Exception" 
+                   description="Thrown when an error occurs while unzipping/zipping the file" 
+                   message="Error occurred when reading the zip file">
+      </mdException>    
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
