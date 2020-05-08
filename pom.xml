@@ -34,6 +34,13 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
+  
+  <scm>
+    <connection>scm:git:ssh://git@github.com/terraframe/osmre-uav</connection>
+    <developerConnection>scm:git:ssh://git@github.com/terraframe/osmre-uav</developerConnection>
+    <url>scm:git:ssh://git@github.com/terraframe/osmre-uav</url>
+    <tag>0.0.1</tag>
+  </scm>
 
   <dependencies>
     <dependency>
