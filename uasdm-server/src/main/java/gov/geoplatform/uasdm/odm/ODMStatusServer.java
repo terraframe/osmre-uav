@@ -333,7 +333,15 @@ public class ODMStatusServer
   
               String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
   
-              task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+              if (resp.getImagesCount() == 1) // This happens when not using ODM's newer "chunk" functionality, and it only happens when a auto-scaling node is spinning up.
+              {
+                task.setMessage("Your images are being processed. Check back later for updates. An email will be sent when the processing is complete.");
+              }
+              else
+              {
+                task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+              }
+              
               task.apply();
             }
             else if (resp.getStatus().equals(ODMStatus.QUEUED))
