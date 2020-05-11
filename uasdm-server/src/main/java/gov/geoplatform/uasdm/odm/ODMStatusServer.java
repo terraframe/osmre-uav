@@ -1,3 +1,18 @@
+/**
+ * Copyright 2020 The Department of Interior
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
@@ -318,7 +333,15 @@ public class ODMStatusServer
   
               String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
   
-              task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+              if (resp.getImagesCount() == 1) // This happens when not using ODM's newer "chunk" functionality, and it only happens when a auto-scaling node is spinning up.
+              {
+                task.setMessage("Your images are being processed. Check back later for updates. An email will be sent when the processing is complete.");
+              }
+              else
+              {
+                task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+              }
+              
               task.apply();
             }
             else if (resp.getStatus().equals(ODMStatus.QUEUED))

@@ -1,9 +1,26 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>gov.osmre.uasdm</groupId>
   <artifactId>uasdm</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.10.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UASDM</name>
@@ -25,6 +42,22 @@
 
     <geotools.version>16.1</geotools.version>    
   </properties>
+  
+  <licenses>
+    <license>
+      <name>
+        Apache License, Version 2.0
+      </name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:git:ssh://git@github.com/terraframe/osmre-uav</connection>
+    <developerConnection>scm:git:ssh://git@github.com/terraframe/osmre-uav</developerConnection>
+    <url>scm:git:ssh://git@github.com/terraframe/osmre-uav</url>
+    <tag>0.0.1</tag>
+  </scm>
 
   <dependencies>
     <dependency>
@@ -73,6 +106,18 @@
           </execution>
         </executions>
       </plugin>
+      
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.4.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.8.1</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     
       <!-- Add generated source directories -->
       <plugin>
@@ -95,7 +140,77 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>2.11</version>
+        <configuration>
+          <header>${basedir}/LICENSE_HEADER</header>
+          <excludes>
+            <exclude>target/**</exclude>
+            <exclude>m2-target/**</exclude>
+            <exclude>**/*.properties</exclude>
+            <exclude>**/*.launch</exclude>
+            <exclude>**/*.vsd</exclude>
+            <exclude>**/*.gitignore</exclude>
+            <exclude>**/*.LESSER</exclude>
+            <exclude>**/*.xls</exclude>
+            <exclude>**/doc/**</exclude>
+            <exclude>**/launches/**</exclude>
+            <exclude>**/*.jar</exclude>
+            <exclude>LICENSE_HEADER</exclude>
+            <exclude>**/*.markdown</exclude>
+            <exclude>**/COPYING</exclude>
+            <exclude>**/logs/**</exclude>
+            <exclude>**/*.png</exclude>
+            <exclude>**/thirdparty/**</exclude>
+            <exclude>**/yui2/**</exclude>
+            <exclude>**/yui3/**</exclude>
+            <exclude>**/.git/**</exclude>
+            <exclude>**/ajcore*.txt</exclude>
+            <exclude>**/.directory</exclude>
+            <exclude>**/.keystore</exclude>
+            <exclude>**/.keyStore</exclude>
+            <exclude>**/*.yml</exclude>
+            <exclude>**/custom-fonts/**</exclude>
+            <exclude>**/node_modules/**</exclude>
+            <exclude>**/typings/**</exclude>
+            <exclude>**/ng2/**</exclude>
+            <exclude>**/webapp/dist/**</exclude>
+            <exclude>**/cldr/**</exclude>
+            <exclude>uasdm-clusterodm/ClusterODM/**</exclude>
+            <exclude>uasdm-micasense/imageprocessing/**</exclude>
+            <exclude>uasdm-micasense/micasense/**</exclude>
+            <exclude>uasdm-micasense/in/**</exclude>
+            <exclude>uasdm-micasense/out/**</exclude>
+            <exclude>uasdm-micasense/.pytest_cache/**</exclude>
+            <exclude>uasdm-odm/NodeODM/**</exclude>
+            <exclude>uasdm-odm/ODM/**</exclude>
+            <exclude>geoserver-data/**</exclude>
+            <exclude>src/solr/configsets/**</exclude>
+            <exclude>**/session/sessionCache/**</exclude>
 
+            <!-- 3rd party library mishmashes. When we upgrade tomcat we can remove these with webjars. -->
+            <exclude>**/webapp/3rd-party/**</exclude>
+          </excludes>
+          <properties>
+            <name>${project.name}</name>
+            <year>${project.inceptionYear}</year>
+            <holder>The Department of Interior</holder>
+            <contact>getinfo@osmre.gov</contact>
+          </properties>
+          <encoding>UTF-8</encoding>
+        </configuration>
+        <!-- <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions> -->
+      </plugin>
     </plugins>
     <pluginManagement>
     	<plugins>
@@ -121,7 +236,7 @@
     								</goals>
     							</pluginExecutionFilter>
     							<action>
-    								<ignore></ignore>
+    								<ignore />
     							</action>
     						</pluginExecution>
     					</pluginExecutions>
