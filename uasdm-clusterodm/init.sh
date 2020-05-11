@@ -6,5 +6,3 @@ set -e
 
 # Checkout ClusterODM
 git clone git@github.com:terraframe/ClusterODM.git
-
-cd ../
