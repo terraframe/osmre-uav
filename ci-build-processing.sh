@@ -32,3 +32,10 @@ if [ "$build_odm" == "true" ]; then
 	./build.sh
 	sudo ./deploy.sh
 fi
+
+if [ "$build_clusterodm" == "true" ]; then
+	cd $WORKSPACE/uasdm/uasdm-clusterodm
+	./init.sh
+	./build.sh
+	sudo ./deploy.sh
+fi
