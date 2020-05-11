@@ -116,6 +116,13 @@
       </div>
     </div>
     
+    <div [@fadeInOnEnter] class="row" *ngIf="finishedTask != null">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <a (click)="handleAddMetadata(finishedTask)">Add Metadata</a>
+      </div>
+    </div>
+    
 
     <div [@fadeInOnEnter] [hidden]="page.type !== 'FILE' && page.type !== 'SUMMARY'" class="row">
         <div class="col-md-2"></div>
@@ -202,6 +209,14 @@
         </div>
         <div class="col-md-2"></div>
     </div>
+    
+    <div [@fadeInOnEnter] class="row" *ngIf="currentTask != null">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <a (click)="handleAddMetadata(currentTask)">Add Metadata</a>
+      </div>
+    </div>
+    
     </div>
       <div class="modal-footer">
     
