@@ -6,6 +6,8 @@
     
     "securityGroup": "cluster-odm-node",
     
+    "vpcId" : "vpc-daa11dbf",
+    
     "log-level": "debug",
     "debug": true,
 
