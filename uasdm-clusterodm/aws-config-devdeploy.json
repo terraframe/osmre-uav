@@ -8,16 +8,18 @@
     
     "vpcId" : "vpc-04624f4b9b033bc4c",
     
+    "privateAddressOnly": true,
+    
     "log-level": "debug",
     "debug": true,
 
     "monitoring": false,
     "maxRuntime": -1,
     "maxUploadTime": -1,
-    "region": "us-west-2",
+    "region": "us-east-1",
     "tags": ["type,clusterodm"],
     
-    "ami": "ami-07b4f3c02c7f83d59",
+    "ami": "ami-026c8acd92718196b",
     
     "instanceLimit": 5,
 
