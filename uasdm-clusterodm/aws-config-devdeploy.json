@@ -8,7 +8,7 @@
     
     "vpcId" : "vpc-04624f4b9b033bc4c",
     
-    "privateAddressOnly": true,
+    "usePrivateAddress": true,
     
     "log-level": "debug",
     "debug": true,
