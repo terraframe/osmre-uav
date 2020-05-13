@@ -1,114 +1,114 @@
-import gov.geoplatform.uasdm.bus.Bureau;
-import gov.geoplatform.uasdm.bus.Imagery;
-import gov.geoplatform.uasdm.bus.UasComponent;
+/**
+ * Copyright 2020 The Department of Interior
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.ValueObject;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
+import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
+import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class Sandbox
 {
-  public static void main(String[] args) 
+  public static void main(String[] args) throws Exception
   {
-//    GeoprismPatcher.main(args);
-    
-    System.out.println("Happy Testing!");
-    
-    UasComponent uasComponent = null;
-    
-    System.out.println(uasComponent instanceof Imagery);
-    
-//    test();
-    
-//    createFolder();
-    
-//    deleteFolder();
-    
-    
-//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-//    
-//    List<Bucket> bucketList = client.listBuckets();
-//    
-//    for (Bucket bucket : bucketList)
-//    { 
-//      if (bucket.getName().equals("BUCKET_NAME"))
-//      {
-//        System.out.println("Bucket Name: " +bucket.getName());
-//      }
-//    }   
+    testGetCount();
 
-    
-//    GetObjectRequest request = new GetObjectRequest("BUCKET_NAME", "CottonwoodData/");        
-//    S3Object object = client.getObject(request); 
-//    System.out.println("Bucket Name: "+object.getBucketName());
-//    System.out.println("Key: "+object.getKey());
-    
-
-//  ListObjectsRequest request = new ListObjectsRequest();
-//  request = request.withBucketName("BUCKET_NAME");
-//  request = request.withPrefix("CottonwoodData");
-//    
-//    ObjectListing listing;
-//    
-//    do
-//    {
-//      listing = client.listObjects(request);
-//
-//      List<S3ObjectSummary> summaries = listing.getObjectSummaries();
-//
-//      for (S3ObjectSummary summary : summaries)
-//      {
-//        String key = summary.getKey();
-//
-//        System.out.println("Key: "+key);
-//        
-////        if (key.endsWith(".xml.gz"))
-////        {
-////          files.add(key);
-////        }
-//      }
-//
-//      request.setMarker(listing.getNextMarker());
-//    } while (listing != null && listing.isTruncated());
-    
+//    testGeoserver();
   }
-//  
-//  public static void createFolder()
-//  {
-//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-//    
-//    // create meta-data for your folder and set content-length to 0
-//    ObjectMetadata metadata = new ObjectMetadata();
-//    metadata.setContentLength(0);
-//
-//    // create empty content
-//    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-//    
-//    PutObjectRequest putObjectRequest = new PutObjectRequest("BUCKET_NAME",
-//        "CottonwoodData/Project1/", emptyContent, metadata);
-//    
-//    // send request to S3 to create folder
-//    client.putObject(putObjectRequest);
-//  }
-//  
-//  public static void deleteFolder()
-//  {
-//    AmazonS3 client = new AmazonS3Client(new ClasspathPropertiesFileCredentialsProvider());
-//    
-//    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest("BUCKET_NAME")
-//    .withKeys("CottonwoodData/Project2/")
-//    .withQuiet(false);
-//    
-//    DeleteObjectsResult delObjRes = client.deleteObjects(multiObjectDeleteRequest);
-//    int successfulDeletes = delObjRes.getDeletedObjects().size();
-//    System.out.println(successfulDeletes + " objects successfully deleted.");
-//  }
-  
+
   @Request
-  private static void test()
+  public static void testGetCount() throws SQLException
   {
-    Bureau bureau = Bureau.getByKey("OSMRE");
-    
-    bureau.printAttributes();
+    int pageNumber = 1;
+    int pageSize = 5;
+
+    ValueQuery vQuery = new ValueQuery(new QueryFactory());
+    WorkflowTaskQuery query = new WorkflowTaskQuery(vQuery);
+
+    vQuery.SELECT_DISTINCT(query.getComponent());
+
+    vQuery.restrictRows(pageSize, pageNumber);
+
+    List<String> components = new LinkedList<String>();
+
+    try (OIterator<ValueObject> iterator = vQuery.getIterator(pageSize, pageNumber))
+    {
+      while (iterator.hasNext())
+      {
+        ValueObject vObject = iterator.next();
+        String component = vObject.getValue(WorkflowTask.COMPONENT);
+
+        components.add(component);
+      }
+    }
+
+  }
+
+  public static void testGeoserver() throws FileNotFoundException
+  {
+    String geoserverData = System.getProperty("GEOSERVER_DATA_DIR");
+
+    if (geoserverData == null)
+    {
+      throw new ProgrammingErrorException("Unable to find geoserver data directory: Please set the JVM arg GEOSERVER_DATA_DIR");
+    }
+
+    final File baseDir = new File(geoserverData + "/data/" + AppProperties.getPublicWorkspace());
+
+    final GeoServerRESTPublisher publisher = GeoserverProperties.getPublisher();
+    final String workspace = AppProperties.getPublicWorkspace();
+    final String layerName = "image-public";
+
+    final GSLayerEncoder layerEnc = new GSLayerEncoder();
+    layerEnc.setDefaultStyle("raster");
+
+    // coverage encoder
+    final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
+    coverageEnc.setName(layerName);
+    coverageEnc.setTitle(layerName);
+//    coverageEnc.setEnabled(true);
+//    coverageEnc.setNativeCRS("EPSG:4326");
+//    coverageEnc.setSRS("EPSG:4326");
+    coverageEnc.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+
+    // ... many other options are supported
+
+    // create a new ImageMosaic layer...
+//    publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
+    final boolean published = publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
+
+    // check the results
+    if (!published)
+    {
+      System.out.println("Bad");
+    }
   }
 }
-
-

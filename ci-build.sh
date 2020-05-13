@@ -1,3 +1,19 @@
+#
+# Copyright 2020 The Department of Interior
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 :
 : ----------------------------------
 :  CONFIGURE  
@@ -11,6 +27,7 @@ sed -i -e "s/clean_solr=true/clean_solr=$clean_solr/g" geoprism-platform/ansible
 sed -i -e "s/clean_solr=false/clean_solr=$clean_solr/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_orientdb=true/clean_orientdb=$clean_orientdb/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_orientdb=false/clean_orientdb=$clean_orientdb/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
+sed -i -e "s/artifact_version=.*/artifact_version=$version/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 
 #sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 mdillon/postgis:9.5
 

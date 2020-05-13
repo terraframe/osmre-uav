@@ -1,0 +1,41 @@
+{
+    "provider": "aws",
+    
+    "accessKey": "AKIA32XPOGK7WEK6SWGU",
+    "secretKey": "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",
+    
+    "securityGroup": "cluster-odm-node",
+    
+    "vpcId" : "vpc-04624f4b9b033bc4c",
+    
+    "privateAddressOnly": true,
+    
+    "log-level": "debug",
+    "debug": true,
+
+    "monitoring": false,
+    "maxRuntime": -1,
+    "maxUploadTime": -1,
+    "region": "us-east-1",
+    "tags": ["type,clusterodm"],
+    
+    "ami": "ami-026c8acd92718196b",
+    
+    "instanceLimit": 5,
+
+    "spot": true,
+    "imageSizeMapping": [
+        {"maxImages": 40, "slug": "t3a.small", "spotPrice": 0.05, "storage": 60},
+        {"maxImages": 80, "slug": "t3a.medium", "spotPrice": 0.05, "storage": 100},
+		{"maxImages": 250, "slug": "t3a.large", "spotPrice": 0.05, "storage": 160},
+		{"maxImages": 500, "slug": "t3a.xlarge", "spotPrice": 0.1, "storage": 320},
+		{"maxImages": 1500, "slug": "t3a.2xlarge", "spotPrice": 0.2, "storage": 640},
+		{"maxImages": 2500, "slug": "r5.2xlarge", "spotPrice": 0.25, "storage": 1200},
+		{"maxImages": 3500, "slug": "r5.4xlarge", "spotPrice": 0.5, "storage": 2000},
+		{"maxImages": 5000, "slug": "r5.4xlarge", "spotPrice": 0.5, "storage": 2500}
+    ],
+
+    "addSwap": 1,
+    "dockerImage": "-v /data/odm/dev/micasense:/opt/micasense -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/dev/micasense --name uasdm-nodeodm 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest",
+    "additionalMachineSetupCmd": "sudo apt update && sudo apt install -y unzip && curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && unzip -o -q awscliv2.zip && sudo ./aws/install && aws configure set aws_access_key_id AKIAIKFVZC4DZ3NIGP4A && aws configure set aws_secret_access_key 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 && sudo su -m -c 'aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 961902606948.dkr.ecr.us-west-2.amazonaws.com && docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest && docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest && docker tag 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest uasdm-micasense'"
+}

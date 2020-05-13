@@ -100,10 +100,11 @@ export class Task {
     actions: Action[];
     uploadId: string;
     odmOutput: string;
-    visible?: boolean;
     collection: string;
     collectionLabel: string;
     type: string;
+    visible?: boolean;
+    showError?:boolean;
 }
 
 export class TaskGroup {
