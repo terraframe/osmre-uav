@@ -367,10 +367,6 @@ public class Util
         task.createAction(e.getMessage(), "error");
       }
     }
-    else
-    {
-      task.createAction("The filename [" + name + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
-    }
 
     return false;
   }

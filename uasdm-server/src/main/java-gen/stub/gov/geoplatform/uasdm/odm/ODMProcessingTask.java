@@ -24,8 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.session.Session;
+import com.runwaysdk.system.scheduler.ExecutableJob;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.InvalidZipException;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -126,10 +129,10 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     catch (Throwable t)
     {
       logger.error("Error occurred while initiating ODM Processing.", t);
-
+      
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage(t.getLocalizedMessage());
+      this.setMessage(ExecutableJob.getMessageFromException(t));
       this.apply();
     }
   }

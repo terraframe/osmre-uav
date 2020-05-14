@@ -26,12 +26,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.system.scheduler.ExecutableJob;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
@@ -122,7 +124,7 @@ public class ODMStatusServer
     {
       logger.error("Problem sending email for task [" + task.getTaskLabel() + "] with status [" + task.getStatus() + "].", t);
 
-      task.createAction("Problem occured while sending email. " + t.getLocalizedMessage(), "error");
+      task.createAction("Problem occured while sending email. " + ExecutableJob.getMessageFromException(t), "error");
     }
   }
 
@@ -191,7 +193,7 @@ public class ODMStatusServer
     {
       logger.error("Error occurred while removing task [" + uuid + "] [" + task.getTaskLabel() + "] from ODM.", t);
 
-      task.createAction("Problem occured while cleaning up data from ODM. " + t.getLocalizedMessage(), "error");
+      task.createAction("Problem occured while cleaning up data from ODM. " + ExecutableJob.getMessageFromException(t), "error");
     }
   }
 
@@ -475,6 +477,52 @@ public class ODMStatusServer
         task.setOdmOutput(sb.toString());
 
         task.writeODMtoS3(output);
+        
+        processODMOutputAndCreateTasks(output, task);
+      }
+    }
+    
+    /**
+     * Read through the ODM output and attempt to identify issues that may have occurred.
+     */
+    private void processODMOutputAndCreateTasks(JSONArray output, ODMProcessingTaskIF task)
+    {
+      String sOutput = output.toString();
+      
+      for (int i = 0; i < output.length(); ++i)
+      {
+        String line = output.getString(i);
+        
+        if (line.contains("MICA-CODE:1"))
+        {
+          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif?", "error");
+        }
+        else if (line.contains("MICA-CODE:2"))
+        {
+          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif?", "error");
+        }
+        else if (line.contains("MICA-CODE:3"))
+        {
+          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images?", "error");
+        }
+        else if (line.contains("MICA-CODE:4"))
+        {
+          task.createAction("Image alignment has failed.", "error");
+        }
+        else if (
+            line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
+            || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8 output
+            || (line.contains("IndexError: list index out of range")
+                && output.getString(i-1).contains("reconstruction = data[0]")
+                && sOutput.contains("Traceback (most recent call last):")) // 0.9.1
+            )
+        {
+          task.createAction("ODM failed to produce a reconstruction from the image matches. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. (more info: https://github.com/OpenDroneMap/ODM/issues/524)", "error");
+        }
+        else if (line.contains("Not enough supported images in")) // 0.9.1
+        {
+          task.createAction("Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'", "error");
+        }
       }
     }
   }
@@ -548,7 +596,7 @@ public class ODMStatusServer
         }
         else
         {
-          msg = "The upload failed. " + t.getLocalizedMessage();
+          msg = "The upload failed. " + ExecutableJob.getMessageFromException(t);
         }
 
         uploadTask.lock();

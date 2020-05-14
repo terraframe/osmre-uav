@@ -18,19 +18,31 @@ package gov.geoplatform.uasdm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
+import com.runwaysdk.system.scheduler.ExecutableJob;
 import com.runwaysdk.system.scheduler.ExecutionContext;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
@@ -56,7 +68,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File imageryZip) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-
+    
+    // Sanity check the zip they sent us. Throw an error if it's not what we expect.
+    if (!validateZip(imageryZip, task)) { return; }
+    
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
@@ -76,7 +91,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + t.getLocalizedMessage());
+      task.setMessage("An error occurred while uploading the imagery to S3. " + ExecutableJob.getMessageFromException(t));
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
@@ -94,7 +109,105 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
   }
+  
+  private static boolean validateZip(File fZip, AbstractUploadTask task)
+  {
+    // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
+    // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
+    final String[] supportedExts = new String[] {"jpg", "jpeg", "png"};
+    
+    
+    boolean isMultispectral = isMultispectral(task);
+    
+    // Check to make sure that this zip actually has files to process in it.
+    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(fZip)))
+    {
+      boolean hasFiles = false;
+      
+      ZipEntry entry;
+      while ( ( entry = zis.getNextEntry() ) != null)
+      {
+        String filename = entry.getName();
+        boolean isVideo = Util.isVideoFile(filename);
+        boolean isValidName = UasComponentIF.isValidName(filename);
+        String ext = FilenameUtils.getExtension(filename);
+        
+        if (entry.isDirectory())
+        {
+          task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
+          continue;
+        }
+        
+        if (!isVideo)
+        {
+          if (!isValidName)
+          {
+            task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
+            continue;
+          }
+          
+          if (isMultispectral)
+          {
+            if (!filename.endsWith(".tif"))
+            {
+              task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", "error");
+              continue;
+            }
+          }
+          else
+          {
+            if (!ArrayUtils.contains(supportedExts, ext))
+            {
+              task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(supportedExts, ", "), "error");
+              continue;
+            }
+          }
+        }
+        
+        hasFiles = true;
+      }
+      
+      if (!hasFiles)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(supportedExts, ", "));
+        task.apply();
+        
+//        throw new InvalidZipException();
+        return false;
+      }
+    }
+    catch (ZipException e)
+    {
+      task.createAction(e.getMessage(), "error");
+      
+      throw new InvalidZipException();
+    }
+    catch (IOException e)
+    {
+      task.createAction(e.getMessage(), "error");
 
+      throw new ProgrammingErrorException(e);
+    }
+    
+    return true;
+  }
+  
+  private static boolean isMultispectral(AbstractWorkflowTask task)
+  {
+    if (task instanceof ImageryWorkflowTask)
+    {
+      return false;
+    }
+    else
+    {
+      WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
+      
+      return CollectionUploadEvent.isMultispectral(collectionWorkflowTask.getComponentInstance());
+    }
+  }
+  
   private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
   {
     AbstractWorkflowTask task = this.getWorkflowTask();
@@ -170,7 +283,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + t.getLocalizedMessage());
+      task.setMessage("An error occurred while uploading the imagery to S3. " + ExecutableJob.getMessageFromException(t));
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
