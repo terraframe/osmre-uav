@@ -112,7 +112,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   
   private static boolean validateZip(File fZip, AbstractUploadTask task)
   {
-    final String[] supportedExts = new String[] {"jpg", "jpeg", "png"}; // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now. TODO : Update ODM
+    // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
+    // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
+    final String[] supportedExts = new String[] {"jpg", "jpeg", "png"};
+    
+    
     boolean isMultispectral = isMultispectral(task);
     
     // Check to make sure that this zip actually has files to process in it.
