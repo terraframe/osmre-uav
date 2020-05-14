@@ -1,0 +1,13 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+       <mdException name="gov.geoplatform.uasdm.InvalidZipException"
+                   message="The system encountered an error while reading your zip file. Your zip file may be corrupt, or it may have gotten corrupt during upload.">
+      </mdException>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

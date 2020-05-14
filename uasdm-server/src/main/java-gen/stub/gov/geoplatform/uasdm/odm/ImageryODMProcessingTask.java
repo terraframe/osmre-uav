@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.system.scheduler.ExecutableJob;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ImageryIF;
@@ -107,7 +108,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage(t.getLocalizedMessage());
+      this.setMessage(ExecutableJob.getMessageFromException(t));
       this.apply();
     }
   }

@@ -87,7 +87,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 //    handleMetadataWorkflow(task);
   }
 
-  public boolean isMultispectral(UasComponentIF uasc)
+  public static boolean isMultispectral(UasComponentIF uasc)
   {
     if (uasc instanceof CollectionIF)
     {
