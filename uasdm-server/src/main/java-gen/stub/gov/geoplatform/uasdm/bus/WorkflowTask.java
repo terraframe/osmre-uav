@@ -25,7 +25,6 @@ import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runwaysdk.Pair;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.database.Database;
@@ -109,7 +108,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
       query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
 
       query.ORDER_BY_ASC(query.getComponent());
-      query.ORDER_BY_ASC(query.getLastUpdateDate());
+      query.ORDER_BY_ASC(query.getCreateDate());
 
 //    if (pageNumber != null && pageSize != null)
 //    {

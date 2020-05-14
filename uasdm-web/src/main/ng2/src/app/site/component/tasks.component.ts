@@ -37,6 +37,11 @@ export class TasksComponent implements OnInit {
     statuses = [];
 
     /*
+     * Token used to determine if a change has occured in the page before loading the polling values
+     */
+    token: number = 0;
+
+    /*
      * Reference to the modal current showing
      */
     bsModalRef: BsModalRef;
@@ -56,9 +61,9 @@ export class TasksComponent implements OnInit {
     constructor(private managementService: ManagementService, private modalService: BsModalService) {
 
         this.taskPolling = interval(5000).pipe(
-            switchMap(() => from(this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber))))
+            switchMap(() => from(this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token))))
             .subscribe((data) => {
-                if(data.pageNumber == this.taskPage.pageNumber) {
+                if (data['token'] === this.token) {
                     this.updateTaskData(data);
                 }
             });
@@ -67,7 +72,7 @@ export class TasksComponent implements OnInit {
 
     ngOnInit(): void {
         this.userName = this.managementService.getCurrentUser();
-        this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber).then(data => {
+        this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
             this.setTaskData(data, false);
         });
 
@@ -89,7 +94,9 @@ export class TasksComponent implements OnInit {
     }
 
     onPageChange(pageNumber: number): void {
-        this.managementService.tasks(this.statuses, this.taskPage.pageSize, pageNumber).then(tasks => {
+        this.token++;
+
+        this.managementService.tasks(this.statuses, this.taskPage.pageSize, pageNumber, this.token).then(tasks => {
 
             this.updatePage(tasks);
 
@@ -100,6 +107,7 @@ export class TasksComponent implements OnInit {
     onTabClick(event: any, tab: string): void {
         this.activeTab = tab;
         this.taskPage = { count: 0, pageSize: 20, pageNumber: 1, resultSet: [] };
+        this.token++;
 
         if (tab === "success") {
             this.statuses = this.completeStatuses;
@@ -111,7 +119,7 @@ export class TasksComponent implements OnInit {
             this.statuses = [];
         }
 
-        this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber).then(tasks => {
+        this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(tasks => {
 
             this.updatePage(tasks);
 
@@ -146,7 +154,7 @@ export class TasksComponent implements OnInit {
 
         for (let i = 0; i < tasks.resultSet.length; i++) {
             let task = tasks.resultSet[i];
-            let collectPosition = this.collectionGroups.findIndex(value => { return task.collectionLabel === value.label });
+            let collectPosition = this.collectionGroups.findIndex(value => { return task.collection === value.collectionId });
 
             if (collectPosition > -1) {
 
@@ -196,7 +204,7 @@ export class TasksComponent implements OnInit {
                         lastUpdatedDate: task.lastUpdatedDate
                     });
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'){
+                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
 
                     this.collectionGroups.push({
                         label: task.collectionLabel,
@@ -294,7 +302,6 @@ export class TasksComponent implements OnInit {
                             }
                             if (existingTask.lastUpdatedDate !== newTask.lastUpdatedDate) {
                                 existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
-                                matchFound = true;
                             }
                             if (existingTask.message !== newTask.message) {
                                 existingTask.message = newTask.message;
@@ -305,6 +312,8 @@ export class TasksComponent implements OnInit {
                             if (existingTask.odmOutput !== newTask.odmOutput) {
                                 existingTask.odmOutput = newTask.odmOutput;
                             }
+                            
+                            existingTask.actions = newTask.actions;
                         }
                     })
                 });

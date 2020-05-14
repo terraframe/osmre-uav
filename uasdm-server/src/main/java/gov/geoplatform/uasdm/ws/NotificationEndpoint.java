@@ -37,11 +37,18 @@ public class NotificationEndpoint
     WebClientSession clientSession = (WebClientSession) s.getAttribute(ClientConstants.CLIENTSESSION);
 
     this.session = session;
-    this.userId = clientSession.getRequest().getSessionUser().getOid();
 
-    endpoints.add(this);
+    if (!clientSession.getRequest().isPublicUser())
+    {
+      this.userId = clientSession.getRequest().getSessionUser().getOid();
+    }
 
-    logger.info("Connecting websocket for user [" + this.userId + "]");
+    if (this.userId != null)
+    {
+      endpoints.add(this);
+
+      logger.debug("Connecting websocket for user [" + this.userId + "]");
+    }
   }
 
 //  @OnMessage
@@ -53,9 +60,12 @@ public class NotificationEndpoint
   @OnClose
   public void onClose(Session session) throws IOException
   {
-    endpoints.remove(this);
+    if (this.userId != null)
+    {
+      endpoints.remove(this);
 
-    logger.info("Closing websocket for user [" + this.userId + "]");
+      logger.debug("Closing websocket for user [" + this.userId + "]");
+    }
   }
 
   @OnError
@@ -66,7 +76,7 @@ public class NotificationEndpoint
 
   public static void broadcast(String userId, JSONObject message)
   {
-    logger.info("Broadcasting to [" + userId + "]: " + message.toString());
+    logger.debug("Broadcasting to [" + userId + "]: " + message.toString());
 
     endpoints.forEach(endpoint -> {
       synchronized (endpoint)
