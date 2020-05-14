@@ -109,6 +109,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       query.ORDER_BY_ASC(query.getComponent());
       query.ORDER_BY_ASC(query.getCreateDate());
+      query.ORDER_BY_ASC(query.getLastUpdateDate());
 
 //    if (pageNumber != null && pageSize != null)
 //    {
