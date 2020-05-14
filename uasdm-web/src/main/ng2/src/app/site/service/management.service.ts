@@ -285,13 +285,14 @@ export class ManagementService {
             .toPromise();
     }
 
-    tasks(statuses: string[], pageSize: number, pageNumber: number): Promise<PageResult<Task>> {
+    tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<Task>> {
 
         // status options: PROCESSING, COMPLETE, ERROR, QUEUED
         let params: HttpParams = new HttpParams();
         params = params.set('statuses', JSON.stringify(statuses));
         params = params.set('pageSize', pageSize.toString());
         params = params.set('pageNumber', pageNumber.toString());
+        params = params.set('token', token.toString());
 
         return this.http
             .get<PageResult<Task>>(acp + '/project/tasks', { params: params })
