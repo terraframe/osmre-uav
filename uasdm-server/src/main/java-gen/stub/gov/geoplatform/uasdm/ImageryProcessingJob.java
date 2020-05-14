@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -39,28 +39,30 @@ import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
+import gov.geoplatform.uasdm.ws.NotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
-  
-  private static final long serialVersionUID = -339555201;
-  
+  private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
+
+  private static final long   serialVersionUID = -339555201;
+
   public ImageryProcessingJob()
   {
     super();
   }
-  
+
   public static void processFiles(RequestParser parser, File imageryZip) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    
+
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
       String uploadTarget = parser.getUploadTarget();
       VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(imageryZip));
-      
+
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
       job.setWorkflowTask(task);
@@ -76,11 +78,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.setMessage("An error occurred while uploading the imagery to S3. " + t.getLocalizedMessage());
       task.apply();
-      
+
       logger.error("An error occurred while uploading the imagery to S3.", t);
     }
   }
-  
+
   @Override
   public boolean canResume()
   {
@@ -92,17 +94,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
   }
-  
+
   private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
   {
     AbstractWorkflowTask task = this.getWorkflowTask();
-    
+
     try
     {
       if (task instanceof ImageryWorkflowTask)
       {
         ImageryWorkflowTask imageryWorkflowTask = (ImageryWorkflowTask) task;
-  
+
         ImageryUploadEventQuery eq = new ImageryUploadEventQuery(new QueryFactory());
         eq.WHERE(eq.getUploadId().EQ(imageryWorkflowTask.getUploadId()));
         ImageryUploadEvent event;
@@ -123,18 +125,18 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         {
           event = new ImageryUploadEvent();
         }
-        
+
         event.setGeoprismUser(imageryWorkflowTask.getGeoprismUser());
         event.setUploadId(imageryWorkflowTask.getUploadId());
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
-  
+
         event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix);
       }
       else
       {
         WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
-        
+
         CollectionUploadEventQuery eq = new CollectionUploadEventQuery(new QueryFactory());
         eq.WHERE(eq.getUploadId().EQ(collectionWorkflowTask.getUploadId()));
         CollectionUploadEvent event;
@@ -155,12 +157,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         {
           event = new CollectionUploadEvent();
         }
-  
+
         event.setGeoprismUser(collectionWorkflowTask.getGeoprismUser());
         event.setUploadId(collectionWorkflowTask.getUploadId());
         event.setComponent(collectionWorkflowTask.getComponent());
         event.apply();
-  
+
         event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix);
       }
     }
@@ -170,8 +172,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.setMessage("An error occurred while uploading the imagery to S3. " + t.getLocalizedMessage());
       task.apply();
-      
+
       logger.error("An error occurred while uploading the imagery to S3.", t);
+
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+      }
     }
     finally
     {
