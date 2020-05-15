@@ -10,6 +10,8 @@
     
     "log-level": "debug",
     "debug": true,
+    
+    "createRetries": 5,
 
     "monitoring": false,
     "maxRuntime": -1,
