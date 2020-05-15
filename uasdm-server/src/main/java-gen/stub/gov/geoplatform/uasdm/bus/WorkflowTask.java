@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -25,14 +25,18 @@ import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
+import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.database.Database;
+import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
+import com.runwaysdk.system.metadata.MdBusiness;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -109,6 +113,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       query.ORDER_BY_ASC(query.getComponent());
       query.ORDER_BY_ASC(query.getCreateDate());
+      query.ORDER_BY_ASC(query.getLastUpdateDate());
 
 //    if (pageNumber != null && pageSize != null)
 //    {
@@ -130,14 +135,20 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public static Long getUserWorkflowComponentCount(String statuses)
   {
+    MdBusinessDAOIF mdAbstractWorkflow = MdBusinessDAO.getMdBusinessDAO(AbstractWorkflowTask.CLASS);
+    MdBusinessDAOIF mdWorkflow = MdBusinessDAO.getMdBusinessDAO(WorkflowTask.CLASS);
+    MdAttributeConcreteDAOIF componentAttribute = mdWorkflow.definesAttribute(WorkflowTask.COMPONENT);
+    MdAttributeConcreteDAOIF userAttribute = mdAbstractWorkflow.definesAttribute(AbstractWorkflowTask.GEOPRISMUSER);
+    MdAttributeConcreteDAOIF statusAttribute = mdAbstractWorkflow.definesAttribute(AbstractWorkflowTask.STATUS);
+
     // Runway doesn't support doing a count distinct query so I am circumventing
     // the ORM api and doing a direct query
     StringBuilder builder = new StringBuilder();
-    builder.append("SELECT count (DISTINCT workflow_task_2.component) AS component_3\n");
-    builder.append("FROM abstract_workflow_task abstract_workflow_task_4,\n");
-    builder.append("     workflow_task workflow_task_2 \n");
+    builder.append("SELECT count (DISTINCT workflow_task_2." + componentAttribute.getColumnName() + ") AS component_3\n");
+    builder.append("FROM " + mdAbstractWorkflow.getTableName() + " abstract_workflow_task_4,\n");
+    builder.append("     " + mdWorkflow.getTableName() + " workflow_task_2 \n");
     builder.append("WHERE workflow_task_2.oid = abstract_workflow_task_4.oid\n");
-    builder.append("AND abstract_workflow_task_4.geoprism_user = '" + GeoprismUser.getCurrentUser().getOid() + "' ");
+    builder.append("AND abstract_workflow_task_4." + userAttribute.getColumnName() + " = '" + GeoprismUser.getCurrentUser().getOid() + "' ");
 
     if (statuses != null)
     {
@@ -153,13 +164,13 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
           {
             builder.append(" OR");
           }
-          builder.append(" abstract_workflow_task_4.status = '" + array.getString(i) + "'");
+          builder.append(" abstract_workflow_task_4." + statusAttribute.getColumnName() + " = '" + array.getString(i) + "'");
         }
 
         builder.append(") \n");
       }
     }
-    
+
     try (ResultSet rs = Database.query(builder.toString()))
     {
       if (rs.next())

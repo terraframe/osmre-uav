@@ -329,6 +329,8 @@ export class TasksComponent implements OnInit {
         if (noMatch && noMatch.length > 0) {
             this.setTaskData({ resultSet: noMatch, count: tasks.count, pageNumber: this.taskPage.pageNumber, pageSize: this.taskPage.pageSize }, true);
         }
+        
+        this.setTaskGroupStatuses();
     }
 
 
