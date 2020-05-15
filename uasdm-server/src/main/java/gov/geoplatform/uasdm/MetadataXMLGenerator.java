@@ -33,6 +33,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -50,6 +52,8 @@ import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
 {
+  private static final Logger logger = LoggerFactory.getLogger(MetadataXMLGenerator.class);
+  
   public static final String FILENAME = "_uasmetadata.xml";
 
   private Document           dom;
@@ -194,7 +198,8 @@ public class MetadataXMLGenerator
     }
     catch (TransformerException te)
     {
-      System.out.println(te.getMessage());
+      logger.error("Unexpected error while generating IDM metadata.", te);
+      throw new ProgrammingErrorException(te);
     }
   }
 

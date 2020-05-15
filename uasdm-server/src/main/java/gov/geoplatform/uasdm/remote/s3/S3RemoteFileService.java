@@ -49,7 +49,9 @@ import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
@@ -407,7 +409,7 @@ public class S3RemoteFileService implements RemoteFileService
     {
       if (task != null)
       {
-        task.createAction(e.getMessage(), "error");
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);

@@ -23,12 +23,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
-import com.runwaysdk.system.scheduler.ExecutableJob;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.InvalidZipException;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -132,7 +131,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage(ExecutableJob.getMessageFromException(t));
+      this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
     }
   }

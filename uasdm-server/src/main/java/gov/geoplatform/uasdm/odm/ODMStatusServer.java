@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
-import com.runwaysdk.system.scheduler.ExecutableJob;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
@@ -124,7 +124,7 @@ public class ODMStatusServer
     {
       logger.error("Problem sending email for task [" + task.getTaskLabel() + "] with status [" + task.getStatus() + "].", t);
 
-      task.createAction("Problem occured while sending email. " + ExecutableJob.getMessageFromException(t), "error");
+      task.createAction("Problem occured while sending email. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()), "error");
     }
   }
 
@@ -193,7 +193,7 @@ public class ODMStatusServer
     {
       logger.error("Error occurred while removing task [" + uuid + "] [" + task.getTaskLabel() + "] from ODM.", t);
 
-      task.createAction("Problem occured while cleaning up data from ODM. " + ExecutableJob.getMessageFromException(t), "error");
+      task.createAction("Problem occured while cleaning up data from ODM. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()), "error");
     }
   }
 
@@ -292,7 +292,7 @@ public class ODMStatusServer
   
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
-            task.setMessage(ex.getLocalizedMessage());
+            task.setMessage(RunwayException.localizeThrowable(ex, Session.getCurrentLocale()));
             task.apply();
   
             it.remove();
@@ -596,7 +596,7 @@ public class ODMStatusServer
         }
         else
         {
-          msg = "The upload failed. " + ExecutableJob.getMessageFromException(t);
+          msg = "The upload failed. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
         }
 
         uploadTask.lock();

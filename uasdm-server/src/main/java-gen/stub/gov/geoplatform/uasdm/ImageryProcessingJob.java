@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -31,24 +29,24 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
-import com.runwaysdk.system.scheduler.ExecutableJob;
 import com.runwaysdk.system.scheduler.ExecutionContext;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -91,7 +89,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + ExecutableJob.getMessageFromException(t));
+      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
@@ -180,13 +178,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     catch (ZipException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       
       throw new InvalidZipException();
     }
     catch (IOException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
       throw new ProgrammingErrorException(e);
     }
@@ -283,7 +281,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + ExecutableJob.getMessageFromException(t));
+      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
