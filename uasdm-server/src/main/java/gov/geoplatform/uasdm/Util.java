@@ -34,9 +34,11 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
@@ -239,13 +241,13 @@ public class Util
     }
     catch (ZipException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       
       throw new InvalidZipException();
     }
     catch (IOException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
       throw new ProgrammingErrorException(e);
     }
@@ -319,7 +321,7 @@ public class Util
     }
     catch (IOException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
       throw new ProgrammingErrorException(e);
     }
@@ -364,7 +366,7 @@ public class Util
       }
       catch (Exception e)
       {
-        task.createAction(e.getMessage(), "error");
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       }
     }
 

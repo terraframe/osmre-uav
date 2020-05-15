@@ -292,7 +292,7 @@ public class ODMStatusServer
   
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
-            task.setMessage(ex.getLocalizedMessage());
+            task.setMessage(RunwayException.localizeThrowable(ex, Session.getCurrentLocale()));
             task.apply();
   
             it.remove();

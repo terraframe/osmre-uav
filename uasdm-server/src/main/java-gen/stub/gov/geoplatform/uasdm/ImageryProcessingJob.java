@@ -178,13 +178,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     catch (ZipException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       
       throw new InvalidZipException();
     }
     catch (IOException e)
     {
-      task.createAction(e.getMessage(), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
       throw new ProgrammingErrorException(e);
     }
