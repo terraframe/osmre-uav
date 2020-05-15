@@ -43,13 +43,13 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -93,7 +93,7 @@ public class HTTPConnector
   
   synchronized public void initialize()
   {
-    this.client = new HttpClient();
+    this.client = new HttpClient(new MultiThreadedHttpConnectionManager());
     
     if (username != null && password != null)
     {
@@ -196,7 +196,7 @@ public class HTTPConnector
     String sResponse = null;
     try
     {
-      this.logger.info("Sending request to " + method.getURI());
+      this.logger.debug("Sending request to " + method.getURI());
 
       // Execute the method.
       int statusCode = client.executeMethod(method);
@@ -204,7 +204,7 @@ public class HTTPConnector
       // Follow Redirects
       if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY || statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_TEMPORARY_REDIRECT || statusCode == HttpStatus.SC_SEE_OTHER)
       {
-        this.logger.info("Redirected [" + statusCode + "] to [" + method.getResponseHeader("location").getValue() + "].");
+        this.logger.debug("Redirected [" + statusCode + "] to [" + method.getResponseHeader("location").getValue() + "].");
         method.setURI(new URI(method.getResponseHeader("location").getValue(), true, method.getParams().getUriCharset()));
         method.releaseConnection();
         return httpRequest(client, method);
@@ -223,11 +223,11 @@ public class HTTPConnector
       
       if (sResponse.length() < 1000)
       {
-        this.logger.info("Response string = '" + sResponse + "'.");
+        this.logger.debug("Response string = '" + sResponse + "'.");
       }
       else
       {
-        this.logger.info("Receieved a very large response.");
+        this.logger.debug("Receieved a very large response.");
       }
       
       return new HTTPResponse(sResponse, statusCode);
