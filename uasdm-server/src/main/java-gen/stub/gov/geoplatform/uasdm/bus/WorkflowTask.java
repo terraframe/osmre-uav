@@ -32,7 +32,10 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
+import com.runwaysdk.query.AttributeUUID;
 import com.runwaysdk.query.Condition;
+import com.runwaysdk.query.F;
+import com.runwaysdk.query.MAX;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
@@ -193,7 +196,9 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     ValueQuery vQuery = new ValueQuery(new QueryFactory());
     WorkflowTaskQuery query = new WorkflowTaskQuery(vQuery);
 
-    vQuery.SELECT_DISTINCT(query.getComponent());
+    MAX max = F.MAX(query.getCreateDate());
+    
+    vQuery.SELECT(query.getComponent(COMPONENT), max);
     vQuery.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
     if (statuses != null)
@@ -213,7 +218,9 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
       }
     }
 
-//    vQuery.ORDER_BY_ASC(query.getLastUpdateDate());
+    vQuery.GROUP_BY((AttributeUUID) query.getComponent(COMPONENT));
+
+    vQuery.ORDER_BY_DESC(max);
 
     if (pageNumber != null && pageSize != null)
     {
