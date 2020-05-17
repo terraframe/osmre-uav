@@ -7,7 +7,7 @@
         </a>
       </h4>
       <span class="heading-status-label pull-right">Current status: <span
-          [ngClass]="{'success':taskGroupType.status === 'Complete', 'pending':taskGroupType.status === 'Queued' || taskGroupType.status === 'Running' || taskGroupType.status === 'Processing' || taskGroupType.status === 'Pending','fail':taskGroupType.status === 'Failed'}">{{taskGroupType.status}}</span></span>
+          [ngClass]="{'success':(taskGroupType.status === 'Complete' || taskGroupType.status  === 'Warning'), 'pending':taskGroupType.status === 'Queued' || taskGroupType.status === 'Running' || taskGroupType.status === 'Processing' || taskGroupType.status === 'Pending','fail':taskGroupType.status === 'Failed'}">{{taskGroupType.status}}</span></span>
     </div>
     <div id="task-group-panel-{{groupTypeId}}" class="panel-body" [isAnimated]="false" [collapse]="!showProcess">
 
@@ -26,8 +26,10 @@
 
         <div *ngIf="task.status === 'Complete' || task.status === 'Failed'">
           <ul class="list-unstyled" style="margin: 0;">
-            <li>Status: <b
-                [ngClass]="{'success':task.status === 'Complete','pending':task.status === 'Queued' || task.status === 'Running' || task.status === 'Processing' || task.status === 'Pending', 'fail':task.status === 'Failed'}">{{task.status}}</b>
+            <li>Status: 
+              <b [ngClass]="{'success':task.status === 'Complete','pending':task.status === 'Queued' || task.status === 'Running' || task.status === 'Processing' || task.status === 'Pending', 'fail':task.status === 'Failed'}">
+                {{task.status === 'Complete' && task.actions.length > 0 ? 'Complete With Warnings' : task.status }}
+              </b>
             </li>
             <li>Message: <b>{{task.message}}</b></li>
             <li>Created on: <b>{{task.createDate}}</b></li>

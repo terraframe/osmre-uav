@@ -245,6 +245,7 @@ export class TasksComponent implements OnInit {
 
             let isError: boolean = false;
             let isWorking: boolean = false;
+            let isWarning: boolean = false;
 
             collectionGroup.groups.forEach(group => {
 
@@ -254,6 +255,11 @@ export class TasksComponent implements OnInit {
                     );
 
                     group.status = sortedTasks[0].status;
+
+                    if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
+                        group.status = 'Warning';
+                        isWarning = true;
+                    }
                 }
 
                 if (group.status === "Error" || group.status === "Failed") {
@@ -269,6 +275,9 @@ export class TasksComponent implements OnInit {
             }
             else if (isError) {
                 collectionGroup.status = "Failed";
+            }
+            else if (isWarning) {
+                collectionGroup.status = "Warning";
             }
             else {
                 collectionGroup.status = "Complete";
@@ -315,7 +324,7 @@ export class TasksComponent implements OnInit {
                             if (existingTask.odmOutput !== newTask.odmOutput) {
                                 existingTask.odmOutput = newTask.odmOutput;
                             }
-                            
+
                             existingTask.actions = newTask.actions;
                         }
                     })
@@ -332,7 +341,7 @@ export class TasksComponent implements OnInit {
         if (noMatch && noMatch.length > 0) {
             this.setTaskData({ resultSet: noMatch, count: tasks.count, pageNumber: this.taskPage.pageNumber, pageSize: this.taskPage.pageSize }, true);
         }
-        
+
         this.setTaskGroupStatuses();
     }
 
