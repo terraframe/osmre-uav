@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.bus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +37,6 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
-import com.runwaysdk.system.metadata.MdBusiness;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -240,15 +240,28 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
 
+    ImageryComponent component = this.getImageryComponent();
+
+    final List<UasComponentIF> ancestors = component.getAncestors();
+    Collections.reverse(ancestors);
+
+    final JSONArray parents = new JSONArray();
+
+    for (UasComponentIF ancestor : ancestors)
+    {
+      parents.put(ancestor.getName());
+    }
+
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
-    obj.put("collection", this.getComponent());
-    obj.put("collectionLabel", this.getComponentLabel());
+    obj.put("collection", component.getOid());
+    obj.put("collectionLabel", component.getName());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
     obj.put("createDate", format.format(this.getCreateDate()));
     obj.put("type", this.getType());
+    obj.put("ancestors", parents);
 
     return obj;
   }

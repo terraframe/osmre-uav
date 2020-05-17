@@ -104,7 +104,9 @@ export class Task {
     collectionLabel: string;
     type: string;
     visible?: boolean;
-    showError?:boolean;
+    showError?: boolean;
+    ancestors?: string[];
+
 }
 
 export class TaskGroup {
@@ -114,6 +116,7 @@ export class TaskGroup {
     groups: TaskGroupType[];
     status: string;
     lastUpdatedDate: string;
+    ancestors?: string[];
 }
 
 export class TaskGroupType {

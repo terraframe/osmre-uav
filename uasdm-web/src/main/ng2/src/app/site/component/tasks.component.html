@@ -97,10 +97,21 @@
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
+                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                    <ul class="breadcrumb" style="color:grey;">
+                      <li *ngFor="let ancestor of taskGroup.ancestors">
+                        <span > <b>{{ancestor}}</b> </span>
+                      </li>
+                      <li class="active">
+                        {{taskGroup.label}}
+                      </li>
+                    </ul>
+                  </div>
+
                 </div>
             
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
-                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
+                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">                  
                     <div [id]="'task'+ grpi">
 
                       <!-- Upload Tasks -->
@@ -143,9 +154,21 @@
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
+                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                    <ul class="breadcrumb" style="color:grey;">
+                      <li *ngFor="let ancestor of taskGroup.ancestors">
+                        <span > <b>{{ancestor}}</b> </span>
+                      </li>
+                      <li class="active">
+                        {{taskGroup.label}}
+                      </li>
+                    </ul>
+                  </div>
+
                 </div>
             
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
+                
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
                     <div [id]="'task'+ grpi">
 
@@ -186,9 +209,19 @@
 
                   <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
 
+                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                    <ul class="breadcrumb" style="color:grey;">
+                      <li *ngFor="let ancestor of taskGroup.ancestors">
+                        <span > <b>{{ancestor}}</b> </span>
+                      </li>
+                      <li class="active">
+                        {{taskGroup.label}}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
             
-                <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
+                <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">                
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
                     <div [id]="'task'+ grpi">
 

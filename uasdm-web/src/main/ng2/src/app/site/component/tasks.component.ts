@@ -201,7 +201,8 @@ export class TasksComponent implements OnInit {
                         collectionId: task.collection,
                         groups: [{ tasks: [task], status: task.status, type: 'UPLOAD' }],
                         status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate
+                        lastUpdatedDate: task.lastUpdatedDate,
+                        ancestors: task.ancestors
                     });
                 }
                 else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
@@ -211,7 +212,8 @@ export class TasksComponent implements OnInit {
                         collectionId: task.collection,
                         groups: [{ tasks: [task], status: task.status, type: 'PROCESS' }],
                         status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate
+                        lastUpdatedDate: task.lastUpdatedDate,
+                        ancestors: task.ancestors
                     });
                 }
                 else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
@@ -221,7 +223,8 @@ export class TasksComponent implements OnInit {
                         collectionId: task.collection,
                         groups: [{ tasks: [task], status: task.status, type: 'STORE' }],
                         status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate
+                        lastUpdatedDate: task.lastUpdatedDate,
+                        ancestors: task.ancestors
                     });
                 }
 
