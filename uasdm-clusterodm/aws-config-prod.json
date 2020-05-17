@@ -12,6 +12,8 @@
     
     "log-level": "debug",
     "debug": true,
+    
+    "createRetries": 3,
 
     "monitoring": false,
     "maxRuntime": -1,
@@ -23,7 +25,7 @@
     
     "instanceLimit": 30,
 
-    "spot": true,
+    "spot": false,
     "imageSizeMapping": [
         {"maxImages": 40, "slug": "t3a.small", "spotPrice": 0.05, "storage": 60},
         {"maxImages": 80, "slug": "t3a.medium", "spotPrice": 0.05, "storage": 100},
