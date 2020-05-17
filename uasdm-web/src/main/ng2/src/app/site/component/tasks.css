@@ -65,6 +65,9 @@
 .panel-heading.panel-heading-light .heading-status-label .fail {
     color: red;
 }
+.panel-heading.panel-heading-light .heading-status-label .warning {
+    color: blue;
+}
 
 b.success {
   color: green;

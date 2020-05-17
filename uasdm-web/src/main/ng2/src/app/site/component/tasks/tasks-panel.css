@@ -65,6 +65,9 @@
 .panel-heading.panel-heading-light .heading-status-label .success {
     color: green;
 }
+.panel-heading.panel-heading-light .heading-status-label .warning {
+    color: blue;
+}
 .panel-heading.panel-heading-light .heading-status-label .pending {
     color: orange;
 }
@@ -110,6 +113,9 @@ b.fail {
 }
 .dot.pending {
   background-color: orange;
+}
+.dot.warning {
+  background-color: blue;
 }
 .dot.pending.blink {
    animation-duration: 400ms;
