@@ -231,9 +231,9 @@ export class TasksComponent implements OnInit {
             }
         }
 
-        this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
-            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-        );
+//        this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
+//            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+//        );
 
         this.setTaskGroupStatuses();
     }

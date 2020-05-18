@@ -66,10 +66,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File imageryZip) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    
-    // Sanity check the zip they sent us. Throw an error if it's not what we expect.
-    if (!validateZip(imageryZip, task)) { return; }
-    
+
+    // Sanity check the zip they sent us. Throw an error if it's not what we
+    // expect.
+    if (!validateZip(imageryZip, task))
+    {
+      return;
+    }
+
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
@@ -93,6 +97,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
+
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+      }
     }
   }
 
@@ -107,21 +116,20 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
   }
-  
+
   private static boolean validateZip(File fZip, AbstractUploadTask task)
   {
     // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
     // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
-    final String[] supportedExts = new String[] {"jpg", "jpeg", "png"};
-    
-    
+    final String[] supportedExts = new String[] { "jpg", "jpeg", "png" };
+
     boolean isMultispectral = isMultispectral(task);
-    
+
     // Check to make sure that this zip actually has files to process in it.
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(fZip)))
     {
       boolean hasFiles = false;
-      
+
       ZipEntry entry;
       while ( ( entry = zis.getNextEntry() ) != null)
       {
@@ -129,13 +137,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         boolean isVideo = Util.isVideoFile(filename);
         boolean isValidName = UasComponentIF.isValidName(filename);
         String ext = FilenameUtils.getExtension(filename);
-        
+
         if (entry.isDirectory())
         {
           task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
           continue;
         }
-        
+
         if (!isVideo)
         {
           if (!isValidName)
@@ -143,7 +151,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
             task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
             continue;
           }
-          
+
           if (isMultispectral)
           {
             if (!filename.endsWith(".tif"))
@@ -161,17 +169,22 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
             }
           }
         }
-        
+
         hasFiles = true;
       }
-      
+
       if (!hasFiles)
       {
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(supportedExts, ", "));
         task.apply();
-        
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+        }
+
 //        throw new InvalidZipException();
         return false;
       }
@@ -179,7 +192,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     catch (ZipException e)
     {
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-      
+
       throw new InvalidZipException();
     }
     catch (IOException e)
@@ -188,10 +201,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       throw new ProgrammingErrorException(e);
     }
-    
+
     return true;
   }
-  
+
   private static boolean isMultispectral(AbstractWorkflowTask task)
   {
     if (task instanceof ImageryWorkflowTask)
@@ -201,11 +214,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     else
     {
       WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
-      
+
       return CollectionUploadEvent.isMultispectral(collectionWorkflowTask.getComponentInstance());
     }
   }
-  
+
   private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
   {
     AbstractWorkflowTask task = this.getWorkflowTask();
