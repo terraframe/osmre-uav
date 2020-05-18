@@ -41,7 +41,7 @@
               <div class="button-holder" style="margin-top: 30px;">
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
                 <button class="btn btn-default" *ngIf="task.odmOutput" (click)="showODMOutput = !showODMOutput">Show Log Output</button>
-                <button class="btn btn-default" (click)="task.showError = !task.showError">Show Warnings</button>
+                <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">Show Warnings</button>
               </div>
             </div>
           </div>
