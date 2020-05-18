@@ -114,9 +114,9 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
       query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
 
-      query.ORDER_BY_ASC(query.getComponent());
-      query.ORDER_BY_ASC(query.getCreateDate());
-      query.ORDER_BY_ASC(query.getLastUpdateDate());
+//      query.ORDER_BY_ASC(query.getComponent());
+      query.ORDER_BY_DESC(query.getCreateDate());
+//      query.ORDER_BY_ASC(query.getLastUpdateDate());
 
 //    if (pageNumber != null && pageSize != null)
 //    {
@@ -124,7 +124,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 //    }
 //
 //    final long count = query.getCount();
-
+      
       try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
       {
         List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
@@ -226,7 +226,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     {
       vQuery.restrictRows(pageSize, pageNumber);
     }
-
+    
     List<String> components = new LinkedList<String>();
 
     try (OIterator<ValueObject> iterator = vQuery.getIterator(pageSize, pageNumber))

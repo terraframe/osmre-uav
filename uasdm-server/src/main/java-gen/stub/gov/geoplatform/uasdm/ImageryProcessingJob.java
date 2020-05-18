@@ -99,6 +99,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
+
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+      }
     }
   }
 
@@ -187,6 +192,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "));
       task.apply();
       
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+      }
+      
       return false;
     }
     
@@ -210,6 +220,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       if (!isValidName)
       {
         task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
+
         return false;
       }
       
@@ -230,10 +241,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         }
       }
     }
-    
+
     return true;
   }
-  
+
   private static boolean isMultispectral(AbstractWorkflowTask task)
   {
     if (task instanceof ImageryWorkflowTask)
@@ -243,11 +254,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     else
     {
       WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
-      
+
       return CollectionUploadEvent.isMultispectral(collectionWorkflowTask.getComponentInstance());
     }
   }
-  
+
   private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
   {
     AbstractWorkflowTask task = this.getWorkflowTask();
