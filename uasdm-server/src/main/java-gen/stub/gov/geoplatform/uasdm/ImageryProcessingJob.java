@@ -126,63 +126,54 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     
     boolean hasFiles = false;
     
-    if (ext.equalsIgnoreCase("zip"))
+    try
     {
-      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
+      if (ext.equalsIgnoreCase("zip"))
       {
-        ZipEntry entry;
-        while ( ( entry = zis.getNextEntry() ) != null)
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
         {
-          String filename = entry.getName();
-          
-          boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-          
-          hasFiles = hasFiles || isValid;
-        }
-      }
-      catch (ZipException e)
-      {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-        
-        throw new InvalidZipException();
-      }
-      catch (IOException e)
-      {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-        throw new ProgrammingErrorException(e);
-      }
-    }
-    else if (ext.equalsIgnoreCase("gz"))
-    {
-      try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
-      {
-        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
-        {
-          TarArchiveEntry entry;
-
-          while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+          ZipEntry entry;
+          while ( ( entry = zis.getNextEntry() ) != null)
           {
-            final String filename = entry.getName();
-
+            String filename = entry.getName();
+            
             boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
             
             hasFiles = hasFiles || isValid;
           }
         }
       }
-      catch (ZipException e)
+      else if (ext.equalsIgnoreCase("gz"))
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-        
-        throw new InvalidZipException();
+        try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
+        {
+          try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+          {
+            TarArchiveEntry entry;
+  
+            while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+            {
+              final String filename = entry.getName();
+  
+              boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+              
+              hasFiles = hasFiles || isValid;
+            }
+          }
+        }
       }
-      catch (IOException e)
-      {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+    }
+    catch (ZipException e)
+    {
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+      
+      throw new InvalidZipException();
+    }
+    catch (IOException e)
+    {
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
-        throw new ProgrammingErrorException(e);
-      }
+      throw new ProgrammingErrorException(e);
     }
     
     if (!hasFiles)
