@@ -23,6 +23,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -57,24 +60,27 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
 
   private static final long   serialVersionUID = -339555201;
+  
+  // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
+  // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
+  public static final String[] SUPPORTED_EXTENSIONS = new String[] {"jpg", "jpeg", "png"};
 
   public ImageryProcessingJob()
   {
     super();
   }
 
-  public static void processFiles(RequestParser parser, File imageryZip) throws FileNotFoundException
+  public static void processFiles(RequestParser parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     
-    // Sanity check the zip they sent us. Throw an error if it's not what we expect.
-    if (!validateZip(imageryZip, task)) { return; }
+    if (!validateArchive(archive, task)) { return; }
     
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
       String uploadTarget = parser.getUploadTarget();
-      VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(imageryZip));
+      VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
@@ -108,85 +114,121 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
   }
   
-  private static boolean validateZip(File fZip, AbstractUploadTask task)
+  private static boolean validateArchive(File archive, AbstractUploadTask task)
   {
-    // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
-    // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
-    final String[] supportedExts = new String[] {"jpg", "jpeg", "png"};
+    final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
+    final boolean isMultispectral = isMultispectral(task);
     
+    boolean hasFiles = false;
     
-    boolean isMultispectral = isMultispectral(task);
-    
-    // Check to make sure that this zip actually has files to process in it.
-    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(fZip)))
+    if (ext.equalsIgnoreCase("zip"))
     {
-      boolean hasFiles = false;
-      
-      ZipEntry entry;
-      while ( ( entry = zis.getNextEntry() ) != null)
+      try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
       {
-        String filename = entry.getName();
-        boolean isVideo = Util.isVideoFile(filename);
-        boolean isValidName = UasComponentIF.isValidName(filename);
-        String ext = FilenameUtils.getExtension(filename).toLowerCase();
-        
-        if (entry.isDirectory())
+        ZipEntry entry;
+        while ( ( entry = zis.getNextEntry() ) != null)
         {
-          task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
-          continue;
-        }
-        
-        if (!isVideo)
-        {
-          if (!isValidName)
-          {
-            task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
-            continue;
-          }
+          String filename = entry.getName();
           
-          if (isMultispectral)
+          boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+          
+          hasFiles = hasFiles || isValid;
+        }
+      }
+      catch (ZipException e)
+      {
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        
+        throw new InvalidZipException();
+      }
+      catch (IOException e)
+      {
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+
+        throw new ProgrammingErrorException(e);
+      }
+    }
+    else if (ext.equalsIgnoreCase("gz"))
+    {
+      try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
+      {
+        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+        {
+          TarArchiveEntry entry;
+
+          while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
           {
-            if (!filename.endsWith(".tif"))
-            {
-              task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", "error");
-              continue;
-            }
-          }
-          else
-          {
-            if (!ArrayUtils.contains(supportedExts, ext))
-            {
-              task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(supportedExts, ", "), "error");
-              continue;
-            }
+            final String filename = entry.getName();
+
+            boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+            
+            hasFiles = hasFiles || isValid;
           }
         }
-        
-        hasFiles = true;
       }
-      
-      if (!hasFiles)
+      catch (ZipException e)
       {
-        task.lock();
-        task.setStatus(WorkflowTaskStatus.ERROR.toString());
-        task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(supportedExts, ", "));
-        task.apply();
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
         
-//        throw new InvalidZipException();
+        throw new InvalidZipException();
+      }
+      catch (IOException e)
+      {
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+
+        throw new ProgrammingErrorException(e);
+      }
+    }
+    
+    if (!hasFiles)
+    {
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "));
+      task.apply();
+      
+      return false;
+    }
+    
+    return true;
+  }
+  
+  private static boolean validateFile(String filename, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task)
+  {
+    boolean isVideo = Util.isVideoFile(filename);
+    boolean isValidName = UasComponentIF.isValidName(filename);
+    String ext = FilenameUtils.getExtension(filename).toLowerCase();
+    
+    if (isDirectory)
+    {
+      task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
+      return false;
+    }
+    
+    if (!isVideo)
+    {
+      if (!isValidName)
+      {
+        task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
         return false;
       }
-    }
-    catch (ZipException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       
-      throw new InvalidZipException();
-    }
-    catch (IOException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-      throw new ProgrammingErrorException(e);
+      if (isMultispectral)
+      {
+        if (!filename.endsWith(".tif"))
+        {
+          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", "error");
+          return false;
+        }
+      }
+      else
+      {
+        if (!ArrayUtils.contains(SUPPORTED_EXTENSIONS, ext))
+        {
+          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "), "error");
+          return false;
+        }
+      }
     }
     
     return true;
