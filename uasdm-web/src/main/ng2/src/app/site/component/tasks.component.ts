@@ -177,8 +177,6 @@ export class TasksComponent implements OnInit {
                 group = this.collectionGroups[collectPosition];
             }
             
-            console.log(group);
-
             if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
 
                 let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'UPLOAD' });
