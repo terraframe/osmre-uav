@@ -41,7 +41,7 @@
               <div class="button-holder" style="margin-top: 30px;">
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
                 <button class="btn btn-default" *ngIf="task.odmOutput" (click)="showODMOutput = !showODMOutput">Show Log Output</button>
-                <button class="btn btn-default" (click)="task.showError = !task.showError">Show Error</button>
+                <button class="btn btn-default" (click)="task.showError = !task.showError">Show Warnings</button>
               </div>
             </div>
           </div>
@@ -55,22 +55,20 @@
 
           <div *ngIf="task.showError" class="row">
             <div class="col-sm-12">
-              <h4>Actions:</h4>
+              <h4>Warnings:</h4>
               <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
               <table *ngIf="task.actions.length > 0" class="table table-bordered">
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Type</th>
                     <th>Description</th>
                     <th>Creation Date</th>
                     <th>Last Updated</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let action of task.actions; let i=index" [ngClass]="{'danger':action.type === 'error'}">
+                  <tr *ngFor="let action of task.actions; let i=index">
                     <th scope="row">{{i + 1}}</th>
-                    <td>{{action.type}}</td>
                     <td>{{action.description}}</td>
                     <td>{{action.createDate}}</td>
                     <td>{{action.lastUpdatedDate}}</td>

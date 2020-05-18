@@ -128,7 +128,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         String filename = entry.getName();
         boolean isVideo = Util.isVideoFile(filename);
         boolean isValidName = UasComponentIF.isValidName(filename);
-        String ext = FilenameUtils.getExtension(filename);
+        String ext = FilenameUtils.getExtension(filename).toLowerCase();
         
         if (entry.isDirectory())
         {
