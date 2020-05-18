@@ -551,10 +551,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         event.stopPropagation();
 
-        let sText = '<b>IMPORTANT:</b> Deleting [' + node.name + '] will delete itself and the files inside any Collections or Accessible Support that are within it.';
+        let sText = '<b>IMPORTANT:</b> [' + node.name + '] will be deleted along with all underlying data including all files in Collections and Accessible Support';
 
         if (node.type === 'Collection') {
-            sText = '<b>IMPORTANT:</b> Deleting [' + node.name + '] will delete itself and all of the files within it.';
+            sText = '<b>IMPORTANT:</b> [' + node.name + '] will be deleted along with all underlying data including all files.';
         }
 
         sText += ' This can <b>NOT</b> be undone';
