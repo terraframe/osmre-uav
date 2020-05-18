@@ -14,6 +14,8 @@ export class BasicConfirmModalComponent {
      */
     @Input() message: string = 'Are you sure?';
 
+    @Input() subText: string = null;
+
     @Input() data: any;
 
     @Input() submitText: string = 'Submit';

@@ -551,12 +551,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         event.stopPropagation();
 
+        let sText = '<b>IMPORTANT:</b> Deleting [' + node.name + '] will delete itself and the files inside any Collections or Accessible Support that are within it.';
+
+        if (node.type === 'Collection') {
+            sText = '<b>IMPORTANT:</b> Deleting [' + node.name + '] will delete itself and all of the files within it.';
+        }
+
+        sText += ' This can <b>NOT</b> be undone';
+
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.name + ']?';
+        this.bsModalRef.content.subText = sText;
         this.bsModalRef.content.data = node;
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
