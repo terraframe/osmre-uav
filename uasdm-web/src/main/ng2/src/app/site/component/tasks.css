@@ -56,29 +56,29 @@
     vertical-align: middle;
     line-height: 40px;
 }
+
 .panel-heading.panel-heading-light .heading-status-label .success {
-    color: green;
-}
-.panel-heading.panel-heading-light .heading-status-label .pending {
-    color: orange;
-}
-.panel-heading.panel-heading-light .heading-status-label .fail {
-    color: red;
+    color: #6CB46F;
 }
 .panel-heading.panel-heading-light .heading-status-label .warning {
-    color: blue;
+    color: #2C88CB;
+}
+.panel-heading.panel-heading-light .heading-status-label .pending {
+    color: #FF8C42;
+}
+.panel-heading.panel-heading-light .heading-status-label .fail {
+    color: #BF1E1E;
 }
 
 b.success {
-  color: green;
+    color: #6CB46F;
 }
 b.pending {
-  color: orange;
+    color: #FF8C42;
 }
 b.fail {
-  color: red;
+    color: #BF1E1E;
 }
-
 
 .nav-tabs > li a {
     color: grey;
