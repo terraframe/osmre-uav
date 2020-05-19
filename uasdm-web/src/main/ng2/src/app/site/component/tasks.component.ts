@@ -155,85 +155,66 @@ export class TasksComponent implements OnInit {
         for (let i = 0; i < tasks.resultSet.length; i++) {
             let task = tasks.resultSet[i];
             let collectPosition = this.collectionGroups.findIndex(value => { return task.collection === value.collectionId });
+            let group: TaskGroup = null;
 
-            if (collectPosition > -1) {
+            if (collectPosition === -1) {
+                group = {
+                    label: task.collectionLabel,
+                    collectionId: task.collection,
+                    groups: [],
+                    status: task.status,
+                    lastUpdatedDate: task.lastUpdatedDate,
+                    ancestors: task.ancestors
+                };
 
-                if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
-
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'UPLOAD' });
-
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'UPLOAD' })
-                    }
-                    else {
-                        this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-                    }
-                }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
-
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'PROCESS' });
-
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'PROCESS' })
-                    }
-                    else {
-                        this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-                    }
-                }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
-
-                    let taskGroupTypeIndex = this.collectionGroups[collectPosition].groups.findIndex(value => { return value.type === 'STORE' });
-
-                    if (taskGroupTypeIndex === -1) {
-                        this.collectionGroups[collectPosition].groups.push({ tasks: [task], status: task.status, type: 'STORE' })
-                    }
-                    else {
-                        this.collectionGroups[collectPosition].groups[taskGroupTypeIndex].tasks.push(task);
-                    }
-                }
+                group.groups.push({ tasks: [], status: null, type: 'UPLOAD' });
+                group.groups.push({ tasks: [], status: null, type: 'PROCESS' });
+                group.groups.push({ tasks: [], status: null, type: 'STORE' });
+                
+                this.collectionGroups.push(group);
             }
             else {
+                group = this.collectionGroups[collectPosition];
+            }
+            
+            if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
 
-                if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
+                let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'UPLOAD' });
 
-                    this.collectionGroups.push({
-                        label: task.collectionLabel,
-                        collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'UPLOAD' }],
-                        status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate,
-                        ancestors: task.ancestors
-                    });
+                if (taskGroupTypeIndex === -1) {
+                    group.groups.push({ tasks: [task], status: task.status, type: 'UPLOAD' })
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
-
-                    this.collectionGroups.push({
-                        label: task.collectionLabel,
-                        collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'PROCESS' }],
-                        status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate,
-                        ancestors: task.ancestors
-                    });
+                else {
+                    group.groups[taskGroupTypeIndex].tasks.push(task);
                 }
-                else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
+            }
+            else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
 
-                    this.collectionGroups.push({
-                        label: task.collectionLabel,
-                        collectionId: task.collection,
-                        groups: [{ tasks: [task], status: task.status, type: 'STORE' }],
-                        status: task.status,
-                        lastUpdatedDate: task.lastUpdatedDate,
-                        ancestors: task.ancestors
-                    });
+                let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'PROCESS' });
+
+                if (taskGroupTypeIndex === -1) {
+                    group.groups.push({ tasks: [task], status: task.status, type: 'PROCESS' })
                 }
+                else {
+                    group.groups[taskGroupTypeIndex].tasks.push(task);
+                }
+            }
+            else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
 
+                let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'STORE' });
+
+                if (taskGroupTypeIndex === -1) {
+                    group.groups.push({ tasks: [task], status: task.status, type: 'STORE' })
+                }
+                else {
+                    group.groups[taskGroupTypeIndex].tasks.push(task);
+                }
             }
         }
 
-//        this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
-//            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-//        );
+        //        this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
+        //            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+        //        );
 
         this.setTaskGroupStatuses();
     }

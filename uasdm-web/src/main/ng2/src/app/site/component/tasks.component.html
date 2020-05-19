@@ -112,7 +112,7 @@
             
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">                  
-                    <div [id]="'task'+ grpi">
+                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
 
                       <!-- Upload Tasks -->
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
@@ -170,7 +170,7 @@
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">
                 
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
-                    <div [id]="'task'+ grpi">
+                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
 
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
                         <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
@@ -223,7 +223,7 @@
             
                 <div class="panel-body" [isAnimated]="false" [collapse]="!taskGroup.visible">                
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
-                    <div [id]="'task'+ grpi">
+                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi" >
 
                       <!-- Upload Tasks -->
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
