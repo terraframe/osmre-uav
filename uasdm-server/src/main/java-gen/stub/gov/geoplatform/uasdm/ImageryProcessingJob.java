@@ -178,10 +178,20 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     
     if (!hasFiles)
     {
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "));
-      task.apply();
+      if (!isMultispectral)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "));
+        task.apply();
+      }
+      else
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip did not contain any files to process. You have selected a multispectral sensor, are your files of .tif format? Additionally, files must be at the top-most level of the zip (not in a sub-directory) and they must follow proper naming conventions.");
+        task.apply();
+      }
       
       if (Session.getCurrentSession() != null)
       {
