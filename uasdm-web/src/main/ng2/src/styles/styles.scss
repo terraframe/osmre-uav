@@ -610,3 +610,19 @@ input[type="checkbox"].x-box:checked:after {
 .ngx-pagination .current {
   background: grey !important;
 }
+
+.idm-toast .alert.alert-success {
+	background-color: white;
+}
+
+ngx-file-drop > div {
+  border: dashed 2px lightgrey !important;
+  border-radius: 10px !important;
+  margin: 10px !important;
+}
+ngx-file-drop > div > div {
+  color: grey !important;
+}
+ngx-file-drop button {
+  margin: 10px !important;
+}

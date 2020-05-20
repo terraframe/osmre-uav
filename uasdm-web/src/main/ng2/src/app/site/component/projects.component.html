@@ -189,7 +189,7 @@
         <div class="col-md-9" id="site-explorer-map">
             <div class="row">
                 <article style="position: absolute;z-index: 5;margin-left: 100px;margin-top: 10px;">
-                  <div *ngFor="let task of tasks; let idx = index">
+                  <div class="idm-toast" *ngFor="let task of tasks; let idx = index">
                     <alert *ngIf="task.status === 'Complete' && task.actions.length === 0" type="success" [dismissible]="true" (onClosed)="handleCloseToast(idx)">
                       <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. <a (click)="handleViewSite(task.collection)">Goto the collection view</a>
                     </alert>
@@ -202,8 +202,9 @@
                     <alert *ngIf="task.status !== 'Failed' && task.status !== 'Complete'" type="info" [dismissible]="true" (onClosed)="handleCloseToast(idx)">
                       <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}.
                     </alert>
-                  </div>                  
+                  </div>    
                 </article>
+
 
                 <article class="base-layer-panel">
 

@@ -184,6 +184,43 @@
 
         <!-- Current upload indicator -->
         <div class="" [hidden]="!uploadVisible">
+
+          <div class="well">
+            <h4>All files uploaded through the upload wizard must</h4>
+            <ul>
+              <li>be compressed into a .zip format </li>
+              <li>not contain any directories within the .zip file</li>
+              <li>not contain spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or apostrophes in any file name</li>
+            </ul>
+
+            <h4>
+              Supported File Formats
+            </h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Formats</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>RGB Image Data</td>
+                  <td>jpg, jpeg, png</td>
+                </tr>
+                <tr>
+                  <td>Multispectral Image Data</td>
+                  <td>tif</td>
+                </tr>
+                <tr>
+                  <td>Video</td>
+                  <td>mp4</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
           <div *ngIf="currentTask" class="panel panel-warning" style="margin: 30px 0 30px 0;">
             <div class="panel-heading" style="font-size: 20px;">Upload Details</div>
             <div class="panel-body">
@@ -228,8 +265,7 @@
   <div class="modal-footer">
 
     <div class="row">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
+      <div class="col-md-12">
         <div class="btn-holder" style="text-align: right;">
           <button type="button" [disabled]="disabled" (click)="close()" [disabled]="disabled" class="btn btn-default"
             role="button" aria-disabled="false" style="padding: 4px 18px;">

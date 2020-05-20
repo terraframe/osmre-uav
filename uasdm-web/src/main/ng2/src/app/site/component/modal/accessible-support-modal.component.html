@@ -32,7 +32,7 @@
         <tabset class="nav-full-width">
           <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
             <div class="row image-list-container">              
-              <div class="col-sm-8">
+              <div class="col-sm-12">
                 <table class="table table-striped">
                   <thead>
                     <tr>
@@ -45,7 +45,7 @@
                     <tr *ngFor="let item of page.results  | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }">
                       <td class="button-column">
                         <a class="fa fa-download" (click)="handleDownloadFile(item)" title="Download"></a>
-                        <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(item)" title="Remove"></a>
+                        <a style="margin-left: 5px;" class="fa fa-trash-alt ico-remove" (click)="handleDelete(item)" title="Remove"></a>
                       </td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.lastModified }}</td>
@@ -53,14 +53,16 @@
                   </tbody>
                 </table>
               </div>
-              <div class="col-sm-4">
+            </div>
+            <div class="row">
+                   <div class="col-sm-12">
                 <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
                   <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
                     Drag & Drop File
                     <button type="button" (click)="openFileSelector()">Browse Files</button>
                   </ng-template>
                 </ngx-file-drop>
-              </div>                        
+              </div> 
             </div>
           </tab>
         </tabset>
