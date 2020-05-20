@@ -177,7 +177,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
 
         this.notifier = webSocket(baseUrl + '/websocket/notify');
-        this.notifier.subscribe(task => this.tasks.push(task));
+        this.notifier.subscribe(task => {
+            this.tasks.push(task)
+        });
     }
 
     ngOnDestroy(): void {
@@ -410,7 +412,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tasks.splice(idx, 1);
     }
 
-
     handleUploadFile(): void {
 
         this.bsModalRef = this.modalService.show(UploadModalComponent, {
@@ -422,33 +423,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.bsModalRef.content.init(this.breadcrumbs);
 
         this.bsModalRef.content.onUploadComplete.subscribe(node => {
+
             this.service.getItems(this.current.id, null).then(nodes => {
                 this.setNodes(nodes);
             });
         });
-
-        //        this.bsModalRef.content.onHierarchyChange.subscribe( () => {
-        //            const metadata = this.metadataService.getMetadata( item );
-        //
-        //            if ( metadata.expandable ) {
-        ////                if ( node.children == null || node.children.length == 0 ) {
-        ////                    this.service.getItems( node.id, null ).then( nodes => {
-        ////                        node.children = nodes;
-        ////
-        ////                        this.expand( node );
-        ////                    } );
-        ////                }
-        ////                else {
-        ////                    this.expand( node );
-        ////                }
-        //            }
-        //            else {
-        //                this.service.getItems( item.id, null ).then( nodes => {
-        //                    this.setNodes( nodes );
-        //                } );
-        //            }
-        //
-        //        } );
     }
 
 

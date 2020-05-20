@@ -31,7 +31,7 @@ sed -i -e "s/artifact_version=.*/artifact_version=$version/g" geoprism-platform/
 
 #sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 mdillon/postgis:9.5
 
-source /home/ec2-user/.bashrc
+#source /home/ec2-user/.bashrc
 source /home/ec2-user/ansible/hacking/env-setup
 
 export M2_HOME=/usr/local/apache-maven
@@ -54,7 +54,8 @@ if [ "$build_artifact" == "true" ]; then
 #typings install lodash
 #npm run build
 cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
-nvm install lts/erbium
+npm version
+#nvm install lts/erbium
 [ -e ./node_modules ] && rm -r node_modules
 npm install
 npm install typings

@@ -227,18 +227,15 @@ export class UploadModalComponent implements OnInit {
                         clearInterval(that.uplodeCounterInterfal);
 
                         if (responseJSON.success) {
-                            let notificationMsg = "";
-                            //                            if ( that.clickedItem.data.name === "ortho" || that.clickedItem.data.name === "georef" ) {
-                            //                                notificationMsg = "Your upload has finished and can be viewed in the Site Navigator.";
-                            //                            }
-                            //                            else {
-                            notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
-                            //                            }
+                            // let notificationMsg = "";
+                            // notificationMsg = "Your uploaded data is being processed into final image products. You can view the progress at the Workflow Tasks page.";
 
-                            that.taskFinishedNotifications.push({
-                                'id': id,
-                                "message": notificationMsg
-                            })
+                            // that.taskFinishedNotifications.push({
+                            //     'id': id,
+                            //     "message": notificationMsg
+                            // })
+
+                            that.bsModalRef.hide();
                         }
 
                         that.onUploadComplete.next();

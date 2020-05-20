@@ -111,9 +111,8 @@ b.fail {
 .dot.success {
   background-color: #6CB46F;
 }
-.dot.pending {
-	
-  background-color: #BF1E1E;
+.dot.pending {    
+  background-color: #FF8C42;
 }
 .dot.warning {
   background-color: #2C88CB;

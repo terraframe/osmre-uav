@@ -45,28 +45,8 @@ docker run -d -p 3001:3000 --restart always -v /data/odm/dev/micasense:/opt/mica
 
 ##### These commands are specific to the STAGING container!! ####
 
-docker run -d -p 3002:3000 --restart always -v /data/odm/staging/micasense:/opt/micasense -v /data/odm/staging/data:/var/www/datavol -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/staging/micasense --name uasdm-nodeodm-staging 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
-
-docker exec uasdm-nodeodm-staging bash -c 'rm -r /var/www/data'
-docker exec uasdm-nodeodm-staging bash -c 'rm -r /var/www/tmp'
-
-docker exec uasdm-nodeodm-staging bash -c 'mkdir /var/www/datavol/data'
-docker exec uasdm-nodeodm-staging bash -c 'mkdir /var/www/datavol/tmp'
-
-docker exec uasdm-nodeodm-staging bash -c 'ln -s /var/www/datavol/data /var/www/data'
-docker exec uasdm-nodeodm-staging bash -c 'ln -s /var/www/datavol/tmp /var/www/tmp'
-
-
+docker run -d -p 3002:3000 --restart always -v /data/odm/staging/micasense:/opt/micasense -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/staging/micasense --name uasdm-nodeodm-staging 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
 
 ##### These commands are specific to the PROD container!! ####
 
-docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/micasense -v /data/odm/prod/data:/var/www/datavol -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/prod/micasense --name uasdm-nodeodm-prod 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
-
-docker exec uasdm-nodeodm-prod bash -c 'rm -r /var/www/data'
-docker exec uasdm-nodeodm-prod bash -c 'rm -r /var/www/tmp'
-
-docker exec uasdm-nodeodm-prod bash -c 'mkdir /var/www/datavol/data'
-docker exec uasdm-nodeodm-prod bash -c 'mkdir /var/www/datavol/tmp'
-
-docker exec uasdm-nodeodm-prod bash -c 'ln -s /var/www/datavol/data /var/www/data'
-docker exec uasdm-nodeodm-prod bash -c 'ln -s /var/www/datavol/tmp /var/www/tmp'
+docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/micasense -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/prod/micasense --name uasdm-nodeodm-prod 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
