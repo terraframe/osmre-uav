@@ -306,7 +306,7 @@ public class ODMFacade
           {
             int len;
 
-            zos.putNextEntry(new ZipEntry(entry));
+            zos.putNextEntry(new ZipEntry(entry.getName()));
 
             while ( ( len = zis.read(buffer) ) > 0)
             {
