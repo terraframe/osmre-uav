@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -30,6 +30,7 @@ import com.runwaysdk.query.QueryFactory;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF, JSONSerializable
@@ -119,6 +120,26 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     }
   }
 
+  public String getNormalizedStatus()
+  {
+    String status = this.getStatus();
+
+    if (status != null && status.equals(WorkflowTaskStatus.ERROR.toString()))
+    {
+      return ODMStatus.FAILED.getLabel();
+    }
+    else if (status != null && ( status.equals(ODMStatus.RUNNING.getLabel()) || status.equals(WorkflowTaskStatus.STARTED.toString()) ))
+    {
+      return WorkflowTaskStatus.PROCESSING.toString();
+    }
+    else if (status != null && status.equals("Pending"))
+    {
+      return WorkflowTaskStatus.QUEUED.toString();
+    }
+
+    return status;
+  }
+
   public JSONObject toJSON()
   {
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
@@ -137,7 +158,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     obj.put("label", this.getTaskLabel());
     obj.put("createDate", format.format(this.getCreateDate()));
     obj.put("lastUpdatedDate", format.format(this.getLastUpdateDate()));
-    obj.put("status", this.getStatus());
+    obj.put("status", this.getNormalizedStatus());
     obj.put("message", this.getMessage());
     obj.put("actions", jActions);
 

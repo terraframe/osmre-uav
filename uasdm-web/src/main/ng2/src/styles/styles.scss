@@ -573,12 +573,20 @@ input[type="checkbox"].x-box:checked:after {
   margin-right: 10px;
   margin-left: 10px;
 }
+
 .dot.success {
-  background-color: green;
+  background-color: #6CB46F;
 }
-.dot.pending {
-  background-color: orange;
+.dot.pending {    
+  background-color: #BF1E1E;
 }
+.dot.warning {
+  background-color: #2C88CB;
+}
+.dot.fail {
+  background-color:#BF1E1E;
+}
+
 .dot.pending.blink {
    animation-duration: 400ms;
    animation-name: blink;
@@ -593,13 +601,6 @@ input[type="checkbox"].x-box:checked:after {
       opacity: .25;
    }
  }
-.dot.fail {
-  background-color: red;
-}
-.dot.warning {
-  background-color: blue;
-}
-
 
 
 .ngx-pagination {

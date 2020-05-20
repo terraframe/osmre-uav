@@ -264,7 +264,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     obj.put("collection", component.getOid());
     obj.put("collectionLabel", component.getName());
     obj.put("message", this.getMessage());
-    obj.put("status", this.getStatus());
+    obj.put("status", this.getNormalizedStatus());
     obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
     obj.put("createDate", format.format(this.getCreateDate()));
     obj.put("type", this.getType());

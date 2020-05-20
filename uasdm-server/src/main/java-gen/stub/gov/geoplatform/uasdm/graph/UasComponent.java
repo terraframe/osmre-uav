@@ -141,8 +141,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       String folderName = this.generateFolderName(parent);
 
-      System.out.println(folderName);
-
       this.setFolderName(folderName);
     }
 

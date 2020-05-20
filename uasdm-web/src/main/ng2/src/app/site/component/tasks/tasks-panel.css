@@ -63,26 +63,26 @@
     line-height: 40px;
 }
 .panel-heading.panel-heading-light .heading-status-label .success {
-    color: green;
+    color: #6CB46F;
 }
 .panel-heading.panel-heading-light .heading-status-label .warning {
-    color: blue;
+    color: #2C88CB;
 }
 .panel-heading.panel-heading-light .heading-status-label .pending {
-    color: orange;
+    color: #FF8C42;
 }
 .panel-heading.panel-heading-light .heading-status-label .fail {
-    color: red;
+    color: #BF1E1E;
 }
 
 b.success {
-  color: green;
+    color: #6CB46F;
 }
 b.pending {
-  color: orange;
+    color: #FF8C42;
 }
 b.fail {
-  color: red;
+    color: #BF1E1E;
 }
 
 
@@ -109,13 +109,17 @@ b.fail {
   margin-right: 10px;
 }
 .dot.success {
-  background-color: green;
+  background-color: #6CB46F;
 }
 .dot.pending {
-  background-color: orange;
+	
+  background-color: #BF1E1E;
 }
 .dot.warning {
-  background-color: blue;
+  background-color: #2C88CB;
+}
+.dot.fail {
+  background-color:#BF1E1E;
 }
 .dot.pending.blink {
    animation-duration: 400ms;
@@ -131,6 +135,3 @@ b.fail {
       opacity: .5;
    }
  }
-.dot.fail {
-  background-color: red;
-}

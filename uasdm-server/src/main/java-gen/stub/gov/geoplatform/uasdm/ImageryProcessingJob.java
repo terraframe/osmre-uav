@@ -189,7 +189,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
-        task.setMessage("The zip did not contain any files to process. You have selected a multispectral sensor, are your files of .tif format? Additionally, files must be at the top-most level of the zip (not in a sub-directory) and they must follow proper naming conventions.");
+        task.setMessage("Could not process files in upload. All files must be at the top-most level of the directory (not in a sub-directory) and must follow proper naming conventions. You selected a multispectral sensor, all files must be of .tif format to be processed.");
         task.apply();
       }
       
