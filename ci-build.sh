@@ -54,7 +54,8 @@ if [ "$build_artifact" == "true" ]; then
 #typings install lodash
 #npm run build
 cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
-nvm install lts/erbium
+npm version
+#nvm install lts/erbium
 [ -e ./node_modules ] && rm -r node_modules
 npm install
 npm install typings
