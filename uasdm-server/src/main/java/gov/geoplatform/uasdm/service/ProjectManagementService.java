@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
@@ -317,12 +318,12 @@ public class ProjectManagementService
 
     List<String> filenames = new LinkedList<String>();
 
-    File zip;
+    CloseableFile zip;
     try
     {
       logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
 
-      zip = File.createTempFile("raw-" + id, ".zip");
+      zip = new CloseableFile(File.createTempFile("raw-" + id, ".zip"));
 
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
       {

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.Util;
@@ -132,39 +132,30 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       sb.append("\n");
     }
 
-    try
+    try (CloseableFile file = new CloseableFile(File.createTempFile(imagery.getName(), ".txt")))
     {
-      File file = File.createTempFile(imagery.getName(), ".txt");
+      BufferedWriter writer = null;
       try
       {
-        BufferedWriter writer = null;
-        try
-        {
-          writer = new BufferedWriter(new FileWriter(file));
-          writer.write(sb.toString());
-        }
-        finally
-        {
-          if (writer != null)
-          {
-            writer.flush();
-            writer.close();
-          }
-        }
-
-        String geoRefLocation = imagery.buildGeoRefKey();
-
-        Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", this);
+        writer = new BufferedWriter(new FileWriter(file));
+        writer.write(sb.toString());
       }
       finally
       {
-        FileUtils.deleteQuietly(file);
+        if (writer != null)
+        {
+          writer.flush();
+          writer.close();
+        }
       }
+
+      String geoRefLocation = imagery.buildGeoRefKey();
+
+      Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", this);
     }
     catch (IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
-
   }
 }
