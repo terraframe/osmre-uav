@@ -40,6 +40,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -62,7 +63,11 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public static long getUserWorkflowTasksCount(String statuses)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+
+    if (isShowUserOnly())
+    {
+      query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+    }
 
     if (statuses != null)
     {
@@ -93,38 +98,43 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     {
 
       WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-      query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
 
-//    if (statuses != null)
-//    {
-//      List<Condition> conditions = new LinkedList<Condition>();
-//
-//      final JSONArray array = new JSONArray(statuses);
-//
-//      for (int i = 0; i < array.length(); i++)
-//      {
-//        conditions.add(query.getStatus().EQ(array.getString(i)));
-//      }
-//
-//      if (conditions.size() > 0)
-//      {
-//        query.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
-//      }
-//    }
+      if (isShowUserOnly())
+      {
+        query.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+      }
+
+      // if (statuses != null)
+      // {
+      // List<Condition> conditions = new LinkedList<Condition>();
+      //
+      // final JSONArray array = new JSONArray(statuses);
+      //
+      // for (int i = 0; i < array.length(); i++)
+      // {
+      // conditions.add(query.getStatus().EQ(array.getString(i)));
+      // }
+      //
+      // if (conditions.size() > 0)
+      // {
+      // query.AND(OR.get(conditions.toArray(new
+      // Condition[conditions.size()])));
+      // }
+      // }
 
       query.AND(query.getComponent().IN(components.toArray(new String[components.size()])));
 
-//      query.ORDER_BY_ASC(query.getComponent());
+      // query.ORDER_BY_ASC(query.getComponent());
       query.ORDER_BY_DESC(query.getCreateDate());
-//      query.ORDER_BY_ASC(query.getLastUpdateDate());
+      // query.ORDER_BY_ASC(query.getLastUpdateDate());
 
-//    if (pageNumber != null && pageSize != null)
-//    {
-//      query.restrictRows(pageSize, pageNumber);
-//    }
-//
-//    final long count = query.getCount();
-      
+      // if (pageNumber != null && pageSize != null)
+      // {
+      // query.restrictRows(pageSize, pageNumber);
+      // }
+      //
+      // final long count = query.getCount();
+
       try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
       {
         List<WorkflowTask> results = new LinkedList<WorkflowTask>(iterator.getAll());
@@ -151,7 +161,11 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     builder.append("FROM " + mdAbstractWorkflow.getTableName() + " abstract_workflow_task_4,\n");
     builder.append("     " + mdWorkflow.getTableName() + " workflow_task_2 \n");
     builder.append("WHERE workflow_task_2.oid = abstract_workflow_task_4.oid\n");
-    builder.append("AND abstract_workflow_task_4." + userAttribute.getColumnName() + " = '" + GeoprismUser.getCurrentUser().getOid() + "' ");
+
+    if (isShowUserOnly())
+    {
+      builder.append("AND abstract_workflow_task_4." + userAttribute.getColumnName() + " = '" + GeoprismUser.getCurrentUser().getOid() + "' ");
+    }
 
     if (statuses != null)
     {
@@ -189,58 +203,6 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     {
       throw new ProgrammingErrorException(e);
     }
-  }
-
-  public static List<String> getUserWorkflowComponents(String statuses, Integer pageNumber, Integer pageSize)
-  {
-    ValueQuery vQuery = new ValueQuery(new QueryFactory());
-    WorkflowTaskQuery query = new WorkflowTaskQuery(vQuery);
-
-    MAX max = F.MAX(query.getCreateDate());
-    
-    vQuery.SELECT(query.getComponent(COMPONENT), max);
-    vQuery.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
-
-    if (statuses != null)
-    {
-      List<Condition> conditions = new LinkedList<Condition>();
-
-      final JSONArray array = new JSONArray(statuses);
-
-      for (int i = 0; i < array.length(); i++)
-      {
-        conditions.add(query.getStatus().EQ(array.getString(i)));
-      }
-
-      if (conditions.size() > 0)
-      {
-        vQuery.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
-      }
-    }
-
-    vQuery.GROUP_BY((AttributeUUID) query.getComponent(COMPONENT));
-
-    vQuery.ORDER_BY_DESC(max);
-
-    if (pageNumber != null && pageSize != null)
-    {
-      vQuery.restrictRows(pageSize, pageNumber);
-    }
-    
-    List<String> components = new LinkedList<String>();
-
-    try (OIterator<ValueObject> iterator = vQuery.getIterator(pageSize, pageNumber))
-    {
-      while (iterator.hasNext())
-      {
-        ValueObject vObject = iterator.next();
-        String component = vObject.getValue(COMPONENT);
-
-        components.add(component);
-      }
-    }
-
-    return components;
   }
 
   public JSONObject toJSON()
@@ -291,5 +253,66 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public UasComponentIF getComponentInstance()
   {
     return ComponentFacade.getComponent(this.getComponent());
+  }
+
+  private static boolean isShowUserOnly()
+  {
+    return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole("geoprism.admin.Administrator");
+  }
+
+  public static List<String> getUserWorkflowComponents(String statuses, Integer pageNumber, Integer pageSize)
+  {
+    ValueQuery vQuery = new ValueQuery(new QueryFactory());
+    WorkflowTaskQuery query = new WorkflowTaskQuery(vQuery);
+
+    MAX max = F.MAX(query.getCreateDate());
+
+    vQuery.SELECT(query.getComponent(COMPONENT), max);
+
+    if (isShowUserOnly())
+    {
+      vQuery.WHERE(query.getGeoprismUser().EQ(GeoprismUser.getCurrentUser()));
+    }
+
+    if (statuses != null)
+    {
+      List<Condition> conditions = new LinkedList<Condition>();
+
+      final JSONArray array = new JSONArray(statuses);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        conditions.add(query.getStatus().EQ(array.getString(i)));
+      }
+
+      if (conditions.size() > 0)
+      {
+        vQuery.AND(OR.get(conditions.toArray(new Condition[conditions.size()])));
+      }
+    }
+
+    vQuery.GROUP_BY((AttributeUUID) query.getComponent(COMPONENT));
+
+    vQuery.ORDER_BY_DESC(max);
+
+    if (pageNumber != null && pageSize != null)
+    {
+      vQuery.restrictRows(pageSize, pageNumber);
+    }
+
+    List<String> components = new LinkedList<String>();
+
+    try (OIterator<ValueObject> iterator = vQuery.getIterator(pageSize, pageNumber))
+    {
+      while (iterator.hasNext())
+      {
+        ValueObject vObject = iterator.next();
+        String component = vObject.getValue(COMPONENT);
+
+        components.add(component);
+      }
+    }
+
+    return components;
   }
 }

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
@@ -276,12 +276,12 @@ public class S3RemoteFileService implements RemoteFileService
 
     int pageIndexStart = 0;
     int pageIndexStop = 0;
+
     if (pageNumber != null && pageSize != null)
     {
       pageIndexStart = ( pageNumber - 1 ) * pageSize;
       pageIndexStop = pageNumber * pageSize;
     }
-    int awsPageNum = 1;
 
     ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
@@ -290,23 +290,20 @@ public class S3RemoteFileService implements RemoteFileService
       List<S3ObjectSummary> list = objectListing.getObjectSummaries();
       Iterator<S3ObjectSummary> objIter = list.iterator();
 
-      if (pageNumber == null || pageSize == null || ( pageIndexStart >= maxKeys * ( awsPageNum - 1 ) && pageIndexStop <= maxKeys * awsPageNum ))
+      while (objIter.hasNext())
       {
-        while (objIter.hasNext())
+        S3ObjectSummary summary = objIter.next();
+
+        String summaryKey = summary.getKey();
+
+        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
         {
-          S3ObjectSummary summary = objIter.next();
-
-          String summaryKey = summary.getKey();
-
-          if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
+          if ( ( pageSize == null || ( curIndex >= pageIndexStart && curIndex < pageIndexStop ) ))
           {
-            if ( ( pageSize == null || ( curIndex >= pageIndexStart && curIndex < pageIndexStop ) ))
-            {
-              objects.add(SiteObject.create(component, key, summary));
-            }
-
-            curIndex++;
+            objects.add(SiteObject.create(component, key, summary));
           }
+
+          curIndex++;
         }
       }
 
@@ -316,7 +313,6 @@ public class S3RemoteFileService implements RemoteFileService
       if (objectListing.isTruncated())
       {
         objectListing = client.listNextBatchOfObjects(objectListing);
-        awsPageNum++;
       }
       else
       {
