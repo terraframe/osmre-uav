@@ -134,6 +134,10 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
     }
+    finally
+    {
+      images.close();
+    }
   }
 
   /**

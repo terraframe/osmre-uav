@@ -22,14 +22,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -38,6 +39,7 @@ import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -83,15 +85,9 @@ public class Util
             Util.removeCoverageStore(workspace, storeName);
           }
 
-          File geotiff = Util.download(key, storeName);
-
-          try
+          try (CloseableFile geotiff = Util.download(key, storeName))
           {
             GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
-          }
-          finally
-          {
-            FileUtils.deleteQuietly(geotiff);
           }
         }
       }
@@ -126,11 +122,11 @@ public class Util
 //    }
   }
 
-  public static File download(String key, String storeName)
+  public static CloseableFile download(String key, String storeName)
   {
     try
     {
-      File temp = Files.createTempFile("geotiff-" + storeName, ".tif").toFile();
+      CloseableFile temp = new CloseableFile(Files.createTempFile("geotiff-" + storeName, ".tif").toFile());
 
       RemoteFileFacade.download(key, temp);
 
@@ -204,52 +200,49 @@ public class Util
 
     byte[] buffer = new byte[BUFFER_SIZE];
 
-    try (ZipInputStream zis = new ZipInputStream(archive.openNewStream()))
+    try (CloseableFile fArchive = archive.openNewFile())
     {
-      ZipEntry entry;
-      while ( ( entry = zis.getNextEntry() ) != null)
+      try (ZipFile zipFile = new ZipFile(fArchive))
       {
-        File tmp = File.createTempFile("raw", "tmp");
-
-        try
+        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+        
+        while (entries.hasMoreElements())
         {
-          try (FileOutputStream fos = new FileOutputStream(tmp))
+          ZipArchiveEntry entry = entries.nextElement();
+          
+          try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
           {
-            int len;
-            while ( ( len = zis.read(buffer) ) > 0)
+            try (FileOutputStream fos = new FileOutputStream(tmp))
             {
-              fos.write(buffer, 0, len);
+              try (InputStream zis = zipFile.getInputStream(entry))
+              {
+                int len;
+                while ( ( len = zis.read(buffer) ) > 0)
+                {
+                  fos.write(buffer, 0, len);
+                }
+              }
+            }
+  
+            // Upload the file to S3
+            String filename = entry.getName();
+            String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
+  
+            boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
+  
+            if (success)
+            {
+              filenames.add(filename);
             }
           }
-
-          // Upload the file to S3
-          String filename = entry.getName();
-          String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
-
-          boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
-
-          if (success)
-          {
-            filenames.add(filename);
-          }
-        }
-        finally
-        {
-          FileUtils.deleteQuietly(tmp);
         }
       }
-    }
-    catch (ZipException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-      
-      throw new InvalidZipException();
     }
     catch (IOException e)
     {
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-      throw new ProgrammingErrorException(e);
+      
+      throw new InvalidZipException();
     }
 
     return filenames;
@@ -283,9 +276,7 @@ public class Util
           }
           else
           {
-            File tmp = File.createTempFile("raw", "tmp");
-
-            try
+            try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
             {
               try (FileOutputStream fos = new FileOutputStream(tmp))
               {
@@ -310,11 +301,6 @@ public class Util
                 filenames.add(filename);
               }
             }
-            finally
-            {
-              FileUtils.deleteQuietly(tmp);
-            }
-
           }
         }
       }

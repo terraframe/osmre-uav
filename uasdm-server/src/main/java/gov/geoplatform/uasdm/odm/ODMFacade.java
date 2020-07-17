@@ -19,14 +19,17 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -143,13 +146,13 @@ public class ODMFacade
     return new TaskRemoveResponse(resp);
   }
 
-  public static File taskDownload(String uuid)
+  public static CloseableFile taskDownload(String uuid)
   {
     initialize();
 
     try
     {
-      File zip = File.createTempFile("all", ".zip");
+      CloseableFile zip = new CloseableFile(File.createTempFile("all", ".zip"));
 
       String url = connector.getServerUrl() + "task/" + uuid + "/download/all.zip";
       logger.info("Downloading file from ODM [" + url + "].");
@@ -239,7 +242,7 @@ public class ODMFacade
 
   private static CloseablePair filterTarGzArchive(ApplicationResource archive) throws IOException
   {
-    File zip = File.createTempFile("filtered", ".zip");
+    CloseableFile zip = new CloseableFile(File.createTempFile("filtered", ".zip"));
     int itemCount = 0;
 
     byte data[] = new byte[Util.BUFFER_SIZE];
@@ -281,52 +284,58 @@ public class ODMFacade
       }
     }
 
-    return new CloseablePair(new CloseableFile(zip), itemCount);
+    return new CloseablePair(zip, itemCount);
   }
 
   private static CloseablePair filterZipArchive(ApplicationResource archive) throws IOException
   {
-    File zip = File.createTempFile("filtered", ".zip");
+    CloseableFile zip = new CloseableFile(File.createTempFile("filtered", ".zip"));
     int itemCount = 0;
 
     try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zip))))
     {
       byte[] buffer = new byte[Util.BUFFER_SIZE];
 
-      try (ZipInputStream zis = new ZipInputStream(archive.openNewStream()))
+      try (CloseableFile fArchive = archive.openNewFile())
       {
-        ZipEntry entry;
-
-        while ( ( entry = zis.getNextEntry() ) != null)
+        try (ZipFile zipFile = new ZipFile(fArchive))
         {
-          final String filename = entry.getName();
-          final String ext = FilenameUtils.getExtension(filename);
-
-          if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
+          Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+  
+          while ( entries.hasMoreElements() )
           {
-            int len;
-
-            zos.putNextEntry(new ZipEntry(entry.getName()));
-
-            while ( ( len = zis.read(buffer) ) > 0)
+            ZipArchiveEntry entry = entries.nextElement();
+            final String filename = entry.getName();
+            final String ext = FilenameUtils.getExtension(filename);
+  
+            if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
             {
-              zos.write(buffer, 0, len);
+              int len;
+  
+              zos.putNextEntry(new ZipEntry(entry.getName()));
+              
+              try (InputStream zis = zipFile.getInputStream(entry))
+              {
+                while ( ( len = zis.read(buffer) ) > 0)
+                {
+                  zos.write(buffer, 0, len);
+                }
+              }
+  
+              zos.closeEntry();
+  
+              itemCount++;
             }
-
-            zos.closeEntry();
-
-            itemCount++;
           }
         }
+        catch (ZipException e)
+        {
+          throw new InvalidZipException();
+        }
       }
-      catch (ZipException e)
-      {
-        throw new InvalidZipException();
-      }
-
     }
 
-    return new CloseablePair(new CloseableFile(zip), itemCount);
+    return new CloseablePair(zip, itemCount);
   }
 
 }

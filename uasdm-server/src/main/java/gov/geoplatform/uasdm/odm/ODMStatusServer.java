@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
@@ -531,25 +532,11 @@ public class ODMStatusServer
   {
     private ODMUploadTaskIF uploadTask;
 
-    private File            zip;
-
-    private File            unzippedParentFolder;
-
     protected S3ResultsUploadThread(String name, ODMUploadTaskIF uploadTask)
     {
       super(name);
 
       this.uploadTask = uploadTask;
-      this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
-
-      if (DevProperties.runOrtho())
-      {
-        this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      }
-      else
-      {
-        this.zip = DevProperties.orthoResults();
-      }
     }
 
     @Override
@@ -620,101 +607,114 @@ public class ODMStatusServer
 
       return processingConfigs;
     }
+    
+    private CloseableFile getZip()
+    {
+      if (DevProperties.runOrtho())
+      {
+        return ODMFacade.taskDownload(uploadTask.getOdmUUID());
+      }
+      else
+      {
+        return DevProperties.orthoResults();
+      }
+    }
 
 //    @Transaction
     public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
     {
-      List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
-
-      /**
-       * Upload the full all.zip file to S3 for archive purposes.
-       */
-      String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-
-      if (DevProperties.uploadAllZip())
+      try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID()))
       {
-        Util.uploadFileToS3(zip, allKey, uploadTask);
-      }
-
-      ImageryComponent ic = uploadTask.getImageryComponent();
-
-      // Determine the raw documents which were used for to generate this ODM
-      // output
-      UasComponentIF component = ic.getUasComponent();
-
-      List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
-        return doc.getS3location().contains("/raw/");
-      }).collect(Collectors.toList());
-
-      String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
-
-      /**
-       * Unzip the ODM all.zip file and selectively upload files that interest
-       * us to S3.
-       */
-      try
-      {
-        try
+        try (CloseableFile zip = getZip())
         {
-          new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
-        }
-        catch (ZipException e)
-        {
-          throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
-        }
-
-        List<DocumentIF> documents = new LinkedList<DocumentIF>();
-
-        for (ODMFolderProcessingConfig config : processingConfigs)
-        {
-          if (Thread.interrupted())
+          List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
+    
+          /**
+           * Upload the full all.zip file to S3 for archive purposes.
+           */
+          String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
+    
+          if (DevProperties.uploadAllZip())
           {
-            throw new InterruptedException();
+            Util.uploadFileToS3(zip, allKey, uploadTask);
           }
-
-          File parentDir = new File(unzippedParentFolder, config.odmFolderName);
-
-          if (parentDir.exists())
+    
+          ImageryComponent ic = uploadTask.getImageryComponent();
+    
+          // Determine the raw documents which were used for to generate this ODM
+          // output
+          UasComponentIF component = ic.getUasComponent();
+    
+          List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
+            return doc.getS3location().contains("/raw/");
+          }).collect(Collectors.toList());
+    
+          String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
+    
+          /**
+           * Unzip the ODM all.zip file and selectively upload files that interest
+           * us to S3.
+           */
+          try
           {
-            processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
+            new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
           }
-
-          List<String> unprocessed = config.getUnprocessedFiles();
-          if (unprocessed.size() > 0)
+          catch (ZipException e)
           {
-            for (String name : unprocessed)
+            throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
+          }
+  
+          List<DocumentIF> documents = new LinkedList<DocumentIF>();
+  
+          for (ODMFolderProcessingConfig config : processingConfigs)
+          {
+            if (Thread.interrupted())
             {
-              uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+              throw new InterruptedException();
+            }
+  
+            File parentDir = new File(unzippedParentFolder, config.odmFolderName);
+  
+            if (parentDir.exists())
+            {
+              processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
+            }
+  
+            List<String> unprocessed = config.getUnprocessedFiles();
+            if (unprocessed.size() > 0)
+            {
+              for (String name : unprocessed)
+              {
+                uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+              }
             }
           }
-        }
-
-        ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
-        List<String> list = processingTask.getFileList();
-
-        ProductIF product = ic.getUasComponent().createProductIfNotExist();
-        product.clear();
-
-        product.addDocuments(documents);
-
-        for (DocumentIF raw : raws)
-        {
-          if (list.size() == 0 || list.contains(raw.getName()))
+  
+          ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
+          List<String> list = processingTask.getFileList();
+  
+          ProductIF product = ic.getUasComponent().createProductIfNotExist();
+          product.clear();
+  
+          product.addDocuments(documents);
+  
+          for (DocumentIF raw : raws)
           {
-            raw.addGeneratedProduct(product);
+            if (list.size() == 0 || list.contains(raw.getName()))
+            {
+              raw.addGeneratedProduct(product);
+            }
           }
+  
+          return product;
         }
-
-        return product;
       }
       finally
       {
         if (DevProperties.runOrtho())
         {
-          FileUtils.deleteQuietly(zip);
           removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
-        FileUtils.deleteQuietly(unzippedParentFolder);
       }
     }
 

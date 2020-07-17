@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.zip.ZipEntry;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -130,11 +132,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       if (ext.equalsIgnoreCase("zip"))
       {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archive)))
+        try (ZipFile zipFile = new ZipFile(archive))
         {
-          ZipEntry entry;
-          while ( ( entry = zis.getNextEntry() ) != null)
+          Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+          
+          while (entries.hasMoreElements())
           {
+            ZipArchiveEntry entry = entries.nextElement();
+            
             String filename = entry.getName();
             
             boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
@@ -163,17 +168,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         }
       }
     }
-    catch (ZipException e)
+    catch (IOException e)
     {
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
       
       throw new InvalidZipException();
-    }
-    catch (IOException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-      throw new ProgrammingErrorException(e);
     }
     
     if (!hasFiles)
