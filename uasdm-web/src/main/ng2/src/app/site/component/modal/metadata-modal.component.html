@@ -66,14 +66,14 @@
                         </div>
                         <div class="form-group">
                             <label for="platform.serialNumber">Serial Number</label>
-                            <input type="number" name="platform.serialNumber"
-                                [(ngModel)]="metaObject.platform.serialNumber" OnlyNumber="true" [maxlength]="50"
+                            <input type="text" name="platform.serialNumber"
+                                [(ngModel)]="metaObject.platform.serialNumber" [maxlength]="50"
                                 [required]="true" [disabled]="false" />
                         </div>
                         <div class="form-group">
                             <label for="platform.faaIdNumber">FAA Id Number</label>
-                            <input type="number" name="platform.faaIdNumber" [(ngModel)]="metaObject.platform.faaIdNumber"
-                                OnlyNumber="true" [maxlength]="30" [required]="true" [disabled]="false" />
+                            <input type="text" name="platform.faaIdNumber" [(ngModel)]="metaObject.platform.faaIdNumber"
+                                [maxlength]="30" [required]="true" [disabled]="false" />
                         </div>
                     </div>
                 </div>
