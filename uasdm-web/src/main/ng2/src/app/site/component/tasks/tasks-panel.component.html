@@ -25,8 +25,8 @@
           <div class="row">
             <div class="col-sm-12">
               <div class="button-holder" style="margin-top: 30px;">
+                <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">{{task.showError ? 'Hide' : 'Show'}} Messages</button>
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
-                <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">Show Warnings</button>
               </div>
             </div>
           </div>          
@@ -36,7 +36,7 @@
           <ul class="list-unstyled" style="margin: 0;">
             <li>Status: 
               <b [ngClass]="{'success':task.status === 'Complete','pending':(task.status === 'Queued' || task.status === 'Processing'), 'fail':task.status === 'Failed'}">
-                {{task.status === 'Complete' && task.actions.length > 0 ? 'Complete With Warnings' : task.status }}
+                {{task.status === 'Complete' && task.actions.length > 0 ? 'Complete With Messages' : task.status }}
               </b>
             </li>
             <li>Message: <b>{{task.message}}</b></li>
@@ -47,9 +47,9 @@
           <div class="row">
             <div class="col-sm-12">
               <div class="button-holder" style="margin-top: 30px;">
+                <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">{{task.showError ? 'Hide' : 'Show'}} Messages</button>
+                <button class="btn btn-default" *ngIf="task.odmOutput" (click)="showODMOutput = !showODMOutput">Show Detailed Log Output</button>
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
-                <button class="btn btn-default" *ngIf="task.odmOutput" (click)="showODMOutput = !showODMOutput">Show Log Output</button>
-                <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">Show Warnings</button>
               </div>
             </div>
           </div>
@@ -64,7 +64,6 @@
         
         <div *ngIf="task.showError" class="row">
           <div class="col-sm-12">
-            <h4>Warnings:</h4>
             <h4 *ngIf="task.actions.length === 0" style="color:grey;">There are no actions for this task.</h4>
             <table *ngIf="task.actions.length > 0" class="table table-bordered">
               <thead>
