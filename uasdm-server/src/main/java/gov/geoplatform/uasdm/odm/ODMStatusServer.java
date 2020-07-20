@@ -510,6 +510,10 @@ public class ODMStatusServer
         {
           task.createAction("Image alignment has failed.", "error");
         }
+        else if (line.contains("Panels not detected in all images")) // Micasense
+        {
+          task.createAction("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images.", "error");
+        }
         else if (
             line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
             || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8 output
