@@ -496,15 +496,15 @@ public class ODMStatusServer
         
         if (line.contains("MICA-CODE:1"))
         {
-          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif?", "error");
+          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:2"))
         {
-          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif?", "error");
+          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:3"))
         {
-          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images?", "error");
+          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:4"))
         {
@@ -512,7 +512,7 @@ public class ODMStatusServer
         }
         else if (line.contains("Panels not detected in all images")) // Micasense
         {
-          task.createAction("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images.", "error");
+          task.createAction("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.", "error");
         }
         else if (
             line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
