@@ -41,6 +41,18 @@ export class TasksPanelComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+	  if (this.taskGroupType != null && this.taskGroupType.tasks != null)
+	  {
+		  for (var i = 0; i < this.taskGroupType.tasks.length; ++i)
+		  {
+		    let task = this.taskGroupType.tasks[i];
+		    
+		    if (task.actions.length > 0)
+		    {
+		      task.showError = true;
+		    }
+		  }
+	  }
 	}
 
 	ngOnDestroy(): void {
