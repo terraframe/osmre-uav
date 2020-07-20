@@ -508,7 +508,7 @@ public class ODMStatusServer
         }
         else if (line.contains("MICA-CODE:4"))
         {
-          task.createAction("Image alignment has failed.", "error");
+          task.createAction("Image alignment has failed. Take the time to look through your image collection and weed out any bad images, i.e. pictures of the camera inside the case, or pictures which are entirely black, etc. You can also try using a different alignment image (by renaming a better image set to IMG_0001_*.tif). Finally, make sure this collection is of a single flight and that there were no 'shock' events. Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("Panels not detected in all images")) // Micasense
         {
