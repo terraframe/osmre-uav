@@ -528,6 +528,10 @@ public class ODMStatusServer
         {
           task.createAction("Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'", "error");
         }
+        else if (line.contains("bad_alloc")) // Comes from ODM (and/or sub-libraries)
+        {
+          task.createAction("ODM ran out of memory during processing. Please contact your technical support.", "error");
+        }
       }
     }
   }

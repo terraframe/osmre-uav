@@ -351,7 +351,7 @@ public class ProjectManagementService
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
     task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilenames(array.toString());
+    task.setProcessFilenameArray(array.toString());
     task.apply();
 
     task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());

@@ -1,25 +1,10 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 578709338)
+@com.runwaysdk.business.ClassSignature(hash = 1893785881)
 public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus.WorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMProcessingTask";
-  private static final long serialVersionUID = 578709338;
+  private static final long serialVersionUID = 1893785881;
   
   protected ODMProcessingTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -43,9 +28,9 @@ public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus
   }
   
   public static java.lang.String FILEPREFIX = "filePrefix";
-  public static java.lang.String FILENAMES = "filenames";
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
+  public static java.lang.String PROCESSFILENAMEARRAY = "processFilenameArray";
   public String getFilePrefix()
   {
     return getValue(FILEPREFIX);
@@ -81,43 +66,6 @@ public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getFilePrefixMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(FILEPREFIX).getAttributeMdDTO();
-  }
-  
-  public String getFilenames()
-  {
-    return getValue(FILENAMES);
-  }
-  
-  public void setFilenames(String value)
-  {
-    if(value == null)
-    {
-      setValue(FILENAMES, "");
-    }
-    else
-    {
-      setValue(FILENAMES, value);
-    }
-  }
-  
-  public boolean isFilenamesWritable()
-  {
-    return isWritable(FILENAMES);
-  }
-  
-  public boolean isFilenamesReadable()
-  {
-    return isReadable(FILENAMES);
-  }
-  
-  public boolean isFilenamesModified()
-  {
-    return isModified(FILENAMES);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getFilenamesMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(FILENAMES).getAttributeMdDTO();
   }
   
   public String getOdmOutput()
@@ -192,6 +140,43 @@ public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getOdmUUIDMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(ODMUUID).getAttributeMdDTO();
+  }
+  
+  public String getProcessFilenameArray()
+  {
+    return getValue(PROCESSFILENAMEARRAY);
+  }
+  
+  public void setProcessFilenameArray(String value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSFILENAMEARRAY, "");
+    }
+    else
+    {
+      setValue(PROCESSFILENAMEARRAY, value);
+    }
+  }
+  
+  public boolean isProcessFilenameArrayWritable()
+  {
+    return isWritable(PROCESSFILENAMEARRAY);
+  }
+  
+  public boolean isProcessFilenameArrayReadable()
+  {
+    return isReadable(PROCESSFILENAMEARRAY);
+  }
+  
+  public boolean isProcessFilenameArrayModified()
+  {
+    return isModified(PROCESSFILENAMEARRAY);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getProcessFilenameArrayMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(PROCESSFILENAMEARRAY).getAttributeMdDTO();
   }
   
   public static gov.geoplatform.uasdm.odm.ODMProcessingTaskDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
