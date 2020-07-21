@@ -104,7 +104,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       {
         this.appLock();
         this.setStatus(ODMStatus.FAILED.getLabel());
-        this.setMessage("The job encountered an unspecified error.");
+        this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
       }
       else

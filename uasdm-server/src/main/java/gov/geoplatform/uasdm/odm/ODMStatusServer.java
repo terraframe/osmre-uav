@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.CloseableFile;
@@ -319,9 +320,8 @@ public class ODMStatusServer
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage("The job encountered an unspecified error.");
-            task.apply();
-  
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+            task.apply();
   
             it.remove();
           }
@@ -399,19 +399,24 @@ public class ODMStatusServer
         }
         catch (Throwable t)
         {
+          logger.error("Error encountered in ODMStatusServer", t);
+          
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
           task.setMessage("The job encountered an unspecified error.");
-          task.apply();
-
+          
+          String errMsg = RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
+          
           if (resp != null && resp.getHTTPResponse() != null)
           {
-            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ". " + errMsg);
           }
           else
           {
-            task.setOdmOutput("HTTP communication with ODM has failed.");
+            task.setOdmOutput("HTTP communication with ODM has failed. " + errMsg);
           }
+          
+          task.apply();
 
           it.remove();
         }
