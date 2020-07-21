@@ -53,6 +53,7 @@ export class LeafModalComponent implements OnInit {
 	excludes: string[] = [];
 	enableSelectableImages: boolean = false;
 	folder: SiteEntity;
+	showOrthoRerunMessage: boolean = false;
 
 	constPageSize: number = 50;
 
@@ -252,10 +253,17 @@ export class LeafModalComponent implements OnInit {
 
 		(<BasicConfirmModalComponent>this.confirmModalRef.content).onConfirm.subscribe(data => {
 			this.processRunning = true;
+			this.showOrthoRerunMessage = true;
 
 			this.service.runOrtho(this.entity.id, this.excludes).then(data => {
-				this.processRunning = false;
-				this.statusMessage = "Your process is started.";
+			    this.processRunning = false;
+			
+			    setTimeout( () => {
+			      this.showOrthoRerunMessage = false;
+				  this.statusMessage = "Your process is started.";
+			    }, 30000 );
+			}).catch(( err: HttpErrorResponse ) => {
+			    this.error(err);
 			});
 		});
 

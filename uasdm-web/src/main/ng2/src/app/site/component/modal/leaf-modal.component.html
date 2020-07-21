@@ -120,7 +120,7 @@
         <div class="col-sm-12">
           <pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
 
-          <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
+          <div *ngIf="showOrthoRerunMessage" style="text-align:right;padding-right:20px;">
             <p>{{statusMessage}}</p>
             <p>See this process on
               <a routerlink="/site/tasks" routerlinkactive="active" href="#/site/tasks">your tasks page</a>
