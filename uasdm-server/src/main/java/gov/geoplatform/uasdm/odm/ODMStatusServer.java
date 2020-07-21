@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.business.SmartException;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -403,15 +404,23 @@ public class ODMStatusServer
           
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
-          task.setMessage("The job encountered an unspecified error.");
           
           String errMsg = RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
+          
+          if (t instanceof SmartException)
+          {
+            task.setMessage(errMsg);
+          }
+          else
+          {
+            task.setMessage("The job encountered an unspecified error.");
+          }
           
           if (resp != null && resp.getHTTPResponse() != null)
           {
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ". " + errMsg);
           }
-          else
+          else if (!(t instanceof SmartException))
           {
             task.setOdmOutput("HTTP communication with ODM has failed. " + errMsg);
           }
