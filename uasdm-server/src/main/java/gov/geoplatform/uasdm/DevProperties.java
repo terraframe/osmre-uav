@@ -15,13 +15,12 @@
  */
 package gov.geoplatform.uasdm;
 
-import java.io.File;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONObject;
 
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
+import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.odm.HTTPResponse;
 import gov.geoplatform.uasdm.odm.InfoResponse;
@@ -69,9 +68,9 @@ public class DevProperties
     return getInstance().props.getBoolean("dev.runOrtho", true);
   }
   
-  public static File orthoResults()
+  public static CloseableFile orthoResults()
   {
-    return new File(getInstance().props.getString("dev.orthoResults"));
+    return new CloseableFile(getInstance().props.getString("dev.orthoResults"), false);
   }
   
   public static boolean shouldUploadProduct(String name)

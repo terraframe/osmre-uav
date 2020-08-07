@@ -26,10 +26,15 @@ set -e
 # Used for pulling the images from TerraFrame's AWS ECR
 export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
 export AWS_SECRET_ACCESS_KEY=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
-eval $(aws ecr get-login --region us-west-2 --no-include-email)
+
+# Commands for aws cli v1
+# eval $(aws ecr get-login-password --region us-west-2 --no-include-email)
+
+# Commands for aws cli v2
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 961902606948.dkr.ecr.us-west-2.amazonaws.com
 
 # Kill any running containers by name of what we're about to run
-docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
+# docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
 
 # Pull the micasense container (our NodeODM might launch it at runtime)
 docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -52,15 +52,15 @@ import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
 {
-  private static final Logger logger = LoggerFactory.getLogger(MetadataXMLGenerator.class);
-  
-  public static final String FILENAME = "_uasmetadata.xml";
+  private static final Logger logger   = LoggerFactory.getLogger(MetadataXMLGenerator.class);
 
-  private Document           dom;
+  public static final String  FILENAME = "_uasmetadata.xml";
 
-  private JSONObject         json;
+  private Document            dom;
 
-  private CollectionIF       collection;
+  private JSONObject          json;
+
+  private CollectionIF        collection;
 
   public MetadataXMLGenerator(String json)
   {
@@ -98,7 +98,7 @@ public class MetadataXMLGenerator
     Element root = dom.createElement("rootEl");
     dom.appendChild(root);
 
-//    JSONObject agency = json.getJSONObject("agency");
+    // JSONObject agency = json.getJSONObject("agency");
     e = dom.createElement("Agency");
     e.setAttribute("name", "Department of Interior");
     e.setAttribute("shortName", "");
@@ -153,8 +153,8 @@ public class MetadataXMLGenerator
     e.setAttribute("type", jSensor.getString("type"));
     e.setAttribute("model", jSensor.getString("model"));
     e.setAttribute("wavelength", jSensor.getJSONArray("wavelength").toString());
-//    e.setAttribute("imageWidth", sensor.getString("imageWidth"));
-//    e.setAttribute("imageHeight", sensor.getString("imageHeight"));
+    // e.setAttribute("imageWidth", sensor.getString("imageWidth"));
+    // e.setAttribute("imageHeight", sensor.getString("imageHeight"));
     Integer width = collection.getImageWidth();
     if (width != null && width != 0)
     {
@@ -189,7 +189,7 @@ public class MetadataXMLGenerator
       tr.setOutputProperty(OutputKeys.INDENT, "yes");
       tr.setOutputProperty(OutputKeys.METHOD, "xml");
       tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-//      tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
+      // tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
       tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
       // send DOM to file
@@ -220,8 +220,8 @@ public class MetadataXMLGenerator
         throw new ProgrammingErrorException(e);
       }
 
-      String fileName = this.collection.getName() + FILENAME;
-      String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getName() + FILENAME;
+      String fileName = this.collection.getFolderName() + FILENAME;
+      String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
       this.collection.createDocumentIfNotExist(key, fileName);

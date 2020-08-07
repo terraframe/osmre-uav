@@ -44,4 +44,4 @@ sleep 2;
 docker run -d -p 4000:3000 -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4000/
 
 sleep 2;
-{ sleep 1; echo "NODE ADD uasdm-nodeodm-prod 3000"; sleep 1; echo "QUIT"; } | telnet localhost 4500
+{ sleep 1; echo "NODE ADD uasdm-nodeodm-prod 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4500

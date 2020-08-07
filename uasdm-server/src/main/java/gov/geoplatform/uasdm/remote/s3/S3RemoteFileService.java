@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
@@ -34,6 +34,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -70,57 +71,87 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void download(String key, File destination) throws IOException, FileNotFoundException
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    GetObjectRequest request = new GetObjectRequest(bucketName, key);
-
-    S3Object s3Obj = client.getObject(request);
-
-    try (final S3ObjectInputStream istream = s3Obj.getObjectContent())
+    try
     {
-      try (OutputStream fos = new FileOutputStream(destination))
+
+      AmazonS3 client = S3ClientFactory.createClient();
+
+      String bucketName = AppProperties.getBucketName();
+
+      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+
+      S3Object s3Obj = client.getObject(request);
+
+      try (final S3ObjectInputStream istream = s3Obj.getObjectContent())
       {
-        IOUtils.copy(istream, fos);
+        try (OutputStream fos = new FileOutputStream(destination))
+        {
+          IOUtils.copy(istream, fos);
+        }
       }
+    }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
+
+      throw e;
     }
   }
 
   @Override
   public RemoteFileObject download(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
+    try
+    {
+      AmazonS3 client = S3ClientFactory.createClient();
+      String bucketName = AppProperties.getBucketName();
 
-    GetObjectRequest request = new GetObjectRequest(bucketName, key);
+      GetObjectRequest request = new GetObjectRequest(bucketName, key);
 
-    return new S3ObjectWrapper(client.getObject(request));
+      return new S3ObjectWrapper(client.getObject(request));
+    }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
+
+      throw e;
+    }
+
   }
 
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
-
-    GetObjectRequest request = new GetObjectRequest(bucketName, key);
-
-    if (ranges.size() > 0)
+    try
     {
-      final Range range = ranges.get(0);
 
-      if (range.getEnd() != null)
+      AmazonS3 client = S3ClientFactory.createClient();
+      String bucketName = AppProperties.getBucketName();
+
+      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+
+      if (ranges.size() > 0)
       {
-        request.setRange(range.getStart(), range.getEnd());
+        final Range range = ranges.get(0);
+
+        if (range.getEnd() != null)
+        {
+          request.setRange(range.getStart(), range.getEnd());
+        }
+        else
+        {
+          request.setRange(range.getStart());
+        }
       }
-      else
-      {
-        request.setRange(range.getStart());
-      }
+
+      return new S3ObjectWrapper(client.getObject(request));
     }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
 
-    return new S3ObjectWrapper(client.getObject(request));
+      throw e;
+    }
   }
 
   @Override
@@ -265,33 +296,33 @@ public class S3RemoteFileService implements RemoteFileService
     final int maxKeys = 500;
     String key = component.getS3location() + folder;
 
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-    listObjectsRequest.setMaxKeys(maxKeys);
-
-    int curIndex = 0;
-
-    int pageIndexStart = 0;
-    int pageIndexStop = 0;
-    if (pageNumber != null && pageSize != null)
+    try
     {
-      pageIndexStart = ( pageNumber - 1 ) * pageSize;
-      pageIndexStop = pageNumber * pageSize;
-    }
-    int awsPageNum = 1;
+      AmazonS3 client = S3ClientFactory.createClient();
 
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
+      String bucketName = AppProperties.getBucketName();
 
-    while (true)
-    {
-      List<S3ObjectSummary> list = objectListing.getObjectSummaries();
-      Iterator<S3ObjectSummary> objIter = list.iterator();
+      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+      listObjectsRequest.setMaxKeys(maxKeys);
 
-      if (pageNumber == null || pageSize == null || ( pageIndexStart >= maxKeys * ( awsPageNum - 1 ) && pageIndexStop <= maxKeys * awsPageNum ))
+      int curIndex = 0;
+
+      int pageIndexStart = 0;
+      int pageIndexStop = 0;
+
+      if (pageNumber != null && pageSize != null)
       {
+        pageIndexStart = ( pageNumber - 1 ) * pageSize;
+        pageIndexStop = pageNumber * pageSize;
+      }
+
+      ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+      while (true)
+      {
+        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
+        Iterator<S3ObjectSummary> objIter = list.iterator();
+
         while (objIter.hasNext())
         {
           S3ObjectSummary summary = objIter.next();
@@ -308,23 +339,28 @@ public class S3RemoteFileService implements RemoteFileService
             curIndex++;
           }
         }
+
+        // If the bucket contains many objects, the listObjects() call
+        // might not return all of the objects in the first listing. Check to
+        // see whether the listing was truncated.
+        if (objectListing.isTruncated())
+        {
+          objectListing = client.listNextBatchOfObjects(objectListing);
+        }
+        else
+        {
+          break;
+        }
       }
 
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated.
-      if (objectListing.isTruncated())
-      {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-        awsPageNum++;
-      }
-      else
-      {
-        break;
-      }
+      return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
     }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
 
-    return new SiteObjectsResultSet(curIndex, pageNumber, pageSize, objects, folder);
+      throw e;
+    }
   }
 
   @Override

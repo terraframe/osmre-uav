@@ -30,8 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.business.SmartException;
+import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
@@ -318,9 +321,8 @@ public class ODMStatusServer
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage("The job encountered an unspecified error.");
-            task.apply();
-  
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+            task.apply();
   
             it.remove();
           }
@@ -398,19 +400,32 @@ public class ODMStatusServer
         }
         catch (Throwable t)
         {
+          logger.error("Error encountered in ODMStatusServer", t);
+          
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
-          task.setMessage("The job encountered an unspecified error.");
-          task.apply();
-
-          if (resp != null && resp.getHTTPResponse() != null)
+          
+          String errMsg = RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
+          
+          if (t instanceof SmartException)
           {
-            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
+            task.setMessage(errMsg);
           }
           else
           {
-            task.setOdmOutput("HTTP communication with ODM has failed.");
+            task.setMessage("The job encountered an unspecified error.");
           }
+          
+          if (resp != null && resp.getHTTPResponse() != null)
+          {
+            task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ". " + errMsg);
+          }
+          else if (!(t instanceof SmartException))
+          {
+            task.setOdmOutput("HTTP communication with ODM has failed. " + errMsg);
+          }
+          
+          task.apply();
 
           it.remove();
         }
@@ -495,19 +510,23 @@ public class ODMStatusServer
         
         if (line.contains("MICA-CODE:1"))
         {
-          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif?", "error");
+          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:2"))
         {
-          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif?", "error");
+          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:3"))
         {
-          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images?", "error");
+          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.", "error");
         }
         else if (line.contains("MICA-CODE:4"))
         {
-          task.createAction("Image alignment has failed.", "error");
+          task.createAction("Image alignment has failed. Take the time to look through your image collection and weed out any bad images, i.e. pictures of the camera inside the case, or pictures which are entirely black, etc. Also make sure that if your collection includes panel images, that they are named as IMG_0000_*.tif. You can also try using a different alignment image (by renaming a better image set to IMG_0001_*.tif). Finally, make sure this collection is of a single flight and that there were no 'shock' events. Refer to the multispectral documentation for more information.", "error");
+        }
+        else if (line.contains("OSError: Panels not detected in all images")) // Micasense
+        {
+          task.createAction("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.", "error");
         }
         else if (
             line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
@@ -523,6 +542,10 @@ public class ODMStatusServer
         {
           task.createAction("Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'", "error");
         }
+        else if (line.contains("bad_alloc")) // Comes from ODM (and/or sub-libraries)
+        {
+          task.createAction("ODM ran out of memory during processing. Please contact your technical support.", "error");
+        }
       }
     }
   }
@@ -531,25 +554,11 @@ public class ODMStatusServer
   {
     private ODMUploadTaskIF uploadTask;
 
-    private File            zip;
-
-    private File            unzippedParentFolder;
-
     protected S3ResultsUploadThread(String name, ODMUploadTaskIF uploadTask)
     {
       super(name);
 
       this.uploadTask = uploadTask;
-      this.unzippedParentFolder = new File(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID());
-
-      if (DevProperties.runOrtho())
-      {
-        this.zip = ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      }
-      else
-      {
-        this.zip = DevProperties.orthoResults();
-      }
     }
 
     @Override
@@ -620,101 +629,114 @@ public class ODMStatusServer
 
       return processingConfigs;
     }
+    
+    private CloseableFile getZip()
+    {
+      if (DevProperties.runOrtho())
+      {
+        return ODMFacade.taskDownload(uploadTask.getOdmUUID());
+      }
+      else
+      {
+        return DevProperties.orthoResults();
+      }
+    }
 
 //    @Transaction
     public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
     {
-      List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
-
-      /**
-       * Upload the full all.zip file to S3 for archive purposes.
-       */
-      String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-
-      if (DevProperties.uploadAllZip())
+      try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID()))
       {
-        Util.uploadFileToS3(zip, allKey, uploadTask);
-      }
-
-      ImageryComponent ic = uploadTask.getImageryComponent();
-
-      // Determine the raw documents which were used for to generate this ODM
-      // output
-      UasComponentIF component = ic.getUasComponent();
-
-      List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
-        return doc.getS3location().contains("/raw/");
-      }).collect(Collectors.toList());
-
-      String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
-
-      /**
-       * Unzip the ODM all.zip file and selectively upload files that interest
-       * us to S3.
-       */
-      try
-      {
-        try
+        try (CloseableFile zip = getZip())
         {
-          new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
-        }
-        catch (ZipException e)
-        {
-          throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
-        }
-
-        List<DocumentIF> documents = new LinkedList<DocumentIF>();
-
-        for (ODMFolderProcessingConfig config : processingConfigs)
-        {
-          if (Thread.interrupted())
+          List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
+    
+          /**
+           * Upload the full all.zip file to S3 for archive purposes.
+           */
+          String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
+    
+          if (DevProperties.uploadAllZip())
           {
-            throw new InterruptedException();
+            Util.uploadFileToS3(zip, allKey, uploadTask);
           }
-
-          File parentDir = new File(unzippedParentFolder, config.odmFolderName);
-
-          if (parentDir.exists())
+    
+          ImageryComponent ic = uploadTask.getImageryComponent();
+    
+          // Determine the raw documents which were used for to generate this ODM
+          // output
+          UasComponentIF component = ic.getUasComponent();
+    
+          List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
+            return doc.getS3location().contains("/raw/");
+          }).collect(Collectors.toList());
+    
+          String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
+    
+          /**
+           * Unzip the ODM all.zip file and selectively upload files that interest
+           * us to S3.
+           */
+          try
           {
-            processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
+            new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
           }
-
-          List<String> unprocessed = config.getUnprocessedFiles();
-          if (unprocessed.size() > 0)
+          catch (ZipException e)
           {
-            for (String name : unprocessed)
+            throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
+          }
+  
+          List<DocumentIF> documents = new LinkedList<DocumentIF>();
+  
+          for (ODMFolderProcessingConfig config : processingConfigs)
+          {
+            if (Thread.interrupted())
             {
-              uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+              throw new InterruptedException();
+            }
+  
+            File parentDir = new File(unzippedParentFolder, config.odmFolderName);
+  
+            if (parentDir.exists())
+            {
+              processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
+            }
+  
+            List<String> unprocessed = config.getUnprocessedFiles();
+            if (unprocessed.size() > 0)
+            {
+              for (String name : unprocessed)
+              {
+                uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
+              }
             }
           }
-        }
-
-        ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
-        List<String> list = processingTask.getFileList();
-
-        ProductIF product = ic.getUasComponent().createProductIfNotExist();
-        product.clear();
-
-        product.addDocuments(documents);
-
-        for (DocumentIF raw : raws)
-        {
-          if (list.size() == 0 || list.contains(raw.getName()))
+  
+          ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
+          List<String> list = processingTask.getFileList();
+  
+          ProductIF product = ic.getUasComponent().createProductIfNotExist();
+          product.clear();
+  
+          product.addDocuments(documents);
+  
+          for (DocumentIF raw : raws)
           {
-            raw.addGeneratedProduct(product);
+            if (list.size() == 0 || list.contains(raw.getName()))
+            {
+              raw.addGeneratedProduct(product);
+            }
           }
+  
+          return product;
         }
-
-        return product;
       }
       finally
       {
         if (DevProperties.runOrtho())
         {
-          FileUtils.deleteQuietly(zip);
           removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
-        FileUtils.deleteQuietly(unzippedParentFolder);
       }
     }
 

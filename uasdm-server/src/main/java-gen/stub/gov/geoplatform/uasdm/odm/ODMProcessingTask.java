@@ -58,7 +58,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
   public List<String> getFileList()
   {
     List<String> list = new LinkedList<String>();
-    String filenames = this.getFilenames();
+    String filenames = this.getProcessFilenameArray();
 
     if (filenames != null && filenames.length() > 0)
     {
@@ -104,7 +104,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       {
         this.appLock();
         this.setStatus(ODMStatus.FAILED.getLabel());
-        this.setMessage("The job encountered an unspecified error.");
+        this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
       }
       else
@@ -133,6 +133,10 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
+    }
+    finally
+    {
+      images.close();
     }
   }
 

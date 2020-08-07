@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.osmre.uasdm;
-import net.geoprism.GeoprismPatcher;
-
-public class Sandbox
-{
-  public static void main(String[] args) {
-    GeoprismPatcher.main(args);
-  }
-}
+/**
+ * This file is just a placeholder. The actual source exists in : src/main/java/com/runwaysdk/build/domain
+ */

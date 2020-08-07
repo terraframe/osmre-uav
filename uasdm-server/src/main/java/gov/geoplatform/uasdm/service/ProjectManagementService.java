@@ -36,8 +36,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
+import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
@@ -310,39 +313,6 @@ public class ProjectManagementService
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
 
-    /*
-     * Predicate for filtering out files from the zip file to send to ODM
-     */
-    Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
-
-    List<String> filenames = new LinkedList<String>();
-
-    File zip;
-    try
-    {
-      logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
-
-      zip = File.createTempFile("raw-" + id, ".zip");
-
-      try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
-      {
-        List<String> files = downloadAll(sessionId, id, ImageryComponent.RAW, ostream, predicate);
-
-        filenames.addAll(files);
-      }
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-
-    JSONArray array = new JSONArray();
-
-    for (String filename : filenames)
-    {
-      array.put(filename);
-    }
-
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(id);
     task.setComponent(collection.getOid());
@@ -350,10 +320,86 @@ public class ProjectManagementService
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
     task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilenames(array.toString());
     task.apply();
 
-    task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
+    RerunOrthoThread t = new RerunOrthoThread(task, collection, excludes);
+    t.setDaemon(true);
+    t.start();
+  }
+  
+  private class RerunOrthoThread extends Thread {
+    private ODMProcessingTask task;
+    
+    private CollectionIF collection;
+    
+    private String excludes;
+    
+    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, String excludes)
+    {
+      super("Rerun ortho thread for collection [" + collection.getName() + "]");
+      
+      this.task = task;
+      this.collection = collection;
+      this.excludes = excludes;
+    }
+    
+    @Override
+    @Request
+    public void run()
+    {
+      try
+      {
+        /*
+         * Predicate for filtering out files from the zip file to send to ODM
+         */
+        Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
+  
+        List<String> filenames = new LinkedList<String>();
+        
+        CloseableFile zip;
+        try
+        {
+          logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
+  
+          zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip"));
+  
+          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
+          {
+            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate);
+  
+            filenames.addAll(files);
+          }
+        }
+        catch (IOException e)
+        {
+          throw new ProgrammingErrorException(e);
+        }
+  
+        JSONArray array = new JSONArray();
+  
+        for (String filename : filenames)
+        {
+          array.put(filename);
+        }
+        
+        task.appLock();
+        task.setProcessFilenameArray(array.toString());
+        task.apply();
+  
+        task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
+      }
+      catch (Throwable t)
+      {
+        logger.error("Exception while re-running ortho", t);
+        
+        task.appLock();
+        task.setStatus(ODMStatus.FAILED.getLabel());
+        task.setMessage(RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
+        task.apply();
+        
+        throw t;
+      }
+    }
   }
 
   @Request(RequestType.SESSION)
@@ -513,8 +559,22 @@ public class ProjectManagementService
     return component.getSiteObjects(key, pageNumber, pageSize);
   }
 
-  @Request(RequestType.SESSION)
   public RemoteFileObject download(String sessionId, String id, String key)
+  {
+    if (sessionId != null)
+    {
+      return this.downloadInReq(sessionId, id, key);
+    }
+    else
+    {
+      UasComponentIF component = ComponentFacade.getComponent(id);
+  
+      return component.download(key);
+    }
+  }
+  
+  @Request(RequestType.SESSION)
+  public RemoteFileObject downloadInReq(String sessionId, String id, String key)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 

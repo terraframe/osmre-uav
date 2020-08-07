@@ -120,7 +120,7 @@
         <div class="col-sm-12">
           <pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
 
-          <div *ngIf="processRunning" style="text-align:right;padding-right:20px;">
+          <div *ngIf="showOrthoRerunMessage" style="text-align:right;padding-right:20px;">
             <p>{{statusMessage}}</p>
             <p>See this process on
               <a routerlink="/site/tasks" routerlinkactive="active" href="#/site/tasks">your tasks page</a>
@@ -137,8 +137,7 @@
                 </button>
               </div>
               <div class="col-md-10" style="text-align: right;">
-                <button type="button" class="btn btn-default" [disabled]="processRunning"
-                  (click)="bsModalRef.hide()">Close</button>
+                <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
                 <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
                   (click)="handleDownload()" style="margin-left: 5px;">
                   Download all
