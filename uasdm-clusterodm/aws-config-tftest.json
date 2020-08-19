@@ -32,7 +32,9 @@
 		{"maxImages": 1000, "slug": "t3a.2xlarge", "spotPrice": 0.2, "storage": 640},
 		{"maxImages": 2000, "slug": "r5.2xlarge", "spotPrice": 0.25, "storage": 1200},
 		{"maxImages": 3000, "slug": "r5.4xlarge", "spotPrice": 0.5, "storage": 2000},
-		{"maxImages": 5000, "slug": "r5.4xlarge", "spotPrice": 0.5, "storage": 2500}
+		{"maxImages": 6000, "slug": "r5.8xlarge", "spotPrice": 1.0, "storage": 4000},
+		{"maxImages": 12000, "slug": "r5.12xlarge", "spotPrice": 2.0, "storage": 8000},
+		{"maxImages": 24000, "slug": "r5.16xlarge", "spotPrice": 4.0, "storage": 16000}
     ],
 
     "addSwap": 1,

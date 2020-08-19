@@ -328,7 +328,36 @@ public class ODMStatusServer
           }
           else
           {
-            if (resp.getStatus().equals(ODMStatus.RUNNING))
+            ODMStatus respStatus = resp.getStatus();
+            
+            if (respStatus == null)
+            {
+              task.appLock();
+              task.setStatus(ODMStatus.FAILED.getLabel());
+              addOutputToTask(task);
+              task.apply();
+  
+              it.remove();
+  
+              sendEmail(task);
+  
+              removeFromOdm(task, task.getOdmUUID());
+            }
+            else if (ODMStatus.FAILED.equals(respStatus))
+            {
+              task.appLock();
+              task.setStatus(resp.getStatus().getLabel());
+              task.setMessage(resp.getStatusError());
+              addOutputToTask(task);
+              task.apply();
+  
+              it.remove();
+  
+              sendEmail(task);
+  
+              removeFromOdm(task, task.getOdmUUID());
+            }
+            else if (ODMStatus.RUNNING.equals(respStatus))
             {
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
@@ -348,14 +377,14 @@ public class ODMStatusServer
               
               task.apply();
             }
-            else if (resp.getStatus().equals(ODMStatus.QUEUED))
+            else if (ODMStatus.QUEUED.equals(respStatus))
             {
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
               task.setMessage("Job is queued."); // TODO : Position in queue?
               task.apply();
             }
-            else if (resp.getStatus().equals(ODMStatus.CANCELED))
+            else if (ODMStatus.CANCELED.equals(respStatus))
             {
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
@@ -366,21 +395,7 @@ public class ODMStatusServer
   
               // TODO : Remove from ODM?
             }
-            else if (resp.getStatus().equals(ODMStatus.FAILED))
-            {
-              task.appLock();
-              task.setStatus(resp.getStatus().getLabel());
-              task.setMessage(resp.getStatusError());
-              addOutputToTask(task);
-              task.apply();
-  
-              it.remove();
-  
-              sendEmail(task);
-  
-              removeFromOdm(task, task.getOdmUUID());
-            }
-            else if (resp.getStatus().equals(ODMStatus.COMPLETED))
+            else if (ODMStatus.COMPLETED.equals(respStatus))
             {
               long millis = resp.getProcessingTime();
   

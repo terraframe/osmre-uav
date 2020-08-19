@@ -71,6 +71,6 @@ public enum ODMStatus
       return CANCELED;
     }
     
-    throw new UnsupportedOperationException("No status by code [" + code + "].");
+    return null;
   }
 }

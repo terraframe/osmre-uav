@@ -29,22 +29,58 @@ public class InfoResponse extends ODMResponse
   
   public String getUUID()
   {
-    return http.getJSONObject().getString("uuid");
+    JSONObject json = http.getJSONObject();
+    
+    if (json == null || !json.has("uuid"))
+    {
+      return null;
+    }
+    else
+    {
+      return json.getString("uuid");
+    }
   }
   
   public Date getDateCreated()
   {
-    return new Date(http.getJSONObject().getLong("dateCreated"));
+    JSONObject json = http.getJSONObject();
+    
+    if (json == null || !json.has("dateCreated"))
+    {
+      return null;
+    }
+    else
+    {
+      return new Date(json.getLong("dateCreated"));
+    }
   }
   
   public Long getProcessingTime()
   {
-    return http.getJSONObject().getLong("processingTime");
+    JSONObject json = http.getJSONObject();
+    
+    if (json == null || !json.has("processingTime"))
+    {
+      return -1L;
+    }
+    else
+    {
+      return json.getLong("processingTime");
+    }
   }
   
   public Long getImagesCount()
   {
-    return http.getJSONObject().getLong("imagesCount");
+    JSONObject json = http.getJSONObject();
+    
+    if (json == null || !json.has("imagesCount"))
+    {
+      return -1L;
+    }
+    else
+    {
+      return json.getLong("imagesCount");
+    }
   }
   
   public JSONObject getOptions()
@@ -54,16 +90,44 @@ public class InfoResponse extends ODMResponse
   
   public ODMStatus getStatus()
   {
-    JSONObject status = http.getJSONObject().getJSONObject("status");
+    JSONObject json = http.getJSONObject();
     
-    return ODMStatus.getByCode(status.getInt("code"));
+    if (json == null || !json.has("status"))
+    {
+      return null;
+    }
+    
+    JSONObject status = json.getJSONObject("status");
+    
+    if (status == null || !status.has("code"))
+    {
+      return null;
+    }
+    else
+    {
+      return ODMStatus.getByCode(status.getInt("code"));
+    }
   }
   
   public String getStatusError()
   {
-    JSONObject status = http.getJSONObject().getJSONObject("status");
+    JSONObject json = http.getJSONObject();
     
-    return status.getString("errorMessage");
+    if (json == null || !json.has("status"))
+    {
+      return null;
+    }
+    
+    JSONObject status = json.getJSONObject("status");
+    
+    if (status == null || !status.has("errorMessage"))
+    {
+      return null;
+    }
+    else
+    {
+      return status.getString("errorMessage");
+    }
   }
 
 }

@@ -197,6 +197,11 @@ public class ODMFacade
           multispectral.put("value", String.valueOf(isMultispectral));
           arr.put(multispectral);
         }
+        
+        JSONObject imagesCount = new JSONObject();
+        imagesCount.put("name", "imagesCount");
+        imagesCount.put("value", filtered.getItemCount());
+        arr.put(imagesCount);
 
         parts[1] = new StringPart("options", arr.toString());
 
