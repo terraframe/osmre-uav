@@ -20,7 +20,7 @@
 : ----------------------------------
 :
 # Configure the build based on Jenkins parameters
-sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-22-81.us-west-2.compute.internal/g' geoprism-platform/ansible/inventory/uasdm/$environment.ini
+sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-2-248.us-west-2.compute.internal/g' geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_db=true/clean_db=$clean_db/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_db=false/clean_db=$clean_db/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
 sed -i -e "s/clean_solr=true/clean_solr=$clean_solr/g" geoprism-platform/ansible/inventory/uasdm/$environment.ini
@@ -101,6 +101,7 @@ ln -s $WORKSPACE/geoprism-cloud/ansible/uasdm.yml ./uasdm.yml
 sudo chmod 400 ../permissions/uasdm/rich.rowlands.id_rsa
 sudo chmod 400 ../permissions/RichardsMacbook.pem
 sudo chmod 400 ../permissions/nps/richard.rowlands.pem
+sudo chmod 400 ../permissions/geoprism-dev.pem
 pip install boto
 
 ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml

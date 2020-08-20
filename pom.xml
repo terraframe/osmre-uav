@@ -72,7 +72,7 @@
     <repository>
       <id>terraframe</id>
       <name>terraframe</name>
-      <url>http://nexus.terraframe.com/content/groups/allrepos</url>
+      <url>https://nexus.terraframe.com/content/groups/allrepos</url>
       <layout>default</layout>
     </repository>
   </repositories>
@@ -81,13 +81,13 @@
     <repository>
       <id>terraframe-private-releases</id>
       <name>terraframe-private-releases</name>
-      <url>http://nexus.terraframe.com/content/repositories/terraframe-private-releases/</url>
+      <url>https://nexus.terraframe.com/content/repositories/terraframe-private-releases/</url>
       <layout>default</layout>
     </repository>
     <snapshotRepository>
       <id>terraframe-private-snapshots</id>
       <name>terraframe-private-snapshots</name>
-      <url>http://nexus.terraframe.com/content/repositories/terraframe-private-snapshots/</url>
+      <url>https://nexus.terraframe.com/content/repositories/terraframe-private-snapshots/</url>
       <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>
