@@ -20,9 +20,9 @@
 set -e
 
 cd ./ODM
-sudo docker build -t uasdm-odm .
+sudo docker build -t 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-odm:latest .
 
 cd ../NodeODM
-sudo docker build -t uasdm-nodeodm .
+sudo docker build -t 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest .
 
 cd ../

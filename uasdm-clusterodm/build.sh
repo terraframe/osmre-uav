@@ -20,6 +20,6 @@
 set -e
 
 cd ./ClusterODM
-sudo docker build -t uasdm-clusterodm .
+sudo docker build -t 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest .
 
 cd ../

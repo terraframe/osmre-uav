@@ -28,7 +28,7 @@ export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
 export AWS_SECRET_ACCESS_KEY=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
 
 # Commands for aws cli v1
-# eval $(aws ecr get-login-password --region us-west-2 --no-include-email)
+# eval $(aws ecr get-login --region us-west-2 --no-include-email)
 
 # Commands for aws cli v2
 aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 961902606948.dkr.ecr.us-west-2.amazonaws.com
