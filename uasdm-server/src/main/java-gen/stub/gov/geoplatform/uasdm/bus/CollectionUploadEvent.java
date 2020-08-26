@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -38,9 +38,11 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationEndpoint;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.NotificationMessage;
+import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import net.geoprism.GeoprismUser;
 import net.lingala.zip4j.ZipFile;
 
@@ -62,10 +64,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("Processing archived files");
     task.apply();
 
-//    if (Session.getCurrentSession() != null)
-//    {
-//      NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
-//    }
+    // if (Session.getCurrentSession() != null)
+    // {
+    // NotificationFacade.queue(new
+    // NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+    // }
 
     UasComponentIF component = task.getComponentInstance();
 
@@ -83,7 +86,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     if (Session.getCurrentSession() != null)
     {
-      NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
     }
 
     // Only upload to ODM if there are valid image files which were successfully
@@ -98,7 +101,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       }
     }
 
-//    handleMetadataWorkflow(task);
+    // handleMetadataWorkflow(task);
   }
 
   public static boolean isMultispectral(UasComponentIF uasc)
@@ -171,20 +174,21 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-//  private void handleMetadataWorkflow(WorkflowTask uploadTask)
-//  {
-//    if (this.getCollection().getMetadataUploaded())
-//    {
-//      WorkflowTask task = new WorkflowTask();
-//      task.setUploadId(uploadTask.getUploadId());
-//      task.setCollectionId(uploadTask.getCollectionOid());
-//      task.setGeoprismUser(uploadTask.getGeoprismUser());
-//      task.setWorkflowType(WorkflowTask.NEEDS_METADATA);
-//      task.setStatus("Message");
-//      task.setTaskLabel("Missing Metadata");
-//      task.setMessage("Metadata is missing for Collection [" + uploadTask.getCollection().getName() + "].");
-//      task.apply();
-//    }
-//  }
+  // private void handleMetadataWorkflow(WorkflowTask uploadTask)
+  // {
+  // if (this.getCollection().getMetadataUploaded())
+  // {
+  // WorkflowTask task = new WorkflowTask();
+  // task.setUploadId(uploadTask.getUploadId());
+  // task.setCollectionId(uploadTask.getCollectionOid());
+  // task.setGeoprismUser(uploadTask.getGeoprismUser());
+  // task.setWorkflowType(WorkflowTask.NEEDS_METADATA);
+  // task.setStatus("Message");
+  // task.setTaskLabel("Missing Metadata");
+  // task.setMessage("Metadata is missing for Collection [" +
+  // uploadTask.getCollection().getName() + "].");
+  // task.apply();
+  // }
+  // }
 
 }

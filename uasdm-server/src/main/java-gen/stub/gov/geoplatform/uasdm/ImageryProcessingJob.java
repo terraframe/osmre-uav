@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -41,6 +41,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.scheduler.ExecutionContext;
+import com.runwaysdk.system.scheduler.JobHistory;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -54,18 +55,21 @@ import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.NotificationMessage;
+import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
+  private static final Logger  logger               = LoggerFactory.getLogger(ProjectManagementService.class);
 
-  private static final long   serialVersionUID = -339555201;
-  
+  private static final long    serialVersionUID     = -339555201;
+
   // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
   // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
-  public static final String[] SUPPORTED_EXTENSIONS = new String[] {"jpg", "jpeg", "png"};
+  public static final String[] SUPPORTED_EXTENSIONS = new String[] { "jpg", "jpeg", "png" };
 
   public ImageryProcessingJob()
   {
@@ -75,9 +79,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    
-    if (!validateArchive(archive, task)) { return; }
-    
+
+    if (!validateArchive(archive, task))
+    {
+      return;
+    }
+
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
@@ -104,7 +111,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (Session.getCurrentSession() != null)
       {
-        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
     }
   }
@@ -118,16 +125,26 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   @Override
   public void execute(ExecutionContext executionContext)
   {
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
     this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
   }
-  
+
+  @Override
+  public void afterJobExecute(JobHistory history)
+  {
+    super.afterJobExecute(history);
+
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+  }
+
   private static boolean validateArchive(File archive, AbstractUploadTask task)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
-    
+
     boolean hasFiles = false;
-    
+
     try
     {
       if (ext.equalsIgnoreCase("zip"))
@@ -135,15 +152,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         try (ZipFile zipFile = new ZipFile(archive))
         {
           Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-          
+
           while (entries.hasMoreElements())
           {
             ZipArchiveEntry entry = entries.nextElement();
-            
+
             String filename = entry.getName();
-            
+
             boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-            
+
             hasFiles = hasFiles || isValid;
           }
         }
@@ -155,13 +172,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
           try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
           {
             TarArchiveEntry entry;
-  
+
             while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
             {
               final String filename = entry.getName();
-  
+
               boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-              
+
               hasFiles = hasFiles || isValid;
             }
           }
@@ -171,10 +188,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     catch (IOException e)
     {
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-      
+
       throw new InvalidZipException();
     }
-    
+
     if (!hasFiles)
     {
       if (!isMultispectral)
@@ -191,30 +208,30 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         task.setMessage("Could not process files in upload. All files must be at the top-most level of the directory (not in a sub-directory) and must follow proper naming conventions. You selected a multispectral sensor, all files must be of .tif format to be processed.");
         task.apply();
       }
-      
+
       if (Session.getCurrentSession() != null)
       {
-        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
-      
+
       return false;
     }
-    
+
     return true;
   }
-  
+
   private static boolean validateFile(String filename, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task)
   {
     boolean isVideo = Util.isVideoFile(filename);
     boolean isValidName = UasComponentIF.isValidName(filename);
     String ext = FilenameUtils.getExtension(filename).toLowerCase();
-    
+
     if (isDirectory)
     {
       task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
       return false;
     }
-    
+
     if (!isVideo)
     {
       if (!isValidName)
@@ -223,7 +240,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
         return false;
       }
-      
+
       if (isMultispectral)
       {
         if (!filename.endsWith(".tif"))
@@ -261,6 +278,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
   {
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
     AbstractWorkflowTask task = this.getWorkflowTask();
 
     try
@@ -341,7 +360,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (Session.getCurrentSession() != null)
       {
-        NotificationFacade.queue(new NotificationMessage(Session.getCurrentSession(), task.toJSON()));
+        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
     }
     finally

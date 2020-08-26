@@ -35,6 +35,9 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 
 public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -99,6 +102,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setOdmUUID(resp.getUUID());
         this.setMessage("Your images are being processed. Check back later for updates.");
         this.apply();
+
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
         ODMStatusServer.addTask(this);
       }

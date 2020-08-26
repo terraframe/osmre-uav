@@ -37,6 +37,9 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.GeoprismUser;
 import net.lingala.zip4j.ZipFile;
 
@@ -59,6 +62,8 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("Processing archived files");
     task.apply();
+    
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     ImageryIF imagery = task.getImageryInstance();
 
@@ -78,6 +83,8 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       task.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
       task.apply();
 
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+      
       // Only initialize an ortho job if imagery has been uploaded to the raw
       // folder.
       if (uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW))
@@ -100,6 +107,8 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("The images uploaded to ['" + imagery.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilePrefix(outFileNamePrefix);
     task.apply();
+    
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     task.initiate(appRes);
   }

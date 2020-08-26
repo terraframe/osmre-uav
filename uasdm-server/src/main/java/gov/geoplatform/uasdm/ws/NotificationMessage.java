@@ -1,66 +1,51 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.ws;
 
 import org.json.JSONObject;
 
-import com.runwaysdk.session.SessionIF;
-
-public class NotificationMessage implements Runnable
+public abstract class NotificationMessage implements Runnable
 {
-  private String     userId;
 
-  private JSONObject message;
+  private MessageType type;
 
-  public NotificationMessage(SessionIF session, JSONObject message)
-  {
-    this(session.getUser().getOid(), message);
-  }
+  private JSONObject  content;
 
-  public NotificationMessage(String userId, JSONObject message)
+  public NotificationMessage(MessageType type, JSONObject content)
   {
     super();
-    this.userId = userId;
-    this.message = message;
-  }
-
-  public String getUserId()
-  {
-    return userId;
-  }
-
-  public void setUserId(String userId)
-  {
-    this.userId = userId;
+    this.type = type;
+    this.content = content;
   }
 
   public JSONObject getMessage()
   {
+    JSONObject message = new JSONObject();
+    message.put("type", this.type.name());
+
+    if (this.content != null)
+    {
+      message.put("content", this.content);
+    }
+
     return message;
   }
 
-  public void setMessage(JSONObject message)
+  public JSONObject getContent()
   {
-    this.message = message;
+    return content;
   }
 
-  @Override
-  public void run()
+  public void setContent(JSONObject content)
   {
-    NotificationEndpoint.broadcast(this.userId, this.message);
+    this.content = content;
   }
 
+  public MessageType getType()
+  {
+    return type;
+  }
+
+  public void setType(MessageType type)
+  {
+    this.type = type;
+  }
 }

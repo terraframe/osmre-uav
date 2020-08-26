@@ -48,6 +48,9 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.EmailSetting;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -483,6 +486,8 @@ public class ODMStatusServer
 
         uploadTask = odmUploadTask;
       }
+      
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
       uploadThreads.add(thread);
@@ -601,6 +606,8 @@ public class ODMStatusServer
         uploadTask.setMessage("The upload successfully completed.  All files except those mentioned were archived.");
         uploadTask.apply();
 
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
         // Create image services
         product.createImageService();
 
@@ -627,6 +634,8 @@ public class ODMStatusServer
         uploadTask.setStatus(ODMStatus.FAILED.getLabel());
         uploadTask.setMessage(msg);
         uploadTask.apply();
+        
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
     }
 
