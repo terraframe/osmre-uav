@@ -71,16 +71,11 @@ export class TasksComponent implements OnInit {
 
 		this.getMissingMetadata();
 
-
-		console.log('Setting up websocket');
-
 		let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
 
 		this.notifier = webSocket(baseUrl + '/websocket/notify');
 		this.notifier.subscribe(message => {
 			if (message.type === 'JOB_CHANGE') {
-				console.log(message);
-
 				this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
 					if (data['token'] === this.token) {
 						this.updateTaskData(data);
@@ -241,7 +236,7 @@ export class TasksComponent implements OnInit {
 			collectionGroup.groups.forEach(group => {
 
 				if (group.tasks.length > 0) {
-					let sortedTasks = group.tasks.sort((a: any, b: any) =>
+					const sortedTasks = group.tasks.sort((a: any, b: any) =>
 						new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
 					);
 

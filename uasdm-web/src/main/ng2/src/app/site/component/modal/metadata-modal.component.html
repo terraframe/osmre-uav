@@ -126,9 +126,19 @@
                                 [required]="true" [disabled]="false" OnlyNumber="true" />
                         </div>
                         <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Width Units</label>
+                            <input type="text" name="sensor.sensorWidthUnits" [(ngModel)]="metaObject.sensor.sensorWidthUnits"
+                                [required]="true" [disabled]="false" />
+                        </div>
+                        <div class="form-group">
                             <label for="sensor.sensorHeight">Sensor Height</label>
                             <input type="number" name="sensor.sensorHeight" [(ngModel)]="metaObject.sensor.sensorHeight"
                                 [required]="true" [disabled]="false" OnlyNumber="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Height Units</label>
+                            <input type="text" name="sensor.sensorWidthUnits" [(ngModel)]="metaObject.sensor.sensorHeightUnits"
+                                [required]="true" [disabled]="false" />
                         </div>
                         <div class="form-group">
                             <label for="sensor.pixelSizeWidth">Pixel Size Width</label>

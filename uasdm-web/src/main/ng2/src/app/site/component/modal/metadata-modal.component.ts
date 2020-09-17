@@ -71,7 +71,9 @@ export class MetadataModalComponent {
 			// imageWidth:"",
 			// imageHeight:"",
 			sensorWidth: "",
+			sensorWidthUnits: "",
 			sensorHeight: "",
+			sensorHeightUnits: "",
 			pixelSizeWidth: "",
 			pixelSizeHeight: ""
 		},

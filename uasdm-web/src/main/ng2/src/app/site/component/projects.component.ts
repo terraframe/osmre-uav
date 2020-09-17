@@ -267,6 +267,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.subject.next(e);
 		});
 
+		// Sit selection from map
+		this.map.on('dblclick', (e) => {
+			let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
+
+			if (features.length > 0) {
+				let focusFeatureId = features[0].properties.oid; // just the first
+
+				this.handleViewSite(focusFeatureId);
+			}
+		});
+
 		// MapboxGL doesn't have a good way to detect when moving off the map
 		let sidebar = document.getElementById("navigator-left-sidebar");
 		sidebar.addEventListener("mouseenter", function() {
@@ -886,7 +897,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				class: 'leaf-modal'
+				class: 'leaf-modal modal-lg'
 			});
 			this.bsModalRef.content.init(collection, folders, breadcrumbs);
 		}
@@ -895,7 +906,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				class: 'leaf-modal'
+				class: 'leaf-modal modal-lg'
 			});
 			this.bsModalRef.content.init(collection, folders, breadcrumbs);
 		}

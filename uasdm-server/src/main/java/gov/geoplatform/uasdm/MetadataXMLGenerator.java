@@ -174,7 +174,9 @@ public class MetadataXMLGenerator
       e.setAttribute("imageHeight", "");
     }
     e.setAttribute("sensorWidth", jSensor.get("sensorWidth").toString());
+    e.setAttribute("sensorWidthUnits", jSensor.get("sensorWidthUnits").toString());
     e.setAttribute("sensorHeight", jSensor.get("sensorHeight").toString());
+    e.setAttribute("sensorHeightUnits", jSensor.get("sensorHeightUnits").toString());
     e.setAttribute("pixelSizeWidth", jSensor.get("pixelSizeWidth").toString());
     e.setAttribute("pixelSizeHeight", jSensor.get("pixelSizeHeight").toString());
     root.appendChild(e);

@@ -56,7 +56,7 @@
                         [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
                         <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
                           [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
-                        <img (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+                        <img style="max-height: 150px" (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
                           [ngClass]="{'img-disabled' : item.excludeFromProcess}"
                           [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
                           alt="Image">
