@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -73,10 +73,93 @@ import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.view.TreeComponent;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.GeoprismUser;
 
 public class ProjectManagementService
 {
+
+  private class RerunOrthoThread extends Thread
+  {
+    private ODMProcessingTask task;
+
+    private CollectionIF      collection;
+
+    private String            excludes;
+
+    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, String excludes)
+    {
+      super("Rerun ortho thread for collection [" + collection.getName() + "]");
+
+      this.task = task;
+      this.collection = collection;
+      this.excludes = excludes;
+    }
+
+    @Override
+    @Request
+    public void run()
+    {
+      try
+      {
+        /*
+         * Predicate for filtering out files from the zip file to send to ODM
+         */
+        Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
+
+        List<String> filenames = new LinkedList<String>();
+
+        CloseableFile zip;
+        try
+        {
+          logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
+
+          zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip"));
+
+          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
+          {
+            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate);
+
+            filenames.addAll(files);
+          }
+        }
+        catch (IOException e)
+        {
+          throw new ProgrammingErrorException(e);
+        }
+
+        JSONArray array = new JSONArray();
+
+        for (String filename : filenames)
+        {
+          array.put(filename);
+        }
+
+        task.appLock();
+        task.setProcessFilenameArray(array.toString());
+        task.apply();
+
+        task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
+        
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+      }
+      catch (Throwable t)
+      {
+        logger.error("Exception while re-running ortho", t);
+
+        task.appLock();
+        task.setStatus(ODMStatus.FAILED.getLabel());
+        task.setMessage(RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
+        task.apply();
+
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+        throw t;
+      }
+    }
+  }
 
   final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
@@ -147,60 +230,60 @@ public class ProjectManagementService
     // expensive.
     if (id != null)
     {
-//      UasComponent component = ComponentFactory.getComponent(id);
-//
-//      TreeComponent child = Converter.toSiteItem(component, false, true);
-//
-//      List<UasComponentIF> ancestors = component.getAncestors();
-//
-//      for (int j = 0; j < ancestors.size(); j++)
-//      {
-//        TreeComponent parent = null;
-//
-//        if (j == ( ancestors.size() - 1 ))
-//        {
-//          /*
-//           * The last ancestor in the list should be the root tree node, which
-//           * should already be in the roots list. As such use the root list node
-//           * instead and add children to it.
-//           */
-//          UasComponent root = ancestors.get(ancestors.size() - 1);
-//
-//          for (TreeComponent r : roots)
-//          {
-//            if (r.getId().equals(root.getOid()))
-//            {
-//              parent = r;
-//            }
-//          }
-//        }
-//        else
-//        {
-//          parent = Converter.toSiteItem(ancestors.get(j), false);
-//        }
-//
-//        if (parent instanceof SiteItem)
-//        {
-//          /*
-//           * For each ancestor get all of its children TreeComponents
-//           */
-//          List<TreeComponent> children = this.items(parent.getId(), null);
-//
-//          for (TreeComponent chi : children)
-//          {
-//            if (!chi.getId().equals(child.getId()))
-//            {
-//              parent.addChild(chi);
-//            }
-//            else
-//            {
-//              parent.addChild(child);
-//            }
-//          }
-//
-//          child = parent;
-//        }
-//      }
+      // UasComponent component = ComponentFactory.getComponent(id);
+      //
+      // TreeComponent child = Converter.toSiteItem(component, false, true);
+      //
+      // List<UasComponentIF> ancestors = component.getAncestors();
+      //
+      // for (int j = 0; j < ancestors.size(); j++)
+      // {
+      // TreeComponent parent = null;
+      //
+      // if (j == ( ancestors.size() - 1 ))
+      // {
+      // /*
+      // * The last ancestor in the list should be the root tree node, which
+      // * should already be in the roots list. As such use the root list node
+      // * instead and add children to it.
+      // */
+      // UasComponent root = ancestors.get(ancestors.size() - 1);
+      //
+      // for (TreeComponent r : roots)
+      // {
+      // if (r.getId().equals(root.getOid()))
+      // {
+      // parent = r;
+      // }
+      // }
+      // }
+      // else
+      // {
+      // parent = Converter.toSiteItem(ancestors.get(j), false);
+      // }
+      //
+      // if (parent instanceof SiteItem)
+      // {
+      // /*
+      // * For each ancestor get all of its children TreeComponents
+      // */
+      // List<TreeComponent> children = this.items(parent.getId(), null);
+      //
+      // for (TreeComponent chi : children)
+      // {
+      // if (!chi.getId().equals(child.getId()))
+      // {
+      // parent.addChild(chi);
+      // }
+      // else
+      // {
+      // parent.addChild(child);
+      // }
+      // }
+      //
+      // child = parent;
+      // }
+      // }
     }
 
     return roots;
@@ -322,84 +405,11 @@ public class ProjectManagementService
     task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.apply();
 
+    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
     RerunOrthoThread t = new RerunOrthoThread(task, collection, excludes);
     t.setDaemon(true);
     t.start();
-  }
-  
-  private class RerunOrthoThread extends Thread {
-    private ODMProcessingTask task;
-    
-    private CollectionIF collection;
-    
-    private String excludes;
-    
-    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, String excludes)
-    {
-      super("Rerun ortho thread for collection [" + collection.getName() + "]");
-      
-      this.task = task;
-      this.collection = collection;
-      this.excludes = excludes;
-    }
-    
-    @Override
-    @Request
-    public void run()
-    {
-      try
-      {
-        /*
-         * Predicate for filtering out files from the zip file to send to ODM
-         */
-        Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
-  
-        List<String> filenames = new LinkedList<String>();
-        
-        CloseableFile zip;
-        try
-        {
-          logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
-  
-          zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip"));
-  
-          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
-          {
-            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate);
-  
-            filenames.addAll(files);
-          }
-        }
-        catch (IOException e)
-        {
-          throw new ProgrammingErrorException(e);
-        }
-  
-        JSONArray array = new JSONArray();
-  
-        for (String filename : filenames)
-        {
-          array.put(filename);
-        }
-        
-        task.appLock();
-        task.setProcessFilenameArray(array.toString());
-        task.apply();
-  
-        task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
-      }
-      catch (Throwable t)
-      {
-        logger.error("Exception while re-running ortho", t);
-        
-        task.appLock();
-        task.setStatus(ODMStatus.FAILED.getLabel());
-        task.setMessage(RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
-        task.apply();
-        
-        throw t;
-      }
-    }
   }
 
   @Request(RequestType.SESSION)
@@ -451,13 +461,13 @@ public class ProjectManagementService
   {
     UasComponentIF uasComponent = ComponentFacade.getComponent(siteItem.getId());
 
-//    uasComponent.lock();
+    // uasComponent.lock();
 
     uasComponent = Converter.toExistingUasComponent(siteItem);
 
     uasComponent.apply();
 
-//    uasComponent.unlock();
+    // uasComponent.unlock();
 
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
@@ -528,16 +538,16 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void validate(String sessionId, RequestParser parser)
   {
-//    Map<String, String> params = parser.getCustomParams();
-//    Boolean createCollection = new Boolean(params.get("create"));
-//
-//    if (createCollection)
-//    {
-//      String missionId = params.get("mission");
-//      String folderName = params.get("folderName");
-//
-//      UasComponent.validateFolderName(missionId, folderName);
-//    }
+    // Map<String, String> params = parser.getCustomParams();
+    // Boolean createCollection = new Boolean(params.get("create"));
+    //
+    // if (createCollection)
+    // {
+    // String missionId = params.get("mission");
+    // String folderName = params.get("folderName");
+    //
+    // UasComponent.validateFolderName(missionId, folderName);
+    // }
   }
 
   @Request(RequestType.SESSION)
@@ -568,11 +578,11 @@ public class ProjectManagementService
     else
     {
       UasComponentIF component = ComponentFacade.getComponent(id);
-  
+
       return component.download(key);
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadInReq(String sessionId, String id, String key)
   {
@@ -699,21 +709,21 @@ public class ProjectManagementService
     return doc.toJSON();
   }
 
-//  public void logLoginAttempt(String sessionId, String username)
-//  {
-//    if (sessionId != null)
-//    {
-//      logSuccessfulLogin(sessionId);
-//    }
-//    else
-//    {
-//      // log invalid attempt??
-//    }
-//  }
-//
-//  @Request(RequestType.SESSION)
-//  public void logSuccessfulLogin(String sessionId)
-//  {
-//    SessionEvent.createLoginEvent();
-//  }
+  // public void logLoginAttempt(String sessionId, String username)
+  // {
+  // if (sessionId != null)
+  // {
+  // logSuccessfulLogin(sessionId);
+  // }
+  // else
+  // {
+  // // log invalid attempt??
+  // }
+  // }
+  //
+  // @Request(RequestType.SESSION)
+  // public void logSuccessfulLogin(String sessionId)
+  // {
+  // SessionEvent.createLoginEvent();
+  // }
 }
