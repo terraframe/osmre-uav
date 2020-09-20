@@ -44,7 +44,7 @@ public interface RemoteFileService
 
   public int getItemCount(String key);
 
-  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize);
+  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize);
 
   public void uploadFile(File file, String key, AbstractWorkflowTaskIF task);
 

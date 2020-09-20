@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -87,9 +88,9 @@ public class ProjectManagementService
 
     private CollectionIF      collection;
 
-    private String            excludes;
+    private Set<String>       excludes;
 
-    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, String excludes)
+    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
       super("Rerun ortho thread for collection [" + collection.getName() + "]");
 
@@ -107,7 +108,7 @@ public class ProjectManagementService
         /*
          * Predicate for filtering out files from the zip file to send to ODM
          */
-        Predicate<SiteObject> predicate = ( excludes == null || excludes.length() == 0 ) ? null : new ExcludeSiteObjectPredicate(new JSONArray(excludes));
+        Predicate<SiteObject> predicate = ( excludes == null || excludes.size() == 0 ) ? null : new ExcludeSiteObjectPredicate(this.excludes);
 
         List<String> filenames = new LinkedList<String>();
 
@@ -142,7 +143,7 @@ public class ProjectManagementService
         task.apply();
 
         task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
-        
+
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
       catch (Throwable t)
@@ -392,7 +393,19 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void runOrtho(String sessionId, String id, String excludes)
+  public SiteObject setExclude(String sessionId, String id, Boolean exclude)
+  {
+    DocumentIF document = ComponentFacade.getDocument(id);
+    document.setExclude(exclude);
+    document.apply();
+
+    UasComponentIF component = document.getComponent();
+
+    return SiteObject.create(component, document);
+  }
+
+  @Request(RequestType.SESSION)
+  public void runOrtho(String sessionId, String id)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
 
@@ -406,6 +419,9 @@ public class ProjectManagementService
     task.apply();
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+    // Get the exlcudes
+    Set<String> excludes = collection.getExcludes();
 
     RerunOrthoThread t = new RerunOrthoThread(task, collection, excludes);
     t.setDaemon(true);
@@ -557,12 +573,12 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public String getObjects(String sessionId, String id, String key, Integer pageNumber, Integer pageSize)
+  public String getObjects(String sessionId, String id, String key, Long pageNumber, Long pageSize)
   {
     return this.getObjects(id, key, pageNumber, pageSize).toJSON().toString();
   }
 
-  public SiteObjectsResultSet getObjects(String id, String key, Integer pageNumber, Integer pageSize)
+  public SiteObjectsResultSet getObjects(String id, String key, Long pageNumber, Long pageSize)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 

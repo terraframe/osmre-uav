@@ -177,7 +177,7 @@ public class Imagery extends ImageryBase implements ImageryIF
   }
 
   @Override
-  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
+  public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -217,7 +217,7 @@ public class Imagery extends ImageryBase implements ImageryIF
   }
 
   @Override
-  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
+  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
     if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
     {

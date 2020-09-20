@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1513620269)
+@com.runwaysdk.business.ClassSignature(hash = 1406334416)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,15 +11,32 @@ package gov.geoplatform.uasdm.graph;
 public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Document";
+  public static java.lang.String EXCLUDE = "exclude";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String S3LOCATION = "s3location";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -1513620269;
+  private static final long serialVersionUID = 1406334416;
   
   public DocumentBase()
   {
     super();
+  }
+  
+  public Boolean getExclude()
+  {
+    return (Boolean) this.getObjectValue(EXCLUDE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getExcludeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(EXCLUDE);
+  }
+  
+  public void setExclude(Boolean value)
+  {
+    this.setValue(EXCLUDE, value);
   }
   
   public String getName()
@@ -101,14 +103,14 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return CLASS;
   }
   
-  public void addDocumentGeneratedProductChild(gov.geoplatform.uasdm.graph.Product product)
+  public com.runwaysdk.business.graph.EdgeObject addDocumentGeneratedProductChild(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addChild(product, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
+    return super.addChild(product, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
   }
   
   public void removeDocumentGeneratedProductChild(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addChild(product, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
+    super.removeChild(product, "gov.geoplatform.uasdm.graph.DocumentGeneratedProduct");
   }
   
   @SuppressWarnings("unchecked")
@@ -117,14 +119,14 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getChildren("gov.geoplatform.uasdm.graph.DocumentGeneratedProduct",gov.geoplatform.uasdm.graph.Product.class);
   }
   
-  public void addComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
+  public com.runwaysdk.business.graph.EdgeObject addComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
-    super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
+    return super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
   }
   
   public void removeComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
-    super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
+    super.removeParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
   }
   
   @SuppressWarnings("unchecked")
@@ -133,14 +135,14 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getParents("gov.geoplatform.uasdm.graph.ComponentHasDocument", gov.geoplatform.uasdm.graph.UasComponent.class);
   }
   
-  public void addProductHasDocumentParent(gov.geoplatform.uasdm.graph.Product product)
+  public com.runwaysdk.business.graph.EdgeObject addProductHasDocumentParent(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addParent(product, "gov.geoplatform.uasdm.graph.ProductHasDocument");
+    return super.addParent(product, "gov.geoplatform.uasdm.graph.ProductHasDocument");
   }
   
   public void removeProductHasDocumentParent(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addParent(product, "gov.geoplatform.uasdm.graph.ProductHasDocument");
+    super.removeParent(product, "gov.geoplatform.uasdm.graph.ProductHasDocument");
   }
   
   @SuppressWarnings("unchecked")

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
 
 @Controller(url = "project")
@@ -180,9 +181,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "excludes") String excludes)
+  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    this.service.runOrtho(request.getSessionId(), id, excludes);
+    this.service.runOrtho(request.getSessionId(), id);
 
     return new RestResponse();
   }
@@ -204,6 +205,14 @@ public class ProjectManagementController
     response.set("item", item.toJSON());
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
+  }
+
+  @Endpoint(url = "set-exclude", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF setExclude(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "exclude") Boolean exclude)
+  {
+    SiteObject object = this.service.setExclude(request.getSessionId(), id, exclude);
+
+    return new RestBodyResponse(object.toJSON());
   }
 
   @Endpoint(url = "update", method = ServletMethod.POST, error = ErrorSerialization.JSON)
@@ -291,7 +300,7 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "objects", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF objects(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
+  public ResponseIF objects(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Long pageNumber, @RequestParamter(name = "pageSize") Long pageSize)
   {
     String response = this.service.getObjects(request.getSessionId(), id, key, pageNumber, pageSize);
 

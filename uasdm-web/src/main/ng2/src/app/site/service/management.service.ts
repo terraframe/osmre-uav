@@ -20,404 +20,420 @@ declare var acp: any;
 @Injectable()
 export class ManagementService {
 
-    constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService) { }
-
-    getChildren(id: string): Promise<SiteEntity[]> {
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
-
-
-        return this.http
-            .get<SiteEntity[]>(acp + '/project/get-children', { params: params })
-            .toPromise()
-    }
+	constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService) { }
+
+	getChildren(id: string): Promise<SiteEntity[]> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+
+
+		return this.http
+			.get<SiteEntity[]>(acp + '/project/get-children', { params: params })
+			.toPromise()
+	}
 
-    getObjects(id: string, key: string, pageNumber: number, pageSize: number): Promise<SiteObjectsResultSet> {
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
-
-        if (key != null) {
-            params = params.set('key', key);
-        }
-
-        if (pageNumber != null) {
-            params = params.set('pageNumber', pageNumber.toString());
-        }
-        if (pageSize != null) {
-            params = params.set('pageSize', pageSize.toString());
-        }
+	getObjects(id: string, key: string, pageNumber: number, pageSize: number): Promise<SiteObjectsResultSet> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+
+		if (key != null) {
+			params = params.set('key', key);
+		}
+
+		if (pageNumber != null) {
+			params = params.set('pageNumber', pageNumber.toString());
+		}
+		if (pageSize != null) {
+			params = params.set('pageSize', pageSize.toString());
+		}
 
-        return this.http
-            .get<SiteObjectsResultSet>(acp + '/project/objects', { params: params })
-            .toPromise()
-    }
+		return this.http
+			.get<SiteObjectsResultSet>(acp + '/project/objects', { params: params })
+			.toPromise()
+	}
+
+	view(id: string): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+
+		return this.http
+			.get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>(acp + '/project/view', { params: params })
+			.toPromise()
+	}
 
-    view(id: string): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
+	getItems(id: string, key: string): Promise<SiteEntity[]> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
 
-        return this.http
-            .get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>(acp + '/project/view', { params: params })
-            .toPromise()
-    }
+		if (key != null) {
+			params = params.set('key', key);
+		}
 
-    getItems(id: string, key: string): Promise<SiteEntity[]> {
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
+		return this.http
+			.get<SiteEntity[]>(acp + '/project/items', { params: params })
+			.toPromise()
+	}
 
-        if (key != null) {
-            params = params.set('key', key);
-        }
+	roots(id: string, bounds: LngLatBounds): Promise<SiteEntity[]> {
+		let params: HttpParams = new HttpParams();
 
-        return this.http
-            .get<SiteEntity[]>(acp + '/project/items', { params: params })
-            .toPromise()
-    }
+		if (id != null) {
+			params = params.set('id', id);
+		}
 
-    roots(id: string, bounds: LngLatBounds): Promise<SiteEntity[]> {
-        let params: HttpParams = new HttpParams();
+		if (bounds != null) {
+			params = params.set('bounds', JSON.stringify(bounds));
+		}
 
-        if (id != null) {
-            params = params.set('id', id);
-        }
+		return this.http
+			.get<SiteEntity[]>(acp + '/project/roots', { params: params })
+			.toPromise()
+	}
 
-        if (bounds != null) {
-            params = params.set('bounds', JSON.stringify(bounds));
-        }
+	edit(id: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-        return this.http
-            .get<SiteEntity[]>(acp + '/project/roots', { params: params })
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    edit(id: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+		this.eventService.start();
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/edit', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        this.eventService.start();
+	setExclude(id: string, exclude: boolean): Promise<SiteEntity> {
 
-        return this.http
-            .post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/edit', JSON.stringify({ id: id }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    runOrtho(id: string, excludes: string[]): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+		this.eventService.start();
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.post<SiteEntity>(acp + '/project/set-exclude', JSON.stringify({ id: id, exclude: exclude }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        //   this.eventService.start();
+	runOrtho(id: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-        return this.http
-            .post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/run-ortho', JSON.stringify({ id: id, excludes: excludes }), { headers: headers })
-            .pipe(finalize(() => {
-                //				this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    update(entity: SiteEntity): Promise<SiteEntity> {
+		//   this.eventService.start();
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/run-ortho', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				//				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        this.eventService.start();
+	update(entity: SiteEntity): Promise<SiteEntity> {
 
-        return this.noErrorHttpClient
-            .post<SiteEntity>(acp + '/project/update', JSON.stringify({ entity: entity }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    newChild(parentId: string, type: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+		this.eventService.start();
 
-        let url = '/project/new-default-child';
+		return this.noErrorHttpClient
+			.post<SiteEntity>(acp + '/project/update', JSON.stringify({ entity: entity }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+	newChild(parentId: string, type: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-        let params = {} as any;
+		let url = '/project/new-default-child';
 
-        if (parentId != null) {
-            params.parentId = parentId;
-        }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        if (type) {
-            params.type = type;
+		let params = {} as any;
 
-            url = '/project/new-child';
-        }
+		if (parentId != null) {
+			params.parentId = parentId;
+		}
 
+		if (type) {
+			params.type = type;
 
-        this.eventService.start();
+			url = '/project/new-child';
+		}
 
 
-        return this.http
-            .post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + url, JSON.stringify(params), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		this.eventService.start();
 
 
+		return this.http
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + url, JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-    applyWithParent(entity: SiteEntity, parentId: string): Promise<SiteEntity> {
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
 
+	applyWithParent(entity: SiteEntity, parentId: string): Promise<SiteEntity> {
 
-        let params = { entity: entity } as any;
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-        if (parentId != null) {
-            params.parentId = parentId;
-        }
 
+		let params = { entity: entity } as any;
 
-        this.eventService.start();
+		if (parentId != null) {
+			params.parentId = parentId;
+		}
 
-        return this.noErrorHttpClient
-            .post<SiteEntity>(acp + '/project/apply-with-parent', JSON.stringify(params), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
 
-    getCurrentUser(): string {
-        //        let userName: string = "admin";
-        //
-        //        if ( this.cookieService.check( "user" ) ) {
-        //            let cookieData: string = this.cookieService.get( "user" )
-        //            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-        //            userName = cookieDataJSON.userName;
-        //        }
-        //        else {
-        //            console.log( 'Check fails for the existence of the cookie' )
-        //
-        //            let cookieData: string = this.cookieService.get( "user" )
-        //
-        //            if ( cookieData != null ) {
-        //                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
-        //                userName = cookieDataJSON.userName;
-        //            }
-        //            else {
-        //                console.log( 'Unable to get cookie' );
-        //            }
-        //        }
+		this.eventService.start();
 
-        return this.authService.getUserName();
-    }
+		return this.noErrorHttpClient
+			.post<SiteEntity>(acp + '/project/apply-with-parent', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-    remove(id: string): Promise<void> {
+	getCurrentUser(): string {
+		//        let userName: string = "admin";
+		//
+		//        if ( this.cookieService.check( "user" ) ) {
+		//            let cookieData: string = this.cookieService.get( "user" )
+		//            let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+		//            userName = cookieDataJSON.userName;
+		//        }
+		//        else {
+		//            console.log( 'Check fails for the existence of the cookie' )
+		//
+		//            let cookieData: string = this.cookieService.get( "user" )
+		//
+		//            if ( cookieData != null ) {
+		//                let cookieDataJSON: any = JSON.parse( JSON.parse( cookieData ) );
+		//                userName = cookieDataJSON.userName;
+		//            }
+		//            else {
+		//                console.log( 'Unable to get cookie' );
+		//            }
+		//        }
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.authService.getUserName();
+	}
 
-        this.eventService.start();
+	remove(id: string): Promise<void> {
 
-        return this.http
-            .post<void>(acp + '/project/remove', JSON.stringify({ id: id }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    removeObject(componentId: string, key: string): Promise<void> {
+		this.eventService.start();
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.post<void>(acp + '/project/remove', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        this.eventService.start();
+	removeObject(componentId: string, key: string): Promise<void> {
 
-        return this.http
-            .post<void>(acp + '/project/removeObject', JSON.stringify({ id: componentId, key: key }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    removeTask(uploadId: string): Promise<void> {
+		this.eventService.start();
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.post<void>(acp + '/project/removeObject', JSON.stringify({ id: componentId, key: key }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        this.eventService.start();
+	removeTask(uploadId: string): Promise<void> {
 
-        return this.http
-            .post<void>(acp + '/project/remove-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    upload(id: string, folder: string, file: File): Promise<Document> {
+		this.eventService.start();
 
-        this.eventService.start();
+		return this.http
+			.post<void>(acp + '/project/remove-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        const formData = new FormData()
-        formData.append('file', file);
-        formData.append('id', id);
-        formData.append('folder', folder);
+	upload(id: string, folder: string, file: File): Promise<Document> {
 
-        return this.http.post<Document>(acp + '/project/upload', formData)
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise();
-    }
+		this.eventService.start();
 
-    tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<Task>> {
+		const formData = new FormData()
+		formData.append('file', file);
+		formData.append('id', id);
+		formData.append('folder', folder);
 
-        // status options: PROCESSING, COMPLETE, ERROR, QUEUED
-        let params: HttpParams = new HttpParams();
-        params = params.set('statuses', JSON.stringify(statuses));
-        params = params.set('pageSize', pageSize.toString());
-        params = params.set('pageNumber', pageNumber.toString());
-        params = params.set('token', token.toString());
+		return this.http.post<Document>(acp + '/project/upload', formData)
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise();
+	}
 
-        return this.http
-            .get<PageResult<Task>>(acp + '/project/tasks', { params: params })
-            .toPromise()
-    }
+	tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<Task>> {
 
-    task(id: string): Promise<{ messages: Message[], task: Task }> {
+		// status options: PROCESSING, COMPLETE, ERROR, QUEUED
+		let params: HttpParams = new HttpParams();
+		params = params.set('statuses', JSON.stringify(statuses));
+		params = params.set('pageSize', pageSize.toString());
+		params = params.set('pageNumber', pageNumber.toString());
+		params = params.set('token', token.toString());
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
+		return this.http
+			.get<PageResult<Task>>(acp + '/project/tasks', { params: params })
+			.toPromise()
+	}
 
-        return this.http
-            .get<{ messages: Message[], task: Task }>(acp + '/project/task', { params: params })
-            .toPromise();
-    }
+	task(id: string): Promise<{ messages: Message[], task: Task }> {
 
-    getMissingMetadata(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('pageSize', pageSize.toString());
-        params = params.set('pageNumber', pageNumber.toString());
+		return this.http
+			.get<{ messages: Message[], task: Task }>(acp + '/project/task', { params: params })
+			.toPromise();
+	}
 
-        return this.http.get<PageResult<Message>>(acp + '/project/missing-metadata', { params: params })
-            .toPromise();
-    }
+	getMissingMetadata(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
 
-    download(id: string, key: string, useSpinner: boolean): Observable<Blob> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('pageSize', pageSize.toString());
+		params = params.set('pageNumber', pageNumber.toString());
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
-        params = params.set('key', key);
+		return this.http.get<PageResult<Message>>(acp + '/project/missing-metadata', { params: params })
+			.toPromise();
+	}
 
-        if (useSpinner) {
-            this.eventService.start();
-        }
+	download(id: string, key: string, useSpinner: boolean): Observable<Blob> {
 
-        return this.noErrorHttpClient.get<Blob>(acp + '/project/download', { params: params, responseType: 'blob' as 'json' })
-            .pipe(finalize(() => {
-                if (useSpinner) {
-                    this.eventService.complete();
-                }
-            }))
-    }
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+		params = params.set('key', key);
 
-    downloadAll(id: string, key: string, useSpinner: boolean): Observable<Blob> {
+		if (useSpinner) {
+			this.eventService.start();
+		}
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('id', id);
-        params = params.set('key', key);
+		return this.noErrorHttpClient.get<Blob>(acp + '/project/download', { params: params, responseType: 'blob' as 'json' })
+			.pipe(finalize(() => {
+				if (useSpinner) {
+					this.eventService.complete();
+				}
+			}))
+	}
 
-        if (useSpinner) {
-            this.eventService.start();
-        }
+	downloadAll(id: string, key: string, useSpinner: boolean): Observable<Blob> {
 
-        return this.noErrorHttpClient.get<Blob>(acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' })
-            .pipe(finalize(() => {
-                if (useSpinner) {
-                    this.eventService.complete();
-                }
-            }))
-    }
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+		params = params.set('key', key);
 
-    search(terms: Observable<string>) {
-        return terms
-            .pipe(debounceTime(400))
-            .pipe(distinctUntilChanged())
-            .pipe(switchMap(term => this.searchEntries(term)));
-    }
+		if (useSpinner) {
+			this.eventService.start();
+		}
 
-    searchEntries(term: string): Observable<string> {
+		return this.noErrorHttpClient.get<Blob>(acp + '/project/download-all', { params: params, responseType: 'blob' as 'json' })
+			.pipe(finalize(() => {
+				if (useSpinner) {
+					this.eventService.complete();
+				}
+			}))
+	}
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('term', term);
+	search(terms: Observable<string>) {
+		return terms
+			.pipe(debounceTime(400))
+			.pipe(distinctUntilChanged())
+			.pipe(switchMap(term => this.searchEntries(term)));
+	}
 
-        return this.http
-            .get<string>(acp + '/project/search', { params: params })
-    }
+	searchEntries(term: string): Observable<string> {
 
-    searchEntites(term: string): Promise<any> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('term', term);
 
-        let params: HttpParams = new HttpParams();
-        params = params.set('term', term);
+		return this.http
+			.get<string>(acp + '/project/search', { params: params })
+	}
 
-        return this.http
-            .get(acp + '/project/search', { params: params })
-            .toPromise()
-    }
+	searchEntites(term: string): Promise<any> {
 
-    submitCollectionMetadata(metaObj: string): Promise<void> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('term', term);
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		return this.http
+			.get(acp + '/project/search', { params: params })
+			.toPromise()
+	}
 
-        this.eventService.start();
+	submitCollectionMetadata(metaObj: string): Promise<void> {
 
-        return this.noErrorHttpClient
-            .post<void>(acp + '/project/submit-metadata', JSON.stringify({ json: metaObj }), { headers: headers })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
-            .toPromise()
-    }
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
 
-    getMetadataOptions(id: string): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
+		this.eventService.start();
 
-        let params: HttpParams = new HttpParams();
+		return this.noErrorHttpClient
+			.post<void>(acp + '/project/submit-metadata', JSON.stringify({ json: metaObj }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
-        if (id != null) {
-            params = params.set('id', id);
-        }
+	getMetadataOptions(id: string): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
 
-        return this.noErrorHttpClient
-            .get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }>(acp + '/project/metadata-options', { params: params })
-            .toPromise()
-    }
+		let params: HttpParams = new HttpParams();
 
-    evaluate(condition: Condition, entity: SiteEntity): boolean {
-        if (condition != null && condition.type === 'eq') {
-            return (entity[condition.name] === condition.value);
-        }
-        else if (condition != null && condition.type === 'admin') {
-            return this.authService.isAdmin();
-        }
+		if (id != null) {
+			params = params.set('id', id);
+		}
 
-        return false;
-    }
+		return this.noErrorHttpClient
+			.get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }>(acp + '/project/metadata-options', { params: params })
+			.toPromise()
+	}
+
+	evaluate(condition: Condition, entity: SiteEntity): boolean {
+		if (condition != null && condition.type === 'eq') {
+			return (entity[condition.name] === condition.value);
+		}
+		else if (condition != null && condition.type === 'admin') {
+			return this.authService.isAdmin();
+		}
+
+		return false;
+	}
 }

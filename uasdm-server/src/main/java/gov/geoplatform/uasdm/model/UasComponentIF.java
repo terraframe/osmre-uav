@@ -75,7 +75,7 @@ public interface UasComponentIF extends ComponentIF
 
   public String getS3location();
 
-  public SiteObjectsResultSet getSiteObjects(String key, Integer pageNumber, Integer pageSize);
+  public SiteObjectsResultSet getSiteObjects(String key, Long pageNumber, Long pageSize);
 
   public List<DocumentIF> getDocuments();
 

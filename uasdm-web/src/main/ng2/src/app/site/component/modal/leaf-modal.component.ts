@@ -50,7 +50,6 @@ export class LeafModalComponent implements OnInit {
 	message: string;
 	statusMessage: string;
 	processable: boolean = false;
-	excludes: string[] = [];
 	enableSelectableImages: boolean = false;
 	folder: SiteEntity;
 	showOrthoRerunMessage: boolean = false;
@@ -79,8 +78,6 @@ export class LeafModalComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.onNodeChange = new Subject();
-
-		this.excludes = []; // clear excludes if toggling between tabs
 
 		this.page.count = 0;
 		this.page.pageNumber = 1;
@@ -158,8 +155,6 @@ export class LeafModalComponent implements OnInit {
 			ps = this.constPageSize;
 		}
 
-		this.excludes = []; // clear excludes if toggling between tabs
-
 		this.folder = folder;
 
 		this.video.src = null;
@@ -177,10 +172,6 @@ export class LeafModalComponent implements OnInit {
 
 				if (this.isImage(item)) {
 					this.getThumbnail(item);
-
-					if (this.excludes.indexOf(item.name) != -1) {
-						item.excludeFromProcess = true;
-					}
 				}
 
 			}
@@ -209,17 +200,20 @@ export class LeafModalComponent implements OnInit {
 	}
 
 	toggleExcludeImage(event: any, image: any): void {
-		image.excludeFromProcess = !image.excludeFromProcess;
-
-		if (image.excludeFromProcess) {
-			this.excludes.push(image.name);
-		}
-		else {
-			let position = this.excludes.indexOf(image.name);
-			if (position > -1) {
-				this.excludes.splice(position, 1);
-			}
-		}
+		this.service.setExclude(image.id, !image.exclude).then(result => {
+			image.exclude = result.exclude;
+		});
+//
+//
+//		if (image.exclude) {
+//			this.excludes.push(image.name);
+//		}
+//		else {
+//			let position = this.excludes.indexOf(image.name);
+//			if (position > -1) {
+//				this.excludes.splice(position, 1);
+//			}
+//		}
 	}
 
 	isProcessable(item: any): boolean {
@@ -255,15 +249,15 @@ export class LeafModalComponent implements OnInit {
 			this.processRunning = true;
 			this.showOrthoRerunMessage = true;
 
-			this.service.runOrtho(this.entity.id, this.excludes).then(data => {
-			    this.processRunning = false;
-			
-			    setTimeout( () => {
-			      this.showOrthoRerunMessage = false;
-				  this.statusMessage = "Your process is started.";
-			    }, 30000 );
-			}).catch(( err: HttpErrorResponse ) => {
-			    this.error(err);
+			this.service.runOrtho(this.entity.id).then(data => {
+				this.processRunning = false;
+
+				setTimeout(() => {
+					this.showOrthoRerunMessage = false;
+					this.statusMessage = "Your process is started.";
+				}, 30000);
+			}).catch((err: HttpErrorResponse) => {
+				this.error(err);
 			});
 		});
 
@@ -289,19 +283,19 @@ export class LeafModalComponent implements OnInit {
 		window.location.href = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key;
 	}
 
-    handleSetMetadata(): void {
-        let modalRef = this.modalService.show(MetadataModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-            'class': 'upload-modal'
-        });
-        modalRef.content.init(this.entity.id);
+	handleSetMetadata(): void {
+		let modalRef = this.modalService.show(MetadataModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'upload-modal'
+		});
+		modalRef.content.init(this.entity.id);
 
-        modalRef.content.onMetadataChange.subscribe(() => {
-          this.entity.metadataUploaded = true;
-        });
-    }
+		modalRef.content.onMetadataChange.subscribe(() => {
+			this.entity.metadataUploaded = true;
+		});
+	}
 
 
 	showVideo(item: SiteEntity): void {

@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -43,5 +44,7 @@ public interface CollectionIF extends UasComponentIF
   public JSONObject toMetadataMessage();
 
   public void appLock();
+
+  public Set<String> getExcludes();
 
 }

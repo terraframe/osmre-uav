@@ -120,7 +120,7 @@ public class Mission extends MissionBase implements MissionIF
   }
 
   @Override
-  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
+  public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 

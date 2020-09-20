@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -23,7 +23,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.runwaysdk.ComponentIF;
 
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
@@ -42,6 +44,8 @@ public class SiteObject implements TreeComponent
 
   public static final String LAST_MODIFIED_KEY = "lastModified";
 
+  public static final String EXCLUDE           = "exclude";
+
   private String             id;
 
   private String             name;
@@ -55,6 +59,8 @@ public class SiteObject implements TreeComponent
   private String             imageKey;
 
   private Date               lastModified;
+
+  private Boolean            exclude;
 
   public String getId()
   {
@@ -125,6 +131,16 @@ public class SiteObject implements TreeComponent
   {
     this.lastModified = lastModified;
   }
+  
+  public Boolean getExclude()
+  {
+    return exclude;
+  }
+  
+  public void setExclude(Boolean exclude)
+  {
+    this.exclude = exclude;
+  }
 
   @Override
   public void addChild(TreeComponent child)
@@ -141,6 +157,7 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.KEY, this.key);
     json.put(SiteObject.COMPONENT, this.componentId);
     json.put(SiteObject.LAST_MODIFIED_KEY, this.lastModified);
+    json.put(SiteObject.EXCLUDE, this.exclude);
 
     // if (this.type.equals(SiteObject.FOLDER))
     // {
@@ -167,6 +184,27 @@ public class SiteObject implements TreeComponent
     object.setKey(key);
     object.setType(SiteObject.OBJECT);
     object.setLastModified(summary.getLastModified());
+    object.setExclude(false);
+
+    return object;
+  }
+
+  public static SiteObject create(ComponentIF component, DocumentIF document)
+  {
+
+    String key = document.getS3location();
+    String name = FilenameUtils.getName(key);
+
+    SiteObject object = new SiteObject();
+    object.setId(document.getOid());
+    object.setName(name);
+    object.setComponentId(component.getOid());
+    object.setKey(key);
+    object.setType(SiteObject.OBJECT);
+//    object.setExclude(true);
+    object.setExclude(document.getExclude() != null && document.getExclude());
+
+    // object.setLastModified(document.getLastModified());
 
     return object;
   }

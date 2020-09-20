@@ -42,7 +42,7 @@ export class SiteEntity {
     privilegeType?: string;
     children?: SiteEntity[];
     active?: boolean;
-    excludeFromProcess?: boolean;
+    exclude?: boolean;
 }
 
 export class CollectionHierarchy {

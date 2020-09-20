@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -33,6 +33,12 @@ public class Document extends DocumentBase implements DocumentIF
   public Document()
   {
     super();
+  }
+
+  @Override
+  public Boolean getExclude()
+  {
+    return false;
   }
 
   @Override
@@ -62,42 +68,11 @@ public class Document extends DocumentBase implements DocumentIF
   {
     return this.getS3location();
   }
-
-  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name)
+  
+  @Override
+  public void setExclude(Boolean exclude)
   {
-    Document document = Document.find(key);
-
-    if (document == null)
-    {
-      document = new Document();
-      document.setS3location(key);
-    }
-    else
-    {
-      document.appLock();
-    }
-
-    document.setComponent((UasComponent) uasComponent);
-    document.setName(name);
-    document.apply();
-
-    return document;
-  }
-
-  public static Document find(String key)
-  {
-    DocumentQuery query = new DocumentQuery(new QueryFactory());
-    query.WHERE(query.getS3location().EQ(key));
-
-    try (OIterator<? extends Document> it = query.getIterator())
-    {
-      if (it.hasNext())
-      {
-        return it.next();
-      }
-    }
-
-    return null;
+    // Do nothing   
   }
 
   public void addGeneratedProduct(ProductIF product)
@@ -136,6 +111,43 @@ public class Document extends DocumentBase implements DocumentIF
     object.put("component", this.getComponentOid());
 
     return object;
+  }
+
+  public static Document find(String key)
+  {
+    DocumentQuery query = new DocumentQuery(new QueryFactory());
+    query.WHERE(query.getS3location().EQ(key));
+
+    try (OIterator<? extends Document> it = query.getIterator())
+    {
+      if (it.hasNext())
+      {
+        return it.next();
+      }
+    }
+
+    return null;
+  }
+
+  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name)
+  {
+    Document document = Document.find(key);
+
+    if (document == null)
+    {
+      document = new Document();
+      document.setS3location(key);
+    }
+    else
+    {
+      document.appLock();
+    }
+
+    document.setComponent((UasComponent) uasComponent);
+    document.setName(name);
+    document.apply();
+
+    return document;
   }
 
 }

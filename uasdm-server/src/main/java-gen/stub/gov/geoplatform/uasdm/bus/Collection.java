@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -246,7 +248,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize)
+  public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -298,11 +300,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return new SiteObjectsResultSet(objects.size(), pageNumber, pageSize, objects, folder);
+    return new SiteObjectsResultSet(new Long(objects.size()), pageNumber, pageSize, objects, folder);
   }
 
   @Override
-  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
+  protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
     if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
     {
@@ -319,11 +321,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public Integer getNumberOfChildren()
   {
-//    int count = 0;
-//    count += this.getItemCount(this.buildRawKey());
-//    count += this.getItemCount(this.buildPointCloudKey());
-//    count += this.getItemCount(this.buildDemKey());
-//    count += this.getItemCount(this.buildOrthoKey());
+    // int count = 0;
+    // count += this.getItemCount(this.buildRawKey());
+    // count += this.getItemCount(this.buildPointCloudKey());
+    // count += this.getItemCount(this.buildDemKey());
+    // count += this.getItemCount(this.buildOrthoKey());
 
     DocumentQuery query = new DocumentQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
@@ -339,6 +341,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Logger getLog()
   {
     return this.log;
+  }
+  
+  @Override
+  public Set<String> getExcludes()
+  {
+    return new TreeSet<String>();
   }
 
   @Override

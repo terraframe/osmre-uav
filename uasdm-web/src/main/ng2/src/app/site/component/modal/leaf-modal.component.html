@@ -53,11 +53,11 @@
                       *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
                       class="list-group-item col-xs-3">
                       <a class="thumbnail"
-                        [ngClass]="{'card-disabled' : item.excludeFromProcess, 'non-clickable' : !enableSelectableImages}">
+                        [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
                         <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
-                          [checked]="item.excludeFromProcess" (change)="toggleExcludeImage($event, item)" />
+                          [checked]="item.exclude" (change)="toggleExcludeImage($event, item)" />
                         <img style="max-height: 150px" (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
-                          [ngClass]="{'img-disabled' : item.excludeFromProcess}"
+                          [ngClass]="{'img-disabled' : item.exclude}"
                           [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
                           alt="Image">
                         <div class="caption">

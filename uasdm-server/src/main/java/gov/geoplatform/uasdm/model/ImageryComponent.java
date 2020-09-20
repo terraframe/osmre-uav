@@ -61,7 +61,7 @@ public interface ImageryComponent
 
   public String getStoreName(String key);
 
-  public SiteObjectsResultSet getSiteObjects(String folder, Integer pageNumber, Integer pageSize);
+  public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize);
 
   public String getS3location();
 
