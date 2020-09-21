@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -56,13 +56,13 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationResource appRes, String outFileNamePrefix)
+  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationResource appRes, String outFileNamePrefix, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("Processing archived files");
     task.apply();
-    
+
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     ImageryIF imagery = task.getImageryInstance();
@@ -84,10 +84,10 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       task.apply();
 
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-      
+
       // Only initialize an ortho job if imagery has been uploaded to the raw
       // folder.
-      if (uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW))
+      if (processUpload && ( uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW) ))
       {
         startODMProcessing(appRes, task, outFileNamePrefix);
       }
@@ -107,7 +107,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setMessage("The images uploaded to ['" + imagery.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilePrefix(outFileNamePrefix);
     task.apply();
-    
+
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     task.initiate(appRes);

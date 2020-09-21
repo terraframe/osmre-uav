@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1804637686)
+@com.runwaysdk.business.ClassSignature(hash = -1988648387)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -28,9 +13,10 @@ public abstract class ImageryProcessingJobBase extends com.runwaysdk.system.sche
   public final static String CLASS = "gov.geoplatform.uasdm.ImageryProcessingJob";
   public static java.lang.String IMAGERYFILE = "imageryFile";
   public static java.lang.String OUTFILENAMEPREFIX = "outFileNamePrefix";
+  public static java.lang.String PROCESSUPLOAD = "processUpload";
   public static java.lang.String UPLOADTARGET = "uploadTarget";
   public static java.lang.String WORKFLOWTASK = "workflowTask";
-  private static final long serialVersionUID = 1804637686;
+  private static final long serialVersionUID = -1988648387;
   
   public ImageryProcessingJobBase()
   {
@@ -90,6 +76,34 @@ public abstract class ImageryProcessingJobBase extends com.runwaysdk.system.sche
     else
     {
       setValue(OUTFILENAMEPREFIX, value);
+    }
+  }
+  
+  public Boolean getProcessUpload()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSUPLOAD));
+  }
+  
+  public void validateProcessUpload()
+  {
+    this.validateAttribute(PROCESSUPLOAD);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getProcessUploadMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.ImageryProcessingJob.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PROCESSUPLOAD);
+  }
+  
+  public void setProcessUpload(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSUPLOAD, "");
+    }
+    else
+    {
+      setValue(PROCESSUPLOAD, java.lang.Boolean.toString(value));
     }
   }
   

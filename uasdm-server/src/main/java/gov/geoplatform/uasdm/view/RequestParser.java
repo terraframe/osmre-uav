@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -49,6 +49,8 @@ public class RequestParser
 
   private static String       UAS_COMPONENT_OID    = "uasComponentOid";
 
+  private static String       PROCESS_UPLOAD       = "processUpload";
+
   private static String       SELECTIONS           = "selections";
 
   private static String       UPLOAD_TARGET        = "uploadTarget";
@@ -78,6 +80,8 @@ public class RequestParser
   private String              uasComponentOid;
 
   private String              uploadTarget;
+
+  private Boolean             processUpload;
 
   private JSONArray           selections;
 
@@ -159,6 +163,11 @@ public class RequestParser
     return uasComponentOid;
   }
 
+  public Boolean getProcessUpload()
+  {
+    return processUpload;
+  }
+
   public JSONArray getSelections()
   {
     return selections;
@@ -225,6 +234,11 @@ public class RequestParser
       requestParser.uasComponentOid = multipartUploadParser.getParams().get(UAS_COMPONENT_OID);
     }
 
+    if (requestParser.processUpload == null)
+    {
+      requestParser.processUpload = Boolean.valueOf(multipartUploadParser.getParams().get(PROCESS_UPLOAD));
+    }
+
     if (requestParser.selections == null && multipartUploadParser.getParams().containsKey(SELECTIONS))
     {
       requestParser.selections = new JSONArray(multipartUploadParser.getParams().get(SELECTIONS));
@@ -289,6 +303,11 @@ public class RequestParser
       requestParser.uasComponentOid = req.getParameter(UAS_COMPONENT_OID);
     }
 
+    if (requestParser.processUpload == null)
+    {
+      requestParser.processUpload = Boolean.valueOf(req.getParameter(PROCESS_UPLOAD));
+    }
+
     if (requestParser.uploadTarget == null)
     {
       requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);
@@ -337,6 +356,10 @@ public class RequestParser
       else if (key.equals(UAS_COMPONENT_OID))
       {
         requestParser.uasComponentOid = value;
+      }
+      else if (key.equals(PROCESS_UPLOAD))
+      {
+        requestParser.processUpload = Boolean.valueOf(value);
       }
       else if (key.equals(UPLOAD_TARGET))
       {

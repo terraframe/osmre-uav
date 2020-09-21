@@ -90,6 +90,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
       String uploadTarget = parser.getUploadTarget();
       VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
+      Boolean processUpload = parser.getProcessUpload();
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
@@ -97,6 +98,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       job.setImageryFile(vfImageryZip.getOid());
       job.setUploadTarget(uploadTarget);
       job.setOutFileNamePrefix(outFileNamePrefix);
+      job.setProcessUpload(processUpload);
       job.apply();
       job.start();
     }
@@ -288,65 +290,25 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         ImageryWorkflowTask imageryWorkflowTask = (ImageryWorkflowTask) task;
 
-        ImageryUploadEventQuery eq = new ImageryUploadEventQuery(new QueryFactory());
-        eq.WHERE(eq.getUploadId().EQ(imageryWorkflowTask.getUploadId()));
-        ImageryUploadEvent event;
-        if (eq.getCount() > 0)
-        {
-          OIterator<? extends ImageryUploadEvent> it = eq.getIterator();
-          try
-          {
-            event = it.next();
-            event.lock();
-          }
-          finally
-          {
-            it.close();
-          }
-        }
-        else
-        {
-          event = new ImageryUploadEvent();
-        }
-
+        ImageryUploadEvent event = this.getOrCreateEvent(imageryWorkflowTask);
         event.setGeoprismUser(imageryWorkflowTask.getGeoprismUser());
         event.setUploadId(imageryWorkflowTask.getUploadId());
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
 
-        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix);
+        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
       }
       else
       {
         WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
 
-        CollectionUploadEventQuery eq = new CollectionUploadEventQuery(new QueryFactory());
-        eq.WHERE(eq.getUploadId().EQ(collectionWorkflowTask.getUploadId()));
-        CollectionUploadEvent event;
-        if (eq.getCount() > 0)
-        {
-          OIterator<? extends CollectionUploadEvent> it = eq.getIterator();
-          try
-          {
-            event = it.next();
-            event.lock();
-          }
-          finally
-          {
-            it.close();
-          }
-        }
-        else
-        {
-          event = new CollectionUploadEvent();
-        }
-
+        CollectionUploadEvent event = this.getOrCreateEvent(collectionWorkflowTask);
         event.setGeoprismUser(collectionWorkflowTask.getGeoprismUser());
         event.setUploadId(collectionWorkflowTask.getUploadId());
         event.setComponent(collectionWorkflowTask.getComponent());
         event.apply();
 
-        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix);
+        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
       }
     }
     catch (Throwable t)
@@ -367,5 +329,55 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       vfImageryZip.delete();
     }
+  }
+
+  private CollectionUploadEvent getOrCreateEvent(WorkflowTask collectionWorkflowTask)
+  {
+    CollectionUploadEventQuery eq = new CollectionUploadEventQuery(new QueryFactory());
+    eq.WHERE(eq.getUploadId().EQ(collectionWorkflowTask.getUploadId()));
+    CollectionUploadEvent event;
+    if (eq.getCount() > 0)
+    {
+      OIterator<? extends CollectionUploadEvent> it = eq.getIterator();
+      try
+      {
+        event = it.next();
+        event.lock();
+      }
+      finally
+      {
+        it.close();
+      }
+    }
+    else
+    {
+      event = new CollectionUploadEvent();
+    }
+    return event;
+  }
+
+  private ImageryUploadEvent getOrCreateEvent(ImageryWorkflowTask imageryWorkflowTask)
+  {
+    ImageryUploadEventQuery eq = new ImageryUploadEventQuery(new QueryFactory());
+    eq.WHERE(eq.getUploadId().EQ(imageryWorkflowTask.getUploadId()));
+    ImageryUploadEvent event;
+    if (eq.getCount() > 0)
+    {
+      OIterator<? extends ImageryUploadEvent> it = eq.getIterator();
+      try
+      {
+        event = it.next();
+        event.lock();
+      }
+      finally
+      {
+        it.close();
+      }
+    }
+    else
+    {
+      event = new ImageryUploadEvent();
+    }
+    return event;
   }
 }

@@ -118,6 +118,9 @@
           <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
             placeholder="Output product name prefix..." />
         </div>
+        <div class="form-group">
+           <boolean-field [value]="processUpload" label="Generate products from raw images" (valueChange)="updateProcessUpload($event)"></boolean-field>
+        </div>
       </div>
     </div>
 

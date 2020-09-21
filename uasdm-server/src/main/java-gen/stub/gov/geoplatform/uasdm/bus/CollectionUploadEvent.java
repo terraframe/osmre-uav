@@ -57,7 +57,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationResource infile, String outFileNamePrefix)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationResource infile, String outFileNamePrefix, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -91,7 +91,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     // Only upload to ODM if there are valid image files which were successfully
     // uploaded to s3
-    if (!DevProperties.uploadRaw() || Util.hasImages(uploadedFiles))
+    if (processUpload && ( !DevProperties.uploadRaw() || Util.hasImages(uploadedFiles) ))
     {
       startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
 

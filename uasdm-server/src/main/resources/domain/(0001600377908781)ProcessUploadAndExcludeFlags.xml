@@ -1,0 +1,28 @@
+<version
+	xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<update>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Document">
+				<create>
+					<attributes>
+						<boolean name="exclude" label="Exclude" />
+					</attributes>
+				</create>
+			</mdVertex>
+			<mdBusiness name="gov.geoplatform.uasdm.ImageryProcessingJob">
+				<create>
+					<attributes>
+						<boolean name="processUpload" label="processUpload" />
+					</attributes>
+				</create>
+			</mdBusiness>
+		</update>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object type="com.runwaysdk.system.metadata.MdAttribute" key="gov.geoplatform.uasdm.graph.Document.exclude" />
+			<object type="com.runwaysdk.system.metadata.MdAttribute" key="gov.geoplatform.uasdm.ImageryProcessingJob.processUpload" />
+		</delete>
+	</undoIt>
+</version>

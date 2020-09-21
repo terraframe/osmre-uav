@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -203600883)
+@com.runwaysdk.business.ClassSignature(hash = -99625196)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -25,7 +10,7 @@ package gov.geoplatform.uasdm;
  */
 public class ImageryProcessingJobQueryDTO extends com.runwaysdk.system.scheduler.ExecutableJobQueryDTO
 {
-private static final long serialVersionUID = -203600883;
+private static final long serialVersionUID = -99625196;
 
   protected ImageryProcessingJobQueryDTO(String type)
   {
