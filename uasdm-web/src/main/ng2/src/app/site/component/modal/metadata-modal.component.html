@@ -127,8 +127,10 @@
                         </div>
                         <div class="form-group">
                             <label for="sensor.sensorWidth">Sensor Width Units</label>
-                            <input type="text" name="sensor.sensorWidthUnits" [(ngModel)]="metaObject.sensor.sensorWidthUnits"
-                                [required]="true" [disabled]="false" />
+                            <select [(ngModel)]="metaObject.sensor.sensorWidthUnits" name="sensor.sensorWidthUnits" type="input" required>                               
+                                <option></option>
+                                <option value="mm">Millimeters</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="sensor.sensorHeight">Sensor Height</label>
@@ -137,8 +139,11 @@
                         </div>
                         <div class="form-group">
                             <label for="sensor.sensorWidth">Sensor Height Units</label>
-                            <input type="text" name="sensor.sensorWidthUnits" [(ngModel)]="metaObject.sensor.sensorHeightUnits"
-                                [required]="true" [disabled]="false" />
+                            <select [(ngModel)]="metaObject.sensor.sensorHeightUnits" name="sensor.sensorHeightUnits" type="input" required>                               
+                                <option></option>
+                                <option value="ft">Feet</option>
+                                <option value="m">Meters</option>
+                            </select>                            
                         </div>
                         <div class="form-group">
                             <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
