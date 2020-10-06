@@ -20,8 +20,9 @@ source idm/bin/activate
 pip install boto
 pip install boto3
 pip install ansible
-pip install docker-py
+pip install docker
 ansible-galaxy collection install amazon.aws
+ansible-galaxy collection install community.general
 
 :
 : ----------------------------------
