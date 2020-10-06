@@ -119,4 +119,4 @@ ls -al /usr/var/jenkins/uasdm
 ls -al /usr/var/jenkins/uasdm/idm
 ls -al /usr/var/jenkins/uasdm/idm/bin
 
-ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "ansible_python_interpreter=$WORKSPACE/idm/bin/python"
+ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml
