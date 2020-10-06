@@ -112,4 +112,4 @@ sudo chmod 400 ../permissions/RichardsMacbook.pem
 sudo chmod 400 ../permissions/nps/richard.rowlands.pem
 sudo chmod 400 ../permissions/geoprism-dev.pem
 
-ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml
+ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "ansible_python_interpreter=$WORKSPACE/idm/bin/python"
