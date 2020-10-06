@@ -20,6 +20,7 @@ source idm/bin/activate
 pip install boto
 pip install boto3
 pip install ansible
+pip install docker-py
 ansible-galaxy collection install amazon.aws
 
 :
