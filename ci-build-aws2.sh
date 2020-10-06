@@ -24,6 +24,8 @@ pip install docker
 ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.general
 
+pip list
+
 :
 : ----------------------------------
 :  CONFIGURE  
