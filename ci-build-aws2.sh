@@ -115,4 +115,8 @@ sudo chmod 400 ../permissions/RichardsMacbook.pem
 sudo chmod 400 ../permissions/nps/richard.rowlands.pem
 sudo chmod 400 ../permissions/geoprism-dev.pem
 
+ls -al /usr/var/jenkins/uasdm
+ls -al /usr/var/jenkins/uasdm/idm
+ls -al /usr/var/jenkins/uasdm/idm/bin
+
 ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "ansible_python_interpreter=$WORKSPACE/idm/bin/python"
