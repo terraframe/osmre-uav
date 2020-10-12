@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-if curl --user ansible:sPc0*059 -f -s --head "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=$IDM_VERSION" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
-    echo "The release version $IDM_VERSION has already been deployed! Please ensure you are releasing the correct version of geoprism."
-    exit 1
-fi
+#if curl --user ansible:sPc0*059 -f -s --head "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=$IDM_VERSION" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
+#    echo "The release version $IDM_VERSION has already been deployed! Please ensure you are releasing the correct version of geoprism."
+#    exit 1
+#fi
 
 source /home/ec2-user/.bashrc
 
