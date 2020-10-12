@@ -19,6 +19,8 @@
 #    exit 1
 #fi
 
+sudo chmod 700 /home/ec2-user/.ssh/id_rsa
+
 source /home/ec2-user/.bashrc
 
 git config --global user.name "terraframe-builder"
