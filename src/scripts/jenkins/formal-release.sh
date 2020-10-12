@@ -21,8 +21,6 @@
 
 source /home/ec2-user/.bashrc
 
-sudo ntpdate -u ntp.ubuntu.com
-
 git config --global user.name "terraframe-builder"
 git config --global user.email builder@terraframe.com
 
