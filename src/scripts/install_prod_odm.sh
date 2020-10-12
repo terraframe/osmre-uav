@@ -67,6 +67,7 @@ docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/mic
 
 
 ### Clean up the space again afterwards
+# TODO : Won't this remove the micasense image? Since it's only used on demand. Seems like a bad idea?
 docker system prune --volumes
 docker image prune -a
 

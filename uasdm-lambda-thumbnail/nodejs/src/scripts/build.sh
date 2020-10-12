@@ -22,7 +22,7 @@ mkdir $THUMBNAIL_WORKSPACE/target
 cp $THUMBNAIL_WORKSPACE/src/index.js $THUMBNAIL_WORKSPACE/target/index.js
 
 cd $THUMBNAIL_WORKSPACE/target
-npm install async gm
+npm install s3-download-stream s3-upload-stream sharp
 
 # PACKAGE
 cd $THUMBNAIL_WORKSPACE/target

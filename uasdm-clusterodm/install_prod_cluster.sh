@@ -31,9 +31,6 @@ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
   sudo mv /tmp/docker-machine /usr/local/bin/docker-machine &&
   chmod +x /usr/local/bin/docker-machine
 
-# Copy over the cluster-odm config file
-# at /data/odm/config/aws-config-prod.json
-
 export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
 export AWS_SECRET_ACCESS_KEY=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
 eval $(aws ecr get-login --no-include-email --region us-west-2)
@@ -44,7 +41,10 @@ eval $(aws ecr get-login --no-include-email --region us-west-2)
 docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest
 
 
-### If you've made changes to the aws-config make sure to propagate them ###
+### If Fresh Install
+sudo mkdir -p /data/odm/config
+# Copy over the cluster-odm config file
+### If Patch : you've made changes to the aws-config make sure to propagate them ###
 
 vim /data/odm/config/aws-config-dev.json
 vim /data/odm/config/aws-config-staging.json
