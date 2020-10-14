@@ -60,6 +60,8 @@ provider:
 functions:
   uasdm-lambda-thumbnail-py:
     handler: handler.lambda_handler
+    layers:
+      - { Ref: LibvipsLambdaLayer }
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -105,7 +107,7 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: non-linux
 
 # you can add CloudFormation resource templates here
 #resources:
@@ -118,3 +120,12 @@ custom:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+
+layers:
+  libvips:
+    path: layer-libvips/layer
+    name: uasdm-lambda-thumbnail-py-libvips
+    compatibleRuntimes: # optional, a list of runtimes this layer is compatible with
+      - python3.7
+    retain: false # optional, false by default. If true, layer versions are not deleted as new ones are created
