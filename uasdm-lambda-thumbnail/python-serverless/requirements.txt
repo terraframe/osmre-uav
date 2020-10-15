@@ -13,3 +13,4 @@ setuptools==49.6.0
 six==1.15.0
 urllib3==1.25.10
 wheel==0.35.1
+smart-open==3.0.0

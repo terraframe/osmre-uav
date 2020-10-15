@@ -4,6 +4,7 @@ from io import BytesIO
 import re
 from urllib.parse import unquote_plus
 import pyvips
+from smart_open import open
 
 buffer_size = 10240
 
@@ -48,26 +49,23 @@ def resize_image(bucket, srcKey):
 
 	# Define a Vips Reader for the S3 StreamingBody
 	def read_handler(size):
-		return streamingDownload.read(amt=buffer_size)
+		return streamingDownload.read(amt=size)
 	vipsSource = pyvips.SourceCustom()
 	vipsSource.on_read(read_handler)
 	
-	# Define a Vips Writer for the S3 Uploader
-	binary_stream = BytesIO()
-	def write_handler(chunk):
-		return binary_stream.write(chunk)
-	vipsTarget = pyvips.TargetCustom()
-	vipsTarget.on_write(write_handler)
+	# Open a connection to our s3 file
+	with open("s3://" + bucket + "/" + dstKey, 'wb') as s3out:
 	
-	# Create a thumbnail
-	image = pyvips.Image.new_from_source(vipsSource, '', access='sequential')
-	#image = pyvips.Image.new_from_file("/home/rich/Documents/scale-test/4.8g.png")
-	image = image.thumbnail_image(300, height=300)
-	image.write_to_target(vipsTarget, imageType)
-	#image.write_to_file("/home/rich/Documents/scale-test/4.8g-thumb.png")
+		# Hook up our pyvips target to write to S3
+		def write_handler(chunk):
+			s3out.write(chunk)
+		vipsTarget = pyvips.TargetCustom()
+		vipsTarget.on_write(write_handler)
 	
-	# Upload to S3
-	s3.Object(bucket, dstKey).put(Body=binary_stream)
+		# Kick off the pyvips streaming process
+		image = pyvips.Image.new_from_source(vipsSource, '', access='sequential')
+		image = image.thumbnail_image(300, height=300)
+		image.write_to_target(vipsTarget, "." + imageType)
 	
 	return "Success"
 	
@@ -75,37 +73,37 @@ def resize_image(bucket, srcKey):
 # This method is a direct callback from lambda. The goal here is to convert the params
 # From lambda into a generic format which can also be used locally for testing
 def lambda_handler(event, context):
-		msg = "";
-
-		for record in event['Records']:
-		
-				bucket = record['s3']['bucket']['name']
-				srcKey = unquote_plus(record['s3']['object']['key'])
-				
-				msg = msg + resize_image(bucket, srcKey) + "\n";
-		
-		print("Returning with message: " + msg)
-		return {'message': msg};
+	msg = "";
+	
+	for record in event['Records']:
+	
+			bucket = record['s3']['bucket']['name']
+			srcKey = unquote_plus(record['s3']['object']['key'])
+			
+			msg = msg + resize_image(bucket, srcKey) + "\n";
+	
+	print("Returning with message: " + msg)
+	return {'message': msg};
 
 # This method allows us to run our function locally for testing purposes
 if __name__ == "__main__":
-		class TestContext(object):	# fake object
-				function_name = "++MAIN++"
-
-		test_event = {
-			"Records": [
-				{
-					"s3": {
-						"bucket": {
-							"name": "terraframe-test-bucket"
-						},
-						"object": {
-							"key": "uasdm-lambda-test/230m.png"
-						}
+	class TestContext(object):	# fake object
+			function_name = "++MAIN++"
+	
+	test_event = {
+		"Records": [
+			{
+				"s3": {
+					"bucket": {
+						"name": "terraframe-test-bucket"
+					},
+					"object": {
+						"key": "uasdm-lambda-test/230m.png"
 					}
 				}
-			]
-		}
-		lambda_handler(test_event, TestContext())
+			}
+		]
+	}
+	lambda_handler(test_event, TestContext())
 
 				
