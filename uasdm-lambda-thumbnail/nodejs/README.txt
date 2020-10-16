@@ -14,6 +14,11 @@
     limitations under the License.
 ====
 
+# HEADS UP #
+
+This project is now deprecated / legacy and only included here for archival purposes.
+The actual thumbnail code exists in the "python-serverless" directory.
+
 # Thanks to:
 https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html
 
