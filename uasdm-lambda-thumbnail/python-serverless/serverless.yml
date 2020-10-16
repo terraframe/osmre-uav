@@ -1,0 +1,24 @@
+
+service: uasdm-lambda-thumbnail-py
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-west-2
+
+functions:
+  uasdm-lambda-thumbnail-py:
+    handler: handler.lambda_handler
+    layers:
+      - arn:aws:lambda:us-west-2:961902606948:layer:libvips-lambda:1
+    environment:
+      LD_LIBRARY_PATH: /opt/lib:LD_LIBRARY_PATH
+      PATH: /opt/bin:${LAMBDA_TASK_ROOT}:${PATH}
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
