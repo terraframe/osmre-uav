@@ -65,9 +65,9 @@ def resize_image(bucket, srcKey):
 		# Kick off the pyvips streaming process
 		image = pyvips.Image.new_from_source(vipsSource, '', access='sequential')
 		image = image.thumbnail_image(300, height=300)
-		image.write_to_target(vipsTarget, "." + imageType)
+		image.write_to_target(vipsTarget, ".png")
 	
-	return "Success"
+	return "Successfully downloaded an image from " + bucket + "/" + srcKey + " and uploaded a thumbnail to " + bucket + "/" + dstKey;
 	
 
 # This method is a direct callback from lambda. The goal here is to convert the params
