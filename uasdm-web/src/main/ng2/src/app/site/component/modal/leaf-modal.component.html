@@ -46,6 +46,19 @@
                     </li>
                   </ul>
                 </div>
+                
+                <div class="image-list-container" *ngSwitchCase="'ortho'">
+                  <ul class="list-group row">
+                    <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+                      <a class="thumbnail non-clickable">
+                        <img [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')" alt="Image">
+                        <div class="caption">
+                          <h4 class="media-heading">{{item.name}}</h4>
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
 
                 <div class="image-list-container" *ngSwitchCase="'raw'">
                   <ul class="list-group row">
