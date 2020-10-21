@@ -92,6 +92,11 @@
       <version>1.20</version>
     </dependency>
     <dependency>
+	  <groupId>com.amazonaws</groupId>
+	  <artifactId>aws-java-sdk</artifactId>
+	  <version>1.11.884</version>
+	</dependency>
+    <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
       <version>6.6.6</version>

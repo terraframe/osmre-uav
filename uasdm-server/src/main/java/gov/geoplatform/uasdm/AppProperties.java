@@ -130,5 +130,15 @@ public class AppProperties
   {
     return Singleton.getProps().getString("s3.secretKey");
   }
+  
+  public static String getECSAccessKey()
+  {
+    return Singleton.getProps().getString("ecs.accessKey");
+  }
+
+  public static String getECSSecretKey()
+  {
+    return Singleton.getProps().getString("ecs.secretKey");
+  }
 
 }

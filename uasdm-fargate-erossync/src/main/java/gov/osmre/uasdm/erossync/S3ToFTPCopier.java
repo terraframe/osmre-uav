@@ -74,7 +74,7 @@ public class S3ToFTPCopier
   
   private void uploadFTPFile(String uploadPath, InputStream is) throws IOException
   {
-    StaticUserAuthenticator auth = new StaticUserAuthenticator(ftpServer, System.getenv("FTP_USERNAME"), System.getenv("FTP_PASSWORD"));
+    StaticUserAuthenticator auth = new StaticUserAuthenticator(ftpServer, System.getenv("EROSSYNC_FTP_USERNAME"), System.getenv("EROSSYNC_FTP_PASSWORD"));
     FileSystemOptions opts = new FileSystemOptions();
     DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
 

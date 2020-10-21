@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.remote.s3;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.ecs.AmazonECS;
+import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -42,5 +44,15 @@ public class S3ClientFactory
     final AmazonS3 client = createClient();
 
     return TransferManagerBuilder.standard().withS3Client(client).build();
+  }
+  
+  public static AmazonECS createECSClient()
+  {
+    final Regions region = Regions.valueOf(AppProperties.getBucketRegion());
+
+    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getECSAccessKey(), AppProperties.getECSSecretKey());
+    AmazonECS client = AmazonECSClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+
+    return client;
   }
 }

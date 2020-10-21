@@ -412,6 +412,22 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
+	
+	pushToEros(collectionId: string): Promise<void> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<void>(acp + '/eros/push', JSON.stringify({ collectionId: collectionId }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
 
 	getMetadataOptions(id: string): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
 
