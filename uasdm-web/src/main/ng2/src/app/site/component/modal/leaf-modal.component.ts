@@ -4,7 +4,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { SiteEntity, SiteObjectsResultSet } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
@@ -219,6 +219,21 @@ export class LeafModalComponent implements OnInit {
 	isProcessable(item: any): boolean {
 		return this.metadataService.isProcessable(item.type);
 	}
+	
+	handleErosPush(): void {
+	  this.processRunning = true;
+	
+	  this.service.pushToEros(this.entity.id).then(data => {
+			this.processRunning = false;
+	
+			setTimeout(() => {
+				this.showOrthoRerunMessage = false;
+				this.statusMessage = "Your process is started.";
+			}, 30000);
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
 
 	handleRunOrtho(): void {
 
@@ -316,10 +331,7 @@ export class LeafModalComponent implements OnInit {
 	}
 
 	error(err: HttpErrorResponse): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
+import { ErrorHandler } from '@shared/component';
+
 import { Platform } from '../../model/platform';
 import { PlatformService } from '../../service/platform.service';
 
@@ -55,13 +57,8 @@ export class PlatformComponent implements OnInit {
         }
     }
 
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
-        }
-    }
+    error(err: HttpErrorResponse): void {
+	  this.message = ErrorHandler.getMessageFromError(err);
+	}
 
 }

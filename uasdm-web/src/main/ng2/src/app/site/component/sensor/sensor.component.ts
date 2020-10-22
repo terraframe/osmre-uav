@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
+import { ErrorHandler } from '@shared/component';
+
 import { Sensor, WAVELENGTHS } from '../../model/sensor';
 import { SensorService } from '../../service/sensor.service';
 
@@ -75,12 +77,7 @@ export class SensorComponent implements OnInit {
 	}
 
 	error(err: HttpErrorResponse): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-
-			console.log(this.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

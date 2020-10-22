@@ -24,11 +24,11 @@ import { ActivatedRoute } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { ErrorModalComponent } from '../../../shared/component/modal/error-modal.component';
-
 import { User } from '../../model/account';
 
 import { AccountService } from '../../service/account.service';
+
+import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 
 declare let acp: string;
 
@@ -80,7 +80,7 @@ export class AccountInviteCompleteComponent implements OnInit {
 		// Handle error
 		if (err !== null) {
 			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
-			this.bsModalRef.content.message = (err.error.localizedMessage || err.error.message || err.message);
+			this.bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
 		}
 	}
 

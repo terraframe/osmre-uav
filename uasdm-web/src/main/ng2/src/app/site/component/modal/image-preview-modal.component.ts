@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '../../service/management.service';
 
@@ -57,13 +58,8 @@ export class ImagePreviewModalComponent {
         this.open = false;
     }
 
-    error( err: HttpErrorResponse ): void {
-        // Handle error
-        if ( err !== null ) {
-            this.message = ( err.error.localizedMessage || err.error.message || err.message );
-
-            console.log( this.message );
-        }
-    }
+    error(err: HttpErrorResponse): void {
+	  this.message = ErrorHandler.getMessageFromError(err);
+	}
 
 }

@@ -3,8 +3,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
+import { ErrorHandler } from '@shared/component';
+
 import { LeafModalComponent } from './leaf-modal.component'
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 
 import { ProductDetail, SiteEntity } from '../../model/management';
@@ -22,7 +23,7 @@ declare var acp: string;
 @Component({
 	selector: 'product-modal',
 	templateUrl: './product-modal.component.html',
-	providers: [LeafModalComponent, BasicConfirmModalComponent],
+	providers: [LeafModalComponent],
 	styleUrls: [],
 	animations: [
 		fadeInOnEnterAnimation(),
@@ -126,10 +127,7 @@ export class ProductModalComponent implements OnInit {
 
 
 	error(err: HttpErrorResponse): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

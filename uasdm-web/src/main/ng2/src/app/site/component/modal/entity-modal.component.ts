@@ -7,6 +7,8 @@ import { LngLat } from 'mapbox-gl';
 import { SiteEntity, AttributeType } from '../../model/management';
 import { ManagementService } from '../../service/management.service';
 
+import { ErrorHandler } from '@shared/component';
+
 
 @Component({
 	selector: 'entity-modal',
@@ -96,10 +98,7 @@ export class EntityModalComponent implements OnInit {
 	}
 
 	error(err: HttpErrorResponse): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

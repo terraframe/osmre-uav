@@ -13,7 +13,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
+import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 
 
 declare var acp: string;
@@ -47,7 +47,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                 }
                 else {
                     this.bsModalRef = this.modalService.show( ErrorModalComponent, { backdrop: true } );
-                    this.bsModalRef.content.message = ( err.error.localizedMessage || err.error.message || err.message );
+                    this.bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
                 }
             }
         } ));

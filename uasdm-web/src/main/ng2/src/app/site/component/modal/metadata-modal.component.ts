@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
+import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '../../service/management.service';
 
 import { Sensor, WAVELENGTHS } from '../../model/sensor';
@@ -194,9 +195,6 @@ export class MetadataModalComponent {
 	}
 
 	error(err: HttpErrorResponse): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 }

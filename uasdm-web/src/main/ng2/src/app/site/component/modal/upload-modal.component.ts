@@ -8,7 +8,7 @@ import { switchMap, map } from 'rxjs/operators';
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { Sensor } from '../../model/sensor';
 import { Platform } from '../../model/platform';
@@ -629,10 +629,7 @@ export class UploadModalComponent implements OnInit {
 	}
 
 	error(err: any): void {
-		// Handle error
-		if (err !== null) {
-			this.message = (err.error.localizedMessage || err.error.message || err.message);
-		}
+	  this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 	public canDeactivate(): boolean {
