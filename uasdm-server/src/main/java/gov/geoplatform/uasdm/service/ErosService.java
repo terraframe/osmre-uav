@@ -15,7 +15,11 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ecs.AmazonECS;
+import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.ContainerOverride;
 import com.amazonaws.services.ecs.model.Failure;
 import com.amazonaws.services.ecs.model.KeyValuePair;
@@ -27,21 +31,35 @@ import com.google.gson.JsonObject;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.remote.s3.S3ClientFactory;
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.graph.Collection;
 
 public class ErosService
 {
   @Request(RequestType.SESSION)
   public JsonObject push(String sessionId, String collectionId)
   {
-    AmazonECS client = S3ClientFactory.createECSClient();
+    Collection collection = Collection.get(collectionId);
+    
+    final Regions region = Regions.valueOf(AppProperties.getBucketRegion());
+
+    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getErosECSAccessKey(), AppProperties.getErosECSSecretKey());
+    AmazonECS client = AmazonECSClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     
     RunTaskRequest request = new RunTaskRequest().withTaskDefinition("idm-fargate-erossync");
     request.withCluster("").withLaunchType(LaunchType.FARGATE).withCount(1);
     
     TaskOverride taskOverrides = new TaskOverride();
     ContainerOverride containerOverrides = new ContainerOverride();
-    containerOverrides.withEnvironment(new KeyValuePair().withName("").withValue(""));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_TARGET_PATH").withValue(AppProperties.getErosFtpTargetPath()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_SERVER").withValue(AppProperties.getErosFtpServerUrl()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_USERNAME").withValue(AppProperties.getErosFtpUsername()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_PASSWORD").withValue(AppProperties.getErosFtpPassword()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_PORT").withValue(AppProperties.getErosFtpPort()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_PASSIVE").withValue(AppProperties.getErosFtpPassive()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_S3_BUCKET").withValue(AppProperties.getBucketName()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_S3_SOURCE_PATH").withValue(collection.getS3location()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_REGION").withValue(AppProperties.getBucketRegion()));
     taskOverrides.withContainerOverrides(containerOverrides);
     request.withOverrides(taskOverrides);
     

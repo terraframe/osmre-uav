@@ -45,14 +45,4 @@ public class S3ClientFactory
 
     return TransferManagerBuilder.standard().withS3Client(client).build();
   }
-  
-  public static AmazonECS createECSClient()
-  {
-    final Regions region = Regions.valueOf(AppProperties.getBucketRegion());
-
-    BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getECSAccessKey(), AppProperties.getECSSecretKey());
-    AmazonECS client = AmazonECSClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-
-    return client;
-  }
 }

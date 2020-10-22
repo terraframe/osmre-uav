@@ -131,14 +131,49 @@ public class AppProperties
     return Singleton.getProps().getString("s3.secretKey");
   }
   
-  public static String getECSAccessKey()
+  
+  /*
+   * Eros Synchronization related properties
+   */
+  
+  
+  public static String getErosECSAccessKey()
   {
-    return Singleton.getProps().getString("ecs.accessKey");
+    return Singleton.getProps().getString("eros.ecs.accessKey");
   }
 
-  public static String getECSSecretKey()
+  public static String getErosECSSecretKey()
   {
-    return Singleton.getProps().getString("ecs.secretKey");
+    return Singleton.getProps().getString("eros.ecs.secretKey");
   }
 
+  public static String getErosFtpServerUrl()
+  {
+    return Singleton.getProps().getString("eros.ftp.serverUrl");
+  }
+  
+  public static String getErosFtpUsername()
+  {
+    return Singleton.getProps().getString("eros.ftp.username");
+  }
+  
+  public static String getErosFtpPassword()
+  {
+    return Singleton.getProps().getString("eros.ftp.password");
+  }
+  
+  public static String getErosFtpPassive()
+  {
+    return Singleton.getProps().getString("eros.ftp.passive");
+  }
+  
+  public static String getErosFtpPort()
+  {
+    return Singleton.getProps().getString("eros.ftp.port");
+  }
+  
+  public static String getErosFtpTargetPath()
+  {
+    return Singleton.getProps().getString("eros.ftp.targetPath");
+  }
 }
