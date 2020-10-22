@@ -176,4 +176,24 @@ public class AppProperties
   {
     return Singleton.getProps().getString("eros.ftp.targetPath");
   }
+  
+  public static String getErosCluster()
+  {
+    return Singleton.getProps().getString("eros.ecs.cluster");
+  }
+  
+  public static String getErosTask()
+  {
+    return Singleton.getProps().getString("eros.ecs.task");
+  }
+
+  public static String getErosContainerName()
+  {
+    return Singleton.getProps().getString("eros.ecs.containerName");
+  }
+  
+  public static String getErosSubnets()
+  {
+    return Singleton.getProps().getString("eros.ecs.subnets");
+  }
 }

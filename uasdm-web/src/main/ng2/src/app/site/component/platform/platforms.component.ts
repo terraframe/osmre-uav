@@ -4,12 +4,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { LocalizationService } from '../../../shared/service/localization.service';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { LocalizationService } from '@shared/service/localization.service';
+import { PageResult } from '@shared/model/page';
 
-import { PageResult } from '../../../shared/model/page';
-import { Platform } from '../../model/platform';
-import { PlatformService } from '../../service/platform.service';
+import { Platform } from '@site/model/platform';
+import { PlatformService } from '@site/service/platform.service';
 import { PlatformComponent } from './platform.component';
 
 declare let acp: string;

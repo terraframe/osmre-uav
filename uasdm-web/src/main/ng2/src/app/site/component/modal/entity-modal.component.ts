@@ -4,10 +4,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 import { LngLat } from 'mapbox-gl';
 
-import { SiteEntity, AttributeType } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
-
 import { ErrorHandler } from '@shared/component';
+
+import { SiteEntity, AttributeType } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
 
 
 @Component({

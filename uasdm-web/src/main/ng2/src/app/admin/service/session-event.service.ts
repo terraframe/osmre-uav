@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { finalize } from 'rxjs/operators';
 
-import { EventService } from '../../shared/service/event.service';
-import { PageResult } from '../../shared/model/page';
+import { EventService } from '@shared/service/event.service';
+import { PageResult } from '@shared/model/page';
 
 import { SessionEvent } from '../model/session-event';
 

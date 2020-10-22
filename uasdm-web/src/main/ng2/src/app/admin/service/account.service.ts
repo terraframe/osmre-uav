@@ -23,8 +23,8 @@ import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular
 // import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
 
-import { EventService } from '../../shared/service/event.service';
-import { PageResult } from '../../shared/model/page';
+import { EventService } from '@shared/service/event.service';
+import { PageResult } from '@shared/model/page';
 
 import { Account, User, UserInvite } from '../model/account';
 

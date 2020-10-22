@@ -5,8 +5,8 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Platform } from '../../model/platform';
-import { PlatformService } from '../../service/platform.service';
+import { Platform } from '@site/model/platform';
+import { PlatformService } from '@site/service/platform.service';
 
 
 @Component( {

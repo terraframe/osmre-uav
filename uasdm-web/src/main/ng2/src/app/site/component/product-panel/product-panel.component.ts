@@ -2,13 +2,13 @@ import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 import { ProductModalComponent } from '../modal/product-modal.component';
 
-import { Product } from '../../model/management';
-import { ProductService } from '../../service/product.service';
-import { ManagementService } from '../../service/management.service';
+import { Product } from '@site/model/management';
+import { ProductService } from '@site/service/product.service';
+import { ManagementService } from '@site/service/management.service';
 
 import {
     fadeInOnEnterAnimation,

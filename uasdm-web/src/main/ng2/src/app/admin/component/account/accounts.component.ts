@@ -23,8 +23,8 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { PageResult } from '../../../shared/model/page';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { PageResult } from '@shared/model/page';
 
 import { User, Account } from '../../model/account';
 import { AccountService } from '../../service/account.service';

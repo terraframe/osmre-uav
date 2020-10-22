@@ -20,10 +20,12 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
+import com.amazonaws.services.ecs.model.AwsVpcConfiguration;
 import com.amazonaws.services.ecs.model.ContainerOverride;
 import com.amazonaws.services.ecs.model.Failure;
 import com.amazonaws.services.ecs.model.KeyValuePair;
 import com.amazonaws.services.ecs.model.LaunchType;
+import com.amazonaws.services.ecs.model.NetworkConfiguration;
 import com.amazonaws.services.ecs.model.RunTaskRequest;
 import com.amazonaws.services.ecs.model.RunTaskResult;
 import com.amazonaws.services.ecs.model.TaskOverride;
@@ -46,11 +48,12 @@ public class ErosService
     BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getErosECSAccessKey(), AppProperties.getErosECSSecretKey());
     AmazonECS client = AmazonECSClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     
-    RunTaskRequest request = new RunTaskRequest().withTaskDefinition("idm-fargate-erossync");
-    request.withCluster("").withLaunchType(LaunchType.FARGATE).withCount(1);
+    RunTaskRequest request = new RunTaskRequest().withTaskDefinition(AppProperties.getErosTask());
+    request.withCluster(AppProperties.getErosCluster()).withLaunchType(LaunchType.FARGATE).withCount(1);
     
     TaskOverride taskOverrides = new TaskOverride();
     ContainerOverride containerOverrides = new ContainerOverride();
+    containerOverrides.withName(AppProperties.getErosContainerName());
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_TARGET_PATH").withValue(AppProperties.getErosFtpTargetPath()));
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_SERVER").withValue(AppProperties.getErosFtpServerUrl()));
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_USERNAME").withValue(AppProperties.getErosFtpUsername()));
@@ -62,6 +65,12 @@ public class ErosService
     containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_REGION").withValue(AppProperties.getBucketRegion()));
     taskOverrides.withContainerOverrides(containerOverrides);
     request.withOverrides(taskOverrides);
+    
+    NetworkConfiguration networkConfiguration = new NetworkConfiguration();
+    AwsVpcConfiguration awsvpcConfiguration = new AwsVpcConfiguration();
+    awsvpcConfiguration.withSubnets(AppProperties.getErosSubnets());
+    networkConfiguration.withAwsvpcConfiguration(awsvpcConfiguration);
+    request.withNetworkConfiguration(networkConfiguration);
     
     
     RunTaskResult response = client.runTask(request);

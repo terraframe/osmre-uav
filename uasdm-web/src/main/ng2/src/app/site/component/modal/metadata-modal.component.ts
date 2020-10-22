@@ -4,10 +4,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
-import { ManagementService } from '../../service/management.service';
+import { ManagementService } from '@site/service/management.service';
 
-import { Sensor, WAVELENGTHS } from '../../model/sensor';
-import { Platform } from '../../model/platform';
+import { Sensor, WAVELENGTHS } from '@site/model/sensor';
+import { Platform } from '@site/model/platform';
 
 
 declare var acp: string;

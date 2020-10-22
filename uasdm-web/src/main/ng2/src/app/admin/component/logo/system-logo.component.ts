@@ -23,7 +23,7 @@ import { Location } from '@angular/common';
 
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
-import { EventService } from '../../../shared/service/event.service';
+import { EventService } from '@shared/service/event.service';
 
 declare var acp: any;
 

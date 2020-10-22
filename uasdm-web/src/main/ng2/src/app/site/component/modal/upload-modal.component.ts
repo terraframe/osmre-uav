@@ -10,14 +10,14 @@ import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { Sensor } from '../../model/sensor';
-import { Platform } from '../../model/platform';
-import { SiteEntity, UploadForm, Task, Selection } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
-import { MetadataService } from '../../service/metadata.service';
+import { Sensor } from '@site/model/sensor';
+import { Platform } from '@site/model/platform';
+import { SiteEntity, UploadForm, Task, Selection } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
+import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
 
-import { StepConfig } from '../../../shared/modal/step-indicator/modal-step-indicator'
+import { StepConfig } from '@shared/modal/step-indicator/modal-step-indicator'
 
 import {
 	fadeInOnEnterAnimation,

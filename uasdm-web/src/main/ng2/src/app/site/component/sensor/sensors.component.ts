@@ -4,12 +4,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { LocalizationService } from '../../../shared/service/localization.service';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { LocalizationService } from '@shared/service/localization.service';
 
-import { PageResult } from '../../../shared/model/page';
-import { Sensor } from '../../model/sensor';
-import { SensorService } from '../../service/sensor.service';
+import { PageResult } from '@shared/model/page';
+import { Sensor } from '@site/model/sensor';
+import { SensorService } from '@site/service/sensor.service';
 import { SensorComponent } from './sensor.component';
 
 declare let acp: string;

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
-import { ManagementService } from '../../service/management.service';
+import { ManagementService } from '@site/service/management.service';
 
 
 @Component( {

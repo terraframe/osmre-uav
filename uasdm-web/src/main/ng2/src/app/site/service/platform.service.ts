@@ -4,10 +4,10 @@ import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend } f
 // import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
 
-import { EventService } from '../../shared/service/event.service';
-import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
+import { EventService } from '@shared/service/event.service';
+import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { PageResult } from '../../shared/model/page';
+import { PageResult } from '@shared/model/page';
 import { Platform } from '../model/platform';
 
 declare var acp: any;

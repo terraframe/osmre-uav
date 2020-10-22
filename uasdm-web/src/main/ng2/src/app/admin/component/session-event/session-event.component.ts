@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { PageResult } from '../../../shared/model/page';
+import { PageResult } from '@shared/model/page';
 
 import { SessionEvent } from '../../model/session-event';
 import { SessionEventService } from '../../service/session-event.service';

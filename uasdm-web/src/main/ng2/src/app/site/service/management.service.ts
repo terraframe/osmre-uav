@@ -6,14 +6,14 @@ import { Observable } from 'rxjs';
 // import 'rxjs/add/operator/toPromise';
 import { finalize, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
-import { AuthService } from '../../shared/service/auth.service';
-import { EventService } from '../../shared/service/event.service';
-import { HttpBackendClient } from '../../shared/service/http-backend-client.service';
+import { AuthService } from '@shared/service/auth.service';
+import { EventService } from '@shared/service/event.service';
+import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
-import { PageResult } from '../../shared/model/page';
+import { PageResult } from '@shared/model/page';
 
 declare var acp: any;
 

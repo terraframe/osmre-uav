@@ -23,10 +23,10 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { ProfileService } from '../../../shared/service/profile.service';
-import { SessionService } from '../../../shared/service/session.service';
+import { ProfileService } from '@shared/service/profile.service';
+import { SessionService } from '@shared/service/session.service';
 
-import { ProfileComponent } from '../../../shared/component/profile/profile.component';
+import { ProfileComponent } from '@shared/component/profile/profile.component';
 
 declare var acp: string;
 

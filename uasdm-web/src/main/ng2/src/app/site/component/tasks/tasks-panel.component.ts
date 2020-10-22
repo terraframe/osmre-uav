@@ -2,10 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 
-import { Task, TaskGroup, TaskGroupType } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
+import { Task, TaskGroup, TaskGroupType } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
 
 
 @Component({

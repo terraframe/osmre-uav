@@ -5,8 +5,8 @@ import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Observable } from 'rxjs';
 
 
-import { SiteEntity } from '../../model/management';
-import { MapService } from '../../service/map.service';
+import { SiteEntity } from '@site/model/management';
+import { MapService } from '@site/service/map.service';
 
 
 @Component( {

@@ -8,8 +8,8 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
-import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
-import { AuthService } from '../../shared/service/auth.service';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { AuthService } from '@shared/service/auth.service';
 
 import { SiteEntity, Product, Task } from '../model/management';
 

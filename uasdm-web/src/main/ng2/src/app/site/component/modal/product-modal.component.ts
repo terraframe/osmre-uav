@@ -8,9 +8,9 @@ import { ErrorHandler } from '@shared/component';
 import { LeafModalComponent } from './leaf-modal.component'
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 
-import { ProductDetail, SiteEntity } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
-import { ProductService } from '../../service/product.service';
+import { ProductDetail, SiteEntity } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
+import { ProductService } from '@site/service/product.service';
 
 import {
 	fadeInOnEnterAnimation,

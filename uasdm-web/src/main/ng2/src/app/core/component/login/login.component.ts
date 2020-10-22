@@ -20,7 +20,7 @@ import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { SessionService } from '../../../shared/service/session.service';
+import { SessionService } from '@shared/service/session.service';
 
 import { LoginHeaderComponent } from './login-header.component';
 

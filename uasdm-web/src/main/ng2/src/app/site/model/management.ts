@@ -1,4 +1,4 @@
-import { PageResult } from '../../shared/model/page';
+import { PageResult } from '@shared/model/page';
 
 export class Condition {
 	name: string;

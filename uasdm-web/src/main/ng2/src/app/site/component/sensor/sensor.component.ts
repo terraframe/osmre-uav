@@ -5,8 +5,8 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor, WAVELENGTHS } from '../../model/sensor';
-import { SensorService } from '../../service/sensor.service';
+import { Sensor, WAVELENGTHS } from '@site/model/sensor';
+import { SensorService } from '@site/service/sensor.service';
 
 
 @Component({

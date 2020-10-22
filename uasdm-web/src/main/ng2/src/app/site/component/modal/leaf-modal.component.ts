@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { SiteEntity, SiteObjectsResultSet } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
-import { MetadataService } from '../../service/metadata.service';
+import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
+import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
 
 import {

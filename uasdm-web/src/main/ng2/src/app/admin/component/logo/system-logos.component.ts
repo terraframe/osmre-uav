@@ -25,8 +25,8 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { LocalizationService } from '../../../shared/service/localization.service';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { LocalizationService } from '@shared/service/localization.service';
 
 import { SystemLogo } from '../../model/system-logo';
 import { SystemLogoService } from '../../service/system-logo.service';

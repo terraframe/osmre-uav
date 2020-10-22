@@ -3,9 +3,9 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { MetadataModalComponent } from './modal/metadata-modal.component';
-import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { LeafModalComponent } from './modal/leaf-modal.component';
-import { PageResult } from '../../shared/model/page';
+import { PageResult } from '@shared/model/page';
 
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 

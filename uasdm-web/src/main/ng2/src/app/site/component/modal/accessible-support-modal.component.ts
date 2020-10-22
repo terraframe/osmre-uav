@@ -4,11 +4,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
 
-import { BasicConfirmModalComponent } from '../../../shared/component/modal/basic-confirm-modal.component';
-import { SiteEntity, SiteObjectsResultSet } from '../../model/management';
-import { ManagementService } from '../../service/management.service';
+import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { ErrorHandler } from '@shared/component';
+import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { ManagementService } from '@site/service/management.service';
 
 declare var acp: string;
 

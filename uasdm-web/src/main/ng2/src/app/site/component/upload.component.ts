@@ -8,8 +8,8 @@ import { switchMap, map } from 'rxjs/operators';
 //use Fine Uploader UI for traditional endpoints
 import { FineUploader, UIOptions } from 'fine-uploader';
 
-import { ErrorModalComponent } from '../../shared/component/modal/error-modal.component';
-import { BasicConfirmModalComponent } from '../../shared/component/modal/basic-confirm-modal.component';
+import { ErrorModalComponent } from '@shared/component/modal/error-modal.component';
+import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { SiteEntity, UploadForm, Task } from '../model/management';
 import { ManagementService } from '../service/management.service';
 
