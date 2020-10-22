@@ -11,6 +11,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -77,12 +78,29 @@ public class S3ToFTPCopier
     StaticUserAuthenticator auth = new StaticUserAuthenticator(ftpServer, System.getenv("EROSSYNC_FTP_USERNAME"), System.getenv("EROSSYNC_FTP_PASSWORD"));
     FileSystemOptions opts = new FileSystemOptions();
     DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+    
+    if (System.getenv("EROSSYNC_FTP_PASSIVE") != null && (System.getenv("EROSSYNC_FTP_PASSIVE").equalsIgnoreCase("true") || System.getenv("EROSSYNC_FTP_PASSIVE").equalsIgnoreCase("yes")))
+    {
+      FtpFileSystemConfigBuilder.getInstance().setPassiveMode(opts, true);
+    }
 
     FileSystemManager fsManager = VFS.getManager();
-    try (FileObject fo = fsManager.resolveFile("ftp://" + ftpServer + "/" + uploadPath, opts))
+    try (FileObject fo = fsManager.resolveFile(this.buildFtpUrl() + uploadPath, opts))
     {
       IOUtils.copy(is, fo.getContent().getOutputStream());
     }
+  }
+  
+  private String buildFtpUrl()
+  {
+    String url = "ftp://" + ftpServer;
+    
+    if (System.getenv("EROSSYNC_FTP_PORT") != null && System.getenv("EROSSYNC_FTP_PORT").length() > 0)
+    {
+      url = url + ":" + System.getenv("EROSSYNC_FTP_PORT");
+    }
+    
+    return url + "/";
   }
   
   private S3Object downloadS3File(String key) throws IOException

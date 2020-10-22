@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.service;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.model.ContainerOverride;
 import com.amazonaws.services.ecs.model.Failure;
+import com.amazonaws.services.ecs.model.KeyValuePair;
 import com.amazonaws.services.ecs.model.LaunchType;
 import com.amazonaws.services.ecs.model.RunTaskRequest;
 import com.amazonaws.services.ecs.model.RunTaskResult;
@@ -40,7 +41,7 @@ public class ErosService
     
     TaskOverride taskOverrides = new TaskOverride();
     ContainerOverride containerOverrides = new ContainerOverride();
-    containerOverrides.withCommand(new String[] {"one", "two"});
+    containerOverrides.withEnvironment(new KeyValuePair().withName("").withValue(""));
     taskOverrides.withContainerOverrides(containerOverrides);
     request.withOverrides(taskOverrides);
     

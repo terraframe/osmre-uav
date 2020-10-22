@@ -2,4 +2,4 @@
 
 mvn clean install
 
-docker build -t uasdm-fargate-erossync .
+sudo docker build -t uasdm-fargate-erossync .
