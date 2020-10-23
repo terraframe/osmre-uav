@@ -20,6 +20,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
+import com.amazonaws.services.ecs.model.AssignPublicIp;
 import com.amazonaws.services.ecs.model.AwsVpcConfiguration;
 import com.amazonaws.services.ecs.model.ContainerOverride;
 import com.amazonaws.services.ecs.model.Failure;
@@ -62,13 +63,16 @@ public class ErosService
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_FTP_PASSIVE").withValue(AppProperties.getErosFtpPassive()));
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_S3_BUCKET").withValue(AppProperties.getBucketName()));
     containerOverrides.withEnvironment(new KeyValuePair().withName("EROSSYNC_S3_SOURCE_PATH").withValue(collection.getS3location()));
-    containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_REGION").withValue(AppProperties.getBucketRegion()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_REGION").withValue(region.getName()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_ACCESS_KEY_ID").withValue(AppProperties.getS3AccessKey()));
+    containerOverrides.withEnvironment(new KeyValuePair().withName("AWS_SECRET_ACCESS_KEY").withValue(AppProperties.getS3SecretKey()));
     taskOverrides.withContainerOverrides(containerOverrides);
     request.withOverrides(taskOverrides);
     
     NetworkConfiguration networkConfiguration = new NetworkConfiguration();
     AwsVpcConfiguration awsvpcConfiguration = new AwsVpcConfiguration();
     awsvpcConfiguration.withSubnets(AppProperties.getErosSubnets());
+    awsvpcConfiguration.withAssignPublicIp(AssignPublicIp.ENABLED);
     networkConfiguration.withAwsvpcConfiguration(awsvpcConfiguration);
     request.withNetworkConfiguration(networkConfiguration);
     

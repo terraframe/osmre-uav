@@ -23,11 +23,11 @@ sudo chmod 700 /home/ec2-user/.ssh/id_rsa
 
 source /home/ec2-user/.bashrc
 
-git config --global user.name "terraframe-builder"
+git config --global user.name $GIT_TF_BUILDER_USERNAME
 git config --global user.email builder@terraframe.com
 
 set +x # don't print our password to the console please
-git remote set-url origin https://terraframe-builder:_Terra4Frame@github.com/terraframe/osmre-uav.git
+git remote set-url origin https://$GIT_TF_BUILDER_USERNAME:$GIT_TF_BUILDER_PASSWORD@github.com/terraframe/osmre-uav.git
 set -x
 
 ## Update IDM Version in System Component and Commit Compiled NodeJS Source
