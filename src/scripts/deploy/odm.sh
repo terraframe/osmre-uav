@@ -43,8 +43,8 @@ docker image prune -a
 # Requires AWS CLI : pip install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
-export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
-export AWS_SECRET_ACCESS_KEY=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
+export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
+export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 eval $(aws ecr get-login --no-include-email --region us-west-2)
 
 # Pull the latest docker containers

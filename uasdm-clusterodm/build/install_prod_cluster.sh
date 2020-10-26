@@ -31,16 +31,13 @@ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
   sudo mv /tmp/docker-machine /usr/local/bin/docker-machine &&
   chmod +x /usr/local/bin/docker-machine
 
-export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
-export AWS_SECRET_ACCESS_KEY=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
-eval $(aws ecr get-login --no-include-email --region us-west-2)
-
 
 ### You should do a docker pull if you've updated the image ###
 
 docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest
 
 
+### Make sure to add credentials back into the config files! They've been scraped out for open sourcing purposes
 ### If Fresh Install
 sudo mkdir -p /data/odm/config
 # Copy over the cluster-odm config file

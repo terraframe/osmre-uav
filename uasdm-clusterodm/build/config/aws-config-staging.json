@@ -1,8 +1,8 @@
 {
     "provider": "aws",
     
-    "accessKey": "AKIA32XPOGK7WEK6SWGU",
-    "secretKey": "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",
+    "accessKey": "UASDM_CLUSTER_KEY",
+    "secretKey": "UASDM_CLUSTER_SECRET",
     
     "securityGroup": "cluster-odm-node",
     

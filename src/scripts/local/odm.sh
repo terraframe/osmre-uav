@@ -23,9 +23,9 @@
 # Exit immediately if anything errors out
 set -e
 
-# Used for pulling the images from TerraFrame's AWS ECR
-export AWS_ACCESS_KEY_ID=AKIAIKFVZC4DZ3NIGP4A
-export AWS_SECRET_ACCESS_KEY=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
+# Used for pulling the images from ECR
+export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
+export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 
 # Commands for aws cli v1
 # eval $(aws ecr get-login --region us-west-2 --no-include-email)
