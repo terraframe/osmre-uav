@@ -34,7 +34,7 @@ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
 
 ### You should do a docker pull if you've updated the image ###
 
-docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest
+docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 
 
 ### Make sure to add credentials back into the config files! They've been scraped out for open sourcing purposes
@@ -50,7 +50,7 @@ vim /data/odm/config/aws-config-prod.json
 
 ##### These commands are specific to the DEV container!! ####
 
-docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 -v /data/odm/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp -v /data/odm-cluster/dev/data:/var/www/data --link uasdm-nodeodm-dev --name uasdm-clusterodm-dev 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4001/
+docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 -v /data/odm/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp -v /data/odm-cluster/dev/data:/var/www/data --link uasdm-nodeodm-dev --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4001/
 
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-dev 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4501
@@ -58,7 +58,7 @@ sleep 2;
 
 ##### These commands are specific to the STAGING container!! ####
 
-docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 -v /data/odm/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp -v /data/odm-cluster/staging/data:/var/www/data --link uasdm-nodeodm-staging --name uasdm-clusterodm-staging 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4002/
+docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 -v /data/odm/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp -v /data/odm-cluster/staging/data:/var/www/data --link uasdm-nodeodm-staging --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4002/
 
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-staging 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4502
@@ -66,7 +66,7 @@ sleep 2;
 
 ##### These commands are specific to the PROD container!! ####
 
-docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp -v /data/odm-cluster/prod/data:/var/www/data --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4000/
+docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp -v /data/odm-cluster/prod/data:/var/www/data --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4000/
 
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-prod 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4500

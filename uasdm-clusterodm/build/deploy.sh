@@ -24,10 +24,10 @@ set -e
 [ -z "$UASDM_ECR_KEY" ] && echo "UASDM_ECR_KEY is null. Set this environment variable and then try running this script again." && exit 1;
 [ -z "$UASDM_ECR_SECRET" ] && echo "UASDM_ECR_SECRET is null. Set this environment variable and then try running this script again." && exit 1;
 
-docker tag uasdm-clusterodm:latest 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest
+docker tag uasdm-clusterodm:latest 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 eval $(aws ecr get-login --no-include-email --region us-west-2)
 
-docker push 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm:latest
+docker push 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest

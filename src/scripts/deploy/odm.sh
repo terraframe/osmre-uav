@@ -48,22 +48,22 @@ export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 eval $(aws ecr get-login --no-include-email --region us-west-2)
 
 # Pull the latest docker containers
-docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
-docker pull 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-micasense:latest
+docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
+docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest
 
 
 
 ##### These commands are specific to the DEV container!! ####
 
-docker run -d -p 3001:3000 --restart always -v /data/odm/dev/micasense:/opt/micasense -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/dev/micasense --name uasdm-nodeodm-dev 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker run -d -p 3001:3000 --restart always -v /data/odm/dev/micasense:/opt/micasense -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/dev/micasense --name uasdm-nodeodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
 
 ##### These commands are specific to the STAGING container!! ####
 
-docker run -d -p 3002:3000 --restart always -v /data/odm/staging/micasense:/opt/micasense -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/staging/micasense --name uasdm-nodeodm-staging 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker run -d -p 3002:3000 --restart always -v /data/odm/staging/micasense:/opt/micasense -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/staging/micasense --name uasdm-nodeodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
 
 ##### These commands are specific to the PROD container!! ####
 
-docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/micasense -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/prod/micasense --name uasdm-nodeodm-prod 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-nodeodm:latest
+docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/micasense -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/prod/micasense --name uasdm-nodeodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
 
 
 ### Clean up the space again afterwards

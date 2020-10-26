@@ -23,7 +23,7 @@ BASEDIR=$(cd `dirname $0` && pwd)
 # First, run local_odm.sh
 
 sudo docker rm -f $(docker ps -a -q --filter="name=uasdm-clusterodm") || true
-docker run -d -p 4000:3000 -p 4500:8080 -p 10000:10000 -v $BASEDIR/aws-config-tftest.json:/var/www/config-uasdm.json --link uasdm-nodeodm --name uasdm-clusterodm 961902606948.dkr.ecr.us-west-2.amazonaws.com/uasdm-clusterodm --asr /var/www/config-uasdm.json --public-address http://67.165.199.18:4000/
+docker run -d -p 4000:3000 -p 4500:8080 -p 10000:10000 -v $BASEDIR/aws-config-tftest.json:/var/www/config-uasdm.json --link uasdm-nodeodm --name uasdm-clusterodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm --asr /var/www/config-uasdm.json --public-address http://67.165.199.18:4000/
 
 sleep 2;
 
