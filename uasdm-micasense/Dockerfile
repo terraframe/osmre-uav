@@ -26,7 +26,7 @@ RUN apt update \
 RUN mkdir ~/program \
   && mkdir ~/program/exiftool \
   && cd ~/program/exiftool \
-  && wget https://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-10.98.tar.gz \
+  && wget https://falcon.phy.queensu.ca/SNO/~phil/exiftool/Image-ExifTool-10.98.tar.gz \
   && tar -xvzf Image-ExifTool-10.98.tar.gz \
   && cd ~/program/exiftool/Image-ExifTool-10.98/ \
   && perl Makefile.PL \
