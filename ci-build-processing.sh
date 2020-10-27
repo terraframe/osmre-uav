@@ -34,7 +34,7 @@ if [ "$build_odm" == "true" ]; then
 fi
 
 if [ "$build_clusterodm" == "true" ]; then
-	cd $WORKSPACE/uasdm/uasdm-clusterodm
+	cd $WORKSPACE/uasdm/uasdm-clusterodm/build
 	./init.sh
 	./build.sh
 	sudo ./deploy.sh
