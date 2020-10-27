@@ -16,5 +16,5 @@ sudo docker run --rm --name uasdm-fargate-erossync-test --network host \
   -e EROSSYNC_FTP_USERNAME="test" -e EROSSYNC_FTP_PASSWORD="test" \
   -e EROSSYNC_FTP_PORT="11021" -e EROSSYNC_FTP_PASSIVE="true" \
   -e EROSSYNC_S3_BUCKET="terraframe-test-bucket" -e EROSSYNC_S3_SOURCE_PATH="TestFolder" \
-  -e AWS_REGION=us-west-2 -e AWS_ACCESS_KEY_ID="AKIA575O47JSLYC3KOAH" -e AWS_SECRET_ACCESS_KEY="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" \
+  -e AWS_REGION=us-west-2 -e AWS_ACCESS_KEY_ID="$TF_BUILDER_KEY" -e AWS_SECRET_ACCESS_KEY="$TF_BUILDER_SECRET" \
   uasdm-fargate-erossync
