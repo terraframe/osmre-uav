@@ -23,6 +23,6 @@ cd ./ODM
 sudo docker build -t uasdm-odm .
 
 cd ../NodeODM
-sudo docker build -t 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest .
+sudo docker build -t uasdm-nodeodm .
 
 cd ../
