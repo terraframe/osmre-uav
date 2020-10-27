@@ -23,16 +23,6 @@
 # Exit immediately if anything errors out
 set -e
 
-# Used for pulling the images from ECR
-export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
-export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
-
-# Commands for aws cli v1
-# eval $(aws ecr get-login --region us-west-2 --no-include-email)
-
-# Commands for aws cli v2
-aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 961902606948.dkr.ecr.us-west-2.amazonaws.com
-
 # Kill any running containers by name of what we're about to run
 # docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
 

@@ -28,6 +28,6 @@ docker tag uasdm-clusterodm:latest 813324710591.dkr.ecr.us-east-1.amazonaws.com/
 
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
-eval $(aws ecr get-login --no-include-email --region us-west-2)
+eval $(aws ecr get-login --no-include-email --region us-east-1)
 
 docker push 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest

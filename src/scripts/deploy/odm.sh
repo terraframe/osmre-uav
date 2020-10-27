@@ -43,10 +43,6 @@ docker image prune -a
 # Requires AWS CLI : pip install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
-export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
-export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
-eval $(aws ecr get-login --no-include-email --region us-west-2)
-
 # Pull the latest docker containers
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest
