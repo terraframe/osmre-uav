@@ -26,19 +26,19 @@ if [ "$build_micasense" == "true" ]; then
 	cd $WORKSPACE/uasdm/uasdm-micasense
 	sh -xe ./init.sh
 	sh -xe ./build.sh
-	sudo sh -xe ./deploy.sh
+	sudo -E sh -xe ./deploy.sh
 fi
 
 if [ "$build_odm" == "true" ]; then
 	cd $WORKSPACE/uasdm/uasdm-odm
 	sh -xe ./init.sh
 	sh -xe ./build.sh
-	sudo sh -xe ./deploy.sh
+	sudo -E sh -xe ./deploy.sh
 fi
 
 if [ "$build_clusterodm" == "true" ]; then
 	cd $WORKSPACE/uasdm/uasdm-clusterodm/build
 	sh -xe ./init.sh
 	sh -xe ./build.sh
-	sudo sh -xe ./deploy.sh
+	sudo -E sh -xe ./deploy.sh
 fi
