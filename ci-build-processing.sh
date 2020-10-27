@@ -17,6 +17,9 @@
 
 set -e
 
+[ -z "$UASDM_ECR_KEY" ] && echo "UASDM_ECR_KEY is null. Set this environment variable and then try running this script again." && exit 1;
+[ -z "$UASDM_ECR_SECRET" ] && echo "UASDM_ECR_SECRET is null. Set this environment variable and then try running this script again." && exit 1;
+
 sudo rpm -i https://packagecloud.io/github/git-lfs/packages/el/6/git-lfs-2.9.0-1.el6.x86_64.rpm/download || true
 
 if [ "$build_micasense" == "true" ]; then
