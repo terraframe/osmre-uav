@@ -12,12 +12,12 @@ cp ./aws-config-devdeploy.json target/aws-config-devdeploy.json
 cp ./aws-config-prod.json target/aws-config-prod.json
 cp ./aws-config-staging.json target/aws-config-staging.json
 
-sed -i -e "s/UASDM_CLUSTER_KEY/$UASDM_CLUSTER_KEY/g" ./target/aws-config-devdeploy.json
-sed -i -e "s/UASDM_CLUSTER_KEY/$UASDM_CLUSTER_KEY/g" ./target/aws-config-prod.json
-sed -i -e "s/UASDM_CLUSTER_KEY/$UASDM_CLUSTER_KEY/g" ./target/aws-config-staging.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-devdeploy.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-prod.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-staging.json
 
-sed -i -e "s/UASDM_CLUSTER_SECRET/$UASDM_CLUSTER_SECRET/g" ./target/aws-config-devdeploy.json
-sed -i -e "s/UASDM_CLUSTER_SECRET/$UASDM_CLUSTER_SECRET/g" ./target/aws-config-prod.json
-sed -i -e "s/UASDM_CLUSTER_SECRET/$UASDM_CLUSTER_SECRET/g" ./target/aws-config-staging.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-devdeploy.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-prod.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-staging.json
 
 echo "Config files with variables replaced are now available in target."

@@ -47,6 +47,7 @@ vim /data/odm/config/aws-config-dev.json
 vim /data/odm/config/aws-config-staging.json
 vim /data/odm/config/aws-config-prod.json
 
+### If patch : You need to reboot the clusterodm server
 
 ##### These commands are specific to the DEV container!! ####
 
