@@ -141,8 +141,6 @@
                     -Djavax.net.ssl.trustStorePassword=2v8hVW2rPFncN6m
                     -Djava.rmi.server.hostname=127.0.0.1
                     -Dbirt-server=true
-                    -Daws.accessKeyId=AKIAIUOLICSECPXGYTAA
-                    -Daws.secretKey=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
                     -Denvcfg=${project.basedir}/../envcfg
                     -Dproject.basedir=${project.basedir}
                     -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true
