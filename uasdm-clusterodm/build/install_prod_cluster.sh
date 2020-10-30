@@ -49,25 +49,31 @@ vim /data/odm/config/aws-config-prod.json
 
 ### If patch : You need to reboot the clusterodm server
 
+# Note the public-address at the end. It MUST be set to allow the spawned cluster nodes to talk back to the cluster odm.
+# If this is not working properly you will silently leak nodes and eat up budget!
+
 ##### These commands are specific to the DEV container!! ####
 
-docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 -v /data/odm/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp -v /data/odm-cluster/dev/data:/var/www/data --link uasdm-nodeodm-dev --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4001/
+docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 -v /data/odm/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp -v /data/odm-cluster/dev/data:/var/www/data --link uasdm-nodeodm-dev --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4001/
 
+# If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-dev 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4501
 
 
 ##### These commands are specific to the STAGING container!! ####
 
-docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 -v /data/odm/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp -v /data/odm-cluster/staging/data:/var/www/data --link uasdm-nodeodm-staging --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4002/
+docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 -v /data/odm/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp -v /data/odm-cluster/staging/data:/var/www/data --link uasdm-nodeodm-staging --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4002/
 
+# If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-staging 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4502
 
 
 ##### These commands are specific to the PROD container!! ####
 
-docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp -v /data/odm-cluster/prod/data:/var/www/data --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.50:4000/
+docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp -v /data/odm-cluster/prod/data:/var/www/data --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4000/
 
+# If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-prod 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4500
