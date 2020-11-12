@@ -88,9 +88,8 @@ fi
 
 if [ "$tag_cloud" == "true" ]; then
   cd $WORKSPACE
-  #git clone -b master git@github.com:terraframe/geoprism-cloud.git
+  git clone -b master git@github.com:terraframe/geoprism-cloud.git
   cd geoprism-cloud
-  git checkout master
   git merge origin/dev
   git push
   git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
