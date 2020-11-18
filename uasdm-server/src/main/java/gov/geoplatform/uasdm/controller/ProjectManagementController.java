@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.MultipartFileParameter;
@@ -63,6 +65,8 @@ public class ProjectManagementController
   public static final String       JSP_DIR   = "/WEB-INF/";
 
   public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
+  
+  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
 
   private ProjectManagementService service;
 
@@ -165,7 +169,7 @@ public class ProjectManagementController
           }
           catch (Exception e)
           {
-            // Handle error message
+            logger.error("Error occurred while writing response to download-all request.", e);
           }
         }
       });

@@ -28,6 +28,7 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 
+import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProductService;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
@@ -40,6 +41,12 @@ public class ProductController
   public ProductController()
   {
     this.service = new ProductService();
+  }
+  
+  @Endpoint(url = "get-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getAllZip(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    return new RemoteFileGetResponse(service.getAllZip(request.getSessionId(), id));
   }
 
   @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)

@@ -675,6 +675,10 @@ public class ODMStatusServer
         try (CloseableFile zip = getZip())
         {
           List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
+          
+          List<DocumentIF> documents = new LinkedList<DocumentIF>();
+          ImageryComponent ic = uploadTask.getImageryComponent();
+          UasComponentIF component = ic.getUasComponent();
     
           /**
            * Upload the full all.zip file to S3 for archive purposes.
@@ -684,13 +688,9 @@ public class ODMStatusServer
           if (DevProperties.uploadAllZip())
           {
             Util.uploadFileToS3(zip, allKey, uploadTask);
+            
+            documents.add(component.createDocumentIfNotExist(allKey, zip.getName()));
           }
-    
-          ImageryComponent ic = uploadTask.getImageryComponent();
-    
-          // Determine the raw documents which were used for to generate this ODM
-          // output
-          UasComponentIF component = ic.getUasComponent();
     
           List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
             return doc.getS3location().contains("/raw/");
@@ -710,8 +710,6 @@ public class ODMStatusServer
           {
             throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
           }
-  
-          List<DocumentIF> documents = new LinkedList<DocumentIF>();
   
           for (ODMFolderProcessingConfig config : processingConfigs)
           {

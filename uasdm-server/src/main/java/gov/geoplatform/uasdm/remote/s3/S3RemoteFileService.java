@@ -101,22 +101,12 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public RemoteFileObject download(String key)
   {
-    try
-    {
-      AmazonS3 client = S3ClientFactory.createClient();
-      String bucketName = AppProperties.getBucketName();
+    AmazonS3 client = S3ClientFactory.createClient();
+    String bucketName = AppProperties.getBucketName();
 
-      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+    GetObjectRequest request = new GetObjectRequest(bucketName, key);
 
-      return new S3ObjectWrapper(client.getObject(request));
-    }
-    catch (AmazonS3Exception e)
-    {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
-
-      throw e;
-    }
-
+    return new S3ObjectWrapper(client.getObject(request));
   }
 
   @Override

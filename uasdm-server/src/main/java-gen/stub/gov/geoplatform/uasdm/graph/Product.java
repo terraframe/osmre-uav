@@ -53,6 +53,8 @@ import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class Product extends ProductBase implements ProductIF
 {
+  public static final String ODM_ALL_DIR = "odm_all";
+  
   private static final Logger logger           = LoggerFactory.getLogger(Product.class);
 
   private static final long   serialVersionUID = -1476643617;
