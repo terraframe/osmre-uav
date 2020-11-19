@@ -73,7 +73,7 @@ fi
 : ----------------------------------
 :
 
-cd $WORKSPACE/geoprism-platform/ansible
+cd $WORKSPACE/geoprism-cloud/ansible
 
 [ -e ./roles ] && unlink ./roles
 ln -s $WORKSPACE/geoprism-cloud/ansible/roles ./roles
