@@ -46,7 +46,7 @@ if [ "$release_uasdm" == "true" ]; then
   rm -rf builderdev
   
   ## License Headers
-  cd $WORKSPACE
+  cd $WORKSPACE/uasdm
   git checkout dev
   git pull
   mvn license:format -B
