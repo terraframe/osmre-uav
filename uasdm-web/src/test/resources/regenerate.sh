@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # This file explains how the keys used for development were created.
 # This process is the recommended way to do it again, if you need to.
@@ -10,11 +11,16 @@
 
 export PASSWORD=2v8hVW2rPFncN6m
 export ALIAS=tomcat
+export FACTORING_MODULUS=4096 # https://www.keylength.com/
+
+set -e
+set -x
+
 
 # These steps based on https://www.akadia.com/services/ssh_test_certificate.html
 # 1. Generate a private key (dev.key)
 [ -f dev.key ] && rm dev.key
-openssl genrsa -passout env:PASSWORD -des3 -out dev.key 1024
+openssl genrsa -passout env:PASSWORD -des3 -out dev.key $FACTORING_MODULUS
 
 
 # 2. CSR was generated with `openssl req -new -key server.key -out server.csr`
