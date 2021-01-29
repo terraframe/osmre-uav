@@ -44,7 +44,8 @@ docker image prune -a
 
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
-aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
+#aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
+$(aws ecr get-login --no-include-email --region us-east-1)
 
 # Pull the latest docker containers
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
