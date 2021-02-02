@@ -48,6 +48,7 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.GeoprismUser;
+import net.geoprism.RoleConstants;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -257,7 +258,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   private static boolean isShowUserOnly()
   {
-    return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole("geoprism.admin.Administrator");
+    return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole(RoleConstants.ADIM_ROLE);
   }
 
   public static List<String> getUserWorkflowComponents(String statuses, Integer pageNumber, Integer pageSize)

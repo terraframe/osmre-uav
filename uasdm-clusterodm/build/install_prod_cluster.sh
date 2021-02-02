@@ -33,6 +33,10 @@ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
 
 
 ### You should do a docker pull if you've updated the image ###
+export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
+export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
+#aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
+$(aws ecr get-login --no-include-email --region us-east-1)
 
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 

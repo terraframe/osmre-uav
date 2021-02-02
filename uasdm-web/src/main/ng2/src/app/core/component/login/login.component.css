@@ -41,6 +41,53 @@ h1 {
     border-color: #6BA542;
 }
 
+.keycloak-login-button {
+  background-color:#fff;
+  border-color: #333;
+  border-radius:5px;
+  margin-bottom:5px;
+  padding: 10px;
+}
+.keycloak-login-button:hover {
+  background-color: darkgray;
+}
+
+.keycloak-login-button-text {
+  color:#333;
+  font-size:18px;
+  vertical-align:middle;
+}
+
+.keycloak-login-button-image {
+  height: 30px;
+  margin-left: 10px;
+}
+
+span.keycloak-or-text {
+  font-size:19px;
+  color:#333;
+}
+
+span.keycloak-or-line {
+  width: 45%;
+  height: 47px;
+  border-bottom: 1px solid darkgray;
+  display: inline-block;
+  margin-bottom: 7px;
+}
+
+h4.keycloak-or-line-block {
+  margin-bottom:50px;
+  margin-top:50px;
+  border-bottom: 1px solid #000; 
+   line-height: 0.1em;
+}
+h4.keycloak-or-line-block span {
+  background:#fff; 
+    padding:0 10px; 
+}
+
+
 /* unvisited link */
 a:link {
     color: grey;

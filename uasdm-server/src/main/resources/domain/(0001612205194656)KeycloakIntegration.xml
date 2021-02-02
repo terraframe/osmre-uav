@@ -1,0 +1,38 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <createOrUpdate>
+    </createOrUpdate>
+    <create>
+      <mdUtil name="gov.geoplatform.uasdm.IDMSessionService" label="Session Service">
+        <mdMethod name="keycloakLogin" static="true" label="keycloakLogin" returnType="java.lang.String">
+          <mdParameter name="username" label="username" order="0" type="java.lang.String"/>
+          <mdParameter name="roles" label="roles" order="1" type="java.lang.String"/>
+          <mdParameter name="locales" label="Locales" order="2" type="java.lang.String"/>
+        </mdMethod>
+      </mdUtil>
+      <mdException name="gov.geoplatform.uasdm.KeycloakNoValidRolesException" message="User [{username}] does not have any valid roles assigned to it. You must first assign roles to this user in Keycloak to proceed. Contact your Geoplatform technical support for more information." >
+        <attributes>
+          <text name="username"/>
+        </attributes>
+      </mdException>
+    </create>
+    <update></update>
+    <permissions>
+      <role roleName="PUBLIC">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.IDMSessionService">
+            <mdMethodPermission methodName="keycloakLogin">
+              <operation name="EXECUTE"/>
+            </mdMethodPermission>
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.IDMSessionService" type="com.runwaysdk.system.metadata.MdUtil"/>
+      <object key="gov.geoplatform.uasdm.KeycloakNoValidRolesException" type="com.runwaysdk.system.metadata.MdException"/>
+    </delete>
+  </undoIt>
+</version>

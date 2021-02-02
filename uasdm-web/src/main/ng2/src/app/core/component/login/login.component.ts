@@ -40,9 +40,13 @@ export class LoginComponent {
         this.context = acp as string;
     }
 
+    onClickKeycloak(): void {
+      window.location.href = this.context + "/keycloak/loginRedirect";
+    }
+
     onSubmit(): void {
-        this.service.login( this.username, this.password ).then( response => {
-            this.router.navigate( ['/menu/true'] );
-        } );
+      this.service.login( this.username, this.password ).then( response => {
+          this.router.navigate( ['/menu/true'] );
+      } );
     }
 }
