@@ -2,15 +2,17 @@ package gov.geoplatform.uasdm.keycloak;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpSession;
 
 import org.keycloak.adapters.AuthenticatedActionsHandler;
 import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.OidcKeycloakAccount;
 import org.keycloak.adapters.PreAuthActionsHandler;
 import org.keycloak.adapters.servlet.FilterRequestAuthenticator;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
@@ -34,6 +37,7 @@ import org.keycloak.adapters.spi.AuthChallenge;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.spi.KeycloakAccount;
 import org.keycloak.adapters.spi.UserSessionManagement;
+import org.keycloak.representations.IDToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +46,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.LocalizationFacade;
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.constants.ClientConstants;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.constants.CommonProperties;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.web.WebClientSession;
 
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
@@ -116,10 +122,40 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     
     if (account != null)
     {
-      String username = account.getPrincipal().getName();
+      JsonObject userJson = new JsonObject();
+      
+      String userId = account.getPrincipal().getName();
+      userJson.addProperty(KeycloakConstants.USERJSON_USERID, userId);
+      
+      String username = userId;
+      if (account instanceof OidcKeycloakAccount)
+      {
+        IDToken token = ((OidcKeycloakAccount)account).getKeycloakSecurityContext().getIdToken();
+        
+        if (token != null)
+        {
+          String preferred = token.getPreferredUsername();
+          
+          if (preferred != null && preferred.length() > 0)
+          {
+            username = preferred;
+          }
+          
+          userJson.addProperty(KeycloakConstants.USERJSON_EMAIL, token.getEmail());
+          
+          userJson.addProperty(KeycloakConstants.USERJSON_FIRSTNAME, token.getGivenName());
+          
+          userJson.addProperty(KeycloakConstants.USERJSON_LASTNAME, token.getFamilyName());
+          
+          userJson.addProperty(KeycloakConstants.USERJSON_PHONENUMBER, token.getPhoneNumber());
+        }
+      }
+      
+      userJson.addProperty(KeycloakConstants.USERJSON_USERNAME, username);
+          
       Set<String> roles = account.getRoles();
       
-      return this.loginAsIdmUser(wrapper, resp, username, roles, wrapper.getLocales());
+      return this.loginAsIdmUser(wrapper, resp, userJson, roles, wrapper.getLocales());
     }
     else
     {
@@ -128,7 +164,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     }
   }
   
-  private boolean loginAsIdmUser(HttpServletRequestWrapper req, HttpServletResponse resp, String keycloakUsername, Set<String> keycloakRoles, Enumeration<Locale> enumLocales)
+  private boolean loginAsIdmUser(HttpServletRequestWrapper req, HttpServletResponse resp, JsonObject userJson, Set<String> keycloakRoles, Enumeration<Locale> enumLocales)
   {
     Locale[] locales = this.localesToArray(enumLocales);
     
@@ -147,7 +183,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       
       String jsonRoles = new GsonBuilder().create().toJson(keycloakRoles);
       
-      String cgrSessionJsonString = IDMSessionServiceDTO.keycloakLogin(clientRequest, keycloakUsername, jsonRoles, LocaleSerializer.serialize(locales));
+      String cgrSessionJsonString = IDMSessionServiceDTO.keycloakLogin(clientRequest, userJson.toString(), jsonRoles, LocaleSerializer.serialize(locales));
       
       JsonObject cgrSessionJson = (JsonObject) JsonParser.parseString(cgrSessionJsonString);
       final String sessionId = cgrSessionJson.get("sessionId").getAsString();
@@ -162,7 +198,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       
       JsonArray roles = JsonParser.parseString((RoleViewDTO.getCurrentRoles(clientRequest))).getAsJsonArray();
 
-      this.loggedInCookieResponse(req, resp, roles, clientRequest, enumLocales);
+      this.loggedInCookieResponse(req, resp, userJson, roles, clientRequest, enumLocales);
       
       return true;
     }
@@ -180,7 +216,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     }
   }
   
-  private void loggedInCookieResponse(HttpServletRequestWrapper req, HttpServletResponse resp, JsonArray roles, ClientRequestIF clientRequest, Enumeration<Locale> enumLocales) throws IOException
+  private void loggedInCookieResponse(HttpServletRequestWrapper req, HttpServletResponse resp, JsonObject userJson, JsonArray roles, ClientRequestIF clientRequest, Enumeration<Locale> enumLocales) throws IOException
   {
     JsonObject jo = new JsonObject();
     
@@ -204,9 +240,10 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     jo.addProperty("loggedIn", clientRequest.isLoggedIn());
     jo.add("roles", roles);
     jo.add("roleDisplayLabels", roleDisplayLabels);
-    jo.addProperty("userName", "test"); // TODO 
+    jo.addProperty("userName", userJson.get(KeycloakConstants.USERJSON_USERNAME).getAsString()); 
     jo.addProperty("version", ClientConfigurationService.getServerVersion());
     jo.add("installedLocales", installedLocalesArr);
+    jo.addProperty("externalProfile", true);
 
     String path = req.getContextPath();
 
@@ -256,6 +293,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException
   {
+//    HttpServletRequest request = new EditableParamServletRequestWrapper((HttpServletRequest) req);
     HttpServletRequest request = (HttpServletRequest) req;
     HttpServletResponse response = (HttpServletResponse) res;
 
@@ -264,6 +302,11 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       chain.doFilter(req, res);
       return;
     }
+    
+//    if (!request.getRequestURI().endsWith("keycloak/loginRedirect"))
+//    {
+//      request.getParameterMap().put(OAuth2Constants.PROMPT, new String[]{"none"});
+//    }
 
     OIDCServletHttpFacade facade = new OIDCServletHttpFacade(request, response);
     KeycloakDeployment deployment = deploymentContext.resolveDeployment(facade);
@@ -325,15 +368,41 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
             return;
           }
         }
-        catch (Exception e)
+        catch (Throwable t)
         {
           tokenStore.logout();
+          
+          Locale locale = CommonProperties.getDefaultLocale();
+          
+          Locale[] locales = this.localesToArray(wrapper.getLocales());
+          
+          if (locales.length > 0)
+          {
+            locale = locales[0];
+          }
+          
+          String errorMessage = RunwayException.localizeThrowable(t, locale);
+          
+          try
+          {
+            errorMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8.name());
+          }
+          catch (Throwable t2)
+          {
+            throw new ProgrammingErrorException(t2);
+          }
+          
+          String url = "/project/management#/login/" + errorMessage;
+          
+          response.sendRedirect(buildRedirectUrl(request, url));
+          
+          return;
         }
       }
     }
-
-//    if (request.getRequestURI().endsWith("keycloak/loginRedirect"))
-//    {
+    
+    if (request.getRequestURI().endsWith("keycloak/loginRedirect"))
+    {
       AuthChallenge challenge = authenticator.getChallenge();
       if (challenge != null)
       {
@@ -341,7 +410,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
         challenge.challenge(facade);
         return;
       }
-//    }
+    }
     
     SerializableKeycloakAccount account = null;
     CookieAwareHttpServletResponse cookieAwareResp = new CookieAwareHttpServletResponse(response);
@@ -381,14 +450,37 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     }
   }
   
+  private String buildRedirectUrl(HttpServletRequest req, String url)
+  {
+    String contextPath = req.getContextPath();
+
+    if (contextPath.equals("") || contextPath.length() == 0)
+    {
+      contextPath = "/";
+    }
+    
+    String finalUrl = url;
+    
+    if (url.startsWith("/"))
+    {
+      finalUrl = req.getContextPath() + url;
+    }
+    else
+    {
+      finalUrl = req.getContextPath() + "/" + url;
+    }
+    
+    return finalUrl;
+  }
+  
   protected boolean skipPath(HttpServletRequest request)
   {
-    String uri = stripSlashes(request.getRequestURI());
-    
-    if (uri.equals("") || uri.equals(stripSlashes(request.getContextPath())))
-    {
-      return true;
-    }
+//    String uri = stripSlashes(request.getRequestURI());
+//    
+//    if (uri.equals("") || uri.equals(stripSlashes(request.getContextPath())))
+//    {
+//      return true;
+//    }
     
     return SessionFilter.isPublic(request) || SessionFilter.pathAllowed(request);
   }
@@ -422,6 +514,59 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     return llLocales.toArray(new Locale[llLocales.size()]);
   }
   
+  public class EditableParamServletRequestWrapper extends HttpServletRequestWrapper {
+
+    private Map<String, String[]> params = new HashMap<String, String[]>();
+
+    public EditableParamServletRequestWrapper (HttpServletRequest aRequest) {
+        super (aRequest);
+    }
+    
+    public void putParameter(String name, String[] values)
+    {
+      this.params.put(name, values);
+    }
+    
+    @Override
+    public String getParameter(String name)
+    {
+      return this.params.get(name)[0];
+    }
+    
+    @Override
+    public Map<String, String[]> getParameterMap()
+    {
+      return this.params;
+    }
+    
+    @Override
+    public String[] getParameterValues(String name)
+    {
+      return this.params.get(name);
+    }
+    
+    @Override
+    public String getQueryString()
+    {
+      String qs = super.getQueryString();
+      
+      if (this.params.size() > 0)
+      {
+        if (qs == null || qs.length() == 0)
+        {
+          qs = "prompt=none";
+        }
+        else
+        {
+          qs = qs + "&prompt=none";
+        }
+      }
+      
+      return qs;
+    }
+
+  }
+  
   public class CookieAwareHttpServletResponse extends HttpServletResponseWrapper {
 
     private List<Cookie> cookies = new ArrayList<Cookie>();
@@ -440,5 +585,5 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
         return Collections.unmodifiableList (cookies);
     }
 
-} 
+  }
 }

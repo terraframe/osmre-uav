@@ -24,6 +24,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Profile } from '../../model/profile';
 import { ProfileService } from '../../service/profile.service';
 
+import { AuthService } from '../../service/auth.service';
+
 
 @Component({  
   selector: 'profile',
@@ -41,7 +43,13 @@ export class ProfileComponent {
     changePassword:false    
   };
   
-  constructor(private service:ProfileService, public bsModalRef: BsModalRef) {}
+  externalProfile: boolean = false;
+  
+  constructor(private authService: AuthService, private service:ProfileService, public bsModalRef: BsModalRef) {}
+  
+  ngOnInit(): void {
+    this.externalProfile = this.authService.isExternalProfile();
+  }
   
   onSubmit():void {
     if(!this.profile.changePassword) {
@@ -54,8 +62,15 @@ export class ProfileComponent {
   }  
   
   cancel():void {
-    this.service.unlock(this.profile.oid).then(profile => {
+    if (!this.externalProfile)
+    {
+      this.service.unlock(this.profile.oid).then(profile => {
+        this.bsModalRef.hide();
+      });
+    }
+    else
+    {
       this.bsModalRef.hide();
-    });
+    }
   }  
 }

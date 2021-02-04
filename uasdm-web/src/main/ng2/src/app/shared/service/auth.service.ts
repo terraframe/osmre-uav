@@ -26,6 +26,7 @@ export class AuthService {
 	private user: User = {
 		loggedIn: false,
 		userName: '',
+		externalProfile: false,
 		roles: []
 	};
 
@@ -38,6 +39,7 @@ export class AuthService {
 
 			this.user.userName = cookieDataJSON.userName;
 			this.user.roles = cookieDataJSON.roles;
+			this.user.externalProfile = cookieDataJSON.externalProfile;
 			this.user.loggedIn = true;
 		}
 	}
@@ -50,6 +52,7 @@ export class AuthService {
 		this.user = {
 			loggedIn: false,
 			userName: '',
+			externalProfile: false,
 			roles: []
 		};
 	}
@@ -64,6 +67,10 @@ export class AuthService {
 
 	isAdmin(): boolean {
 		return this.user.roles.indexOf("geoprism.admin.Administrator") !== -1;
+	}
+	
+	isExternalProfile(): boolean {
+	  return this.user.externalProfile;
 	}
 
 	isWorker(): boolean {

@@ -24,22 +24,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.ParseType;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 import com.runwaysdk.request.ServletRequestIF;
+import com.runwaysdk.system.SingleActorDTO;
 
 import gov.geoplatform.uasdm.UserInviteDTO;
 import gov.geoplatform.uasdm.service.AccountService;
 import net.geoprism.GeoprismUserDTO;
 import net.geoprism.RoleViewDTO;
+import net.geoprism.account.ExternalProfileDTO;
 
 @Controller(url = "uasdm-account")
 public class UASDMAccountController

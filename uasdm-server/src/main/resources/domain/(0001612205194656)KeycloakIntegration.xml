@@ -5,7 +5,7 @@
     <create>
       <mdUtil name="gov.geoplatform.uasdm.IDMSessionService" label="Session Service">
         <mdMethod name="keycloakLogin" static="true" label="keycloakLogin" returnType="java.lang.String">
-          <mdParameter name="username" label="username" order="0" type="java.lang.String"/>
+          <mdParameter name="userJson" label="username" order="0" type="java.lang.String"/>
           <mdParameter name="roles" label="roles" order="1" type="java.lang.String"/>
           <mdParameter name="locales" label="Locales" order="2" type="java.lang.String"/>
         </mdMethod>
@@ -17,11 +17,6 @@
       </mdException>
     </create>
     <update>
-      <mdBusiness name="net.geoprism.account.ExternalProfile">
-        <attributes>
-          <reference name="server" required="false"/>
-        </attributes>
-      </mdBusiness>
     </update>
     <permissions>
       <role roleName="PUBLIC">

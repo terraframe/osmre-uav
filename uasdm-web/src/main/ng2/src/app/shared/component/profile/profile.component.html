@@ -9,19 +9,19 @@
       <label>
         <localize key="account.firstname"></localize>
       </label>
-      <input type="text" [(ngModel)]="profile.firstName" name="firstname" required>
+      <input [disabled]="externalProfile" type="text" [(ngModel)]="profile.firstName" name="firstname" required>
     </div>
     <div class="form-group">
       <label>
         <localize key="account.lastname"></localize>
       </label>
-      <input type="text" [(ngModel)]="profile.lastName" name="lastname" required>
+      <input [disabled]="externalProfile" type="text" [(ngModel)]="profile.lastName" name="lastname" required>
     </div>
     <div class="form-group">
       <label>
         <localize key="account.email"></localize>
       </label>
-      <input type="email" [(ngModel)]="profile.email" name="email" #aemail="ngModel" required email>
+      <input [disabled]="externalProfile" type="email" [(ngModel)]="profile.email" name="email" #aemail="ngModel" required email>
       <div *ngIf="aemail.errors?.email" class="inline-error-message">
         <localize key="account.email.validation"></localize>
       </div>
@@ -38,14 +38,14 @@
       <label>
         <localize key="account.username"></localize>
       </label>
-      <input [disabled]="profile.username === 'admin'" type="text" [(ngModel)]="profile.username" name="username" required>
+      <input [disabled]="profile.username === 'admin' || externalProfile" type="text" [(ngModel)]="profile.username" name="username" required>
     </div>
 
-    <div class="form-group">
+    <div *ngIf="!externalProfile" class="form-group">
       <boolean-field [(value)]="profile.changePassword" [label]="'account.changePassword' | localize"></boolean-field>
     </div>
 
-    <div *ngIf="profile.changePassword">
+    <div *ngIf="profile.changePassword && !externalProfile">
       <div class="form-group">
         <label>
           <localize key="account.password"></localize>
@@ -69,7 +69,7 @@
 
     <div class="btn-holder" style="text-align: right;">
       <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />
-      <input type="submit" [value]="'dataset.submit' | localize" class="btn btn-primary" [disabled]="!(form.valid)" />
+      <input *ngIf="!externalProfile" type="submit" [value]="'dataset.submit' | localize" class="btn btn-primary" [disabled]="!(form.valid)" />
     </div>
   </form>
 </div>

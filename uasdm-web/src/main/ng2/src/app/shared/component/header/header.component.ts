@@ -19,6 +19,7 @@ export class UasdmHeaderComponent {
     context: string;
     userName: string = "";
     admin: boolean = false;
+    externalProfile: boolean = false;
     bsModalRef: BsModalRef;
     notificationCount: number = 0;
 
@@ -33,6 +34,7 @@ export class UasdmHeaderComponent {
 
         this.userName = this.authService.getUserName();
         this.admin = this.authService.isAdmin();
+        this.externalProfile = this.authService.isExternalProfile();
 
         this.profileService.tasksCount().then(data => {
 

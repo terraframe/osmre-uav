@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1180268711)
+@com.runwaysdk.business.ClassSignature(hash = -2065248324)
 public abstract class IDMSessionServiceDTOBase extends com.runwaysdk.business.UtilDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.IDMSessionService";
-  private static final long serialVersionUID = -1180268711;
+  private static final long serialVersionUID = -2065248324;
   
   protected IDMSessionServiceDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -17,10 +17,10 @@ public abstract class IDMSessionServiceDTOBase extends com.runwaysdk.business.Ut
   }
   
   public static java.lang.String OID = "oid";
-  public static final java.lang.String keycloakLogin(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String username, java.lang.String roles, java.lang.String locales)
+  public static final java.lang.String keycloakLogin(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String userJson, java.lang.String roles, java.lang.String locales)
   {
     String[] _declaredTypes = new String[]{"java.lang.String", "java.lang.String", "java.lang.String"};
-    Object[] _parameters = new Object[]{username, roles, locales};
+    Object[] _parameters = new Object[]{userJson, roles, locales};
     com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.IDMSessionServiceDTO.CLASS, "keycloakLogin", _declaredTypes);
     return (java.lang.String) clientRequest.invokeMethod(_metadata, null, _parameters);
   }

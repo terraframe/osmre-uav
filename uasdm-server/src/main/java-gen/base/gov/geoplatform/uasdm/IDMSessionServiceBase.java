@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -2058418727)
+@com.runwaysdk.business.ClassSignature(hash = 1351568956)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,7 +12,7 @@ public abstract class IDMSessionServiceBase extends com.runwaysdk.business.Util
 {
   public final static String CLASS = "gov.geoplatform.uasdm.IDMSessionService";
   public static java.lang.String OID = "oid";
-  private static final long serialVersionUID = -2058418727;
+  private static final long serialVersionUID = 1351568956;
   
   public IDMSessionServiceBase()
   {
@@ -45,7 +45,7 @@ public abstract class IDMSessionServiceBase extends com.runwaysdk.business.Util
     return (IDMSessionService) com.runwaysdk.business.Util.get(oid);
   }
   
-  public static java.lang.String keycloakLogin(java.lang.String username, java.lang.String roles, java.lang.String locales)
+  public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String roles, java.lang.String locales)
   {
     String msg = "This method should never be invoked.  It should be overwritten in gov.geoplatform.uasdm.IDMSessionService.java";
     throw new com.runwaysdk.dataaccess.metadata.ForbiddenMethodException(msg);

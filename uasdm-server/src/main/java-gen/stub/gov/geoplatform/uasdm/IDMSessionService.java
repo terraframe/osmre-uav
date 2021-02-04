@@ -19,6 +19,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.SessionFacade;
 
+import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import net.geoprism.RoleConstants;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
@@ -40,7 +41,7 @@ public class IDMSessionService extends IDMSessionServiceBase
   }
   
   @Authenticate
-  public static java.lang.String keycloakLogin(java.lang.String username, java.lang.String sRoles, java.lang.String locales)
+  public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String sRoles, java.lang.String locales)
   {
     Set<String> roles = new HashSet<String>();
     
@@ -50,14 +51,18 @@ public class IDMSessionService extends IDMSessionServiceBase
       }
     });
     
+    JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
+    
     if (roles.size() == 0)
     {
       KeycloakNoValidRolesException ex = new KeycloakNoValidRolesException();
-      ex.setUsername(username);
+      ex.setUsername(joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
       throw ex;
     }
     
-    SingleActorDAOIF profile = IDMSessionService.getActor(username, roles);
+    final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
+    
+    SingleActorDAOIF profile = IDMSessionService.getActor(joUser, roles);
 
     String sessionId = SessionFacade.logIn(profile, LocaleSerializer.deserialize(locales));
     
@@ -68,10 +73,17 @@ public class IDMSessionService extends IDMSessionServiceBase
   }
   
   @Transaction
-  private static synchronized SingleActorDAOIF getActor(String remoteId, Set<String> roles)
+  private static synchronized SingleActorDAOIF getActor(JsonObject joUser, Set<String> roles)
   {
+    final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
+    final String userid = joUser.get(KeycloakConstants.USERJSON_USERID).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERID).getAsString();
+    final String firstName = joUser.get(KeycloakConstants.USERJSON_FIRSTNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_FIRSTNAME).getAsString();
+    final String lastName = joUser.get(KeycloakConstants.USERJSON_LASTNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_LASTNAME).getAsString();
+    final String phoneNumber = joUser.get(KeycloakConstants.USERJSON_PHONENUMBER).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_PHONENUMBER).getAsString();
+    final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
+    
     ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-    query.WHERE(query.getRemoteId().EQ(remoteId));
+    query.WHERE(query.getRemoteId().EQ(userid));
     OIterator<? extends ExternalProfile> it = query.getIterator();
 
     try
@@ -80,11 +92,15 @@ public class IDMSessionService extends IDMSessionServiceBase
       {
         try
         {
-          logger.debug("Logging in existing KeyCloak user with remote id[" + remoteId + "].");
+          logger.debug("Logging in existing KeyCloak user with remote id[" + userid + "].");
           
           ExternalProfile profile = it.next();
           profile.lock();
-//          profile.setDisplayName(value); // TODO
+          profile.setDisplayName(username);
+          profile.setLastName(lastName);
+          profile.setFirstName(firstName);
+          profile.setPhoneNumber(phoneNumber);
+          profile.setEmail(email);
           profile.apply();
 
           return (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
@@ -100,11 +116,15 @@ public class IDMSessionService extends IDMSessionServiceBase
       }
       else
       {
-        logger.debug("Creating new KeyCloak user with remote id[" + remoteId + "].");
+        logger.debug("Creating new KeyCloak user with remote id[" + userid + "].");
         
         ExternalProfile profile = new ExternalProfile();
-        profile.setRemoteId(remoteId);
-//        profile.setDisplayName(value); // TODO
+        profile.setRemoteId(userid);
+        profile.setDisplayName(username);
+        profile.setLastName(lastName);
+        profile.setFirstName(firstName);
+        profile.setPhoneNumber(phoneNumber);
+        profile.setEmail(email);
         profile.apply();
 
         SingleActorDAOIF actor = (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
