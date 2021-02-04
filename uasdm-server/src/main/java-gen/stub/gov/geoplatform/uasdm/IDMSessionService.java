@@ -45,7 +45,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     Set<String> roles = new HashSet<String>();
     
     JsonParser.parseString(sRoles).getAsJsonArray().forEach(role -> {
-      if (ArrayUtils.contains(VALID_IDM_ROLES, role)) {
+      if (ArrayUtils.contains(VALID_IDM_ROLES, role.getAsString())) {
         roles.add(role.getAsString());
       }
     });

@@ -16,7 +16,13 @@
         </attributes>
       </mdException>
     </create>
-    <update></update>
+    <update>
+      <mdBusiness name="net.geoprism.account.ExternalProfile">
+        <attributes>
+          <reference name="server" required="false"/>
+        </attributes>
+      </mdBusiness>
+    </update>
     <permissions>
       <role roleName="PUBLIC">
         <grant>
@@ -27,6 +33,16 @@
           </mdBusinessPermission>
         </grant>
       </role>
+      <method methodName="keycloakLogin" type="gov.geoplatform.uasdm.IDMSessionService">
+        <grant>
+          <mdBusinessPermission type="net.geoprism.account.ExternalProfile">
+            <operation name="READ"/>
+            <operation name="WRITE"/>
+            <operation name="WRITE_ALL_ATTRIBUTES"/>
+            <operation name="CREATE"/>
+          </mdBusinessPermission>
+        </grant>
+      </method>
     </permissions>
   </doIt>
   <undoIt>

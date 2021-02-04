@@ -30,7 +30,8 @@ docker run --user root --name keycloak -d -p 8021:8443 \
 
 #docker exec -u root keycloak /opt/keycloak/ssl/add-cert-to-java-truststore.sh
 
-docker exec -u root keycloak bash -c "echo '172.17.0.1 localhost' > /etc/hosts"
-echo "Backchannel set to ip 172.17.0.1. If backchanneling is not working, it might be because this ip is wrong. You can verify with 'sudo ip addr show docker0'"
+# TODO : This wrote into the host's file instead of the containers file
+#docker exec -u root keycloak bash -c "echo '172.17.0.1 localhost' > /etc/hosts"
+#echo "Backchannel set to ip 172.17.0.1. If backchanneling is not working, it might be because this ip is wrong. You can verify with 'sudo ip addr show docker0'"
 
 echo "Keycloak is now running at https://localhost:8021/. You will need to create a user (and password) in the ream 'myrealm'."

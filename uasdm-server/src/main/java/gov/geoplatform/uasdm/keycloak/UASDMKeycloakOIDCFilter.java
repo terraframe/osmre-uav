@@ -1,8 +1,9 @@
 package gov.geoplatform.uasdm.keycloak;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.keycloak.adapters.AuthenticatedActionsHandler;
@@ -26,6 +28,7 @@ import org.keycloak.adapters.PreAuthActionsHandler;
 import org.keycloak.adapters.servlet.FilterRequestAuthenticator;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
 import org.keycloak.adapters.servlet.OIDCFilterSessionStore;
+import org.keycloak.adapters.servlet.OIDCFilterSessionStore.SerializableKeycloakAccount;
 import org.keycloak.adapters.servlet.OIDCServletHttpFacade;
 import org.keycloak.adapters.spi.AuthChallenge;
 import org.keycloak.adapters.spi.AuthOutcome;
@@ -38,15 +41,36 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.runwaysdk.LocalizationFacade;
 import com.runwaysdk.constants.ClientConstants;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.web.WebClientSession;
 
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
+import gov.geoplatform.uasdm.KeycloakNoValidRolesExceptionDTO;
+import net.geoprism.ClientConfigurationService;
 import net.geoprism.RoleViewDTO;
+import net.geoprism.SessionFilter;
 import net.geoprism.account.LocaleSerializer;
 
+/**
+ * 
+ * This KeyCloak filter is implemented as per the official Keycloak documentation at:
+ * https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter
+ * 
+ * It was decided to use a filter instead of a controller / servlet paradigm for the
+ * following reasons:
+ * 1. This filter heavily extends and leverages the official Keycloak adapters and
+ *    follows keycloak recommended practice
+ * 2. As a result, we can support more usecases and leverage any security fixes / etc.
+ * 
+ * Keep in mind this as a result makes the code a little less clean than if we were
+ * to use a servlet or controller paradigm.
+ * 
+ * @author rrowlands
+ *
+ */
 public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
 {
   private static final Logger logger = LoggerFactory.getLogger(UASDMKeycloakOIDCFilter.class);
@@ -76,7 +100,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     }
   }
   
-  private void logIn(HttpServletRequestWrapper wrapper, HttpServletResponse resp)
+  private boolean logIn(HttpServletRequestWrapper wrapper, HttpServletResponse resp)
   {
     HttpSession session = wrapper.getSession(false);
     KeycloakAccount account = null;
@@ -95,23 +119,31 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       String username = account.getPrincipal().getName();
       Set<String> roles = account.getRoles();
       
-      this.loginAsIdmUser(wrapper, resp, username, roles, wrapper.getLocales());
+      return this.loginAsIdmUser(wrapper, resp, username, roles, wrapper.getLocales());
     }
     else
     {
       logger.error("Expected KeycloakAccount to exist at this point. Unable to log user in.");
+      return false;
     }
   }
   
-  private void loginAsIdmUser(HttpServletRequestWrapper req, HttpServletResponse resp, String keycloakUsername, Set<String> keycloakRoles, Enumeration<Locale> enumLocales)
+  private boolean loginAsIdmUser(HttpServletRequestWrapper req, HttpServletResponse resp, String keycloakUsername, Set<String> keycloakRoles, Enumeration<Locale> enumLocales)
   {
     Locale[] locales = this.localesToArray(enumLocales);
     
-    WebClientSession clientSession = WebClientSession.createAnonymousSession(locales);
+    final HttpSession session = req.getSession();
+    WebClientSession existCS = (WebClientSession) session.getAttribute(ClientConstants.CLIENTSESSION);
+    if (existCS != null && session.getAttribute(ClientConstants.CLIENTREQUEST) != null && session.getAttribute(ClientConstants.CLIENTREQUEST) instanceof ClientRequestIF)
+    {
+      return false;
+    }
+    
+    WebClientSession anonClientSession = WebClientSession.createAnonymousSession(locales);
     
     try
     {
-      ClientRequestIF clientRequest = clientSession.getRequest();
+      ClientRequestIF clientRequest = anonClientSession.getRequest();
       
       String jsonRoles = new GsonBuilder().create().toJson(keycloakRoles);
       
@@ -121,35 +153,60 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       final String sessionId = cgrSessionJson.get("sessionId").getAsString();
 //      final String username = cgrSessionJson.get("username").getAsString();
       
-      clientSession.logout();
-      
-      clientSession = WebClientSession.getExistingSession(sessionId, locales);
+      WebClientSession clientSession = WebClientSession.getExistingSession(sessionId, locales);
       clientRequest = clientSession.getRequest();
 
       req.getSession().setMaxInactiveInterval(CommonProperties.getSessionTime());
       req.getSession().setAttribute(ClientConstants.CLIENTSESSION, clientSession);
-      req.setAttribute(ClientConstants.CLIENTREQUEST, clientRequest);
+      req.getSession().setAttribute(ClientConstants.CLIENTREQUEST, clientRequest);
       
       JsonArray roles = JsonParser.parseString((RoleViewDTO.getCurrentRoles(clientRequest))).getAsJsonArray();
 
-      this.loggedInCookieResponse(req, resp, roles, clientRequest);
+      this.loggedInCookieResponse(req, resp, roles, clientRequest, enumLocales);
+      
+      return true;
+    }
+    catch (KeycloakNoValidRolesExceptionDTO e)
+    {
+      throw e;
     }
     catch (Throwable t)
     {
-      
+      throw new RuntimeException(t); // TODO
     }
     finally
     {
-      clientSession.logout();
+      anonClientSession.logout();
     }
   }
   
-  private void loggedInCookieResponse(HttpServletRequestWrapper req, HttpServletResponse resp, JsonArray roles, ClientRequestIF clientRequest) throws IOException
+  private void loggedInCookieResponse(HttpServletRequestWrapper req, HttpServletResponse resp, JsonArray roles, ClientRequestIF clientRequest, Enumeration<Locale> enumLocales) throws IOException
   {
     JsonObject jo = new JsonObject();
     
+    Locale[] locales = this.localesToArray(enumLocales);
+
+    JsonArray installedLocalesArr = new JsonArray();
+    List<Locale> installedLocales = LocalizationFacade.getInstalledLocales();
+    for (Locale loc : installedLocales)
+    {
+      JsonObject locObj = new JsonObject();
+      locObj.addProperty("language", loc.getDisplayLanguage());
+      locObj.addProperty("country", loc.getDisplayCountry());
+      locObj.addProperty("name", loc.getDisplayName());
+      locObj.addProperty("variant", loc.getDisplayVariant());
+
+      installedLocalesArr.add(locObj);
+    }
+    
+    JsonArray roleDisplayLabels = JsonParser.parseString((RoleViewDTO.getCurrentRoleDisplayLabels(clientRequest))).getAsJsonArray();
+    
     jo.addProperty("loggedIn", clientRequest.isLoggedIn());
     jo.add("roles", roles);
+    jo.add("roleDisplayLabels", roleDisplayLabels);
+    jo.addProperty("userName", "test"); // TODO 
+    jo.addProperty("version", ClientConfigurationService.getServerVersion());
+    jo.add("installedLocales", installedLocalesArr);
 
     String path = req.getContextPath();
 
@@ -165,24 +222,35 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     cookie.setPath(path);
 
     resp.addCookie(cookie);
-
-    String encoding = ( req.getCharacterEncoding() != null ? req.getCharacterEncoding() : "UTF-8" );
-
-    resp.setStatus(200);
-    resp.setContentType("application/json");
-
-    OutputStream ostream = resp.getOutputStream();
-
-    try
+    
+    String contextPath = req.getContextPath();
+    if (contextPath.equals("") || contextPath.length() == 0)
     {
-      ostream.write(jo.toString().getBytes(encoding));
-
-      ostream.flush();
+      contextPath = "/";
     }
-    finally
+    else
     {
-      ostream.close();
+      contextPath = contextPath + "/";
     }
+    resp.sendRedirect(contextPath);
+
+//    String encoding = ( req.getCharacterEncoding() != null ? req.getCharacterEncoding() : "UTF-8" );
+
+//    resp.setStatus(200);
+//    resp.setContentType("application/json");
+
+//    OutputStream ostream = resp.getOutputStream();
+//
+//    try
+//    {
+//      ostream.write(jo.toString().getBytes(encoding));
+//
+//      ostream.flush();
+//    }
+//    finally
+//    {
+//      ostream.close();
+//    }
   }
 
   @Override
@@ -191,7 +259,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     HttpServletRequest request = (HttpServletRequest) req;
     HttpServletResponse response = (HttpServletResponse) res;
 
-    if (shouldSkip(request))
+    if (skipPath(request))
     {
       chain.doFilter(req, res);
       return;
@@ -237,7 +305,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       logger.trace("AUTHENTICATED");
       if (facade.isEnded())
       {
-        chain.doFilter(req, res);
+//        chain.doFilter(req, res);
         return;
       }
       AuthenticatedActionsHandler actions = new AuthenticatedActionsHandler(deployment, facade);
@@ -250,16 +318,22 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       {
         HttpServletRequestWrapper wrapper = tokenStore.buildWrapper();
         
-        logIn(wrapper, response);
-        
-        chain.doFilter(wrapper, res);
-        
-        return;
+        try
+        {
+          if (logIn(wrapper, response))
+          {
+            return;
+          }
+        }
+        catch (Exception e)
+        {
+          tokenStore.logout();
+        }
       }
     }
 
-    if (request.getRequestURI().endsWith("keycloak/loginRedirect"))
-    {
+//    if (request.getRequestURI().endsWith("keycloak/loginRedirect"))
+//    {
       AuthChallenge challenge = authenticator.getChallenge();
       if (challenge != null)
       {
@@ -267,36 +341,73 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
         challenge.challenge(facade);
         return;
       }
+//    }
+    
+    SerializableKeycloakAccount account = null;
+    CookieAwareHttpServletResponse cookieAwareResp = new CookieAwareHttpServletResponse(response);
+    if (request.getRequestURI().endsWith("session/logout"))
+    {
+      HttpSession httpSession = request.getSession(false);
+      if (httpSession != null) {
+        account = (SerializableKeycloakAccount) httpSession.getAttribute(KeycloakAccount.class.getName());
+      }
+      
+      chain.doFilter(req, cookieAwareResp);
+    }
+    else
+    {
+      chain.doFilter(req, res);
     }
     
-    chain.doFilter(req, res);
-  }
-
-  /**
-   * Decides whether this {@link Filter} should skip the given
-   * {@link HttpServletRequest} based on the configured
-   * {@link KeycloakOIDCFilter#skipPattern}. Patterns are matched against the
-   * {@link HttpServletRequest#getRequestURI() requestURI} of a request without
-   * the context-path. A request for {@code /myapp/index.html} would be tested
-   * with {@code /index.html} against the skip pattern. Skipped requests will
-   * not be processed further by {@link KeycloakOIDCFilter} and immediately
-   * delegated to the {@link FilterChain}.
-   *
-   * @param request
-   *          the request to check
-   * @return {@code true} if the request should not be handled, {@code false}
-   *         otherwise.
-   */
-  private boolean shouldSkip(HttpServletRequest request)
-  {
-
-    if (skipPattern == null)
+    if (request.getRequestURI().endsWith("session/logout"))
     {
-      return false;
+      if (cookieAwareResp.getCookies().size() > 0)
+      {
+        for (Cookie cookie : cookieAwareResp.getCookies())
+        {
+          if (cookie.getName().equals("user"))
+          {
+            String val = cookie.getValue();
+            
+            if (val == null || val.length() == 0)
+            {
+              if (account != null) {
+                account.getKeycloakSecurityContext().logout(deployment);
+              }
+            }
+          }
+        }
+      }
     }
-
-    String requestPath = request.getRequestURI().substring(request.getContextPath().length());
-    return skipPattern.matcher(requestPath).matches();
+  }
+  
+  protected boolean skipPath(HttpServletRequest request)
+  {
+    String uri = stripSlashes(request.getRequestURI());
+    
+    if (uri.equals("") || uri.equals(stripSlashes(request.getContextPath())))
+    {
+      return true;
+    }
+    
+    return SessionFilter.isPublic(request) || SessionFilter.pathAllowed(request);
+  }
+  
+  private String stripSlashes(String uri)
+  {
+    String ret = uri;
+    
+    if (ret.endsWith("/"))
+    {
+      ret = ret.substring(0, uri.length() - 1);
+    }
+    
+    if (ret.startsWith("/"))
+    {
+      ret = ret.substring(1);
+    }
+    
+    return ret;
   }
   
   public Locale[] localesToArray(Enumeration<Locale> locales)
@@ -310,4 +421,24 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
 
     return llLocales.toArray(new Locale[llLocales.size()]);
   }
+  
+  public class CookieAwareHttpServletResponse extends HttpServletResponseWrapper {
+
+    private List<Cookie> cookies = new ArrayList<Cookie>();
+
+    public CookieAwareHttpServletResponse (HttpServletResponse aResponse) {
+        super (aResponse);
+    }
+
+    @Override
+    public void addCookie (Cookie aCookie) {
+        cookies.add (aCookie);
+        super.addCookie(aCookie);
+    }
+
+    public List<Cookie> getCookies () {
+        return Collections.unmodifiableList (cookies);
+    }
+
+} 
 }

@@ -18,7 +18,12 @@
 ///
 import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 
 import { SessionService } from '@shared/service/session.service';
 
@@ -35,9 +40,27 @@ export class LoginComponent {
     context: string;
     username: string = '';
     password: string = '';
+    
+    private bsModalRef: BsModalRef;
+    
+    sub: Subscription;
 
-    constructor( private service: SessionService, private router: Router ) {
+    constructor( private service: SessionService, private router: Router, private route: ActivatedRoute, private modalService: BsModalService ) {
         this.context = acp as string;
+    }
+    
+    ngOnInit(): void {
+      this.sub = this.route.params.subscribe(params => {
+        if (params['errorMsg'] != null)
+        {
+          this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+          
+          let encodedError = params['errorMsg'];
+          let decodedError = encodedError.replaceAll("+", " ");
+          
+          this.bsModalRef.content.message = decodedError;
+        }
+      });
     }
 
     onClickKeycloak(): void {
@@ -48,5 +71,9 @@ export class LoginComponent {
       this.service.login( this.username, this.password ).then( response => {
           this.router.navigate( ['/menu/true'] );
       } );
+    }
+    
+    public error( err: HttpErrorResponse ): void {
+      this.bsModalRef = ErrorHandler.showErrorAsDialog(err, this.modalService);
     }
 }
