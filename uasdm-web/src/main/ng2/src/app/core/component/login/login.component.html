@@ -54,11 +54,13 @@
                     
                     <div *ngIf="keycloakEnabled" class="row">
                       <div class="col-md-12 text-center">
-                        <h4 class="keycloak-or-line-block">
-                          <span class="keycloak-or-text">&nbsp;Or&nbsp;</span>
-                        </h4>
+                        <div class="keycloak-or-line-family">
+	                        <h4 class="keycloak-or-line"></h4>
+	                        <span class="keycloak-or-text">&nbsp;Or&nbsp;</span>
+	                        <h4 class="keycloak-or-line"></h4>
+                        </div>
                     
-                        <button (click)="onClickKeycloak()" class="keycloak-login-button">
+                        <button (click)="onClickKeycloak()" class="keycloak-login-button btn-default">
                           <span class="keycloak-login-button-text">
                             Log in with 
                           </span>

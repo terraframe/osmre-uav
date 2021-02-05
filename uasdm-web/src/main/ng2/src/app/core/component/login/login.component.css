@@ -42,18 +42,13 @@ h1 {
 }
 
 .keycloak-login-button {
-  background-color:#fff;
-  border-color: #333;
+	height:initial;
   border-radius:5px;
   margin-bottom:5px;
   padding: 10px;
 }
-.keycloak-login-button:hover {
-  background-color: darkgray;
-}
 
 .keycloak-login-button-text {
-  color:#333;
   font-size:18px;
   vertical-align:middle;
 }
@@ -66,25 +61,22 @@ h1 {
 span.keycloak-or-text {
   font-size:19px;
   color:#333;
+  width:5%;
+  position:relative;
+  top:-43px;
 }
 
-span.keycloak-or-line {
-  width: 45%;
-  height: 47px;
-  border-bottom: 1px solid darkgray;
-  display: inline-block;
-  margin-bottom: 7px;
+.keycloak-or-line-family {
+	width:100%;
 }
 
-h4.keycloak-or-line-block {
+.keycloak-or-line {
+	display:inline-block;
   margin-bottom:50px;
   margin-top:50px;
   border-bottom: 1px solid #000; 
-   line-height: 0.1em;
-}
-h4.keycloak-or-line-block span {
-  background:#fff; 
-    padding:0 10px; 
+  line-height: 0.1em;
+  width:47%;
 }
 
 
