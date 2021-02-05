@@ -18,6 +18,11 @@ const routes: Routes = [
         data: { title: 'login.title' }
     },
     {
+        path: 'login/:errorMsg',
+        component: LoginComponent,
+        data: { title: 'login.title' }
+    },
+    {
         path: 'forgotpassword',
         component: ForgotPasswordComponent,
         data: { title: 'useraccounts.title' }
