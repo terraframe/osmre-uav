@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm;
 
 import java.io.File;
+import java.io.InputStream;
 
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
@@ -94,6 +95,23 @@ public class AppProperties
   public static Boolean isSolrEnabled()
   {
     return Singleton.getProps().getBoolean("solr.enabled", true);
+  }
+  
+  public static Boolean isKeycloakEnabled()
+  {
+    return Singleton.getProps().getBoolean("keycloak.enabled", false);
+  }
+  
+  public static InputStream getKeycloakConfig()
+  {
+    if (isKeycloakEnabled() && ConfigurationManager.checkExistence(UasdmConfigGroup.COMMON, "keycloak.json"))
+    {
+      return ConfigurationManager.getResourceAsStream(UasdmConfigGroup.COMMON, "keycloak.json");
+    }
+    else
+    {
+      return null;
+    }
   }
 
   public static File getTempDirectory()

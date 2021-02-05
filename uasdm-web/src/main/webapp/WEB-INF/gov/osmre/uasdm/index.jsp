@@ -47,6 +47,8 @@ body {
       + (window.location.port ? ':' + window.location.port : '');
   
   window.gpAppType = "<%=AppProperties.getDeploymentType()%>";
+  
+  window.uasdmKeycloakEnabled = <%=AppProperties.isKeycloakEnabled()%>;
 </script>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">

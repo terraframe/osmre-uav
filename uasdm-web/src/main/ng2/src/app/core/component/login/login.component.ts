@@ -30,6 +30,7 @@ import { SessionService } from '@shared/service/session.service';
 import { LoginHeaderComponent } from './login-header.component';
 
 declare var acp: any;
+declare var uasdmKeycloakEnabled: boolean;
 
 @Component( {
     selector: 'login',
@@ -44,6 +45,8 @@ export class LoginComponent {
     private bsModalRef: BsModalRef;
     
     sub: Subscription;
+    
+    keycloakEnabled: boolean = uasdmKeycloakEnabled;
 
     constructor( private service: SessionService, private router: Router, private route: ActivatedRoute, private modalService: BsModalService ) {
         this.context = acp as string;
@@ -51,6 +54,7 @@ export class LoginComponent {
     
     ngOnInit(): void {
       this.sub = this.route.params.subscribe(params => {
+      
         if (params['errorMsg'] != null)
         {
           this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
