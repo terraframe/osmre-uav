@@ -42,20 +42,17 @@ h1 {
 }
 
 .keycloak-login-button {
-	height:initial;
   border-radius:5px;
   margin-bottom:5px;
   padding: 10px;
 }
 
-.keycloak-login-button-text {
-  font-size:18px;
-  vertical-align:middle;
-}
-
 .keycloak-login-button-image {
-  height: 30px;
-  margin-left: 10px;
+	position:relative;
+  top:-2px;
+  height: 25px;
+  margin-left: 5px;
+  margin-right:0px;
 }
 
 span.keycloak-or-text {
