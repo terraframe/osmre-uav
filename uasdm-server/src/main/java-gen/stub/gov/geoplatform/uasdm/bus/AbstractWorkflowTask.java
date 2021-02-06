@@ -31,6 +31,7 @@ import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import net.geoprism.GeoprismActorIF;
 import net.geoprism.GeoprismUser;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF, JSONSerializable
@@ -56,6 +57,11 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
   public AbstractWorkflowTask()
   {
     super();
+  }
+  
+  public GeoprismActorIF getGeoprismUserIF()
+  {
+    return (GeoprismActorIF) super.getGeoprismUser();
   }
 
   @Override

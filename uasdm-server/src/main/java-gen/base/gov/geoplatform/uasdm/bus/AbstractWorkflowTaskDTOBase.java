@@ -1,25 +1,10 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 542778887)
+@com.runwaysdk.business.ClassSignature(hash = 1671484312)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
-  private static final long serialVersionUID = 542778887;
+  private static final long serialVersionUID = 1671484312;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -169,7 +154,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(ENTITYDOMAIN).getAttributeMdDTO();
   }
   
-  public net.geoprism.GeoprismUserDTO getGeoprismUser()
+  public com.runwaysdk.system.SingleActorDTO getGeoprismUser()
   {
     if(getValue(GEOPRISMUSER) == null || getValue(GEOPRISMUSER).trim().equals(""))
     {
@@ -177,7 +162,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     }
     else
     {
-      return net.geoprism.GeoprismUserDTO.get(getRequest(), getValue(GEOPRISMUSER));
+      return com.runwaysdk.system.SingleActorDTO.get(getRequest(), getValue(GEOPRISMUSER));
     }
   }
   
@@ -186,7 +171,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     return getValue(GEOPRISMUSER);
   }
   
-  public void setGeoprismUser(net.geoprism.GeoprismUserDTO value)
+  public void setGeoprismUser(com.runwaysdk.system.SingleActorDTO value)
   {
     if(value == null)
     {

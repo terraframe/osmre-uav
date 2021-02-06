@@ -15,7 +15,12 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import com.runwaysdk.business.Element;
+import com.runwaysdk.business.Entity;
+import com.runwaysdk.system.SingleActor;
+
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import net.geoprism.GeoprismActorIF;
 
 public interface AbstractWorkflowTaskIF
 {
@@ -34,7 +39,9 @@ public interface AbstractWorkflowTaskIF
   /**
    * {@link AbstractWorkflowTask#getGeoprismUser()}
    */
-  public net.geoprism.GeoprismUser getGeoprismUser();
+  public GeoprismActorIF getGeoprismUserIF();
+  
+  public SingleActor getGeoprismUser();
 
   /**
    * {@link AbstractWorkflowTask#getMessage(String)}

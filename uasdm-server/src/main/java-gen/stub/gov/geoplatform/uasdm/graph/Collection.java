@@ -390,7 +390,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);
     workflowTask.setComponent(this.getOid());
-    workflowTask.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
     workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
 
     return workflowTask;

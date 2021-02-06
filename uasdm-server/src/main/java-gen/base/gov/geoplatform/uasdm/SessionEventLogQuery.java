@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1656245681)
+@com.runwaysdk.business.ClassSignature(hash = 1002621442)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -173,27 +158,27 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.SessionEventLog.EVENTTYPE, alias, displayLabel);
 
   }
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser()
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser()
   {
     return getGeoprismUser(null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias)
   {
 
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER);
 
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, mdAttributeIF, this, alias, null);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, mdAttributeIF, this, alias, null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
   {
 
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER);
 
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, mdAttributeIF, this, alias, displayLabel);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, mdAttributeIF, this, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -402,7 +387,7 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER)) 
     {
-       return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.LASTUPDATEDBY)) 
     {
@@ -473,9 +458,9 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     public com.runwaysdk.query.SelectableChar getEventType();
     public com.runwaysdk.query.SelectableChar getEventType(String alias);
     public com.runwaysdk.query.SelectableChar getEventType(String alias, String displayLabel);
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser();
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias);
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -643,21 +628,21 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.SessionEventLog.EVENTTYPE, alias, displayLabel);
 
   }
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser()
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser()
   {
     return getGeoprismUser(null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias)
   {
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, alias, null);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, alias, null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
   {
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER,  alias, displayLabel);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER,  alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -848,7 +833,7 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER)) 
     {
-       return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.LASTUPDATEDBY)) 
     {
@@ -896,9 +881,9 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     public com.runwaysdk.query.SelectableChar getEventType();
     public com.runwaysdk.query.SelectableChar getEventType(String alias);
     public com.runwaysdk.query.SelectableChar getEventType(String alias, String displayLabel);
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser();
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias);
-    public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser();
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias);
+    public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -1115,21 +1100,21 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.SessionEventLog.EVENTTYPE, alias, displayLabel);
 
   }
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser()
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser()
   {
     return getGeoprismUser(null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias)
   {
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, alias, null);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER, alias, null);
 
   }
  
-  public net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
+  public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getGeoprismUser(String alias, String displayLabel)
   {
-    return (net.geoprism.GeoprismUserQuery.GeoprismUserQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER,  alias, displayLabel);
+    return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER,  alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getKeyName()
@@ -1320,7 +1305,7 @@ public  class SessionEventLogQuery extends com.runwaysdk.query.GeneratedBusiness
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.GEOPRISMUSER)) 
     {
-       return new net.geoprism.GeoprismUserQuery.GeoprismUserQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+       return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.SessionEventLog.LASTUPDATEDBY)) 
     {

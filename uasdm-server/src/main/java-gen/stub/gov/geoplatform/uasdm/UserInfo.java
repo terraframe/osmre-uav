@@ -27,6 +27,7 @@ import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.BureauQuery;
@@ -260,7 +261,7 @@ public class UserInfo extends UserInfoBase
     return user;
   }
 
-  public static UserInfo getByUser(GeoprismUser user)
+  public static UserInfo getByUser(SingleActor user)
   {
     if (user.isAppliedToDB())
     {

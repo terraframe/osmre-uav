@@ -22,9 +22,9 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.SessionEventLog;
-import net.geoprism.GeoprismUser;
 import net.geoprism.SessionEvent;
 
 public class SessionEventService
@@ -46,7 +46,7 @@ public class SessionEventService
   private void logSuccessfulLogin(String sessionId, String username)
   {
     final SessionIF session = Session.getCurrentSession();
-    final GeoprismUser user = (GeoprismUser) BusinessFacade.get(session.getUser());
+    final SingleActor user = (SingleActor) BusinessFacade.get(session.getUser());
 
     SessionEventLog.log(SessionEvent.EventType.LOGIN_SUCCESS.name(), username, user.getOid());
   }

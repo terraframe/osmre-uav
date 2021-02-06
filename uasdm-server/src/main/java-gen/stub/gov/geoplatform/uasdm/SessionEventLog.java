@@ -24,10 +24,10 @@ import org.json.JSONObject;
 import com.runwaysdk.business.rbac.Authenticate;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
-import net.geoprism.GeoprismUser;
 import net.geoprism.SessionEvent;
 
 public class SessionEventLog extends SessionEventLogBase implements JSONSerializable
@@ -66,7 +66,7 @@ public class SessionEventLog extends SessionEventLogBase implements JSONSerializ
 
     if (eventType.equals(SessionEvent.EventType.LOGIN_SUCCESS.name()))
     {
-      final GeoprismUser user = GeoprismUser.get(userId);
+      final SingleActor user = SingleActor.get(userId);
       final UserInfo info = UserInfo.getByUser(user);
 
       log.setGeoprismUser(user);

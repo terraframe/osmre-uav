@@ -17,6 +17,31 @@
       </mdException>
     </create>
     <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask" >
+        <attributes>
+          <reference name="geoprismUser" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionUploadEvent" >
+        <attributes>
+          <reference name="geoprismUser" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.ImageryUploadEvent" >
+        <attributes>
+          <reference name="geoprismUser" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.UserInfo" >
+        <attributes>
+          <reference name="geoprismUser" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.SessionEventLog" >
+        <attributes>
+          <reference name="geoprismUser" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      </mdBusiness>
     </update>
     <permissions>
       <role roleName="PUBLIC">

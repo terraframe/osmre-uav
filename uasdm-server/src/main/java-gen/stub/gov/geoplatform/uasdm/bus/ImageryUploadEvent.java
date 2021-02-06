@@ -101,7 +101,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     ImageryODMProcessingTask task = new ImageryODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setImagery(imagery.getOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("UAV data orthorectification for imagery [" + imagery.getName() + "]");
     task.setMessage("The images uploaded to ['" + imagery.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");

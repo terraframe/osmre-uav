@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1627224185)
+@com.runwaysdk.business.ClassSignature(hash = 1982831010)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -41,7 +26,7 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String TYPE = "type";
   public static java.lang.String UPLOADID = "uploadId";
-  private static final long serialVersionUID = 1627224185;
+  private static final long serialVersionUID = 1982831010;
   
   public CollectionUploadEventBase()
   {
@@ -172,7 +157,7 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
     }
   }
   
-  public net.geoprism.GeoprismUser getGeoprismUser()
+  public com.runwaysdk.system.SingleActor getGeoprismUser()
   {
     if (getValue(GEOPRISMUSER).trim().equals(""))
     {
@@ -180,7 +165,7 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
     }
     else
     {
-      return net.geoprism.GeoprismUser.get(getValue(GEOPRISMUSER));
+      return com.runwaysdk.system.SingleActor.get(getValue(GEOPRISMUSER));
     }
   }
   
@@ -200,7 +185,7 @@ public abstract class CollectionUploadEventBase extends com.runwaysdk.business.B
     return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(GEOPRISMUSER);
   }
   
-  public void setGeoprismUser(net.geoprism.GeoprismUser value)
+  public void setGeoprismUser(com.runwaysdk.system.SingleActor value)
   {
     if(value == null)
     {

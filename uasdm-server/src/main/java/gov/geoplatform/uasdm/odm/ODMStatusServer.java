@@ -111,7 +111,7 @@ public class ODMStatusServer
 
         final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has failed. " + task.getMessage();
 
-        EmailSetting.sendEmail(subject, body, new String[] { task.getGeoprismUser().getEmail() });
+        EmailSetting.sendEmail(subject, body, new String[] { task.getGeoprismUserIF().getEmail() });
       }
       else if (task.getStatus().equals(ODMStatus.COMPLETED.getLabel()))
       {
@@ -119,7 +119,7 @@ public class ODMStatusServer
 
         final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
 
-        EmailSetting.sendEmail(subject, body, new String[] { task.getGeoprismUser().getEmail() });
+        EmailSetting.sendEmail(subject, body, new String[] { task.getGeoprismUserIF().getEmail() });
       }
       else
       {

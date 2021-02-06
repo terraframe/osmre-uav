@@ -18,7 +18,7 @@ package gov.geoplatform.uasdm.view;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import net.geoprism.GeoprismUser;
+import net.geoprism.GeoprismActorIF;
 
 public class CollectionConverter extends Converter
 {
@@ -56,9 +56,9 @@ public class CollectionConverter extends Converter
       siteItem.setPrivilegeType(AllPrivilegeType.AGENCY.name());
     }
 
-    if (collection.getOwner() instanceof GeoprismUser)
+    if (collection.getOwner() instanceof GeoprismActorIF)
     {
-      GeoprismUser user = (GeoprismUser) collection.getOwner();
+      GeoprismActorIF user = (GeoprismActorIF) collection.getOwner();
 
 //      String firstName = user.getFirstName();
 //      String lastName = user.getLastName();

@@ -123,7 +123,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setComponent(component.getOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("UAV data orthorectification for collection [" + component.getName() + "]");
     task.setMessage("The images uploaded to ['" + component.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");

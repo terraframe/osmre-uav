@@ -254,7 +254,7 @@ public class Imagery extends ImageryBase implements ImageryIF
     ImageryWorkflowTask task = new ImageryWorkflowTask();
     task.setUploadId(uploadId);
     task.setImagery(this.getOid());
-    task.setGeoprismUser((GeoprismUser) GeoprismUser.getCurrentUser());
+    task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setTaskLabel("UAV data upload for imagery [" + this.getName() + "]");
 
     return task;
