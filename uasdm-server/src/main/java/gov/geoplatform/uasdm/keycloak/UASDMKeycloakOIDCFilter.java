@@ -86,6 +86,25 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
 
   private static Boolean keycloakEnabled = AppProperties.isKeycloakEnabled();
 
+  /**
+   * It is not clear to me at all how to get backchannel logouts to work. Their documentation appears incomplete,
+   * since there is conflicting information. The Java Servlet Filter Adapter documentation
+   *   (https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter) says that if you set
+   * the Admin Url in the Keycloak Client configuration it will be used for backchannel logouts. However, this is
+   * contradicted by the tooltip withnin the Keycloak app when hovering over (?) for the backchannel logout url,
+   * which states that backchannel logouts will not happen unless that url is specified. The documentation does not
+   * specify what is a valid URL for that field.
+   * 
+   * After looking at their source code, it appears that the PreAuthActionsHandler can handle a url with an ending
+   * of 'k_logout'. When this is specified in the keycloak client configuration backchannel logout url
+   * (as  https://localhost:8443/uasdm/keycloak/k_logout)
+   * 
+   * The error, which is documented here, in Logs B:
+   * https://stackoverflow.com/questions/66002777/spring-boot-single-sign-out-using-keycloak
+   * 
+   * Occurs, which I am unable to make sense of. This makes me think that the backchannel logout feature is legitimately
+   * buggy. I will therefore not be supporting backchannel logouts at this time.
+   */
   private void logoutAll()
   {
     logger.debug("**************** Logout all sessions");
