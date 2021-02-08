@@ -1,12 +1,14 @@
 package gov.geoplatform.uasdm;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.business.BusinessFacade;
@@ -18,16 +20,22 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.SessionFacade;
+import com.runwaysdk.system.Roles;
 
 import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import net.geoprism.RoleConstants;
+import net.geoprism.RoleView;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.LocaleSerializer;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {
-  public static final String[] VALID_IDM_ROLES = new String[] {RoleConstants.BUILDER_ROLE, RoleConstants.ADIM_ROLE};
+  public static final String ADMIN_RENAME_ROLE = "gov.geoplatform.aim.Administrator";
+  
+  public static final String FIELD_WORKER_RENAME_ROLE = "gov.geoplatform.aim.FieldWorker";
+  
+  public static final String[] VALID_IDM_ROLES = new String[] {RoleConstants.BUILDER_ROLE, RoleConstants.ADIM_ROLE, ADMIN_RENAME_ROLE, FIELD_WORKER_RENAME_ROLE};
   
   public static final String KEYCLOAK_USERNAME_PREFIX = "keycloak-";
   
@@ -40,16 +48,39 @@ public class IDMSessionService extends IDMSessionServiceBase
     super();
   }
   
+  private static Set<String> deserializeRoles(String sRoles)
+  {
+    JsonArray preRoles = JsonParser.parseString(sRoles).getAsJsonArray();
+    
+    Set<String> postRoles = new HashSet<String>();
+    
+    for (int i = 0; i < preRoles.size(); ++i)
+    {
+      String preRole = preRoles.get(i).getAsString();
+      String postRole = preRole;
+      
+      if (preRole.equals(ADMIN_RENAME_ROLE))
+      {
+        postRole = RoleConstants.ADIM_ROLE;
+      }
+      else if (preRole.equals(FIELD_WORKER_RENAME_ROLE))
+      {
+        postRole = RoleConstants.BUILDER_ROLE;
+      } 
+      
+      if (postRole != null && ArrayUtils.contains(VALID_IDM_ROLES, postRole))
+      {
+        postRoles.add(postRole);
+      }
+    }
+    
+    return postRoles;
+  }
+  
   @Authenticate
   public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String sRoles, java.lang.String locales)
   {
-    Set<String> roles = new HashSet<String>();
-    
-    JsonParser.parseString(sRoles).getAsJsonArray().forEach(role -> {
-      if (ArrayUtils.contains(VALID_IDM_ROLES, role.getAsString())) {
-        roles.add(role.getAsString());
-      }
-    });
+    Set<String> roles = deserializeRoles(sRoles);
     
     JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
     
@@ -102,6 +133,23 @@ public class IDMSessionService extends IDMSessionServiceBase
           profile.setPhoneNumber(phoneNumber);
           profile.setEmail(email);
           profile.apply();
+          
+          SingleActorDAOIF dao = (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
+          
+          List<Roles> allRoles = RoleView.getGeoprismRoles();
+          for (Roles role : allRoles)
+          {
+            RoleDAO roleDAO = RoleDAO.get(role.getOid()).getBusinessDAO();
+
+            if (roles.contains(role.getRoleName()))
+            {
+              roleDAO.assignMember(dao);
+            }
+            else
+            {
+              roleDAO.deassignMember(dao);
+            }
+          }
 
           return (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
         }
