@@ -17,9 +17,12 @@ package gov.geoplatform.uasdm.graph;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
@@ -35,19 +38,30 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.SpecialException;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
 import net.geoprism.gis.geoserver.GeoserverProperties;
 
@@ -366,6 +380,149 @@ public class Product extends ProductBase implements ProductIF
   public void createImageService()
   {
     Util.createImageServices(this.getWorkspace(), this.getComponent());
+  }
+  
+  /**
+   * Refreshes S3 and the database with contents from the all zip for all products in the system.
+   * 
+   * @param sessionId
+   * @param productId
+   * @throws InterruptedException
+   */
+  public static void refreshAllDocuments() throws InterruptedException
+  {
+    final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
+    
+    StringBuilder sb = new StringBuilder();
+    
+    sb.append("SELECT FROM " + mdProduct.getDBClassName());
+    
+    GraphQuery<Product> gq = new GraphQuery<Product>(sb.toString());
+    
+    List<Product> results = gq.getResults();
+    
+    for (Product product : results)
+    {
+      product.refreshDocuments();
+    }
+  }
+  
+  /**
+   * Downloads the product's ODM all.zip and refreshes S3 and database documents with the data contained.
+   * 
+   * @param sessionId
+   * @param productId
+   * @throws InterruptedException
+   */
+  public void refreshDocuments() throws InterruptedException
+  {
+    final UasComponentIF component = this.getComponent();
+    
+    boolean allZipExists = this.getAllZip() != null;
+    
+    if (allZipExists) 
+    {
+      AllZipS3Uploader uploader = new AllZipS3Uploader(null, component, null, this);
+      
+      uploader.buildProcessingConfig();
+      
+      try
+      {
+        uploader.processAllZip();
+      }
+      catch (SpecialException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  
+  public SiteObject getAllZip()
+  {
+    final UasComponentIF component = this.getComponent();
+
+    // This commented out code was for fetching the all zips from the ProductHasDocument relationship. Unfortunately
+    // we can't do this because Documents don't have a lastUpdateDate field so we wouldn't know how to order them.
+    // I'm leaving this code here because it's technically a "better" solution if we ever have lastUpdate on the graph.
+//    List<DocumentIF> docs = product.getDocuments();
+//    
+//    Iterator<DocumentIF> it = docs.iterator();
+//    while (it.hasNext())
+//    {
+//      DocumentIF doc = it.next();
+//      
+//      if (! (doc.getS3location().contains("/" + Product.ODM_ALL_DIR + "/") && doc.getS3location().endsWith(".zip")))
+//      {
+//        it.remove();
+//      }
+//    }
+//    
+//    DocumentIF lastDoc = null;
+//    for (DocumentIF doc : docs)
+//    {
+//      if (lastDoc == null || doc.getLastModified().after(lastDoc.getLastModified()))
+//      {
+//        lastDoc = doc;
+//      }
+//    }
+//    
+//    if (lastDoc != null)
+//    {
+//      return component.download(lastDoc.getS3location());
+//    }
+//    else
+//    {
+      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+  
+      SiteObject last = null;
+      
+      String path = component.getS3location().replaceAll("\\/", "\\\\/");
+      
+      if (!path.endsWith("/"))
+      {
+        path = path + "\\\\/";
+      }
+      
+      Pattern pattern = Pattern.compile("^" + path + "odm_all\\/all.+\\.zip$", Pattern.CASE_INSENSITIVE);
+      
+      for (SiteObject item : items)
+      {
+        if (last == null || item.getLastModified().after(last.getLastModified()))
+        {
+          Matcher matcher = pattern.matcher(item.getKey());
+          
+          if (matcher.find())
+          {
+            last = item;
+          }
+        }
+      }
+  
+      if (last != null)
+      {
+        return last;
+      }
+      else
+      {
+        return null;
+      }
+//    }
+  }
+  
+  public RemoteFileObject downloadAllZip()
+  {
+    final UasComponentIF component = this.getComponent();
+    
+    SiteObject all = this.getAllZip();
+    
+    if (all != null)
+    {
+      return component.download(all.getKey());
+    }
+    else
+    {
+      throw new ProgrammingErrorException("All zip does not exist");
+    }
   }
 
   @Override

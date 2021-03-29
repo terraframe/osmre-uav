@@ -46,7 +46,7 @@ public class ProductController
   @Endpoint(url = "get-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getAllZip(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
   {
-    return new RemoteFileGetResponse(service.getAllZip(request.getSessionId(), id));
+    return new RemoteFileGetResponse(service.downloadAllZip(request.getSessionId(), id));
   }
 
   @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)

@@ -55,6 +55,9 @@ import net.geoprism.EmailSetting;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.SpecialException;
+
 public class ODMStatusServer
 {
   private static final Integer               ODM_STATUS_UPDATE_INTERVAL = 5000;                                          // in
@@ -640,119 +643,17 @@ public class ODMStatusServer
       }
     }
 
-    private List<ODMFolderProcessingConfig> buildProcessingConfig()
-    {
-      List<ODMFolderProcessingConfig> processingConfigs = new ArrayList<ODMFolderProcessingConfig>();
-
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
-
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
-
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
-
-      processingConfigs.add(new ODMFolderProcessingConfig("micasense", "micasense", null));
-
-      return processingConfigs;
-    }
-    
-    private CloseableFile getZip()
-    {
-      if (DevProperties.runOrtho())
-      {
-        return ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      }
-      else
-      {
-        return DevProperties.orthoResults();
-      }
-    }
-
 //    @Transaction
     public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
     {
-      try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID()))
+      ImageryComponent ic = uploadTask.getImageryComponent();
+      UasComponentIF component = ic.getUasComponent();
+      
+      AllZipS3Uploader processor = new AllZipS3Uploader(component, uploadTask);
+      
+      try
       {
-        try (CloseableFile zip = getZip())
-        {
-          List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
-          
-          List<DocumentIF> documents = new LinkedList<DocumentIF>();
-          ImageryComponent ic = uploadTask.getImageryComponent();
-          UasComponentIF component = ic.getUasComponent();
-    
-          /**
-           * Upload the full all.zip file to S3 for archive purposes.
-           */
-          String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-    
-          if (DevProperties.uploadAllZip())
-          {
-            Util.uploadFileToS3(zip, allKey, uploadTask);
-            
-            documents.add(component.createDocumentIfNotExist(allKey, zip.getName()));
-          }
-    
-          List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
-            return doc.getS3location().contains("/raw/");
-          }).collect(Collectors.toList());
-    
-          String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
-    
-          /**
-           * Unzip the ODM all.zip file and selectively upload files that interest
-           * us to S3.
-           */
-          try
-          {
-            new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
-          }
-          catch (ZipException e)
-          {
-            throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
-          }
-  
-          for (ODMFolderProcessingConfig config : processingConfigs)
-          {
-            if (Thread.interrupted())
-            {
-              throw new InterruptedException();
-            }
-  
-            File parentDir = new File(unzippedParentFolder, config.odmFolderName);
-  
-            if (parentDir.exists())
-            {
-              processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
-            }
-  
-            List<String> unprocessed = config.getUnprocessedFiles();
-            if (unprocessed.size() > 0)
-            {
-              for (String name : unprocessed)
-              {
-                uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
-              }
-            }
-          }
-  
-          ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
-          List<String> list = processingTask.getFileList();
-  
-          ProductIF product = ic.getUasComponent().createProductIfNotExist();
-          product.clear();
-  
-          product.addDocuments(documents);
-  
-          for (DocumentIF raw : raws)
-          {
-            if (list.size() == 0 || list.contains(raw.getName()))
-            {
-              raw.addGeneratedProduct(product);
-            }
-          }
-  
-          return product;
-        }
+        return processor.processAllZip();
       }
       finally
       {
@@ -760,115 +661,6 @@ public class ODMStatusServer
         {
           removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
-      }
-    }
-
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<DocumentIF> documents) throws InterruptedException
-    {
-      File[] children = parentDir.listFiles();
-
-      if (children == null)
-      {
-        logger.error("Problem occurred while listing files of directory [" + parentDir.getAbsolutePath() + "].");
-        return;
-      }
-
-      for (File child : children)
-      {
-        if (Thread.interrupted())
-        {
-          throw new InterruptedException();
-        }
-
-        String name = child.getName();
-
-        if (filePrefix != null && filePrefix.length() > 0)
-        {
-          name = filePrefix + "_" + name;
-        }
-
-        if (!child.isDirectory() && UasComponentIF.isValidName(name) && config.shouldProcessFile(child))
-        {
-          ImageryComponent ic = uploadTask.getImageryComponent();
-          final UasComponentIF component = ic.getUasComponent();
-
-          String key = ic.getS3location() + s3FolderPrefix + "/" + name;
-
-          Util.uploadFileToS3(child, key, uploadTask);
-
-          documents.add(component.createDocumentIfNotExist(key, name));
-
-          SolrService.updateOrCreateDocument(ic.getAncestors(), component, key, name);
-        }
-        else if (child.isDirectory())
-        {
-          processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix, documents);
-        }
-      }
-    }
-
-    private class SpecialException extends Exception
-    {
-      private static final long serialVersionUID = 1L;
-
-      public SpecialException(String string, ZipException e)
-      {
-        super(string, e);
-      }
-    }
-
-    private class ODMFolderProcessingConfig
-    {
-      private String            odmFolderName;
-
-      private String            s3FolderName;
-
-      private String[]          mandatoryFiles;
-
-      private ArrayList<String> processedFiles;
-
-      protected ODMFolderProcessingConfig(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
-      {
-        this.odmFolderName = odmFolderName;
-        this.s3FolderName = s3FolderName;
-        this.mandatoryFiles = mandatoryFiles;
-        this.processedFiles = new ArrayList<String>();
-      }
-
-      protected boolean shouldProcessFile(File file)
-      {
-        if (this.mandatoryFiles == null)
-        {
-          return true;
-        }
-
-        if (ArrayUtils.contains(mandatoryFiles, file.getName()) && DevProperties.shouldUploadProduct(file.getName()))
-        {
-          processedFiles.add(file.getName());
-          return true;
-        }
-
-        return false;
-      }
-
-      protected List<String> getUnprocessedFiles()
-      {
-        ArrayList<String> unprocessed = new ArrayList<String>();
-
-        if (mandatoryFiles == null)
-        {
-          return unprocessed;
-        }
-
-        for (String file : mandatoryFiles)
-        {
-          if (!processedFiles.contains(file))
-          {
-            unprocessed.add(file);
-          }
-        }
-
-        return unprocessed;
       }
     }
   }

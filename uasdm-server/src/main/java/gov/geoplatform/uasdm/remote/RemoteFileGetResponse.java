@@ -46,7 +46,7 @@ public class RemoteFileGetResponse implements ResponseIF
 
       if (contentDisposition == null)
       {
-        contentDisposition = "attachment; filename=\"" + this.object.getFilename() + "\"";
+        contentDisposition = "attachment; filename=\"" + this.object.getName() + "\"";
       }
 
       ResponseDecorator resp = (ResponseDecorator) manager.getResp();

@@ -16,11 +16,9 @@
 package gov.geoplatform.uasdm.service;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
@@ -29,7 +27,6 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ProductDetailView;
@@ -38,6 +35,27 @@ import gov.geoplatform.uasdm.view.SiteObject;
 
 public class ProductService
 {
+  @Request(RequestType.SESSION)
+  public void refreshAllDocuments(String sessionId) throws InterruptedException
+  {
+    Product.refreshAllDocuments();
+  }
+  
+  /**
+   * Downloads the product's ODM all.zip and refreshes S3 and database documents with the data contained.
+   * 
+   * @param sessionId
+   * @param productId
+   * @throws InterruptedException
+   */
+  @Request(RequestType.SESSION)
+  public void refreshDocuments(String sessionId, String productId) throws InterruptedException
+  {
+    final Product product = Product.get(productId);
+    
+    product.refreshDocuments();
+  }
+  
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
@@ -96,65 +114,21 @@ public class ProductService
 
     return Converter.toView(product, components);
   }
-
+  
   @Request(RequestType.SESSION)
-  public RemoteFileObject getAllZip(String sessionId, String id)
+  public RemoteFileObject downloadAllZip(String sessionId, String id)
   {
-    final ProductIF product = ComponentFacade.getProduct(id);
-    final UasComponentIF component = product.getComponent();
-
-    // This commented out code was for fetching the all zips from the ProductHasDocument relationship. Unfortunately
-    // we can't do this because Documents don't have a lastUpdateDate field so we wouldn't know how to order them.
-    // I'm leaving this code here because it's technically a "better" solution if we ever have lastUpdate on the graph.
-//    List<DocumentIF> docs = product.getDocuments();
-//    
-//    Iterator<DocumentIF> it = docs.iterator();
-//    while (it.hasNext())
-//    {
-//      DocumentIF doc = it.next();
-//      
-//      if (! (doc.getS3location().contains("/" + Product.ODM_ALL_DIR + "/") && doc.getS3location().endsWith(".zip")))
-//      {
-//        it.remove();
-//      }
-//    }
-//    
-//    DocumentIF lastDoc = null;
-//    for (DocumentIF doc : docs)
-//    {
-//      if (lastDoc == null || doc.getLastModified().after(lastDoc.getLastModified()))
-//      {
-//        lastDoc = doc;
-//      }
-//    }
-//    
-//    if (lastDoc != null)
-//    {
-//      return component.download(lastDoc.getS3location());
-//    }
-//    else
-//    {
-      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+    final Product product = Product.get(id);
+    
+    return product.downloadAllZip();
+  }
   
-      SiteObject last = null;
-  
-      for (SiteObject item : items)
-      {
-        if (last == null || item.getLastModified().after(last.getLastModified()))
-        {
-          last = item;
-        }
-      }
-  
-      if (last != null)
-      {
-        return component.download(last.getKey());
-      }
-      else
-      {
-        throw new ProgrammingErrorException("No files exist");
-      }
-    }
-//  }
+  @Request(RequestType.SESSION)
+  public SiteObject getAllZip(String sessionId, String id)
+  {
+    final Product product = Product.get(id);
+    
+    return product.getAllZip();
+  }
 
 }

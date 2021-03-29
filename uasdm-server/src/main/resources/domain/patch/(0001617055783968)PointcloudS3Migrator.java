@@ -13,19 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.remote;
-
-import java.io.InputStream;
-
-import com.runwaysdk.resource.ApplicationResource;
-
-public interface RemoteFileObject extends ApplicationResource
-{
-
-  public RemoteFileMetadata getObjectMetadata();
-
-  public InputStream getObjectContent();
-  
-  public String getAbsolutePath();
-
-}
+/**
+ * This file is just a placeholder. The actual source exists in : src/main/java/com/runwaysdk/build/domain
+ */
