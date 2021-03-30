@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
@@ -180,6 +181,12 @@ public class ProjectManagementService
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
 
     return children;
+  }
+  
+  @Request(RequestType.SESSION)
+  public String getComponentName(String sessionId, String componentId)
+  {
+    return UasComponent.get(componentId).getName();
   }
 
   @Request(RequestType.SESSION)

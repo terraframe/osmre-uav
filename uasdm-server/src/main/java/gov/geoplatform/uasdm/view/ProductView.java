@@ -37,6 +37,8 @@ public class ProductView
   private String         workspace;
 
   private String         boundingBox;
+  
+  private boolean        hasPointcloud;
 
   public String getId()
   {
@@ -86,6 +88,16 @@ public class ProductView
   public void setMapKey(String mapKey)
   {
     this.mapKey = mapKey;
+  }
+  
+  public boolean getHasPointcloud()
+  {
+    return hasPointcloud;
+  }
+
+  public void setHasPointcloud(boolean hasPointcloud)
+  {
+    this.hasPointcloud = hasPointcloud;
   }
 
   public String getBoundingBox()
@@ -145,7 +157,9 @@ public class ProductView
     {
       object.put("boundingBox", new JSONArray(this.boundingBox));
     }
-
+    
+    object.put("hasPointcloud", this.hasPointcloud);
+    
     return object;
   }
 

@@ -64,7 +64,7 @@
 		});
 
 		// Load and add point cloud to scene
-		Potree.loadPointCloud("/uasdm/pointcloud/<%= request.getAttribute("componentId") %>/cloud.js", "Dynamically Loaded Data", function(e){
+		Potree.loadPointCloud("/uasdm/pointcloud/<%= request.getAttribute("componentId") %>/cloud.js", "<%= request.getAttribute("productName") %>", function(e){
 			let scene = viewer.scene;
 			let pointcloud = e.pointcloud;
 

@@ -12,8 +12,11 @@ import com.runwaysdk.mvc.ErrorSerialization;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.ViewResponse;
 import com.runwaysdk.request.ServletRequestIF;
+import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
@@ -67,6 +70,7 @@ public class PointcloudController
       ViewResponse resp = new ViewResponse(JSP_DIR + POTREE_JSP);
       
       resp.set("componentId", componentId);
+      resp.set("productName", this.service.getComponentName(request.getSessionId(), componentId));
       
       return resp;
     }

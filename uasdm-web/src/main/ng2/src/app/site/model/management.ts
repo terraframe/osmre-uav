@@ -151,6 +151,7 @@ export class Product {
 	workspace?: string;
 	boundingBox?: number[];
 	orthoMapped?: boolean;
+	hasPointcloud?: boolean;
 }
 
 export class ProductDetail extends Product {

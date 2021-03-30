@@ -112,6 +112,12 @@ export class ProductPanelComponent {
     handleMapIt(product: Product): void {
         this.toggleMapImage.emit(product);
     }
+    
+    handlePointcloud(product: Product): void {
+      let componentId: string = product.entities[product.entities.length-1].id;
+    
+      window.open(acp + "/pointcloud/" + componentId + "/potree");
+    }
 
     handleDelete(product: Product, event: any): void {
 
