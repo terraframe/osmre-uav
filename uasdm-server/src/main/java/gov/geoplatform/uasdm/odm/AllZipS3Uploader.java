@@ -22,6 +22,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.SolrService;
 import net.lingala.zip4j.ZipFile;
@@ -112,7 +113,8 @@ public class AllZipS3Uploader
 
     processingConfigs.add(new MandatoryErosFile("micasense", "micasense", null));
     
-    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"cloud.js", "data"}, true));
+    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"cloud.js"}, false));
+    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"data"}, true));
 
     this.config = processingConfigs;
   }

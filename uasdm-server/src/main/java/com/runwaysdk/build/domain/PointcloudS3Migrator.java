@@ -21,7 +21,8 @@ public class PointcloudS3Migrator
   {
     List<BasicODMFile> processingConfigs = new ArrayList<BasicODMFile>();
     
-    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"cloud.js", "data"}, true));
+    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"cloud.js"}, false));
+    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"data"}, true));
     
     Product.refreshAllDocuments(processingConfigs);
   }
