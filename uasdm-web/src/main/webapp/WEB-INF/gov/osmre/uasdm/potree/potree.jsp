@@ -7,27 +7,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<title>Potree Viewer</title>
 
-	<link rel="stylesheet" type="text/css" href="./potree/build/potree/potree.css">
-	<link rel="stylesheet" type="text/css" href="./potree/libs/jquery-ui/jquery-ui.min.css">
-	<link rel="stylesheet" type="text/css" href="./potree/libs/openlayers3/ol.css">
-	<link rel="stylesheet" type="text/css" href="./potree/libs/spectrum/spectrum.css">
-	<link rel="stylesheet" type="text/css" href="./potree/libs/jstree/themes/mixed/style.css">
+	<link rel="stylesheet" type="text/css" href="../resource/build/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="../resource/libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../resource/libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="../resource/libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="../resource/libs/jstree/themes/mixed/style.css">
 </head>
 
 <body>
-	<script src="./potree/libs/jquery/jquery-3.1.1.min.js"></script>
-	<script src="./potree/libs/spectrum/spectrum.js"></script>
-	<script src="./potree/libs/jquery-ui/jquery-ui.min.js"></script>
+	<script src="../resource/libs/jquery/jquery-3.1.1.min.js"></script>
+	<script src="../resource/libs/spectrum/spectrum.js"></script>
+	<script src="../resource/libs/jquery-ui/jquery-ui.min.js"></script>
 
-	<script src="./potree/libs/other/BinaryHeap.js"></script>
-	<script src="./potree/libs/tween/tween.min.js"></script>
-	<script src="./potree/libs/d3/d3.js"></script>
-	<script src="./potree/libs/proj4/proj4.js"></script>
-	<script src="./potree/libs/openlayers3/ol.js"></script>
-	<script src="./potree/libs/i18next/i18next.js"></script>
-	<script src="./potree/libs/jstree/jstree.js"></script>
-	<script src="./potree/build/potree/potree.js"></script>
-	<script src="./potree/libs/plasio/js/laslaz.js"></script>
+	<script src="../resource/libs/other/BinaryHeap.js"></script>
+	<script src="../resource/libs/tween/tween.min.js"></script>
+	<script src="../resource/libs/d3/d3.js"></script>
+	<script src="../resource/libs/proj4/proj4.js"></script>
+	<script src="../resource/libs/openlayers3/ol.js"></script>
+	<script src="../resource/libs/i18next/i18next.js"></script>
+	<script src="../resource/libs/jstree/jstree.js"></script>
+	<script src="../resource/build/potree/potree.js"></script>
+	<script src="../resource/libs/plasio/js/laslaz.js"></script>
 
 	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
 	<!-- INCLUDE SETTINGS HERE -->
@@ -39,7 +39,7 @@
 
 	<script type="module">
 
-	import * as THREE from "./potree/libs/three.js/build/three.module.js";
+	import * as THREE from "../resource/libs/three.js/build/three.module.js";
 
 		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
 
@@ -64,7 +64,7 @@
 		});
 
 		// Load and add point cloud to scene
-		Potree.loadPointCloud("https://localhost:8443/uasdm/potree-viewer/cloud.js", "Dynamically Loaded Data", function(e){
+		Potree.loadPointCloud("/uasdm/pointcloud/<%= request.getAttribute("componentId") %>/cloud.js", "Dynamically Loaded Data", function(e){
 			let scene = viewer.scene;
 			let pointcloud = e.pointcloud;
 
