@@ -60,6 +60,12 @@ public class AllZipS3Uploader
     this.s3Location = component.getS3location();
     this.uploadTask = uploadTask;
     this.product = product;
+    
+    if (config == null)
+    {
+      buildProcessingConfig();
+    }
+    initConfig();
   }
   
   public AllZipS3Uploader(List<BasicODMFile> config, UasComponentIF component, ODMUploadTaskIF uploadTask)
@@ -68,6 +74,12 @@ public class AllZipS3Uploader
     this.component = component;
     this.s3Location = component.getS3location();
     this.uploadTask = uploadTask;
+    
+    if (config == null)
+    {
+      buildProcessingConfig();
+    }
+    initConfig();
   }
   
   public AllZipS3Uploader(UasComponentIF component, ODMUploadTaskIF uploadTask)
@@ -77,6 +89,15 @@ public class AllZipS3Uploader
     this.uploadTask = uploadTask;
     
     buildProcessingConfig();
+    initConfig();
+  }
+  
+  public void initConfig()
+  {
+    for (BasicODMFile file : this.config)
+    {
+      file.setUploader(this);
+    }
   }
   
   public void buildProcessingConfig()
@@ -253,8 +274,10 @@ public class AllZipS3Uploader
     }
   }
   
-  public class BasicODMFile
+  public static class BasicODMFile
   {
+    protected AllZipS3Uploader  uploader;
+    
     private String            odmFolderName;
 
     private String            s3FolderName;
@@ -274,6 +297,16 @@ public class AllZipS3Uploader
       this.isDirectory = isDirectory;
     }
     
+    public AllZipS3Uploader getUploader()
+    {
+      return uploader;
+    }
+
+    public void setUploader(AllZipS3Uploader uploader)
+    {
+      this.uploader = uploader;
+    }
+
     public boolean isDirectory()
     {
       return this.isDirectory;
@@ -382,16 +415,16 @@ public class AllZipS3Uploader
     {
       if (file.isDirectory())
       {
-        RemoteFileFacade.uploadDirectory(file, key, uploadTask, true);
+        RemoteFileFacade.uploadDirectory(file, key, this.uploader.uploadTask, true);
       }
       else
       {
-        RemoteFileFacade.uploadFile(file, key, uploadTask);
+        RemoteFileFacade.uploadFile(file, key, this.uploader.uploadTask);
       }
     }
   }
   
-  public class MandatoryErosFile extends BasicODMFile
+  public static class MandatoryErosFile extends BasicODMFile
   {
     public MandatoryErosFile(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
     {
@@ -401,9 +434,9 @@ public class AllZipS3Uploader
     @Override
     protected void handleUnprocessedFile(String name)
     {
-      if (uploadTask != null)
+      if (this.uploader.uploadTask != null)
       {
-        uploadTask.createAction("ODM did not produce an expected file [" + this.getS3FolderName() + "/" + name + "].", "error");
+        this.uploader.uploadTask.createAction("ODM did not produce an expected file [" + this.getS3FolderName() + "/" + name + "].", "error");
       }
     }
     
@@ -414,9 +447,9 @@ public class AllZipS3Uploader
       
       if (!file.isDirectory())
       {
-        documents.add(component.createDocumentIfNotExist(key, file.getName()));
+        this.uploader.documents.add(this.uploader.component.createDocumentIfNotExist(key, file.getName()));
         
-        SolrService.updateOrCreateDocument(component.getAncestors(), component, key, file.getName());
+        SolrService.updateOrCreateDocument(this.uploader.component.getAncestors(), this.uploader.component, key, file.getName());
       }
     }
   }

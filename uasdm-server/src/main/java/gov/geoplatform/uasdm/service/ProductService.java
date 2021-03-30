@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ProductDetailView;
@@ -36,9 +37,9 @@ import gov.geoplatform.uasdm.view.SiteObject;
 public class ProductService
 {
   @Request(RequestType.SESSION)
-  public void refreshAllDocuments(String sessionId) throws InterruptedException
+  public void refreshAllDocuments(String sessionId, List<BasicODMFile> config) throws InterruptedException
   {
-    Product.refreshAllDocuments();
+    Product.refreshAllDocuments(config);
   }
   
   /**
@@ -49,11 +50,11 @@ public class ProductService
    * @throws InterruptedException
    */
   @Request(RequestType.SESSION)
-  public void refreshDocuments(String sessionId, String productId) throws InterruptedException
+  public void refreshDocuments(String sessionId, String productId, List<BasicODMFile> config) throws InterruptedException
   {
     final Product product = Product.get(productId);
     
-    product.refreshDocuments();
+    product.refreshDocuments(config);
   }
   
   @Request(RequestType.SESSION)

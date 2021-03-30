@@ -58,6 +58,7 @@ import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.AllZipS3Uploader;
+import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
 import gov.geoplatform.uasdm.odm.AllZipS3Uploader.SpecialException;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -389,7 +390,7 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public static void refreshAllDocuments() throws InterruptedException
+  public static void refreshAllDocuments(List<BasicODMFile> config) throws InterruptedException
   {
     final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
     
@@ -403,7 +404,7 @@ public class Product extends ProductBase implements ProductIF
     
     for (Product product : results)
     {
-      product.refreshDocuments();
+      product.refreshDocuments(config);
     }
   }
   
@@ -414,7 +415,7 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public void refreshDocuments() throws InterruptedException
+  public void refreshDocuments(List<BasicODMFile> config) throws InterruptedException
   {
     final UasComponentIF component = this.getComponent();
     
@@ -422,9 +423,7 @@ public class Product extends ProductBase implements ProductIF
     
     if (allZipExists) 
     {
-      AllZipS3Uploader uploader = new AllZipS3Uploader(null, component, null, this);
-      
-      uploader.buildProcessingConfig();
+      AllZipS3Uploader uploader = new AllZipS3Uploader(config, component, null, this);
       
       try
       {
