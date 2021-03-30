@@ -88,6 +88,7 @@
 			// );
 
 			viewer.setTopView();
+      viewer.fitToScreen();
 
 		});
 
