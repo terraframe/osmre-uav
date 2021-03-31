@@ -62,7 +62,7 @@ if [ "$build_artifact" == "true" ]; then
   : DEPLOY ARTIFACT
   : ----------------------------------
   :
-  cd $WORKSPACE/uasdm/src/scripts/potree
+  cd $WORKSPACE/uasdm/src/build/potree
   sh ./build.sh
   
   cd $WORKSPACE/uasdm
