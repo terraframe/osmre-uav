@@ -69,9 +69,9 @@
 			let pointcloud = e.pointcloud;
 
 		  let material = pointcloud.material;
-			material.size = 1;
+			material.size = 1.5;
 			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-			material.shape = Potree.PointShape.SQUARE;
+			material.shape = Potree.PointShape.CIRCLE;
 			// material.activeAttributeName = "elevation";
 
 			scene.addPointCloud(pointcloud);
