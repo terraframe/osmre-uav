@@ -4,7 +4,7 @@ set -ex
 
 POTREE_VERSION=1.8
 
-UASDM=..
+UASDM=../../..
 POTREE_VIEWER=$UASDM/uasdm-web/src/main/webapp/WEB-INF/gov/osmre/uasdm/potree
 
 [ -d $POTREE_VIEWER/potree ] && rm -rf $POTREE_VIEWER/potree

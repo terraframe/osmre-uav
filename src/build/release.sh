@@ -57,7 +57,7 @@ if [ "$release_uasdm" == "true" ]; then
   git merge dev
   git push
   
-  cd $WORKSPACE/uasdm/potree
+  cd $WORKSPACE/uasdm/potree/src/scripts/potree
   sh ./build.sh
   cd $WORKSPACE/uasdm
   
