@@ -57,8 +57,8 @@ if [ "$release_uasdm" == "true" ]; then
   git merge dev
   git push
   
-  cd $WORKSPACE/uasdm/src/build/potree
-  sh ./build.sh
+  $WORKSPACE/uasdm/src/build/potree/build.sh
+  
   cd $WORKSPACE/uasdm
   
   mvn release:prepare -B -Dtag=$IDM_VERSION \
