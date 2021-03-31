@@ -62,8 +62,6 @@ if [ "$build_artifact" == "true" ]; then
   : DEPLOY ARTIFACT
   : ----------------------------------
   :
-  $WORKSPACE/uasdm/src/build/potree/build.sh
-  
   cd $WORKSPACE/uasdm
   mvn clean deploy -B
 fi

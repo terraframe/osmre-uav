@@ -21,7 +21,7 @@ set -ex
 POTREE_VERSION=1.8
 
 BASEDIR=$(dirname "$0")
-UASDM=$BASEDIR/../../..
+UASDM=$BASEDIR/../../../..
 POTREE_WEBAPP=$UASDM/uasdm-web/src/main/webapp/WEB-INF/gov/osmre/uasdm/potree
 
 [ -d $POTREE_WEBAPP/potree ] && rm -rf $POTREE_WEBAPP/potree
