@@ -5,7 +5,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-	<title>Potree Viewer</title>
+	<title>IDM <%= request.getAttribute("productName") %> Point Cloud</title>
 
 	<link rel="stylesheet" type="text/css" href="../resource/build/potree/potree.css">
 	<link rel="stylesheet" type="text/css" href="../resource/libs/jquery-ui/jquery-ui.min.css">
