@@ -43,6 +43,7 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
@@ -68,15 +69,37 @@ public class Util
   {
     try
     {
-      List<SiteObject> objects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects();
+      // Publish Orthos
+      List<SiteObject> orthoObjects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects();
 
-      Util.getSiteObjects(ImageryComponent.ORTHO, objects, imageryComponent);
-
-      for (SiteObject object : objects)
+      for (SiteObject object : orthoObjects)
       {
         String key = object.getKey();
 
         if (key.endsWith(".tif"))
+        {
+          String storeName = imageryComponent.getStoreName(key);
+
+          if (GeoserverFacade.layerExists(workspace, storeName))
+          {
+            Util.removeCoverageStore(workspace, storeName);
+          }
+
+          try (CloseableFile geotiff = Util.download(key, storeName))
+          {
+            GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
+          }
+        }
+      }
+      
+      // Publish DEMs
+      List<SiteObject> demObjects = imageryComponent.getSiteObjects(ImageryComponent.DEM, null, null).getObjects();
+
+      for (SiteObject object : demObjects)
+      {
+        String key = object.getKey();
+
+        if (key.endsWith("dsm.tif"))
         {
           String storeName = imageryComponent.getStoreName(key);
 

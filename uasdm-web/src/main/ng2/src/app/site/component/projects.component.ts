@@ -697,8 +697,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		});
 
 	}
-
-	handleMapImage(product: Product): void {
+	
+	handleMapOrtho(product: Product): void {
 
 		const mapKey = product.mapKey;
 
@@ -731,6 +731,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 			}
 		}
 	}
+	
+	handleMapDem(product: Product): void {
+
+    const demKey = product.demKey;
+
+    if (demKey != null) {
+      if (this.map.getLayer(demKey) != null) {
+        this.map.removeLayer(demKey);
+        this.map.removeSource(demKey);
+
+        var index = this.layers.findIndex(layer => layer.mapKey === demKey);
+        if (index !== -1) {
+          this.layers.splice(index, 1);
+        }
+
+        product.demMapped = false;
+      }
+      else {
+        this.addImageLayer(product.workspace, demKey);
+
+        this.layers.push({ workspace: product.workspace, mapKey: demKey });
+
+        product.demMapped = true;
+
+        if (product.boundingBox != null) {
+          let bbox = product.boundingBox;
+
+          let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+          this.map.fitBounds(bounds, { padding: 50 });
+        }
+      }
+    }
+  }
 
 	addImageLayer(wkspace: string, imageKey: string) {
 		const workspace = encodeURI(wkspace);

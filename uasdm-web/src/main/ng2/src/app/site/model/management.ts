@@ -148,9 +148,11 @@ export class Product {
 	published: boolean;
 	imageKey?: string;
 	mapKey?: string;
+	demKey?: string;
 	workspace?: string;
 	boundingBox?: number[];
 	orthoMapped?: boolean;
+	demMapped?: boolean;
 	hasPointcloud?: boolean;
 }
 

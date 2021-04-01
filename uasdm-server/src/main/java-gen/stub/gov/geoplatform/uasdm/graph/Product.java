@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -77,6 +78,8 @@ public class Product extends ProductBase implements ProductIF
   private String              imageKey         = null;
 
   private String              mapKey           = null;
+  
+  private String              demKey           = null;
 
   public Product()
   {
@@ -360,6 +363,16 @@ public class Product extends ProductBase implements ProductIF
   {
     return this.mapKey;
   }
+  
+  public String getDemKey()
+  {
+    return demKey;
+  }
+
+  public void setDemKey(String demKey)
+  {
+    this.demKey = demKey;
+  }
 
   public String getWorkspace()
   {
@@ -577,9 +590,18 @@ public class Product extends ProductBase implements ProductIF
 
         if (GeoserverFacade.layerExists(workspace, storeName))
         {
-          this.mapKey = storeName;
-
-          logger.trace("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
+          if (document.getS3location().contains(ImageryComponent.ORTHO + "/"))
+          {
+            this.mapKey = storeName;
+  
+            logger.trace("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
+          }
+          else if (document.getS3location().contains(ImageryComponent.DEM + "/") && document.getName().equals("dsm.tif"))
+          {
+            this.demKey = storeName;
+  
+            logger.trace("Setting dem key for product [" + this.getOid() + "] to [" + this.demKey + "]");
+          }
         }
       }
     }

@@ -34,7 +34,9 @@ export class ProductPanelComponent {
 
     @Input() id: string;
 
-    @Output() public toggleMapImage = new EventEmitter<Product>();
+    @Output() public toggleMapOrtho = new EventEmitter<Product>();
+    
+    @Output() public toggleMapDem = new EventEmitter<Product>();
 
     /* 
      * List of products for the current node
@@ -110,7 +112,11 @@ export class ProductPanelComponent {
     }
 
     handleMapIt(product: Product): void {
-        this.toggleMapImage.emit(product);
+        this.toggleMapOrtho.emit(product);
+    }
+    
+    handleMapDem(product: Product): void {
+        this.toggleMapDem.emit(product);
     }
     
     handlePointcloud(product: Product): void {
@@ -171,9 +177,13 @@ export class ProductPanelComponent {
     handleTogglePublish(product: Product): void {
         this.pService.togglePublish(product.id).then(p => {
             const mapIt:boolean = product.orthoMapped;
+            const demMapped:boolean = product.demMapped;
             
             if (mapIt) {
-                this.toggleMapImage.emit(product);
+                this.toggleMapOrtho.emit(product);
+            }
+            if (demMapped) {
+                this.toggleMapDem.emit(product);
             }
 
             product.workspace = p.workspace;
@@ -181,7 +191,10 @@ export class ProductPanelComponent {
             product.published = p.published;
 
             if (mapIt) {
-                this.toggleMapImage.emit(product);
+                this.toggleMapOrtho.emit(product);
+            }
+            if (demMapped) {
+                this.toggleMapDem.emit(product);
             }
         });
     }

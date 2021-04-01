@@ -31,6 +31,8 @@ public class ProductView
   private String         imageKey;
 
   private String         mapKey;
+  
+  private String         demKey;
 
   private boolean        published;
 
@@ -90,6 +92,16 @@ public class ProductView
     this.mapKey = mapKey;
   }
   
+  public String getDemKey()
+  {
+    return demKey;
+  }
+
+  public void setDemKey(String demKey)
+  {
+    this.demKey = demKey;
+  }
+
   public boolean getHasPointcloud()
   {
     return hasPointcloud;
@@ -146,6 +158,11 @@ public class ProductView
     if (this.mapKey != null)
     {
       object.put("mapKey", this.mapKey);
+    }
+    
+    if (this.demKey != null)
+    {
+      object.put("demKey", this.demKey);
     }
 
     if (this.workspace != null)

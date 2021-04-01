@@ -163,7 +163,7 @@
                     <tab *ngIf="current != null" heading="Products">
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
                       style="height: calc(100vh - 290px);overflow-y: auto;">
-                        <product-panel [id]="current.id" (toggleMapImage)="handleMapImage($event)"></product-panel>           
+                        <product-panel [id]="current.id" (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)"></product-panel>           
                       </div>
                     </tab>
                   </tabset>

@@ -244,11 +244,12 @@ public abstract class Converter
     {
       view.setImageKey(product.getImageKey());
     }
-
+    
     if (product.getMapKey() != null && product.getMapKey().length() > 0)
     {
       view.setWorkspace(product.getWorkspace());
       view.setMapKey(product.getMapKey());
+      view.setDemKey(( (Product) product ).getDemKey());
 
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
       {
