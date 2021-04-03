@@ -55,8 +55,7 @@ import net.geoprism.EmailSetting;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader.SpecialException;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.S3FileUpload;
 
 public class ODMStatusServer
 {
@@ -615,7 +614,7 @@ public class ODMStatusServer
         // Create image services
         product.createImageService();
 
-        // Calculate bounding boxes
+//         Calculate bounding boxes
         product.updateBoundingBox();
 
         ODMStatusServer.sendEmail(uploadTask);
@@ -624,15 +623,7 @@ public class ODMStatusServer
       {
         logger.error("Error occurred while uploading S3 files for " + uploadTask.getOdmUUID(), t);
 
-        String msg;
-        if (t instanceof SpecialException)
-        {
-          msg = t.getLocalizedMessage();
-        }
-        else
-        {
-          msg = "The upload failed. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
-        }
+        String msg = RunwayException.localizeThrowable(t, Session.getCurrentLocale());
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.FAILED.getLabel());
@@ -644,12 +635,12 @@ public class ODMStatusServer
     }
 
 //    @Transaction
-    public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
+    public ProductIF runInTrans() throws ZipException, InterruptedException
     {
       ImageryComponent ic = uploadTask.getImageryComponent();
       UasComponentIF component = ic.getUasComponent();
       
-      AllZipS3Uploader processor = new AllZipS3Uploader(component, uploadTask);
+      ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask);
       
       try
       {

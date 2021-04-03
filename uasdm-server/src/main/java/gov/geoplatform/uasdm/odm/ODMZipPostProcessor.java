@@ -15,7 +15,9 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,23 +25,26 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.tika.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
+import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.SolrService;
+import net.geoprism.gis.geoserver.GeoserverProperties;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -49,15 +54,19 @@ import net.lingala.zip4j.exception.ZipException;
  * 
  * @author rrowlands
  */
-public class AllZipS3Uploader
+public class ODMZipPostProcessor
 {
-  private static final Logger logger = LoggerFactory.getLogger(AllZipS3Uploader.class);
+  private static final Logger logger = LoggerFactory.getLogger(ODMZipPostProcessor.class);
+  
+  public static final String DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
+
+  public static final String POTREE = Product.ODM_ALL_DIR + "/potree";
   
   protected List<DocumentIF> documents = new LinkedList<DocumentIF>();
   
   protected ODMUploadTaskIF uploadTask;
   
-  protected List<BasicODMFile> config;
+  protected List<S3FileUpload> config;
   
   protected UasComponentIF component;
   
@@ -69,7 +78,7 @@ public class AllZipS3Uploader
   
   protected Product product;
   
-  public AllZipS3Uploader(List<BasicODMFile> config, UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
+  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
   {
     this.config = config;
     this.component = component;
@@ -84,7 +93,7 @@ public class AllZipS3Uploader
     initConfig();
   }
   
-  public AllZipS3Uploader(List<BasicODMFile> config, UasComponentIF component, ODMUploadTaskIF uploadTask)
+  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask)
   {
     this.config = config;
     this.component = component;
@@ -98,7 +107,7 @@ public class AllZipS3Uploader
     initConfig();
   }
   
-  public AllZipS3Uploader(UasComponentIF component, ODMUploadTaskIF uploadTask)
+  public ODMZipPostProcessor(UasComponentIF component, ODMUploadTaskIF uploadTask)
   {
     this.component = component;
     this.s3Location = component.getS3location();
@@ -110,7 +119,7 @@ public class AllZipS3Uploader
   
   public void initConfig()
   {
-    for (BasicODMFile file : this.config)
+    for (S3FileUpload file : this.config)
     {
       file.setUploader(this);
     }
@@ -118,23 +127,25 @@ public class AllZipS3Uploader
   
   public void buildProcessingConfig()
   {
-    List<BasicODMFile> processingConfigs = new ArrayList<BasicODMFile>();
+    List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
 
-    processingConfigs.add(new MandatoryErosFile("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
-
-    processingConfigs.add(new MandatoryErosFile("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
-
-    processingConfigs.add(new MandatoryErosFile("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
-
-    processingConfigs.add(new MandatoryErosFile("micasense", "micasense", null));
+    processingConfigs.add(new ManagedSearchableDocument("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
     
-    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"cloud.js"}, false));
-    processingConfigs.add(new BasicODMFile("potree_pointcloud", "odm_all/potree", new String[]{"data"}, true));
+    processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] { "dsm.tif" }));
+
+    processingConfigs.add(new ManagedSearchableDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
+
+    processingConfigs.add(new ManagedSearchableDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+
+    processingConfigs.add(new ManagedSearchableDocument("micasense", "micasense", null));
+    
+    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"cloud.js"}, false));
+    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"data"}, true));
 
     this.config = processingConfigs;
   }
   
-  public ProductIF processAllZip() throws InterruptedException, SpecialException
+  public ProductIF processAllZip() throws InterruptedException
   {
     final String folderName = "odm-" + FilenameUtils.getName(s3Location) + "-" + new Random().nextInt();
     
@@ -148,10 +159,10 @@ public class AllZipS3Uploader
         }
         catch (ZipException e)
         {
-          throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
+          throw new RuntimeException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }
 
-        for (BasicODMFile config : this.config)
+        for (S3FileUpload config : this.config)
         {
           this.processConfig(config, unzippedParentFolder);
         }
@@ -190,7 +201,7 @@ public class AllZipS3Uploader
     return documents;
   }
   
-  protected void processConfig(BasicODMFile config, CloseableFile unzippedParentFolder) throws InterruptedException
+  protected void processConfig(S3FileUpload config, CloseableFile unzippedParentFolder) throws InterruptedException
   {
     if (Thread.interrupted())
     {
@@ -219,7 +230,7 @@ public class AllZipS3Uploader
     }
   }
   
-  protected void processDirectory(File parentDir, String s3FolderPrefix, BasicODMFile config, String filePrefix) throws InterruptedException
+  protected void processDirectory(File parentDir, String s3FolderPrefix, S3FileUpload config, String filePrefix) throws InterruptedException
   {
     File[] children = parentDir.listFiles();
 
@@ -291,9 +302,9 @@ public class AllZipS3Uploader
     }
   }
   
-  public static class BasicODMFile
+  public static class S3FileUpload
   {
-    protected AllZipS3Uploader  uploader;
+    protected ODMZipPostProcessor  uploader;
     
     private String            odmFolderName;
 
@@ -305,7 +316,7 @@ public class AllZipS3Uploader
     
     private boolean           isDirectory;
 
-    public BasicODMFile(String odmFolderName, String s3FolderName, String[] mandatoryFiles, boolean isDirectory)
+    public S3FileUpload(String odmFolderName, String s3FolderName, String[] mandatoryFiles, boolean isDirectory)
     {
       this.odmFolderName = odmFolderName;
       this.s3FolderName = s3FolderName;
@@ -314,12 +325,12 @@ public class AllZipS3Uploader
       this.isDirectory = isDirectory;
     }
     
-    public AllZipS3Uploader getUploader()
+    public ODMZipPostProcessor getUploader()
     {
       return uploader;
     }
 
-    public void setUploader(AllZipS3Uploader uploader)
+    public void setUploader(ODMZipPostProcessor uploader)
     {
       this.uploader = uploader;
     }
@@ -441,9 +452,9 @@ public class AllZipS3Uploader
     }
   }
   
-  public static class MandatoryErosFile extends BasicODMFile
+  public static class ManagedSearchableDocument extends S3FileUpload
   {
-    public MandatoryErosFile(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
+    public ManagedSearchableDocument(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
     {
       super(odmFolderName, s3FolderName, mandatoryFiles, false);
     }
@@ -471,13 +482,88 @@ public class AllZipS3Uploader
     }
   }
   
-  public static class SpecialException extends Exception
+  public static class DemGdalProcessor extends S3FileUpload
   {
-    private static final long serialVersionUID = 1L;
-
-    public SpecialException(String string, ZipException e)
+    public DemGdalProcessor(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
     {
-      super(string, e);
+      super(odmFolderName, s3FolderName, mandatoryFiles, false);
+    }
+
+    @Override
+    protected void processFile(File file, String key)
+    {
+      final String basename = FilenameUtils.getBaseName(file.getName());
+      
+      File hillshade = new File(file.getParent(), basename + "-gdal.tif");
+      
+      this.executeProcess(new String[] {
+          "gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath()
+      });
+      
+      if (hillshade.exists())
+      {
+        this.uploader.documents.add(this.uploader.component.createDocumentIfNotExist(key, file.getName()));
+        
+        super.processFile(hillshade, key);
+      }
+    }
+    
+    private void executeProcess(String[] commands)
+    {
+      final Runtime rt = Runtime.getRuntime();
+      
+      StringBuilder stdOut = new StringBuilder();
+      StringBuilder stdErr = new StringBuilder();
+      
+      Thread t = new Thread() {
+        public void run() {
+          try
+          {
+            Process proc = rt.exec(commands);
+            
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            
+            // read the output from the command
+            String s = null;
+            while ((s = stdInput.readLine()) != null)
+            {
+              stdOut.append(s + "\n");
+            }
+            
+            // read any errors from the attempted command
+            while ((s = stdError.readLine()) != null)
+            {
+              stdErr.append(s + "\n");
+            }
+          }
+          catch (Throwable t)
+          {
+            logger.error("Error occured while processing dem file with gdal.", t);
+          }
+        }
+      };
+      t.start();
+      
+      try
+      {
+        t.join(10000);
+      }
+      catch (InterruptedException e)
+      {
+        logger.error("Interrupted when processing dem file with gdal", e);
+      }
+      
+      if (stdOut.toString().trim().length() > 0)
+      {
+        logger.info("Processed hillshade with gdal [" + stdOut.toString() + "].");
+      }
+      
+      if (stdErr.toString().trim().length() > 0)
+      {
+        logger.error("Unexpected error while processing gdal hillshade [" + stdErr.toString() + "].");
+      }
     }
   }
   

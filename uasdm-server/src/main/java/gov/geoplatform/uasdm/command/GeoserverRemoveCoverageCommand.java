@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 
 public class GeoserverRemoveCoverageCommand implements Command
 {
@@ -43,7 +44,7 @@ public class GeoserverRemoveCoverageCommand implements Command
   {
     log.info("Deleting coverage [" + this.workspace + "][" + this.storeName + "] from geoserver");
 
-    Util.removeCoverageStore(workspace, storeName);
+    GeoserverPublisher.removeCoverageStore(workspace, storeName);
   }
 
   /**

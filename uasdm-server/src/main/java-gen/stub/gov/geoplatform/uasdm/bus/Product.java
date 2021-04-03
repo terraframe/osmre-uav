@@ -37,8 +37,8 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
+import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -345,7 +345,7 @@ public class Product extends ProductBase implements ProductIF
   @Override
   public void createImageService()
   {
-    Util.createImageServices(this.getWorkspace(), this.getComponent());
+    GeoserverPublisher.createImageServices(this.getWorkspace(), this.getComponent(), true);
   }
 
   @Override
@@ -354,31 +354,14 @@ public class Product extends ProductBase implements ProductIF
   {
     String existing = this.getWorkspace();
 
-    this.appLock();
     this.setPublished(!this.isPublished());
     this.apply();
 
     UasComponent component = this.getComponent();
 
-    try (OIterator<? extends Document> it = this.getAllDocuments())
-    {
-      while (it.hasNext())
-      {
-        Document document = it.next();
-
-        if (document.getName().endsWith(".tif"))
-        {
-          String storeName = component.getStoreName(document.getS3location());
-
-          if (GeoserverFacade.layerExists(existing, storeName))
-          {
-            Util.removeCoverageStore(existing, storeName);
-          }
-        }
-      }
-    }
-
-    Util.createImageServices(this.getWorkspace(), component);
+    GeoserverPublisher.removeImageServices(existing, component, false);
+    
+    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
   }
 
   public void calculateKeys(List<UasComponentIF> components)

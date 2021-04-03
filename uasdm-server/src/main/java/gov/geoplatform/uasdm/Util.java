@@ -45,11 +45,13 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.service.SolrService;
@@ -63,65 +65,6 @@ public class Util
   public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
   {
     RemoteFileFacade.uploadFile(child, key, task);
-  }
-
-  public static void createImageServices(String workspace, UasComponentIF imageryComponent)
-  {
-    try
-    {
-      // Publish Orthos
-      List<SiteObject> orthoObjects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects();
-
-      for (SiteObject object : orthoObjects)
-      {
-        String key = object.getKey();
-
-        if (key.endsWith(".tif"))
-        {
-          String storeName = imageryComponent.getStoreName(key);
-
-          if (GeoserverFacade.layerExists(workspace, storeName))
-          {
-            Util.removeCoverageStore(workspace, storeName);
-          }
-
-          try (CloseableFile geotiff = Util.download(key, storeName))
-          {
-            GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
-          }
-        }
-      }
-      
-      // Publish DEMs
-      List<SiteObject> demObjects = imageryComponent.getSiteObjects(ImageryComponent.DEM, null, null).getObjects();
-
-      for (SiteObject object : demObjects)
-      {
-        String key = object.getKey();
-
-        if (key.endsWith("dsm.tif"))
-        {
-          String storeName = imageryComponent.getStoreName(key);
-
-          if (GeoserverFacade.layerExists(workspace, storeName))
-          {
-            Util.removeCoverageStore(workspace, storeName);
-          }
-
-          try (CloseableFile geotiff = Util.download(key, storeName))
-          {
-            GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
-          }
-        }
-      }
-
-      // Refresh the public mosaic
-      new ImageMosaicService().refresh();
-    }
-    catch (Exception e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
   }
 
   public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
@@ -177,13 +120,6 @@ public class Util
 //        }
 //      }
 //    }
-  }
-
-  public static void removeCoverageStore(String workspace, String storeName)
-  {
-//    GeoserverFacade.removeStyle(storeName);
-//    GeoserverFacade.forceRemoveLayer(workspace, storeName);
-    GeoserverFacade.removeCoverageStore(workspace, storeName);
   }
 
   public static boolean isVideoFile(String path)

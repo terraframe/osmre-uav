@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -34,6 +35,8 @@ import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverInitializer implements UncaughtExceptionHandler, ServerContextListener
 {
+  public static String DIRTY_LAYER_PROPERTY_ID = "IDM-GS-DIRTY";
+  
   private static boolean             initialized = false;
 
   private static final ReentrantLock lock        = new ReentrantLock();
@@ -121,7 +124,7 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
         rebuild = true;
       }
 
-      if (rebuild)
+      if (rebuild || GeoserverLayer.getDirtyLayers().size() > 0)
       {
         logger.info("Geoserver workspace and store not found.  Republishing layers.");
 
@@ -131,6 +134,8 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
         {
           product.createImageService();
         }
+        
+        GeoserverLayer.clearDirtyLayers();
       }
 
       new ImageMosaicService().create();

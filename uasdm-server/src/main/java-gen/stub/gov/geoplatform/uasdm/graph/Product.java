@@ -44,23 +44,19 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.session.Request;
-import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
-import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader;
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader.BasicODMFile;
-import gov.geoplatform.uasdm.odm.AllZipS3Uploader.SpecialException;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.S3FileUpload;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -393,7 +389,7 @@ public class Product extends ProductBase implements ProductIF
   @Override
   public void createImageService()
   {
-    Util.createImageServices(this.getWorkspace(), this.getComponent());
+    GeoserverPublisher.createImageServices(this.getWorkspace(), this.getComponent(), true);
   }
   
   /**
@@ -403,7 +399,7 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public static void refreshAllDocuments(List<BasicODMFile> config) throws InterruptedException
+  public static void refreshAllDocuments(List<S3FileUpload> config) throws InterruptedException
   {
     final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
     
@@ -417,6 +413,7 @@ public class Product extends ProductBase implements ProductIF
     
     for (Product product : results)
     {
+      logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
       product.refreshDocuments(config);
     }
   }
@@ -428,7 +425,7 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public void refreshDocuments(List<BasicODMFile> config) throws InterruptedException
+  public void refreshDocuments(List<S3FileUpload> config) throws InterruptedException
   {
     final UasComponentIF component = this.getComponent();
     
@@ -436,16 +433,9 @@ public class Product extends ProductBase implements ProductIF
     
     if (allZipExists) 
     {
-      AllZipS3Uploader uploader = new AllZipS3Uploader(config, component, null, this);
+      ODMZipPostProcessor uploader = new ODMZipPostProcessor(config, component, null, this);
       
-      try
-      {
-        uploader.processAllZip();
-      }
-      catch (SpecialException e)
-      {
-        throw new RuntimeException(e);
-      }
+      uploader.processAllZip();
     }
   }
   
@@ -548,22 +538,9 @@ public class Product extends ProductBase implements ProductIF
 
     UasComponent component = this.getComponent();
 
-    List<DocumentIF> documents = this.getDocuments();
-
-    for (DocumentIF document : documents)
-    {
-      if (document.getName().endsWith(".tif"))
-      {
-        String storeName = component.getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(existing, storeName))
-        {
-          Util.removeCoverageStore(existing, storeName);
-        }
-      }
-    }
-
-    Util.createImageServices(this.getWorkspace(), component);
+    GeoserverPublisher.removeImageServices(existing, component, false);
+    
+    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
   }
 
   @Override
@@ -582,7 +559,7 @@ public class Product extends ProductBase implements ProductIF
       {
         this.imageKey = document.getS3location();
 
-        logger.trace("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
+        logger.debug("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
       }
       else if (document.getName().endsWith(".tif"))
       {
@@ -594,13 +571,14 @@ public class Product extends ProductBase implements ProductIF
           {
             this.mapKey = storeName;
   
-            logger.trace("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
+            logger.debug("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
           }
-          else if (document.getS3location().contains(ImageryComponent.DEM + "/") && document.getName().equals("dsm.tif"))
+          else if (document.getS3location().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
+//          else if (document.getS3location().contains(ImageryComponent.DEM + "/") && document.getName().equals("dsm.tif"))
           {
             this.demKey = storeName;
   
-            logger.trace("Setting dem key for product [" + this.getOid() + "] to [" + this.demKey + "]");
+            logger.debug("Setting dem key for product [" + this.getOid() + "] to [" + this.demKey + "]");
           }
         }
       }
