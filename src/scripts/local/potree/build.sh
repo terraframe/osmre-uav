@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# The actual production potree is downloaded and installed in the primary uasdm ansible deployment file.
 
 set -ex
 
