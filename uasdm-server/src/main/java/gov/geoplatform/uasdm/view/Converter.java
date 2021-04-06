@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -234,8 +235,11 @@ public abstract class Converter
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
+    
+    List<GeoserverLayer> layers = ( (Product) product ).getLayers();
+    view.setLayers(layers);
 
-    if (product.getImageKey() == null || product.getMapKey() == null)
+    if (product.getImageKey() == null || product.getImageKey().length() == 0)
     {
       product.calculateKeys(new LinkedList<UasComponentIF>(components));
     }
@@ -245,12 +249,8 @@ public abstract class Converter
       view.setImageKey(product.getImageKey());
     }
     
-    if (product.getMapKey() != null && product.getMapKey().length() > 0)
+    if (layers.size() > 0)
     {
-      view.setWorkspace(product.getWorkspace());
-      view.setMapKey(product.getMapKey());
-      view.setDemKey(( (Product) product ).getDemKey());
-
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
       {
         product.updateBoundingBox();

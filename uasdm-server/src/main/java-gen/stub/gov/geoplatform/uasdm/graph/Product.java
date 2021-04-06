@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -47,8 +48,10 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
-import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
+import gov.geoplatform.uasdm.geoserver.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -72,10 +75,6 @@ public class Product extends ProductBase implements ProductIF
   private static final long   serialVersionUID = -1476643617;
 
   private String              imageKey         = null;
-
-  private String              mapKey           = null;
-  
-  private String              demKey           = null;
 
   public Product()
   {
@@ -104,25 +103,11 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
-    // Delete all of the documents
-    UasComponent component = this.getComponent();
-    String workspace = this.getWorkspace();
-
     List<DocumentIF> documents = this.getDocuments();
 
     for (DocumentIF document : documents)
     {
-      document.delete(removeFromS3);
-
-      if (document.getName().endsWith(".tif"))
-      {
-        String storeName = component.getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(workspace, storeName))
-        {
-          new GeoserverRemoveCoverageCommand(workspace, storeName).doIt();
-        }
-      }
+      document.delete(removeFromS3, true);
     }
 
     super.delete();
@@ -228,6 +213,8 @@ public class Product extends ProductBase implements ProductIF
     {
       this.removeParent(document, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
+    
+    deleteAllLayers();
   }
 
   static
@@ -243,11 +230,28 @@ public class Product extends ProductBase implements ProductIF
    * 
    * @return A JSON array where [x1, x2, y1, y2]
    */
-  public String calculateBoundingBox(String mapKey)
+  public String calculateBoundingBox()
   {
+    String workspace = null;
+    String mapKey = null;
+    
+    for (GeoserverLayer layer : this.getLayers())
+    {
+      if (layer.getClassification().equals(LayerClassification.ORTHO))
+      {
+        workspace = layer.getWorkspace();
+        mapKey = layer.getLayerKey();
+      }
+    }
+    
+    if (mapKey == null || workspace == null)
+    {
+      return null;
+    }
+    
     try
     {
-      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(this.getWorkspace(), mapKey);
+      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(workspace, mapKey);
 
       List<Layer> layers = capabilities.getLayerList();
 
@@ -333,20 +337,17 @@ public class Product extends ProductBase implements ProductIF
 
     components.add(component);
 
-    if (this.getImageKey() == null || this.getMapKey() == null)
+    if (this.getImageKey() == null)
     {
       this.calculateKeys(components);
     }
 
-    if (this.getMapKey() != null && this.getMapKey().length() > 0)
-    {
-      String bbox = this.calculateBoundingBox(this.getMapKey());
+    String bbox = this.calculateBoundingBox();
 
-      if (bbox != null)
-      {
-        this.setBoundingBox(bbox);
-        this.apply();
-      }
+    if (bbox != null)
+    {
+      this.setBoundingBox(bbox);
+      this.apply();
     }
   }
 
@@ -355,30 +356,15 @@ public class Product extends ProductBase implements ProductIF
     return this.imageKey;
   }
 
-  public String getMapKey()
-  {
-    return this.mapKey;
-  }
-  
-  public String getDemKey()
-  {
-    return demKey;
-  }
-
-  public void setDemKey(String demKey)
-  {
-    this.demKey = demKey;
-  }
-
-  public String getWorkspace()
-  {
-    if (isPublished())
-    {
-      return AppProperties.getPublicWorkspace();
-    }
-
-    return GeoserverProperties.getWorkspace();
-  }
+//  public String getWorkspace()
+//  {
+//    if (isPublished())
+//    {
+//      return AppProperties.getPublicWorkspace();
+//    }
+//
+//    return GeoserverProperties.getWorkspace();
+//  }
 
   @Override
   public boolean isPublished()
@@ -387,9 +373,14 @@ public class Product extends ProductBase implements ProductIF
   }
 
   @Override
-  public void createImageService()
+  public void createImageService(boolean refreshMosaic)
   {
-    GeoserverPublisher.createImageServices(this.getWorkspace(), this.getComponent(), true);
+    GeoserverPublisher publisher = new GeoserverPublisher();
+    
+    for (DocumentIF document : this.getDocuments())
+    {
+      publisher.createImageServices((Document) document, this, refreshMosaic);
+    }
   }
   
   /**
@@ -399,7 +390,7 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public static void refreshAllDocuments(List<S3FileUpload> config) throws InterruptedException
+  public static void refreshAllDocuments() throws InterruptedException
   {
     final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
     
@@ -414,7 +405,7 @@ public class Product extends ProductBase implements ProductIF
     for (Product product : results)
     {
       logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
-      product.refreshDocuments(config);
+      product.refreshDocuments();
     }
   }
   
@@ -425,15 +416,15 @@ public class Product extends ProductBase implements ProductIF
    * @param productId
    * @throws InterruptedException
    */
-  public void refreshDocuments(List<S3FileUpload> config) throws InterruptedException
+  public void refreshDocuments() throws InterruptedException
   {
     final UasComponentIF component = this.getComponent();
     
     boolean allZipExists = this.getAllZip() != null;
     
-    if (allZipExists) 
+    if (allZipExists)
     {
-      ODMZipPostProcessor uploader = new ODMZipPostProcessor(config, component, null, this);
+      ODMZipPostProcessor uploader = new ODMZipPostProcessor(component, null, this);
       
       uploader.processAllZip();
     }
@@ -531,58 +522,68 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void togglePublished()
   {
-    String existing = this.getWorkspace();
-
     this.setPublished(!this.isPublished());
     this.apply();
 
-    UasComponent component = this.getComponent();
-
-    GeoserverPublisher.removeImageServices(existing, component, false);
+    List<GeoserverLayer> layers = this.getLayers();
     
-    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
+    new GeoserverPublisher().togglePublic(layers);
   }
 
   @Override
   public void calculateKeys(List<UasComponentIF> components)
   {
     List<DocumentIF> documents = this.getDocuments();
-    String workspace = this.getWorkspace();
-
-    logger.trace("Calculating image keys for product [" + this.getOid() + "] with [" + documents.size() + "]");
 
     for (DocumentIF document : documents)
     {
-      logger.trace("Checking document [" + document.getName() + "]");
-
       if (document.getName().endsWith(".png"))
       {
         this.imageKey = document.getS3location();
-
-        logger.debug("Setting image key for product [" + this.getOid() + "] to [" + this.imageKey + "]");
       }
-      else if (document.getName().endsWith(".tif"))
-      {
-        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(workspace, storeName))
-        {
-          if (document.getS3location().contains(ImageryComponent.ORTHO + "/"))
-          {
-            this.mapKey = storeName;
-  
-            logger.debug("Setting map key for product [" + this.getOid() + "] to [" + this.mapKey + "]");
-          }
-          else if (document.getS3location().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
-//          else if (document.getS3location().contains(ImageryComponent.DEM + "/") && document.getName().equals("dsm.tif"))
-          {
-            this.demKey = storeName;
-  
-            logger.debug("Setting dem key for product [" + this.getOid() + "] to [" + this.demKey + "]");
-          }
-        }
-      }
+//      else if (document.getName().endsWith(".tif"))
+//      {
+//        Document gdoc = (Document) document;
+//        
+//        for (GeoserverLayer layer : gdoc.getLayers())
+//        {
+//          if (layer.isPublished())
+//          {
+//            if (layer.getClassification().equals(LayerClassification.ORTHO))
+//            {
+//              this.mapKey = layer.getStoreName();
+//            }
+//            else if (layer.getClassification().equals(LayerClassification.DEM_DSM))
+//            {
+//              this.demKey = layer.getStoreName();
+//            }
+//          }
+//        }
+//      }
     }
+  }
+  
+  public void deleteAllLayers()
+  {
+    for (GeoserverLayer layer : this.getLayers())
+    {
+      layer.delete();
+    }
+  }
+  
+  public List<GeoserverLayer> getLayers()
+  {
+    List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
+    List<DocumentIF> documents = this.getDocuments();
+
+    for (DocumentIF document : documents)
+    {
+      Document gdoc = (Document) document;
+      
+      layers.addAll(gdoc.getLayers());
+    }
+    
+    return layers;
   }
 
   public static List<ProductIF> getProducts()
@@ -596,5 +597,5 @@ public class Product extends ProductBase implements ProductIF
 
     return query.getResults();
   }
-
+  
 }

@@ -37,9 +37,9 @@ import gov.geoplatform.uasdm.view.SiteObject;
 public class ProductService
 {
   @Request(RequestType.SESSION)
-  public void refreshAllDocuments(String sessionId, List<S3FileUpload> config) throws InterruptedException
+  public void refreshAllDocuments(String sessionId) throws InterruptedException
   {
-    Product.refreshAllDocuments(config);
+    Product.refreshAllDocuments();
   }
   
   /**
@@ -50,11 +50,11 @@ public class ProductService
    * @throws InterruptedException
    */
   @Request(RequestType.SESSION)
-  public void refreshDocuments(String sessionId, String productId, List<S3FileUpload> config) throws InterruptedException
+  public void refreshDocuments(String sessionId, String productId) throws InterruptedException
   {
     final Product product = Product.get(productId);
     
-    product.refreshDocuments(config);
+    product.refreshDocuments();
   }
   
   @Request(RequestType.SESSION)

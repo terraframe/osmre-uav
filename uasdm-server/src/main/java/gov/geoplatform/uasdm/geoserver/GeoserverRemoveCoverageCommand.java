@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.command;
+package gov.geoplatform.uasdm.geoserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 
 public class GeoserverRemoveCoverageCommand implements Command
 {
@@ -44,7 +44,7 @@ public class GeoserverRemoveCoverageCommand implements Command
   {
     log.info("Deleting coverage [" + this.workspace + "][" + this.storeName + "] from geoserver");
 
-    GeoserverPublisher.removeCoverageStore(workspace, storeName);
+    new GeoserverPublisher().removeCoverageStore(workspace, storeName);
   }
 
   /**

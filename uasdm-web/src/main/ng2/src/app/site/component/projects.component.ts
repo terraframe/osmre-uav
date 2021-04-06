@@ -11,7 +11,7 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 
-import { SiteEntity, Product, Task } from '../model/management';
+import { SiteEntity, Product, Task, GeoserverLayer } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
 import { UploadModalComponent } from './modal/upload-modal.component';
@@ -116,7 +116,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		id: 'streets-v11'
 	}];
 
-	layers: { workspace: string, mapKey: string }[] = [];
+	layers: GeoserverLayer[] = [];
 
 	baselayerIconHover = false;
 
@@ -347,7 +347,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		});
 
 		this.layers.forEach(layer => {
-			this.addImageLayer(layer.workspace, layer.mapKey);
+		  if (layer.isMapped)
+		  {
+			  this.addImageLayer(layer);
+			}
 		});
 	}
 
@@ -700,25 +703,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	
 	handleMapOrtho(product: Product): void {
 
-		const mapKey = product.mapKey;
+		const layer = this.getLayerByClassification("ORTHO", product);
 
-		if (mapKey != null) {
-			if (this.map.getLayer(mapKey) != null) {
-				this.map.removeLayer(mapKey);
-				this.map.removeSource(mapKey);
+		if (layer != null && layer.key != null) {
+			if (this.map.getLayer(layer.key) != null) {
+				this.map.removeLayer(layer.key);
+				this.map.removeSource(layer.key);
 
-				var index = this.layers.findIndex(layer => layer.mapKey === mapKey);
-				if (index !== -1) {
-					this.layers.splice(index, 1);
-				}
-
+        layer.isMapped = false;
 				product.orthoMapped = false;
 			}
 			else {
-				this.addImageLayer(product.workspace, mapKey);
+				this.addImageLayer(layer);
 
-				this.layers.push({ workspace: product.workspace, mapKey: mapKey });
-
+        layer.isMapped = true;
 				product.orthoMapped = true;
 
 				if (product.boundingBox != null) {
@@ -732,27 +730,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 	
+	getLayerByClassification(classification: string, product: Product): GeoserverLayer {
+	  this.layers.forEach( (layer: GeoserverLayer) => {
+	    if (layer.classification === classification)
+	    {
+	      return layer;
+	    }
+	  });
+	  
+	  return null;
+	}
+	
 	handleMapDem(product: Product): void {
 
-    const demKey = product.demKey;
+    const layer = this.getLayerByClassification("DEM_DSM", product);
 
-    if (demKey != null) {
-      if (this.map.getLayer(demKey) != null) {
-        this.map.removeLayer(demKey);
-        this.map.removeSource(demKey);
+    if (layer != null && layer.key != null) {
+      if (this.map.getLayer(layer.key) != null) {
+        this.map.removeLayer(layer.key);
+        this.map.removeSource(layer.key);
 
-        var index = this.layers.findIndex(layer => layer.mapKey === demKey);
-        if (index !== -1) {
-          this.layers.splice(index, 1);
-        }
-
+        layer.isMapped = false;
         product.demMapped = false;
       }
       else {
-        this.addImageLayer(product.workspace, demKey);
+        this.addImageLayer(layer);
 
-        this.layers.push({ workspace: product.workspace, mapKey: demKey });
-
+        layer.isMapped = true;
         product.demMapped = true;
 
         if (product.boundingBox != null) {
@@ -766,12 +770,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-	addImageLayer(wkspace: string, imageKey: string) {
-		const workspace = encodeURI(wkspace);
-		const layerName = encodeURI(workspace + ':' + imageKey);
+	addImageLayer(layer: GeoserverLayer) {
+		const workspace = encodeURI(layer.workspace);
+		const layerName = encodeURI(layer.workspace + ':' + layer.key);
 
 		this.map.addLayer({
-			'id': imageKey,
+			'id': layer.key,
 			'type': 'raster',
 			'source': {
 				'type': 'raster',

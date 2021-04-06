@@ -35,8 +35,6 @@ import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverInitializer implements UncaughtExceptionHandler, ServerContextListener
 {
-  public static String DIRTY_LAYER_PROPERTY_ID = "IDM-GS-DIRTY";
-  
   private static boolean             initialized = false;
 
   private static final ReentrantLock lock        = new ReentrantLock();
@@ -108,37 +106,7 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
     @Request
     private void runInRequest()
     {
-      boolean rebuild = false;
-
-      if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
-      {
-        GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
-
-        rebuild = true;
-      }
-
-      if (!GeoserverFacade.workspaceExists(GeoserverProperties.getWorkspace()))
-      {
-        GeoserverFacade.publishWorkspace();
-
-        rebuild = true;
-      }
-
-      if (rebuild || GeoserverLayer.getDirtyLayers().size() > 0)
-      {
-        logger.info("Geoserver workspace and store not found.  Republishing layers.");
-
-        List<ProductIF> products = ComponentFacade.getProducts();
-
-        for (ProductIF product : products)
-        {
-          product.createImageService();
-        }
-        
-        GeoserverLayer.clearDirtyLayers();
-      }
-
-      new ImageMosaicService().create();
+      new GeoserverPublisher().initializeGeoserver();
     }
   }
 

@@ -37,8 +37,8 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.command.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
+import gov.geoplatform.uasdm.geoserver.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -80,10 +80,6 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
-    // Delete all of the documents
-    UasComponent component = this.getComponent();
-    String workspace = this.getWorkspace();
-
     List<Document> documents = new LinkedList<Document>();
 
     try (OIterator<? extends Document> it = this.getAllDocuments())
@@ -93,17 +89,7 @@ public class Product extends ProductBase implements ProductIF
 
     for (Document document : documents)
     {
-      document.delete(removeFromS3);
-
-      if (document.getName().endsWith(".tif"))
-      {
-        String storeName = component.getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(workspace, storeName))
-        {
-          new GeoserverRemoveCoverageCommand(workspace, storeName).doIt();
-        }
-      }
+      document.delete(removeFromS3, true);
     }
 
     super.delete();
@@ -218,81 +204,81 @@ public class Product extends ProductBase implements ProductIF
    */
   public String calculateBoundingBox(String mapKey)
   {
-    try
-    {
-      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(this.getWorkspace(), mapKey);
-
-      List<Layer> layers = capabilities.getLayerList();
-
-      Layer layer = null;
-
-      if (layers.size() == 0)
-      {
-        logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
-        return null;
-      }
-      else if (layers.size() == 1)
-      {
-        layer = layers.get(0);
-      }
-      else
-      {
-        for (Layer potential : layers)
-        {
-          if (potential.getName() != null && potential.getName().equals(mapKey))
-          {
-            layer = potential;
-            break;
-          }
-        }
-
-        if (layer == null)
-        {
-          logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
-          return null;
-        }
-      }
-
-      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
-
-      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
-      {
-        String code = entry.getKey();
-        CRSEnvelope envelope = entry.getValue();
-
-        try
-        {
-          // Mapbox's docs say that it's in 3857 but it's bounding box method
-          // expects 4326.
-          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-
-          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-
-          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
-          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
-
-          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
-
-          JSONArray json = new JSONArray();
-          json.put(env3857.getMinX());
-          json.put(env3857.getMaxX());
-          json.put(env3857.getMinY());
-          json.put(env3857.getMaxY());
-
-          return json.toString();
-        }
-        catch (Throwable t)
-        {
-          // Perhaps there is another bounding box we can try?
-        }
-      }
-    }
-    catch (Throwable t)
-    {
-      logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].", t);
-      return null;
-    }
+//    try
+//    {
+//      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(this.getWorkspace(), mapKey);
+//
+//      List<Layer> layers = capabilities.getLayerList();
+//
+//      Layer layer = null;
+//
+//      if (layers.size() == 0)
+//      {
+//        logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
+//        return null;
+//      }
+//      else if (layers.size() == 1)
+//      {
+//        layer = layers.get(0);
+//      }
+//      else
+//      {
+//        for (Layer potential : layers)
+//        {
+//          if (potential.getName() != null && potential.getName().equals(mapKey))
+//          {
+//            layer = potential;
+//            break;
+//          }
+//        }
+//
+//        if (layer == null)
+//        {
+//          logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
+//          return null;
+//        }
+//      }
+//
+//      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
+//
+//      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
+//      {
+//        String code = entry.getKey();
+//        CRSEnvelope envelope = entry.getValue();
+//
+//        try
+//        {
+//          // Mapbox's docs say that it's in 3857 but it's bounding box method
+//          // expects 4326.
+//          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
+//          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+//
+//          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+//
+//          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
+//          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
+//
+//          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
+//
+//          JSONArray json = new JSONArray();
+//          json.put(env3857.getMinX());
+//          json.put(env3857.getMaxX());
+//          json.put(env3857.getMinY());
+//          json.put(env3857.getMaxY());
+//
+//          return json.toString();
+//        }
+//        catch (Throwable t)
+//        {
+//          // Perhaps there is another bounding box we can try?
+//        }
+//      }
+//    }
+//    catch (Throwable t)
+//    {
+//      logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].", t);
+//      return null;
+//    }
 
     logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].");
     return null;
@@ -331,65 +317,65 @@ public class Product extends ProductBase implements ProductIF
     return this.getPublished() != null && this.getPublished();
   }
 
-  @Override
-  public String getWorkspace()
-  {
-    if (isPublished())
-    {
-      return AppProperties.getPublicWorkspace();
-    }
+//  @Override
+//  public String getWorkspace()
+//  {
+//    if (isPublished())
+//    {
+//      return AppProperties.getPublicWorkspace();
+//    }
+//
+//    return GeoserverProperties.getWorkspace();
+//  }
 
-    return GeoserverProperties.getWorkspace();
-  }
-
   @Override
-  public void createImageService()
+  public void createImageService(boolean refreshMosaic)
   {
-    GeoserverPublisher.createImageServices(this.getWorkspace(), this.getComponent(), true);
+//    GeoserverPublisher.createImageServices(this.isPublished(), this.getComponent(), refreshMosaic);
   }
 
   @Override
   @Transaction
   public void togglePublished()
   {
-    String existing = this.getWorkspace();
-
-    this.setPublished(!this.isPublished());
-    this.apply();
-
-    UasComponent component = this.getComponent();
-
-    GeoserverPublisher.removeImageServices(existing, component, false);
-    
-    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
+//    String existing = this.getWorkspace();
+//
+//    this.setPublished(!this.isPublished());
+//    this.apply();
+//
+//    UasComponent component = this.getComponent();
+//
+//    GeoserverPublisher.removeImageServices(existing, component, false);
+//    
+//    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
   }
 
   public void calculateKeys(List<UasComponentIF> components)
   {
-    List<Document> documents = new LinkedList<Document>();
-    String workspace = this.getWorkspace();
-
-    try (OIterator<? extends Document> it = this.getAllDocuments())
-    {
-      documents.addAll(it.getAll());
-    }
-
-    for (Document document : documents)
-    {
-      if (document.getName().endsWith(".png"))
-      {
-        this.imageKey = document.getS3location();
-      }
-      else if (document.getName().endsWith(".tif"))
-      {
-        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
-
-        if (GeoserverFacade.layerExists(workspace, storeName))
-        {
-          this.mapKey = storeName;
-        }
-      }
-    }
+//    List<Document> documents = new LinkedList<Document>();
+//    String workspace = this.getWorkspace();
+//
+//    try (OIterator<? extends Document> it = this.getAllDocuments())
+//    {
+//      documents.addAll(it.getAll());
+//    }
+//
+//    for (Document document : documents)
+//    {
+//      if (document.getName().endsWith(".png"))
+//      {
+//        this.imageKey = document.getS3location();
+//      }
+//      else if (document.getName().endsWith(".tif"))
+//      {
+//        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
+//
+//        if (GeoserverFacade.layerExists(workspace, storeName))
+//        {
+//          this.mapKey = storeName;
+//        }
+//      }
+//    }
   }
 
   public static List<ProductIF> getProduct()

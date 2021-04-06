@@ -30,7 +30,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
 
   public void delete();
 
-  public void delete(boolean removeFromS3);
+  public void delete(boolean removeFromS3, boolean deleteLayers);
 
   public JSONObject toJSON();
 

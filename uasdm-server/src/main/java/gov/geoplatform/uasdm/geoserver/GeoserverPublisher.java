@@ -1,57 +1,149 @@
 package gov.geoplatform.uasdm.geoserver;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
+import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
+import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverPublisher
 {
-  public static final Set<String> publishedObjects = new HashSet<String>();
+  private static final Logger logger = LoggerFactory.getLogger(GeoserverPublisher.class);
   
-  static
+  private boolean existsGeoserver;
+  
+  public GeoserverPublisher()
   {
-    publishedObjects.add(ImageryComponent.ORTHO + "/odm_orthophoto.tif");
-    publishedObjects.add(ODMZipPostProcessor.DEM_GDAL + "/dsm.tif");
+    existsGeoserver = System.getProperty("GEOSERVER_DATA_DIR") != null;
   }
   
-  public static List<SiteObject> getPublishableObjects(UasComponentIF component)
+  protected List<GeoserverLayer> getPublishableLayers(Document document, Product product, UasComponent collection)
   {
     List<SiteObject> publishedObjects = new ArrayList<SiteObject>();
     
-    publishedObjects.addAll(component.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects());
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects()));
     
-    publishedObjects.addAll(component.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects());
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects()));
     
-    return publishedObjects;
+    return createPublishableLayersFromSiteObjects(document, product, collection, publishedObjects);
   }
   
-  public static void createImageServices(String workspace, UasComponentIF component, boolean refreshMosiac)
+  public static List<GeoserverLayer> createPublishableLayersFromSiteObjects(Document document, Product product, UasComponent collection, List<SiteObject> siteObjects)
   {
+    List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
+    
+    for (SiteObject siteObject : siteObjects)
+    {
+      GeoserverLayer layer = GeoserverLayer.getByKey(siteObject.getKey());
+      
+      if (layer == null)
+      {
+        layer = new GeoserverLayer(collection, siteObject.getKey(), product.getPublished());
+        layer.apply();
+        
+        document.addChild(layer, EdgeType.DOCUMENT_HAS_LAYER).apply();
+      }
+      
+      layers.add(layer);
+    }
+    
+    return layers;
+  }
+  
+  public void initializeGeoserver()
+  {
+    boolean rebuild = false;
+    
+    if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
+    {
+      GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
+
+      rebuild = true;
+    }
+
+    if (!GeoserverFacade.workspaceExists(GeoserverProperties.getWorkspace()))
+    {
+      GeoserverFacade.publishWorkspace();
+
+      rebuild = true;
+    }
+    
+    if (!GeoserverFacade.workspaceExists(AppProperties.getPublicHillshadeWorkspace()))
+    {
+      GeoserverFacade.publishWorkspace(AppProperties.getPublicHillshadeWorkspace());
+
+      rebuild = true;
+    }
+    
+    if (rebuild)
+    {
+      GeoserverLayer.dirtyAllLayers();
+    }
+    else
+    {
+      for (GeoserverLayer layer : GeoserverLayer.getAllLayers())
+      {
+        if (!layer.isPublished())
+        {
+          layer.setDirty(true);
+          layer.apply();
+        }
+      }
+    }
+    
+    int dirtyLayerCount = GeoserverLayer.getDirtyLayers().size();
+
+    if (dirtyLayerCount > 0)
+    {
+      logger.info("Republishing [" + dirtyLayerCount + "] layers.");
+
+      List<ProductIF> products = ComponentFacade.getProducts();
+
+      for (ProductIF product : products)
+      {
+        product.createImageService(false);
+      }
+      
+      ImageMosaicPublisher.initializeAll();
+    }
+  }
+  
+  public void createImageServices(Document document, Product product, boolean refreshMosiac)
+  {
+    final UasComponent component = product.getComponent();
+    
     try
     {
-      List<SiteObject> publishedObjects = getPublishableObjects(component);
+      List<GeoserverLayer> publishableLayers = getPublishableLayers(document, product, component);
 
-      for (SiteObject object : publishedObjects)
+      for (GeoserverLayer layer : publishableLayers)
       {
-        publishGeoTiff(object.getKey(), (UasComponent) component, workspace);
+        publishGeoTiff(component, layer);
       }
 
       // Refresh the public mosaic
-      if (refreshMosiac)
+      if (existsGeoserver && refreshMosiac)
       {
-        new ImageMosaicService().refresh();
+        ImageMosaicPublisher.refreshAll();
       }
     }
     catch (Exception e)
@@ -60,74 +152,104 @@ public class GeoserverPublisher
     }
   }
   
-  public static void removeImageServices(String workspace, UasComponentIF component, boolean refreshMosiac)
+  public void removeImageServices(Document document, Product product, boolean refreshMosiac)
   {
-    List<SiteObject> publishedObjects = getPublishableObjects(component);
+    final UasComponent component = product.getComponent();
+    
+    List<GeoserverLayer> publishableLayers = getPublishableLayers(document, product, component);
 
-    for (SiteObject object : publishedObjects)
+    for (GeoserverLayer layer : publishableLayers)
     {
-      unpublish(object.getKey(), (UasComponent) component, workspace);
+      unpublish(component, layer);
+      
+      layer.delete();
     }
     
     // Refresh the public mosaic
-    if (refreshMosiac)
+    if (existsGeoserver && refreshMosiac)
     {
-      new ImageMosaicService().refresh();
+      ImageMosaicPublisher.refreshAll();
     }
   }
   
-  public static void refreshImageServices(String workspace, UasComponentIF component)
+  public void togglePublic(List<GeoserverLayer> layers)
   {
-    createImageServices(workspace, component, false);
-    removeImageServices(workspace, component, false);
-    new ImageMosaicService().refresh();
-  }
-  
-  public static void unpublish(String key, UasComponent component, String workspace)
-  {
-    if (shouldPublish(key))
+    for (GeoserverLayer layer : layers)
     {
-      String storeName = component.getStoreName(key);
-
-      if (GeoserverFacade.layerExists(workspace, storeName))
+      if (layer.isPublished())
       {
-        removeCoverageStore(workspace, storeName);
+        layer.unpublish();
+        
+        layer.setIsPublic(!layer.getIsPublic());
+        
+        layer.publish();
+        
+        layer.apply();
       }
     }
   }
   
-  public static void publishGeoTiff(String key, UasComponentIF collection, String workspace)
+  public void refreshImageServices(Document document, Product product, UasComponent component)
   {
-    if (shouldPublish(key))
+    createImageServices(document, product, false);
+    removeImageServices(document, product, false);
+    
+    if (existsGeoserver)
     {
-      final String storeName = collection.getStoreName(key);
-
-      if (GeoserverFacade.layerExists(workspace, storeName))
-      {
-        removeCoverageStore(workspace, storeName);
-      }
-
-      try (CloseableFile geotiff = Util.download(key, storeName))
-      {
-        GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
-      }
+      ImageMosaicPublisher.refreshAll();
     }
   }
   
-  public static boolean shouldPublish(String key)
+  protected void unpublish(UasComponentIF collection, GeoserverLayer layer)
   {
-    for (String expected : publishedObjects)
+    if (existsGeoserver)
     {
-      if (key.endsWith(expected))
+      if (GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName()))
       {
-        return true;
+        removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
+      }
+      
+      layer.setDirty(true);
+    }
+  }
+  
+  protected void publishGeoTiff(UasComponentIF collection, GeoserverLayer layer)
+  {
+    if (existsGeoserver)
+    {
+      if (GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName()))
+      {
+        removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
+      }
+
+      try (CloseableFile geotiff = Util.download(layer.getLayerKey(), layer.getStoreName()))
+      {
+        GeoserverFacade.publishGeoTiff(layer.getWorkspace(), layer.getStoreName(), geotiff);
+      }
+      
+      layer.setDirty(false);
+    }
+  }
+  
+  protected List<SiteObject> filterSiteObjects(List<SiteObject> objects)
+  {
+    List<SiteObject> filtered = new ArrayList<SiteObject>();
+    
+    for (SiteObject object : objects)
+    {
+      for (LayerClassification classy : GeoserverLayer.LayerClassification.values())
+      {
+        if (object.getKey().endsWith(classy.getKeyPath()))
+        {
+          filtered.add(object);
+        }
       }
     }
     
-    return false;
+    return filtered;
   }
   
-  public static void removeCoverageStore(String workspace, String storeName)
+  protected void removeCoverageStore(String workspace, String storeName)
   {
 //    GeoserverFacade.removeStyle(storeName);
 //    GeoserverFacade.forceRemoveLayer(workspace, storeName);

@@ -36,7 +36,7 @@ import com.runwaysdk.resource.CloseableFile;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
-import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
+import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -78,37 +78,38 @@ public class ODMZipPostProcessor
   
   protected Product product;
   
-  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
+//  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
+//  {
+//    this.config = config;
+//    this.component = component;
+//    this.s3Location = component.getS3location();
+//    this.uploadTask = uploadTask;
+//    this.product = product;
+//    
+//    if (config == null)
+//    {
+//      buildProcessingConfig();
+//    }
+//    initConfig();
+//  }
+  
+//  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask)
+//  {
+//    this.config = config;
+//    this.component = component;
+//    this.s3Location = component.getS3location();
+//    this.uploadTask = uploadTask;
+//    
+//    if (config == null)
+//    {
+//      buildProcessingConfig();
+//    }
+//    initConfig();
+//  }
+  
+  public ODMZipPostProcessor(UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
   {
-    this.config = config;
-    this.component = component;
-    this.s3Location = component.getS3location();
-    this.uploadTask = uploadTask;
     this.product = product;
-    
-    if (config == null)
-    {
-      buildProcessingConfig();
-    }
-    initConfig();
-  }
-  
-  public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF component, ODMUploadTaskIF uploadTask)
-  {
-    this.config = config;
-    this.component = component;
-    this.s3Location = component.getS3location();
-    this.uploadTask = uploadTask;
-    
-    if (config == null)
-    {
-      buildProcessingConfig();
-    }
-    initConfig();
-  }
-  
-  public ODMZipPostProcessor(UasComponentIF component, ODMUploadTaskIF uploadTask)
-  {
     this.component = component;
     this.s3Location = component.getS3location();
     this.uploadTask = uploadTask;
@@ -129,15 +130,15 @@ public class ODMZipPostProcessor
   {
     List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
 
-    processingConfigs.add(new ManagedSearchableDocument("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
+    processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
     
     processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] { "dsm.tif" }));
 
-    processingConfigs.add(new ManagedSearchableDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
+    processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
 
-    processingConfigs.add(new ManagedSearchableDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+    processingConfigs.add(new ManagedDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
 
-    processingConfigs.add(new ManagedSearchableDocument("micasense", "micasense", null));
+    processingConfigs.add(new ManagedDocument("micasense", "micasense", null));
     
     processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"cloud.js"}, false));
     processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"data"}, true));
@@ -192,6 +193,10 @@ public class ODMZipPostProcessor
         raw.addGeneratedProduct(product);
       }
     }
+    
+    product.createImageService(true);
+
+    product.updateBoundingBox();
     
     return this.product;
   }
@@ -452,11 +457,20 @@ public class ODMZipPostProcessor
     }
   }
   
-  public static class ManagedSearchableDocument extends S3FileUpload
+  public static class ManagedDocument extends S3FileUpload
   {
-    public ManagedSearchableDocument(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
+    private boolean searchable;
+    
+    public ManagedDocument(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
+    {
+      this(odmFolderName, s3FolderName, mandatoryFiles, true);
+    }
+    
+    public ManagedDocument(String odmFolderName, String s3FolderName, String[] mandatoryFiles, boolean searchable)
     {
       super(odmFolderName, s3FolderName, mandatoryFiles, false);
+      
+      this.searchable = searchable;
     }
 
     @Override
@@ -477,12 +491,15 @@ public class ODMZipPostProcessor
       {
         this.uploader.documents.add(this.uploader.component.createDocumentIfNotExist(key, file.getName()));
         
-        SolrService.updateOrCreateDocument(this.uploader.component.getAncestors(), this.uploader.component, key, file.getName());
+        if (searchable)
+        {
+          SolrService.updateOrCreateDocument(this.uploader.component.getAncestors(), this.uploader.component, key, file.getName());
+        }
       }
     }
   }
   
-  public static class DemGdalProcessor extends S3FileUpload
+  public static class DemGdalProcessor extends ManagedDocument
   {
     public DemGdalProcessor(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
     {

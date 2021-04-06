@@ -640,13 +640,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren().size();
   }
 
-  public String getStoreName(String key)
-  {
-    String baseName = FilenameUtils.getBaseName(key);
-
-    return this.getOid() + "-" + baseName;
-  }
-
   public List<DocumentIF> getDocuments()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_DOCUMENT, DocumentIF.class);

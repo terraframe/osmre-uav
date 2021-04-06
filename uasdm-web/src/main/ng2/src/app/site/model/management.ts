@@ -147,13 +147,18 @@ export class Product {
 	entities: SiteEntity[];
 	published: boolean;
 	imageKey?: string;
-	mapKey?: string;
-	demKey?: string;
-	workspace?: string;
 	boundingBox?: number[];
+	layers: GeoserverLayer[];
 	orthoMapped?: boolean;
 	demMapped?: boolean;
 	hasPointcloud?: boolean;
+}
+
+export class GeoserverLayer {
+  workspace: string;
+  classification: string;
+  key: string;
+  isMapped?: boolean;
 }
 
 export class ProductDetail extends Product {

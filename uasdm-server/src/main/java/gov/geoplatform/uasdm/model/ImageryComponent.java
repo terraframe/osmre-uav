@@ -59,8 +59,6 @@ public interface ImageryComponent
 
   public UasComponentIF getUasComponent();
 
-  public String getStoreName(String key);
-
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize);
 
   public String getS3location();

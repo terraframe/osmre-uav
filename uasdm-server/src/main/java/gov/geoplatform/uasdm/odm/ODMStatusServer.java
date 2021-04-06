@@ -15,16 +15,11 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,28 +29,21 @@ import com.runwaysdk.business.SmartException;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.EmailSetting;
-import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.S3FileUpload;
 
 public class ODMStatusServer
 {
@@ -611,12 +599,6 @@ public class ODMStatusServer
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        // Create image services
-        product.createImageService();
-
-//         Calculate bounding boxes
-        product.updateBoundingBox();
-
         ODMStatusServer.sendEmail(uploadTask);
       }
       catch (Throwable t)
@@ -640,7 +622,7 @@ public class ODMStatusServer
       ImageryComponent ic = uploadTask.getImageryComponent();
       UasComponentIF component = ic.getUasComponent();
       
-      ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask);
+      ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask, null);
       
       try
       {

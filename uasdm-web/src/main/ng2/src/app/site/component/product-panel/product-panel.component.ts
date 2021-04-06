@@ -186,8 +186,6 @@ export class ProductPanelComponent {
                 this.toggleMapDem.emit(product);
             }
 
-            product.workspace = p.workspace;
-            product.mapKey = p.mapKey;
             product.published = p.published;
 
             if (mapIt) {

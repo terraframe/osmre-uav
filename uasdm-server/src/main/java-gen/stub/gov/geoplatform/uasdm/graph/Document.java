@@ -27,6 +27,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -57,11 +58,11 @@ public class Document extends DocumentBase implements DocumentIF
   @Override
   public void delete()
   {
-    this.delete(true);
+    this.delete(true, true);
   }
 
   @Transaction
-  public void delete(boolean removeFromS3)
+  public void delete(boolean removeFromS3, boolean deleteLayers)
   {
     super.delete();
 
@@ -127,6 +128,14 @@ public class Document extends DocumentBase implements DocumentIF
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_GENERATED_PRODUCT);
 
     this.addChild((Product) product, mdEdge).apply();
+  }
+  
+  public List<GeoserverLayer> getLayers()
+  {
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_HAS_LAYER);
+    final List<GeoserverLayer> children = this.getChildren(mdEdge, GeoserverLayer.class);
+
+    return children;
   }
 
   public JSONObject toJSON()

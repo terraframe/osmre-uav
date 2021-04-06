@@ -63,7 +63,12 @@ public class AppProperties
 
   public static String getPublicWorkspace()
   {
-    return Singleton.getProps().getString("public.workspace");
+    return Singleton.getProps().getString("public.workspace", "image-public");
+  }
+  
+  public static String getPublicHillshadeWorkspace()
+  {
+    return Singleton.getProps().getString("geoserver.workspace.public.hillshade", "public-hillshade");
   }
 
   public static String getBucketRegion()

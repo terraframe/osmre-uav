@@ -15,23 +15,17 @@
  */
 package com.runwaysdk.build.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.DemGdalProcessor;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.S3FileUpload;
 
 
-public class GdalS3Migrator
+public class DocumentLayerMigrator
 {
-  private static final Logger logger = LoggerFactory.getLogger(GdalS3Migrator.class);
+  private static final Logger logger = LoggerFactory.getLogger(DocumentLayerMigrator.class);
   
   public static void main(String[] args) throws InterruptedException
   {
@@ -41,16 +35,8 @@ public class GdalS3Migrator
   @Request
   public static void doIt() throws InterruptedException
   {
-    List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
-    
-    processingConfigs.add(new DemGdalProcessor("odm_dem", "odm_all/gdal", new String[] { "dsm.tif" }));
-    
-    Product.refreshAllDocuments(processingConfigs);
+    Product.refreshAllDocuments();
 //    logger.info(Product.get("46281467-ead7-41ae-bb4c-201c5f92a98a").getComponent().getS3location());
 //    Product.get("c48c58b5-dfe4-4540-8dae-6b9c4e0fd7c8").refreshDocuments(processingConfigs);
-    
-    GeoserverLayer layer = new GeoserverLayer();
-    layer.setDirty(true);
-    layer.apply();
   }
 }

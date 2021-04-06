@@ -44,11 +44,11 @@ public class Document extends DocumentBase implements DocumentIF
   @Override
   public void delete()
   {
-    this.delete(true);
+    this.delete(true, true);
   }
 
   @Transaction
-  public void delete(boolean removeFromS3)
+  public void delete(boolean removeFromS3, boolean deleteLayer)
   {
     super.delete();
 
