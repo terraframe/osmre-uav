@@ -52,6 +52,7 @@ import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.geoserver.GeoserverRemoveCoverageCommand;
+import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -240,7 +241,7 @@ public class Product extends ProductBase implements ProductIF
       if (layer.getClassification().equals(LayerClassification.ORTHO))
       {
         workspace = layer.getWorkspace();
-        mapKey = layer.getLayerKey();
+        mapKey = layer.getStoreName();
       }
     }
     
@@ -379,7 +380,12 @@ public class Product extends ProductBase implements ProductIF
     
     for (DocumentIF document : this.getDocuments())
     {
-      publisher.createImageServices((Document) document, this, refreshMosaic);
+      publisher.createImageServices((Document) document, this, false);
+    }
+    
+    if (refreshMosaic)
+    {
+      ImageMosaicPublisher.refreshAll();
     }
   }
   
