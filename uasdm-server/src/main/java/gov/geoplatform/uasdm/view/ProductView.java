@@ -141,9 +141,9 @@ public class ProductView
       
       joLayer.put("workspace", layer.getWorkspace());
       joLayer.put("classification", layer.getClassification().name());
-      joLayer.put("key", layer.getLayerKey());
+      joLayer.put("key", layer.getStoreName());
       
-      jaLayers.put(layer);
+      jaLayers.put(joLayer);
     }
     
     object.put("layers", jaLayers);

@@ -23,6 +23,8 @@ import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverLayer extends GeoserverLayerBase
 {
+  private GeoserverPublisher publisher = new GeoserverPublisher();
+  
   public static enum LayerClassification
   {
     ORTHO(ImageryComponent.ORTHO + "/odm_orthophoto.tif"),
@@ -123,7 +125,7 @@ public class GeoserverLayer extends GeoserverLayerBase
    */
   public boolean isPublished()
   {
-    return GeoserverFacade.layerExists(this.getWorkspace(), this.getStoreName());
+    return this.publisher.isPublished(this);
   }
   
   @Override
@@ -137,27 +139,33 @@ public class GeoserverLayer extends GeoserverLayerBase
    */
   public void publish()
   {
-    this.unpublish();
-
-    try (CloseableFile geotiff = Util.download(this.getLayerKey(), this.getStoreName()))
+    this.publisher.publishLayer(this);
+  }
+  
+  @Override
+  public void delete()
+  {
+    this.unpublish(false);
+    
+    super.delete();
+  }
+  
+  public void delete(boolean unpublishLayer)
+  {
+    if (unpublishLayer)
     {
-      GeoserverFacade.publishGeoTiff(this.getWorkspace(), this.getStoreName(), geotiff);
+      this.unpublish(false);
     }
     
-    this.setDirty(false);
+    super.delete();
   }
   
   /**
    * Removes the layer from Geoserver, if it has been published previously.
    */
-  public void unpublish()
+  public void unpublish(boolean atEndOfTransaction)
   {
-    if (this.isPublished())
-    {
-      new GeoserverRemoveCoverageCommand(this.getWorkspace(), this.getStoreName()).doIt();
-    }
-    
-    this.setDirty(true);
+    this.publisher.unpublishLayer(this, atEndOfTransaction);
   }
   
   public static GeoserverLayer getByKey(String layerKey)

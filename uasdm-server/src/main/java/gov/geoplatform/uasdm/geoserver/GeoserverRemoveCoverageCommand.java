@@ -22,6 +22,7 @@ import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class GeoserverRemoveCoverageCommand implements Command
 {
@@ -44,7 +45,9 @@ public class GeoserverRemoveCoverageCommand implements Command
   {
     log.info("Deleting coverage [" + this.workspace + "][" + this.storeName + "] from geoserver");
 
-    new GeoserverPublisher().removeCoverageStore(workspace, storeName);
+//  GeoserverFacade.removeStyle(storeName);
+//  GeoserverFacade.forceRemoveLayer(workspace, storeName);
+    GeoserverFacade.removeCoverageStore(workspace, storeName);
   }
 
   /**

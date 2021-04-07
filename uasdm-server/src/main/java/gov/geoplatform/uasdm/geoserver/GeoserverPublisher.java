@@ -15,11 +15,8 @@ import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -102,7 +99,7 @@ public class GeoserverPublisher
     {
       for (GeoserverLayer layer : GeoserverLayer.getAllLayers())
       {
-        if (!layer.isPublished())
+        if (!this.isPublished(layer))
         {
           layer.setDirty(true);
           layer.apply();
@@ -110,17 +107,16 @@ public class GeoserverPublisher
       }
     }
     
-    int dirtyLayerCount = GeoserverLayer.getDirtyLayers().size();
+    List<? extends GeoserverLayer> dirtyLayers = GeoserverLayer.getDirtyLayers();
 
-    if (dirtyLayerCount > 0)
+    if (dirtyLayers.size() > 0)
     {
-      logger.info("Republishing [" + dirtyLayerCount + "] layers.");
+      logger.info("Republishing [" + dirtyLayers.size() + "] layers.");
 
-      List<ProductIF> products = ComponentFacade.getProducts();
-
-      for (ProductIF product : products)
+      for (GeoserverLayer layer : dirtyLayers)
       {
-        product.createImageService(false);
+        unpublishLayer(layer, false);
+        publishLayer(layer);
       }
       
       ImageMosaicPublisher.initializeAll();
@@ -137,7 +133,8 @@ public class GeoserverPublisher
 
       for (GeoserverLayer layer : publishableLayers)
       {
-        publishGeoTiff(component, layer);
+        unpublishLayer(layer, false);
+        publishLayer(layer);
       }
 
       // Refresh the public mosaic
@@ -160,9 +157,9 @@ public class GeoserverPublisher
 
     for (GeoserverLayer layer : publishableLayers)
     {
-      unpublish(component, layer);
+      unpublishLayer(layer, false);
       
-      layer.delete();
+      layer.delete(false);
     }
     
     // Refresh the public mosaic
@@ -176,15 +173,13 @@ public class GeoserverPublisher
   {
     for (GeoserverLayer layer : layers)
     {
-      if (layer.isPublished())
+      if (this.isPublished(layer))
       {
-        layer.unpublish();
+        unpublishLayer(layer, false);
         
         layer.setIsPublic(!layer.getIsPublic());
         
-        layer.publish();
-        
-        layer.apply();
+        publishLayer(layer);
       }
     }
   }
@@ -200,34 +195,45 @@ public class GeoserverPublisher
     }
   }
   
-  protected void unpublish(UasComponentIF collection, GeoserverLayer layer)
+  protected void unpublishLayer(GeoserverLayer layer, boolean atEndOfTransaction)
   {
     if (existsGeoserver)
     {
-      if (GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName()))
+      if (isPublished(layer))
       {
-        removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
+        if (atEndOfTransaction)
+        {
+          new GeoserverRemoveCoverageCommand(layer.getWorkspace(), layer.getStoreName()).doIt();
+        }
+        else
+        {
+          GeoserverFacade.removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
+        }
       }
       
       layer.setDirty(true);
+      
+      layer.apply();
     }
   }
   
-  protected void publishGeoTiff(UasComponentIF collection, GeoserverLayer layer)
+  public boolean isPublished(GeoserverLayer layer)
+  {
+    return GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName());
+  }
+  
+  public void publishLayer(GeoserverLayer layer)
   {
     if (existsGeoserver)
     {
-      if (GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName()))
-      {
-        removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
-      }
-
       try (CloseableFile geotiff = Util.download(layer.getLayerKey(), layer.getStoreName()))
       {
         GeoserverFacade.publishGeoTiff(layer.getWorkspace(), layer.getStoreName(), geotiff);
       }
       
       layer.setDirty(false);
+      
+      layer.apply();
     }
   }
   
@@ -247,12 +253,5 @@ public class GeoserverPublisher
     }
     
     return filtered;
-  }
-  
-  protected void removeCoverageStore(String workspace, String storeName)
-  {
-//    GeoserverFacade.removeStyle(storeName);
-//    GeoserverFacade.forceRemoveLayer(workspace, storeName);
-    GeoserverFacade.removeCoverageStore(workspace, storeName);
   }
 }

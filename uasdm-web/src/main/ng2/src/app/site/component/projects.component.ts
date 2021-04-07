@@ -731,13 +731,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	
 	getLayerByClassification(classification: string, product: Product): GeoserverLayer {
-	  this.layers.forEach( (layer: GeoserverLayer) => {
-	    if (layer.classification === classification)
-	    {
-	      return layer;
-	    }
-	  });
+	  let len = product.layers.length;
+	
+	  for (let i = 0; i < len; ++i)
+	  {
+	    let layer: GeoserverLayer = product.layers[i];
 	  
+	    if (layer.classification === classification)
+      {
+        return layer;
+      }
+	  }
+	
 	  return null;
 	}
 	
