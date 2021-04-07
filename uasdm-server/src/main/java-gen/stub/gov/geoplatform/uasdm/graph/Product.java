@@ -534,6 +534,8 @@ public class Product extends ProductBase implements ProductIF
     List<GeoserverLayer> layers = this.getLayers();
     
     new GeoserverPublisher().togglePublic(layers);
+    
+    ImageMosaicPublisher.refreshAll();
   }
 
   @Override

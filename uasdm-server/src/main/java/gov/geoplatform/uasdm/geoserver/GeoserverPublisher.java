@@ -119,6 +119,10 @@ public class GeoserverPublisher
         publishLayer(layer);
       }
       
+      ImageMosaicPublisher.refreshAll();
+    }
+    else
+    {
       ImageMosaicPublisher.initializeAll();
     }
   }
