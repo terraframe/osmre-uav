@@ -1,0 +1,17 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+    </create>
+    <update>
+    </update>
+    <delete>
+      <object key="gov.geoplatform.uasdm.geoserver.GeoserverLayer" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.geoserver.DocumentHasLayer" type="com.runwaysdk.system.metadata.MdEdge"/>
+      <object key="gov.geoplatform.uasdm.geoserver.GeoserverLayer" type="com.runwaysdk.system.metadata.MdVertex"/>
+    </delete>
+  </undoIt>
+</version>
