@@ -55,8 +55,8 @@ public class ImageMosaicPublisher
   
   public static void initializeAll()
   {
-    new ImageMosaicPublisher(PUBLIC_WORKSPACE).create();
-    new ImageMosaicPublisher(HILLSHADE_WORKSPACE).create();
+    new ImageMosaicPublisher(PUBLIC_WORKSPACE).initialize();
+    new ImageMosaicPublisher(HILLSHADE_WORKSPACE).initialize();
   }
   
   public static void refreshAll()
@@ -64,6 +64,8 @@ public class ImageMosaicPublisher
     new ImageMosaicPublisher(PUBLIC_WORKSPACE).refresh();
     new ImageMosaicPublisher(HILLSHADE_WORKSPACE).refresh();
   }
+  
+  
   
   protected void init(String workspaceName)
   {
@@ -88,7 +90,7 @@ public class ImageMosaicPublisher
     }
   }
 
-  protected void create()
+  protected void initialize()
   {
     try
     {
@@ -122,7 +124,20 @@ public class ImageMosaicPublisher
   {
     try
     {
+      final File indexer = new File(this.workspaceDir, "indexer.properties");
+      
       this.deleteMosaic(this.workspaceName);
+      
+      if (!indexer.exists())
+      {
+        try (InputStream istream = this.getClass().getResourceAsStream("/indexer.properties"))
+        {
+          try (FileOutputStream ostream = new FileOutputStream(indexer))
+          {
+            IOUtils.copy(istream, ostream);
+          }
+        }
+      }
 
       if (this.hasPublishedLayers())
       {
@@ -143,6 +158,8 @@ public class ImageMosaicPublisher
   {
     if (GeoserverFacade.layerExists(this.workspaceName, name))
     {
+      logger.info("Deleting mosaic [" + this.workspaceName + ":" + name + "].");
+      
       this.geoserverRemove(this.workspaceName, this.workspaceName);
 
       // Delete the existing store files
@@ -165,6 +182,8 @@ public class ImageMosaicPublisher
   {
     if (!GeoserverFacade.layerExists(this.workspaceName, mosaicName))
     {
+      logger.info("Creating mosaic [" + this.workspaceName + ":" + mosaicName + "].");
+      
       final GeoServerRESTPublisher publisher = GeoserverProperties.getPublisher();
       
       final GSLayerEncoder layerEnc = new GSLayerEncoder();

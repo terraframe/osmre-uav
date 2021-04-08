@@ -187,6 +187,7 @@ export class ProductPanelComponent {
             }
 
             product.published = p.published;
+            product.layers = p.layers;
 
             if (mapIt) {
                 this.toggleMapOrtho.emit(product);

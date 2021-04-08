@@ -129,6 +129,16 @@ public class GeoserverLayer extends GeoserverLayerBase
   }
   
   @Override
+  public void setIsPublic(Boolean value)
+  {
+    super.setIsPublic(value);
+    
+    this.setWorkspace(this.calculateWorkspace(value, this.getLayerKey()));
+    
+    this.setDirty(true);
+  }
+  
+  @Override
   protected String buildKey()
   {
     return this.getLayerKey();
