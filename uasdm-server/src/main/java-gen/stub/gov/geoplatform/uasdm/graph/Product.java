@@ -18,10 +18,12 @@ package gov.geoplatform.uasdm.graph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,26 +48,22 @@ import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
-import gov.geoplatform.uasdm.geoserver.GeoserverRemoveCoverageCommand;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor.S3FileUpload;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
-import net.geoprism.gis.geoserver.GeoserverProperties;
+import net.geoprism.gis.geoserver.GeoserverInitializer;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -208,14 +206,28 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void clear()
   {
+    Set<String> orphans = new HashSet<String>();
+    
     final List<Document> documents = this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, Document.class);
 
     for (Document document : documents)
     {
+      orphans.add(document.getOid());
       this.removeParent(document, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
     
-    deleteAllLayers();
+    final List<Document> documents2 = this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, Document.class);
+
+    for (Document document : documents2)
+    {
+      orphans.add(document.getOid());
+      this.removeChild(document, EdgeType.PRODUCT_HAS_DOCUMENT);
+    }
+    
+    for (String orphan: orphans)
+    {
+      Document.get(orphan).delete(false, true);
+    }
   }
 
   static
@@ -233,6 +245,11 @@ public class Product extends ProductBase implements ProductIF
    */
   public String calculateBoundingBox()
   {
+    if (!GeoserverInitializer.isInitialized())
+    {
+      return null;
+    }
+    
     String workspace = null;
     String mapKey = null;
     

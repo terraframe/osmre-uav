@@ -150,6 +150,9 @@ public class ODMZipPostProcessor
   {
     final String folderName = "odm-" + FilenameUtils.getName(s3Location) + "-" + new Random().nextInt();
     
+    this.product = (Product) this.component.createProductIfNotExist();
+    product.clear();
+    
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
     {
       try (CloseableFile allZip = getAllZip())
@@ -170,9 +173,6 @@ public class ODMZipPostProcessor
       }
     }
     
-    this.product = (Product) this.component.createProductIfNotExist();
-    product.clear();
-
     product.addDocuments(this.getDocuments());
     
     List<String> list = new ArrayList<String>();
@@ -519,8 +519,6 @@ public class ODMZipPostProcessor
       
       if (hillshade.exists())
       {
-        this.uploader.documents.add(this.uploader.component.createDocumentIfNotExist(key, file.getName()));
-        
         super.processFile(hillshade, key);
       }
     }

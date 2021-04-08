@@ -61,6 +61,11 @@ public class ImageMosaicPublisher
   
   public static void refreshAll()
   {
+    if (!GeoserverInitializer.isInitialized())
+    {
+      return;
+    }
+    
     new ImageMosaicPublisher(PUBLIC_WORKSPACE).refresh();
     new ImageMosaicPublisher(HILLSHADE_WORKSPACE).refresh();
   }
@@ -77,7 +82,7 @@ public class ImageMosaicPublisher
     {
       throw new ProgrammingErrorException("Unable to find geoserver data directory: Please set the JVM arg GEOSERVER_DATA_DIR");
     }
-
+    
     this.workspaceDir = new File(geoserverData + "/data/" + this.workspaceName);
     
     try

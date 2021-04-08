@@ -150,6 +150,7 @@ public class GeoserverLayer extends GeoserverLayerBase
   public void publish()
   {
     this.publisher.publishLayer(this);
+    this.setDirty(false);
   }
   
   @Override
@@ -176,6 +177,7 @@ public class GeoserverLayer extends GeoserverLayerBase
   public void unpublish(boolean atEndOfTransaction)
   {
     this.publisher.unpublishLayer(this, atEndOfTransaction);
+    this.setDirty(true);
   }
   
   public static GeoserverLayer getByKey(String layerKey)

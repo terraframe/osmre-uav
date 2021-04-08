@@ -26,11 +26,11 @@ public class GeoserverPublisher
 {
   private static final Logger logger = LoggerFactory.getLogger(GeoserverPublisher.class);
   
-  private boolean existsGeoserver;
+  private boolean geoserverInitialized;
   
   public GeoserverPublisher()
   {
-    existsGeoserver = System.getProperty("GEOSERVER_DATA_DIR") != null;
+    geoserverInitialized = GeoserverInitializer.isInitialized();
   }
   
   public void initializeGeoserver()
@@ -58,6 +58,8 @@ public class GeoserverPublisher
       rebuild = true;
     }
     
+    geoserverInitialized = true;
+    
     if (rebuild)
     {
       GeoserverLayer.dirtyAllLayers();
@@ -84,6 +86,9 @@ public class GeoserverPublisher
       {
         unpublishLayer(layer, false);
         publishLayer(layer);
+        
+        layer.setDirty(false);
+        layer.apply();
       }
       
       ImageMosaicPublisher.refreshAll();
@@ -104,12 +109,22 @@ public class GeoserverPublisher
 
       for (GeoserverLayer layer : publishableLayers)
       {
-        unpublishLayer(layer, false);
-        publishLayer(layer);
+        if (geoserverInitialized)
+        {
+          unpublishLayer(layer, false);
+          publishLayer(layer);
+          
+          layer.setDirty(false);
+        }
+        else
+        {
+          layer.setDirty(true);
+          layer.apply();
+        }
       }
 
       // Refresh the public mosaic
-      if (existsGeoserver && refreshMosiac)
+      if (geoserverInitialized && refreshMosiac)
       {
         ImageMosaicPublisher.refreshAll();
       }
@@ -122,6 +137,11 @@ public class GeoserverPublisher
   
   public void removeImageServices(Document document, Product product, boolean refreshMosiac)
   {
+    if (!geoserverInitialized)
+    {
+      return;
+    }
+    
     final UasComponent component = product.getComponent();
     
     List<GeoserverLayer> publishableLayers = getPublishableLayers(document, product, component);
@@ -134,7 +154,7 @@ public class GeoserverPublisher
     }
     
     // Refresh the public mosaic
-    if (existsGeoserver && refreshMosiac)
+    if (refreshMosiac)
     {
       ImageMosaicPublisher.refreshAll();
     }
@@ -144,13 +164,22 @@ public class GeoserverPublisher
   {
     for (GeoserverLayer layer : layers)
     {
-      if (this.isPublished(layer))
+      if (geoserverInitialized && this.isPublished(layer))
       {
         unpublishLayer(layer, false);
         
         layer.setIsPublic(!layer.getIsPublic());
         
         publishLayer(layer);
+        
+        layer.setDirty(false);
+        layer.apply();
+      }
+      else if (!geoserverInitialized)
+      {
+        layer.setIsPublic(!layer.getIsPublic());
+        layer.setDirty(true);
+        layer.apply();
       }
     }
   }
@@ -160,15 +189,15 @@ public class GeoserverPublisher
     createImageServices(document, product, false);
     removeImageServices(document, product, false);
     
-    if (existsGeoserver)
+    if (geoserverInitialized)
     {
       ImageMosaicPublisher.refreshAll();
     }
   }
   
-  protected void unpublishLayer(GeoserverLayer layer, boolean atEndOfTransaction)
+  public void unpublishLayer(GeoserverLayer layer, boolean atEndOfTransaction)
   {
-    if (existsGeoserver)
+    if (geoserverInitialized)
     {
       if (isPublished(layer))
       {
@@ -181,30 +210,33 @@ public class GeoserverPublisher
           GeoserverFacade.removeCoverageStore(layer.getWorkspace(), layer.getStoreName());
         }
       }
-      
-      layer.setDirty(true);
-      
-      layer.apply();
     }
   }
   
   public boolean isPublished(GeoserverLayer layer)
   {
-    return GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName());
+    if (geoserverInitialized)
+    {
+      return GeoserverFacade.layerExists(layer.getWorkspace(), layer.getStoreName());
+    }
+    else
+    {
+      return false;
+    }
   }
   
   public void publishLayer(GeoserverLayer layer)
   {
-    if (existsGeoserver)
+    if (geoserverInitialized)
     {
       try (CloseableFile geotiff = Util.download(layer.getLayerKey(), layer.getStoreName()))
       {
         GeoserverFacade.publishGeoTiff(layer.getWorkspace(), layer.getStoreName(), geotiff);
       }
-      
-      layer.setDirty(false);
-      
-      layer.apply();
+    }
+    else
+    {
+      layer.setDirty(true);
     }
   }
   

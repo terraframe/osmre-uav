@@ -28,6 +28,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -64,11 +65,32 @@ public class Document extends DocumentBase implements DocumentIF
   @Transaction
   public void delete(boolean removeFromS3, boolean deleteLayers)
   {
+    List<GeoserverLayer> layers = this.getLayers();
+    
+    if (deleteLayers)
+    {
+      for (GeoserverLayer layer : layers)
+      {
+        layer.delete(false);
+      }
+    }
+    
     super.delete();
-
+    
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       this.deleteS3File(this.getS3location());
+    }
+    
+    if (deleteLayers)
+    {
+      if (deleteLayers)
+      {
+        for (GeoserverLayer layer : layers)
+        {
+          new GeoserverPublisher().unpublishLayer(layer, true);
+        }
+      }
     }
   }
 
