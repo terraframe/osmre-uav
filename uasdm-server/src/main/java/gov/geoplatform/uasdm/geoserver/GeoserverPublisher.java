@@ -33,39 +33,6 @@ public class GeoserverPublisher
     existsGeoserver = System.getProperty("GEOSERVER_DATA_DIR") != null;
   }
   
-  protected List<GeoserverLayer> getPublishableLayers(Document document, Product product, UasComponent collection)
-  {
-    List<SiteObject> publishedObjects = new ArrayList<SiteObject>();
-    
-    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects()));
-    
-    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects()));
-    
-    return createPublishableLayersFromSiteObjects(document, product, collection, publishedObjects);
-  }
-  
-  public static List<GeoserverLayer> createPublishableLayersFromSiteObjects(Document document, Product product, UasComponent collection, List<SiteObject> siteObjects)
-  {
-    List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
-    
-    for (SiteObject siteObject : siteObjects)
-    {
-      GeoserverLayer layer = GeoserverLayer.getByKey(siteObject.getKey());
-      
-      if (layer == null)
-      {
-        layer = new GeoserverLayer(collection, siteObject.getKey(), product.getPublished());
-        layer.apply();
-        
-        document.addChild(layer, EdgeType.DOCUMENT_HAS_LAYER).apply();
-      }
-      
-      layers.add(layer);
-    }
-    
-    return layers;
-  }
-  
   public void initializeGeoserver()
   {
     boolean rebuild = false;
@@ -239,6 +206,39 @@ public class GeoserverPublisher
       
       layer.apply();
     }
+  }
+  
+  protected List<GeoserverLayer> getPublishableLayers(Document document, Product product, UasComponent collection)
+  {
+    List<SiteObject> publishedObjects = new ArrayList<SiteObject>();
+    
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects()));
+    
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects()));
+    
+    return createPublishableLayersFromSiteObjects(document, product, collection, publishedObjects);
+  }
+  
+  protected List<GeoserverLayer> createPublishableLayersFromSiteObjects(Document document, Product product, UasComponent collection, List<SiteObject> siteObjects)
+  {
+    List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
+    
+    for (SiteObject siteObject : siteObjects)
+    {
+      GeoserverLayer layer = GeoserverLayer.getByKey(siteObject.getKey());
+      
+      if (layer == null)
+      {
+        layer = new GeoserverLayer(collection, siteObject.getKey(), product.getPublished());
+        layer.apply();
+        
+        document.addChild(layer, EdgeType.DOCUMENT_HAS_LAYER).apply();
+      }
+      
+      layers.add(layer);
+    }
+    
+    return layers;
   }
   
   protected List<SiteObject> filterSiteObjects(List<SiteObject> objects)
