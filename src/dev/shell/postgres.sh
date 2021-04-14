@@ -17,14 +17,15 @@
 
 # Run this with sudo
 
-# Requires AWS CLI : pip3 install awscli --upgrade --user
-# https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
+CONTAINER_NAME=postgres
+POSTGRES_PORT=5442
+POSTGRES_ROOT_PASS=postgres
 
 # Exit immediately if anything errors out
 set -e
 
 # Kill any running containers by name of what we're about to run
-docker rm -f $(docker ps -a -q --filter="name=orientdb") || true
+docker rm -f $(docker ps -a -q --filter="name=$CONTAINER_NAME") > /dev/null || true
 
-# Pull & Run the orientdb container
-docker run -d -p 2424:2424 -p 2480:2480 -e ORIENTDB_ROOT_PASSWORD=root --name orientdb orientdb:3.0
+# Pull & Run the container
+docker run --name $CONTAINER_NAME -e POSTGRES_PASSWORD=$POSTGRES_ROOT_PASS -d -p $POSTGRES_PORT:5432 postgis/postgis:13-master
