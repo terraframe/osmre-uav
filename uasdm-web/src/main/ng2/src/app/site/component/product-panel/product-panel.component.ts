@@ -49,6 +49,8 @@ export class ProductPanelComponent {
      * Reference to the modal current showing
     */
     private bsModalRef: BsModalRef;
+    
+    loading: boolean = false;
 
 
     constructor(private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
@@ -61,9 +63,12 @@ export class ProductPanelComponent {
     refreshProducts(id: string): void {
         this.products = [];
         this.thumbnails = {};
+        
+        this.loading = true;
 
         this.pService.getProducts(id).then(products => {
             this.products = products;
+            this.loading = false;
 
             this.products.forEach(product => {
                 this.getThumbnail(product);

@@ -59,10 +59,19 @@
 
                           <!-- If -->
                           <div *ngIf="nodes.length < 1 && breadcrumbs.length === 0" [@fadeInOnEnter] style="padding: 20px;text-align: center;color: grey;">
-                            <h4>No Sites in this area.</h4>
-                            <p>
-                              Zoom out to find sites in other areas of the map.
-                            </p>
+                            <span *ngIf="loadingSites">
+                              <h4>
+                                <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                                Loading Sites
+                              </h4>
+                            </span>
+                          
+                            <span *ngIf="!loadingSites">
+                              <h4>No Sites in this area.</h4>
+                              <p>
+                                Zoom out to find sites in other areas of the map.
+                              </p>
+                            </span>
                           </div>
 
                           <!-- Else -->
@@ -83,10 +92,10 @@
                               <div class="card-body card-5-7" >
                                 <div>
                                    <!-- <i class="fas fa-map-marker-alt" style="font-size: 50px;"></i> -->
-                                   <h4 style="word-break: break-all;">
-                                    <!-- <a (click)="select(node, $event)"> -->
+                                   <h4 style="word-break: break-all; border-bottom-color:rgba(195, 195, 195, 0.5); border-bottom-style:inset;">
+                                     <!-- <a (click)="select(node, $event)"> -->
                                       {{node.name}}
-                                    <!-- </a> -->
+                                     <!-- </a> -->
                                   </h4>
                                   <span>
                                     <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>

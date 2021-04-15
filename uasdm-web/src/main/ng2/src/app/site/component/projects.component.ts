@@ -102,6 +102,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      * Flag denoting the draw control is active
      */
   active: boolean = false;
+  
+  loadingSites: boolean = true;
 
     /* 
      * List of base layers
@@ -362,8 +364,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Sometimes bounds aren't valid for 4326, so validate it before sending to server
       if (this.isValidBounds(bounds)) {
+        this.loadingSites = true;
         this.service.roots(null, bounds).then(nodes => {
           this.nodes = nodes;
+          this.loadingSites = false;
         });
       }
       else {
@@ -930,7 +934,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     else if (this.breadcrumbs.length > 0) {
+      this.loadingSites = true;
       this.service.roots(null, null).then(nodes => {
+        this.loadingSites = false;
         this.breadcrumbs = [];
         this.setNodes(nodes);
         this.staticTabs.tabs[0].active = true;

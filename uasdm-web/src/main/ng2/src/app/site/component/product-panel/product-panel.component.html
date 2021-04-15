@@ -1,9 +1,15 @@
 <div class="list-group">
 
     <div *ngIf="products.length < 1" [@fadeInOnEnter] style="padding: 10px;text-align: center;color: grey;">
-        <h4>No data found</h4>
+        <h4>
+          <span *ngIf="loading">
+            <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            Loading Products
+          </span>
+          <p *ngIf="!loading">No data found</p>
+        </h4>
     </div>
-
+    
     <div *ngFor="let product of products" class="list-group-item">
         <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
             <div class="card-body card-8-4">

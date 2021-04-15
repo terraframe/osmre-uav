@@ -20,7 +20,7 @@
           
               <div class="panel-body">
                 <div class="row">
-                  <div class="col-sm-9">
+                  <div class="col-sm-7">
                     <div>
                       <span class="dot pending" style="margin-left:0;"></span>
                       {{message.message}}
@@ -36,10 +36,10 @@
                       </ul>
                     </div>
                   </div>
-                  <div class="col-sm-3" style="text-align: right;">
+                  <div class="col-sm-5" style="text-align: right;">
                     <div>
-                      <button style="width:47%" class="btn btn-default" (click)="handleGoto(message.collectionId)">View Collection</button>
-                      <button style="width:47%;margin-left: 10px;" class="btn btn-primary" (click)="handleMessage(message)">Add Metadata</button>
+                      <button class="btn btn-default" (click)="handleGoto(message.collectionId)">View Collection</button>
+                      <button style="margin-left: 10px;" class="btn btn-primary" (click)="handleMessage(message)">Add Metadata</button>
                     </div>
                   </div>
                 </div>
