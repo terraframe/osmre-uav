@@ -823,6 +823,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (event != null) {
       event.stopPropagation();
     }
+    
+    if (node != null && node.geometry != null && node.geometry.type === "Point")
+    {
+      //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+      
+      this.map.easeTo({
+        center: node.geometry.coordinates,
+        zoom: 8
+      });
+    }
 
     const metadata = this.metadataService.getMetadata(node);
 
@@ -901,6 +911,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(node: SiteEntity): void {
 
     if (node != null) {
+      if (node.geometry != null && node.geometry.type === "Point")
+      {
+        //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+        
+        this.map.easeTo({
+          center: node.geometry.coordinates,
+          zoom: 8
+        });
+      }
+    
       this.service.getItems(node.id, null).then(nodes => {
         var indexOf = this.breadcrumbs.findIndex(i => i.id === node.id);
 
