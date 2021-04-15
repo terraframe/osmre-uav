@@ -36,27 +36,27 @@
                 <div class="card-right" style="padding-left:0px;">
                     <ul style="list-style: none;padding: 0;">
                         <li style="padding: 3px 0 3px 0; min-width:6em;">
-                            <a class="fa fa-globe" aria-hidden="true" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product)" title="Show on map">Aerial</a>
+                            <a class="fa fa-globe" aria-hidden="true" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product)" title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
                             <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
                         <li style="padding: 3px 0 3px 0; min-width:7.2em;">
-                            <a class="fa fa-industry" aria-hidden="true" [ngClass]="{'active': product.demMapped}" (click)="handleMapDem(product)" title="Hillshade">Hillshade</a>
+                            <a class="fa fa-industry" aria-hidden="true" [ngClass]="{'active': product.demMapped}" (click)="handleMapDem(product)" title="View the DEM hillshade.">Hillshade</a>
                             <i *ngIf="product.demMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-cube" aria-hidden="true" [ngClass]="{'active': false}" (click)="handlePointcloud(product)" title="3D">3D</a>
+                            <a class="fa fa-cube" aria-hidden="true" [ngClass]="{'active': false}" (click)="handlePointcloud(product)" title="View the 3D pointcloud for this product using the PoTree viewer.">3D</a>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-info-circle" (click)="handleGetInfo(product)" title="See details">Get Info</a>
+                            <a class="fa fa-info-circle" (click)="handleGetInfo(product)" title="View more information about this product, including raw data.">Get Info</a>
                         </li>
                         <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)" title="Delete">Delete</a>
+                            <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)" title="Deletes the product and all associated data and layers, including what is stored on S3.">Delete</a>
                         </li>
                         <li *ngIf="product.published" style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-arrow-alt-circle-down" (click)="handleTogglePublish(product)" title="Unpublish">Unpublish</a>
+                            <a class="fa fa-arrow-alt-circle-down" (click)="handleTogglePublish(product)" title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible from Geoserver.">Unpublish</a>
                         </li>
                         <li *ngIf="!product.published" style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-arrow-alt-circle-up" (click)="handleTogglePublish(product)" title="Publish">Publish</a>
+                            <a class="fa fa-arrow-alt-circle-up" (click)="handleTogglePublish(product)" title="Publish the layer to the public mosaic. This layer will be publicly accessible from Geoserver.">Publish</a>
                         </li>
                     </ul>             
                 </div>
