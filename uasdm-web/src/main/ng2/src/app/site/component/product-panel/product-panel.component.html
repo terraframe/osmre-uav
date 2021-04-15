@@ -27,13 +27,13 @@
                         </a>
                     </div>
                 </div>
-                <div class="card-right">   
+                <div class="card-right" style="padding-left:0px;">
                     <ul style="list-style: none;padding: 0;">
-                        <li style="padding: 3px 0 3px 0;">
-                            <a class="fa fa-globe" aria-hidden="true" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product)" title="Show on map">Map It</a>
+                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                            <a class="fa fa-globe" aria-hidden="true" [ngClass]="{'active': product.orthoMapped}" (click)="handleMapIt(product)" title="Show on map">Aerial</a>
                             <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
-                        <li style="padding: 3px 0 3px 0;">
+                        <li style="padding: 3px 0 3px 0; min-width:7.2em;">
                             <a class="fa fa-industry" aria-hidden="true" [ngClass]="{'active': product.demMapped}" (click)="handleMapDem(product)" title="Hillshade">Hillshade</a>
                             <i *ngIf="product.demMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check" style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </li>
