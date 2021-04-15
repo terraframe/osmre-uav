@@ -18,8 +18,8 @@
             
                   <!-- IF lower than Site -->
                   <div class="row" *ngIf="current">
-                    <div class="col-md-12" style="height: 56px; overflow: scroll;">
-                      <ul class="breadcrumb" style="background-color: white;">
+                    <div class="col-md-12" style="height: 65px; overflow: auto;">
+                      <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
                         <li>
                           <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
                           <a (click)="back(null)" style="color: #007276;">IDM Sites</a>
@@ -91,9 +91,9 @@
                                   <span>
                                     <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
                                     <span *ngIf="node.type !== 'folder'" class="pull-right">
-                                    <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
-                                    <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>                                   
-                                  </span>  
+	                                    <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
+	                                    <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>                                   
+	                                  </span>  
                                   </span>
                                 </div>
                               </div>
