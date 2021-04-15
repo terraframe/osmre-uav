@@ -919,9 +919,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // This hack exists because the handleExtentChange method gets called immediately after we do fitBounds
         // and it gets called with some really closely zoomed-in bbox which dumps our nodes we just fetched...
+        let that = this;
         window.setTimeout(function(){
-          this.current = null;
-        }, 100);
+          that.current = null;
+        }, 500);
       });
     }
   }
