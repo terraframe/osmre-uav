@@ -322,6 +322,10 @@ export class LeafModalComponent implements OnInit {
 			this.entity.metadataUploaded = true;
 		});
 	}
+	
+	capitalize(str): string {
+    return str.replace(/^\w/, c => c.toUpperCase());
+  }
 
 
 	showVideo(item: SiteEntity): void {
