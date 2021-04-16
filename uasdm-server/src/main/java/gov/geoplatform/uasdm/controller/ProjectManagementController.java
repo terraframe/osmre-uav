@@ -183,6 +183,14 @@ public class ProjectManagementController
       throw new RuntimeException("Test");
     }
   }
+  
+  @Endpoint(url = "download-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadOdmAll(ClientRequestIF request, final @RequestParamter(name = "colId") String colId)
+  {
+    final String sessionId = request.getSessionId();
+    
+    return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
+  }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)

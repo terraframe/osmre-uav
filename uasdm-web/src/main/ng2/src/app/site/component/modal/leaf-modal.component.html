@@ -153,7 +153,11 @@
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
                 <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
                   (click)="handleDownload()" style="margin-left: 5px;">
-                  Download all
+                  Download all {{folder.name}}
+                </button>
+                <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
+                  (click)="handleDownloadOdmAll()" style="margin-left: 5px;">
+                  Download ODM all zip
                 </button>
                 <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning"
                   (click)="handleRunOrtho()" class="btn btn-primary" style="margin-left: 5px;">
