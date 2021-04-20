@@ -11,8 +11,8 @@
             
                   <!-- IF at Site level -->
                   <div class="row" *ngIf="!current">
-                    <div class="col-md-6" style="height: 56px;">
-                      <h3 style="text-shadow: -1px -1px 1px #000, 1px 1px 1px #ccc;">IDM Sites</h3>
+                    <div class="col-md-6" style="height: 64px;">
+                      <h3 style="font-weight:bold;">IDM Sites</h3>
                     </div>
                   </div>
             
@@ -54,7 +54,7 @@
                   <tabset #staticTabs class="nav-full-width">
                     <tab heading="Data">                
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
-                      style="height: calc(100vh - 290px);overflow-y: auto;">
+                      style="height: calc(100vh - 296px);overflow-y: auto;">
                         <div class="list-group">
 
                           <!-- If -->
@@ -170,7 +170,7 @@
                     </tab>
                     <tab *ngIf="current != null" heading="Products">
                       <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
-                      style="height: calc(100vh - 290px);overflow-y: auto;">
+                      style="height: calc(100vh - 296px);overflow-y: auto;">
                         <product-panel [id]="current.id" (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)"></product-panel>           
                       </div>
                     </tab>
@@ -235,7 +235,7 @@
                     </accordion> -->
                 </article>
 
-                <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right" style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 15px;"></div>
+                <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right" style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 0px;"></div>
 
                 <div id="map" class="map-view-port"></div>
             </div>
