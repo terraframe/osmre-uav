@@ -48,7 +48,6 @@ import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
@@ -69,6 +68,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.uasmetadata.AbstractMetadataGenerator;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -577,7 +577,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void submitMetadata(String sessionId, String json)
   {
-    new MetadataXMLGenerator(json).generateAndUpload();
+    new AbstractMetadataGenerator(json).generateAndUpload();
   }
 
   @Request(RequestType.SESSION)

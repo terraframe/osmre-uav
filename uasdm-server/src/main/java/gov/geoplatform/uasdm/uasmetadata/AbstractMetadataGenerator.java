@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.uasmetadata;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +42,8 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.Platform;
 import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -50,9 +52,9 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 
-public class MetadataXMLGenerator
+public class AbstractMetadataGenerator
 {
-  private static final Logger logger   = LoggerFactory.getLogger(MetadataXMLGenerator.class);
+  private static final Logger logger   = LoggerFactory.getLogger(AbstractMetadataGenerator.class);
 
   public static final String  FILENAME = "_uasmetadata.xml";
 
@@ -62,7 +64,7 @@ public class MetadataXMLGenerator
 
   private CollectionIF        collection;
 
-  public MetadataXMLGenerator(String json)
+  public AbstractMetadataGenerator(String json)
   {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = null;
@@ -95,8 +97,9 @@ public class MetadataXMLGenerator
 
     Element e = null;
 
-    Element root = dom.createElement("rootEl");
-    dom.appendChild(root);
+    UasMetadata metadata = new UasMetadata();
+    
+    
 
     // JSONObject agency = json.getJSONObject("agency");
     e = dom.createElement("Agency");

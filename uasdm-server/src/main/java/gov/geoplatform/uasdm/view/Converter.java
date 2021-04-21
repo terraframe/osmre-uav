@@ -26,7 +26,6 @@ import com.runwaysdk.session.SessionIF;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Product;
@@ -41,6 +40,8 @@ import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.uasmetadata.AbstractMetadataGenerator;
+import gov.geoplatform.uasdm.uasmetadata.UasMetadata;
 
 public abstract class Converter
 {
@@ -281,11 +282,11 @@ public abstract class Converter
     Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
-    FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);
+    UasMetadata metadata = UasMetadata.get(product.getComponent(), Collection.RAW, AbstractMetadataGenerator.FILENAME);
 
     if (metadata != null)
     {
-      view.setPilotName(metadata.getName());
+      view.setPilotName(metadata.getPointOfContact().getName());
       view.setSensor(metadata.getSensor().getName());
     }
 
