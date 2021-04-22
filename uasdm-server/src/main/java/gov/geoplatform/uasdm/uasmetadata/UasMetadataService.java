@@ -22,6 +22,9 @@ import com.runwaysdk.resource.CloseableFile;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Mission;
+import gov.geoplatform.uasdm.graph.Project;
+import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.service.SolrService;
 
@@ -68,6 +71,43 @@ public class UasMetadataService
       throw new ProgrammingErrorException(e);
     }
   }
+  /**
+   * Populates the UasMetadata object with values from the collection.
+   */
+  public void populate(CollectionSubfolder folder, Collection collection, UasMetadata metadata)
+  {
+    Mission mission = collection.getMissionHasCollectionParentMissions().get(0);
+    Project project = mission.getProjectHasMissionParentProjects().get(0);
+    Site site = project.getSiteHasProjectParentSites().get(0);
+    
+    Agency agency = metadata.getOrCreateAgency();
+    
+    agency.setName(site.getBureau().getDisplayLabel());
+    agency.setShortName(site.getBureau().getName());
+    
+    gov.geoplatform.uasdm.uasmetadata.Collection mdCol = metadata.getOrCreateCollection();
+    mdCol.setName(collection.getName());
+    
+    gov.geoplatform.uasdm.uasmetadata.Mission mdMission = metadata.getOrCreateMission();
+    mdMission.setName(mission.getName());
+    
+    gov.geoplatform.uasdm.uasmetadata.Project mdProject = metadata.getOrCreateProject();
+    mdProject.setName(project.getName());
+    
+    Sensor mdSensor = metadata.getOrCreateSensor();
+    mdSensor.setImageWidth(collection.getImageWidth());
+    mdSensor.setImageHeight(collection.getImageHeight());
+    
+    Upload upload = metadata.getOrCreateUpload();
+    upload.setDataType(folder.getFolderName());
+    
+    if (folder.equals(CollectionSubfolder.ORTHO))
+    {
+      upload.setOrthoStartDate(collection.getProducts().get(0).getLastUpdateDate());
+      upload.setOrthoEndDate(collection.getProducts().get(0).getLastUpdateDate());
+//      upload.setOrthoCorrectionModel("unknown");
+    }
+  }
   
   @Transaction
   public void saveMetadataFormSubmission(Collection collection, String uasMetadataJson)
@@ -87,6 +127,8 @@ public class UasMetadataService
       try (FileOutputStream fos = new FileOutputStream(temp))
       {
         UasMetadata metadata = this.fromJson(IOUtils.toInputStream(uasMetadataJson, Charset.forName("UTF-8")));
+        
+        this.populate(folder, collection, metadata);
         
         this.toXml(fos, metadata);
       }

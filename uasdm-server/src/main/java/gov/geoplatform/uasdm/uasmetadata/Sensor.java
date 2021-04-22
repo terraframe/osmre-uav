@@ -10,17 +10,17 @@ public class Sensor
 
   private String wavelength;
 
-  private String imageWidth;
+  private Integer imageWidth;
 
-  private String imageHeight;
+  private Integer imageHeight;
 
-  private String sensorWidth;
+  private Integer sensorWidth;
 
-  private String sensorHeight;
+  private Integer sensorHeight;
 
-  private String pixelSizeWidth;
+  private Integer pixelSizeWidth;
 
-  private String pixelSizeHeight;
+  private Integer pixelSizeHeight;
 
   public String getName()
   {
@@ -62,62 +62,62 @@ public class Sensor
     this.wavelength = wavelength;
   }
 
-  public String getImageWidth()
+  public Integer getImageWidth()
   {
     return imageWidth;
   }
 
-  public void setImageWidth(String imageWidth)
+  public void setImageWidth(Integer imageWidth)
   {
     this.imageWidth = imageWidth;
   }
 
-  public String getImageHeight()
+  public Integer getImageHeight()
   {
     return imageHeight;
   }
 
-  public void setImageHeight(String imageHeight)
+  public void setImageHeight(Integer imageHeight)
   {
     this.imageHeight = imageHeight;
   }
 
-  public String getSensorWidth()
+  public Integer getSensorWidth()
   {
     return sensorWidth;
   }
 
-  public void setSensorWidth(String sensorWidth)
+  public void setSensorWidth(Integer sensorWidth)
   {
     this.sensorWidth = sensorWidth;
   }
 
-  public String getSensorHeight()
+  public Integer getSensorHeight()
   {
     return sensorHeight;
   }
 
-  public void setSensorHeight(String sensorHeight)
+  public void setSensorHeight(Integer sensorHeight)
   {
     this.sensorHeight = sensorHeight;
   }
 
-  public String getPixelSizeWidth()
+  public Integer getPixelSizeWidth()
   {
     return pixelSizeWidth;
   }
 
-  public void setPixelSizeWidth(String pixelSizeWidth)
+  public void setPixelSizeWidth(Integer pixelSizeWidth)
   {
     this.pixelSizeWidth = pixelSizeWidth;
   }
 
-  public String getPixelSizeHeight()
+  public Integer getPixelSizeHeight()
   {
     return pixelSizeHeight;
   }
 
-  public void setPixelSizeHeight(String pixelSizeHeight)
+  public void setPixelSizeHeight(Integer pixelSizeHeight)
   {
     this.pixelSizeHeight = pixelSizeHeight;
   }

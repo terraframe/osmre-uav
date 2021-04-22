@@ -93,6 +93,16 @@ public class UasMetadata
   {
     return agency;
   }
+  
+  public Agency getOrCreateAgency()
+  {
+    if (agency == null)
+    {
+      this.agency = new Agency();
+    }
+    
+    return this.agency;
+  }
 
   public void setAgency(Agency agency)
   {
@@ -102,6 +112,16 @@ public class UasMetadata
   public Collection getCollection()
   {
     return collection;
+  }
+  
+  public Collection getOrCreateCollection()
+  {
+    if (this.collection == null)
+    {
+      this.collection = new Collection();
+    }
+    
+    return this.collection;
   }
 
   public void setCollection(Collection collection)
@@ -113,6 +133,16 @@ public class UasMetadata
   {
     return mission;
   }
+  
+  public Mission getOrCreateMission()
+  {
+    if (this.mission == null)
+    {
+      this.mission = new Mission();
+    }
+    
+    return this.mission;
+  }
 
   public void setMission(Mission mission)
   {
@@ -121,6 +151,16 @@ public class UasMetadata
 
   public Platform getPlatform()
   {
+    return platform;
+  }
+  
+  public Platform getOrCreatePlatform()
+  {
+    if (this.platform == null)
+    {
+      this.platform = new Platform();
+    }
+    
     return platform;
   }
 
@@ -133,6 +173,16 @@ public class UasMetadata
   {
     return pointOfContact;
   }
+  
+  public PointOfContact getOrCreatePointOfContact()
+  {
+    if (pointOfContact == null)
+    {
+      pointOfContact = new PointOfContact();
+    }
+    
+    return pointOfContact;
+  }
 
   public void setPointOfContact(PointOfContact pointOfContact)
   {
@@ -141,6 +191,16 @@ public class UasMetadata
 
   public Project getProject()
   {
+    return project;
+  }
+  
+  public Project getOrCreateProject()
+  {
+    if (project == null)
+    {
+      project = new Project();
+    }
+    
     return project;
   }
 
@@ -153,6 +213,16 @@ public class UasMetadata
   {
     return sensor;
   }
+  
+  public Sensor getOrCreateSensor()
+  {
+    if (sensor == null)
+    {
+      sensor = new Sensor();
+    }
+    
+    return sensor;
+  }
 
   public void setSensor(Sensor sensor)
   {
@@ -161,6 +231,16 @@ public class UasMetadata
 
   public Upload getUpload()
   {
+    return upload;
+  }
+  
+  public Upload getOrCreateUpload()
+  {
+    if (upload == null)
+    {
+      upload = new Upload();
+    }
+    
     return upload;
   }
 
