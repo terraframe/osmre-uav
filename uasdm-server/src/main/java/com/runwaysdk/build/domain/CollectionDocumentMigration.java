@@ -29,6 +29,7 @@ import gov.geoplatform.uasdm.bus.Document;
 import gov.geoplatform.uasdm.bus.DocumentQuery;
 import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.ProductQuery;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -60,7 +61,7 @@ public class CollectionDocumentMigration implements Runnable
 
         if (col.getDocuments().size() == 0)
         {
-          String[] folders = new String[] { Collection.RAW, Collection.PTCLOUD, Collection.DEM, Collection.ORTHO };
+          String[] folders = new String[] { CollectionSubfolder.RAW.getFolderName(), CollectionSubfolder.PTCLOUD.getFolderName(), CollectionSubfolder.DEM.getFolderName(), CollectionSubfolder.ORTHO.getFolderName() };
 
           List<DocumentIF> rDocuments = new LinkedList<DocumentIF>();
           List<DocumentIF> pDocuments = new LinkedList<DocumentIF>();
@@ -73,7 +74,7 @@ public class CollectionDocumentMigration implements Runnable
             {
               Document document = Document.createIfNotExist(col, object.getKey(), object.getName());
 
-              if (!folder.equals(Collection.RAW))
+              if (!folder.equals(CollectionSubfolder.RAW.getFolderName()))
               {
                 pDocuments.add(document);
               }

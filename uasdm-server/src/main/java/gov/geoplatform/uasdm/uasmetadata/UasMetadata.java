@@ -39,14 +39,12 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 @JsonRootName(value = "uas")
 public class UasMetadata
 {
-  public static final String DATE_FORMAT = "MM/dd/yyyy";
-  
   public static void main(String[] args) throws Exception
   {
     final String path = "/home/rich/dev/projects/uasdm/data/metadata/IDM folder structure and EROS requirements/new/dem_uasmeta.xml";
     
     XmlMapper mapper = new XmlMapper();
-    mapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
+    mapper.setDateFormat(new SimpleDateFormat(UasMetadataService.DATE_FORMAT));
     
     UasMetadata metadata = mapper.readValue(new FileInputStream(path), UasMetadata.class);
     
@@ -183,7 +181,7 @@ public class UasMetadata
         try (InputStream istream = object.getObjectContent())
         {
           ObjectMapper mapper = new XmlMapper();
-          mapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
+          mapper.setDateFormat(new SimpleDateFormat(UasMetadataService.DATE_FORMAT));
           
           return mapper.readValue(istream, UasMetadata.class);
         }

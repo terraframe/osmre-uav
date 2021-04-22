@@ -9,16 +9,13 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
-import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverLayer extends GeoserverLayerBase
@@ -27,9 +24,9 @@ public class GeoserverLayer extends GeoserverLayerBase
   
   public static enum LayerClassification
   {
-    ORTHO(ImageryComponent.ORTHO + "/odm_orthophoto.tif"),
-    DEM_DSM(ODMZipPostProcessor.DEM_GDAL + "/dsm.tif"),
-    DEM_DTM(ODMZipPostProcessor.DEM_GDAL + "/dtm.tif");
+    ORTHO(CollectionSubfolder.ORTHO.getFolderName() + "/odm_orthophoto.tif"),
+    DEM_DSM(CollectionSubfolder.ODM_ALL_GDAL.getFolderName() + "/dsm.tif"),
+    DEM_DTM(CollectionSubfolder.ODM_ALL_GDAL.getFolderName() + "/dtm.tif");
     
     private String keyPath;
     
@@ -77,11 +74,11 @@ public class GeoserverLayer extends GeoserverLayerBase
       return GeoserverProperties.getWorkspace();
     }
     
-    if (key.contains("/" + ImageryComponent.ORTHO + "/"))
+    if (key.contains("/" + CollectionSubfolder.ORTHO.getFolderName() + "/"))
     {
       return AppProperties.getPublicWorkspace();
     }
-    else if (key.contains("/" + ODMZipPostProcessor.DEM_GDAL + "/"))
+    else if (key.contains("/" + CollectionSubfolder.ODM_ALL_GDAL.getFolderName() + "/"))
     {
       return AppProperties.getPublicHillshadeWorkspace();
     }
@@ -93,11 +90,11 @@ public class GeoserverLayer extends GeoserverLayerBase
   
   public LayerClassification getClassification()
   {
-    if (this.getLayerKey().contains(ImageryComponent.ORTHO + "/"))
+    if (this.getLayerKey().contains(CollectionSubfolder.ORTHO.getFolderName() + "/"))
     {
       return LayerClassification.ORTHO;
     }
-    else if (this.getLayerKey().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
+    else if (this.getLayerKey().contains(CollectionSubfolder.ODM_ALL_GDAL.getFolderName() + "/"))
     {
       return LayerClassification.DEM_DSM;
     }

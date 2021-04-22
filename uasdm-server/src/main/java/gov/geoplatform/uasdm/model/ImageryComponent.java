@@ -33,18 +33,7 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
  */
 public interface ImageryComponent
 {
-  public static final String RAW     = "raw";
-
-  public static final String VIDEO   = "video";
-
-  public static final String PTCLOUD = "ptcloud";
-
-  public static final String DEM     = "dem";
-
-  public static final String ORTHO   = "ortho";
-
-  public static final String GEOREF  = "georef";
-
+  
   public String getOid();
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);

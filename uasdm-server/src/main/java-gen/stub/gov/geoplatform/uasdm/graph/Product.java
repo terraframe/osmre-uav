@@ -53,6 +53,7 @@ import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
@@ -67,8 +68,6 @@ import net.geoprism.gis.geoserver.GeoserverInitializer;
 
 public class Product extends ProductBase implements ProductIF
 {
-  public static final String ODM_ALL_DIR = "odm_all";
-  
   private static final Logger logger           = LoggerFactory.getLogger(Product.class);
 
   private static final long   serialVersionUID = -1476643617;
@@ -488,7 +487,7 @@ public class Product extends ProductBase implements ProductIF
 //    }
 //    else
 //    {
-      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, CollectionSubfolder.ODM_ALL.getFolderName(), new LinkedList<SiteObject>(), null, null).getObjects();
   
       SiteObject last = null;
       

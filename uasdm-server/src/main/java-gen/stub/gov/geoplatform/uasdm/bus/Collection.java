@@ -36,6 +36,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -171,15 +172,15 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildRawKey(), RAW);
+      this.deleteS3Folder(this.buildRawKey(), CollectionSubfolder.RAW.getFolderName());
 
-      this.deleteS3Folder(this.buildPointCloudKey(), PTCLOUD);
+      this.deleteS3Folder(this.buildPointCloudKey(), CollectionSubfolder.PTCLOUD.getFolderName());
 
-      this.deleteS3Folder(this.buildDemKey(), DEM);
+      this.deleteS3Folder(this.buildDemKey(), CollectionSubfolder.DEM.getFolderName());
 
-      this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
+      this.deleteS3Folder(this.buildOrthoKey(), CollectionSubfolder.ORTHO.getFolderName());
 
-      this.deleteS3Folder(this.buildVideoKey(), VIDEO);
+      this.deleteS3Folder(this.buildVideoKey(), CollectionSubfolder.VIDEO.getFolderName());
     }
   }
 
@@ -212,27 +213,27 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public String buildRawKey()
   {
-    return this.getS3location() + RAW + "/";
+    return this.getS3location() + CollectionSubfolder.RAW.getFolderName() + "/";
   }
 
   public String buildVideoKey()
   {
-    return this.getS3location() + VIDEO + "/";
+    return this.getS3location() + CollectionSubfolder.VIDEO.getFolderName() + "/";
   }
 
   public String buildPointCloudKey()
   {
-    return this.getS3location() + PTCLOUD + "/";
+    return this.getS3location() + CollectionSubfolder.PTCLOUD.getFolderName() + "/";
   }
 
   public String buildDemKey()
   {
-    return this.getS3location() + DEM + "/";
+    return this.getS3location() + CollectionSubfolder.DEM.getFolderName() + "/";
   }
 
   public String buildOrthoKey()
   {
-    return this.getS3location() + ORTHO + "/";
+    return this.getS3location() + CollectionSubfolder.ORTHO.getFolderName() + "/";
   }
 
   @Override
@@ -255,36 +256,36 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     if (folder == null)
     {
       SiteObject raw = new SiteObject();
-      raw.setId(this.getOid() + "-" + RAW);
-      raw.setName(RAW);
+      raw.setId(this.getOid() + "-" + CollectionSubfolder.RAW.getFolderName());
+      raw.setName(CollectionSubfolder.RAW.getFolderName());
       raw.setComponentId(this.getOid());
       raw.setKey(this.buildRawKey());
       raw.setType(SiteObject.FOLDER);
 
       SiteObject ptCloud = new SiteObject();
-      ptCloud.setId(this.getOid() + "-" + PTCLOUD);
-      ptCloud.setName(PTCLOUD);
+      ptCloud.setId(this.getOid() + "-" + CollectionSubfolder.PTCLOUD.getFolderName());
+      ptCloud.setName(CollectionSubfolder.PTCLOUD.getFolderName());
       ptCloud.setComponentId(this.getOid());
       ptCloud.setKey(this.buildPointCloudKey());
       ptCloud.setType(SiteObject.FOLDER);
 
       SiteObject dem = new SiteObject();
-      dem.setId(this.getOid() + "-" + DEM);
-      dem.setName(DEM);
+      dem.setId(this.getOid() + "-" + CollectionSubfolder.DEM.getFolderName());
+      dem.setName(CollectionSubfolder.DEM.getFolderName());
       dem.setComponentId(this.getOid());
       dem.setKey(this.buildDemKey());
       dem.setType(SiteObject.FOLDER);
 
       SiteObject ortho = new SiteObject();
-      ortho.setId(this.getOid() + "-" + ORTHO);
-      ortho.setName(ORTHO);
+      ortho.setId(this.getOid() + "-" + CollectionSubfolder.ORTHO.getFolderName());
+      ortho.setName(CollectionSubfolder.ORTHO.getFolderName());
       ortho.setComponentId(this.getOid());
       ortho.setKey(this.buildOrthoKey());
       ortho.setType(SiteObject.FOLDER);
 
       SiteObject video = new SiteObject();
-      video.setId(this.getOid() + "-" + VIDEO);
-      video.setName(VIDEO);
+      video.setId(this.getOid() + "-" + CollectionSubfolder.VIDEO.getFolderName());
+      video.setName(CollectionSubfolder.VIDEO.getFolderName());
       video.setComponentId(this.getOid());
       video.setKey(this.buildVideoKey());
       video.setType(SiteObject.FOLDER);
@@ -306,7 +307,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
+    if (!folder.equals(CollectionSubfolder.RAW.getFolderName()) && ( pageNumber != null || pageSize != null ))
     {
       throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
     }

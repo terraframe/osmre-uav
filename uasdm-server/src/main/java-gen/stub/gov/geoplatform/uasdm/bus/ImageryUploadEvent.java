@@ -33,7 +33,7 @@ import com.runwaysdk.resource.ApplicationResource;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -87,7 +87,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
       // Only initialize an ortho job if imagery has been uploaded to the raw
       // folder.
-      if (processUpload && ( uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW) ))
+      if (processUpload && ( uploadTarget != null && uploadTarget.equals(CollectionSubfolder.RAW.getFolderName()) ))
       {
         startODMProcessing(appRes, task, outFileNamePrefix);
       }

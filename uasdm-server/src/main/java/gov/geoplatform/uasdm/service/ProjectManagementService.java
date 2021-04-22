@@ -37,6 +37,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
@@ -56,6 +58,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -68,7 +71,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.uasmetadata.AbstractMetadataGenerator;
+import gov.geoplatform.uasdm.uasmetadata.UasMetadataService;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -123,7 +126,7 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate);
+            List<String> files = downloadAll(null, this.collection.getOid(), CollectionSubfolder.RAW.getFolderName(), ostream, predicate);
 
             filenames.addAll(files);
           }
@@ -577,7 +580,10 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void submitMetadata(String sessionId, String json)
   {
-    new AbstractMetadataGenerator(json).generateAndUpload();
+    JsonObject config = JsonParser.parseString(json).getAsJsonObject();
+    Collection collection = Collection.get(config.get("collectionId").getAsString());
+    
+    new UasMetadataService().saveMetadataFormSubmission(collection, json);
   }
 
   @Request(RequestType.SESSION)

@@ -30,6 +30,7 @@ import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryIF;
@@ -230,7 +231,7 @@ public abstract class Converter
       list.add(Converter.toSiteItem(component, false));
     }
     
-    view.setHasPointcloud(RemoteFileFacade.objectExists(components.get(components.size()-1).getS3location() + Product.ODM_ALL_DIR + "/potree/cloud.js"));
+    view.setHasPointcloud(RemoteFileFacade.objectExists(components.get(components.size()-1).getS3location() + CollectionSubfolder.ODM_ALL.getFolderName() + "/potree/cloud.js"));
 
     view.setComponents(list);
     view.setId(product.getOid());
@@ -282,7 +283,7 @@ public abstract class Converter
     Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
-    UasMetadata metadata = UasMetadata.get(product.getComponent(), Collection.RAW, AbstractMetadataGenerator.FILENAME);
+    UasMetadata metadata = UasMetadata.get(product.getComponent(), CollectionSubfolder.RAW.getFolderName(), AbstractMetadataGenerator.FILENAME);
 
     if (metadata != null)
     {

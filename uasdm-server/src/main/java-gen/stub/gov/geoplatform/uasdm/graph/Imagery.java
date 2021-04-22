@@ -34,6 +34,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTaskQuery;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -124,11 +125,11 @@ public class Imagery extends ImageryBase implements ImageryIF
 
     if (!this.getS3location().trim().equals(""))
     {
-      this.deleteS3Folder(this.buildRawKey(), RAW);
+      this.deleteS3Folder(this.buildRawKey(), CollectionSubfolder.RAW.getFolderName());
 
-      this.deleteS3Folder(this.buildGeoRefKey(), GEOREF);
+      this.deleteS3Folder(this.buildGeoRefKey(), CollectionSubfolder.GEOREF.getFolderName());
 
-      this.deleteS3Folder(this.buildOrthoKey(), ORTHO);
+      this.deleteS3Folder(this.buildOrthoKey(), CollectionSubfolder.ORTHO.getFolderName());
     }
   }
 
@@ -151,17 +152,17 @@ public class Imagery extends ImageryBase implements ImageryIF
 
   public String buildRawKey()
   {
-    return this.getS3location() + RAW + "/";
+    return this.getS3location() + CollectionSubfolder.RAW.getFolderName() + "/";
   }
 
   public String buildGeoRefKey()
   {
-    return this.getS3location() + GEOREF + "/";
+    return this.getS3location() + CollectionSubfolder.GEOREF.getFolderName() + "/";
   }
 
   public String buildOrthoKey()
   {
-    return this.getS3location() + ORTHO + "/";
+    return this.getS3location() + CollectionSubfolder.ORTHO.getFolderName() + "/";
   }
 
   @Override
@@ -184,22 +185,22 @@ public class Imagery extends ImageryBase implements ImageryIF
     if (folder == null)
     {
       SiteObject raw = new SiteObject();
-      raw.setId(this.getOid() + "-" + RAW);
-      raw.setName(RAW);
+      raw.setId(this.getOid() + "-" + CollectionSubfolder.RAW.getFolderName());
+      raw.setName(CollectionSubfolder.RAW.getFolderName());
       raw.setComponentId(this.getOid());
       raw.setKey(this.buildRawKey());
       raw.setType(SiteObject.FOLDER);
 
       SiteObject geoRef = new SiteObject();
-      geoRef.setId(this.getOid() + "-" + GEOREF);
-      geoRef.setName(GEOREF);
+      geoRef.setId(this.getOid() + "-" + CollectionSubfolder.GEOREF.getFolderName());
+      geoRef.setName(CollectionSubfolder.GEOREF.getFolderName());
       geoRef.setComponentId(this.getOid());
       geoRef.setKey(this.buildGeoRefKey());
       geoRef.setType(SiteObject.FOLDER);
 
       SiteObject ortho = new SiteObject();
-      ortho.setId(this.getOid() + "-" + ORTHO);
-      ortho.setName(ORTHO);
+      ortho.setId(this.getOid() + "-" + CollectionSubfolder.ORTHO.getFolderName());
+      ortho.setName(CollectionSubfolder.ORTHO.getFolderName());
       ortho.setComponentId(this.getOid());
       ortho.setKey(this.buildOrthoKey());
       ortho.setType(SiteObject.FOLDER);
@@ -219,7 +220,7 @@ public class Imagery extends ImageryBase implements ImageryIF
   @Override
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
+    if (!folder.equals(CollectionSubfolder.RAW.getFolderName()) && ( pageNumber != null || pageSize != null ))
     {
       throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
     }

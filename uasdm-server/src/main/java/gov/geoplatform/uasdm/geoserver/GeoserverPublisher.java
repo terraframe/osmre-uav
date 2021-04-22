@@ -15,8 +15,8 @@ import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -244,9 +244,9 @@ public class GeoserverPublisher
   {
     List<SiteObject> publishedObjects = new ArrayList<SiteObject>();
     
-    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects()));
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(CollectionSubfolder.ORTHO.getFolderName(), null, null).getObjects()));
     
-    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects()));
+    publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(CollectionSubfolder.ODM_ALL_GDAL.getFolderName(), null, null).getObjects()));
     
     return createPublishableLayersFromSiteObjects(document, product, collection, publishedObjects);
   }

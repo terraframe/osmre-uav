@@ -38,6 +38,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -57,10 +58,6 @@ import net.lingala.zip4j.exception.ZipException;
 public class ODMZipPostProcessor
 {
   private static final Logger logger = LoggerFactory.getLogger(ODMZipPostProcessor.class);
-  
-  public static final String DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
-
-  public static final String POTREE = Product.ODM_ALL_DIR + "/potree";
   
   protected List<DocumentIF> documents = new LinkedList<DocumentIF>();
   
@@ -130,18 +127,18 @@ public class ODMZipPostProcessor
   {
     List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
 
-    processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
+    processingConfigs.add(new ManagedDocument("odm_dem", CollectionSubfolder.DEM.getFolderName(), new String[] { "dsm.tif", "dtm.tif" }));
     
-    processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] { "dsm.tif" }));
+    processingConfigs.add(new DemGdalProcessor("odm_dem", CollectionSubfolder.ODM_ALL_GDAL.getFolderName(), new String[] { "dsm.tif" }));
 
-    processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
+    processingConfigs.add(new ManagedDocument("odm_georeferencing", CollectionSubfolder.PTCLOUD.getFolderName(), new String[] { "odm_georeferenced_model.laz" }));
 
-    processingConfigs.add(new ManagedDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+    processingConfigs.add(new ManagedDocument("odm_orthophoto", CollectionSubfolder.ORTHO.getFolderName(), new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
 
     processingConfigs.add(new ManagedDocument("micasense", "micasense", null));
     
-    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"cloud.js"}, false));
-    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"data"}, true));
+    processingConfigs.add(new S3FileUpload("potree_pointcloud", CollectionSubfolder.ODM_ALL_POTREE.getFolderName(), new String[]{"cloud.js"}, false));
+    processingConfigs.add(new S3FileUpload("potree_pointcloud", CollectionSubfolder.ODM_ALL_POTREE.getFolderName(), new String[]{"data"}, true));
 
     this.config = processingConfigs;
   }

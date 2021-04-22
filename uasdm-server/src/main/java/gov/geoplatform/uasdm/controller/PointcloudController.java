@@ -32,6 +32,7 @@ import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
@@ -108,7 +109,7 @@ public class PointcloudController
     {
       String componentId = matcher.group(1);
       
-      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, Product.ODM_ALL_DIR + "/potree/cloud.js"));
+      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, CollectionSubfolder.ODM_ALL.getFolderName() + "/potree/cloud.js"));
     }
     else
     {
@@ -131,7 +132,7 @@ public class PointcloudController
       
       String dataPath = matcher.group(2);
       
-      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, Product.ODM_ALL_DIR + "/potree/data/" + dataPath));
+      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, CollectionSubfolder.ODM_ALL.getFolderName() + "/potree/data/" + dataPath));
     }
     else
     {

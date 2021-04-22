@@ -43,6 +43,7 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -62,7 +63,7 @@ public class Util
 
   public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
   {
-//    if (folder.equals(ImageryComponent.ORTHO))
+//    if (folder.equals(CollectionSubfolder.ORTHO.getFolderName()))
 //    {
 //      for (SiteObject object : objects)
 //      {
@@ -105,7 +106,7 @@ public class Util
 //
 //      if (paths.length > 1)
 //      {
-//        if (paths[paths.length - 2].startsWith(ImageryComponent.ORTHO))
+//        if (paths[paths.length - 2].startsWith(CollectionSubfolder.ORTHO.getFolderName()))
 //        {
 //          String storeName = imageryComponent.getStoreName(key);
 //
@@ -178,7 +179,7 @@ public class Util
   
             // Upload the file to S3
             String filename = entry.getName();
-            String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
+            String folder = uploadTarget.equals(CollectionSubfolder.RAW.getFolderName()) && isVideoFile(filename) ? CollectionSubfolder.VIDEO.getFolderName() : CollectionSubfolder.RAW.getFolderName();
   
             boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
   
@@ -244,7 +245,7 @@ public class Util
               }
 
               // Upload the file to S3
-              String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
+              String folder = uploadTarget.equals(CollectionSubfolder.RAW.getFolderName()) && isVideoFile(filename) ? CollectionSubfolder.VIDEO.getFolderName() : CollectionSubfolder.RAW.getFolderName();
 
               boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
