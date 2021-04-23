@@ -460,6 +460,21 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return messages;
   }
+  
+  public static List<Collection> getAll()
+  {
+    final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    
+    StringBuilder sb = new StringBuilder();
+    
+    sb.append("SELECT FROM " + mdCollection.getDBClassName());
+    
+    GraphQuery<Collection> gq = new GraphQuery<Collection>(sb.toString());
+    
+    List<Collection> results = gq.getResults();
+    
+    return results;
+  }
 
   public static String expandClause()
   {

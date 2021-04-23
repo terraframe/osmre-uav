@@ -8,7 +8,7 @@ public class Sensor
 
   private String model;
 
-  private String wavelength;
+  private String[] wavelength;
 
   private Integer imageWidth;
 
@@ -52,12 +52,12 @@ public class Sensor
     this.model = model;
   }
 
-  public String getWavelength()
+  public String[] getWavelength()
   {
     return wavelength;
   }
 
-  public void setWavelength(String wavelength)
+  public void setWavelength(String[] wavelength)
   {
     this.wavelength = wavelength;
   }

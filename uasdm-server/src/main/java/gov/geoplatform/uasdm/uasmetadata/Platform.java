@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Platform
 {
   private String name;
-
+  
   @JsonProperty("class")
   private String platformClass;
 

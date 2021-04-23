@@ -23,13 +23,13 @@
                     <div class="panel-heading">Point Of Contact</div>
                     <div class="panel-body">
                         <div class="form-group">
-                            <label for="pointOfContact.name">Name</label>
-                            <input type="text" name="pointOfContact.name" [(ngModel)]="metaObject.pointOfContact.name"
+                            <label for="PointOfContact.name">Name</label>
+                            <input type="text" name="PointOfContact.name" [(ngModel)]="metaObject.PointOfContact.name"
                                 [maxlength]="100" [required]="false" [disabled]="false" />
                         </div>
                         <div class="form-group">
-                            <label for="pointOfContact.email">Email</label>
-                            <input type="text" name="pointOfContact.email" [(ngModel)]="metaObject.pointOfContact.email"
+                            <label for="PointOfContact.email">Email</label>
+                            <input type="text" name="PointOfContact.email" [(ngModel)]="metaObject.PointOfContact.email"
                                 [maxlength]="255" [required]="false" [disabled]="false" />
                         </div>
                     </div>
@@ -40,25 +40,24 @@
                     <div class="panel-body">
                         <div class="form-group">
                             <label for="platform.name">Name</label>
-                            <select [(ngModel)]="metaObject.platform.name" name="platform.name" type="input" (change)="handlePlatformSelect()" required>                               
+                            <select [(ngModel)]="frontendSelect.platform.name" name="platform.name" type="input" (change)="handlePlatformSelect()" required>
                                 <option></option>
-                                <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.displayLabel}}</option>
+                                <option *ngFor="let platform of platforms" [value]="platform.name">{{platform.displayLabel}}</option>
                             </select>
                         </div>
-                        <div class="form-group" *ngIf="metaObject.platform.name === otherPlatformId">
-                            <label for="platform.class">Other name</label>
-                            <input type="text" name="platform.otherName" [(ngModel)]="metaObject.platform.otherName"
-                                maxlength="20" required />
+                        <div class="form-group" *ngIf="frontendSelect.platform.name === otherPlatformId">
+                            <label for="platform.otherName">Other name</label>
+                            <input type="text" name="platform.otherName" [(ngModel)]="frontendSelect.platform.otherName" (change)="handlePlatformOtherChange()" maxlength="20" required  />
                         </div>
                         <div class="form-group">
                             <label for="platform.class">Class</label>
-                            <input type="text" name="platform.class" [(ngModel)]="metaObject.platform.class"
+                            <input type="text" name="platform.class" [(ngModel)]="metaObject.Platform.class"
                                 [maxlength]="20" [disabled]="false" required />
                         </div>
                         <div class="form-group">
                             <label for="platform.type">Type</label>
-                            <select [(ngModel)]="metaObject.platform.type" name="platform.type" type="input" class=""
-                                [disabled]="metaObject.platform.name !== otherPlatformId" required>
+                            <select [(ngModel)]="metaObject.Platform.type" name="platform.type" type="input" class=""
+                                [disabled]="frontendSelect.platform.name !== otherPlatformId" required>
                                 <option></option>
                                 <option>Fixed Wing</option>
                                 <option>Hybrid</option>
@@ -67,12 +66,12 @@
                         <div class="form-group">
                             <label for="platform.serialNumber">Serial Number</label>
                             <input type="text" name="platform.serialNumber"
-                                [(ngModel)]="metaObject.platform.serialNumber" [maxlength]="50"
+                                [(ngModel)]="metaObject.Platform.serialNumber" [maxlength]="50"
                                 [required]="true" [disabled]="false" />
                         </div>
                         <div class="form-group">
                             <label for="platform.faaIdNumber">FAA Id Number</label>
-                            <input type="text" name="platform.faaIdNumber" [(ngModel)]="metaObject.platform.faaIdNumber"
+                            <input type="text" name="platform.faaIdNumber" [(ngModel)]="metaObject.Platform.faaIdNumber"
                                 [maxlength]="30" [required]="true" [disabled]="false" />
                         </div>
                     </div>
@@ -84,30 +83,29 @@
                     <div class="panel-body">
                         <div class="form-group">
                             <label for="sensor.name">Name</label>
-                            <select [(ngModel)]="metaObject.sensor.name" name="sensor.name" type="input" (change)="handleSensorSelect()" required>                               
+                            <select [(ngModel)]="frontendSelect.sensor.name" name="sensor.name" type="input" (change)="handleSensorSelect()" required>                               
                                 <option></option>
-                                <option *ngFor="let sensor of sensors" [value]="sensor.oid">{{sensor.displayLabel}}</option>
+                                <option *ngFor="let sensor of sensors" [value]="sensor.name">{{sensor.displayLabel}}</option>
                             </select>
                         </div>                    
-                        <div class="form-group" *ngIf="metaObject.sensor.name === otherSensorId">
+                        <div class="form-group" *ngIf="frontendSelect.sensor.name === otherSensorId">
                             <label for="sensor.class">Other name</label>
-                            <input type="text" name="sensor.otherName" [(ngModel)]="metaObject.sensor.otherName"
-                                maxlength="20" required />
+                            <input type="text" name="sensor.otherName" [(ngModel)]="frontendSelect.sensor.otherName" (change)="handleSensorOtherChange()" maxlength="20" required />
                         </div>
                         <div class="form-group">
                             <label for="sensor.type">Type</label>
-                            <input type="text" name="sensor.type" [(ngModel)]="metaObject.sensor.type" [maxlength]="20"
-                                [required]="true" [disabled]="metaObject.sensor.name !== otherSensorId" />
+                            <input type="text" name="sensor.type" [(ngModel)]="metaObject.Sensor.type" [maxlength]="20"
+                                [required]="true" [disabled]="frontendSelect.sensor.name !== otherSensorId" />
                         </div>
                         <div class="form-group">
                             <label for="sensor.model">Model</label>
-                            <input type="text" name="sensor.model" [(ngModel)]="metaObject.sensor.model"
-                                [maxlength]="20" [required]="true" [disabled]="metaObject.sensor.name !== otherSensorId" />
+                            <input type="text" name="sensor.model" [(ngModel)]="metaObject.Sensor.model"
+                                [maxlength]="20" [required]="true" [disabled]="frontendSelect.sensor.name !== otherSensorId" />
                         </div>
                         <div class="form-group">
                             <label for="sensor.wavelength">Wave Length</label>
                             <div *ngFor="let wavelength of wavelengths">
-                              <boolean-field [value]="metaObject.sensor.wavelength && (-1 !== metaObject.sensor.wavelength.indexOf(wavelength))" [label]="wavelength" (valueChange)="updateSelectedWaveLength(wavelength, $event)" [disabled]="metaObject.sensor.name !== otherSensorId"></boolean-field>                              
+                              <boolean-field [value]="metaObject.Sensor.wavelength && (-1 !== metaObject.Sensor.wavelength.indexOf(wavelength))" [label]="wavelength" (valueChange)="updateSelectedWaveLength(wavelength, $event)" [disabled]="frontendSelect.sensor.name !== otherSensorId"></boolean-field>                              
                             </div>                                                        
                         </div>
                         <!-- <div class="form-group">
@@ -122,36 +120,40 @@
                         </div> -->
                         <div class="form-group">
                             <label for="sensor.sensorWidth">Sensor Width</label>
-                            <input type="number" name="sensor.sensorWidth" [(ngModel)]="metaObject.sensor.sensorWidth"
+                            <input type="number" name="sensor.sensorWidth" [(ngModel)]="metaObject.Sensor.sensorWidth"
                                 [required]="true" [disabled]="false" OnlyNumber="true" />
                         </div>
+                        <!--
                         <div class="form-group">
                             <label for="sensor.sensorWidth">Sensor Width Units</label>
-                            <select [(ngModel)]="metaObject.sensor.sensorWidthUnits" name="sensor.sensorWidthUnits" type="input" required disabled>
+                            <select [(ngModel)]="metaObject.Sensor.sensorWidthUnits" name="sensor.sensorWidthUnits" type="input" required disabled>
                                 <option value="mm" selected>Millimeters</option>
                             </select>
                         </div>
+                        -->
                         <div class="form-group">
                             <label for="sensor.sensorHeight">Sensor Height</label>
-                            <input type="number" name="sensor.sensorHeight" [(ngModel)]="metaObject.sensor.sensorHeight"
+                            <input type="number" name="sensor.sensorHeight" [(ngModel)]="metaObject.Sensor.sensorHeight"
                                 [required]="true" [disabled]="false" OnlyNumber="true" />
                         </div>
+                        <!-- 
                         <div class="form-group">
                             <label for="sensor.sensorWidth">Sensor Height Units</label>
-                            <select [(ngModel)]="metaObject.sensor.sensorHeightUnits" name="sensor.sensorHeightUnits" type="input" required disabled>
+                            <select [(ngModel)]="metaObject.Sensor.sensorHeightUnits" name="sensor.sensorHeightUnits" type="input" required disabled>
                                 <option value="mm" selected>Millimeters</option>
                             </select>                            
                         </div>
+                        -->
                         <div class="form-group">
                             <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
                             <input type="number" name="sensor.pixelSizeWidth"
-                                [(ngModel)]="metaObject.sensor.pixelSizeWidth" [required]="true" [disabled]="false"
+                                [(ngModel)]="metaObject.Sensor.pixelSizeWidth" [required]="true" [disabled]="false"
                                 OnlyNumber="true" />
                         </div>
                         <div class="form-group">
                             <label for="sensor.pixelSizeHeight">Pixel Size Height</label>
                             <input type="number" name="sensor.pixelSizeHeight"
-                                [(ngModel)]="metaObject.sensor.pixelSizeHeight" [required]="true" [disabled]="false"
+                                [(ngModel)]="metaObject.Sensor.pixelSizeHeight" [required]="true" [disabled]="false"
                                 OnlyNumber="true" />
                         </div>
                     </div>

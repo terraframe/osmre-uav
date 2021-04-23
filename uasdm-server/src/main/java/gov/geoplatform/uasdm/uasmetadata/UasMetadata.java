@@ -25,6 +25,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import com.amazonaws.AmazonClientException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
+import gov.geoplatform.uasdm.model.CollectionSubfolder;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -39,27 +41,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 @JsonRootName(value = "uas")
 public class UasMetadata
 {
-  public static void main(String[] args) throws Exception
-  {
-    final String path = "/home/rich/dev/projects/uasdm/data/metadata/IDM folder structure and EROS requirements/new/dem_uasmeta.xml";
-    
-    XmlMapper mapper = new XmlMapper();
-    mapper.setDateFormat(new SimpleDateFormat(UasMetadataService.DATE_FORMAT));
-    
-    UasMetadata metadata = mapper.readValue(new FileInputStream(path), UasMetadata.class);
-    
-    StringWriter stringWriter = new StringWriter();
-    XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-    XMLStreamWriter sw = xmlOutputFactory.createXMLStreamWriter(stringWriter);
-    
-    sw.writeStartDocument();
-    
-    mapper.writeValue(sw, metadata);
-    
-    sw.writeEndDocument();
-    
-    System.out.println(stringWriter.toString());
-  }
+  public static final String S3_FILE_POSTFIX = "_uasmeta";
   
   @JsonProperty("Agency")
   private Agency agency;
@@ -94,6 +76,7 @@ public class UasMetadata
     return agency;
   }
   
+  @JsonIgnore
   public Agency getOrCreateAgency()
   {
     if (agency == null)
@@ -114,6 +97,7 @@ public class UasMetadata
     return collection;
   }
   
+  @JsonIgnore
   public Collection getOrCreateCollection()
   {
     if (this.collection == null)
@@ -134,6 +118,7 @@ public class UasMetadata
     return mission;
   }
   
+  @JsonIgnore
   public Mission getOrCreateMission()
   {
     if (this.mission == null)
@@ -154,6 +139,7 @@ public class UasMetadata
     return platform;
   }
   
+  @JsonIgnore
   public Platform getOrCreatePlatform()
   {
     if (this.platform == null)
@@ -174,6 +160,7 @@ public class UasMetadata
     return pointOfContact;
   }
   
+  @JsonIgnore
   public PointOfContact getOrCreatePointOfContact()
   {
     if (pointOfContact == null)
@@ -194,6 +181,7 @@ public class UasMetadata
     return project;
   }
   
+  @JsonIgnore
   public Project getOrCreateProject()
   {
     if (project == null)
@@ -214,6 +202,7 @@ public class UasMetadata
     return sensor;
   }
   
+  @JsonIgnore
   public Sensor getOrCreateSensor()
   {
     if (sensor == null)
@@ -234,6 +223,7 @@ public class UasMetadata
     return upload;
   }
   
+  @JsonIgnore
   public Upload getOrCreateUpload()
   {
     if (upload == null)
@@ -248,13 +238,17 @@ public class UasMetadata
   {
     this.upload = upload;
   }
-
-  public static UasMetadata get(UasComponentIF component, String folderName, String filename)
+  
+  public static String buildS3MetadataPath(gov.geoplatform.uasdm.graph.Collection collection, CollectionSubfolder folder)
   {
-    // TODO : This path needs to change
-    String key = component.getS3location() + folderName + "/" + component.getName() + filename;
+    return collection.getS3location() + folder.getFolderName() + "/" + folder.getFolderName() + S3_FILE_POSTFIX + ".xml";
+  }
 
-    try (RemoteFileObject object = component.download(key))
+  public static UasMetadata get(gov.geoplatform.uasdm.graph.Collection collection, CollectionSubfolder folder)
+  {
+    String key = buildS3MetadataPath(collection, folder);
+
+    try (RemoteFileObject object = collection.download(key))
     {
       if (object != null)
       {

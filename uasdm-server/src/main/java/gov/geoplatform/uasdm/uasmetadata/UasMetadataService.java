@@ -7,13 +7,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -23,6 +26,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Mission;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.model.CollectionSubfolder;
@@ -32,16 +36,29 @@ public class UasMetadataService
 {
   public static final String DATE_FORMAT = "MM/dd/yyyy";
   
-  public static final String POSTFIX = "_uasmeta";
-  
   public UasMetadata fromJson(InputStream json)
+  {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
+    
+    try
+    {
+      return mapper.readValue(json, UasMetadata.class);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  public UasMetadata fromXml(InputStream xml)
   {
     XmlMapper mapper = new XmlMapper();
     mapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
     
     try
     {
-      return mapper.readValue(json, UasMetadata.class);
+      return mapper.readValue(xml, UasMetadata.class);
     }
     catch (IOException e)
     {
@@ -103,9 +120,14 @@ public class UasMetadataService
     
     if (folder.equals(CollectionSubfolder.ORTHO))
     {
-      upload.setOrthoStartDate(collection.getProducts().get(0).getLastUpdateDate());
-      upload.setOrthoEndDate(collection.getProducts().get(0).getLastUpdateDate());
-//      upload.setOrthoCorrectionModel("unknown");
+      List<Product> products = collection.getProducts();
+      
+      if (products != null && products.size() > 0)
+      {
+        upload.setOrthoStartDate(products.get(0).getLastUpdateDate());
+        upload.setOrthoEndDate(products.get(0).getLastUpdateDate());
+  //      upload.setOrthoCorrectionModel("unknown");
+      }
     }
   }
   
@@ -122,7 +144,7 @@ public class UasMetadataService
 
   private void generateAndUpload(CollectionSubfolder folder, Collection collection, String uasMetadataJson)
   {
-    try (CloseableFile temp = new CloseableFile(AppProperties.getTempDirectory(), collection.getOid() + "_" + folder.getFolderName() + POSTFIX + ".xml", true))
+    try (CloseableFile temp = new CloseableFile(AppProperties.getTempDirectory(), collection.getOid() + "_" + folder.getFolderName() + "_metadata.xml", true))
     {
       try (FileOutputStream fos = new FileOutputStream(temp))
       {
@@ -137,8 +159,8 @@ public class UasMetadataService
         throw new ProgrammingErrorException(e);
       }
       
-      String fileName = folder.getFolderName() + POSTFIX + ".xml";
-      String key = collection.getS3location() + folder.getFolderName() + "/" + fileName;
+      String key = UasMetadata.buildS3MetadataPath(collection, folder);
+      String fileName = FilenameUtils.getName(key);
       Util.uploadFileToS3(temp, key, null);
 
       collection.createDocumentIfNotExist(key, fileName);

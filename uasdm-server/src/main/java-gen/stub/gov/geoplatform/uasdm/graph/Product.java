@@ -117,6 +117,11 @@ public class Product extends ProductBase implements ProductIF
 
     return parents.get(0);
   }
+  
+  public Collection getCollection()
+  {
+    return (Collection) this.getComponent();
+  }
 
   public List<DocumentIF> getDocuments()
   {

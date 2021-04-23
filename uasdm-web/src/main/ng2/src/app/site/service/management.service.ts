@@ -397,7 +397,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	submitCollectionMetadata(metaObj: string): Promise<void> {
+	submitCollectionMetadata(collectionId: string, metaObj: string): Promise<void> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -406,7 +406,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.noErrorHttpClient
-			.post<void>(acp + '/project/submit-metadata', JSON.stringify({ json: metaObj }), { headers: headers })
+			.post<void>(acp + '/project/submit-metadata', JSON.stringify({ collectionId: collectionId, json: metaObj }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

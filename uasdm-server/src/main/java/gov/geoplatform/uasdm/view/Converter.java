@@ -270,6 +270,8 @@ public abstract class Converter
   public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated, Integer pageNumber, Integer pageSize)
   {
     final SessionIF session = Session.getCurrentSession();
+    
+    gov.geoplatform.uasdm.graph.Collection collection = ((Product)product).getCollection();
 
     if (!session.checkTypeAccess(Operation.READ, product.getMdClass()))
     {
@@ -283,7 +285,7 @@ public abstract class Converter
     Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
-    UasMetadata metadata = UasMetadata.get(product.getComponent(), CollectionSubfolder.RAW.getFolderName(), AbstractMetadataGenerator.FILENAME);
+    UasMetadata metadata = UasMetadata.get(collection, CollectionSubfolder.RAW);
 
     if (metadata != null)
     {

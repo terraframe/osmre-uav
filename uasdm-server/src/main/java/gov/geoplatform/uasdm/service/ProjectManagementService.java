@@ -578,12 +578,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void submitMetadata(String sessionId, String json)
+  public void submitMetadata(String sessionId, String collectionId, String jsonUasMetadata)
   {
-    JsonObject config = JsonParser.parseString(json).getAsJsonObject();
-    Collection collection = Collection.get(config.get("collectionId").getAsString());
+    Collection collection = Collection.get(collectionId);
     
-    new UasMetadataService().saveMetadataFormSubmission(collection, json);
+    new UasMetadataService().saveMetadataFormSubmission(collection, jsonUasMetadata);
   }
 
   @Request(RequestType.SESSION)
@@ -714,8 +713,11 @@ public class ProjectManagementService
 
       if (component instanceof CollectionIF)
       {
-        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
-        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
+        Platform platform = Platform.get(component.getObjectValue(Collection.PLATFORM));
+        response.put("platform", platform.getName());
+        
+        Sensor sensor = Sensor.get(component.getObjectValue(Collection.SENSOR));
+        response.put("sensor", sensor.getName());
       }
     }
 
