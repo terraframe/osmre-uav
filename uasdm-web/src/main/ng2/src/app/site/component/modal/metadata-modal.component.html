@@ -55,13 +55,17 @@
                             <input type="text" name="platform.class" [(ngModel)]="metaObject.platform.class"
                                 [maxlength]="20" [disabled]="false" required />
                         </div>
-                        <div class="form-group">
+                        <div *ngIf="metaObject.platform.name != null && metaObject.platform.name.length > 0" class="form-group">
                             <label for="platform.type">Type</label>
                             <select [(ngModel)]="metaObject.platform.type" name="platform.type" type="input" class=""
                                 [disabled]="metaObject.platform.name !== otherPlatformId" required>
                                 <option></option>
                                 <option>Fixed Wing</option>
                                 <option>Hybrid</option>
+                                <option>Multi-rotor</option>
+                                <option>Helicopter</option>
+                                <option>VTOL Fixed-wing</option>
+                                <option>Quadcopter</option>
                             </select>
                         </div>
                         <div class="form-group">
