@@ -17,7 +17,7 @@
 
 # Run this with sudo
 
-CONTAINER_NAME=postgres
+CONTAINER_NAME=uasdm-postgres
 POSTGRES_PORT=5442
 POSTGRES_ROOT_PASS=postgres
 
