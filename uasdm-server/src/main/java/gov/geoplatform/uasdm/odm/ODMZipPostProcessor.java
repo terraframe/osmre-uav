@@ -60,7 +60,7 @@ public class ODMZipPostProcessor
   
   public static final String DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
 
-  public static final String POTREE = Product.ODM_ALL_DIR + "/potree";
+  public static final String POTREE = Product.ODM_ALL_DIR + "/entwine_pointcloud";
   
   protected List<DocumentIF> documents = new LinkedList<DocumentIF>();
   
@@ -140,8 +140,8 @@ public class ODMZipPostProcessor
 
     processingConfigs.add(new ManagedDocument("micasense", "micasense", null));
     
-    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"cloud.js"}, false));
-    processingConfigs.add(new S3FileUpload("potree_pointcloud", POTREE, new String[]{"data"}, true));
+    processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[]{"ept.json", "ept-build.json"}, false));
+    processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[]{"ept-sources", "ept-hierarchy", "ept-data"}, true));
 
     this.config = processingConfigs;
   }
@@ -259,7 +259,7 @@ public class ODMZipPostProcessor
         name = filePrefix + "_" + name;
       }
 
-      if (UasComponentIF.isValidName(name) && config.shouldProcessFile(child))
+      if (config.shouldProcessFile(child))
       {
         String key = this.s3Location + s3FolderPrefix + "/" + name;
         
@@ -347,6 +347,12 @@ public class ODMZipPostProcessor
 
     protected boolean shouldProcessFile(File file)
     {
+      String name = file.getName();
+      if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
+      {
+        return false;
+      }
+      
       if (this.isDirectory != file.isDirectory())
       {
         return false;

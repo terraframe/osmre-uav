@@ -33,6 +33,7 @@ docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") > /dev/null || tru
 
 # Pull the micasense container (our NodeODM might launch it at runtime)
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest
+docker tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense uasdm-micasense
 
 # Pull & Run the custom UASDM NodeODM container
 docker run -d -p 3000:3000 -v $(pwd)/micasense:/opt/micasense -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=$(pwd)/micasense --name uasdm-nodeodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm

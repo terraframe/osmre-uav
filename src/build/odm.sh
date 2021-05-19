@@ -50,6 +50,7 @@ $(aws ecr get-login --no-include-email --region us-east-1)
 # Pull the latest docker containers
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest
+docker tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense uasdm-micasense
 
 
 

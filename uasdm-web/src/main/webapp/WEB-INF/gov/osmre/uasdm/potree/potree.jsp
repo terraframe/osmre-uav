@@ -81,14 +81,14 @@
 		});
 
 		// Load and add point cloud to scene
-		Potree.loadPointCloud("<%=request.getContextPath()%>/pointcloud/<%= request.getAttribute("componentId") %>/cloud.js", "<%= request.getAttribute("productName") %>", function(e){
+		Potree.loadPointCloud("<%=request.getContextPath()%>/pointcloud/<%= request.getAttribute("componentId") %>/data/ept.json", "<%= request.getAttribute("productName") %>", function(e){
 			let scene = viewer.scene;
 			let pointcloud = e.pointcloud;
 
 		  let material = pointcloud.material;
-			material.size = 1.5;
-			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-			material.shape = Potree.PointShape.CIRCLE;
+			material.size = 5.0;
+			material.pointSizeType = Potree.PointSizeType.FIXED;
+			material.shape = Potree.PointShape.SQUARE;
 			// material.activeAttributeName = "elevation";
 
 			scene.addPointCloud(pointcloud);

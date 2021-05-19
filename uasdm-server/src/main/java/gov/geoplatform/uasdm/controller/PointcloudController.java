@@ -27,11 +27,8 @@ import com.runwaysdk.mvc.ErrorSerialization;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.ViewResponse;
 import com.runwaysdk.request.ServletRequestIF;
-import com.runwaysdk.session.Request;
-import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
@@ -46,6 +43,14 @@ public class PointcloudController
   
   private ProjectManagementService service = new ProjectManagementService();
   
+  /**
+   * Serves resource requests from the Potree Viewer for files additional resources like CSS, javascript, files.
+   * These files are typically pulled from the potree build directory, which is produced at build time.
+   * 
+   * @param request
+   * @param servletRequest
+   * @return
+   */
   @Endpoint(url = "resource\\/.*", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF resource(ClientRequestIF request, ServletRequestIF servletRequest)
   {
@@ -69,8 +74,15 @@ public class PointcloudController
     }
   }
   
+  /**
+   * Primary endpoint which serves up the Potree Viewer JSP page.
+   * 
+   * @param request
+   * @param servletRequest
+   * @return
+   */
   @Endpoint(url = ".+\\/potree$", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF potree(ClientRequestIF request, ServletRequestIF servletRequest)
+  public ResponseIF potreeViewer(ClientRequestIF request, ServletRequestIF servletRequest)
   {
     String url = servletRequest.getRequestURI();
     
@@ -95,27 +107,13 @@ public class PointcloudController
     }
   }
   
-  @Endpoint(url = ".+\\/cloud\\.js$", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF cloudJs(ClientRequestIF request, ServletRequestIF servletRequest)
-  {
-    String url = servletRequest.getRequestURI();
-    
-    Pattern pattern = Pattern.compile(".*pointcloud\\/(.+)\\/cloud\\.js$", Pattern.CASE_INSENSITIVE);
-    
-    Matcher matcher = pattern.matcher(url);
-    
-    if (matcher.find())
-    {
-      String componentId = matcher.group(1);
-      
-      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, Product.ODM_ALL_DIR + "/potree/cloud.js"));
-    }
-    else
-    {
-      throw new ProgrammingErrorException("Could not match regex against provided url.");
-    }
-  }
-  
+  /**
+   * Serves requests for data by the Potree Viewer and fullfills the requests by fetching data from S3.
+   * 
+   * @param request
+   * @param servletRequest
+   * @return
+   */
   @Endpoint(url = ".+\\/data\\/.*", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF data(ClientRequestIF request, ServletRequestIF servletRequest)
   {
@@ -131,7 +129,7 @@ public class PointcloudController
       
       String dataPath = matcher.group(2);
       
-      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, Product.ODM_ALL_DIR + "/potree/data/" + dataPath));
+      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, ODMZipPostProcessor.POTREE + "/" + dataPath));
     }
     else
     {

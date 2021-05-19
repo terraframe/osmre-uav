@@ -63,7 +63,6 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
-import net.geoprism.gis.geoserver.GeoserverInitializer;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -245,7 +244,7 @@ public class Product extends ProductBase implements ProductIF
    */
   public String calculateBoundingBox()
   {
-    if (!GeoserverInitializer.isInitialized())
+    if (!gov.geoplatform.uasdm.geoserver.GeoserverInitializer.isInitialized())
     {
       return null;
     }
