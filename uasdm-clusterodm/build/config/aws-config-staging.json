@@ -27,14 +27,14 @@
 
     "spot": false,
     "imageSizeMapping": [
-        {"maxImages": 20, "slug": "t3a.small", "spotPrice": 0.05, "storage": 60},
-        {"maxImages": 50, "slug": "t3a.medium", "spotPrice": 0.05, "storage": 100},
-		{"maxImages": 180, "slug": "t3a.large", "spotPrice": 0.05, "storage": 160},
-		{"maxImages": 300, "slug": "t3a.xlarge", "spotPrice": 0.1, "storage": 320},
-		{"maxImages": 1000, "slug": "t3a.2xlarge", "spotPrice": 0.2, "storage": 640},
-		{"maxImages": 2000, "slug": "r5.2xlarge", "spotPrice": 0.25, "storage": 1200},
-		{"maxImages": 3000, "slug": "r5.4xlarge", "spotPrice": 0.5, "storage": 2000},
-		{"maxImages": 6000, "slug": "r5.8xlarge", "spotPrice": 1.0, "storage": 4000},
+        {"maxImages": 20, "slug": "t3a.small", "spotPrice": 0.02, "storage": 60},
+        {"maxImages": 50, "slug": "t3a.medium", "spotPrice": 0.04, "storage": 100},
+		{"maxImages": 180, "slug": "m5.large", "spotPrice": 0.1, "storage": 160},
+		{"maxImages": 300, "slug": "m5.xlarge", "spotPrice": 0.2, "storage": 320},
+		{"maxImages": 1000, "slug": "m5.2xlarge", "spotPrice": 0.4, "storage": 640},
+		{"maxImages": 2000, "slug": "r5.2xlarge", "spotPrice": 0.6, "storage": 1200},
+		{"maxImages": 3000, "slug": "r5.4xlarge", "spotPrice": 1.1, "storage": 2000},
+		{"maxImages": 6000, "slug": "r5.8xlarge", "spotPrice": 1.8, "storage": 4000},
 		{"maxImages": 12000, "slug": "r5.12xlarge", "spotPrice": 2.0, "storage": 8000},
 		{"maxImages": 24000, "slug": "r5.16xlarge", "spotPrice": 4.0, "storage": 16000}
     ],
