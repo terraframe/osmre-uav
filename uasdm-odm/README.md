@@ -18,9 +18,9 @@ We also have wrapper projects similar to this in the uasdm-micasense and uasdm-c
 There are various shell scripts which facilitate various build tasks for deploy and development. These shell scripts have been tested only on Ubuntu. Some are expected to be run as root, and others not (this is usually documented at the top of the script).
 
 The shell scripts may or may not utilize the following environment variables:
-UASDM = /path/to/uasdm/git/project/../
-UASDM_ECR_KEY = credentials to Terraframe's private ECR server
-UASDM_ECR_SECRET = credentials to Terraframe's private ECR server
+- UASDM = /path/to/uasdm/git/project/../
+- UASDM_ECR_KEY = credentials to Terraframe's private ECR server
+- UASDM_ECR_SECRET = credentials to Terraframe's private ECR server
 
 The purposes of the shell scripts is as follows:
 init.sh - Downloads the required repositories and configures them
