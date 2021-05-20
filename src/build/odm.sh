@@ -37,7 +37,7 @@ service docker start
 
 # Consider using (if all containers are live and running)
 docker system prune --volumes
-docker image prune -a
+docker image prune -a # TODO : Don't run this it will delete the micasense image
 
 # Requires AWS CLI : pip install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
