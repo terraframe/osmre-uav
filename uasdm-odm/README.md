@@ -23,7 +23,7 @@ The shell scripts may or may not utilize the following environment variables:
 - UASDM_ECR_SECRET = credentials to Terraframe's private ECR server
 
 The purposes of the shell scripts is as follows:
-init.sh - Downloads the required repositories and configures them
-build.sh - Builds the necessary Docker images from the repositories fetched with init.sh
-run.sh - Runs the Docker image built with the build.sh script
-deploy.sh - Deploys the Docker image to the Terraframe ECR repository.
+- init.sh - Downloads the required repositories and configures them
+- build.sh - Builds the necessary Docker images from the repositories fetched with init.sh
+- run.sh - Runs the Docker image built with the build.sh script
+- deploy.sh - Deploys the Docker image to the Terraframe ECR repository.
