@@ -28,7 +28,11 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.ViewResponse;
 import com.runwaysdk.request.ServletRequestIF;
 
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
@@ -40,6 +44,12 @@ public class PointcloudController
   public static final String       POTREE_JSP = "gov/osmre/uasdm/potree/potree.jsp";
   
   public static final String       POTREE_RESOURCES = "gov/osmre/uasdm/potree/potree";
+  
+  /**
+   * Support for the "legacy" older 'potree' data format, as opposed to the newer 'entwine' format. Older versions of ODM
+   * used to generate pointcloud data in this format. 
+   */
+  public static final String       LEGACY_POTREE_SUPPORT = Product.ODM_ALL_DIR + "/potree";
   
   private ProjectManagementService service = new ProjectManagementService();
   
@@ -96,8 +106,23 @@ public class PointcloudController
       
       ViewResponse resp = new ViewResponse(JSP_DIR + POTREE_JSP);
       
+      UasComponent component = this.service.getComponent(request.getSessionId(), componentId);
+      
       resp.set("componentId", componentId);
-      resp.set("productName", this.service.getComponentName(request.getSessionId(), componentId));
+      resp.set("productName", component.getName());
+      
+      if (RemoteFileFacade.objectExists(component.getS3location() + ODMZipPostProcessor.POTREE + "/ept.json"))
+      {
+        resp.set("pointcloudLoadPath", "ept.json");
+      }
+      else if (RemoteFileFacade.objectExists(component.getS3location() + LEGACY_POTREE_SUPPORT + "/cloud.js"))
+      {
+        resp.set("pointcloudLoadPath", "legacypotree/cloud.js");
+      }
+      else
+      {
+        resp.set("noData", "true");
+      }
       
       return resp;
     }
@@ -119,7 +144,7 @@ public class PointcloudController
   {
     String url = servletRequest.getRequestURI();
     
-    Pattern pattern = Pattern.compile(".*pointcloud\\/(.+)\\/data\\/(.*)$", Pattern.CASE_INSENSITIVE);
+    Pattern pattern = Pattern.compile(".*pointcloud\\/([^\\/]+)\\/data(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);
     
     Matcher matcher = pattern.matcher(url);
     
@@ -129,7 +154,14 @@ public class PointcloudController
       
       String dataPath = matcher.group(2);
       
-      return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, ODMZipPostProcessor.POTREE + "/" + dataPath));
+      if (url.contains("legacypotree/"))
+      {
+        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, LEGACY_POTREE_SUPPORT + "/" + dataPath));
+      }
+      else
+      {
+        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, ODMZipPostProcessor.POTREE + "/" + dataPath));
+      }
     }
     else
     {

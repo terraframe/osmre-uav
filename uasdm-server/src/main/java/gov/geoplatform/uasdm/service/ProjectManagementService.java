@@ -185,9 +185,9 @@ public class ProjectManagementService
   }
   
   @Request(RequestType.SESSION)
-  public String getComponentName(String sessionId, String componentId)
+  public UasComponent getComponent(String sessionId, String componentId)
   {
-    return UasComponent.get(componentId).getName();
+    return UasComponent.get(componentId);
   }
 
   @Request(RequestType.SESSION)
