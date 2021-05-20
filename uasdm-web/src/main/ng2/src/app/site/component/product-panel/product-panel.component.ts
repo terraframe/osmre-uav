@@ -22,7 +22,6 @@ declare var acp: string;
 @Component({
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
-    styles: [],
     animations: [
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation(),
@@ -87,6 +86,32 @@ export class ProductPanelComponent {
             reader.readAsDataURL(image);
         }
     }
+    
+    hasOrthoLayer(product: Product): boolean {
+      let len = product.layers.length;
+      for (let i = 0; i < len; ++i)
+      {
+        if (product.layers[i].classification === 'ORTHO' && product.layers[i].key != null && product.layers[i].key.length > 0)
+        {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    hasDemLayer(product: Product): boolean {
+      let len = product.layers.length;
+      for (let i = 0; i < len; ++i)
+      {
+        if ((product.layers[i].classification === 'DEM_DSM' || product.layers[i].classification === 'DEM_DTM') && product.layers[i].key != null && product.layers[i].key.length > 0)
+        {
+          return true;
+        }
+      }
+      
+      return false;
+    }
 
     getThumbnail(product: Product): void {
 
@@ -117,17 +142,26 @@ export class ProductPanelComponent {
     }
 
     handleMapIt(product: Product): void {
+      if (this.hasOrthoLayer(product))
+      {
         this.toggleMapOrtho.emit(product);
+      }
     }
     
     handleMapDem(product: Product): void {
+      if (this.hasDemLayer(product))
+      {
         this.toggleMapDem.emit(product);
+      }
     }
     
     handlePointcloud(product: Product): void {
-      let componentId: string = product.entities[product.entities.length-1].id;
-    
-      window.open(acp + "/pointcloud/" + componentId + "/potree");
+      if (product.hasPointcloud)
+      {
+        let componentId: string = product.entities[product.entities.length-1].id;
+      
+        window.open(acp + "/pointcloud/" + componentId + "/potree");
+      }
     }
 
     handleDelete(product: Product, event: any): void {

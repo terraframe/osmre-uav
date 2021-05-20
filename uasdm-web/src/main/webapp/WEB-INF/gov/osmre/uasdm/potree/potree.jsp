@@ -32,9 +32,7 @@
 </head>
 
 <body>
-<c:choose>
-    <c:when test="${noData == null}">
-        <script src="../resource/libs/jquery/jquery-3.1.1.min.js"></script>
+  <script src="../resource/libs/jquery/jquery-3.1.1.min.js"></script>
   <script src="../resource/libs/spectrum/spectrum.js"></script>
   <script src="../resource/libs/jquery-ui/jquery-ui.min.js"></script>
 
@@ -112,12 +110,5 @@
     });
 
   </script>
-    </c:when>    
-    <c:otherwise>
-      <div style="font-size:13px; color:#8c0000; line-height:18px; font-size:13px;">
-        No data!
-      </div>
-    </c:otherwise>
-</c:choose>
   </body>
 </html>
