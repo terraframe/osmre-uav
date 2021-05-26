@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -42,6 +42,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
@@ -58,6 +59,14 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public WorkflowTask()
   {
     super();
+  }
+
+  @Override
+  public void apply()
+  {
+    super.apply();
+
+    CollectionStatus.updateStatus(this);
   }
 
   public static long getUserWorkflowTasksCount(String statuses)
@@ -255,7 +264,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     return ComponentFacade.getComponent(this.getComponent());
   }
 
-  private static boolean isShowUserOnly()
+  public static boolean isShowUserOnly()
   {
     return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole("geoprism.admin.Administrator");
   }
@@ -315,4 +324,32 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     return components;
   }
+
+  public static JSONArray getCollectionTasks(String collectionId)
+  {
+    List<? extends WorkflowTask> tasks = getTasksForCollection(collectionId);
+
+    JSONArray results = new JSONArray();
+
+    for (WorkflowTask task : tasks)
+    {
+      results.put(task.toJSON());
+    }
+
+    return results;
+
+  }
+
+  public static List<? extends WorkflowTask> getTasksForCollection(String collectionId)
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(collectionId));
+    query.ORDER_BY_DESC(query.getCreateDate());
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      return iterator.getAll();
+    }
+  }
+
 }

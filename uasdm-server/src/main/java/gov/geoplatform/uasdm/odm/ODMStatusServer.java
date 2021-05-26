@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -36,6 +36,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
@@ -251,7 +252,7 @@ public class ODMStatusServer
       runInTrans();
     }
 
-//    @Transaction
+    // @Transaction
     public void runInTrans()
     {
       synchronized (pendingTasks)
@@ -271,7 +272,7 @@ public class ODMStatusServer
         }
 
         ODMProcessingTaskIF task = it.next();
-  
+
         InfoResponse resp = null;
         try
         {
@@ -283,23 +284,23 @@ public class ODMStatusServer
           {
             resp = DevProperties.getMockOdmTaskInfo();
           }
-  
+
           if (resp.getHTTPResponse().isUnreachableHost())
           {
             String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
             logger.error(msg);
             UnreachableHostException ex = new UnreachableHostException(msg);
-  
+
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage(RunwayException.localizeThrowable(ex, Session.getCurrentLocale()));
             task.apply();
-  
+
             it.remove();
-  
+
             sendEmail(task);
-  
-  //          throw ex;
+
+            // throw ex;
             continue;
           }
           else if (resp.hasError())
@@ -308,9 +309,9 @@ public class ODMStatusServer
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage(resp.getError());
             task.apply();
-  
+
             it.remove();
-  
+
             sendEmail(task);
           }
           else if (!resp.hasError() && resp.getHTTPResponse().isError())
@@ -320,24 +321,24 @@ public class ODMStatusServer
             task.setMessage("The job encountered an unspecified error.");
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
             task.apply();
-  
+
             it.remove();
           }
           else
           {
             ODMStatus respStatus = resp.getStatus();
-            
+
             if (respStatus == null)
             {
               task.appLock();
               task.setStatus(ODMStatus.FAILED.getLabel());
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               sendEmail(task);
-  
+
               removeFromOdm(task, task.getOdmUUID());
             }
             else if (ODMStatus.FAILED.equals(respStatus))
@@ -347,32 +348,41 @@ public class ODMStatusServer
               task.setMessage(resp.getStatusError());
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               sendEmail(task);
-  
+
               removeFromOdm(task, task.getOdmUUID());
             }
             else if (ODMStatus.RUNNING.equals(respStatus))
             {
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
-  
-//              long millis = resp.getProcessingTime();
-//  
-//              String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-  
-              if (resp.getImagesCount() == 1) // This happens when not using ODM's newer "chunk" functionality, and it only happens when a auto-scaling node is spinning up.
+
+              // long millis = resp.getProcessingTime();
+              //
+              // String sProcessingTime = String.format("%d hours, %d minutes",
+              // TimeUnit.MILLISECONDS.toHours(millis),
+              // TimeUnit.MILLISECONDS.toMinutes(millis) -
+              // TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+
+              if (resp.getImagesCount() == 1) // This happens when not using
+                                              // ODM's newer "chunk"
+                                              // functionality, and it only
+                                              // happens when a auto-scaling
+                                              // node is spinning up.
               {
                 task.setMessage("Your images are being processed. Check back later for updates. An email will be sent when the processing is complete.");
               }
               else
               {
                 task.setMessage("Processing of " + resp.getImagesCount() + " images. An email will be sent when the processing is complete");
-//                task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+                // task.setMessage("Processing of " + resp.getImagesCount() + "
+                // images has been running for " + sProcessingTime + ". An email
+                // will be sent when the processing is complete");
               }
-              
+
               task.apply();
             }
             else if (ODMStatus.QUEUED.equals(respStatus))
@@ -388,25 +398,25 @@ public class ODMStatusServer
               task.setStatus(resp.getStatus().getLabel());
               task.setMessage("Job was canceled.");
               task.apply();
-  
+
               it.remove();
-  
+
               // TODO : Remove from ODM?
             }
             else if (ODMStatus.COMPLETED.equals(respStatus))
             {
               long millis = resp.getProcessingTime();
-  
+
               String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-  
+
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
               task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               uploadResultsToS3(task);
             }
           }
@@ -414,12 +424,12 @@ public class ODMStatusServer
         catch (Throwable t)
         {
           logger.error("Error encountered in ODMStatusServer", t);
-          
+
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
-          
+
           String errMsg = RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
-          
+
           if (t instanceof SmartException)
           {
             task.setMessage(errMsg);
@@ -428,16 +438,16 @@ public class ODMStatusServer
           {
             task.setMessage("The job encountered an unspecified error.");
           }
-          
+
           if (resp != null && resp.getHTTPResponse() != null)
           {
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ". " + errMsg);
           }
-          else if (!(t instanceof SmartException))
+          else if (! ( t instanceof SmartException ))
           {
             task.setOdmOutput("HTTP communication with ODM has failed. " + errMsg);
           }
-          
+
           task.apply();
 
           it.remove();
@@ -458,7 +468,8 @@ public class ODMStatusServer
         imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
         imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         imageryOdmUploadTask.setProcessingTask(task);
-//        imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        // imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification
+        // Artifacts for [" + task.getCollection().getName() + "].");
         imageryOdmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
         imageryOdmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
         imageryOdmUploadTask.apply();
@@ -474,14 +485,15 @@ public class ODMStatusServer
         odmUploadTask.setOdmUUID(task.getOdmUUID());
         odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         odmUploadTask.setProcessingTask(task);
-//        uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        // uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for
+        // [" + task.getCollection().getName() + "].");
         odmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
         odmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
         odmUploadTask.apply();
 
         uploadTask = odmUploadTask;
       }
-      
+
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
@@ -507,24 +519,25 @@ public class ODMStatusServer
         task.setOdmOutput(sb.toString());
 
         task.writeODMtoS3(output);
-        
+
         processODMOutputAndCreateTasks(output, task);
       }
     }
-    
+
     /**
-     * Read through the ODM output and attempt to identify issues that may have occurred.
+     * Read through the ODM output and attempt to identify issues that may have
+     * occurred.
      */
     private void processODMOutputAndCreateTasks(JSONArray output, ODMProcessingTaskIF task)
     {
       Set<String> actions = new HashSet<String>();
-      
+
       String sOutput = output.toString();
-      
+
       for (int i = 0; i < output.length(); ++i)
       {
         String line = output.getString(i);
-        
+
         if (line.contains("MICA-CODE:1"))
         {
           actions.add("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.");
@@ -538,9 +551,12 @@ public class ODMStatusServer
           Pattern pattern = Pattern.compile(".*Image \\[(.*)\\] does not match the naming convention\\. Are you.*\\(MICA-CODE:3\\).*", Pattern.CASE_INSENSITIVE);
           Matcher matcher = pattern.matcher(line);
           boolean matchFound = matcher.find();
-          if(matchFound) {
+          if (matchFound)
+          {
             actions.add("Image [" + matcher.group(1) + "] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
-          } else {
+          }
+          else
+          {
             actions.add("Image does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
           }
         }
@@ -552,29 +568,28 @@ public class ODMStatusServer
         {
           actions.add("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.");
         }
-        else if (
-            line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
-            || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8 output
-            || (line.contains("IndexError: list index out of range")
-                && output.getString(i-1).contains("reconstruction = data[0]")
-                && sOutput.contains("Traceback (most recent call last):")) // 0.9.1
-            )
+        else if (line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1
+                                                                                                                                                        // output
+            || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8
+                                                                                                                                                 // output
+            || ( line.contains("IndexError: list index out of range") && output.getString(i - 1).contains("reconstruction = data[0]") && sOutput.contains("Traceback (most recent call last):") ) // 0.9.1
+        )
         {
           actions.add("ODM failed to produce a reconstruction from the image matches. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. (more info: https://github.com/OpenDroneMap/ODM/issues/524)");
         }
         else if (line.contains("Not enough supported images in") // 0.9.1
-              || (line.contains("numpy.AxisError: axis 1 is out of bounds for array of dimension 0") // 2.4.7
-                  )
-            )
+            || ( line.contains("numpy.AxisError: axis 1 is out of bounds for array of dimension 0") // 2.4.7
+            ))
         {
           actions.add("Couldn't find enough usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'");
         }
-        else if (line.contains("bad_alloc")) // Comes from ODM (and/or sub-libraries)
+        else if (line.contains("bad_alloc")) // Comes from ODM (and/or
+                                             // sub-libraries)
         {
           actions.add("ODM ran out of memory during processing. Please contact your technical support.");
         }
       }
-      
+
       for (String action : actions)
       {
         task.createAction(action, "error");
@@ -632,19 +647,19 @@ public class ODMStatusServer
         uploadTask.setStatus(ODMStatus.FAILED.getLabel());
         uploadTask.setMessage(msg);
         uploadTask.apply();
-        
+
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
     }
 
-//    @Transaction
+    // @Transaction
     public ProductIF runInTrans() throws ZipException, InterruptedException
     {
       ImageryComponent ic = uploadTask.getImageryComponent();
       UasComponentIF component = ic.getUasComponent();
-      
+
       ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask, null);
-      
+
       try
       {
         return processor.processAllZip();

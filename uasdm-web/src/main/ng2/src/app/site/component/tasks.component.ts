@@ -31,9 +31,10 @@ export class TasksComponent implements OnInit {
 	showProcess: boolean = false;
 	showStore: boolean = false;
 	tasks: any;
-	taskPage: PageResult<Task> = { count: 0, pageSize: 10, pageNumber: 1, resultSet: [] };
+	taskPage: PageResult<TaskGroup> = { count: 0, pageSize: 10, pageNumber: 1, resultSet: [] };
 	errorStatuses = ["Error", "Failed", "Queued", "Processing"];
 	completeStatuses = ["Complete"];
+	visible: {};
 
 	statuses = [];
 
@@ -57,8 +58,6 @@ export class TasksComponent implements OnInit {
      */
 	// tasks: PageResult<Task>;
 
-	collectionGroups: TaskGroup[] = [];
-
 	notifier: WebSocketSubject<{ type: string, content: any }>;
 
 	constructor(private managementService: ManagementService, private modalService: BsModalService) { }
@@ -66,7 +65,7 @@ export class TasksComponent implements OnInit {
 	ngOnInit(): void {
 		this.userName = this.managementService.getCurrentUser();
 		this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
-			this.setTaskData(data, false);
+			this.setTaskData(data);
 		});
 
 		this.getMissingMetadata();
@@ -91,21 +90,12 @@ export class TasksComponent implements OnInit {
 		this.notifier.complete();
 	}
 
-	updatePage(data: PageResult<Task>): void {
-		this.taskPage.pageNumber = data.pageNumber;
-		this.taskPage.pageSize = data.pageSize;
-		this.taskPage.count = data.count;
-		this.taskPage.resultSet = data.resultSet;
-	}
-
 	onPageChange(pageNumber: number): void {
 		this.token++;
 
 		this.managementService.tasks(this.statuses, this.taskPage.pageSize, pageNumber, this.token).then(tasks => {
 
-			this.updatePage(tasks);
-
-			this.setTaskData(tasks, false);
+			this.setTaskData(tasks);
 		});
 	}
 
@@ -126,9 +116,7 @@ export class TasksComponent implements OnInit {
 
 		this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(tasks => {
 
-			this.updatePage(tasks);
-
-			this.setTaskData(tasks, false);
+			this.setTaskData(tasks);
 		});
 
 
@@ -149,207 +137,135 @@ export class TasksComponent implements OnInit {
 		}
 	}
 
-	setTaskData(tasks: PageResult<Task>, addOnly: boolean): void {
+	setTaskData(tasks: PageResult<TaskGroup>): void {
+		this.taskPage = tasks;
+		this.visible = {};
 
-		if (!addOnly) {
-			this.updatePage(tasks);
+		this.taskPage.resultSet.forEach(task => {
+			this.visible[task.collectionId] = false;
+		});
+	}
 
-			this.collectionGroups = [];
-		}
+	setGroupTasks(collection: TaskGroup, tasks: Task[]): void {
+		collection.groups = [];
+		collection.groups.push({ tasks: [], status: null, type: 'UPLOAD' });
+		collection.groups.push({ tasks: [], status: null, type: 'PROCESS' });
+		collection.groups.push({ tasks: [], status: null, type: 'STORE' });
 
-		for (let i = 0; i < tasks.resultSet.length; i++) {
-			let task = tasks.resultSet[i];
-			let collectPosition = this.collectionGroups.findIndex(value => { return task.collection === value.collectionId });
-			let group: TaskGroup = null;
 
-			if (collectPosition === -1) {
-				group = {
-					label: task.collectionLabel,
-					collectionId: task.collection,
-					groups: [],
-					status: task.status,
-					lastUpdatedDate: task.lastUpdatedDate,
-					ancestors: task.ancestors
-				};
+		for (let i = 0; i < tasks.length; i++) {
+			let task = tasks[i];
 
-				group.groups.push({ tasks: [], status: null, type: 'UPLOAD' });
-				group.groups.push({ tasks: [], status: null, type: 'PROCESS' });
-				group.groups.push({ tasks: [], status: null, type: 'STORE' });
-
-				this.collectionGroups.push(group);
-			}
-			else {
-				group = this.collectionGroups[collectPosition];
-			}
 
 			if (task.type === 'gov.geoplatform.uasdm.bus.WorkflowTask') {
 
-				let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'UPLOAD' });
+				let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'UPLOAD' });
 
 				if (taskGroupTypeIndex === -1) {
-					group.groups.push({ tasks: [task], status: task.status, type: 'UPLOAD' })
+					collection.groups.push({ tasks: [task], status: task.status, type: 'UPLOAD' })
 				}
 				else {
-					group.groups[taskGroupTypeIndex].tasks.push(task);
+					collection.groups[taskGroupTypeIndex].tasks.push(task);
 				}
 			}
 			else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
 
-				let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'PROCESS' });
+				let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'PROCESS' });
 
 				if (taskGroupTypeIndex === -1) {
-					group.groups.push({ tasks: [task], status: task.status, type: 'PROCESS' })
+					collection.groups.push({ tasks: [task], status: task.status, type: 'PROCESS' })
 				}
 				else {
-					group.groups[taskGroupTypeIndex].tasks.push(task);
+					collection.groups[taskGroupTypeIndex].tasks.push(task);
 				}
 			}
 			else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
 
-				let taskGroupTypeIndex = group.groups.findIndex(value => { return value.type === 'STORE' });
+				let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'STORE' });
 
 				if (taskGroupTypeIndex === -1) {
-					group.groups.push({ tasks: [task], status: task.status, type: 'STORE' })
+					collection.groups.push({ tasks: [task], status: task.status, type: 'STORE' })
 				}
 				else {
-					group.groups[taskGroupTypeIndex].tasks.push(task);
+					collection.groups[taskGroupTypeIndex].tasks.push(task);
 				}
 			}
 		}
 
-		//        this.collectionGroups = this.collectionGroups.sort((a: any, b: any) =>
-		//            new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-		//        );
-
-		this.setTaskGroupStatuses();
+		this.setTaskGroupStatuses(collection);
 	}
 
 
-	setTaskGroupStatuses(): void {
+	setTaskGroupStatuses(collection: TaskGroup): void {
 
-		this.collectionGroups.forEach(collectionGroup => {
+		let isError: boolean = false;
+		let isWorking: boolean = false;
+		let isWarning: boolean = false;
+		let latestDate: Date = null;
 
-			let isError: boolean = false;
-			let isWorking: boolean = false;
-			let isWarning: boolean = false;
-			let latestDate: Date = null;
+		collection.groups.forEach(group => {
 
-			collectionGroup.groups.forEach(group => {
+			let isLatestTask: boolean = false;
 
-				let isLatestTask: boolean = false;
+			if (group.tasks.length > 0) {
+				const sortedTasks = group.tasks.sort((a: any, b: any) =>
+					new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+				);
 
-				if (group.tasks.length > 0) {
-					const sortedTasks = group.tasks.sort((a: any, b: any) =>
-						new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
-					);
+				group.status = sortedTasks[0].status;
 
-					group.status = sortedTasks[0].status;
+				const firstDate: Date = new Date(sortedTasks[0].lastUpdatedDate);
 
-					const firstDate: Date = new Date(sortedTasks[0].lastUpdatedDate);
+				isLatestTask = (latestDate == null || latestDate.getTime() - firstDate.getTime() <= 0);
 
-					isLatestTask = (latestDate == null || latestDate.getTime() - firstDate.getTime() <= 0);
+				if (isLatestTask) {
+					console.log('Updating last task');
+
+					latestDate = firstDate;
+
+					// Reset the collection status because it should only be derived from the last task
+					isError = false;
+					isWorking = false;
+					isWarning = false;
+				}
+
+				if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
+					group.status = 'Warning';
 
 					if (isLatestTask) {
-						console.log('Updating last task');
-						
-						latestDate = firstDate;
-
-						// Reset the collection status because it should only be derived from the last task
-						isError = false;
-						isWorking = false;
-						isWarning = false;
-					}
-
-					if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
-						group.status = 'Warning';
-
-						if (isLatestTask) {
-							isWarning = true;
-						}
+						isWarning = true;
 					}
 				}
-
-				if (isLatestTask && (group.status === "Error" || group.status === "Failed")) {
-					isError = true;
-				}
-				else if (isLatestTask && (group.status === "Queued" || group.status === "Processing" || group.status === "Running" || group.status === "Pending")) {
-					isWorking = true;
-				}
-			});
-
-			if (isWorking) {
-				collectionGroup.status = "Processing";
-			}
-			else if (isError) {
-				collectionGroup.status = "Failed";
-			}
-			else if (isWarning) {
-				collectionGroup.status = "Warning";
-			}
-			else {
-				collectionGroup.status = "Complete";
 			}
 
-		})
+			if (isLatestTask && (group.status === "Error" || group.status === "Failed")) {
+				isError = true;
+			}
+			else if (isLatestTask && (group.status === "Queued" || group.status === "Processing" || group.status === "Running" || group.status === "Pending")) {
+				isWorking = true;
+			}
+		});
 	}
 
 
-	updateTaskData(tasks: PageResult<Task>): void {
-		let noMatch = [];
+	updateTaskData(page: PageResult<TaskGroup>): void {
+		this.taskPage = page;
 
-		this.totalTaskCount = tasks.count;
-
-		// Update existing tasks
-		tasks.resultSet.forEach(newTask => {
-
-			let matchFound: boolean = false;
-
-			this.collectionGroups.forEach(existingTaskGrp => {
-				existingTaskGrp.groups.forEach(existingGroup => {
-
-					existingGroup.tasks.forEach(existingTask => {
-						if (existingTask.oid === newTask.oid) {
-
-							matchFound = true;
-
-							// Update props
-							if (existingTask.label !== newTask.label) {
-								existingTask.label = newTask.label;
-							}
-							if (existingTask.lastUpdateDate !== newTask.lastUpdateDate) {
-								existingTask.lastUpdateDate = newTask.lastUpdateDate;
-							}
-							if (existingTask.lastUpdatedDate !== newTask.lastUpdatedDate) {
-								existingTask.lastUpdatedDate = newTask.lastUpdatedDate;
-							}
-							if (existingTask.message !== newTask.message) {
-								existingTask.message = newTask.message;
-							}
-							if (existingTask.status !== newTask.status) {
-								existingTask.status = newTask.status;
-							}
-							if (existingTask.odmOutput !== newTask.odmOutput) {
-								existingTask.odmOutput = newTask.odmOutput;
-							}
-
-							existingTask.actions = newTask.actions;
-						}
-					})
+		this.taskPage.resultSet.forEach(task => {
+			if (this.visible[task.collectionId]) {
+				this.managementService.getTasks(task.collectionId).then(tasks => {
+					this.setGroupTasks(task, tasks);
 				});
-			});
-
-			if (!matchFound) {
-				noMatch.push(newTask);
 			}
-		})
+		});
+	}
 
-		// Add new tasks
-		// let newTasks = data.tasks.filter((o: Task) => !this.collectionGroups.resultSet.find(o2 => o.oid === o2.oid));
-		if (noMatch && noMatch.length > 0) {
-			this.setTaskData({ resultSet: noMatch, count: tasks.count, pageNumber: this.taskPage.pageNumber, pageSize: this.taskPage.pageSize }, true);
-		}
+	setVisibility(taskGroup: TaskGroup): void {
+		this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
+			this.setGroupTasks(taskGroup, tasks);
 
-		this.setTaskGroupStatuses();
+			this.visible[taskGroup.collectionId] = !this.visible[taskGroup.collectionId];
+		});
 	}
 
 
