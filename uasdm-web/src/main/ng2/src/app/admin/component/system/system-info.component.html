@@ -4,13 +4,50 @@
     <div id="app-container" class="container">
 
         <h2>
-            IDM System Information
+            System Information
         </h2>
 
+        <h3>Software Versions</h3>
         <ul>
             <li>IDM Platform Version: <span id="automated-version-replace">0.12.0</span></li>
-            <li>Open Drone Map (ODM): v2.4.7</li>
-            <li><a href="https://terraframe.atlassian.net/l/c/iHQKhY3Q">IDM Documentation</a></li>
+            <li>Open Drone Map (ODM): 2.4.7</li>
+            <li>GeoServer: 2.14.2</li>
+        </ul>
+        
+        <h3>
+            Documentation
+        </h3>
+        
+        <ul>
+            <li><a href="https://terraframe.atlassian.net/l/c/iHQKhY3Q" target="_blank">IDM Documentation</a></li>
+            <li><a href="https://geoplatform.atlassian.net/wiki/spaces/BETC" target="_blank">GeoPlatform Documentation</a> (Access issued through the DOI)</li>
+        </ul>
+        
+        <h3>
+            Public Map Services
+        </h3>
+        IDM hosts both image mosaic and hillshade public OGC compliant map services that are powered by <a href="http://geoserver.org/">GeoServer</a>. 
+        
+        <div class="panel panel-default" style="background:#f0f0f0;margin-top:5px;">
+          <div class="panel-body">
+            The public IDM WMS and WMTS map services are accessed by using the appropriate root URL format for the specific service type. 
+            <br><br>
+            Root WMS URL:  https://aim.geoplatform.gov/wms?...
+            <br>
+            Root WMTS URL:  https://aim.geoplatform.gov/gwc/service/wms?...
+            <br><br>
+            More detailed information on how to use these services can be found on the GeoServer documentation.
+            <ul>
+                <li><a href="https://docs.geoserver.org/latest/en/user/services/wms/reference.html" target="_blank">GeoServer WMS Documentation</a></li>
+                <li><a href="https://docs.geoserver.org/latest/en/user/geowebcache/webadmin/defaults.html" target="_blank">GeoServer WMTS Documentation (cached & tiled service)</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <h4>Map Service Previews</h4>
+        <ul>
+            <li><a href="https://aim.geoplatform.gov/geoserver/image-public/wms?service=WMS&version=1.1.0&request=GetMap&layers=image-public%3Aimage-public&bbox=-107.47156109532345%2C24.704968062854245%2C-81.3753633911118%2C41.30545938423954&width=768&height=488&srs=EPSG%3A4326&format=application/openlayers" target="_blank">Image Mosaic WMS Preview</a></li>
+            <li><a href="https://aim.geoplatform.gov/geoserver/public-hillshade/wms?service=WMS&version=1.1.0&request=GetMap&layers=public-hillshade%3Apublic-hillshade&bbox=-111.12440739708047%2C38.11520869406993%2C-84.88643383212677%2C39.321076899236274&width=768&height=330&srs=EPSG%3A4326&format=application/openlayers" target="_blank">Hillshade Mosaic WMS Preview</a></li>
         </ul>
         
     </div>
