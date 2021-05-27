@@ -252,6 +252,9 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
       query.WHERE(query.getComponent().EQ(taskQuery.getComponent()));
     }
+    
+    query.ORDER_BY_DESC(query.getLastModificationDate());
+    
 
     try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
     {
