@@ -222,7 +222,7 @@ export class TasksComponent implements OnInit {
 				if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
 					group.status = 'Warning';
 				}
-			}	
+			}
 		});
 	}
 
@@ -240,11 +240,17 @@ export class TasksComponent implements OnInit {
 	}
 
 	setVisibility(taskGroup: TaskGroup): void {
-		this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
-			this.setGroupTasks(taskGroup, tasks);
+		if (this.visible[taskGroup.collectionId]) {
 
+			this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
+				this.setGroupTasks(taskGroup, tasks);
+
+				this.visible[taskGroup.collectionId] = !this.visible[taskGroup.collectionId];
+			});
+		}
+		else {
 			this.visible[taskGroup.collectionId] = !this.visible[taskGroup.collectionId];
-		});
+		}
 	}
 
 
