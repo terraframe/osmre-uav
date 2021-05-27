@@ -56,6 +56,23 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
       return asString;
     }
   }
+  
+  public static enum TaskActionType {
+    ERROR("error"),
+    WARNING("warning");
+    
+    private String type;
+    
+    TaskActionType(String type)
+    {
+      this.type = type;
+    }
+    
+    public String getType()
+    {
+      return this.type;
+    }
+  }
 
   public AbstractWorkflowTask()
   {
