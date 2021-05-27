@@ -107,7 +107,7 @@ export class Task {
 	visible?: boolean;
 	showError?: boolean;
 	ancestors?: string[];
-
+  sensorName?: string;
 }
 
 export class TaskGroup {

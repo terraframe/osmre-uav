@@ -20,6 +20,7 @@
             <li>Created on: <b>{{task.createDate}}</b></li>
             <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
             <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
+            <li *ngIf="taskCategory == 'Upload'">Sensor: <b>{{task.sensorName}}</b></li>
           </ul>
           
           <div class="row">
@@ -42,6 +43,7 @@
             <li>Message: <b>{{task.message}}</b></li>
             <li>Created on: <b>{{task.createDate}}</b></li>
             <li>Last update: <b>{{task.lastUpdatedDate}}</b></li>
+            <li *ngIf="taskCategory == 'Upload'">Sensor: <b>{{task.sensorName}}</b></li>
           </ul>
 
           <div class="row">

@@ -240,6 +240,11 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     obj.put("createDate", format.format(this.getCreateDate()));
     obj.put("type", this.getType());
     obj.put("ancestors", parents);
+    
+    if (component instanceof gov.geoplatform.uasdm.graph.Collection)
+    {
+      obj.put("sensorName", ((gov.geoplatform.uasdm.graph.Collection)component).getSensor().getName());
+    }
 
     return obj;
   }
