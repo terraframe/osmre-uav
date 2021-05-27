@@ -15,19 +15,26 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Enumeration;
-import java.util.zip.ZipException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -35,9 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.scheduler.ExecutionContext;
@@ -45,6 +52,7 @@ import com.runwaysdk.system.scheduler.JobHistory;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
@@ -58,7 +66,6 @@ import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
-import gov.geoplatform.uasdm.ws.NotificationMessage;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
@@ -79,10 +86,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    
+    File newArchive = validateArchive(archive, task);
 
-    if (!validateArchive(archive, task))
+    if (newArchive == null)
     {
       return;
+    }
+    else
+    {
+      FileUtils.deleteQuietly(archive);
+      archive = newArchive;
     }
 
     try
@@ -139,49 +153,103 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
   }
-
-  private static boolean validateArchive(File archive, AbstractUploadTask task)
+  
+  private static CloseableFile validateArchive(File archive, AbstractUploadTask task)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
 
     boolean hasFiles = false;
-
+    
+    byte buffer[] = new byte[Util.BUFFER_SIZE];
+    
+    CloseableFile newZip;
+    
     try
     {
+      newZip = new CloseableFile(File.createTempFile("noSubFolders", "." + ext));
+      
       if (ext.equalsIgnoreCase("zip"))
       {
-        try (ZipFile zipFile = new ZipFile(archive))
+        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newZip))))
         {
-          Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-
-          while (entries.hasMoreElements())
+          try (ZipFile zipFile = new ZipFile(archive))
           {
-            ZipArchiveEntry entry = entries.nextElement();
-
-            String filename = entry.getName();
-
-            boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-
-            hasFiles = hasFiles || isValid;
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+    
+            while (entries.hasMoreElements())
+            {
+              ZipArchiveEntry entry = entries.nextElement();
+    
+              String filename = entry.getName();
+    
+              boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+    
+              if (!entry.isDirectory())
+              {
+                hasFiles = hasFiles || isValid;
+                
+                int len;
+                
+                filename = FilenameUtils.getName(filename);
+  
+                zos.putNextEntry(new ZipEntry(filename));
+  
+                try (InputStream zis = zipFile.getInputStream(entry))
+                {
+                  while ( ( len = zis.read(buffer) ) > 0)
+                  {
+                    zos.write(buffer, 0, len);
+                  }
+                }
+  
+                zos.closeEntry();
+              }
+            }
           }
         }
       }
       else if (ext.equalsIgnoreCase("gz"))
       {
-        try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
+        try (FileOutputStream fOut = new FileOutputStream(newZip);
+            BufferedOutputStream buffOut = new BufferedOutputStream(fOut);
+            GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut);
+            TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut))
         {
-          try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+          try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
           {
-            TarArchiveEntry entry;
-
-            while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+            try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
             {
-              final String filename = entry.getName();
+              TarArchiveEntry entry;
+    
+              while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+              {
+                String filename = entry.getName();
+    
+                boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+    
+                if (!entry.isDirectory())
+                {
+                  hasFiles = hasFiles || isValid;
+                  
+                  int count;
+                  
+                  filename = FilenameUtils.getName(filename);
+                  
+                  TarArchiveEntry tarEntry = new TarArchiveEntry(filename);
+                  
+                  tarEntry.setSize(entry.getSize());
 
-              boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+                  tOut.putArchiveEntry(tarEntry);
+                  
+                  while ( ( count = tarIn.read(buffer, 0, Util.BUFFER_SIZE) ) != -1)
+                  {
+                    tOut.write(buffer, 0, count);
+                  }
 
-              hasFiles = hasFiles || isValid;
+                  tOut.closeArchiveEntry();
+                }
+              }
             }
           }
         }
@@ -189,9 +257,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     catch (IOException e)
     {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), TaskActionType.ERROR.getType());
 
-      throw new InvalidZipException();
+      throw new InvalidZipException(e);
     }
 
     if (!hasFiles)
@@ -216,29 +284,30 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
 
-      return false;
+      return null;
     }
 
-    return true;
+    return newZip;
   }
 
-  private static boolean validateFile(String filename, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task)
+  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task)
   {
+    String filename = FilenameUtils.getName(path);
     boolean isVideo = Util.isVideoFile(filename);
     boolean isValidName = UasComponentIF.isValidName(filename);
     String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
     if (isDirectory)
     {
-      task.createAction("The directory [" + filename + "] inside the uploaded zip will be ignored. Any files within it will not be processed.", "error");
-      return false;
+      task.createAction("We will be processing all files located in the directory [" + path + "] inside the uploaded archive.", TaskActionType.WARNING.getType());
+      return true;
     }
 
     if (!isVideo)
     {
       if (!isValidName)
       {
-        task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", "error");
+        task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", TaskActionType.ERROR.getType());
 
         return false;
       }
@@ -247,7 +316,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         if (!filename.endsWith(".tif"))
         {
-          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", "error");
+          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR.getType());
           return false;
         }
       }
@@ -255,7 +324,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         if (!ArrayUtils.contains(SUPPORTED_EXTENSIONS, ext))
         {
-          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "), "error");
+          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "), TaskActionType.ERROR.getType());
           return false;
         }
       }
