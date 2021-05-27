@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -65,8 +65,8 @@ public class ProjectManagementController
   public static final String       JSP_DIR   = "/WEB-INF/";
 
   public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
-  
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
+
+  private static final Logger      logger    = LoggerFactory.getLogger(ProjectManagementController.class);
 
   private ProjectManagementService service;
 
@@ -183,12 +183,12 @@ public class ProjectManagementController
       throw new RuntimeException("Test");
     }
   }
-  
+
   @Endpoint(url = "download-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF downloadOdmAll(ClientRequestIF request, final @RequestParamter(name = "colId") String colId)
   {
     final String sessionId = request.getSessionId();
-    
+
     return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
   }
 
@@ -273,6 +273,14 @@ public class ProjectManagementController
   public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "statuses") String statuses, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize, @RequestParamter(name = "token") Integer token)
   {
     JSONObject response = new WorkflowService().getTasks(request.getSessionId(), statuses, pageNumber, pageSize, token);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(url = "collection-tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getCollectionTasks(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  {
+    JSONArray response = new WorkflowService().getCollectionTasks(request.getSessionId(), collectionId);
 
     return new RestBodyResponse(response);
   }
