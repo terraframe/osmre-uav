@@ -240,7 +240,7 @@ export class TasksComponent implements OnInit {
 	}
 
 	setVisibility(taskGroup: TaskGroup): void {
-		if (this.visible[taskGroup.collectionId]) {
+		if (!this.visible[taskGroup.collectionId]) {
 
 			this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
 				this.setGroupTasks(taskGroup, tasks);
