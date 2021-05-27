@@ -32,7 +32,7 @@ export class TasksComponent implements OnInit {
 	showStore: boolean = false;
 	tasks: any;
 	taskPage: PageResult<TaskGroup> = { count: 0, pageSize: 10, pageNumber: 1, resultSet: [] };
-	errorStatuses = ["Error", "Failed", "Queued", "Processing"];
+	errorStatuses = ["Failed", "Processing"];
 	completeStatuses = ["Complete"];
 	visible: {};
 
@@ -198,9 +198,6 @@ export class TasksComponent implements OnInit {
 
 	setTaskGroupStatuses(collection: TaskGroup): void {
 
-		let isError: boolean = false;
-		let isWorking: boolean = false;
-		let isWarning: boolean = false;
 		let latestDate: Date = null;
 
 		collection.groups.forEach(group => {
@@ -219,31 +216,13 @@ export class TasksComponent implements OnInit {
 				isLatestTask = (latestDate == null || latestDate.getTime() - firstDate.getTime() <= 0);
 
 				if (isLatestTask) {
-					console.log('Updating last task');
-
 					latestDate = firstDate;
-
-					// Reset the collection status because it should only be derived from the last task
-					isError = false;
-					isWorking = false;
-					isWarning = false;
 				}
 
 				if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
 					group.status = 'Warning';
-
-					if (isLatestTask) {
-						isWarning = true;
-					}
 				}
-			}
-
-			if (isLatestTask && (group.status === "Error" || group.status === "Failed")) {
-				isError = true;
-			}
-			else if (isLatestTask && (group.status === "Queued" || group.status === "Processing" || group.status === "Running" || group.status === "Pending")) {
-				isWorking = true;
-			}
+			}	
 		});
 	}
 

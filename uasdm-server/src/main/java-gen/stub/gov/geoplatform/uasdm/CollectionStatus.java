@@ -13,7 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -230,9 +232,16 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     {
       final JSONArray array = new JSONArray(statuses);
 
-      for (int i = 0; i < array.length(); i++)
+      if (array.length() > 0)
       {
-        query.WHERE(query.getStatus().EQ(array.getString(i)));
+        List<Condition> conditions = new LinkedList<Condition>();
+
+        for (int i = 0; i < array.length(); i++)
+        {
+          conditions.add(query.getStatus().EQ(array.getString(i)));
+        }
+
+        query.WHERE(OR.get(conditions.toArray(new Condition[conditions.size()])));
       }
     }
 
