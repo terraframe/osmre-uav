@@ -1,0 +1,39 @@
+<version
+	xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<create>
+			<mdBusiness name="gov.geoplatform.uasdm.CollectionStatus" label="Collection Status">
+				<create>
+					<attributes>
+						<text name="status" label="Status" required="true" />
+						<uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="unique index" />
+						<dateTime name="lastModificationDate" label="Last modification date" required="true" />
+					</attributes>
+				</create>
+			</mdBusiness>
+		</create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.CollectionStatus">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.CollectionStatus">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>      
+    </permissions>
+	</doIt>
+	<undoIt>
+		<delete>
+		      <object key="gov.geoplatform.uasdm.CollectionStatus" type="com.runwaysdk.system.metadata.MdBusiness" />    
+		
+		</delete>
+	</undoIt>
+</version>
