@@ -85,7 +85,7 @@ export class UploadForm {
 
 export class Action {
 	createDate: string;
-	lastUpdatedDate: string;
+	lastUpdateDate: string;
 	type: string;
 	description: string;
 }
@@ -95,7 +95,6 @@ export class Task {
 	label: string;
 	createDate: string;
 	lastUpdateDate: string;
-	lastUpdatedDate: string;
 	status: string;
 	message: string;
 	actions: Action[];

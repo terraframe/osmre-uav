@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -53,6 +56,8 @@ import gov.geoplatform.uasdm.view.SiteObject;
 
 public class Util
 {
+  public static final TimeZone SYSTEM_TIMEZONE = TimeZone.getTimeZone("UTC");
+  
   public static final int BUFFER_SIZE = 1024;
 
   public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
@@ -79,6 +84,22 @@ public class Util
 //        }
 //      }
 //    }
+  }
+  
+  public static String formatIso8601(Date date, boolean includeTime)
+  {
+    if (!includeTime)
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.format(date);
+    }
+    else
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.format(date);
+    }
   }
 
   public static CloseableFile download(String key, String storeName)

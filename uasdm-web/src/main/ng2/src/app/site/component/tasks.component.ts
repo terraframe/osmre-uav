@@ -206,12 +206,12 @@ export class TasksComponent implements OnInit {
 
       if (group.tasks.length > 0) {
         const sortedTasks = group.tasks.sort((a: any, b: any) =>
-          new Date(b.lastUpdatedDate).getTime() - new Date(a.lastUpdatedDate).getTime()
+          new Date(b.lastUpdateDate).getTime() - new Date(a.lastUpdateDate).getTime()
         );
 
         group.status = sortedTasks[0].status;
 
-        const firstDate: Date = new Date(sortedTasks[0].lastUpdatedDate);
+        const firstDate: Date = new Date(sortedTasks[0].lastUpdateDate);
 
         isLatestTask = (latestDate == null || latestDate.getTime() - firstDate.getTime() <= 0);
 

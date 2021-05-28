@@ -31,6 +31,7 @@ import { MustMatchDirective } from './directive/must-match.directive';
 import { PhoneNumberValidatorDirective } from './directive/phone-number.directive'; 
 import { PasswordValidatorDirective } from './directive/password-validator.directive';
 
+import { DateService } from './service/date.service';
 import { ProgressService } from './service/progress.service';
 import { EventService } from './service/event.service';
 import { LocalizationService } from './service/localization.service';
@@ -112,6 +113,7 @@ export class SharedModule {
 				LocalizationService,
 				EventService,
 				ProgressService,
+				DateService,
 				AdminGuardService,
 				AuthGuard,
 				HttpBackendClient

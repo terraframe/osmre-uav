@@ -140,11 +140,11 @@
                             </h4>
                             <h4>
                                 Upload Started On:
-                                <b> {{currentTask.createDate}} </b>
+                                <b> {{currentTask.createDate | date: "MMM dd, yyyy hh:mm:ss z"}} </b>
                             </h4>
                             <h4>
                                 Last Updated:
-                                <b> {{currentTask.lastUpdatedDate}} </b>
+                                <b> {{currentTask.lastUpdateDate | date: "MMM dd, yyyy hh:mm:ss z"}} </b>
                             </h4>
                             <h4>
                                 Elapsed Time:

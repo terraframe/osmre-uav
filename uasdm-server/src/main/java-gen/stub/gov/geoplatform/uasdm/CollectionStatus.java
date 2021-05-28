@@ -54,8 +54,6 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
   @Override
   public JSONObject toJSON()
   {
-    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
-
     UasComponentIF component = ComponentFacade.getComponent(this.getComponent());
 
     final List<UasComponentIF> ancestors = component.getAncestors();
@@ -72,7 +70,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     obj.put("label", component.getName());
     obj.put("collectionId", component.getOid());
     obj.put("status", this.getStatus());
-    obj.put("lastUpdateDate", format.format(this.getLastModificationDate()));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastModificationDate(), true));
     obj.put("ancestors", parents);
 
     return obj;

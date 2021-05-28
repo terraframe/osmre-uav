@@ -28,6 +28,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
@@ -184,8 +185,8 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     JSONObject obj = new JSONObject();
     obj.put("oid", this.getOid());
     obj.put("label", this.getTaskLabel());
-    obj.put("createDate", format.format(this.getCreateDate()));
-    obj.put("lastUpdatedDate", format.format(this.getLastUpdateDate()));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
     obj.put("status", this.getNormalizedStatus());
     obj.put("message", this.getMessage());
     obj.put("actions", jActions);

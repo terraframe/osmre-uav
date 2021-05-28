@@ -43,6 +43,7 @@ import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
@@ -216,8 +217,6 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public JSONObject toJSON()
   {
-    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
-
     ImageryComponent component = this.getImageryComponent();
 
     final List<UasComponentIF> ancestors = component.getAncestors();
@@ -236,8 +235,8 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     obj.put("collectionLabel", component.getName());
     obj.put("message", this.getMessage());
     obj.put("status", this.getNormalizedStatus());
-    obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
-    obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
     obj.put("type", this.getType());
     obj.put("ancestors", parents);
     
