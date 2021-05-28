@@ -114,6 +114,7 @@ export class TaskGroup {
 	label: string;
 	collectionId: string;
 	visible?: boolean;
+	loading?: boolean;
 	groups: TaskGroupType[];
 	status: string;
 	lastUpdatedDate: string;

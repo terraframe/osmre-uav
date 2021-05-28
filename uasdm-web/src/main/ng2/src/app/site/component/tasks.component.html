@@ -109,8 +109,8 @@
                   </div>
 
                 </div>
-            
-                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+                
+                <div *ngIf="!taskGroup.loading" class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">                  
                     <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
 
@@ -166,7 +166,7 @@
                   </div>
 
                 </div>
-            
+                
                 <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
                 
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
@@ -220,28 +220,32 @@
                     </ul>
                   </div>
                 </div>
-            
-                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">                
-                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
-                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi" >
-
-                      <!-- Upload Tasks -->
-                      <div *ngIf="taskGroupType.type === 'UPLOAD'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
-                      </div>
-
-                      <!-- Process Tasks -->
-                      <div *ngIf="taskGroupType.type === 'PROCESS'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
-                      </div>
-
-                      <!-- Store Tasks -->
-                      <div *ngIf="taskGroupType.type === 'STORE'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
-                      </div>
                 
-                    </div>
-                  </div>
+                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+                  <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin"></i>
+                  
+                  <span *ngIf="!taskGroup.loading">
+	                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
+	                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi" >
+	
+	                      <!-- Upload Tasks -->
+	                      <div *ngIf="taskGroupType.type === 'UPLOAD'">
+	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
+	                      </div>
+	
+	                      <!-- Process Tasks -->
+	                      <div *ngIf="taskGroupType.type === 'PROCESS'">
+	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
+	                      </div>
+	
+	                      <!-- Store Tasks -->
+	                      <div *ngIf="taskGroupType.type === 'STORE'">
+	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
+	                      </div>
+	                
+	                    </div>
+	                  </div>
+                  </span>
                 </div>
             </div>
 
