@@ -45,7 +45,7 @@ public class SessionEventLog extends SessionEventLogBase implements JSONSerializ
     final JSONObject object = new JSONObject();
     object.put(SessionEventLog.USERNAME, this.getUsername());
     object.put(SessionEventLog.EVENTTYPE, this.getEventType());
-    object.put(SessionEventLog.EVENTDATE, this.getEventDate());
+    object.put(SessionEventLog.EVENTDATE, Util.formatIso8601(this.getEventDate(), true));
 
     if (this.getBureauOid() != null && this.getBureauOid().length() > 0)
     {

@@ -37,10 +37,6 @@ UASDM_PROJECT=$UASDM/uasdm
 # Exit on error
 set -ex
 
-# Set proper version of npm
-source ~/.nvm/nvm.sh
-nvm install lts/erbium
-
 # Update git
 cd $UASDM_PROJECT
 git pull
@@ -54,16 +50,17 @@ sudo docker start uasdm-nodeodm
 pkill -f -SIGINT catalina || true
 sleep 2
 
-# Run the ng2 server
-cd $UASDM_PROJECT/uasdm-web/src/main/ng2
-gnome-terminal -x sh -c "npm run start"
-
 # Run the cgr webserver
 cd $UASDM_PROJECT
 mvn clean
 gnome-terminal -x sh -c "mvn install -P ng2-dev,cargo-run-uasdm"
 
+# Run the ng2 server
+cd $UASDM_PROJECT/uasdm-web/src/main/ng2
+# source ~/.nvm/nvm.sh && 
+gnome-terminal -x /bin/bash -c "source ~/.nvm/nvm.sh && nvm install lts/erbium && npm install && npm rebuild node-sass && npm run start"
+
 # Open a web browser to view the app
-sleep 15
+sleep 25
 google-chrome https://localhost:8443/uasdm
 

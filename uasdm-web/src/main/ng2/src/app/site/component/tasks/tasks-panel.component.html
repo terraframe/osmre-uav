@@ -17,8 +17,8 @@
             <li>Status: <b
                 [ngClass]="{'success':task.status === 'Complete', 'pending':(task.status === 'Queued' || task.status === 'Processing'),'fail':task.status === 'Failed'}">{{task.status}}</b>
             </li>
-            <li>Created on: <b>{{task.createDate | date: "MMM dd, yyyy hh:mm:ss z"}}</b></li>
-            <li>Last update: <b>{{task.lastUpdateDate | date: "MMM dd, yyyy hh:mm:ss z"}}</b></li>
+            <li>Created on: <b>{{task.createDate | idmdate}}</b></li>
+            <li>Last update: <b>{{task.lastUpdateDate | idmdate}}</b></li>
             <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
             <li *ngIf="taskCategory == 'Upload'">Sensor: <b>{{task.sensorName}}</b></li>
           </ul>
@@ -41,8 +41,8 @@
               </b>
             </li>
             <li>Message: <b>{{task.message}}</b></li>
-            <li>Created on: <b>{{task.createDate | date: "MMM dd, yyyy hh:mm:ss z"}}</b></li>
-            <li>Last update: <b>{{task.lastUpdateDate | date: "MMM dd, yyyy hh:mm:ss z"}}</b></li>
+            <li>Created on: <b>{{task.createDate | idmdate}}</b></li>
+            <li>Last update: <b>{{task.lastUpdateDate | idmdate}}</b></li>
             <li *ngIf="taskCategory == 'Upload'">Sensor: <b>{{task.sensorName}}</b></li>
           </ul>
 
@@ -80,8 +80,8 @@
                 <tr *ngFor="let action of task.actions; let i=index">
                   <th scope="row">{{i + 1}}</th>
                   <td>{{action.description}}</td>
-                  <td>{{action.createDate | date: "MMM dd, yyyy hh:mm:ss z"}}</td>
-                  <td>{{action.lastUpdateDate | date: "MMM dd, yyyy hh:mm:ss z"}}</td>
+                  <td>{{action.createDate | idmdate}}</td>
+                  <td>{{action.lastUpdateDate | idmdate}}</td>
                 </tr>
               </tbody>
             </table>

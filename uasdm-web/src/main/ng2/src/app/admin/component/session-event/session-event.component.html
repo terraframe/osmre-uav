@@ -31,7 +31,7 @@
                             class="fade-ngRepeat-item">
                             <td class="label-column username-col"> {{ event.username }} </td>
                             <td class="label-column firstname-col"> {{ event.bureau }} </td>
-                            <td class="label-column lastname-col"> {{ event.eventDate }} </td>
+                            <td class="label-column lastname-col"> {{ event.eventDate | idmdate }} </td>
                             <td class="label-column phone-col"> {{ event.eventType }} </td>
                         </tr>
                     </tbody>

@@ -26,6 +26,7 @@ import { KeysPipe } from './pipe/keys.pipe';
 import { PhonePipe } from './pipe/phone.pipe';
 import { FilterPipe } from './pipe/filter.pipe';
 import { SafeHtmlPipe } from './pipe/safe-html.pipe';
+import { IdmDatePipe } from './pipe/idmdate.pipe';
 
 import { MustMatchDirective } from './directive/must-match.directive';
 import { PhoneNumberValidatorDirective } from './directive/phone-number.directive'; 
@@ -70,6 +71,7 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		PhonePipe,
 		FilterPipe,
 		SafeHtmlPipe,
+		IdmDatePipe,
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
 		PasswordValidatorDirective
@@ -89,6 +91,7 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		PhonePipe,
 		FilterPipe,
 		SafeHtmlPipe,
+		IdmDatePipe,
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
 		PasswordValidatorDirective
