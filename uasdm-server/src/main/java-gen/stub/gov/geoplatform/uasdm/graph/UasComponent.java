@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,6 +42,8 @@ import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
@@ -51,6 +52,8 @@ import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
+import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
@@ -343,6 +346,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     for (DocumentIF document : documents)
     {
       document.delete();
+    }
+    
+    CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(this.getOid()));
+    try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        iterator.next().delete();
+      }
     }
 
     super.delete();
