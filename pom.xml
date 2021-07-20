@@ -20,7 +20,7 @@
 
   <groupId>gov.osmre.uasdm</groupId>
   <artifactId>uasdm</artifactId>
-  <version>0.11.0-SNAPSHOT</version>
+  <version>0.13.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UASDM</name>
@@ -32,7 +32,7 @@
   </modules>
 
   <properties>
-    <geoprism.version>0.9.22</geoprism.version>
+    <geoprism.version>0.9.29</geoprism.version>
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -56,7 +56,7 @@
     <connection>scm:git:ssh://git@github.com/terraframe/osmre-uav</connection>
     <developerConnection>scm:git:ssh://git@github.com/terraframe/osmre-uav</developerConnection>
     <url>scm:git:ssh://git@github.com/terraframe/osmre-uav</url>
-    <tag>0.0.1</tag>
+    <tag>0.001.001-SNAPSHOT</tag>
   </scm>
 
   <dependencies>

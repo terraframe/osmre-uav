@@ -22,17 +22,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.ZipException;
+import java.util.TimeZone;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.runwaysdk.RunwayException;
@@ -43,7 +44,6 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.geoserver.ImageMosaicService;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -53,52 +53,16 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Util
 {
+  public static final TimeZone SYSTEM_TIMEZONE = TimeZone.getTimeZone("UTC");
+  
   public static final int BUFFER_SIZE = 1024;
 
   public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
   {
     RemoteFileFacade.uploadFile(child, key, task);
-  }
-
-  public static void createImageServices(String workspace, UasComponentIF imageryComponent)
-  {
-    try
-    {
-      List<SiteObject> objects = imageryComponent.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects();
-
-      Util.getSiteObjects(ImageryComponent.ORTHO, objects, imageryComponent);
-
-      for (SiteObject object : objects)
-      {
-        String key = object.getKey();
-
-        if (key.endsWith(".tif"))
-        {
-          String storeName = imageryComponent.getStoreName(key);
-
-          if (GeoserverFacade.layerExists(workspace, storeName))
-          {
-            Util.removeCoverageStore(workspace, storeName);
-          }
-
-          try (CloseableFile geotiff = Util.download(key, storeName))
-          {
-            GeoserverFacade.publishGeoTiff(workspace, storeName, geotiff);
-          }
-        }
-      }
-
-      // Refresh the public mosaic
-      new ImageMosaicService().refresh();
-    }
-    catch (Exception e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
   }
 
   public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
@@ -120,6 +84,22 @@ public class Util
 //        }
 //      }
 //    }
+  }
+  
+  public static String formatIso8601(Date date, boolean includeTime)
+  {
+    if (!includeTime)
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.format(date);
+    }
+    else
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.format(date);
+    }
   }
 
   public static CloseableFile download(String key, String storeName)
@@ -154,13 +134,6 @@ public class Util
 //        }
 //      }
 //    }
-  }
-
-  public static void removeCoverageStore(String workspace, String storeName)
-  {
-//    GeoserverFacade.removeStyle(storeName);
-//    GeoserverFacade.forceRemoveLayer(workspace, storeName);
-    GeoserverFacade.removeCoverageStore(workspace, storeName);
   }
 
   public static boolean isVideoFile(String path)

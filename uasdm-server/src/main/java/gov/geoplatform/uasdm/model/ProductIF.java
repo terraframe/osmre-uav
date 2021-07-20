@@ -31,8 +31,6 @@ public interface ProductIF extends ComponentIF
 
   public String getImageKey();
 
-  public String getMapKey();
-
   public Date getLastUpdateDate();
 
   public String getBoundingBox();
@@ -53,9 +51,9 @@ public interface ProductIF extends ComponentIF
 
   public void delete();
 
-  public void createImageService();
+  public void createImageService(boolean refreshMosaic);
 
-  public String getWorkspace();
+//  public String getWorkspace();
 
   public boolean isPublished();
 

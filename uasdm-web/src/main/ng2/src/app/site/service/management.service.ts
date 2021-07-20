@@ -10,7 +10,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -301,7 +301,7 @@ export class ManagementService {
 			.toPromise();
 	}
 
-	tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<Task>> {
+	tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<TaskGroup>> {
 
 		// status options: PROCESSING, COMPLETE, ERROR, QUEUED
 		let params: HttpParams = new HttpParams();
@@ -311,7 +311,19 @@ export class ManagementService {
 		params = params.set('token', token.toString());
 
 		return this.http
-			.get<PageResult<Task>>(acp + '/project/tasks', { params: params })
+			.get<PageResult<TaskGroup>>(acp + '/project/tasks', { params: params })
+			.toPromise()
+	}
+
+
+	getTasks(collectionId: string): Promise<Task[]> {
+
+		// status options: PROCESSING, COMPLETE, ERROR, QUEUED
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
+
+		return this.http
+			.get<Task[]>(acp + '/project/collection-tasks', { params: params })
 			.toPromise()
 	}
 

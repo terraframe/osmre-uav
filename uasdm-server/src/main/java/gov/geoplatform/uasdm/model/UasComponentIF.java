@@ -53,8 +53,6 @@ public interface UasComponentIF extends ComponentIF
 
   public String getSolrNameField();
 
-  public String getStoreName(String s3location);
-
   public UasComponentIF createChild(String type);
 
   public List<AttributeType> attributes();

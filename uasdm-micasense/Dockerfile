@@ -16,6 +16,8 @@
 
 FROM ubuntu:bionic
 
+ARG exiftool_version=12.25
+
 SHELL ["/bin/bash", "-c"]
 
 # Install system dependencies
@@ -26,13 +28,13 @@ RUN apt update \
 RUN mkdir ~/program \
   && mkdir ~/program/exiftool \
   && cd ~/program/exiftool \
-  && wget https://falcon.phy.queensu.ca/SNO/~phil/exiftool/Image-ExifTool-10.98.tar.gz \
-  && tar -xvzf Image-ExifTool-10.98.tar.gz \
-  && cd ~/program/exiftool/Image-ExifTool-10.98/ \
+  && wget https://exiftool.org/Image-ExifTool-$exiftool_version.tar.gz \
+  && tar -xvzf Image-ExifTool-$exiftool_version.tar.gz \
+  && cd ~/program/exiftool/Image-ExifTool-$exiftool_version/ \
   && perl Makefile.PL \
   && make test \
   && make install
-
+  
 # Install Miniconda3
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
@@ -61,10 +63,10 @@ COPY imageprocessing /root/imageprocessing/
 
 # Add conda and exiftool to the shell PATH
 ENV PATH="/opt/conda/bin:${PATH}"
-RUN mkdir /root/program/exiftool/Image-ExifTool-10.98/bin && cp /root/program/exiftool/Image-ExifTool-10.98/exiftool /root/program/exiftool/Image-ExifTool-10.98/bin
-ENV PATH="/root/program/exiftool/Image-ExifTool-10.98/bin:${PATH}"
-RUN chmod +x /root/program/exiftool/Image-ExifTool-10.98/bin/exiftool
-ENV exiftoolpath="/root/program/exiftool/Image-ExifTool-10.98/bin/exiftool"
+RUN mkdir /root/program/exiftool/Image-ExifTool-$exiftool_version/bin && cp /root/program/exiftool/Image-ExifTool-$exiftool_version/exiftool /root/program/exiftool/Image-ExifTool-$exiftool_version/bin
+ENV PATH="/root/program/exiftool/Image-ExifTool-$exiftool_version/bin:${PATH}"
+RUN chmod +x /root/program/exiftool/Image-ExifTool-$exiftool_version/bin/exiftool
+ENV exiftoolpath="/root/program/exiftool/Image-ExifTool-$exiftool_version/bin/exiftool"
 
 # Run the mikasense test code
 RUN source /root/.bashrc && source activate micasense && pytest .

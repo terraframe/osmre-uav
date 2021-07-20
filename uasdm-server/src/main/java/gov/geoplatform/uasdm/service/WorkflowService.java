@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,10 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
@@ -122,7 +124,7 @@ public class WorkflowService
   @Request(RequestType.SESSION)
   public JSONObject getTasks(String sessionId, String statuses, Integer pageNumber, Integer pageSize, Integer token)
   {
-    Page<WorkflowTask> page = WorkflowTask.getUserWorkflowTasks(statuses, pageNumber, pageSize);
+    Page<CollectionStatus> page = CollectionStatus.getUserWorkflowTasks(statuses, pageNumber, pageSize);
     page.addParam("token", token);
 
     return page.toJSON();
@@ -138,6 +140,12 @@ public class WorkflowService
     response.put("tasksCount", count + metadataCount);
 
     return response;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray getCollectionTasks(String sessionId, String collectionId)
+  {
+    return WorkflowTask.getCollectionTasks(collectionId);
   }
 
   @Request(RequestType.SESSION)

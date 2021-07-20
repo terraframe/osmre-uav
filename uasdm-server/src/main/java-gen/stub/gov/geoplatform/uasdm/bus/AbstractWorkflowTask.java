@@ -27,11 +27,16 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismActorIF;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.GeoprismUser;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF, JSONSerializable
@@ -51,6 +56,23 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     public String toString()
     {
       return asString;
+    }
+  }
+  
+  public static enum TaskActionType {
+    ERROR("error"),
+    WARNING("warning");
+    
+    private String type;
+    
+    TaskActionType(String type)
+    {
+      this.type = type;
+    }
+    
+    public String getType()
+    {
+      return this.type;
     }
   }
 
@@ -97,6 +119,13 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     action.setDescription(message);
     action.setWorkflowTask(this);
     action.apply();
+
+    if (type != null && type.equals("error"))
+    {
+      CollectionStatus.updateStatus(this);
+
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+    }
   }
 
   public static Page<AbstractWorkflowTask> getUserTasks(String status, Integer pageNumber, Integer pageSize)
@@ -162,8 +191,8 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     JSONObject obj = new JSONObject();
     obj.put("oid", this.getOid());
     obj.put("label", this.getTaskLabel());
-    obj.put("createDate", format.format(this.getCreateDate()));
-    obj.put("lastUpdatedDate", format.format(this.getLastUpdateDate()));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
     obj.put("status", this.getNormalizedStatus());
     obj.put("message", this.getMessage());
     obj.put("actions", jActions);

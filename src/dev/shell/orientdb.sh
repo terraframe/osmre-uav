@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Copyright 2020 The Department of Interior
 #
@@ -14,28 +15,16 @@
 # limitations under the License.
 #
 
-# This script will start a local docker instance that you can use for testing and development
-# Run it with sudo
+# Run this with sudo
 
-# docker rm -f $(docker ps -a -q --filter=name=solr)
+# Requires AWS CLI : pip3 install awscli --upgrade --user
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
+# Exit immediately if anything errors out
 set -e
-set -x
-
-BASEDIR=$(pwd)
 
 # Kill any running containers by name of what we're about to run
-docker rm -f $(docker ps -a -q --filter="name=solr") || true
-#docker system prune
+docker rm -f $(docker ps -a -q --filter="name=orientdb") > /dev/null || true
 
-
-# Install preqreqs (assumes you're on Ubuntu!)
-#apt-get -y update
-#apt-get -y install tesseract-ocr libgdal-java
-
-rm -rf ../../target/solr
-
-
-docker run -d -p 8983:8983 -v $BASEDIR/../../src/solr/configsets/uasdm:/opt/solr/server/solr/configsets/uasdm:ro --name solr solr:6.6.5 solr-precreate uasdm /opt/solr/server/solr/configsets/uasdm
-
-echo "Solr should now be running at http://127.0.0.1:8983."
+# Pull & Run the orientdb container
+docker run -d -p 2424:2424 -p 2480:2480 -e ORIENTDB_ROOT_PASSWORD=root --name orientdb orientdb:3.0

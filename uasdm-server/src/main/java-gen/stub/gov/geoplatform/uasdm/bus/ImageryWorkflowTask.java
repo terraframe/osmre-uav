@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
@@ -46,15 +47,13 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
 
   public JSONObject toJSON()
   {
-    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
-
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
     obj.put("imagery", this.getImagery());
     obj.put("message", this.getMessage());
     obj.put("status", this.getStatus());
-    obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
-    obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
 
     return obj;
   }

@@ -57,6 +57,7 @@ if [ "$release_uasdm" == "true" ]; then
   git merge dev
   git push
   
+  cd $WORKSPACE/uasdm
   
   mvn release:prepare -B -Dtag=$IDM_VERSION \
                    -DreleaseVersion=$IDM_VERSION \

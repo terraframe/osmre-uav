@@ -85,7 +85,7 @@ export class UploadForm {
 
 export class Action {
 	createDate: string;
-	lastUpdatedDate: string;
+	lastUpdateDate: string;
 	type: string;
 	description: string;
 }
@@ -95,7 +95,6 @@ export class Task {
 	label: string;
 	createDate: string;
 	lastUpdateDate: string;
-	lastUpdatedDate: string;
 	status: string;
 	message: string;
 	actions: Action[];
@@ -107,13 +106,14 @@ export class Task {
 	visible?: boolean;
 	showError?: boolean;
 	ancestors?: string[];
-
+  sensorName?: string;
 }
 
 export class TaskGroup {
 	label: string;
 	collectionId: string;
 	visible?: boolean;
+	loading?: boolean;
 	groups: TaskGroupType[];
 	status: string;
 	lastUpdatedDate: string;
@@ -147,10 +147,18 @@ export class Product {
 	entities: SiteEntity[];
 	published: boolean;
 	imageKey?: string;
-	mapKey?: string;
-	workspace?: string;
 	boundingBox?: number[];
+	layers: GeoserverLayer[];
 	orthoMapped?: boolean;
+	demMapped?: boolean;
+	hasPointcloud?: boolean;
+}
+
+export class GeoserverLayer {
+  workspace: string;
+  classification: string;
+  key: string;
+  isMapped?: boolean;
 }
 
 export class ProductDetail extends Product {

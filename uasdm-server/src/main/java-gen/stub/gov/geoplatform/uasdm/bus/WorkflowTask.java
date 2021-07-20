@@ -42,6 +42,8 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
@@ -59,6 +61,14 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public WorkflowTask()
   {
     super();
+  }
+
+  @Override
+  public void apply()
+  {
+    super.apply();
+
+    CollectionStatus.updateStatus(this);
   }
 
   public static long getUserWorkflowTasksCount(String statuses)
@@ -208,8 +218,6 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public JSONObject toJSON()
   {
-    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
-
     ImageryComponent component = this.getImageryComponent();
 
     final List<UasComponentIF> ancestors = component.getAncestors();
@@ -228,10 +236,15 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     obj.put("collectionLabel", component.getName());
     obj.put("message", this.getMessage());
     obj.put("status", this.getNormalizedStatus());
-    obj.put("lastUpdateDate", format.format(this.getLastUpdateDate()));
-    obj.put("createDate", format.format(this.getCreateDate()));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
     obj.put("type", this.getType());
     obj.put("ancestors", parents);
+    
+    if (component instanceof gov.geoplatform.uasdm.graph.Collection)
+    {
+      obj.put("sensorName", ((gov.geoplatform.uasdm.graph.Collection)component).getSensor().getName());
+    }
 
     return obj;
   }
@@ -256,7 +269,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     return ComponentFacade.getComponent(this.getComponent());
   }
 
-  private static boolean isShowUserOnly()
+  public static boolean isShowUserOnly()
   {
     return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole(RoleConstants.ADIM_ROLE);
   }
@@ -316,4 +329,32 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     return components;
   }
+
+  public static JSONArray getCollectionTasks(String collectionId)
+  {
+    List<? extends WorkflowTask> tasks = getTasksForCollection(collectionId);
+
+    JSONArray results = new JSONArray();
+
+    for (WorkflowTask task : tasks)
+    {
+      results.put(task.toJSON());
+    }
+
+    return results;
+
+  }
+
+  public static List<? extends WorkflowTask> getTasksForCollection(String collectionId)
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getComponent().EQ(collectionId));
+    query.ORDER_BY_DESC(query.getCreateDate());
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      return iterator.getAll();
+    }
+  }
+
 }

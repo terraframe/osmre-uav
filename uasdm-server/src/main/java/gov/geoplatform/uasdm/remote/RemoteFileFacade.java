@@ -86,5 +86,15 @@ public class RemoteFileFacade
   {
     service.putFile(key, metadata, stream);
   }
+  
+  public static void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  {
+    service.uploadDirectory(directory, key, task, includeSubDirectories);
+  }
+  
+  public static boolean objectExists(String key)
+  {
+    return service.objectExists(key);
+  }
 
 }

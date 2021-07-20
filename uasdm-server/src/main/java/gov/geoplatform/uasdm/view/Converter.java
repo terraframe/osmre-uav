@@ -28,6 +28,9 @@ import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.controller.PointcloudController;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -38,6 +41,8 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public abstract class Converter
 {
@@ -225,13 +230,21 @@ public abstract class Converter
     {
       list.add(Converter.toSiteItem(component, false));
     }
+    
+    final String s3Loc = components.size() > 0 ? components.get(components.size()-1).getS3location() : ""; 
+    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json")
+        || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
+    view.setHasPointcloud(hasPointcloud);
 
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
+    
+    List<GeoserverLayer> layers = ( (Product) product ).getLayers();
+    view.setLayers(layers);
 
-    if (product.getImageKey() == null || product.getMapKey() == null)
+    if (product.getImageKey() == null || product.getImageKey().length() == 0)
     {
       product.calculateKeys(new LinkedList<UasComponentIF>(components));
     }
@@ -240,12 +253,9 @@ public abstract class Converter
     {
       view.setImageKey(product.getImageKey());
     }
-
-    if (product.getMapKey() != null && product.getMapKey().length() > 0)
+    
+    if (layers.size() > 0)
     {
-      view.setWorkspace(product.getWorkspace());
-      view.setMapKey(product.getMapKey());
-
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
       {
         product.updateBoundingBox();

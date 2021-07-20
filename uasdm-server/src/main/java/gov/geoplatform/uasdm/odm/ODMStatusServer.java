@@ -15,16 +15,15 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,25 +33,21 @@ import com.runwaysdk.business.SmartException;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.service.SolrService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.EmailSetting;
-import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 public class ODMStatusServer
@@ -257,7 +252,7 @@ public class ODMStatusServer
       runInTrans();
     }
 
-//    @Transaction
+    // @Transaction
     public void runInTrans()
     {
       synchronized (pendingTasks)
@@ -277,7 +272,7 @@ public class ODMStatusServer
         }
 
         ODMProcessingTaskIF task = it.next();
-  
+
         InfoResponse resp = null;
         try
         {
@@ -289,23 +284,23 @@ public class ODMStatusServer
           {
             resp = DevProperties.getMockOdmTaskInfo();
           }
-  
+
           if (resp.getHTTPResponse().isUnreachableHost())
           {
             String msg = "Unable to reach ODM server. code: " + resp.getHTTPResponse().getStatusCode() + " response: " + resp.getHTTPResponse().getResponse();
             logger.error(msg);
             UnreachableHostException ex = new UnreachableHostException(msg);
-  
+
             task.appLock();
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage(RunwayException.localizeThrowable(ex, Session.getCurrentLocale()));
             task.apply();
-  
+
             it.remove();
-  
+
             sendEmail(task);
-  
-  //          throw ex;
+
+            // throw ex;
             continue;
           }
           else if (resp.hasError())
@@ -314,9 +309,9 @@ public class ODMStatusServer
             task.setStatus(ODMStatus.FAILED.getLabel());
             task.setMessage(resp.getError());
             task.apply();
-  
+
             it.remove();
-  
+
             sendEmail(task);
           }
           else if (!resp.hasError() && resp.getHTTPResponse().isError())
@@ -326,24 +321,24 @@ public class ODMStatusServer
             task.setMessage("The job encountered an unspecified error.");
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
             task.apply();
-  
+
             it.remove();
           }
           else
           {
             ODMStatus respStatus = resp.getStatus();
-            
+
             if (respStatus == null)
             {
               task.appLock();
               task.setStatus(ODMStatus.FAILED.getLabel());
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               sendEmail(task);
-  
+
               removeFromOdm(task, task.getOdmUUID());
             }
             else if (ODMStatus.FAILED.equals(respStatus))
@@ -353,32 +348,41 @@ public class ODMStatusServer
               task.setMessage(resp.getStatusError());
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               sendEmail(task);
-  
+
               removeFromOdm(task, task.getOdmUUID());
             }
             else if (ODMStatus.RUNNING.equals(respStatus))
             {
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
-  
-//              long millis = resp.getProcessingTime();
-//  
-//              String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-  
-              if (resp.getImagesCount() == 1) // This happens when not using ODM's newer "chunk" functionality, and it only happens when a auto-scaling node is spinning up.
+
+              // long millis = resp.getProcessingTime();
+              //
+              // String sProcessingTime = String.format("%d hours, %d minutes",
+              // TimeUnit.MILLISECONDS.toHours(millis),
+              // TimeUnit.MILLISECONDS.toMinutes(millis) -
+              // TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+
+              if (resp.getImagesCount() == 1) // This happens when not using
+                                              // ODM's newer "chunk"
+                                              // functionality, and it only
+                                              // happens when a auto-scaling
+                                              // node is spinning up.
               {
                 task.setMessage("Your images are being processed. Check back later for updates. An email will be sent when the processing is complete.");
               }
               else
               {
                 task.setMessage("Processing of " + resp.getImagesCount() + " images. An email will be sent when the processing is complete");
-//                task.setMessage("Processing of " + resp.getImagesCount() + " images has been running for " + sProcessingTime + ". An email will be sent when the processing is complete");
+                // task.setMessage("Processing of " + resp.getImagesCount() + "
+                // images has been running for " + sProcessingTime + ". An email
+                // will be sent when the processing is complete");
               }
-              
+
               task.apply();
             }
             else if (ODMStatus.QUEUED.equals(respStatus))
@@ -394,25 +398,25 @@ public class ODMStatusServer
               task.setStatus(resp.getStatus().getLabel());
               task.setMessage("Job was canceled.");
               task.apply();
-  
+
               it.remove();
-  
+
               // TODO : Remove from ODM?
             }
             else if (ODMStatus.COMPLETED.equals(respStatus))
             {
               long millis = resp.getProcessingTime();
-  
+
               String sProcessingTime = String.format("%d hours, %d minutes", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-  
+
               task.appLock();
               task.setStatus(resp.getStatus().getLabel());
               task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
               addOutputToTask(task);
               task.apply();
-  
+
               it.remove();
-  
+
               uploadResultsToS3(task);
             }
           }
@@ -420,12 +424,12 @@ public class ODMStatusServer
         catch (Throwable t)
         {
           logger.error("Error encountered in ODMStatusServer", t);
-          
+
           task.appLock();
           task.setStatus(ODMStatus.FAILED.getLabel());
-          
+
           String errMsg = RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
-          
+
           if (t instanceof SmartException)
           {
             task.setMessage(errMsg);
@@ -434,16 +438,16 @@ public class ODMStatusServer
           {
             task.setMessage("The job encountered an unspecified error.");
           }
-          
+
           if (resp != null && resp.getHTTPResponse() != null)
           {
             task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ". " + errMsg);
           }
-          else if (!(t instanceof SmartException))
+          else if (! ( t instanceof SmartException ))
           {
             task.setOdmOutput("HTTP communication with ODM has failed. " + errMsg);
           }
-          
+
           task.apply();
 
           it.remove();
@@ -464,7 +468,8 @@ public class ODMStatusServer
         imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
         imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         imageryOdmUploadTask.setProcessingTask(task);
-//        imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        // imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification
+        // Artifacts for [" + task.getCollection().getName() + "].");
         imageryOdmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
         imageryOdmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
         imageryOdmUploadTask.apply();
@@ -480,14 +485,15 @@ public class ODMStatusServer
         odmUploadTask.setOdmUUID(task.getOdmUUID());
         odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         odmUploadTask.setProcessingTask(task);
-//        uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for [" + task.getCollection().getName() + "].");
+        // uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for
+        // [" + task.getCollection().getName() + "].");
         odmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
         odmUploadTask.setMessage("The results of the Orthorectification processing are being uploaded to S3. Currently uploading orthorectification artifacts for ['" + task.getImageryComponent().getName() + "']. Check back later for updates.");
         odmUploadTask.apply();
 
         uploadTask = odmUploadTask;
       }
-      
+
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
       S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
@@ -513,60 +519,80 @@ public class ODMStatusServer
         task.setOdmOutput(sb.toString());
 
         task.writeODMtoS3(output);
-        
+
         processODMOutputAndCreateTasks(output, task);
       }
     }
-    
+
     /**
-     * Read through the ODM output and attempt to identify issues that may have occurred.
+     * Read through the ODM output and attempt to identify issues that may have
+     * occurred.
      */
     private void processODMOutputAndCreateTasks(JSONArray output, ODMProcessingTaskIF task)
     {
+      Set<String> actions = new HashSet<String>();
+
       String sOutput = output.toString();
-      
+
       for (int i = 0; i < output.length(); ++i)
       {
         String line = output.getString(i);
-        
+
         if (line.contains("MICA-CODE:1"))
         {
-          task.createAction("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.", "error");
+          actions.add("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.");
         }
         else if (line.contains("MICA-CODE:2"))
         {
-          task.createAction("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif? Refer to the multispectral documentation for more information.", "error");
+          actions.add("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif? Refer to the multispectral documentation for more information.");
         }
         else if (line.contains("MICA-CODE:3"))
         {
-          task.createAction("Image [\" + fileName + \"] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.", "error");
+          Pattern pattern = Pattern.compile(".*Image \\[(.*)\\] does not match the naming convention\\. Are you.*\\(MICA-CODE:3\\).*", Pattern.CASE_INSENSITIVE);
+          Matcher matcher = pattern.matcher(line);
+          boolean matchFound = matcher.find();
+          if (matchFound)
+          {
+            actions.add("Image [" + matcher.group(1) + "] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
+          }
+          else
+          {
+            actions.add("Image does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
+          }
         }
         else if (line.contains("MICA-CODE:4"))
         {
-          task.createAction("Image alignment has failed. Take the time to look through your image collection and weed out any bad images, i.e. pictures of the camera inside the case, or pictures which are entirely black, etc. Also make sure that if your collection includes panel images, that they are named as IMG_0000_*.tif. You can also try using a different alignment image (by renaming a better image set to IMG_0001_*.tif). Finally, make sure this collection is of a single flight and that there were no 'shock' events. Refer to the multispectral documentation for more information.", "error");
+          actions.add("Image alignment has failed. Take the time to look through your image collection and weed out any bad images, i.e. pictures of the camera inside the case, or pictures which are entirely black, etc. Also make sure that if your collection includes panel images, that they are named as IMG_0000_*.tif. You can also try using a different alignment image (by renaming a better image set to IMG_0001_*.tif). Finally, make sure this collection is of a single flight and that there were no 'shock' events. Refer to the multispectral documentation for more information.");
         }
         else if (line.contains("OSError: Panels not detected in all images")) // Micasense
         {
-          task.createAction("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.", "error");
+          actions.add("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.");
         }
-        else if (
-            line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1 output
-            || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8 output
-            || (line.contains("IndexError: list index out of range")
-                && output.getString(i-1).contains("reconstruction = data[0]")
-                && sOutput.contains("Traceback (most recent call last):")) // 0.9.1
-            )
+        else if (line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1
+                                                                                                                                                        // output
+            || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8
+                                                                                                                                                 // output
+            || ( line.contains("IndexError: list index out of range") && output.getString(i - 1).contains("reconstruction = data[0]") && sOutput.contains("Traceback (most recent call last):") ) // 0.9.1
+        )
         {
-          task.createAction("ODM failed to produce a reconstruction from the image matches. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. (more info: https://github.com/OpenDroneMap/ODM/issues/524)", "error");
+          actions.add("ODM failed to produce a reconstruction from the image matches. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. (more info: https://github.com/OpenDroneMap/ODM/issues/524)");
         }
-        else if (line.contains("Not enough supported images in")) // 0.9.1
+        else if (line.contains("Not enough supported images in") // 0.9.1
+            || ( line.contains("numpy.AxisError: axis 1 is out of bounds for array of dimension 0") // 2.4.7
+            ))
         {
-          task.createAction("Couldn't find any usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'", "error");
+          actions.add("Couldn't find enough usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'");
         }
-        else if (line.contains("bad_alloc")) // Comes from ODM (and/or sub-libraries)
+        else if (line.contains("bad_alloc")) // Comes from ODM (and/or
+                                             // sub-libraries)
         {
-          task.createAction("ODM ran out of memory during processing. Please contact your technical support.", "error");
+          actions.add("ODM ran out of memory during processing. Please contact your technical support.");
         }
+      }
+
+      for (String action : actions)
+      {
+        task.createAction(action, "error");
       }
     }
   }
@@ -609,150 +635,34 @@ public class ODMStatusServer
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        // Create image services
-        product.createImageService();
-
-        // Calculate bounding boxes
-        product.updateBoundingBox();
-
         ODMStatusServer.sendEmail(uploadTask);
       }
       catch (Throwable t)
       {
         logger.error("Error occurred while uploading S3 files for " + uploadTask.getOdmUUID(), t);
 
-        String msg;
-        if (t instanceof SpecialException)
-        {
-          msg = t.getLocalizedMessage();
-        }
-        else
-        {
-          msg = "The upload failed. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
-        }
+        String msg = RunwayException.localizeThrowable(t, Session.getCurrentLocale());
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.FAILED.getLabel());
         uploadTask.setMessage(msg);
         uploadTask.apply();
-        
+
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
     }
 
-    private List<ODMFolderProcessingConfig> buildProcessingConfig()
+    // @Transaction
+    public ProductIF runInTrans() throws ZipException, InterruptedException
     {
-      List<ODMFolderProcessingConfig> processingConfigs = new ArrayList<ODMFolderProcessingConfig>();
+      ImageryComponent ic = uploadTask.getImageryComponent();
+      UasComponentIF component = ic.getUasComponent();
 
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
+      ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask, null);
 
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
-
-      processingConfigs.add(new ODMFolderProcessingConfig("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
-
-      processingConfigs.add(new ODMFolderProcessingConfig("micasense", "micasense", null));
-
-      return processingConfigs;
-    }
-    
-    private CloseableFile getZip()
-    {
-      if (DevProperties.runOrtho())
+      try
       {
-        return ODMFacade.taskDownload(uploadTask.getOdmUUID());
-      }
-      else
-      {
-        return DevProperties.orthoResults();
-      }
-    }
-
-//    @Transaction
-    public ProductIF runInTrans() throws ZipException, SpecialException, InterruptedException
-    {
-      try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), "odm-" + uploadTask.getOdmUUID()))
-      {
-        try (CloseableFile zip = getZip())
-        {
-          List<ODMFolderProcessingConfig> processingConfigs = buildProcessingConfig();
-          
-          List<DocumentIF> documents = new LinkedList<DocumentIF>();
-          ImageryComponent ic = uploadTask.getImageryComponent();
-          UasComponentIF component = ic.getUasComponent();
-    
-          /**
-           * Upload the full all.zip file to S3 for archive purposes.
-           */
-          String allKey = uploadTask.getImageryComponent().getS3location() + "odm_all" + "/" + zip.getName();
-    
-          if (DevProperties.uploadAllZip())
-          {
-            Util.uploadFileToS3(zip, allKey, uploadTask);
-            
-            documents.add(component.createDocumentIfNotExist(allKey, zip.getName()));
-          }
-    
-          List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
-            return doc.getS3location().contains("/raw/");
-          }).collect(Collectors.toList());
-    
-          String filePrefix = this.uploadTask.getProcessingTask().getFilePrefix();
-    
-          /**
-           * Unzip the ODM all.zip file and selectively upload files that interest
-           * us to S3.
-           */
-          try
-          {
-            new ZipFile(zip).extractAll(unzippedParentFolder.getAbsolutePath());
-          }
-          catch (ZipException e)
-          {
-            throw new SpecialException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
-          }
-  
-          for (ODMFolderProcessingConfig config : processingConfigs)
-          {
-            if (Thread.interrupted())
-            {
-              throw new InterruptedException();
-            }
-  
-            File parentDir = new File(unzippedParentFolder, config.odmFolderName);
-  
-            if (parentDir.exists())
-            {
-              processChildren(parentDir, config.s3FolderName, config, filePrefix, documents);
-            }
-  
-            List<String> unprocessed = config.getUnprocessedFiles();
-            if (unprocessed.size() > 0)
-            {
-              for (String name : unprocessed)
-              {
-                uploadTask.createAction("ODM did not produce an expected file [" + config.s3FolderName + "/" + name + "].", "error");
-              }
-            }
-          }
-  
-          ODMProcessingTaskIF processingTask = this.uploadTask.getProcessingTask();
-          List<String> list = processingTask.getFileList();
-  
-          ProductIF product = ic.getUasComponent().createProductIfNotExist();
-          product.clear();
-  
-          product.addDocuments(documents);
-  
-          for (DocumentIF raw : raws)
-          {
-            if (list.size() == 0 || list.contains(raw.getName()))
-            {
-              raw.addGeneratedProduct(product);
-            }
-          }
-  
-          return product;
-        }
+        return processor.processAllZip();
       }
       finally
       {
@@ -760,115 +670,6 @@ public class ODMStatusServer
         {
           removeFromOdm(this.uploadTask, this.uploadTask.getOdmUUID());
         }
-      }
-    }
-
-    private void processChildren(File parentDir, String s3FolderPrefix, ODMFolderProcessingConfig config, String filePrefix, List<DocumentIF> documents) throws InterruptedException
-    {
-      File[] children = parentDir.listFiles();
-
-      if (children == null)
-      {
-        logger.error("Problem occurred while listing files of directory [" + parentDir.getAbsolutePath() + "].");
-        return;
-      }
-
-      for (File child : children)
-      {
-        if (Thread.interrupted())
-        {
-          throw new InterruptedException();
-        }
-
-        String name = child.getName();
-
-        if (filePrefix != null && filePrefix.length() > 0)
-        {
-          name = filePrefix + "_" + name;
-        }
-
-        if (!child.isDirectory() && UasComponentIF.isValidName(name) && config.shouldProcessFile(child))
-        {
-          ImageryComponent ic = uploadTask.getImageryComponent();
-          final UasComponentIF component = ic.getUasComponent();
-
-          String key = ic.getS3location() + s3FolderPrefix + "/" + name;
-
-          Util.uploadFileToS3(child, key, uploadTask);
-
-          documents.add(component.createDocumentIfNotExist(key, name));
-
-          SolrService.updateOrCreateDocument(ic.getAncestors(), component, key, name);
-        }
-        else if (child.isDirectory())
-        {
-          processChildren(child, s3FolderPrefix + "/" + child.getName(), config, filePrefix, documents);
-        }
-      }
-    }
-
-    private class SpecialException extends Exception
-    {
-      private static final long serialVersionUID = 1L;
-
-      public SpecialException(String string, ZipException e)
-      {
-        super(string, e);
-      }
-    }
-
-    private class ODMFolderProcessingConfig
-    {
-      private String            odmFolderName;
-
-      private String            s3FolderName;
-
-      private String[]          mandatoryFiles;
-
-      private ArrayList<String> processedFiles;
-
-      protected ODMFolderProcessingConfig(String odmFolderName, String s3FolderName, String[] mandatoryFiles)
-      {
-        this.odmFolderName = odmFolderName;
-        this.s3FolderName = s3FolderName;
-        this.mandatoryFiles = mandatoryFiles;
-        this.processedFiles = new ArrayList<String>();
-      }
-
-      protected boolean shouldProcessFile(File file)
-      {
-        if (this.mandatoryFiles == null)
-        {
-          return true;
-        }
-
-        if (ArrayUtils.contains(mandatoryFiles, file.getName()) && DevProperties.shouldUploadProduct(file.getName()))
-        {
-          processedFiles.add(file.getName());
-          return true;
-        }
-
-        return false;
-      }
-
-      protected List<String> getUnprocessedFiles()
-      {
-        ArrayList<String> unprocessed = new ArrayList<String>();
-
-        if (mandatoryFiles == null)
-        {
-          return unprocessed;
-        }
-
-        for (String file : mandatoryFiles)
-        {
-          if (!processedFiles.contains(file))
-          {
-            unprocessed.add(file);
-          }
-        }
-
-        return unprocessed;
       }
     }
   }

@@ -22,7 +22,6 @@ declare var acp: string;
 @Component({
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
-    styles: [],
     animations: [
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation(),
@@ -34,7 +33,9 @@ export class ProductPanelComponent {
 
     @Input() id: string;
 
-    @Output() public toggleMapImage = new EventEmitter<Product>();
+    @Output() public toggleMapOrtho = new EventEmitter<Product>();
+    
+    @Output() public toggleMapDem = new EventEmitter<Product>();
 
     /* 
      * List of products for the current node
@@ -47,6 +48,8 @@ export class ProductPanelComponent {
      * Reference to the modal current showing
     */
     private bsModalRef: BsModalRef;
+    
+    loading: boolean = false;
 
 
     constructor(private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
@@ -59,9 +62,12 @@ export class ProductPanelComponent {
     refreshProducts(id: string): void {
         this.products = [];
         this.thumbnails = {};
+        
+        this.loading = true;
 
         this.pService.getProducts(id).then(products => {
             this.products = products;
+            this.loading = false;
 
             this.products.forEach(product => {
                 this.getThumbnail(product);
@@ -79,6 +85,32 @@ export class ProductPanelComponent {
         if (image) {
             reader.readAsDataURL(image);
         }
+    }
+    
+    hasOrthoLayer(product: Product): boolean {
+      let len = product.layers.length;
+      for (let i = 0; i < len; ++i)
+      {
+        if (product.layers[i].classification === 'ORTHO' && product.layers[i].key != null && product.layers[i].key.length > 0)
+        {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    hasDemLayer(product: Product): boolean {
+      let len = product.layers.length;
+      for (let i = 0; i < len; ++i)
+      {
+        if ((product.layers[i].classification === 'DEM_DSM' || product.layers[i].classification === 'DEM_DTM') && product.layers[i].key != null && product.layers[i].key.length > 0)
+        {
+          return true;
+        }
+      }
+      
+      return false;
     }
 
     getThumbnail(product: Product): void {
@@ -110,7 +142,26 @@ export class ProductPanelComponent {
     }
 
     handleMapIt(product: Product): void {
-        this.toggleMapImage.emit(product);
+      if (this.hasOrthoLayer(product))
+      {
+        this.toggleMapOrtho.emit(product);
+      }
+    }
+    
+    handleMapDem(product: Product): void {
+      if (this.hasDemLayer(product))
+      {
+        this.toggleMapDem.emit(product);
+      }
+    }
+    
+    handlePointcloud(product: Product): void {
+      if (product.hasPointcloud)
+      {
+        let componentId: string = product.entities[product.entities.length-1].id;
+      
+        window.open(acp + "/pointcloud/" + componentId + "/potree");
+      }
     }
 
     handleDelete(product: Product, event: any): void {
@@ -165,17 +216,23 @@ export class ProductPanelComponent {
     handleTogglePublish(product: Product): void {
         this.pService.togglePublish(product.id).then(p => {
             const mapIt:boolean = product.orthoMapped;
+            const demMapped:boolean = product.demMapped;
             
             if (mapIt) {
-                this.toggleMapImage.emit(product);
+                this.toggleMapOrtho.emit(product);
+            }
+            if (demMapped) {
+                this.toggleMapDem.emit(product);
             }
 
-            product.workspace = p.workspace;
-            product.mapKey = p.mapKey;
             product.published = p.published;
+            product.layers = p.layers;
 
             if (mapIt) {
-                this.toggleMapImage.emit(product);
+                this.toggleMapOrtho.emit(product);
+            }
+            if (demMapped) {
+                this.toggleMapDem.emit(product);
             }
         });
     }

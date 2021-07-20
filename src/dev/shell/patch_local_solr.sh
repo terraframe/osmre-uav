@@ -20,7 +20,7 @@
 set -e
 set -x
 
-BASEDIR=$(pwd)
+BASEDIR=$(dirname "$0")
 
 # Kill any running containers by name of what we're about to run
 docker rm -f $(docker ps -a -q --filter="name=solr") || true

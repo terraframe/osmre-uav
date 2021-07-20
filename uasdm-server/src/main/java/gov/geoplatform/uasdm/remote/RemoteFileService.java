@@ -47,7 +47,11 @@ public interface RemoteFileService
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize);
 
   public void uploadFile(File file, String key, AbstractWorkflowTaskIF task);
+  
+  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories);
 
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream);
+  
+  public boolean objectExists(String key);
 
 }

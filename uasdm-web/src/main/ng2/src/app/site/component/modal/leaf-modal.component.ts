@@ -288,6 +288,17 @@ export class LeafModalComponent implements OnInit {
 		//          this.error( err );
 		//      } );
 	}
+	
+	handleDownloadOdmAll(): void {
+
+    window.location.href = acp + '/project/download-odm-all?colId=' + this.entity.id;
+
+    //      this.service.downloadAll( data.id ).then( data => {
+    //        
+    //      } ).catch(( err: HttpErrorResponse ) => {
+    //          this.error( err );
+    //      } );
+  }
 
 	handleDownloadVideo(src: string): void {
 
@@ -311,6 +322,10 @@ export class LeafModalComponent implements OnInit {
 			this.entity.metadataUploaded = true;
 		});
 	}
+	
+	capitalize(str): string {
+    return str.replace(/^\w/, c => c.toUpperCase());
+  }
 
 
 	showVideo(item: SiteEntity): void {

@@ -48,6 +48,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.runwaysdk.RunwayException;
@@ -235,6 +236,15 @@ public class S3RemoteFileService implements RemoteFileService
     client.deleteObjects(multiObjectDeleteRequest);
   }
 
+  public boolean objectExists(String key)
+  {
+    AmazonS3 client = S3ClientFactory.createClient();
+    
+    String bucketName = AppProperties.getBucketName();
+    
+    return client.doesObjectExist(bucketName, key);
+  }
+  
   @Override
   public int getItemCount(String key)
   {
@@ -393,6 +403,69 @@ public class S3RemoteFileService implements RemoteFileService
         if (myUpload.isDone() == false)
         {
           logger.info("Source: " + file.getAbsolutePath());
+          logger.info("Destination: " + myUpload.getDescription());
+
+          if (task != null)
+          {
+            task.lock();
+            task.setMessage(myUpload.getDescription());
+            task.apply();
+          }
+        }
+
+        myUpload.addProgressListener(new ProgressListener()
+        {
+          int count = 0;
+
+          @Override
+          public void progressChanged(ProgressEvent progressEvent)
+          {
+            if (count % 2000 == 0)
+            {
+              long total = myUpload.getProgress().getTotalBytesToTransfer();
+              long current = myUpload.getProgress().getBytesTransferred();
+
+              logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+
+              count = 0;
+            }
+
+            count++;
+          }
+        });
+
+        myUpload.waitForCompletion();
+      }
+      finally
+      {
+        tx.shutdownNow();
+      }
+    }
+    catch (Exception e)
+    {
+      if (task != null)
+      {
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+      }
+
+      logger.error("Exception occured while uploading [" + key + "].", e);
+    }
+  }
+  
+  @Override
+  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  {
+    try
+    {
+      TransferManager tx = S3ClientFactory.createTransferManager();
+
+      try
+      {
+        MultipleFileUpload myUpload = tx.uploadDirectory(AppProperties.getBucketName(), key, directory, includeSubDirectories);
+
+        if (myUpload.isDone() == false)
+        {
+          logger.info("Source: " + directory.getAbsolutePath());
           logger.info("Destination: " + myUpload.getDescription());
 
           if (task != null)

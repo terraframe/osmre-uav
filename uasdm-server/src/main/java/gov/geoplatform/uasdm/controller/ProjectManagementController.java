@@ -65,8 +65,8 @@ public class ProjectManagementController
   public static final String       JSP_DIR   = "/WEB-INF/";
 
   public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
-  
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
+
+  private static final Logger      logger    = LoggerFactory.getLogger(ProjectManagementController.class);
 
   private ProjectManagementService service;
 
@@ -184,6 +184,14 @@ public class ProjectManagementController
     }
   }
 
+  @Endpoint(url = "download-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadOdmAll(ClientRequestIF request, final @RequestParamter(name = "colId") String colId)
+  {
+    final String sessionId = request.getSessionId();
+
+    return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
+  }
+
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
@@ -265,6 +273,14 @@ public class ProjectManagementController
   public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "statuses") String statuses, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize, @RequestParamter(name = "token") Integer token)
   {
     JSONObject response = new WorkflowService().getTasks(request.getSessionId(), statuses, pageNumber, pageSize, token);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(url = "collection-tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getCollectionTasks(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  {
+    JSONArray response = new WorkflowService().getCollectionTasks(request.getSessionId(), collectionId);
 
     return new RestBodyResponse(response);
   }

@@ -122,7 +122,7 @@ public class CollectionDocumentMigration implements Runnable
 
       for (Document product : products)
       {
-        product.delete(false);
+        product.delete(false, false);
       }
     }
 

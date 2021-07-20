@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -105,35 +106,7 @@ public class GeoserverInitializer implements UncaughtExceptionHandler, ServerCon
     @Request
     private void runInRequest()
     {
-      boolean rebuild = false;
-
-      if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
-      {
-        GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
-
-        rebuild = true;
-      }
-
-      if (!GeoserverFacade.workspaceExists(GeoserverProperties.getWorkspace()))
-      {
-        GeoserverFacade.publishWorkspace();
-
-        rebuild = true;
-      }
-
-      if (rebuild)
-      {
-        logger.info("Geoserver workspace and store not found.  Republishing layers.");
-
-        List<ProductIF> products = ComponentFacade.getProducts();
-
-        for (ProductIF product : products)
-        {
-          product.createImageService();
-        }
-      }
-
-      new ImageMosaicService().create();
+      new GeoserverPublisher().initializeGeoserver();
     }
   }
 

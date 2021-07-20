@@ -15,16 +15,14 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -43,9 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.kms.model.UnsupportedOperationException;
+import com.google.common.io.Files;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -165,7 +165,134 @@ public class ODMFacade
       throw new ProgrammingErrorException(e);
     }
   }
+  
+  /*
+   * Uploads the zip to ODM using the init / upload / commit paradigm, which is recommended for large file uploads.
+   * 
+   * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-tasknewinit
+   */
+  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
+  {
+    initialize();
+    
+    try (CloseablePair parent = filterAndExtract(images))
+    {
+      if (parent.getItemCount() > 0)
+      {
+        NewResponse resp = ODMFacade.taskNewInit(parent.getItemCount(), isMultispectral);
+        
+        if (resp.hasError() || resp.getHTTPResponse().isError())
+        {
+          ODMFacade.taskRemove(resp.getUUID());
+          return resp;
+        }
+        
+        String uuid = resp.getUUID();
+        
+        for (File child : parent.getFile().listFiles())
+        {
+          ODMResponse uploadResp = ODMFacade.taskNewUpload(uuid, new FileResource(child));
+          
+          if (uploadResp.hasError() || uploadResp.getHTTPResponse().isError())
+          {
+            ODMFacade.taskRemove(uuid);
+            return new NewResponse(uploadResp.getHTTPResponse(), uuid);
+          }
+        }
+        
+        ODMResponse commitResp = ODMFacade.taskNewCommit(uuid);
+        
+        return new NewResponse(commitResp.getHTTPResponse(), uuid);
+      }
+      else
+      {
+        throw new EmptyFileSetException();
+      }
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral)
+  {
+    initialize();
+    
+    Part[] parts = new Part[1];
+    
+    JSONArray arr = new JSONArray();
+    
+    JSONObject dsm = new JSONObject();
+    dsm.put("name", "dsm");
+    dsm.put("value", "true");
+    arr.put(dsm);
+    
+    JSONObject orthoPng = new JSONObject();
+    orthoPng.put("name", "orthophoto-png");
+    orthoPng.put("value", "true");
+    arr.put(orthoPng);
 
+    JSONObject dtm = new JSONObject();
+    dtm.put("name", "dtm");
+    dtm.put("value", "true");
+    arr.put(dtm);
+
+    if (isMultispectral)
+    {
+      JSONObject multispectral = new JSONObject();
+      multispectral.put("name", "multispectral");
+      multispectral.put("value", String.valueOf(isMultispectral));
+      arr.put(multispectral);
+    }
+    
+    JSONObject joImagesCount = new JSONObject();
+    joImagesCount.put("name", "imagesCount");
+    joImagesCount.put("value", imagesCount);
+    arr.put(joImagesCount);
+
+    parts[0] = new StringPart("options",  arr.toString(), "UTF-8");
+    
+    HTTPResponse resp = connector.postAsMultipart("task/new/init", parts);
+    
+    return new NewResponse(resp);
+  }
+  
+  public static ODMResponse taskNewUpload(String uuid, ApplicationResource image)
+  {
+    initialize();
+    
+    Part[] parts = new Part[1];
+    
+    try (CloseableFile file = image.openNewFile())
+    {
+      parts[0] = new FilePart("images", file, "application/octet-stream", "UTF-8");
+  
+      HTTPResponse resp = connector.postAsMultipart("task/new/upload/" + uuid, parts);
+  
+      return new ODMResponse(resp);
+    }
+    catch (FileNotFoundException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  public static ODMResponse taskNewCommit(String uuid)
+  {
+    initialize();
+    
+    Part[] parts = new Part[0];
+    
+    HTTPResponse resp = connector.postAsMultipart("task/new/commit/" + uuid, parts);
+
+    return new ODMResponse(resp);
+  }
+
+  /*
+   * taskNew was removed in favour of the init / upload / commit paradigm
+   */
+  /*
   public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
   {
     initialize();
@@ -219,6 +346,7 @@ public class ODMFacade
       throw new ProgrammingErrorException(e);
     }
   }
+  */
 
   public static InfoResponse taskInfo(String uuid)
   {
@@ -229,7 +357,7 @@ public class ODMFacade
     return new InfoResponse(resp);
   }
 
-  public static CloseablePair filter(ApplicationResource archive) throws IOException
+  public static CloseablePair filterAndExtract(ApplicationResource archive) throws IOException
   {
     String extension = archive.getNameExtension();
 
@@ -247,100 +375,96 @@ public class ODMFacade
 
   private static CloseablePair filterTarGzArchive(ApplicationResource archive) throws IOException
   {
-    CloseableFile zip = new CloseableFile(File.createTempFile("filtered", ".zip"));
+    CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
     byte data[] = new byte[Util.BUFFER_SIZE];
 
-    try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zip))))
+    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
     {
-      try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
+      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
       {
-        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+        TarArchiveEntry entry;
+
+        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
         {
-          TarArchiveEntry entry;
+          final String filename = entry.getName();
+          final String ext = FilenameUtils.getExtension(filename);
 
-          while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+          if (entry.isDirectory())
           {
-            final String filename = entry.getName();
-            final String ext = FilenameUtils.getExtension(filename);
+          }
+          else if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
+          {
+            int count;
 
-            if (entry.isDirectory())
+            File file = new File(parent, entry.getName());
+            
+            try (FileOutputStream fos = new FileOutputStream(file))
             {
-            }
-            else if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
-            {
-              int count;
-
-              zos.putNextEntry(new ZipEntry(filename));
-
               while ( ( count = tarIn.read(data, 0, Util.BUFFER_SIZE) ) != -1)
               {
-                zos.write(data, 0, count);
+                fos.write(data, 0, count);
               }
-
-              zos.closeEntry();
-
-              itemCount++;
             }
 
+            itemCount++;
           }
+
         }
       }
     }
 
-    return new CloseablePair(zip, itemCount);
+    return new CloseablePair(parent, itemCount);
   }
 
   private static CloseablePair filterZipArchive(ApplicationResource archive) throws IOException
   {
-    CloseableFile zip = new CloseableFile(File.createTempFile("filtered", ".zip"));
+    CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
-    try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zip))))
-    {
-      byte[] buffer = new byte[Util.BUFFER_SIZE];
+    byte[] buffer = new byte[Util.BUFFER_SIZE];
 
-      try (CloseableFile fArchive = archive.openNewFile())
+    try (CloseableFile fArchive = archive.openNewFile())
+    {
+      try (ZipFile zipFile = new ZipFile(fArchive))
       {
-        try (ZipFile zipFile = new ZipFile(fArchive))
+        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+
+        while ( entries.hasMoreElements() )
         {
-          Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-  
-          while ( entries.hasMoreElements() )
+          ZipArchiveEntry entry = entries.nextElement();
+          final String filename = entry.getName();
+          final String ext = FilenameUtils.getExtension(filename);
+
+          if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
           {
-            ZipArchiveEntry entry = entries.nextElement();
-            final String filename = entry.getName();
-            final String ext = FilenameUtils.getExtension(filename);
-  
-            if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
+            int len;
+
+            File file = new File(parent, entry.getName());
+            
+            try (FileOutputStream fos = new FileOutputStream(file))
             {
-              int len;
-  
-              zos.putNextEntry(new ZipEntry(entry.getName()));
-              
               try (InputStream zis = zipFile.getInputStream(entry))
               {
                 while ( ( len = zis.read(buffer) ) > 0)
                 {
-                  zos.write(buffer, 0, len);
+                  fos.write(buffer, 0, len);
                 }
               }
-  
-              zos.closeEntry();
-  
-              itemCount++;
             }
+
+            itemCount++;
           }
         }
-        catch (ZipException e)
-        {
-          throw new InvalidZipException();
-        }
+      }
+      catch (ZipException e)
+      {
+        throw new InvalidZipException();
       }
     }
 
-    return new CloseablePair(zip, itemCount);
+    return new CloseablePair(parent, itemCount);
   }
 
 }

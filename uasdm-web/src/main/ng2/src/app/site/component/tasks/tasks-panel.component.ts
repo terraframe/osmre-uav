@@ -6,6 +6,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 
 import { Task, TaskGroup, TaskGroupType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
+import { DateService } from '@shared/service/date.service';
 
 
 @Component({
@@ -36,7 +37,7 @@ export class TasksPanelComponent implements OnInit {
      */
 	taskGroups: TaskGroup[] = [];
 
-	constructor(private managementService: ManagementService, private modalService: BsModalService) {
+	constructor(private managementService: ManagementService, private modalService: BsModalService, dateService: DateService) {
 
 	}
 

@@ -20,6 +20,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+
 public class ProductView
 {
   private String         id;
@@ -30,14 +32,14 @@ public class ProductView
 
   private String         imageKey;
 
-  private String         mapKey;
-
   private boolean        published;
 
-  private String         workspace;
-
   private String         boundingBox;
-
+  
+  private boolean        hasPointcloud;
+  
+  private List<GeoserverLayer> layers;
+  
   public String getId()
   {
     return id;
@@ -78,34 +80,24 @@ public class ProductView
     this.imageKey = imageKey;
   }
 
-  public String getMapKey()
+  public boolean getHasPointcloud()
   {
-    return mapKey;
+    return hasPointcloud;
   }
 
-  public void setMapKey(String mapKey)
+  public void setHasPointcloud(boolean hasPointcloud)
   {
-    this.mapKey = mapKey;
+    this.hasPointcloud = hasPointcloud;
   }
 
   public String getBoundingBox()
   {
-    return mapKey;
+    return this.boundingBox;
   }
 
   public void setBoundingBox(String boundingBox)
   {
     this.boundingBox = boundingBox;
-  }
-
-  public String getWorkspace()
-  {
-    return workspace;
-  }
-
-  public void setWorkspace(String workspace)
-  {
-    this.workspace = workspace;
   }
 
   public boolean isPublished()
@@ -116,6 +108,16 @@ public class ProductView
   public void setPublished(boolean published)
   {
     this.published = published;
+  }
+  
+  public List<GeoserverLayer> getLayers()
+  {
+    return layers;
+  }
+
+  public void setLayers(List<GeoserverLayer> layers)
+  {
+    this.layers = layers;
   }
 
   public JSONObject toJSON()
@@ -130,22 +132,29 @@ public class ProductView
     {
       object.put("imageKey", this.imageKey);
     }
-
-    if (this.mapKey != null)
+    
+    JSONArray jaLayers = new JSONArray();
+    
+    for (GeoserverLayer layer : this.layers)
     {
-      object.put("mapKey", this.mapKey);
+      JSONObject joLayer = new JSONObject();
+      
+      joLayer.put("workspace", layer.getWorkspace());
+      joLayer.put("classification", layer.getClassification().name());
+      joLayer.put("key", layer.getStoreName());
+      
+      jaLayers.put(joLayer);
     }
-
-    if (this.workspace != null)
-    {
-      object.put("workspace", this.workspace);
-    }
-
+    
+    object.put("layers", jaLayers);
+    
     if (this.boundingBox != null && this.boundingBox.length() > 0)
     {
       object.put("boundingBox", new JSONArray(this.boundingBox));
     }
-
+    
+    object.put("hasPointcloud", this.hasPointcloud);
+    
     return object;
   }
 

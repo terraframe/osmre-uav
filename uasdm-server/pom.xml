@@ -28,7 +28,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.13.2-SNAPSHOT</version>
   </parent>
   <artifactId>uasdm-server</artifactId>
   <packaging>jar</packaging>

@@ -18,14 +18,29 @@ package gov.geoplatform.uasdm.odm;
 public class NewResponse extends ODMResponse
 {
 
+  private String uuid;
+  
   public NewResponse(HTTPResponse httpResp)
   {
     super(httpResp);
   }
+  
+  public NewResponse(HTTPResponse httpResp, String uuid)
+  {
+    super(httpResp);
+    this.uuid = uuid;
+  }
 
   public String getUUID()
   {
-    return http.getJSONObject().getString("uuid");
+    if (this.uuid != null)
+    {
+      return uuid;
+    }
+    else
+    {
+      return http.getJSONObject().getString("uuid");
+    }
   }
   
 }

@@ -21,16 +21,20 @@ import java.io.InputStream;
 import org.apache.commons.io.FilenameUtils;
 
 import com.amazonaws.services.s3.model.S3Object;
+import com.runwaysdk.resource.ResourceException;
+import com.runwaysdk.resource.StreamResource;
 
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
-public class S3ObjectWrapper implements RemoteFileObject
+public class S3ObjectWrapper extends StreamResource implements RemoteFileObject
 {
   private S3Object object;
 
   public S3ObjectWrapper(S3Object object)
   {
+    super(object.getObjectContent(), FilenameUtils.getName(object.getKey()));
+    
     this.object = object;
   }
 
@@ -43,19 +47,40 @@ public class S3ObjectWrapper implements RemoteFileObject
   @Override
   public InputStream getObjectContent()
   {
-    return this.object.getObjectContent();
+    return this.openNewStream();
+  }
+  
+  @Override
+  public String getAbsolutePath()
+  {
+    return this.object.getKey();
   }
 
   @Override
-  public void close() throws IOException
+  public void close()
   {
-    this.object.close();
+    super.close();
+    
+    try
+    {
+      this.object.close();
+    }
+    catch (IOException e)
+    {
+      throw new ResourceException(e);
+    }
   }
 
   @Override
-  public String getFilename()
+  public boolean isRemote()
   {
-    return FilenameUtils.getName(this.object.getKey());
+    return true;
+  }
+
+  @Override
+  public void delete()
+  {
+    throw new UnsupportedOperationException();
   }
 
 }

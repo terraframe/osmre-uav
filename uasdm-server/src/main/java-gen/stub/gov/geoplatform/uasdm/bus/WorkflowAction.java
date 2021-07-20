@@ -20,6 +20,8 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.Util;
+
 public class WorkflowAction extends WorkflowActionBase
 {
   private static final long serialVersionUID = -893446595;
@@ -31,11 +33,9 @@ public class WorkflowAction extends WorkflowActionBase
 
   public JSONObject toJSON()
   {
-    DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.US);
-
     JSONObject obj = new JSONObject();
-    obj.put("createDate", format.format(this.getCreateDate()));
-    obj.put("lastUpdatedDate", format.format(this.getLastUpdateDate()));
+    obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
+    obj.put("lastUpdateDate", Util.formatIso8601(this.getLastUpdateDate(), true));
     obj.put("type", this.getActionType());
     obj.put("description", this.getDescription());
 

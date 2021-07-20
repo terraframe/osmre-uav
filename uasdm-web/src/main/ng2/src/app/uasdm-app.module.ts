@@ -28,6 +28,7 @@ import { LoginHeaderComponent } from './core/component/login/login-header.compon
 
 import { NgxPaginationModule } from 'ngx-pagination';
 import { SharedModule } from './shared/shared.module';
+import { DatePipe } from '@angular/common';
 
 @NgModule( {
     imports: [
@@ -64,7 +65,8 @@ import { SharedModule } from './shared/shared.module';
         },
         CookieService,
         ForgotPasswordService,
-        HubService
+        HubService,
+        DatePipe
     ],
     bootstrap: [UasdmAppComponent],
     entryComponents: []
