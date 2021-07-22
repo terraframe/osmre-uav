@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.AuthenticatedActionsHandler;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -48,12 +49,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.runwaysdk.LocalizationFacade;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.constants.ClientConstants;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.localization.LocalizationFacade;
 import com.runwaysdk.web.WebClientSession;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -200,6 +201,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     tokenStore.checkCurrentToken();
 
     FilterRequestAuthenticator authenticator = new FilterRequestAuthenticator(deployment, tokenStore, facade, request, 8443);
+    ((DefaultHttpClient) deployment.getClient()).setParams(null);;
     AuthOutcome outcome = authenticator.authenticate();
     if (outcome == AuthOutcome.AUTHENTICATED)
     {
@@ -420,7 +422,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     JsonObject jo = new JsonObject();
 
     JsonArray installedLocalesArr = new JsonArray();
-    List<Locale> installedLocales = LocalizationFacade.getInstalledLocales();
+    Set<Locale> installedLocales = LocalizationFacade.getInstalledLocales();
     for (Locale loc : installedLocales)
     {
       JsonObject locObj = new JsonObject();
