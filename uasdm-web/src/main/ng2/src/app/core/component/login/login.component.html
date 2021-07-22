@@ -59,13 +59,12 @@
 	                        <span class="keycloak-or-text">&nbsp;Or&nbsp;</span>
 	                        <h4 class="keycloak-or-line"></h4>
                         </div>
-                    
                         <button (click)="onClickKeycloak()" class="keycloak-login-button btn btn-default">
                           <span class="keycloak-login-button-text">
                             Log in with 
                           </span>
                           <span>
-									            <img class="keycloak-login-button-image" alt="Logo" src="https://www.geoplatform.gov/wp-content/themes/geoplatform-portal-four/img/logo.svg" style="width:2em">
+									            <img class="keycloak-login-button-image" alt="Logo" [src]="context + '/net/geoprism/images/geoplatform-logo-mini.svg'" style="width:2em">
 									            <span class="keycloak-login-button-text">GeoPlatform</span>
                           </span>
                         </button>
