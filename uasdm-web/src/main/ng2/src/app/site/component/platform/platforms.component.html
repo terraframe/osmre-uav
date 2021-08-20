@@ -5,7 +5,7 @@
 
 		<h2>Platforms</h2>
 
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
+		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 		
 		<div class="list-table-wrapper">
 			<table id="manage-platforms-table"
@@ -13,9 +13,9 @@
 				<thead>
 					<tr>
 						<th></th>
+						<th class="label-column">Code</th>
 						<th class="label-column">Name</th>
-						<th class="label-column">Label</th>
-						<th class="label-column">Type</th>
+						<th class="label-column">Description</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -25,9 +25,9 @@
 						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(platform)" title="Edit platform"></a>
 						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform)" title="Remove platform"></a>
 					    </td>
+						<td class="label-column">{{ platform.code }}</td>
 						<td class="label-column">{{ platform.name }}</td>
-						<td class="label-column">{{ platform.displayLabel }}</td>
-						<td class="label-column">{{ platform.platformType }}</td>
+						<td class="label-column">{{ platform.description }}</td>
 					</tr>
 					<tr>
 						<td class="button-column">
@@ -39,6 +39,6 @@
 			</table>
 		</div>
 		
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
+		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 	</div>
 </div>

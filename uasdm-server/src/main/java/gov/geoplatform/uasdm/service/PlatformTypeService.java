@@ -15,49 +15,57 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.graph.Platform;
+import gov.geoplatform.uasdm.graph.PlatformType;
 
-public class PlatformService
+public class PlatformTypeService
 {
   @Request(RequestType.SESSION)
   public JSONObject page(String sessionId, Integer pageNumber)
   {
-    return Platform.getPage(pageNumber, 20).toJSON();
+    return PlatformType.getPage(pageNumber, 20).toJSON();
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray getAll(String sessionId)
+  {
+    return PlatformType.getAll();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject apply(String sessionId, JSONObject json)
   {
-    Platform platform = Platform.apply(json);
+    PlatformType manufacturer = PlatformType.fromJSON(json);
+    manufacturer.apply();
 
-    return platform.toJSON();
+    return manufacturer.toJSON();
   }
 
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    Platform platform = Platform.get(oid);
+    PlatformType manufacturer = PlatformType.get(oid);
 
-    if (platform != null)
+    if (manufacturer != null)
     {
-      platform.delete();
+      manufacturer.delete();
     }
   }
 
   @Request(RequestType.SESSION)
   public JSONObject get(String sessionId, String oid)
   {
-    return Platform.get(oid).toJSON();
+    return PlatformType.get(oid).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject newInstance(String sessionId)
   {
-    return new Platform().toJSON();
+    return new PlatformType().toJSON();
   }
 }

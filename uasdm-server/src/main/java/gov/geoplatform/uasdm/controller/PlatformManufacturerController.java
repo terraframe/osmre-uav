@@ -1,20 +1,21 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,16 +29,16 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 
-import gov.geoplatform.uasdm.service.PlatformService;
+import gov.geoplatform.uasdm.service.PlatformManufacturerService;
 
-@Controller(url = "platform")
-public class PlatformController
+@Controller(url = "platform-manufacturer")
+public class PlatformManufacturerController
 {
-  private PlatformService service;
+  private PlatformManufacturerService service;
 
-  public PlatformController()
+  public PlatformManufacturerController()
   {
-    this.service = new PlatformService();
+    this.service = new PlatformManufacturerService();
   }
 
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
@@ -48,12 +49,20 @@ public class PlatformController
     return new RestBodyResponse(page);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "platform") String platformJSON) throws JSONException
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-all")
+  public ResponseIF getAll(ClientRequestIF request) throws JSONException
   {
-    JSONObject platform = new JSONObject(platformJSON);
+    JSONArray list = this.service.getAll(request.getSessionId());
 
-    JSONObject response = this.service.apply(request.getSessionId(), platform);
+    return new RestBodyResponse(list);
+  }
+
+  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
+  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "classification") String classificationJSON) throws JSONException
+  {
+    JSONObject classification = new JSONObject(classificationJSON);
+
+    JSONObject response = this.service.apply(request.getSessionId(), classification);
 
     return new RestBodyResponse(response);
   }

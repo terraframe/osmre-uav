@@ -1,18 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { LocalizationService } from '@shared/service/localization.service';
 
 import { PageResult } from '@shared/model/page';
 import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { SensorComponent } from './sensor.component';
-
-declare let acp: string;
+import { Classification } from '@site/model/classification';
 
 @Component( {
     selector: 'sensors',
@@ -26,14 +22,13 @@ export class SensorsComponent implements OnInit {
         pageNumber: 1,
         pageSize: 10
     };
+    wavelengths: Classification[] = []
     bsModalRef: BsModalRef;
     message: string = null;
 
     constructor(
-        private router: Router,
         private service: SensorService,
-        private modalService: BsModalService,
-        private localizeService: LocalizationService
+        private modalService: BsModalService
     ) { }
 
     ngOnInit(): void {
@@ -64,7 +59,7 @@ export class SensorsComponent implements OnInit {
     }
 
     edit( sensor: Sensor ): void {
-        this.service.edit( sensor.oid ).then( res => {
+        this.service.get( sensor.oid ).then( res => {
             this.showModal( res, false );
         } );
     }

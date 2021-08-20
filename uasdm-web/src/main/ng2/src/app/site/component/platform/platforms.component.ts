@@ -1,18 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { LocalizationService } from '@shared/service/localization.service';
 import { PageResult } from '@shared/model/page';
 
 import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
 import { PlatformComponent } from './platform.component';
-
-declare let acp: string;
 
 @Component( {
     selector: 'platforms',
@@ -30,10 +25,8 @@ export class PlatformsComponent implements OnInit {
     message: string = null;
 
     constructor(
-        private router: Router,
         private service: PlatformService,
         private modalService: BsModalService,
-        private localizeService: LocalizationService
     ) { }
 
     ngOnInit(): void {
@@ -64,7 +57,7 @@ export class PlatformsComponent implements OnInit {
     }
 
     edit( platform: Platform ): void {
-        this.service.edit( platform.oid ).then( res => {
+        this.service.get( platform.oid ).then( res => {
             this.showModal( res, false );
         } );
     }

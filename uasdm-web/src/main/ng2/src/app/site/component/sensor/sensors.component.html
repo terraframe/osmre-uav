@@ -13,10 +13,9 @@
 				<thead>
 					<tr>
 						<th></th>
+						<th class="label-column">Code</th>
 						<th class="label-column">Name</th>
-						<th class="label-column">Label</th>
-						<th class="label-column">Type</th>
-						<th class="label-column">Model</th>
+						<th class="label-column">Description</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -26,10 +25,9 @@
 						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(sensor)" title="Edit sensor"></a>
 						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(sensor)" title="Remove sensor"></a>
 					    </td>
+						<td class="label-column">{{ sensor.code }}</td>
 						<td class="label-column">{{ sensor.name }}</td>
-						<td class="label-column">{{ sensor.displayLabel }}</td>
-						<td class="label-column">{{ sensor.sensorType }}</td>
-						<td class="label-column">{{ sensor.model }}</td>
+						<td class="label-column">{{ sensor.description }}</td>
 					</tr>
 					<tr>
 						<td class="button-column">

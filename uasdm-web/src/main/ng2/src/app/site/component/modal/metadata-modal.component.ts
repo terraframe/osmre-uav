@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '@site/service/management.service';
 
-import { Sensor, WAVELENGTHS } from '@site/model/sensor';
+import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
 
 
@@ -90,7 +90,7 @@ export class MetadataModalComponent {
 
 	sensors: Sensor[] = [];
 	platforms: Platform[] = [];
-	wavelengths: string[] = WAVELENGTHS;
+	wavelengths: string[] = [];
 
 	otherSensorId: string = "";
 	otherPlatformId: string = "";
@@ -136,8 +136,8 @@ export class MetadataModalComponent {
 			const sensor = this.getSelectedSensor();
 
 			this.metaObject.sensor.type = sensor.sensorType;
-			this.metaObject.sensor.model = sensor.model;
-			this.metaObject.sensor.wavelength = [...sensor.waveLength];
+			// this.metaObject.sensor.model = sensor.model;
+			// this.metaObject.sensor.wavelength = [...sensor.waveLength];
 
 			console.log(this.metaObject.sensor);
 		}

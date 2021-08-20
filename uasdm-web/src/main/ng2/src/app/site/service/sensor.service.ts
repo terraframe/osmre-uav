@@ -31,7 +31,20 @@ export class SensorService {
             .toPromise();
     }
 
-    edit( oid: string ): Promise<Sensor> {
+    getAll( ): Promise<Sensor[]> {
+        let params: HttpParams = new HttpParams();
+
+        this.eventService.start();
+
+        return this.http
+            .get<Sensor[]>( acp + '/sensor/get-all', { params: params } )
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+            .toPromise();
+    }
+
+    get( oid: string ): Promise<Sensor> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
@@ -40,7 +53,7 @@ export class SensorService {
         this.eventService.start();
 
         return this.http
-            .post<Sensor>( acp + '/sensor/lock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<Sensor>( acp + '/sensor/get', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -89,22 +102,6 @@ export class SensorService {
 
         return this.noErrorHttpClient
             .post<Sensor>( acp + '/sensor/apply', JSON.stringify( { sensor: sensor } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
-            .toPromise();
-    }
-
-    unlock( oid: string ): Promise<void> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
-
-        this.eventService.start();
-
-        return this.noErrorHttpClient
-            .post<void>( acp + '/sensor/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

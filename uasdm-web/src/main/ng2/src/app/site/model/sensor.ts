@@ -1,11 +1,11 @@
 export class Sensor {
-    newInstance: boolean;
+    seq?: string;
     oid: string;
+    code: string;
     name: string;
-    displayLabel: string;
+    description?: string;
+    dateCreated?: string;
+    dateUpdate?: string;
     sensorType: string;
-    model: string;
-    waveLength: string[];
+    wavelengths: string[];
 }
-
-export const WAVELENGTHS: string[] = ["Natural Color RGB", "Thermal", "Red Edge", "Near Infra Red", "LiDAR", "Other"];

@@ -5,8 +5,10 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor, WAVELENGTHS } from '@site/model/sensor';
+import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
+import { SensorTypeService, WaveLengthService } from '@site/service/classification.service';
+import { Classification } from '@site/model/classification';
 
 
 @Component({
@@ -20,17 +22,27 @@ export class SensorComponent implements OnInit {
 
 	message: string = null;
 
-	waveLengths: string[] = WAVELENGTHS;
+	wavelengths: Classification[] = [];
+	types: Classification[] = [];
 
-    /*
-     * Observable subject for TreeNode changes.  Called when create is successful 
-     */
+	/*
+	 * Observable subject for TreeNode changes.  Called when create is successful 
+	 */
 	public onSensorChange: Subject<Sensor>;
 
-	constructor(private service: SensorService, public bsModalRef: BsModalRef) { }
+	constructor(private service: SensorService, private wavelengthService: WaveLengthService,
+		private typeService: SensorTypeService, public bsModalRef: BsModalRef) { }
 
 	ngOnInit(): void {
 		this.onSensorChange = new Subject();
+
+		this.wavelengthService.getAll().then(wavelengths => {
+			this.wavelengths = wavelengths;
+		});
+
+		this.typeService.getAll().then(types => {
+			this.types = types;
+		});
 	}
 
 	handleOnSubmit(): void {
@@ -47,37 +59,28 @@ export class SensorComponent implements OnInit {
 	handleOnCancel(): void {
 		this.message = null;
 
-		if (this.newInstance) {
-			this.bsModalRef.hide();
-		}
-		else {
-			this.service.unlock(this.sensor.oid).then(data => {
-				this.bsModalRef.hide();
-			}).catch((err: HttpErrorResponse) => {
-				this.error(err);
-			});
-		}
+		this.bsModalRef.hide();
 	}
 
-	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
+	updateSelectedWaveLength(wavelength: Classification, checked: boolean): void {
 
-		const indexOf = this.sensor.waveLength.indexOf(wavelength)
+		const indexOf = this.sensor.wavelengths.findIndex(w => wavelength.oid === w);
 
 		if (checked) {
 
 			if (indexOf < 0) {
-				this.sensor.waveLength.push(wavelength);
+				this.sensor.wavelengths.push(wavelength.oid);
 
 			}
 		} else {
 			if (indexOf > -1) {
-				this.sensor.waveLength.splice(indexOf, 1);
+				this.sensor.wavelengths.splice(indexOf, 1);
 			}
 		}
 	}
 
 	error(err: HttpErrorResponse): void {
-	  this.message = ErrorHandler.getMessageFromError(err);
+		this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

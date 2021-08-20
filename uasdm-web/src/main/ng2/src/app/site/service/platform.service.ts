@@ -31,7 +31,7 @@ export class PlatformService {
             .toPromise();
     }
 
-    edit( oid: string ): Promise<Platform> {
+    get( oid: string ): Promise<Platform> {
 
         let headers = new HttpHeaders( {
             'Content-Type': 'application/json'
@@ -40,7 +40,7 @@ export class PlatformService {
         this.eventService.start();
 
         return this.http
-            .post<Platform>( acp + '/platform/lock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<Platform>( acp + '/platform/get', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -89,22 +89,6 @@ export class PlatformService {
 
         return this.noErrorHttpClient
             .post<Platform>( acp + '/platform/apply', JSON.stringify( { platform: platform } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
-            .toPromise();
-    }
-
-    unlock( oid: string ): Promise<void> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
-
-        this.eventService.start();
-
-        return this.noErrorHttpClient
-            .post<void>( acp + '/platform/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

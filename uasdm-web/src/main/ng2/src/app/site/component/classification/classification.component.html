@@ -1,0 +1,31 @@
+<div *ngIf="classification != null" class="modal-body">
+  <div *ngIf="message != null" class="error-container">
+    <div class="label-holder">
+      <strong>Error</strong>
+    </div>
+    <div class="holder">
+      <div>
+        <p class="error-message">{{message}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-title-container">
+    <h3>{{metadata.title}}</h3>
+  </div>
+
+  <form #ngForm="ngForm">
+    <div class="form-group">
+      <label>Code</label>
+      <input [(ngModel)]="classification.code" name="code" type="input" class="form-control" placeholder="Code" [disabled]="!newInstance" required />
+    </div>
+    <div class="form-group">
+      <label>Label</label>
+      <input [(ngModel)]="classification.label" name="label" type="input" class="form-control" placeholder="Label" required />
+    </div>
+    <div class="btn-holder" style="text-align: right;">
+      <button type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()" [disabled]="!ngForm.valid">Apply</button>
+    </div>
+  </form>
+</div>

@@ -1,7 +1,6 @@
-import { NgModule, Injectable, Inject } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { Routes, RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Routes, RouterModule } from '@angular/router';
 
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
@@ -11,6 +10,10 @@ import { PlatformsComponent } from './component/platform/platforms.component';
 
 import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
+import { PlatformManufacturerComponent } from './component/platform-manufacturer/platform-manufacturer.component';
+import { PlatformTypeComponent } from './component/platform-type/platform-type.component';
+import { SensorTypeComponent } from './component/sensor-type/sensor-type.component';
+import { WaveLengthComponent } from './component/wave-length/wave-length.component';
 
 const routes: Routes = [
     {
@@ -42,12 +45,32 @@ const routes: Routes = [
         path: 'platforms',
         canActivate: [AdminGuardService],
         component: PlatformsComponent,
+    },
+    {
+        path: 'platform-manufacturers',
+        canActivate: [AdminGuardService],
+        component: PlatformManufacturerComponent,
+    },
+    {
+        path: 'platform-types',
+        canActivate: [AdminGuardService],
+        component: PlatformTypeComponent,
+    },
+    {
+        path: 'sensor-types',
+        canActivate: [AdminGuardService],
+        component: SensorTypeComponent,
+    },
+    {
+        path: 'wave-lengths',
+        canActivate: [AdminGuardService],
+        component: WaveLengthComponent,
     }
 ];
 
-@NgModule( {
-    imports: [RouterModule.forChild( routes )],
+@NgModule({
+    imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
     providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }]
-} )
+})
 export class SiteRoutingModule { }
