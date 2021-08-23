@@ -1,17 +1,15 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
 import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
 import { Classification } from '@site/model/classification';
-import { PlatformManufacturerService, PlatformTypeService } from '@site/service/classification.service';
+import { ClassificationService, Endpoint } from '@site/service/classification.service';
 import { SensorService } from '@site/service/sensor.service';
 import { Sensor } from '@site/model/sensor';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'platform',
@@ -19,6 +17,7 @@ import { Sensor } from '@site/model/sensor';
     styleUrls: []
 })
 export class PlatformComponent implements OnInit {
+    original: Platform;
     platform: Platform;
     newInstance: boolean = false;
 
@@ -27,38 +26,55 @@ export class PlatformComponent implements OnInit {
     manufacturers: Classification[] = [];
     types: Classification[] = [];
     sensors: Sensor[] = [];
-
-    /*
-     * Observable subject for TreeNode changes.  Called when create is successful 
-     */
-    public onPlatformChange: Subject<Platform>;
+    mode: string = 'READ';
 
     constructor(private service: PlatformService, private sensorService: SensorService,
-        private typeService: PlatformTypeService, private manufacturerService: PlatformManufacturerService, public bsModalRef: BsModalRef) { }
+        private classificationService: ClassificationService,
+        private route: ActivatedRoute, private router: Router
+    ) { }
 
     ngOnInit(): void {
-        this.onPlatformChange = new Subject();
+        const oid = this.route.snapshot.params['oid'];
 
-		this.manufacturerService.getAll().then(manufacturers => {
-			this.manufacturers = manufacturers;
-		});
+        if (oid === '__NEW__') {
+            this.service.newInstance().then((platform: Platform) => {
+                this.platform = platform;
+                this.newInstance = true;
+                this.mode = 'WRITE';
+            });
+        }
+        else {
+            this.service.get(oid).then((platform: Platform) => {
+                this.platform = platform;
+                this.original = JSON.parse(JSON.stringify(this.platform));
+            });
+        }
 
-		this.typeService.getAll().then(types => {
-			this.types = types;
-		});
+        this.classificationService.getAll(Endpoint.PLATFORM_MANUFACTURER).then(manufacturers => {
+            this.manufacturers = manufacturers;
+        });
 
-		this.sensorService.getAll().then(sensors => {
-			this.sensors = sensors;
-		});
+        this.classificationService.getAll(Endpoint.PLATFORM_TYPE).then(types => {
+            this.types = types;
+        });
 
+        this.sensorService.getAll().then(sensors => {
+            this.sensors = sensors;
+        });
     }
 
     handleOnSubmit(): void {
         this.message = null;
 
         this.service.apply(this.platform).then(data => {
-            this.onPlatformChange.next(data);
-            this.bsModalRef.hide();
+            this.platform = data;
+            this.mode = 'READ';
+
+            if (this.newInstance) {
+                this.router.navigate(['/site/platform', data.oid]);
+                this.newInstance = false;
+                this.original = data;
+            }
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });
@@ -66,7 +82,13 @@ export class PlatformComponent implements OnInit {
 
     handleOnCancel(): void {
         this.message = null;
-        this.bsModalRef.hide();
+
+        this.platform = JSON.parse(JSON.stringify(this.original));
+        this.mode = 'READ';
+    }
+
+    handleOnEdit(): void {
+        this.mode = 'WRITE';
     }
 
     updateSelectedSensor(sensor: Classification, checked: boolean): void {
@@ -85,6 +107,17 @@ export class PlatformComponent implements OnInit {
             }
         }
     }
+
+    getSensorName(oid: string): string {
+        const index = this.sensors.findIndex(s => s.oid === oid);
+
+        if (index !== -1) {
+            return this.sensors[index].name;
+        }
+
+        return '';
+    }
+
 
 
     error(err: HttpErrorResponse): void {

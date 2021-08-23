@@ -5,7 +5,9 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Classification, ComponentMetadata } from '@site/model/classification';
+import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
+import { ClassificationService } from '@site/service/classification.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	selector: 'classification',
@@ -14,44 +16,66 @@ import { Classification, ComponentMetadata } from '@site/model/classification';
 })
 export class ClassificationComponent implements OnInit {
 
-	metadata: ComponentMetadata;
+	metadata: ClassificationComponentMetadata;
 	classification: Classification;
+	original: Classification;
 	newInstance: boolean = false;
 
 	message: string = null;
 
-	/*
-	 * Observable subject for TreeNode changes.  Called when create is successful 
-	 */
-	public onClassificationChange: Subject<Classification>;
+	mode: string = 'READ';
 
-	constructor(public bsModalRef: BsModalRef) { }
+	constructor(private service: ClassificationService, private route: ActivatedRoute, private router: Router) { }
 
 	ngOnInit(): void {
-		this.onClassificationChange = new Subject();
-	}
+        this.route.data.subscribe(data => {
+            this.metadata = data as ClassificationComponentMetadata;
 
-	init(metadata: ComponentMetadata, classification: Classification, newInstance: boolean) {
-		this.metadata = metadata;
-		this.classification = classification;
-		this.newInstance = newInstance;
+			const oid = this.route.snapshot.params['oid'];
+
+			if (oid === '__NEW__') {
+				this.service.newInstance(this.metadata.baseUrl).then((classification: Classification) => {
+					this.classification = classification;
+					this.newInstance = true;
+					this.mode = 'WRITE';
+				});
+			}
+			else {
+				this.service.get(this.metadata.baseUrl, oid).then((classification: Classification) => {
+					this.classification = classification;
+					this.original = JSON.parse(JSON.stringify(this.classification));
+				});
+			}	
+        })
 	}
 
 	handleOnSubmit(): void {
 		this.message = null;
 
-		this.metadata.service.apply(this.classification).then(data => {
-			this.onClassificationChange.next(data);
-			this.bsModalRef.hide();
+		this.service.apply(this.metadata.baseUrl, this.classification).then(data => {
+            this.classification = data;
+            this.mode = 'READ';
+
+            if (this.newInstance) {
+                this.router.navigate(['/site/' + this.metadata.baseUrl, data.oid]);
+				this.newInstance = false;
+                this.original = data;
+            }
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
 
-	handleOnCancel(): void {
-		this.message = null;
-		this.bsModalRef.hide();
-	}
+    handleOnCancel(): void {
+        this.message = null;
+
+        this.classification = JSON.parse(JSON.stringify(this.original));    
+        this.mode = 'READ';
+    }
+
+    handleOnEdit(): void {
+        this.mode = 'WRITE';
+    }
 
 	error(err: HttpErrorResponse): void {
 		this.message = ErrorHandler.getMessageFromError(err);

@@ -1,0 +1,147 @@
+<version
+	xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<create>
+			<mdVertex name="gov.geoplatform.uasdm.graph.PlatformType"
+				label="Platform Type">
+				<attributes>
+					<char name="code" required="true" label="Code" size="256"
+						indexType="unique index" />
+					<char name="label" required="true" label="Label" size="4096" />
+				</attributes>
+			</mdVertex>
+			<mdVertex
+				name="gov.geoplatform.uasdm.graph.PlatformManufacturer"
+				label="Platform Manufacturer">
+				<attributes>
+					<char name="code" required="true" label="Code" size="256"
+						indexType="unique index" />
+					<char name="label" required="true" label="Label" size="4096" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.SensorType"
+				label="Sensor Type">
+				<attributes>
+					<char name="code" required="true" label="Code" size="256"
+						indexType="unique index" />
+					<char name="label" required="true" label="Label" size="4096" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.WaveLength"
+				label="Wave Length">
+				<attributes>
+					<char name="code" required="true" label="Code" size="256"
+						indexType="unique index" />
+					<char name="label" required="true" label="Label" size="4096" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Sensor"
+				label="Sensor">
+				<attributes>
+					<char name="name" required="true" label="Name" size="128" />
+					<char name="code" required="true" label="Code" size="128" />
+					<integer name="pixelSizeWidth" required="true" label="Pixel Size Width" />
+					<integer name="pixelSizeHeight" required="true" label="Pixel Size Height" />
+					<integer name="sensorWidth" required="true" label="Sensor Width" />
+					<integer name="sensorHeight" required="true" label="Sensor Height" />
+					<char name="description" required="true" label="Label"
+						size="1024" />
+					<graphReference name="sensorType"
+						type="gov.geoplatform.uasdm.graph.SensorType" required="true"
+						label="Sensor Type" />
+					<date name="dateCreated" required="true" label="Date Created" />
+					<date name="dateUpdated" required="true" label="Date Updated" />
+				</attributes>
+			</mdVertex>
+			<mdEdge
+				name="gov.geoplatform.uasdm.graph.SensorHasWaveLength"
+				label="Sensor Has Wave Length"
+				parent="gov.geoplatform.uasdm.graph.Sensor"
+				child="gov.geoplatform.uasdm.graph.WaveLength">
+			</mdEdge>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Platform"
+				label="Sensor">
+				<attributes>
+					<char name="name" required="true" label="Name" size="128" />
+					<char name="code" required="true" label="Code" size="128" />
+					<char name="description" required="true" label="Label"
+						size="1024" />
+					<graphReference name="manufacturer"
+						type="gov.geoplatform.uasdm.graph.PlatformManufacturer" required="true"
+						label="Platform Manufacturer" />
+					<graphReference name="platformType"
+						type="gov.geoplatform.uasdm.graph.PlatformType" required="true"
+						label="Platform Type" />
+					<date name="dateCreated" required="true" label="Date Created" />
+					<date name="dateUpdated" required="true" label="Date Updated" />
+				</attributes>
+			</mdVertex>	
+			<mdEdge
+				name="gov.geoplatform.uasdm.graph.PlatformHasSensor"
+				label="Platform Has Sensor"
+				parent="gov.geoplatform.uasdm.graph.Platform"
+				child="gov.geoplatform.uasdm.graph.Sensor">
+			</mdEdge>
+					
+		</create>
+		<permissions>
+			<role roleName="geoprism.admin.Administrator">
+				<grant>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.PlatformType">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.PlatformManufacturer">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.SensorType">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.WaveLength">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.Sensor">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.Platform">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdRelationshipPermission
+						type="gov.geoplatform.uasdm.graph.SensorHasWaveLength">
+						<operation name="ALL" />
+					</mdRelationshipPermission>
+					<mdRelationshipPermission
+						type="gov.geoplatform.uasdm.graph.PlatformHasSensor">
+						<operation name="ALL" />
+					</mdRelationshipPermission>
+				</grant>
+			</role>
+		</permissions>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.graph.PlatformHasSensor"
+				type="com.runwaysdk.system.metadata.MdEdge" />
+			<object key="gov.geoplatform.uasdm.graph.Platform"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.SensorHasWaveLength"
+				type="com.runwaysdk.system.metadata.MdEdge" />
+			<object key="gov.geoplatform.uasdm.graph.Sensor"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.PlatformType"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.PlatformManufacturer"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.SensorType"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.WaveLength"
+				type="com.runwaysdk.system.metadata.MdVertex" />
+		</delete>
+	</undoIt>
+</version>

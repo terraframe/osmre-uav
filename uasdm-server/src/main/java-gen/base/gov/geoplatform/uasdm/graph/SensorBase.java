@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 250719813)
+@com.runwaysdk.business.ClassSignature(hash = -1315153023)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -17,9 +17,13 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public static java.lang.String DESCRIPTION = "description";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
+  public static java.lang.String PIXELSIZEHEIGHT = "pixelSizeHeight";
+  public static java.lang.String PIXELSIZEWIDTH = "pixelSizeWidth";
+  public static java.lang.String SENSORHEIGHT = "sensorHeight";
   public static java.lang.String SENSORTYPE = "sensorType";
+  public static java.lang.String SENSORWIDTH = "sensorWidth";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 250719813;
+  private static final long serialVersionUID = -1315153023;
   
   public SensorBase()
   {
@@ -117,6 +121,54 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
   }
   
+  public Integer getPixelSizeHeight()
+  {
+    return (Integer) this.getObjectValue(PIXELSIZEHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPixelSizeHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PIXELSIZEHEIGHT);
+  }
+  
+  public void setPixelSizeHeight(Integer value)
+  {
+    this.setValue(PIXELSIZEHEIGHT, value);
+  }
+  
+  public Integer getPixelSizeWidth()
+  {
+    return (Integer) this.getObjectValue(PIXELSIZEWIDTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPixelSizeWidthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PIXELSIZEWIDTH);
+  }
+  
+  public void setPixelSizeWidth(Integer value)
+  {
+    this.setValue(PIXELSIZEWIDTH, value);
+  }
+  
+  public Integer getSensorHeight()
+  {
+    return (Integer) this.getObjectValue(SENSORHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getSensorHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(SENSORHEIGHT);
+  }
+  
+  public void setSensorHeight(Integer value)
+  {
+    this.setValue(SENSORHEIGHT, value);
+  }
+  
   public gov.geoplatform.uasdm.graph.SensorType getSensorType()
   {
     return (gov.geoplatform.uasdm.graph.SensorType) this.getObjectValue(SENSORTYPE);
@@ -131,6 +183,22 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setSensorType(gov.geoplatform.uasdm.graph.SensorType value)
   {
     this.setValue(SENSORTYPE, value);
+  }
+  
+  public Integer getSensorWidth()
+  {
+    return (Integer) this.getObjectValue(SENSORWIDTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getSensorWidthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(SENSORWIDTH);
+  }
+  
+  public void setSensorWidth(Integer value)
+  {
+    this.setValue(SENSORWIDTH, value);
   }
   
   public Long getSeq()

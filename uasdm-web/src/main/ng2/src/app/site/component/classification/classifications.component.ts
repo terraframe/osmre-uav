@@ -5,8 +5,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 
 import { PageResult } from '@shared/model/page';
-import { Classification, ComponentMetadata } from '@site/model/classification';
+import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
 import { ClassificationComponent } from './classification.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ClassificationService } from '@site/service/classification.service';
 
 declare let acp: string;
 
@@ -17,7 +19,7 @@ declare let acp: string;
 })
 export class ClassificationsComponent implements OnInit {
 
-    @Input() metadata: ComponentMetadata;
+    metadata: ClassificationComponentMetadata;
 
     res: PageResult<Classification> = {
         resultSet: [],
@@ -28,16 +30,21 @@ export class ClassificationsComponent implements OnInit {
     bsModalRef: BsModalRef;
     message: string = null;
 
-    constructor(private modalService: BsModalService) { }
+    constructor(private activatedroute: ActivatedRoute, private router: Router, private service: ClassificationService, private modalService: BsModalService) { }
 
     ngOnInit(): void {
-        this.metadata.service.page(1).then(res => {
-            this.res = res;
-        });
+        this.activatedroute.data.subscribe(data => {
+            this.metadata = data as ClassificationComponentMetadata;
+
+            this.service.page(this.metadata.baseUrl, 1).then(res => {
+                this.res = res;
+            });
+
+        })
     }
 
     remove(classification: Classification): void {
-        this.metadata.service.remove(classification.oid).then(response => {
+        this.service.remove(this.metadata.baseUrl, classification.oid).then(response => {
             this.res.resultSet = this.res.resultSet.filter(h => h.oid !== classification.oid);
         });
     }
@@ -57,16 +64,12 @@ export class ClassificationsComponent implements OnInit {
         });
     }
 
-    onEdit(classification: Classification): void {
-        this.metadata.service.edit(classification.oid).then(res => {
-            this.showModal(res, false);
-        });
+    onView(classification: Classification): void {
+        this.router.navigate(['/site/' + this.metadata.baseUrl, classification.oid]);
     }
 
     newInstance(): void {
-        this.metadata.service.newInstance().then(res => {
-            this.showModal(res, true);
-        });
+        this.router.navigate(['/site/' + this.metadata.baseUrl, '__NEW__']);
     }
 
     showModal(classification: Classification, newInstance: boolean): void {
@@ -83,7 +86,7 @@ export class ClassificationsComponent implements OnInit {
     }
 
     onPageChange(pageNumber: number): void {
-        this.metadata.service.page(pageNumber).then(res => {
+        this.service.page(this.metadata.baseUrl, pageNumber).then(res => {
             this.res = res;
         });
     }

@@ -1,15 +1,14 @@
 <div>
-    <uasdm-header></uasdm-header>
+	<uasdm-header></uasdm-header>
 
-    <div id="app-container" class="container">
+	<div id="app-container" class="container">
 
 		<h2>{{metadata.title}}</h2>
 
 		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-		
+
 		<div class="list-table-wrapper">
-			<table id="manage-classifications-table"
-				class="list-table table table-bordered table-striped">
+			<table id="manage-classifications-table" class="list-table table table-bordered table-striped">
 				<thead>
 					<tr>
 						<th></th>
@@ -21,22 +20,24 @@
 					<tr *ngFor="let classification of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
 						class="fade-ngRepeat-item">
 						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="onEdit(classification)" [title]="'Edit ' + metadata.label"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onRemove(classification)" [title]="'Remove ' + metadata.label"></a>
-					    </td>
+							<a class="fa fa-eye ico-edit" (click)="onView(classification)"
+								[title]="'Edit ' + metadata.label"></a>
+							<a class="fa fa-trash-alt ico-remove" (click)="onRemove(classification)"
+								[title]="'Remove ' + metadata.label"></a>
+						</td>
 						<td class="label-column">{{ classification.code }}</td>
 						<td class="label-column">{{ classification.label }}</td>
 					</tr>
 					<tr>
 						<td class="button-column">
-						  <a class="fa fa-plus" (click)="newInstance()" [title]="'Add new ' + metadata.label"></a>
+							<a class="fa fa-plus" (click)="newInstance()" [title]="'Add new ' + metadata.label"></a>
 						</td>
 					</tr>
 
 				</tbody>
 			</table>
 		</div>
-		
+
 		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 	</div>
 </div>

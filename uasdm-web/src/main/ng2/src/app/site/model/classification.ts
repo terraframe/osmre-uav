@@ -1,4 +1,3 @@
-import { PageResult } from "@shared/model/page";
 
 export class Classification {
     oid: string;
@@ -7,20 +6,8 @@ export class Classification {
     seq: number;
 }
 
-export interface ClassificationService {
-    page(p: number): Promise<PageResult<Classification>>;
-
-    edit(oid: string): Promise<Classification>;
-
-    newInstance(): Promise<Classification>;
-
-    remove(oid: string): Promise<void>;
-
-    apply(sensor: Classification): Promise<Classification>;
-}
-
-export class ComponentMetadata {
+export class ClassificationComponentMetadata {
     title: string;
     label: string;
-    service: ClassificationService;
+    baseUrl: string;
 }

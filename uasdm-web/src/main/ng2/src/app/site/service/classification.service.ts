@@ -6,40 +6,45 @@ import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
-import { Classification, ClassificationService } from '@site/model/classification';
+import { Classification } from '@site/model/classification';
 import { Injectable } from '@angular/core';
 
 declare var acp: any;
 
-export class AbstractClassificationService implements ClassificationService {
+export enum Endpoint {
+    SENSOR_TYPE = '/sensor-type',
+    PLATFORM_TYPE = '/platform-type',
+    PLATFORM_MANUFACTURER = '/platform-manufacturer',
+    WAVE_LENGTH = '/wave-length'
+}
 
-    baseUrl: string;
+@Injectable()
+export class ClassificationService {
 
-    constructor(baseUrl: string, private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) {
-        this.baseUrl = baseUrl;
+    constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) {
     }
 
-    page(p: number): Promise<PageResult<Classification>> {
+    page(baseUrl: string, p: number): Promise<PageResult<Classification>> {
         let params: HttpParams = new HttpParams();
         params = params.set('number', p.toString());
 
         this.eventService.start();
 
         return this.http
-            .get<PageResult<Classification>>(this.baseUrl + '/page', { params: params })
+            .get<PageResult<Classification>>(acp + '/' + baseUrl + '/page', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
 
-    getAll(): Promise<Classification[]> {
+    getAll(baseUrl: string): Promise<Classification[]> {
         let params: HttpParams = new HttpParams();
 
         this.eventService.start();
 
         return this.http
-            .get<Classification[]>(this.baseUrl + '/get-all', { params: params })
+            .get<Classification[]>(acp + '/' + baseUrl + '/get-all', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -47,7 +52,7 @@ export class AbstractClassificationService implements ClassificationService {
     }
 
 
-    edit(oid: string): Promise<Classification> {
+    get(baseUrl: string, oid: string): Promise<Classification> {
 
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
@@ -56,14 +61,14 @@ export class AbstractClassificationService implements ClassificationService {
         this.eventService.start();
 
         return this.http
-            .post<Classification>(this.baseUrl + '/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<Classification>(acp + '/' + baseUrl + '/get', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
 
-    newInstance(): Promise<Classification> {
+    newInstance(baseUrl: string): Promise<Classification> {
 
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
@@ -72,14 +77,14 @@ export class AbstractClassificationService implements ClassificationService {
         this.eventService.start();
 
         return this.http
-            .post<Classification>(this.baseUrl + '/newInstance', JSON.stringify({}), { headers: headers })
+            .post<Classification>(acp + '/' + baseUrl + '/newInstance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
 
-    remove(oid: string): Promise<void> {
+    remove(baseUrl: string, oid: string): Promise<void> {
 
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
@@ -88,14 +93,14 @@ export class AbstractClassificationService implements ClassificationService {
         this.eventService.start();
 
         return this.http
-            .post<void>(this.baseUrl + '/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<void>(acp + '/' + baseUrl + '/remove', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
 
-    apply(classification: Classification): Promise<Classification> {
+    apply(baseUrl: string, classification: Classification): Promise<Classification> {
 
         let headers = new HttpHeaders({
             'Content-Type': 'application/json'
@@ -104,47 +109,10 @@ export class AbstractClassificationService implements ClassificationService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Classification>(this.baseUrl + '/apply', JSON.stringify({ classification: classification }), { headers: headers })
+            .post<Classification>(acp + '/' + baseUrl + '/apply', JSON.stringify({ classification: classification }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
-}
-
-
-@Injectable()
-export class PlatformManufacturerService extends AbstractClassificationService implements ClassificationService {
-
-    constructor(http: HttpClient, noErrorHttpClient: HttpBackendClient, eventService: EventService) {
-        super(acp + '/platform-manufacturer', http, noErrorHttpClient, eventService);
-    }
-
-}
-
-@Injectable()
-export class PlatformTypeService extends AbstractClassificationService implements ClassificationService {
-
-    constructor(http: HttpClient, noErrorHttpClient: HttpBackendClient, eventService: EventService) {
-        super(acp + '/platform-type', http, noErrorHttpClient, eventService);
-    }
-
-}
-
-@Injectable()
-export class SensorTypeService extends AbstractClassificationService implements ClassificationService {
-
-    constructor(http: HttpClient, noErrorHttpClient: HttpBackendClient, eventService: EventService) {
-        super(acp + '/sensor-type', http, noErrorHttpClient, eventService);
-    }
-
-}
-
-@Injectable()
-export class WaveLengthService extends AbstractClassificationService implements ClassificationService {
-
-    constructor(http: HttpClient, noErrorHttpClient: HttpBackendClient, eventService: EventService) {
-        super(acp + '/wave-length', http, noErrorHttpClient, eventService);
-    }
-
 }

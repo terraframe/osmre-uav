@@ -32,10 +32,6 @@ import { PlatformsComponent } from './component/platform/platforms.component';
 import { PlatformComponent } from './component/platform/platform.component';
 import { ClassificationsComponent } from './component/classification/classifications.component';
 import { ClassificationComponent } from './component/classification/classification.component';
-import { PlatformManufacturerComponent } from './component/platform-manufacturer/platform-manufacturer.component';
-import { PlatformTypeComponent } from './component/platform-type/platform-type.component';
-import { SensorTypeComponent } from './component/sensor-type/sensor-type.component';
-import { WaveLengthComponent } from './component/wave-length/wave-length.component';
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -47,7 +43,7 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
 import { SensorService } from './service/sensor.service';
 import { PlatformService } from './service/platform.service';
 import { MetadataService } from './service/metadata.service';
-import { PlatformManufacturerService, PlatformTypeService, SensorTypeService, WaveLengthService } from './service/classification.service';
+import { ClassificationService } from './service/classification.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
@@ -92,11 +88,7 @@ import { SharedModule } from '../shared/shared.module';
 		PlatformsComponent,
 		TasksPanelComponent,
 		ClassificationsComponent,
-		ClassificationComponent,
-		PlatformManufacturerComponent,
-		PlatformTypeComponent,
-		SensorTypeComponent,
-		WaveLengthComponent
+		ClassificationComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -106,10 +98,7 @@ import { SharedModule } from '../shared/shared.module';
 		SensorService,
 		PlatformService,
 		MetadataService,
-		PlatformManufacturerService,
-		PlatformTypeService,
-		SensorTypeService,
-		WaveLengthService
+		ClassificationService
 	],
 	entryComponents: [
 		UploadModalComponent,

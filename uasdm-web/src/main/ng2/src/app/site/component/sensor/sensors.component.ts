@@ -9,12 +9,13 @@ import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { SensorComponent } from './sensor.component';
 import { Classification } from '@site/model/classification';
+import { Router } from '@angular/router';
 
-@Component( {
+@Component({
     selector: 'sensors',
     templateUrl: './sensors.component.html',
     styles: ['./sensors.css']
-} )
+})
 export class SensorsComponent implements OnInit {
     res: PageResult<Sensor> = {
         resultSet: [],
@@ -26,69 +27,62 @@ export class SensorsComponent implements OnInit {
     bsModalRef: BsModalRef;
     message: string = null;
 
-    constructor(
-        private service: SensorService,
-        private modalService: BsModalService
-    ) { }
+    constructor(private service: SensorService, private modalService: BsModalService, private router: Router) { }
 
     ngOnInit(): void {
-        this.service.page( 1 ).then( res => {
+        this.service.page(1).then(res => {
             this.res = res;
-        } );
+        });
     }
 
-    remove( sensor: Sensor ): void {
-        this.service.remove( sensor.oid ).then( response => {
-            this.res.resultSet = this.res.resultSet.filter( h => h.oid !== sensor.oid );
-        } );
+    remove(sensor: Sensor): void {
+        this.service.remove(sensor.oid).then(response => {
+            this.res.resultSet = this.res.resultSet.filter(h => h.oid !== sensor.oid);
+        });
     }
 
-    onClickRemove( sensor: Sensor ): void {
-        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
+    onClickRemove(sensor: Sensor): void {
+        this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        } );
+        });
         this.bsModalRef.content.message = "Are you sure you want to remove the sensor [" + sensor.name + "]";
-		this.bsModalRef.content.type = 'DANGER';
+        this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = "Delete";
 
-        this.bsModalRef.content.onConfirm.subscribe( data => {
-            this.remove( sensor );
-        } );
+        this.bsModalRef.content.onConfirm.subscribe(data => {
+            this.remove(sensor);
+        });
     }
 
-    edit( sensor: Sensor ): void {
-        this.service.get( sensor.oid ).then( res => {
-            this.showModal( res, false );
-        } );
+    view(sensor: Sensor): void {
+        this.router.navigate(['/site/sensor', sensor.oid]);
     }
 
     newInstance(): void {
-        this.service.newInstance().then( res => {
-            this.showModal( res, true );
-        } );
+        this.router.navigate(['/site/sensor', '__NEW__']);
     }
 
-    showModal( sensor: Sensor, newInstance: boolean ): void {
-        this.bsModalRef = this.modalService.show( SensorComponent, {
+    showModal(sensor: Sensor, newInstance: boolean): void {
+        this.bsModalRef = this.modalService.show(SensorComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        } );
+        });
         this.bsModalRef.content.sensor = sensor;
         this.bsModalRef.content.newInstance = newInstance;
 
         let that = this;
-        this.bsModalRef.content.onSensorChange.subscribe( data => {
-            this.onPageChange( this.res.pageNumber );
-        } );
+        this.bsModalRef.content.onSensorChange.subscribe(data => {
+            this.onPageChange(this.res.pageNumber);
+        });
 
     }
 
-    onPageChange( pageNumber: number ): void {
-        this.service.page( pageNumber ).then( res => {
+    onPageChange(pageNumber: number): void {
+        this.service.page(pageNumber).then(res => {
             this.res = res;
-        } );
+        });
     }
 }

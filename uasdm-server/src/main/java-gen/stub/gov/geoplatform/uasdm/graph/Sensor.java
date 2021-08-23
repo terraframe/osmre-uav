@@ -49,6 +49,10 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.CODE, this.getCode());
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
+    object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
+    object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
+    object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
+    object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
 
     if (this.getDateCreated() != null)
     {
@@ -74,9 +78,18 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
-    JSONArray array = wavelengths.stream().map(w -> w.getOid()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+    object.put("wavelengths", wavelengths.stream().map(w -> w.getOid()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
 
-    object.put("wavelengths", array);
+    List<Platform> platforms = this.getPlatformHasSensorParentPlatforms();
+
+    JSONArray jsonArray = platforms.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(Platform.OID, w.getOid());
+      obj.put(Platform.NAME, w.getName());
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+
+    object.put("platforms", jsonArray);
 
     return object;
   }
@@ -104,6 +117,10 @@ public class Sensor extends SensorBase implements JSONSerializable
     sensor.setCode(UUID.randomUUID().toString());
     sensor.setName(json.getString(Sensor.NAME));
     sensor.setDescription(json.getString(Sensor.DESCRIPTION));
+    sensor.setPixelSizeHeight(json.getInt(Sensor.PIXELSIZEHEIGHT));
+    sensor.setPixelSizeWidth(json.getInt(Sensor.PIXELSIZEWIDTH));
+    sensor.setSensorHeight(json.getInt(Sensor.SENSORHEIGHT));
+    sensor.setSensorWidth(json.getInt(Sensor.SENSORWIDTH));
 
     if (json.has(Sensor.SENSORTYPE))
     {

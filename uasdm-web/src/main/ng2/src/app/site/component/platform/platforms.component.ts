@@ -8,12 +8,13 @@ import { PageResult } from '@shared/model/page';
 import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
 import { PlatformComponent } from './platform.component';
+import { Router } from '@angular/router';
 
-@Component( {
+@Component({
     selector: 'platforms',
     templateUrl: './platforms.component.html',
     styles: ['./platforms.css']
-} )
+})
 export class PlatformsComponent implements OnInit {
     res: PageResult<Platform> = {
         resultSet: [],
@@ -24,69 +25,62 @@ export class PlatformsComponent implements OnInit {
     bsModalRef: BsModalRef;
     message: string = null;
 
-    constructor(
-        private service: PlatformService,
-        private modalService: BsModalService,
-    ) { }
+    constructor(private service: PlatformService, private router: Router, private modalService: BsModalService) { }
 
     ngOnInit(): void {
-        this.service.page( 1 ).then( res => {
+        this.service.page(1).then(res => {
             this.res = res;
-        } );
+        });
     }
 
-    remove( platform: Platform ): void {
-        this.service.remove( platform.oid ).then( response => {
-            this.res.resultSet = this.res.resultSet.filter( h => h.oid !== platform.oid );
-        } );
+    remove(platform: Platform): void {
+        this.service.remove(platform.oid).then(response => {
+            this.res.resultSet = this.res.resultSet.filter(h => h.oid !== platform.oid);
+        });
     }
 
-    onClickRemove( platform: Platform ): void {
-        this.bsModalRef = this.modalService.show( BasicConfirmModalComponent, {
+    onClickRemove(platform: Platform): void {
+        this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        } );
+        });
         this.bsModalRef.content.message = "Are you sure you want to remove the platform [" + platform.name + "]";
-		this.bsModalRef.content.type = 'DANGER';
+        this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = "Delete";
 
-        this.bsModalRef.content.onConfirm.subscribe( data => {
-            this.remove( platform );
-        } );
+        this.bsModalRef.content.onConfirm.subscribe(data => {
+            this.remove(platform);
+        });
     }
 
-    edit( platform: Platform ): void {
-        this.service.get( platform.oid ).then( res => {
-            this.showModal( res, false );
-        } );
+    view(platform: Platform): void {
+        this.router.navigate(['/site/platform', platform.oid]);
     }
 
     newInstance(): void {
-        this.service.newInstance().then( res => {
-            this.showModal( res, true );
-        } );
+        this.router.navigate(['/site/platform', '__NEW__']);
     }
 
-    showModal( platform: Platform, newInstance: boolean ): void {
-        this.bsModalRef = this.modalService.show( PlatformComponent, {
+    showModal(platform: Platform, newInstance: boolean): void {
+        this.bsModalRef = this.modalService.show(PlatformComponent, {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-        } );
+        });
         this.bsModalRef.content.platform = platform;
         this.bsModalRef.content.newInstance = newInstance;
 
         let that = this;
-        this.bsModalRef.content.onPlatformChange.subscribe( data => {
-            this.onPageChange( this.res.pageNumber );
-        } );
+        this.bsModalRef.content.onPlatformChange.subscribe(data => {
+            this.onPageChange(this.res.pageNumber);
+        });
 
     }
 
-    onPageChange( pageNumber: number ): void {
-        this.service.page( pageNumber ).then( res => {
+    onPageChange(pageNumber: number): void {
+        this.service.page(pageNumber).then(res => {
             this.res = res;
-        } );
+        });
     }
 }

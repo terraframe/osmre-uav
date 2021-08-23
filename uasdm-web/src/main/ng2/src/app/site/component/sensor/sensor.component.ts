@@ -7,8 +7,9 @@ import { ErrorHandler } from '@shared/component';
 
 import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
-import { SensorTypeService, WaveLengthService } from '@site/service/classification.service';
+import { ClassificationService, Endpoint } from '@site/service/classification.service';
 import { Classification } from '@site/model/classification';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -17,6 +18,7 @@ import { Classification } from '@site/model/classification';
 	styleUrls: []
 })
 export class SensorComponent implements OnInit {
+    original: Sensor;
 	sensor: Sensor;
 	newInstance: boolean = false;
 
@@ -24,23 +26,33 @@ export class SensorComponent implements OnInit {
 
 	wavelengths: Classification[] = [];
 	types: Classification[] = [];
+    mode: string = 'READ';
 
-	/*
-	 * Observable subject for TreeNode changes.  Called when create is successful 
-	 */
-	public onSensorChange: Subject<Sensor>;
-
-	constructor(private service: SensorService, private wavelengthService: WaveLengthService,
-		private typeService: SensorTypeService, public bsModalRef: BsModalRef) { }
+	constructor(private service: SensorService, private classificationService: ClassificationService, private route: ActivatedRoute, private router: Router
+		) { }
 
 	ngOnInit(): void {
-		this.onSensorChange = new Subject();
+        const oid = this.route.snapshot.params['oid'];
 
-		this.wavelengthService.getAll().then(wavelengths => {
+        if (oid === '__NEW__') {
+            this.service.newInstance().then((sensor: Sensor) => {
+                this.sensor = sensor;
+                this.newInstance = true;
+                this.mode = 'WRITE';
+            });
+        }
+        else {
+            this.service.get(oid).then((sensor: Sensor) => {
+                this.sensor = sensor;
+                this.original = JSON.parse(JSON.stringify(this.sensor));
+            });
+        }
+
+		this.classificationService.getAll(Endpoint.WAVE_LENGTH).then(wavelengths => {
 			this.wavelengths = wavelengths;
 		});
 
-		this.typeService.getAll().then(types => {
+		this.classificationService.getAll(Endpoint.SENSOR_TYPE).then(types => {
 			this.types = types;
 		});
 	}
@@ -49,18 +61,29 @@ export class SensorComponent implements OnInit {
 		this.message = null;
 
 		this.service.apply(this.sensor).then(data => {
-			this.onSensorChange.next(data);
-			this.bsModalRef.hide();
+            this.sensor = data;
+            this.mode = 'READ';
+
+            if (this.newInstance) {
+                this.router.navigate(['/site/sensor', data.oid]);
+				this.newInstance = false;
+                this.original = data;
+            }
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
 
-	handleOnCancel(): void {
-		this.message = null;
+    handleOnCancel(): void {
+        this.message = null;
 
-		this.bsModalRef.hide();
-	}
+        this.sensor = JSON.parse(JSON.stringify(this.original));    
+        this.mode = 'READ';
+    }
+
+    handleOnEdit(): void {
+        this.mode = 'WRITE';
+    }
 
 	updateSelectedWaveLength(wavelength: Classification, checked: boolean): void {
 

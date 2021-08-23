@@ -22,7 +22,7 @@
 					<tr *ngFor="let platform of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
 						class="fade-ngRepeat-item">
 						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(platform)" title="Edit platform"></a>
+						  <a class="fa fa-eye ico-edit" (click)="view(platform)" title="View platform"></a>
 						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform)" title="Remove platform"></a>
 					    </td>
 						<td class="label-column">{{ platform.code }}</td>
