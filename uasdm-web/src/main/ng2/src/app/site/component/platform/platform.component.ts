@@ -25,7 +25,7 @@ export class PlatformComponent implements OnInit {
 
     manufacturers: Classification[] = [];
     types: Classification[] = [];
-    sensors: Sensor[] = [];
+    sensors: { oid: string, name: string }[] = [];
     mode: string = 'READ';
 
     constructor(private service: PlatformService, private sensorService: SensorService,

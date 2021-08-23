@@ -61,7 +61,7 @@
 				child="gov.geoplatform.uasdm.graph.WaveLength">
 			</mdEdge>
 			<mdVertex name="gov.geoplatform.uasdm.graph.Platform"
-				label="Sensor">
+				label="Platform">
 				<attributes>
 					<char name="name" required="true" label="Name" size="128" />
 					<char name="code" required="true" label="Code" size="128" />
@@ -83,6 +83,21 @@
 				parent="gov.geoplatform.uasdm.graph.Platform"
 				child="gov.geoplatform.uasdm.graph.Sensor">
 			</mdEdge>
+			<mdVertex name="gov.geoplatform.uasdm.graph.UAV"
+				label="UAV">
+				<attributes>
+					<char name="serialNumber" required="true" label="Serial Number" size="128" />
+					<char name="faaNumber" required="true" label="FAA Number" size="10" />
+					<char name="description" required="true" label="Label"
+						size="1024" />
+					<graphReference name="platform"
+						type="gov.geoplatform.uasdm.graph.Platform" required="true"
+						label="Platform" />
+					<reference name="bureau"
+						type="gov.geoplatform.uasdm.bus.Bureau" required="true"
+						label="Bureau" />
+				</attributes>
+			</mdVertex>	
 					
 		</create>
 		<permissions>
@@ -120,12 +135,18 @@
 						type="gov.geoplatform.uasdm.graph.PlatformHasSensor">
 						<operation name="ALL" />
 					</mdRelationshipPermission>
+					<mdBusinessPermission
+						type="gov.geoplatform.uasdm.graph.UAV">
+						<operation name="ALL" />
+					</mdBusinessPermission>
 				</grant>
 			</role>
 		</permissions>
 	</doIt>
 	<undoIt>
 		<delete>
+			<object key="gov.geoplatform.uasdm.graph.UAV"
+				type="com.runwaysdk.system.metadata.MdVertex" />		
 			<object key="gov.geoplatform.uasdm.graph.PlatformHasSensor"
 				type="com.runwaysdk.system.metadata.MdEdge" />
 			<object key="gov.geoplatform.uasdm.graph.Platform"

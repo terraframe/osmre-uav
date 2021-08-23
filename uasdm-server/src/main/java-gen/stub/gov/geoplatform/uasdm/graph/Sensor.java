@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -78,7 +79,7 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
-    object.put("wavelengths", wavelengths.stream().map(w -> w.getOid()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
+    object.put("wavelengths", (JSONArray) wavelengths.stream().map(w -> w.getOid()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
 
     List<Platform> platforms = this.getPlatformHasSensorParentPlatforms();
 
@@ -193,10 +194,11 @@ public class Sensor extends SensorBase implements JSONSerializable
     final Long count = Sensor.getCount();
 
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.NAME);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY code");
+    statement.append(" ORDER BY " + mdAttribute.getColumnName());
     statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
 
     final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
@@ -207,15 +209,22 @@ public class Sensor extends SensorBase implements JSONSerializable
   public static JSONArray getAll()
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.NAME);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY code");
+    statement.append(" ORDER BY " + mdAttribute.getColumnName());
 
     final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
 
     List<Sensor> results = query.getResults();
 
-    return results.stream().map(w -> w.toJSON()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+    return results.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(Sensor.OID, w.getOid());
+      obj.put(Sensor.NAME, w.getName());
+
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
 }

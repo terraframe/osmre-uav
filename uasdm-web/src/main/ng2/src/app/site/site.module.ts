@@ -47,6 +47,9 @@ import { ClassificationService } from './service/classification.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { UAVsComponent } from './component/uav/uavs.component';
+import { UAVComponent } from './component/uav/uav.component';
+import { UAVService } from './service/uav.service';
 
 @NgModule({
 	imports: [
@@ -88,7 +91,9 @@ import { SharedModule } from '../shared/shared.module';
 		PlatformsComponent,
 		TasksPanelComponent,
 		ClassificationsComponent,
-		ClassificationComponent
+		ClassificationComponent,
+		UAVsComponent,
+		UAVComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -98,18 +103,16 @@ import { SharedModule } from '../shared/shared.module';
 		SensorService,
 		PlatformService,
 		MetadataService,
-		ClassificationService
+		ClassificationService,
+		UAVService
 	],
 	entryComponents: [
 		UploadModalComponent,
 		EntityModalComponent,
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
-		SensorComponent,
 		LeafModalComponent,
-		ProductModalComponent,
-		PlatformComponent,
-		ClassificationComponent
+		ProductModalComponent
 	]
 })
 export class SiteModule { }

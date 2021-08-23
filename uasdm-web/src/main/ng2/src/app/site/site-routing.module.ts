@@ -15,6 +15,8 @@ import { SensorComponent } from './component/sensor/sensor.component';
 import { ClassificationsComponent } from './component/classification/classifications.component';
 import { Endpoint } from './service/classification.service';
 import { ClassificationComponent } from './component/classification/classification.component';
+import { UAVsComponent } from './component/uav/uavs.component';
+import { UAVComponent } from './component/uav/uav.component';
 
 const routes: Routes = [
     {
@@ -138,6 +140,16 @@ const routes: Routes = [
             label: 'wave length',
             baseUrl: Endpoint.WAVE_LENGTH
         }
+    },
+    {
+        path: 'uavs',
+        canActivate: [AdminGuardService],
+        component: UAVsComponent,
+    },
+    {
+        path: 'uav/:oid',
+        canActivate: [AdminGuardService],
+        component: UAVComponent,
     }
 ];
 

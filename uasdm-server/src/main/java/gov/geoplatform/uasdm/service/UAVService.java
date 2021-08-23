@@ -15,33 +15,25 @@
  */
 package gov.geoplatform.uasdm.service;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.graph.Platform;
-import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 
-public class PlatformService
+public class UAVService
 {
   @Request(RequestType.SESSION)
   public JSONObject page(String sessionId, Integer pageNumber)
   {
-    return Platform.getPage(pageNumber, 20).toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONArray getAll(String sessionId)
-  {
-    return Platform.getAll();
+    return UAV.getPage(pageNumber, 20).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject apply(String sessionId, JSONObject json)
   {
-    Platform platform = Platform.apply(json);
+    UAV platform = UAV.apply(json);
 
     return platform.toJSON();
   }
@@ -49,7 +41,7 @@ public class PlatformService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    Platform platform = Platform.get(oid);
+    UAV platform = UAV.get(oid);
 
     if (platform != null)
     {
@@ -60,12 +52,12 @@ public class PlatformService
   @Request(RequestType.SESSION)
   public JSONObject get(String sessionId, String oid)
   {
-    return Platform.get(oid).toJSON();
+    return UAV.get(oid).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject newInstance(String sessionId)
   {
-    return new Platform().toJSON();
+    return new UAV().toJSON();
   }
 }

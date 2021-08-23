@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,16 +28,16 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.mvc.RestResponse;
 
-import gov.geoplatform.uasdm.service.PlatformService;
+import gov.geoplatform.uasdm.service.UAVService;
 
-@Controller(url = "platform")
-public class PlatformController
+@Controller(url = "uav")
+public class UAVController
 {
-  private PlatformService service;
+  private UAVService service;
 
-  public PlatformController()
+  public UAVController()
   {
-    this.service = new PlatformService();
+    this.service = new UAVService();
   }
 
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
@@ -49,18 +48,10 @@ public class PlatformController
     return new RestBodyResponse(page);
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-all")
-  public ResponseIF getAll(ClientRequestIF request) throws JSONException
-  {
-    JSONArray list = this.service.getAll(request.getSessionId());
-
-    return new RestBodyResponse(list);
-  }
-
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "platform") String platformJSON) throws JSONException
+  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "uav") String uavJSON) throws JSONException
   {
-    JSONObject platform = new JSONObject(platformJSON);
+    JSONObject platform = new JSONObject(uavJSON);
 
     JSONObject response = this.service.apply(request.getSessionId(), platform);
 

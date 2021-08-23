@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -194,15 +195,38 @@ public class Platform extends PlatformBase implements JSONSerializable
     final Long count = Platform.getCount();
 
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.NAME);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY code");
+    statement.append(" ORDER BY " + mdAttribute.getColumnName());
     statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
 
     final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
 
     return new Page<Platform>(count, pageNumber, pageSize, query.getResults());
+  }
+
+  public static JSONArray getAll()
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.NAME);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" ORDER BY " + mdAttribute.getColumnName());
+
+    final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
+
+    List<Platform> results = query.getResults();
+
+    return results.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(Platform.OID, w.getOid());
+      obj.put(Platform.NAME, w.getName());
+
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
 
 }
