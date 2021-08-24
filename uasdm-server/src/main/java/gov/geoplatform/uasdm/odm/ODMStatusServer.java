@@ -40,6 +40,7 @@ import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -656,9 +657,9 @@ public class ODMStatusServer
     public ProductIF runInTrans() throws ZipException, InterruptedException
     {
       ImageryComponent ic = uploadTask.getImageryComponent();
-      UasComponentIF component = ic.getUasComponent();
+      UasComponentIF collection = ic.getUasComponent();
 
-      ODMZipPostProcessor processor = new ODMZipPostProcessor(component, uploadTask, null);
+      ODMZipPostProcessor processor = new ODMZipPostProcessor(collection, uploadTask, null);
 
       try
       {

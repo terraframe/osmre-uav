@@ -37,6 +37,7 @@ import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -68,7 +69,7 @@ public class ODMZipPostProcessor
   
   protected List<S3FileUpload> config;
   
-  protected UasComponentIF component;
+  protected UasComponentIF collection;
   
   protected String filePrefix;
   
@@ -107,11 +108,11 @@ public class ODMZipPostProcessor
 //    initConfig();
 //  }
   
-  public ODMZipPostProcessor(UasComponentIF component, ODMUploadTaskIF uploadTask, Product product)
+  public ODMZipPostProcessor(UasComponentIF collection, ODMUploadTaskIF uploadTask, Product product)
   {
     this.product = product;
-    this.component = component;
-    this.s3Location = component.getS3location();
+    this.collection = collection;
+    this.s3Location = collection.getS3location();
     this.uploadTask = uploadTask;
     
     buildProcessingConfig();
@@ -150,7 +151,7 @@ public class ODMZipPostProcessor
   {
     final String folderName = "odm-" + FilenameUtils.getName(s3Location) + "-" + new Random().nextInt();
     
-    this.product = (Product) this.component.createProductIfNotExist();
+    this.product = (Product) this.collection.createProductIfNotExist();
     product.clear();
     
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
@@ -182,7 +183,7 @@ public class ODMZipPostProcessor
       list = processingTask.getFileList();
     }
     
-    List<DocumentIF> raws = component.getDocuments().stream().filter(doc -> {
+    List<DocumentIF> raws = collection.getDocuments().stream().filter(doc -> {
       return doc.getS3location().contains("/raw/");
     }).collect(Collectors.toList());
 
@@ -225,13 +226,13 @@ public class ODMZipPostProcessor
   
   protected void uploadAllZip(CloseableFile allZip)
   {
-    String allKey = this.component.getS3location() + "odm_all" + "/" + allZip.getName();
+    String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
 
     if (DevProperties.uploadAllZip())
     {
       Util.uploadFileToS3(allZip, allKey, null);
       
-      documents.add(component.createDocumentIfNotExist(allKey, allZip.getName()));
+      documents.add(this.collection.createDocumentIfNotExist(allKey, allZip.getName()));
     }
   }
   
@@ -495,11 +496,11 @@ public class ODMZipPostProcessor
       
       if (!file.isDirectory())
       {
-        this.uploader.documents.add(this.uploader.component.createDocumentIfNotExist(key, file.getName()));
+        this.uploader.documents.add(this.uploader.collection.createDocumentIfNotExist(key, file.getName()));
         
         if (searchable)
         {
-          SolrService.updateOrCreateDocument(this.uploader.component.getAncestors(), this.uploader.component, key, file.getName());
+          SolrService.updateOrCreateDocument(this.uploader.collection.getAncestors(), this.uploader.collection, key, file.getName());
         }
       }
     }
