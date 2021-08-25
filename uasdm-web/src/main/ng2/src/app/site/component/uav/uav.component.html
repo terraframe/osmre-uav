@@ -21,6 +21,14 @@
 
       <form #ngForm="ngForm">
         <div class="form-group">
+          <label>Platform</label>
+          <select [(ngModel)]="uav.platform" [disabled]="mode === 'READ'" name="platform" type="input"
+            class="form-control" required>
+            <option></option>
+            <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Serial Number</label>
           <input [(ngModel)]="uav.serialNumber" name="serialNumber" type="input" class="form-control"
             placeholder="Serial Number" [disabled]="mode === 'READ'" required />
@@ -34,14 +42,6 @@
           <label>Description</label>
           <textarea [(ngModel)]="uav.description" [disabled]="mode === 'READ'" name="description" type="input"
             class="form-control" placeholder="Description"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Platform</label>
-          <select [(ngModel)]="uav.platform" [disabled]="mode === 'READ'" name="platform" type="input"
-            class="form-control" required>
-            <option></option>
-            <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.name}}</option>
-          </select>
         </div>
         <div class="form-group">
           <label>Bureau</label>

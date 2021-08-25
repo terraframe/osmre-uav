@@ -144,7 +144,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
+        task.initiate(new FileResource(zip), collection.isMultiSpectral());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -708,8 +708,8 @@ public class ProjectManagementService
 
       if (component instanceof CollectionIF)
       {
-        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
-        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
+//        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
+//        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
       }
     }
 

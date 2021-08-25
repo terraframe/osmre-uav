@@ -1,7 +1,11 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collector;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -10,6 +14,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 
@@ -93,6 +98,33 @@ public class UAV extends UAVBase implements JSONSerializable
     return uav;
   }
 
+  public JSONObject getMetadataOptions()
+  {
+    String platformOid = this.getObjectValue(UAV.PLATFORM);
+
+    Platform platform = Platform.get(platformOid);
+    Bureau bureau = this.getBureau();
+    List<Sensor> sensors = platform.getPlatformHasSensorChildSensors();
+    
+    Collections.sort(sensors, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+    
+    JSONArray array = sensors.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(Sensor.OID, w.getOid());
+      obj.put(Sensor.NAME, w.getName());
+
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+
+    JSONObject obj = new JSONObject();
+    obj.put(UAV.OID, this.getOid());
+    obj.put(UAV.PLATFORM, platform.getName());
+    obj.put(UAV.BUREAU, bureau.getDisplayLabel());
+    obj.put("sensors", array);
+
+    return obj;
+  }
+
   public static Long getCount()
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
@@ -141,20 +173,24 @@ public class UAV extends UAVBase implements JSONSerializable
 
   public static List<UAV> search(String text)
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
-    MdAttributeDAOIF serialAttribute = mdVertex.definesAttribute(UAV.SERIALNUMBER);
-    MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
+    if (text != null)
+    {
+      final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
+      MdAttributeDAOIF serialAttribute = mdVertex.definesAttribute(UAV.SERIALNUMBER);
+      MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
 
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" WHERE " + serialAttribute.getColumnName() + ".toUpper() LIKE :text");
-    statement.append(" OR " + faaAttribute.getColumnName() + ".toUpper() LIKE :text");
-    statement.append(" ORDER BY " + serialAttribute.getColumnName());
+      StringBuilder statement = new StringBuilder();
+      statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+      statement.append(" WHERE " + serialAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+      statement.append(" OR " + faaAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+      statement.append(" ORDER BY " + serialAttribute.getColumnName());
 
-    final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
-    query.setParameter("text", text);
+      final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
+      query.setParameter("text", "%" + text.toUpperCase() + "%");
 
-    return query.getResults();
+      return query.getResults();
+    }
+
+    return new LinkedList<UAV>();
   }
-
 }

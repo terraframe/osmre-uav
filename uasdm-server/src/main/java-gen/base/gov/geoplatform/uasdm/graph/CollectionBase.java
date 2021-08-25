@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -2021737723)
+@com.runwaysdk.business.ClassSignature(hash = 25833699)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -32,7 +17,8 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
   public static java.lang.String SENSOR = "sensor";
-  private static final long serialVersionUID = -2021737723;
+  public static java.lang.String UAV = "uav";
+  private static final long serialVersionUID = 25833699;
   
   public CollectionBase()
   {
@@ -186,19 +172,51 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     this.setValue(SENSOR, oid);
   }
   
+  public gov.geoplatform.uasdm.graph.UAV getUav()
+  {
+    return (gov.geoplatform.uasdm.graph.UAV) this.getObjectValue(UAV);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getUavMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(UAV);
+  }
+  
+  public void setUav(gov.geoplatform.uasdm.graph.UAV value)
+  {
+    this.setValue(UAV, value);
+  }
+  
   protected String getDeclaredType()
   {
     return CLASS;
   }
   
-  public void addMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
+  public com.runwaysdk.business.graph.EdgeObject addCollectionHasSensorChild(gov.geoplatform.uasdm.graph.Sensor sensor)
   {
-    super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    return super.addChild(sensor, "gov.geoplatform.uasdm.graph.CollectionHasSensor");
+  }
+  
+  public void removeCollectionHasSensorChild(gov.geoplatform.uasdm.graph.Sensor sensor)
+  {
+    super.removeChild(sensor, "gov.geoplatform.uasdm.graph.CollectionHasSensor");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.Sensor> getCollectionHasSensorChildSensors()
+  {
+    return super.getChildren("gov.geoplatform.uasdm.graph.CollectionHasSensor",gov.geoplatform.uasdm.graph.Sensor.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
+  {
+    return super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   public void removeMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
   {
-    super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    super.removeParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   @SuppressWarnings("unchecked")

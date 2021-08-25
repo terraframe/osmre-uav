@@ -63,8 +63,9 @@ export class Selection {
 	isNew: boolean;
 	value: string;
 	label: string;
+	uav?: string;
 	platform?: string;
-	sensor?: string;
+	sensors?: string[];
 };
 
 

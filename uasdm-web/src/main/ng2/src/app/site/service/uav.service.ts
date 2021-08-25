@@ -8,7 +8,7 @@ import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
-import { UAV } from '../model/uav';
+import { MetadataOptions, UAV } from '../model/uav';
 
 declare var acp: any;
 
@@ -92,6 +92,26 @@ export class UAVService {
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
+            .toPromise();
+    }
+
+    search(text: string): Promise<{ oid: string, serialNumber: string, faaNumber: string }[]> {
+
+        let params: HttpParams = new HttpParams();
+        params = params.set('text', text);
+
+        return this.http
+            .get<{ oid: string, serialNumber: string, faaNumber: string }[]>(acp + '/uav/search', { params: params })
+            .toPromise();
+    }
+
+    getMetadataOptions(oid: string): Promise<MetadataOptions> {
+
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
+
+        return this.http
+            .get<MetadataOptions>(acp + '/uav/get-metadata-options', { params: params })
             .toPromise();
     }
 }

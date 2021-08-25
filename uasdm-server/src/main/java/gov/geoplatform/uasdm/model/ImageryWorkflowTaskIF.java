@@ -24,6 +24,7 @@ import com.runwaysdk.dataaccess.DataAccessException;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.view.RequestParser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
@@ -88,18 +89,42 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           {
             child = component.createChild(selection.getString("type"));
             child.setName(name);
+//            child.setValue(Collection.U, value);
 
-            if (child instanceof CollectionIF && selection.has(Collection.PLATFORM))
+            if (child instanceof CollectionIF && selection.has(Collection.UAV))
             {
-              child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
+              child.setValue(Collection.UAV, selection.getString(Collection.UAV));
             }
 
-            if (child instanceof CollectionIF && selection.has(Collection.SENSOR))
-            {
-              child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
-            }
+//            if (child instanceof CollectionIF && selection.has(Collection.PLATFORM))
+//            {
+//              child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
+//            }
+//
+//            if (child instanceof CollectionIF && selection.has(Collection.SENSOR))
+//            {
+//              child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
+//            }
 
             child.applyWithParent(component);
+            
+            if (child instanceof CollectionIF && selection.has("sensors"))
+            {
+              JSONArray oids = selection.getJSONArray("sensors");
+              
+              for (int k = 0; k < oids.length(); k++)
+              {
+                String oid = oids.getString(k);
+
+                Sensor sensor = Sensor.get(oid);
+
+                if (sensor != null)
+                {
+                  ((CollectionIF) child).addSensor(sensor);
+                }
+              }
+            }
+                        
           }
 
           component = child;

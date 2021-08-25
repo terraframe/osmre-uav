@@ -25,7 +25,6 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.Bureau;
-import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.UAV;
 
 public class UAVService
@@ -95,4 +94,13 @@ public class UAVService
       return object;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getMetadataOptions(String sessionId, String oid)
+  {
+    UAV uav = UAV.get(oid);
+
+    return uav.getMetadataOptions();
+  }
+
 }

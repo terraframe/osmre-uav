@@ -80,24 +80,42 @@
               </button>
             </div>
           </div>
-          <div [@fadeInOnEnter] class="row" *ngIf="hasField('platform')">
-            <div class="col-md-8">
-              <label for="platform" style="margin-top: 10px;">Platform:</label>
-              <select [(ngModel)]="page.selection.platform" name="platform" type="input" required>
-                <option></option>
-                <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.displayLabel}}</option>
-              </select>
+          <ng-container *ngIf="hasField('uav')">
+            <div [@fadeInOnEnter] class="row">
+              <div class="col-md-8">
+                <label for="uav" style="margin-top: 10px;">UAV:</label>
+                <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
+                  [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleUavClick($event)"
+                  [typeaheadOptionsLimit]="10" typeaheadOptionField="serialNumber" [ngModelOptions]="{standalone: true}"
+                  (keydown.enter)="$event.preventDefault()" required />
+              </div>
             </div>
-          </div>
-          <div [@fadeInOnEnter] class="row" *ngIf="hasField('sensor')">
-            <div class="col-md-8">
-              <label for="sensor" style="margin-top: 10px;">Sensor:</label>
-              <select [(ngModel)]="page.selection.sensor" name="sensor" type="input" required>
-                <option></option>
-                <option *ngFor="let sensor of sensors" [value]="sensor.oid">{{sensor.displayLabel}}</option>
-              </select>
-            </div>
-          </div>
+
+            <ng-container *ngIf="metadataOption != null">
+              <div [@fadeInOnEnter] class="row">
+                <div class="col-md-8">
+                  <label for="platform" style="margin-top: 10px;">Platform:</label>
+                  {{metadataOption.platform}}
+                </div>
+              </div>
+              <div [@fadeInOnEnter] class="row">
+                <div class="col-md-8">
+                  <label for="bureau" style="margin-top: 10px;">Bureau:</label>
+                  {{metadataOption.bureau}}
+                </div>
+              </div>              
+              <div [@fadeInOnEnter] class="row">
+                <div class="col-md-8">
+                  <label for="sensor" style="margin-top: 10px;">Sensor:</label>
+                  <div *ngFor="let sensor of metadataOption.sensors">
+                    <boolean-field [value]="page.selection.sensors && (-1 !== page.selection.sensors.indexOf(sensor.oid))"
+                      [label]="sensor.name" (valueChange)="updateSelectedSensor(sensor, $event)">
+                    </boolean-field>
+                  </div>                  
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -119,7 +137,8 @@
             placeholder="Output product name prefix..." />
         </div>
         <div class="form-group">
-           <boolean-field [value]="processUpload" label="Generate products from raw images" (valueChange)="updateProcessUpload($event)"></boolean-field>
+          <boolean-field [value]="processUpload" label="Generate products from raw images"
+            (valueChange)="updateProcessUpload($event)"></boolean-field>
         </div>
       </div>
     </div>
@@ -192,7 +211,8 @@
             <h4>All files uploaded through the upload wizard must</h4>
             <ul>
               <li>be compressed into a .zip or .tar.gz format </li>
-              <li>not contain spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or apostrophes in any file name</li>
+              <li>not contain spaces or special characters such as <,>, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or
+                  apostrophes in any file name</li>
             </ul>
 
             <h4>

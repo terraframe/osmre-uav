@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -44,6 +44,8 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
@@ -240,10 +242,12 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     obj.put("createDate", Util.formatIso8601(this.getCreateDate(), true));
     obj.put("type", this.getType());
     obj.put("ancestors", parents);
-    
-    if (component instanceof gov.geoplatform.uasdm.graph.Collection)
+
+    if (component instanceof CollectionIF)
     {
-      obj.put("sensorName", ((gov.geoplatform.uasdm.graph.Collection)component).getSensor().getName());
+      List<Sensor> sensors = ( (CollectionIF) component ).getSensors();
+
+      obj.put("sensorName", sensors.get(0).getName());
     }
 
     return obj;

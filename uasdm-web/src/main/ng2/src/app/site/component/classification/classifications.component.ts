@@ -36,6 +36,10 @@ export class ClassificationsComponent implements OnInit {
         this.activatedroute.data.subscribe(data => {
             this.metadata = data as ClassificationComponentMetadata;
 
+            if(this.metadata.columns === undefined) {
+                this.metadata.columns = [];
+            }
+
             this.service.page(this.metadata.baseUrl, 1).then(res => {
                 this.res = res;
             });

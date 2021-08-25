@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,6 +79,22 @@ public class UAVController
   public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
   {
     JSONObject response = this.service.get(request.getSessionId(), oid);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "search")
+  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text) throws JSONException
+  {
+    JSONArray response = this.service.search(request.getSessionId(), text);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-metadata-options")
+  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  {
+    JSONObject response = this.service.getMetadataOptions(request.getSessionId(), oid);
 
     return new RestBodyResponse(response);
   }

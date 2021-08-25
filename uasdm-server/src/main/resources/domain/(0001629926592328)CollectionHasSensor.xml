@@ -1,0 +1,43 @@
+<version
+	xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<update>
+
+			<mdVertex name="gov.geoplatform.uasdm.graph.Collection">
+				<create>
+					<attributes>
+						<graphReference name="uav"
+							type="gov.geoplatform.uasdm.graph.UAV" required="false"
+							label="UAV" />
+					</attributes>
+				</create>
+			</mdVertex>
+		</update>
+		<create>
+			<mdEdge name="gov.geoplatform.uasdm.graph.CollectionHasSensor"
+				label="Collection Has Sensor"
+				parent="gov.geoplatform.uasdm.graph.Collection"
+				child="gov.geoplatform.uasdm.graph.Sensor">
+			</mdEdge>
+		</create>
+		<permissions>
+			<role roleName="geoprism.admin.Administrator">
+				<grant>
+					<mdRelationshipPermission
+						type="gov.geoplatform.uasdm.graph.CollectionHasSensor">
+						<operation name="ALL" />
+					</mdRelationshipPermission>
+				</grant>
+			</role>
+		</permissions>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.graph.CollectionHasSensor"
+				type="com.runwaysdk.system.metadata.MdEdge" />
+			<object key="gov.geoplatform.uasdm.graph.Collection.uav"
+				type="com.runwaysdk.system.metadata.MdAttribute" />
+		</delete>
+	</undoIt>
+</version>
