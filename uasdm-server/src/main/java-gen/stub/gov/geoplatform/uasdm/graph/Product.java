@@ -207,20 +207,19 @@ public class Product extends ProductBase implements ProductIF
   {
     Set<String> orphans = new HashSet<String>();
     
-    final List<Document> documents = this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, Document.class);
+    final List<Document> rawImages = this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, Document.class);
 
-    for (Document document : documents)
+    for (Document rawImage : rawImages)
     {
-      orphans.add(document.getOid());
-      this.removeParent(document, EdgeType.DOCUMENT_GENERATED_PRODUCT);
+      this.removeParent(rawImage, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
     
-    final List<Document> documents2 = this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, Document.class);
+    final List<Document> orthoArtifacts = this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, Document.class);
 
-    for (Document document : documents2)
+    for (Document orthoArtifact : orthoArtifacts)
     {
-      orphans.add(document.getOid());
-      this.removeChild(document, EdgeType.PRODUCT_HAS_DOCUMENT);
+      orphans.add(orthoArtifact.getOid());
+      this.removeChild(orthoArtifact, EdgeType.PRODUCT_HAS_DOCUMENT);
     }
     
     for (String orphan: orphans)
@@ -440,13 +439,13 @@ public class Product extends ProductBase implements ProductIF
    */
   public void refreshDocuments() throws InterruptedException
   {
-    final UasComponentIF component = this.getComponent();
+    final UasComponentIF collection = this.getComponent();
     
     boolean allZipExists = this.getAllZip() != null;
     
     if (allZipExists)
     {
-      ODMZipPostProcessor uploader = new ODMZipPostProcessor(component, null, this);
+      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this);
       
       uploader.processAllZip();
     }
