@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -135,6 +137,24 @@ public class UAV extends UAVBase implements JSONSerializable
     Long result = query.getSingleResult();
 
     return ( result != null && result > 0 );
+  }
+
+  public static List<UAV> search(String text)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
+    MdAttributeDAOIF serialAttribute = mdVertex.definesAttribute(UAV.SERIALNUMBER);
+    MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + serialAttribute.getColumnName() + ".toUpper() LIKE :text");
+    statement.append(" OR " + faaAttribute.getColumnName() + ".toUpper() LIKE :text");
+    statement.append(" ORDER BY " + serialAttribute.getColumnName());
+
+    final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
+    query.setParameter("text", text);
+
+    return query.getResults();
   }
 
 }

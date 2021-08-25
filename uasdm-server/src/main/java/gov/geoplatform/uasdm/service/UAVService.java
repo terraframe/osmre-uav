@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.util.List;
 import java.util.stream.Collector;
 
 import org.json.JSONArray;
@@ -24,6 +25,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.UAV;
 
 public class UAVService
@@ -77,5 +79,20 @@ public class UAVService
     obj.put("bureaus", bureaus);
 
     return obj;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray search(String sessionId, String text)
+  {
+    List<UAV> uavs = UAV.search(text);
+
+    return uavs.stream().map(w -> {
+      JSONObject object = new JSONObject();
+      object.put(UAV.OID, w.getOid());
+      object.put(UAV.SERIALNUMBER, w.getSerialNumber());
+      object.put(UAV.FAANUMBER, w.getFaaNumber());
+
+      return object;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
 }
