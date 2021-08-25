@@ -10,4 +10,9 @@ export class ClassificationComponentMetadata {
     title: string;
     label: string;
     baseUrl: string;
+    columns?: {
+        name: string,
+        label: string,
+        type: string
+    }[]
 }

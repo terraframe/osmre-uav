@@ -1,6 +1,5 @@
 export class Platform {
     oid: string;
-    code: string;
     name: string;
     label: string;
     description?: string;

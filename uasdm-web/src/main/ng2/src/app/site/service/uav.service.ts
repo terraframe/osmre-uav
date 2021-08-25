@@ -15,83 +15,83 @@ declare var acp: any;
 @Injectable()
 export class UAVService {
 
-    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
+    constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
-    page( p: number ): Promise<PageResult<UAV>> {
+    page(p: number): Promise<PageResult<UAV>> {
         let params: HttpParams = new HttpParams();
-        params = params.set( 'number', p.toString() );
+        params = params.set('number', p.toString());
 
         this.eventService.start();
 
         return this.http
-            .get<PageResult<UAV>>( acp + '/uav/page', { params: params } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .get<PageResult<UAV>>(acp + '/uav/page', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    get( oid: string ): Promise<UAV> {
+    get(oid: string): Promise<{ uav: UAV, bureaus: { value: string, label: string }[] }> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.http
-            .post<UAV>( acp + '/uav/get', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<{ uav: UAV, bureaus: { value: string, label: string }[] }>(acp + '/uav/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    newInstance(): Promise<UAV> {
+    newInstance(): Promise<{ uav: UAV, bureaus: { value: string, label: string }[] }> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.http
-            .post<UAV>( acp + '/uav/newInstance', JSON.stringify( {} ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<{ uav: UAV, bureaus: { value: string, label: string }[] }>(acp + '/uav/newInstance', JSON.stringify({}), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    remove( oid: string ): Promise<void> {
+    remove(oid: string): Promise<void> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.http
-            .post<void>( acp + '/uav/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<void>(acp + '/uav/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    apply( uav: UAV ): Promise<UAV> {
+    apply(uav: UAV): Promise<UAV> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<UAV>( acp + '/uav/apply', JSON.stringify( { uav: uav } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<UAV>(acp + '/uav/apply', JSON.stringify({ uav: uav }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 }

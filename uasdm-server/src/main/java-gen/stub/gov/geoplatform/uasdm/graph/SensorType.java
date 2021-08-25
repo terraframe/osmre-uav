@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class SensorType extends SensorTypeBase implements Classification
@@ -12,6 +13,36 @@ public class SensorType extends SensorTypeBase implements Classification
   public SensorType()
   {
     super();
+  }
+
+  @Override
+  public void delete()
+  {
+    if (Sensor.isSensorTypeReferenced(this))
+    {
+      GenericException message = new GenericException();
+      message.setUserMessage("The sensor type cannot be deleted because it is being used in a sensor");
+      throw message;
+    }
+
+    super.delete();
+  }
+
+  @Override
+  public JSONObject toJSON()
+  {
+    JSONObject object = new JSONObject();
+    object.put(SensorType.OID, this.getOid());
+    object.put(SensorType.CODE, this.getCode());
+    object.put(SensorType.LABEL, this.getLabel());
+    object.put(SensorType.ISMULTISPECTRAL, this.getIsMultispectral());
+
+    if (this.getSeq() != null)
+    {
+      object.put(SensorType.SEQ, this.getSeq());
+    }
+
+    return object;
   }
 
   public static Long getCount()
@@ -50,6 +81,15 @@ public class SensorType extends SensorTypeBase implements Classification
 
     classification.setCode(json.getString(SensorType.CODE));
     classification.setLabel(json.getString(SensorType.LABEL));
+
+    if (json.has(SensorType.ISMULTISPECTRAL))
+    {
+      classification.setIsMultispectral(json.getBoolean(SensorType.ISMULTISPECTRAL));
+    }
+    else
+    {
+      classification.setIsMultispectral(Boolean.FALSE);
+    }
 
     if (json.has(SensorType.SEQ))
     {

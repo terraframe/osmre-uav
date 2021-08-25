@@ -14,6 +14,7 @@
 						<th></th>
 						<th class="label-column">Code</th>
 						<th class="label-column">Label</th>
+						<th *ngFor="let column of metadata.columns" class="label-column">{{column.label}}</th>						
 					</tr>
 				</thead>
 				<tbody>
@@ -27,6 +28,11 @@
 						</td>
 						<td class="label-column">{{ classification.code }}</td>
 						<td class="label-column">{{ classification.label }}</td>
+						<td *ngFor="let column of metadata.columns" class="label-column">
+							<ng-container *ngIf="column.type === 'boolean'">
+								{{classification[column.name] === true ? 'Yes' : 'No'}}
+							</ng-container>
+						</td>						
 					</tr>
 					<tr>
 						<td class="button-column">

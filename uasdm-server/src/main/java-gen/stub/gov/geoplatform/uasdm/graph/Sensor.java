@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.stream.Collector;
 
 import org.json.JSONArray;
@@ -47,7 +46,6 @@ public class Sensor extends SensorBase implements JSONSerializable
   {
     JSONObject object = new JSONObject();
     object.put(Sensor.OID, this.getOid());
-    object.put(Sensor.CODE, this.getCode());
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
     object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
@@ -115,7 +113,6 @@ public class Sensor extends SensorBase implements JSONSerializable
       sensor = new Sensor();
     }
 
-    sensor.setCode(UUID.randomUUID().toString());
     sensor.setName(json.getString(Sensor.NAME));
     sensor.setDescription(json.getString(Sensor.DESCRIPTION));
     sensor.setPixelSizeHeight(json.getInt(Sensor.PIXELSIZEHEIGHT));
@@ -226,5 +223,22 @@ public class Sensor extends SensorBase implements JSONSerializable
 
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+  }
+
+  public static boolean isSensorTypeReferenced(SensorType type)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.SENSORTYPE);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :sensorType");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("sensorType", type.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
   }
 }

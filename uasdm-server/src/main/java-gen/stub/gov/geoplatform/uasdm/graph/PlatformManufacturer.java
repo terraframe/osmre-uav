@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class PlatformManufacturer extends PlatformManufacturerBase implements Classification
@@ -12,6 +13,19 @@ public class PlatformManufacturer extends PlatformManufacturerBase implements Cl
   public PlatformManufacturer()
   {
     super();
+  }
+
+  @Override
+  public void delete()
+  {
+    if (Platform.isPlatformManufacturerReferenced(this))
+    {
+      GenericException message = new GenericException();
+      message.setUserMessage("The manufacturer cannot be deleted because it is being used in a platform");
+      throw message;
+    }
+
+    super.delete();
   }
 
   public static Long getCount()

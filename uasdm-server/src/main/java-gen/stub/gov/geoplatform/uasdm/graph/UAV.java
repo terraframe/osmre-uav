@@ -119,4 +119,22 @@ public class UAV extends UAVBase implements JSONSerializable
 
     return new Page<UAV>(count, pageNumber, pageSize, query.getResults());
   }
+
+  public static boolean isPlatformReferenced(Platform platform)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(UAV.PLATFORM);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :platform");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("platform", platform.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
+  }
+
 }

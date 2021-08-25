@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class PlatformType extends PlatformTypeBase implements Classification
@@ -12,6 +13,19 @@ public class PlatformType extends PlatformTypeBase implements Classification
   public PlatformType()
   {
     super();
+  }
+
+  @Override
+  public void delete()
+  {
+    if (Platform.isPlatformTypeReferenced(this))
+    {
+      GenericException message = new GenericException();
+      message.setUserMessage("The platform type cannot be deleted because it is being used in a platform");
+      throw message;
+    }
+
+    super.delete();
   }
 
   public static Long getCount()

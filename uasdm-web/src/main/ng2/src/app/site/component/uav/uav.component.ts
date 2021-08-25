@@ -20,7 +20,7 @@ export class UAVComponent implements OnInit {
 
     message: string = null;
 
-    bureaus: { oid: string, name: string }[] = [];
+    bureaus: { value: string, label: string }[] = [];
     platforms: { oid: string, name: string }[] = [];
     mode: string = 'READ';
 
@@ -32,15 +32,17 @@ export class UAVComponent implements OnInit {
         const oid = this.route.snapshot.params['oid'];
 
         if (oid === '__NEW__') {
-            this.service.newInstance().then((uav: UAV) => {
-                this.uav = uav;
+            this.service.newInstance().then((resp: { uav: UAV, bureaus: { value: string, label: string }[] }) => {
+                this.uav = resp.uav;
+                this.bureaus = resp.bureaus;
                 this.newInstance = true;
                 this.mode = 'WRITE';
             });
         }
         else {
-            this.service.get(oid).then((uav: UAV) => {
-                this.uav = uav;
+            this.service.get(oid).then((resp: { uav: UAV, bureaus: { value: string, label: string }[] }) => {
+                this.uav = resp.uav;
+                this.bureaus = resp.bureaus;
                 this.original = JSON.parse(JSON.stringify(this.uav));
             });
         }

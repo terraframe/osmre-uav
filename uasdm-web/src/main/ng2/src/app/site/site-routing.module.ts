@@ -106,7 +106,14 @@ const routes: Routes = [
         data: {
             title: 'Sensor Type',
             label: 'type',
-            baseUrl: Endpoint.SENSOR_TYPE
+            baseUrl: Endpoint.SENSOR_TYPE,
+            columns: [
+                {
+                    name: 'isMultispectral',
+                    label: 'Is Multispectral',
+                    type: 'boolean'
+                }
+            ]
         }
 
     },
@@ -117,7 +124,14 @@ const routes: Routes = [
         data: {
             title: 'Sensor Type',
             label: 'type',
-            baseUrl: Endpoint.SENSOR_TYPE
+            baseUrl: Endpoint.SENSOR_TYPE,
+            columns: [
+                {
+                    name: 'isMultispectral',
+                    label: 'Is Multispectral',
+                    type: 'boolean'
+                }
+            ]
         }
 
     },

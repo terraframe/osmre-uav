@@ -38,16 +38,17 @@
         <div class="form-group">
           <label>Platform</label>
           <select [(ngModel)]="uav.platform" [disabled]="mode === 'READ'" name="platform" type="input"
-            class="form-control">
+            class="form-control" required>
             <option></option>
             <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.name}}</option>
           </select>
         </div>
         <div class="form-group">
           <label>Bureau</label>
-          <select [(ngModel)]="uav.bureau" [disabled]="mode === 'READ'" name="bureau" type="input" class="form-control">
+          <select [(ngModel)]="uav.bureau" [disabled]="mode === 'READ'" name="bureau" type="input" class="form-control"
+            required>
             <option></option>
-            <option *ngFor="let bureau of bureaus" [value]="bureau.oid">
+            <option *ngFor="let bureau of bureaus" [value]="bureau.value">
               {{bureau.label}}
             </option>
           </select>

@@ -26,7 +26,13 @@
       <div class="form-group">
         <label>Label</label>
         <input [(ngModel)]="classification.label" name="label" type="input" class="form-control" placeholder="Label"
-        [disabled]="mode === 'READ'" required />
+          [disabled]="mode === 'READ'" required />
+      </div>
+      <div *ngFor="let column of metadata.columns" class="form-group">
+        <label></label>
+        <boolean-field *ngIf="column.type === 'boolean'" [value]="classification[column.name]" [label]="column.label"
+          (valueChange)="classification[column.name] = $event" [disabled]="mode === 'READ'">
+        </boolean-field>
       </div>
       <div *ngIf="mode === 'WRITE'" class="btn-holder" style="text-align: right;">
         <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>

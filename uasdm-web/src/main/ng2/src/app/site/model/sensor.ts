@@ -1,7 +1,6 @@
 export class Sensor {
     seq?: string;
     oid: string;
-    code: string;
     name: string;
     description?: string;
     dateCreated?: string;

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1315153023)
+@com.runwaysdk.business.ClassSignature(hash = 75073676)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,7 +11,6 @@ package gov.geoplatform.uasdm.graph;
 public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Sensor";
-  public static java.lang.String CODE = "code";
   public static java.lang.String DATECREATED = "dateCreated";
   public static java.lang.String DATEUPDATED = "dateUpdated";
   public static java.lang.String DESCRIPTION = "description";
@@ -23,27 +22,11 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SENSORWIDTH = "sensorWidth";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -1315153023;
+  private static final long serialVersionUID = 75073676;
   
   public SensorBase()
   {
     super();
-  }
-  
-  public String getCode()
-  {
-    return (String) this.getObjectValue(CODE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getCodeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(CODE);
-  }
-  
-  public void setCode(String value)
-  {
-    this.setValue(CODE, value);
   }
   
   public java.util.Date getDateCreated()

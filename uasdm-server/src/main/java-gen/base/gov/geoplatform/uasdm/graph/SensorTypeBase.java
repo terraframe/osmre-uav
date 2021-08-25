@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 757603541)
+@com.runwaysdk.business.ClassSignature(hash = 361326457)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,10 +12,11 @@ public abstract class SensorTypeBase extends com.runwaysdk.business.graph.Vertex
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.SensorType";
   public static java.lang.String CODE = "code";
+  public static java.lang.String ISMULTISPECTRAL = "isMultispectral";
   public static java.lang.String LABEL = "label";
   public static java.lang.String OID = "oid";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 757603541;
+  private static final long serialVersionUID = 361326457;
   
   public SensorTypeBase()
   {
@@ -36,6 +37,22 @@ public abstract class SensorTypeBase extends com.runwaysdk.business.graph.Vertex
   public void setCode(String value)
   {
     this.setValue(CODE, value);
+  }
+  
+  public Boolean getIsMultispectral()
+  {
+    return (Boolean) this.getObjectValue(ISMULTISPECTRAL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getIsMultispectralMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.SensorType.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(ISMULTISPECTRAL);
+  }
+  
+  public void setIsMultispectral(Boolean value)
+  {
+    this.setValue(ISMULTISPECTRAL, value);
   }
   
   public String getLabel()

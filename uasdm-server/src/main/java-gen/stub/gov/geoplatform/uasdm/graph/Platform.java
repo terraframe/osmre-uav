@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.stream.Collector;
 
 import org.json.JSONArray;
@@ -16,6 +15,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
@@ -43,11 +43,23 @@ public class Platform extends PlatformBase implements JSONSerializable
   }
 
   @Override
+  public void delete()
+  {
+    if (UAV.isPlatformReferenced(this))
+    {
+      GenericException message = new GenericException();
+      message.setUserMessage("The platform cannot be deleted because it is being used in a UAV");
+      throw message;
+    }
+
+    super.delete();
+  }
+
+  @Override
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
     object.put(Platform.OID, this.getOid());
-    object.put(Platform.CODE, this.getCode());
     object.put(Platform.NAME, this.getName());
     object.put(Platform.DESCRIPTION, this.getDescription());
 
@@ -109,7 +121,6 @@ public class Platform extends PlatformBase implements JSONSerializable
       platform = new Platform();
     }
 
-    platform.setCode(UUID.randomUUID().toString());
     platform.setName(json.getString(Platform.NAME));
     platform.setDescription(json.getString(Platform.DESCRIPTION));
 
@@ -227,6 +238,40 @@ public class Platform extends PlatformBase implements JSONSerializable
 
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+  }
+
+  public static boolean isPlatformTypeReferenced(PlatformType type)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.PLATFORMTYPE);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :platformType");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("platformType", type.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
+  }
+
+  public static boolean isPlatformManufacturerReferenced(PlatformManufacturer manufacturer)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.MANUFACTURER);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :manufacturer");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("manufacturer", manufacturer.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
   }
 
 }

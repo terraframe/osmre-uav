@@ -32,7 +32,7 @@
       <div class="form-group">
         <label>Type</label>
         <select [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control"
-          [disabled]="mode === 'READ'" placeholder="Type">
+          [disabled]="mode === 'READ'" placeholder="Type" required>
           <option></option>
           <option *ngFor="let type of types" [value]="type.oid">{{type.label}}</option>
         </select>

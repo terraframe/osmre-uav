@@ -1,7 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
