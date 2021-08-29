@@ -1,25 +1,10 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -652260564)
+@com.runwaysdk.business.ClassSignature(hash = -1507023348)
 public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasComponentDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.Collection";
-  private static final long serialVersionUID = -652260564;
+  private static final long serialVersionUID = -1507023348;
   
   protected CollectionDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -45,9 +30,7 @@ public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasCom
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
-  public static java.lang.String SENSOR = "sensor";
   public Integer getImageHeight()
   {
     return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(IMAGEHEIGHT));
@@ -159,55 +142,6 @@ public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasCom
     return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(METADATAUPLOADED).getAttributeMdDTO();
   }
   
-  public gov.geoplatform.uasdm.bus.PlatformDTO getPlatform()
-  {
-    if(getValue(PLATFORM) == null || getValue(PLATFORM).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.PlatformDTO.get(getRequest(), getValue(PLATFORM));
-    }
-  }
-  
-  public String getPlatformOid()
-  {
-    return getValue(PLATFORM);
-  }
-  
-  public void setPlatform(gov.geoplatform.uasdm.bus.PlatformDTO value)
-  {
-    if(value == null)
-    {
-      setValue(PLATFORM, "");
-    }
-    else
-    {
-      setValue(PLATFORM, value.getOid());
-    }
-  }
-  
-  public boolean isPlatformWritable()
-  {
-    return isWritable(PLATFORM);
-  }
-  
-  public boolean isPlatformReadable()
-  {
-    return isReadable(PLATFORM);
-  }
-  
-  public boolean isPlatformModified()
-  {
-    return isModified(PLATFORM);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getPlatformMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(PLATFORM).getAttributeMdDTO();
-  }
-  
   @SuppressWarnings("unchecked")
   public java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeTypeDTO> getPrivilegeType()
   {
@@ -252,55 +186,6 @@ public abstract class CollectionDTOBase extends gov.geoplatform.uasdm.bus.UasCom
   public final com.runwaysdk.transport.metadata.AttributeEnumerationMdDTO getPrivilegeTypeMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeEnumerationMdDTO) getAttributeDTO(PRIVILEGETYPE).getAttributeMdDTO();
-  }
-  
-  public gov.geoplatform.uasdm.bus.SensorDTO getSensor()
-  {
-    if(getValue(SENSOR) == null || getValue(SENSOR).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.SensorDTO.get(getRequest(), getValue(SENSOR));
-    }
-  }
-  
-  public String getSensorOid()
-  {
-    return getValue(SENSOR);
-  }
-  
-  public void setSensor(gov.geoplatform.uasdm.bus.SensorDTO value)
-  {
-    if(value == null)
-    {
-      setValue(SENSOR, "");
-    }
-    else
-    {
-      setValue(SENSOR, value.getOid());
-    }
-  }
-  
-  public boolean isSensorWritable()
-  {
-    return isWritable(SENSOR);
-  }
-  
-  public boolean isSensorReadable()
-  {
-    return isReadable(SENSOR);
-  }
-  
-  public boolean isSensorModified()
-  {
-    return isModified(SENSOR);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getSensorMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(SENSOR).getAttributeMdDTO();
   }
   
   @SuppressWarnings("unchecked")

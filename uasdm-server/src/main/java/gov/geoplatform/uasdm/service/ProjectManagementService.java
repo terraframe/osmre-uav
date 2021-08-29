@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -50,11 +50,11 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
-import gov.geoplatform.uasdm.bus.Platform;
-import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -183,7 +183,7 @@ public class ProjectManagementService
 
     return children;
   }
-  
+
   @Request(RequestType.SESSION)
   public UasComponent getComponent(String sessionId, String componentId)
   {
@@ -577,7 +577,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void submitMetadata(String sessionId, String json)
   {
-    new MetadataXMLGenerator(json).generateAndUpload();
+//    new MetadataXMLGenerator(json).generateAndUpload();
   }
 
   @Request(RequestType.SESSION)
@@ -697,8 +697,8 @@ public class ProjectManagementService
     SingleActorDAOIF user = Session.getCurrentSession().getUser();
 
     JSONObject response = new JSONObject();
-    response.put("sensors", Sensor.getAll());
-    response.put("platforms", Platform.getAll());
+    // response.put("sensors", Sensor.getAll());
+    // response.put("platforms", Platform.getAll());
     response.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
     response.put("email", user.getValue(GeoprismUser.EMAIL));
 
@@ -708,10 +708,27 @@ public class ProjectManagementService
 
       if (component instanceof CollectionIF)
       {
-//        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
-//        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
+        CollectionIF collection = (CollectionIF) component;
+        UAV uav = collection.getUav();
+        Sensor sensor = collection.getSensor();
+
+        response.put("uav", uav.toView());
+        response.put("sensor", sensor.toView());
       }
     }
+
+    return response;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getUAVMetadata(String sessionId, String uavId, String sensorId)
+  {
+    UAV uav = UAV.get(uavId);
+    Sensor sensor = Sensor.get(sensorId);
+
+    JSONObject response = new JSONObject();
+    response.put("uav", uav.toView());
+    response.put("sensor", sensor.toView());
 
     return response;
   }
@@ -737,11 +754,11 @@ public class ProjectManagementService
   public RemoteFileObject downloadOdmAll(String sessionId, String colId)
   {
     Collection collection = Collection.get(colId);
-    
+
     List<Product> products = collection.getProducts();
-    
-    products.sort( (a,b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()) );
-    
+
+    products.sort((a, b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()));
+
     return products.get(0).downloadAllZip();
   }
 

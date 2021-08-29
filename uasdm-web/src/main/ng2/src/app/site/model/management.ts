@@ -64,8 +64,11 @@ export class Selection {
 	value: string;
 	label: string;
 	uav?: string;
-	platform?: string;
-	sensors?: string[];
+	sensor?: string;
+	pointOfContact?: {
+		name: string,
+		email: string
+	}
 };
 
 
@@ -107,7 +110,7 @@ export class Task {
 	visible?: boolean;
 	showError?: boolean;
 	ancestors?: string[];
-  sensorName?: string;
+	sensorName?: string;
 }
 
 export class TaskGroup {
@@ -156,10 +159,10 @@ export class Product {
 }
 
 export class GeoserverLayer {
-  workspace: string;
-  classification: string;
-  key: string;
-  isMapped?: boolean;
+	workspace: string;
+	classification: string;
+	key: string;
+	isMapped?: boolean;
 }
 
 export class ProductDetail extends Product {

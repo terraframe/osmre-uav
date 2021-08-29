@@ -55,6 +55,16 @@ public class Platform extends PlatformBase implements JSONSerializable
     super.delete();
   }
 
+  public PlatformType getPlatformType()
+  {
+    return PlatformType.get(this.getObjectValue(PLATFORMTYPE));
+  }
+
+  public PlatformManufacturer getManufacturer()
+  {
+    return PlatformManufacturer.get(this.getObjectValue(MANUFACTURER));
+  }
+
   @Override
   public JSONObject toJSON()
   {
@@ -122,7 +132,7 @@ public class Platform extends PlatformBase implements JSONSerializable
     }
 
     platform.setName(json.getString(Platform.NAME));
-    platform.setDescription(json.getString(Platform.DESCRIPTION));
+    platform.setDescription(json.has(Platform.DESCRIPTION) ? json.getString(Platform.DESCRIPTION) : null);
 
     if (json.has(Platform.PLATFORMTYPE))
     {

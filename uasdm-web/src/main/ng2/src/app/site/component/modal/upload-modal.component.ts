@@ -23,12 +23,10 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
-import { UAVService } from '@site/service/uav.service';
-import { MetadataOptions } from '@site/model/uav';
 
 declare var acp: string;
 
-class Page {
+export class Page {
 	index: number;
 	selection: Selection;
 	options: SiteEntity[];
@@ -133,21 +131,8 @@ export class UploadModalComponent implements OnInit {
 		]
 	};
 
-	/* 
-	 * Datasource to get search responses
-	 */
-	dataSource: Observable<any>;
-	search: string = '';
-	metadataOption: MetadataOptions = null;
-
-	constructor(private service: ManagementService, private uavService: UAVService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers) {
+	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers) {
 		this.differ = differs.find([]).create();
-
-		this.dataSource = new Observable((observer: Observer<object>) => {
-			this.uavService.search(this.search).then(results => {
-				observer.next(results);
-			})
-		});
 	}
 
 	@ViewChild('uploader') set content(elem: ElementRef) {
@@ -423,7 +408,7 @@ export class UploadModalComponent implements OnInit {
 						return false;
 					}
 
-					if (this.hasField('sensor') && (page.selection.sensors == null || page.selection.sensors.length === 0)) {
+					if (this.hasField('sensor') && (page.selection.sensor == null || page.selection.sensor.length === 0)) {
 						return false;
 					}
 
@@ -516,7 +501,7 @@ export class UploadModalComponent implements OnInit {
 				this.modalStepConfig = {
 					"steps": [
 						{ "label": "Category", "active": true, "enabled": false },
-						{ "label": "Final", "active": true, "enabled": true }
+						{ "label": "Final", "active": true, "enabled": false }
 					]
 				};
 			}
@@ -655,37 +640,6 @@ export class UploadModalComponent implements OnInit {
 	unloadNotification($event: any) {
 		if (this.disabled) {
 			$event.returnValue = 'An upload is currently in progress. Are you sure you want to leave?';
-		}
-	}
-
-	handleUavClick(event: any): void {
-		this.metadataOption = null;
-		this.page.selection.uav = null;
-		this.page.selection.sensors = [];
-
-		if (event.item.oid != null) {
-			this.page.selection.uav = event.item.oid;
-
-			this.uavService.getMetadataOptions(event.item.oid).then(metadataOption => {
-				this.metadataOption = metadataOption;
-			});
-		}
-	}
-
-	updateSelectedSensor(sensor: { oid: string, name: string }, checked: boolean): void {
-
-		const indexOf = this.page.selection.sensors.findIndex(w => sensor.oid === w);
-
-		if (checked) {
-
-			if (indexOf < 0) {
-				this.page.selection.sensors.push(sensor.oid);
-
-			}
-		} else {
-			if (indexOf > -1) {
-				this.page.selection.sensors.splice(indexOf, 1);
-			}
 		}
 	}
 }

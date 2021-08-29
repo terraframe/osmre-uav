@@ -21,7 +21,9 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -45,9 +47,9 @@ public interface CollectionIF extends UasComponentIF
 
   public Set<String> getExcludes();
 
-  public void addSensor(Sensor sensor);
-
   public boolean isMultiSpectral();
-  
-  public List<Sensor> getSensors();
+
+  public Sensor getSensor();
+
+  public UAV getUav();
 }

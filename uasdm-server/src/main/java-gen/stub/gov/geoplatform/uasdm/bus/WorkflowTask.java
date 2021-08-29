@@ -17,11 +17,9 @@ package gov.geoplatform.uasdm.bus;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,7 +42,9 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -245,9 +245,9 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     if (component instanceof CollectionIF)
     {
-      List<Sensor> sensors = ( (CollectionIF) component ).getSensors();
+      Sensor sensor = ( (CollectionIF) component ).getSensor();
 
-      obj.put("sensorName", sensors.get(0).getName());
+      obj.put("sensorName", sensor.getName());
     }
 
     return obj;

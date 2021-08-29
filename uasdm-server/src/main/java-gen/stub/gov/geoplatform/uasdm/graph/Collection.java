@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -397,31 +398,26 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public void addSensor(Sensor sensor)
+  public UAV getUav()
   {
-    this.addCollectionHasSensorChild(sensor).apply();
+    return ( gov.geoplatform.uasdm.graph.UAV.get(this.getObjectValue(UAV)) );
   }
-  
+
   @Override
-  public List<Sensor> getSensors()
+  public Sensor getSensor()
   {
-    return this.getCollectionHasSensorChildSensors();
+    return ( gov.geoplatform.uasdm.graph.Sensor.get(this.getObjectValue(COLLECTIONSENSOR)) );
   }
 
   @Override
   public boolean isMultiSpectral()
   {
-    List<Sensor> sensors = this.getCollectionHasSensorChildSensors();
+    Sensor sensor = this.getSensor();
+    SensorType type = sensor.getSensorType();
 
-    for (Sensor sensor : sensors)
+    if (type.getIsMultispectral())
     {
-      String oid = sensor.getObjectValue(Sensor.SENSORTYPE);
-      SensorType type = SensorType.get(oid);
-
-      if (type.getIsMultispectral())
-      {
-        return true;
-      }
+      return true;
     }
 
     return false;
@@ -496,6 +492,23 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     return "OUT('" + mdEdge.getDBClassName() + "')";
+  }
+
+  public static boolean isUAVReferenced(UAV uav)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.UAV);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :uav");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("uav", uav.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
   }
 
 }

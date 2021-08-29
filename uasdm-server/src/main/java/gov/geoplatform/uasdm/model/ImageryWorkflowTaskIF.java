@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.dataaccess.DataAccessException;
 
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -89,42 +90,25 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           {
             child = component.createChild(selection.getString("type"));
             child.setName(name);
-//            child.setValue(Collection.U, value);
+            // child.setValue(Collection.U, value);
 
             if (child instanceof CollectionIF && selection.has(Collection.UAV))
             {
               child.setValue(Collection.UAV, selection.getString(Collection.UAV));
             }
 
-//            if (child instanceof CollectionIF && selection.has(Collection.PLATFORM))
-//            {
-//              child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
-//            }
-//
-//            if (child instanceof CollectionIF && selection.has(Collection.SENSOR))
-//            {
-//              child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
-//            }
+            if (child instanceof CollectionIF && selection.has("sensor"))
+            {
+              child.setValue(Collection.COLLECTIONSENSOR, selection.getString("sensor"));
+            }
 
             child.applyWithParent(component);
-            
-            if (child instanceof CollectionIF && selection.has("sensors"))
+
+            // Upload the metadata file
+            if (child instanceof CollectionIF)
             {
-              JSONArray oids = selection.getJSONArray("sensors");
-              
-              for (int k = 0; k < oids.length(); k++)
-              {
-                String oid = oids.getString(k);
-
-                Sensor sensor = Sensor.get(oid);
-
-                if (sensor != null)
-                {
-                  ((CollectionIF) child).addSensor(sensor);
-                }
-              }
+              new MetadataXMLGenerator((CollectionIF) child, selection).generateAndUpload();
             }
-                        
           }
 
           component = child;

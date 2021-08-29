@@ -9,14 +9,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
+import net.geoprism.GeoprismUser;
 
 public class UAV extends UAVBase implements JSONSerializable
 {
@@ -25,6 +29,24 @@ public class UAV extends UAVBase implements JSONSerializable
   public UAV()
   {
     super();
+  }
+
+  @Override
+  public void delete()
+  {
+    if (Collection.isUAVReferenced(this))
+    {
+      GenericException message = new GenericException();
+      message.setUserMessage("The UAV cannot be deleted because it is being used in a Collection");
+      throw message;
+    }
+
+    super.delete();
+  }
+
+  public Platform getPlatform()
+  {
+    return Platform.get(this.getObjectValue(PLATFORM));
   }
 
   @Override
@@ -52,6 +74,25 @@ public class UAV extends UAVBase implements JSONSerializable
     return object;
   }
 
+  public JSONObject toView()
+  {
+    Platform platform = this.getPlatform();
+    PlatformType platformType = platform.getPlatformType();
+    PlatformManufacturer manufacturer = platform.getManufacturer();
+    Bureau bureau = this.getBureau();
+
+    JSONObject object = new JSONObject();
+    object.put(UAV.OID, this.getOid());
+    object.put(UAV.SERIALNUMBER, this.getSerialNumber());
+    object.put(UAV.FAANUMBER, this.getFaaNumber());
+    object.put(UAV.BUREAU, bureau.getName());
+    object.put(Platform.NAME, platform.getName());
+    object.put(Platform.PLATFORMTYPE, platformType.getLabel());
+    object.put(Platform.MANUFACTURER, manufacturer.getLabel());
+
+    return object;
+  }
+
   @Transaction
   public static UAV apply(JSONObject json)
   {
@@ -74,7 +115,7 @@ public class UAV extends UAVBase implements JSONSerializable
 
     uav.setSerialNumber(json.getString(UAV.SERIALNUMBER));
     uav.setFaaNumber(json.getString(UAV.FAANUMBER));
-    uav.setDescription(json.getString(UAV.DESCRIPTION));
+    uav.setDescription(json.has(UAV.DESCRIPTION) ? json.getString(UAV.DESCRIPTION) : null);
     uav.setBureauId(json.getString(UAV.BUREAU));
 
     if (json.has(UAV.PLATFORM))
@@ -100,14 +141,16 @@ public class UAV extends UAVBase implements JSONSerializable
 
   public JSONObject getMetadataOptions()
   {
+    SingleActorDAOIF user = Session.getCurrentSession().getUser();
     String platformOid = this.getObjectValue(UAV.PLATFORM);
 
     Platform platform = Platform.get(platformOid);
+    PlatformType platformType = platform.getPlatformType();
     Bureau bureau = this.getBureau();
     List<Sensor> sensors = platform.getPlatformHasSensorChildSensors();
-    
+
     Collections.sort(sensors, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-    
+
     JSONArray array = sensors.stream().map(w -> {
       JSONObject obj = new JSONObject();
       obj.put(Sensor.OID, w.getOid());
@@ -116,11 +159,19 @@ public class UAV extends UAVBase implements JSONSerializable
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
+    JSONObject pointOfContact = new JSONObject();
+    pointOfContact.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
+    pointOfContact.put("email", user.getValue(GeoprismUser.EMAIL));
+
     JSONObject obj = new JSONObject();
     obj.put(UAV.OID, this.getOid());
+    obj.put(UAV.SERIALNUMBER, this.getSerialNumber());
+    obj.put(UAV.FAANUMBER, this.getFaaNumber());
     obj.put(UAV.PLATFORM, platform.getName());
+    obj.put(Platform.PLATFORMTYPE, platformType.getLabel());
     obj.put(UAV.BUREAU, bureau.getDisplayLabel());
     obj.put("sensors", array);
+    obj.put("pointOfContact", pointOfContact);
 
     return obj;
   }

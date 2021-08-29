@@ -45,8 +45,7 @@
 					<integer name="pixelSizeHeight" required="true" label="Pixel Size Height" />
 					<integer name="sensorWidth" required="true" label="Sensor Width" />
 					<integer name="sensorHeight" required="true" label="Sensor Height" />
-					<char name="description" required="true" label="Label"
-						size="1024" />
+					<char name="description" label="Description" size="1024" />
 					<graphReference name="sensorType"
 						type="gov.geoplatform.uasdm.graph.SensorType" required="true"
 						label="Sensor Type" />
@@ -64,8 +63,7 @@
 				label="Platform">
 				<attributes>
 					<char name="name" required="true" label="Name" size="128" />
-					<char name="description" required="true" label="Label"
-						size="1024" />
+					<char name="description" label="Description" size="1024" />
 					<graphReference name="manufacturer"
 						type="gov.geoplatform.uasdm.graph.PlatformManufacturer" required="true"
 						label="Platform Manufacturer" />
@@ -87,8 +85,7 @@
 				<attributes>
 					<char name="serialNumber" required="true" label="Serial Number" size="128" />
 					<char name="faaNumber" required="true" label="FAA Number" size="10" />
-					<char name="description" required="true" label="Label"
-						size="1024" />
+					<char name="description" label="Description" size="1024" />
 					<graphReference name="platform"
 						type="gov.geoplatform.uasdm.graph.Platform" required="true"
 						label="Platform" />

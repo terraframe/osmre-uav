@@ -41,6 +41,11 @@ public class Sensor extends SensorBase implements JSONSerializable
     super.apply();
   }
 
+  public SensorType getSensorType()
+  {
+    return SensorType.get(this.getObjectValue(SENSORTYPE));
+  }
+
   @Override
   public JSONObject toJSON()
   {
@@ -93,6 +98,32 @@ public class Sensor extends SensorBase implements JSONSerializable
     return object;
   }
 
+  public JSONObject toView()
+  {
+    SensorType sensorType = this.getSensorType();
+
+    JSONObject object = new JSONObject();
+    object.put(Sensor.OID, this.getOid());
+    object.put(Sensor.NAME, this.getName());
+    object.put(Sensor.DESCRIPTION, this.getDescription());
+    object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
+    object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
+    object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
+    object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
+    object.put(Sensor.SENSORTYPE, sensorType.getLabel());
+
+    List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
+
+    object.put("wavelengths", (JSONArray) wavelengths.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(WaveLength.OID, w.getOid());
+      obj.put(WaveLength.LABEL, w.getLabel());
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
+
+    return object;
+  }
+
   @Transaction
   public static Sensor apply(JSONObject json)
   {
@@ -114,11 +145,12 @@ public class Sensor extends SensorBase implements JSONSerializable
     }
 
     sensor.setName(json.getString(Sensor.NAME));
-    sensor.setDescription(json.getString(Sensor.DESCRIPTION));
+
     sensor.setPixelSizeHeight(json.getInt(Sensor.PIXELSIZEHEIGHT));
     sensor.setPixelSizeWidth(json.getInt(Sensor.PIXELSIZEWIDTH));
     sensor.setSensorHeight(json.getInt(Sensor.SENSORHEIGHT));
     sensor.setSensorWidth(json.getInt(Sensor.SENSORWIDTH));
+    sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
 
     if (json.has(Sensor.SENSORTYPE))
     {
@@ -241,4 +273,5 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     return ( result != null && result > 0 );
   }
+
 }

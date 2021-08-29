@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.Collector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,6 +33,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +44,14 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
-import gov.geoplatform.uasdm.bus.Platform;
-import gov.geoplatform.uasdm.bus.Sensor;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Platform;
+import gov.geoplatform.uasdm.graph.PlatformType;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.SensorType;
+import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
 
@@ -58,12 +63,15 @@ public class MetadataXMLGenerator
 
   private Document            dom;
 
-  private JSONObject          json;
+  private JSONObject          selection;
 
   private CollectionIF        collection;
 
-  public MetadataXMLGenerator(String json)
+  public MetadataXMLGenerator(CollectionIF collection, JSONObject selection)
   {
+    this.collection = collection;
+    this.selection = selection;
+
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = null;
 
@@ -79,14 +87,6 @@ public class MetadataXMLGenerator
     this.dom = builder.newDocument();
     this.dom.setStrictErrorChecking(false);
     this.dom.setXmlStandalone(true);
-    parseJson(json);
-  }
-
-  private void parseJson(String sJson)
-  {
-    json = new JSONObject(sJson);
-
-    this.collection = ComponentFacade.getCollection(json.getString("collectionId"));
   }
 
   public void generate(OutputStream out)
@@ -105,7 +105,7 @@ public class MetadataXMLGenerator
     e.setAttribute("fieldCenter", "");
     root.appendChild(e);
 
-    JSONObject pointOfContact = json.getJSONObject("pointOfContact");
+    JSONObject pointOfContact = selection.getJSONObject("pointOfContact");
     e = dom.createElement("PointOfContact");
     e.setAttribute("name", pointOfContact.getString("name"));
     e.setAttribute("email", pointOfContact.getString("email"));
@@ -128,33 +128,37 @@ public class MetadataXMLGenerator
     e.setAttribute("name", collection.getName());
     e.setAttribute("description", collection.getDescription());
     root.appendChild(e);
+    
+    UAV uav = this.collection.getUav();
+    Platform platform = uav.getPlatform();
+    PlatformType platformType = platform.getPlatformType();
 
-    JSONObject jPlatform = json.getJSONObject("platform");
-    String platformId = jPlatform.getString("name");
-    Platform platform = Platform.get(platformId);
-
-    String platformName = platform.isOther() ? jPlatform.getString("otherName") : platform.getDisplayLabel();
+    String platformName = platform.getName();
     e = dom.createElement("Platform");
     e.setAttribute("name", platformName);
-    e.setAttribute("class", jPlatform.getString("class"));
-    e.setAttribute("type", jPlatform.getString("type"));
-    e.setAttribute("serialNumber", jPlatform.get("serialNumber").toString());
-    e.setAttribute("faaIdNumber", jPlatform.get("faaIdNumber").toString());
+//    e.setAttribute("class", jPlatform.getString("class"));
+    e.setAttribute("type", platformType.getLabel());
+    e.setAttribute("serialNumber", uav.getSerialNumber());
+    e.setAttribute("faaIdNumber", uav.getFaaNumber());
     root.appendChild(e);
+    
+    Sensor sensor = this.collection.getSensor();
+    SensorType sensorType = sensor.getSensorType();
+    
+    List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
+    JSONArray array = wavelengths.stream().map(w -> w.getLabel()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
-    JSONObject jSensor = json.getJSONObject("sensor");
-    String sensorId = jSensor.getString("name");
-    Sensor sensor = Sensor.get(sensorId);
-
-    String sensorName = sensor.isOther() ? jSensor.getString("otherName") : sensor.getDisplayLabel();
+    String sensorName = sensor.getName();
 
     e = dom.createElement("Sensor");
     e.setAttribute("name", sensorName);
-    e.setAttribute("type", jSensor.getString("type"));
-    e.setAttribute("model", jSensor.getString("model"));
-    e.setAttribute("wavelength", jSensor.getJSONArray("wavelength").toString());
+    e.setAttribute("type", sensorType.getLabel());
+//    e.setAttribute("model", jSensor.getString("model"));
+    e.setAttribute("wavelength", array.toString());
     // e.setAttribute("imageWidth", sensor.getString("imageWidth"));
     // e.setAttribute("imageHeight", sensor.getString("imageHeight"));
+    
+    // TODO Does the new workflow make sense with this
     Integer width = collection.getImageWidth();
     if (width != null && width != 0)
     {
@@ -173,12 +177,13 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("imageHeight", "");
     }
-    e.setAttribute("sensorWidth", jSensor.get("sensorWidth").toString());
-    e.setAttribute("sensorWidthUnits", jSensor.get("sensorWidthUnits").toString());
-    e.setAttribute("sensorHeight", jSensor.get("sensorHeight").toString());
-    e.setAttribute("sensorHeightUnits", jSensor.get("sensorHeightUnits").toString());
-    e.setAttribute("pixelSizeWidth", jSensor.get("pixelSizeWidth").toString());
-    e.setAttribute("pixelSizeHeight", jSensor.get("pixelSizeHeight").toString());
+    
+    e.setAttribute("sensorWidth", sensor.getSensorWidth().toString());
+    e.setAttribute("sensorWidthUnits", "mm");
+    e.setAttribute("sensorHeight", sensor.getSensorHeight().toString());
+    e.setAttribute("sensorHeightUnits", "mm");
+    e.setAttribute("pixelSizeWidth", sensor.getPixelSizeWidth().toString());
+    e.setAttribute("pixelSizeHeight", sensor.getPixelSizeHeight().toString());
     root.appendChild(e);
 
     e = dom.createElement("Upload");

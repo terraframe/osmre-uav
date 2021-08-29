@@ -50,6 +50,7 @@ import { SharedModule } from '../shared/shared.module';
 import { UAVsComponent } from './component/uav/uavs.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { UAVService } from './service/uav.service';
+import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
 
 @NgModule({
 	imports: [
@@ -93,7 +94,8 @@ import { UAVService } from './service/uav.service';
 		ClassificationsComponent,
 		ClassificationComponent,
 		UAVsComponent,
-		UAVComponent
+		UAVComponent,
+		MetadataPageComponent
 	],
 	providers: [
 		CanDeactivateGuardService,

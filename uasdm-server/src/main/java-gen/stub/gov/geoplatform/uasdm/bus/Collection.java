@@ -36,6 +36,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -75,6 +76,24 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public String getSolrNameField()
   {
     return "collectionName";
+  }
+
+  @Override
+  public UAV getUav()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Sensor getSensor()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isMultiSpectral()
+  {
+    throw new UnsupportedOperationException();
   }
 
   public ComponentHasComponent addComponent(UasComponent uasComponent)
@@ -348,24 +367,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Set<String> getExcludes()
   {
     return new TreeSet<String>();
-  }
-
-  @Override
-  public void addSensor(Sensor sensor)
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<Sensor> getSensors()
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean isMultiSpectral()
-  {
-    throw new UnsupportedOperationException();
   }
 
   @Override

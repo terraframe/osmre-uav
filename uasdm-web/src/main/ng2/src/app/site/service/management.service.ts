@@ -424,7 +424,7 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
-	
+
 	pushToEros(collectionId: string): Promise<void> {
 
 		let headers = new HttpHeaders({
@@ -441,7 +441,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getMetadataOptions(id: string): Promise<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }> {
+	getMetadataOptions(id: string): Promise<{ name: string, email: string, uav: any, sensor: any }> {
 
 		let params: HttpParams = new HttpParams();
 
@@ -450,9 +450,21 @@ export class ManagementService {
 		}
 
 		return this.noErrorHttpClient
-			.get<{ sensors: Sensor[], platforms: Platform[], name: string, email: string, platform: string, sensor: string }>(acp + '/project/metadata-options', { params: params })
+			.get<{ name: string, email: string, uav: any, sensor: any }>(acp + '/project/metadata-options', { params: params })
 			.toPromise()
 	}
+
+	getUAVMetadata(uavId: string, sensorId: string): Promise<{ uav: any, sensor: any }> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('uavId', uavId);
+		params = params.set('sensorId', sensorId);
+
+		return this.noErrorHttpClient
+			.get<{ uav: any, sensor: any }>(acp + '/project/uav-metadata', { params: params })
+			.toPromise()
+	}
+
 
 	evaluate(condition: Condition, entity: SiteEntity): boolean {
 		if (condition != null && condition.type === 'eq') {
