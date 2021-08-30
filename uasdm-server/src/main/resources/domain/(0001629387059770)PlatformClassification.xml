@@ -45,6 +45,7 @@
 					<integer name="pixelSizeHeight" required="true" label="Pixel Size Height" />
 					<integer name="sensorWidth" required="true" label="Sensor Width" />
 					<integer name="sensorHeight" required="true" label="Sensor Height" />
+					<char name="model" required="false" label="Model" size="1024" />					
 					<char name="description" label="Description" size="1024" />
 					<graphReference name="sensorType"
 						type="gov.geoplatform.uasdm.graph.SensorType" required="true"

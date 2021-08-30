@@ -53,6 +53,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.OID, this.getOid());
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
+    object.put(Sensor.MODEL, this.getModel());
     object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
@@ -106,6 +107,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.OID, this.getOid());
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
+    object.put(Sensor.MODEL, this.getModel());
     object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
@@ -151,6 +153,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     sensor.setSensorHeight(json.getInt(Sensor.SENSORHEIGHT));
     sensor.setSensorWidth(json.getInt(Sensor.SENSORWIDTH));
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
+    sensor.setModel(json.has(Sensor.MODEL) ? json.getString(Sensor.MODEL) : null);
 
     if (json.has(Sensor.SENSORTYPE))
     {

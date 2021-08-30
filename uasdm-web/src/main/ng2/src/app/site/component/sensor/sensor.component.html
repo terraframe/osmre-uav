@@ -30,9 +30,14 @@
         </textarea>
       </div>
       <div class="form-group">
+        <label>Model</label>
+        <input [(ngModel)]="sensor.model" name="model" type="input" class="form-control" placeholder="Model"
+          [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
         <label>Type</label>
         <select [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control"
-          [disabled]="mode === 'READ'" placeholder="Type" required>
+          [disabled]="mode === 'READ'" required>
           <option></option>
           <option *ngFor="let type of types" [value]="type.oid">{{type.label}}</option>
         </select>

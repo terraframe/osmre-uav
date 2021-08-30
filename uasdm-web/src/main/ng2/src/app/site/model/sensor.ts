@@ -3,6 +3,7 @@ export class Sensor {
     oid: string;
     name: string;
     description?: string;
+    model?: string;
     dateCreated?: string;
     dateUpdate?: string;
     sensorType: string;
