@@ -42,6 +42,8 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -200,6 +202,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       event.delete();
     }
 
+    List<CollectionReport> reports = this.getReports();
+
+    for (CollectionReport report : reports)
+    {
+      report.delete();
+    }
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -240,6 +249,17 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
     {
       return new LinkedList<CollectionUploadEvent>(iterator.getAll());
+    }
+  }
+
+  public List<CollectionReport> getReports()
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(this.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      return new LinkedList<CollectionReport>(iterator.getAll());
     }
   }
 
@@ -421,6 +441,16 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
 
     return false;
+  }
+
+  @Override
+  public DocumentIF createDocumentIfNotExist(String key, String name)
+  {
+    DocumentIF document = super.createDocumentIfNotExist(key, name);
+
+    CollectionReport.update(this, document);
+
+    return document;
   }
 
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)

@@ -18,6 +18,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import net.geoprism.GeoprismUser;
@@ -29,6 +30,19 @@ public class UAV extends UAVBase implements JSONSerializable
   public UAV()
   {
     super();
+  }
+
+  @Override
+  public void apply()
+  {
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (!isNew)
+    {
+      CollectionReport.update(this);
+    }
   }
 
   @Override

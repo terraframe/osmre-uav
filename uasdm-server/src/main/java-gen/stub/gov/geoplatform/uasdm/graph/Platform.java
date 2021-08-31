@@ -17,6 +17,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 
@@ -39,7 +40,14 @@ public class Platform extends PlatformBase implements JSONSerializable
 
     this.setDateUpdated(new Date());
 
+    boolean isNew = this.isNew();
+
     super.apply();
+
+    if (!isNew)
+    {
+      CollectionReport.update(this);
+    }
   }
 
   @Override

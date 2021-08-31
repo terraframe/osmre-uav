@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -49,6 +49,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
@@ -66,8 +67,8 @@ import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Product extends ProductBase implements ProductIF
 {
-  public static final String ODM_ALL_DIR = "odm_all";
-  
+  public static final String  ODM_ALL_DIR      = "odm_all";
+
   private static final Logger logger           = LoggerFactory.getLogger(Product.class);
 
   private static final long   serialVersionUID = -1476643617;
@@ -90,6 +91,14 @@ public class Product extends ProductBase implements ProductIF
     {
       this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT).apply();
     }
+  }
+  
+  @Override
+  public void apply()
+  {
+    super.apply();
+    
+    CollectionReport.update(this);
   }
 
   @Override
@@ -206,14 +215,14 @@ public class Product extends ProductBase implements ProductIF
   public void clear()
   {
     Set<String> orphans = new HashSet<String>();
-    
+
     final List<Document> rawImages = this.getParents(EdgeType.DOCUMENT_GENERATED_PRODUCT, Document.class);
 
     for (Document rawImage : rawImages)
     {
       this.removeParent(rawImage, EdgeType.DOCUMENT_GENERATED_PRODUCT);
     }
-    
+
     final List<Document> orthoArtifacts = this.getChildren(EdgeType.PRODUCT_HAS_DOCUMENT, Document.class);
 
     for (Document orthoArtifact : orthoArtifacts)
@@ -221,8 +230,8 @@ public class Product extends ProductBase implements ProductIF
       orphans.add(orthoArtifact.getOid());
       this.removeChild(orthoArtifact, EdgeType.PRODUCT_HAS_DOCUMENT);
     }
-    
-    for (String orphan: orphans)
+
+    for (String orphan : orphans)
     {
       Document.get(orphan).delete(false, true);
     }
@@ -247,10 +256,10 @@ public class Product extends ProductBase implements ProductIF
     {
       return null;
     }
-    
+
     String workspace = null;
     String mapKey = null;
-    
+
     for (GeoserverLayer layer : this.getLayers())
     {
       if (layer.getClassification().equals(LayerClassification.ORTHO))
@@ -259,12 +268,12 @@ public class Product extends ProductBase implements ProductIF
         mapKey = layer.getStoreName();
       }
     }
-    
+
     if (mapKey == null || workspace == null)
     {
       return null;
     }
-    
+
     try
     {
       WMSCapabilities capabilities = GeoserverFacade.getCapabilities(workspace, mapKey);
@@ -372,15 +381,15 @@ public class Product extends ProductBase implements ProductIF
     return this.imageKey;
   }
 
-//  public String getWorkspace()
-//  {
-//    if (isPublished())
-//    {
-//      return AppProperties.getPublicWorkspace();
-//    }
-//
-//    return GeoserverProperties.getWorkspace();
-//  }
+  // public String getWorkspace()
+  // {
+  // if (isPublished())
+  // {
+  // return AppProperties.getPublicWorkspace();
+  // }
+  //
+  // return GeoserverProperties.getWorkspace();
+  // }
 
   @Override
   public boolean isPublished()
@@ -392,20 +401,21 @@ public class Product extends ProductBase implements ProductIF
   public void createImageService(boolean refreshMosaic)
   {
     GeoserverPublisher publisher = new GeoserverPublisher();
-    
+
     for (DocumentIF document : this.getDocuments())
     {
       publisher.createImageServices((Document) document, this, false);
     }
-    
+
     if (refreshMosaic)
     {
       ImageMosaicPublisher.refreshAll();
     }
   }
-  
+
   /**
-   * Refreshes S3 and the database with contents from the all zip for all products in the system.
+   * Refreshes S3 and the database with contents from the all zip for all
+   * products in the system.
    * 
    * @param sessionId
    * @param productId
@@ -414,24 +424,25 @@ public class Product extends ProductBase implements ProductIF
   public static void refreshAllDocuments() throws InterruptedException
   {
     final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
-    
+
     StringBuilder sb = new StringBuilder();
-    
+
     sb.append("SELECT FROM " + mdProduct.getDBClassName());
-    
+
     GraphQuery<Product> gq = new GraphQuery<Product>(sb.toString());
-    
+
     List<Product> results = gq.getResults();
-    
+
     for (Product product : results)
     {
       logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
       product.refreshDocuments();
     }
   }
-  
+
   /**
-   * Downloads the product's ODM all.zip and refreshes S3 and database documents with the data contained.
+   * Downloads the product's ODM all.zip and refreshes S3 and database documents
+   * with the data contained.
    * 
    * @param sessionId
    * @param productId
@@ -440,95 +451,100 @@ public class Product extends ProductBase implements ProductIF
   public void refreshDocuments() throws InterruptedException
   {
     final UasComponentIF collection = this.getComponent();
-    
+
     boolean allZipExists = this.getAllZip() != null;
-    
+
     if (allZipExists)
     {
       ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this);
-      
+
       uploader.processAllZip();
     }
   }
-  
+
   public SiteObject getAllZip()
   {
     final UasComponentIF component = this.getComponent();
 
-    // This commented out code was for fetching the all zips from the ProductHasDocument relationship. Unfortunately
-    // we can't do this because Documents don't have a lastUpdateDate field so we wouldn't know how to order them.
-    // I'm leaving this code here because it's technically a "better" solution if we ever have lastUpdate on the graph.
-//    List<DocumentIF> docs = product.getDocuments();
-//    
-//    Iterator<DocumentIF> it = docs.iterator();
-//    while (it.hasNext())
-//    {
-//      DocumentIF doc = it.next();
-//      
-//      if (! (doc.getS3location().contains("/" + Product.ODM_ALL_DIR + "/") && doc.getS3location().endsWith(".zip")))
-//      {
-//        it.remove();
-//      }
-//    }
-//    
-//    DocumentIF lastDoc = null;
-//    for (DocumentIF doc : docs)
-//    {
-//      if (lastDoc == null || doc.getLastModified().after(lastDoc.getLastModified()))
-//      {
-//        lastDoc = doc;
-//      }
-//    }
-//    
-//    if (lastDoc != null)
-//    {
-//      return component.download(lastDoc.getS3location());
-//    }
-//    else
-//    {
-      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
-  
-      SiteObject last = null;
-      
-      String path = component.getS3location().replaceAll("\\/", "\\\\/");
-      
-      if (!path.endsWith("/"))
+    // This commented out code was for fetching the all zips from the
+    // ProductHasDocument relationship. Unfortunately
+    // we can't do this because Documents don't have a lastUpdateDate field so
+    // we wouldn't know how to order them.
+    // I'm leaving this code here because it's technically a "better" solution
+    // if we ever have lastUpdate on the graph.
+    // List<DocumentIF> docs = product.getDocuments();
+    //
+    // Iterator<DocumentIF> it = docs.iterator();
+    // while (it.hasNext())
+    // {
+    // DocumentIF doc = it.next();
+    //
+    // if (! (doc.getS3location().contains("/" + Product.ODM_ALL_DIR + "/") &&
+    // doc.getS3location().endsWith(".zip")))
+    // {
+    // it.remove();
+    // }
+    // }
+    //
+    // DocumentIF lastDoc = null;
+    // for (DocumentIF doc : docs)
+    // {
+    // if (lastDoc == null ||
+    // doc.getLastModified().after(lastDoc.getLastModified()))
+    // {
+    // lastDoc = doc;
+    // }
+    // }
+    //
+    // if (lastDoc != null)
+    // {
+    // return component.download(lastDoc.getS3location());
+    // }
+    // else
+    // {
+    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+
+    SiteObject last = null;
+
+    String path = component.getS3location().replaceAll("\\/", "\\\\/");
+
+    if (!path.endsWith("/"))
+    {
+      path = path + "\\\\/";
+    }
+
+    Pattern pattern = Pattern.compile("^" + path + "odm_all\\/all.+\\.zip$", Pattern.CASE_INSENSITIVE);
+
+    for (SiteObject item : items)
+    {
+      if (last == null || item.getLastModified().after(last.getLastModified()))
       {
-        path = path + "\\\\/";
-      }
-      
-      Pattern pattern = Pattern.compile("^" + path + "odm_all\\/all.+\\.zip$", Pattern.CASE_INSENSITIVE);
-      
-      for (SiteObject item : items)
-      {
-        if (last == null || item.getLastModified().after(last.getLastModified()))
+        Matcher matcher = pattern.matcher(item.getKey());
+
+        if (matcher.find())
         {
-          Matcher matcher = pattern.matcher(item.getKey());
-          
-          if (matcher.find())
-          {
-            last = item;
-          }
+          last = item;
         }
       }
-  
-      if (last != null)
-      {
-        return last;
-      }
-      else
-      {
-        return null;
-      }
-//    }
+    }
+
+    if (last != null)
+    {
+      return last;
+    }
+    else
+    {
+      return null;
+    }
+    // }
   }
-  
+
   public RemoteFileObject downloadAllZip()
   {
     final UasComponentIF component = this.getComponent();
-    
+
     SiteObject all = this.getAllZip();
-    
+
     if (all != null)
     {
       return component.download(all.getKey());
@@ -547,9 +563,9 @@ public class Product extends ProductBase implements ProductIF
     this.apply();
 
     List<GeoserverLayer> layers = this.getLayers();
-    
+
     new GeoserverPublisher().togglePublic(layers);
-    
+
     ImageMosaicPublisher.refreshAll();
   }
 
@@ -564,28 +580,28 @@ public class Product extends ProductBase implements ProductIF
       {
         this.imageKey = document.getS3location();
       }
-//      else if (document.getName().endsWith(".tif"))
-//      {
-//        Document gdoc = (Document) document;
-//        
-//        for (GeoserverLayer layer : gdoc.getLayers())
-//        {
-//          if (layer.isPublished())
-//          {
-//            if (layer.getClassification().equals(LayerClassification.ORTHO))
-//            {
-//              this.mapKey = layer.getStoreName();
-//            }
-//            else if (layer.getClassification().equals(LayerClassification.DEM_DSM))
-//            {
-//              this.demKey = layer.getStoreName();
-//            }
-//          }
-//        }
-//      }
+      // else if (document.getName().endsWith(".tif"))
+      // {
+      // Document gdoc = (Document) document;
+      //
+      // for (GeoserverLayer layer : gdoc.getLayers())
+      // {
+      // if (layer.isPublished())
+      // {
+      // if (layer.getClassification().equals(LayerClassification.ORTHO))
+      // {
+      // this.mapKey = layer.getStoreName();
+      // }
+      // else if (layer.getClassification().equals(LayerClassification.DEM_DSM))
+      // {
+      // this.demKey = layer.getStoreName();
+      // }
+      // }
+      // }
+      // }
     }
   }
-  
+
   public void deleteAllLayers()
   {
     for (GeoserverLayer layer : this.getLayers())
@@ -593,7 +609,7 @@ public class Product extends ProductBase implements ProductIF
       layer.delete();
     }
   }
-  
+
   public List<GeoserverLayer> getLayers()
   {
     List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
@@ -602,10 +618,10 @@ public class Product extends ProductBase implements ProductIF
     for (DocumentIF document : documents)
     {
       Document gdoc = (Document) document;
-      
+
       layers.addAll(gdoc.getLayers());
     }
-    
+
     return layers;
   }
 
@@ -620,5 +636,5 @@ public class Product extends ProductBase implements ProductIF
 
     return query.getResults();
   }
-  
+
 }

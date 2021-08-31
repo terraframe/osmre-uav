@@ -24,6 +24,7 @@ import com.runwaysdk.dataaccess.DataAccessException;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -107,6 +108,8 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             // Upload the metadata file
             if (child instanceof CollectionIF)
             {
+              CollectionReport.create((CollectionIF) child);
+
               new MetadataXMLGenerator((CollectionIF) child, selection).generateAndUpload();
             }
           }

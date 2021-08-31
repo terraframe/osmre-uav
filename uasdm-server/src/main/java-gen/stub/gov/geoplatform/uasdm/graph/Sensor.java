@@ -16,6 +16,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 
@@ -38,7 +39,14 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     this.setDateUpdated(new Date());
 
+    boolean isNew = this.isNew();
+
     super.apply();
+
+    if (!isNew)
+    {
+      CollectionReport.update(this);
+    }
   }
 
   public SensorType getSensorType()

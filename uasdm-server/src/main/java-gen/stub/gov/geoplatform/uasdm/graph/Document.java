@@ -129,7 +129,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     document.setName(name);
     document.apply(uasComponent);
-
+    
     return document;
   }
 

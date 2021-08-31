@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -28,6 +28,7 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -99,6 +100,8 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage(resp.getError());
         this.apply();
+
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -106,6 +109,8 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
+
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
       }
       else
       {
@@ -128,11 +133,13 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     catch (Throwable t)
     {
       logger.error("Error occurred while initiating ODM Processing.", t);
-      
+
       this.appLock();
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
+      
+      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());              
     }
     finally
     {

@@ -44,6 +44,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.PlatformType;
@@ -238,6 +239,8 @@ public class MetadataXMLGenerator
       this.collection.appLock();
       this.collection.setMetadataUploaded(true);
       this.collection.apply();
+
+      CollectionReport.update(this.collection);
     }
     finally
     {
