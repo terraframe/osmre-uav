@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -131,9 +131,10 @@ public abstract class Converter
     // initially.
     if (siteItem.getId() != null)
     {
-//      EntityDAO entityDAO = (EntityDAO) BusinessFacade.getEntityDAO(uasComponent);
-//      Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
-//      attribute.setValue(siteItem.getId());
+      // EntityDAO entityDAO = (EntityDAO)
+      // BusinessFacade.getEntityDAO(uasComponent);
+      // Attribute attribute = entityDAO.getAttribute(EntityInfo.OID);
+      // attribute.setValue(siteItem.getId());
     }
 
     return uasComponent;
@@ -230,17 +231,16 @@ public abstract class Converter
     {
       list.add(Converter.toSiteItem(component, false));
     }
-    
-    final String s3Loc = components.size() > 0 ? components.get(components.size()-1).getS3location() : ""; 
-    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json")
-        || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
+
+    final String s3Loc = components.size() > 0 ? components.get(components.size() - 1).getS3location() : "";
+    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
-    
+
     List<GeoserverLayer> layers = ( (Product) product ).getLayers();
     view.setLayers(layers);
 
@@ -253,7 +253,7 @@ public abstract class Converter
     {
       view.setImageKey(product.getImageKey());
     }
-    
+
     if (layers.size() > 0)
     {
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
@@ -286,7 +286,9 @@ public abstract class Converter
     Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
-    FlightMetadata metadata = FlightMetadata.get(product.getComponent(), Collection.RAW, MetadataXMLGenerator.FILENAME);
+    UasComponentIF collection = product.getComponent();
+
+    FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
 
     if (metadata != null)
     {

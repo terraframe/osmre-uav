@@ -67,6 +67,11 @@ import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Product extends ProductBase implements ProductIF
 {
+  static
+  {
+    SSLLocalhostTrustConfiguration.trustLocalhost();
+  }
+
   public static final String  ODM_ALL_DIR      = "odm_all";
 
   private static final Logger logger           = LoggerFactory.getLogger(Product.class);
@@ -92,12 +97,12 @@ public class Product extends ProductBase implements ProductIF
       this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT).apply();
     }
   }
-  
+
   @Override
   public void apply()
   {
     super.apply();
-    
+
     CollectionReport.update(this);
   }
 
@@ -235,11 +240,6 @@ public class Product extends ProductBase implements ProductIF
     {
       Document.get(orphan).delete(false, true);
     }
-  }
-
-  static
-  {
-    SSLLocalhostTrustConfiguration.trustLocalhost();
   }
 
   /**

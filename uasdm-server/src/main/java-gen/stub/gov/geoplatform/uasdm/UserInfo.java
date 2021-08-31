@@ -92,7 +92,6 @@ public class UserInfo extends UserInfoBase
     page.put("pageSize", pageSize);
 
     return page;
-
   }
 
   @Transaction

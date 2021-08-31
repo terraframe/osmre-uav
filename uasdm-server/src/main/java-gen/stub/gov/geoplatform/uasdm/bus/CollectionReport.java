@@ -1,12 +1,18 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.Attribute;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.query.Selectable;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.graph.Collection;
@@ -16,17 +22,46 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.JSONSerializable;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import net.geoprism.GeoprismUser;
 
-public class CollectionReport extends CollectionReportBase
+public class CollectionReport extends CollectionReportBase implements JSONSerializable
 {
   private static final long serialVersionUID = -677130973;
 
   public CollectionReport()
   {
     super();
+  }
+
+  @Override
+  public JSONObject toJSON()
+  {
+    JSONObject object = new JSONObject();
+    object.put(CollectionReport.USERNAME, this.getUserName());
+    object.put(CollectionReport.BUREAUNAME, this.getBureauName());
+    object.put(CollectionReport.SITELATDECIMALDEGREE, this.getSiteLatDecimalDegree());
+    object.put(CollectionReport.SITELONGDECIMALDEGREE, this.getSiteLongDecimalDegree());
+    object.put(CollectionReport.SITENAME, this.getSiteName());
+    object.put(CollectionReport.PROJECTNAME, this.getProjectName());
+    object.put(CollectionReport.MISSIONNAME, this.getMissionName());
+    object.put(CollectionReport.COLLECTIONNAME, this.getCollectionName());
+    object.put(CollectionReport.PLATFORMNAME, this.getPlatformName());
+    object.put(CollectionReport.SENSORNAME, this.getSensorName());
+    object.put(CollectionReport.FAAIDNUMBER, this.getFaaIdNumber());
+    object.put(CollectionReport.SERIALNUMBER, this.getSerialNumber());
+    object.put(CollectionReport.ODMPROCESSING, this.getOdmProcessing());
+    object.put(CollectionReport.EROSMETADATACOMPLETE, this.getErosMetadataComplete());
+    object.put(CollectionReport.RAWIMAGESCOUNT, this.getRawImagesCount());
+    object.put(CollectionReport.VIDEO, this.getVideo());
+    object.put(CollectionReport.ORTHOMOSAIC, this.getOrthomosaic());
+    object.put(CollectionReport.POINTCLOUD, this.getPointCloud());
+    object.put(CollectionReport.HILLSHADE, this.getHillshade());
+    object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
+
+    return object;
   }
 
   @Transaction
@@ -285,6 +320,34 @@ public class CollectionReport extends CollectionReportBase
         report.setProductsShared(product.getPublished());
         report.apply();
       }
+    }
+  }
+
+  public static Page<CollectionReport> page(Integer pageSize, Integer pageNumber, JSONArray filters)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+
+    for (int i = 0; i < filters.length(); i++)
+    {
+      JSONObject filter = filters.getJSONObject(i);
+      String attributeName = filter.getString("attribute");
+      String value = filter.get("value").toString();
+
+      Selectable attribute = (Selectable) query.get(attributeName);
+
+      if (attribute != null)
+      {
+        query.WHERE(attribute.EQ(value));
+      }
+    }
+
+    query.restrictRows(pageSize, pageNumber);
+
+    long count = query.getCount();
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      return new Page<CollectionReport>(count, pageNumber, pageSize, new LinkedList<CollectionReport>(iterator.getAll()));
     }
   }
 

@@ -462,7 +462,7 @@ public class FlightMetadata
   {
     FlightMetadata metadata = new FlightMetadata();
 
-    String key = component.getS3location() + folderName + "/" + component.getName() + filename;
+    String key = component.getS3location() + folderName + "/" + filename;
 
     try (RemoteFileObject object = component.download(key))
     {
