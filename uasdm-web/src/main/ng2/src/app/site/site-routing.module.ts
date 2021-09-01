@@ -17,6 +17,7 @@ import { Endpoint } from './service/classification.service';
 import { ClassificationComponent } from './component/classification/classification.component';
 import { UAVsComponent } from './component/uav/uavs.component';
 import { UAVComponent } from './component/uav/uav.component';
+import { ReportsComponent } from './component/report/reports.component';
 
 const routes: Routes = [
     {
@@ -38,6 +39,11 @@ const routes: Routes = [
         path: 'tasks',
         canActivate: [AuthGuard],
         component: TasksComponent
+    },
+    {
+        path: 'report',
+        canActivate: [AuthGuard],
+        component: ReportsComponent
     },
     {
         path: 'sensors',

@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.math.BigDecimal;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +12,10 @@ import org.json.JSONObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.Attribute;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
+import com.runwaysdk.query.SelectableChar;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.graph.Collection;
@@ -323,25 +326,58 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
-  public static Page<CollectionReport> page(Integer pageSize, Integer pageNumber, JSONArray filters)
+  @SuppressWarnings("unchecked")
+  public static Page<CollectionReport> page(JSONObject criteria)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    int pageSize = 10;
+    int pageNumber = 1;
 
-    for (int i = 0; i < filters.length(); i++)
+    if (criteria.has("first") && criteria.has("rows"))
     {
-      JSONObject filter = filters.getJSONObject(i);
-      String attributeName = filter.getString("attribute");
-      String value = filter.get("value").toString();
+      int first = criteria.getInt("first");
+      pageSize = criteria.getInt("rows");
+      pageNumber = ( first / pageSize ) + 1;
 
-      Selectable attribute = (Selectable) query.get(attributeName);
-
-      if (attribute != null)
-      {
-        query.WHERE(attribute.EQ(value));
-      }
+      query.restrictRows(pageSize, pageNumber);
     }
 
-    query.restrictRows(pageSize, pageNumber);
+    if (criteria.has("sortField") && criteria.has("sortOrder"))
+    {
+      String field = criteria.getString("sortField");
+      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+      query.ORDER_BY(query.getS(field), order);
+
+    }
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        Selectable attribute = query.get(attributeName);
+
+        if (attribute != null)
+        {
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            SelectableChar selectable = (SelectableChar) attribute;
+
+            query.WHERE(selectable.LIKEi("%" + value + "%"));
+          }
+        }
+      }
+    }
 
     long count = query.getCount();
 

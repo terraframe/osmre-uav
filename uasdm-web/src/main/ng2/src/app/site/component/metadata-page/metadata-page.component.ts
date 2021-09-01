@@ -80,7 +80,7 @@ export class MetadataPageComponent implements OnInit {
 	handleUavClick(event: any): void {
 		this.getUavInformation(event.item.oid, true);
 
-		this.handlePageChange();
+		this.pageChange.emit(this.page);
 	}
 
 	getUavInformation(oid: string, reset: boolean): void {

@@ -13,6 +13,12 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 
+
+import { TableModule } from 'primeng/table';
+import { SliderModule } from 'primeng/slider';
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
 import { EntityModalComponent } from './component/modal/entity-modal.component';
@@ -51,6 +57,8 @@ import { UAVsComponent } from './component/uav/uavs.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { UAVService } from './service/uav.service';
 import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
+import { ReportsComponent } from './component/report/reports.component';
+import { ReportService } from './service/report.service';
 
 @NgModule({
 	imports: [
@@ -69,7 +77,12 @@ import { MetadataPageComponent } from './component/metadata-page/metadata-page.c
 		CollapseModule.forRoot(),
 		SharedModule,
 		SiteRoutingModule,
-		NgxFileDropModule
+		NgxFileDropModule,
+
+        TableModule,
+		SliderModule,
+		DropdownModule,
+		MultiSelectModule
 	],
 	declarations: [
 		MapAttributeComponent,
@@ -95,7 +108,8 @@ import { MetadataPageComponent } from './component/metadata-page/metadata-page.c
 		ClassificationComponent,
 		UAVsComponent,
 		UAVComponent,
-		MetadataPageComponent
+		MetadataPageComponent,
+		ReportsComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -106,7 +120,8 @@ import { MetadataPageComponent } from './component/metadata-page/metadata-page.c
 		PlatformService,
 		MetadataService,
 		ClassificationService,
-		UAVService
+		UAVService,
+		ReportService
 	],
 	entryComponents: [
 		UploadModalComponent,

@@ -11,9 +11,9 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 public class CollectionReportService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageSize, Integer pageNumber, JSONArray criteria)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return CollectionReport.page(pageSize, pageNumber, criteria).toJSON();
+    return CollectionReport.page(criteria).toJSON();
   }
 
 }
