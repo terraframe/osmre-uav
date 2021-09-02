@@ -6,18 +6,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.Attribute;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
+import com.runwaysdk.system.Actor;
 import com.vividsolutions.jts.geom.Point;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
@@ -51,6 +51,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.PROJECTNAME, this.getProjectName());
     object.put(CollectionReport.MISSIONNAME, this.getMissionName());
     object.put(CollectionReport.COLLECTIONNAME, this.getCollectionName());
+    object.put(CollectionReport.COLLECTIONDATE, Util.formatIso8601(this.getCollectionDate(), false));
     object.put(CollectionReport.PLATFORMNAME, this.getPlatformName());
     object.put(CollectionReport.SENSORNAME, this.getSensorName());
     object.put(CollectionReport.FAAIDNUMBER, this.getFaaIdNumber());
@@ -63,6 +64,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.POINTCLOUD, this.getPointCloud());
     object.put(CollectionReport.HILLSHADE, this.getHillshade());
     object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
+    object.put(CollectionReport.ALLSTORAGESIZE, this.getAllStorageSize());
 
     return object;
   }
@@ -84,10 +86,12 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     Point geometry = site.getGeoPoint();
 
     CollectionReport report = new CollectionReport();
+    report.setActor(owner);
     report.setSite(site);
     report.setProject(project);
     report.setMission(mission);
     report.setCollection(collection);
+    report.setCollectionDate(collection.getCollectionDate());
     report.setUav(uav);
     report.setPlatform(platform);
     report.setSensor(sensor);
@@ -104,8 +108,9 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     report.setSensorName(sensor.getName());
     report.setFaaIdNumber(uav.getFaaNumber());
     report.setSerialNumber(uav.getSerialNumber());
+    report.setProductsShared(false);
     report.setOdmProcessing("not requested");
-    // report.setCollectionDate(new Date());
+    report.setAllStorageSize(0L);
     report.apply();
 
     /*
@@ -149,6 +154,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         CollectionReport report = iterator.next();
         report.appLock();
         report.setCollectionName(collection.getName());
+        report.setCollectionDate(collection.getCollectionDate());
         report.setErosMetadataComplete(collection.getMetadataUploaded());
         report.apply();
       }
@@ -326,6 +332,43 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  public static void update(GeoprismUser actor)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getActor().EQ(actor.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setUserName(actor.getUsername());
+        report.apply();
+      }
+    }
+  }
+
+  public static void update(CollectionIF collection, Long storageSize)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(collection.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setCollectionName(collection.getName());
+        report.setCollectionDate(collection.getCollectionDate());
+        report.setErosMetadataComplete(collection.getMetadataUploaded());
+        report.setAllStorageSize(storageSize);
+        report.apply();
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public static Page<CollectionReport> page(JSONObject criteria)
   {
@@ -374,6 +417,10 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
             SelectableChar selectable = (SelectableChar) attribute;
 
             query.WHERE(selectable.LIKEi("%" + value + "%"));
+          }
+          else if (mode.equals("equals"))
+          {
+            query.WHERE(attribute.EQ(value));
           }
         }
       }

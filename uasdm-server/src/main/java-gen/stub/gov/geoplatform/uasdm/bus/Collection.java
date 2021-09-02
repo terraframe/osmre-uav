@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,6 +77,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public String getSolrNameField()
   {
     return "collectionName";
+  }
+
+  @Override
+  public Date getCollectionDate()
+  {
+    return null;
   }
 
   @Override

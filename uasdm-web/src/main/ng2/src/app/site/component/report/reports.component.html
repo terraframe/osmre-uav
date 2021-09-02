@@ -23,6 +23,11 @@
 
 						<input *ngSwitchCase="'TEXT'" pInputText type="text"
 							(input)="dt.filter($event.target.value, col.field, 'contains')">
+						<input *ngSwitchCase="'NUMBER'" pInputText type="number"
+							(input)="dt.filter($event.target.value, col.field, 'equals')">
+						<p-dropdown *ngSwitchCase="'BOOLEAN'" [options]="booleanOptions"
+							(onChange)="dt.filter($event.value.value, col.field, 'equals')"
+							optionLabel="label" optionValue="value" [virtualScroll]="true"></p-dropdown>
 					</th>
 				</tr>
 			</ng-template>

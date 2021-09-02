@@ -96,12 +96,6 @@ public class Product extends ProductBase implements ProductIF
     {
       this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT).apply();
     }
-  }
-
-  @Override
-  public void apply()
-  {
-    super.apply();
 
     CollectionReport.update(this);
   }

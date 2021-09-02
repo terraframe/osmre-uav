@@ -420,13 +420,27 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public UAV getUav()
   {
-    return ( gov.geoplatform.uasdm.graph.UAV.get(this.getObjectValue(UAV)) );
+    String oid = this.getObjectValue(UAV);
+
+    if (oid != null && oid.length() > 0)
+    {
+      return ( gov.geoplatform.uasdm.graph.UAV.get(oid) );
+    }
+
+    return null;
   }
 
   @Override
   public Sensor getSensor()
   {
-    return ( gov.geoplatform.uasdm.graph.Sensor.get(this.getObjectValue(COLLECTIONSENSOR)) );
+    String oid = this.getObjectValue(COLLECTIONSENSOR);
+
+    if (oid != null && oid.length() > 0)
+    {
+      return ( gov.geoplatform.uasdm.graph.Sensor.get(oid) );
+    }
+
+    return null;
   }
 
   @Override

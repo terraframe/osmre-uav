@@ -8,6 +8,7 @@
 					<graphReference name="mission" type="gov.geoplatform.uasdm.graph.Mission" required="true" label="Mission" />
 					<graphReference name="collection" type="gov.geoplatform.uasdm.graph.Collection" required="true" label="Collection" />
 					<reference name="bureau" type="gov.geoplatform.uasdm.bus.Bureau" required="true" label="Bureau" />
+					<reference name="actor" type="com.runwaysdk.system.Actor" required="true" label="Actor" />
 					<graphReference name="uav" type="gov.geoplatform.uasdm.graph.UAV" required="true" label="UAV" />
 					<graphReference name="sensor" type="gov.geoplatform.uasdm.graph.Sensor" required="true" label="Sensor" />
 					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="true" label="Platform" />

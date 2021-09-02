@@ -12,6 +12,8 @@
 						<graphReference name="collectionSensor"
 							type="gov.geoplatform.uasdm.graph.Sensor" required="false"
 							label="Sensor" />
+					    <date name="collectionDate" required="false" label="Collection Date" description="Date collection was flown" />
+						
 					</attributes>
 				</create>
 			</mdVertex>
@@ -21,7 +23,9 @@
 		<delete>
 			<object key="gov.geoplatform.uasdm.graph.Collection.uav"
 				type="com.runwaysdk.system.metadata.MdAttribute" />
-			<object key="gov.geoplatform.uasdm.graph.Collection.sensor"
+			<object key="gov.geoplatform.uasdm.graph.Collection.collectionSensor"
+				type="com.runwaysdk.system.metadata.MdAttribute" />
+			<object key="gov.geoplatform.uasdm.graph.Collection.collectionDate"
 				type="com.runwaysdk.system.metadata.MdAttribute" />
 		</delete>
 	</undoIt>

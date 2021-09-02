@@ -41,7 +41,7 @@ export class MetadataService {
 
     hasExtraField( type: string, fieldName: string ): boolean {
         if ( type === 'Collection' ) {
-            return ( fieldName === 'platform' || fieldName === 'sensor' || fieldName === 'uav' );
+            return ( fieldName === 'collectionDate' || fieldName === 'sensor' || fieldName === 'uav' );
         }
 
         return false;

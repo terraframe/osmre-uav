@@ -15,13 +15,13 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
-import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 
@@ -52,4 +52,6 @@ public interface CollectionIF extends UasComponentIF
   public Sensor getSensor();
 
   public UAV getUav();
+
+  public Date getCollectionDate();
 }

@@ -65,6 +65,7 @@ export class Selection {
 	label: string;
 	uav?: string;
 	sensor?: string;
+	collectionDate? : string;
 	pointOfContact?: {
 		name: string,
 		email: string

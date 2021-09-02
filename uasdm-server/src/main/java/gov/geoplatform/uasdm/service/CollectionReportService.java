@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.service;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;

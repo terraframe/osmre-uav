@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 95547487)
+@com.runwaysdk.business.ClassSignature(hash = 362021314)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,17 +11,34 @@ package gov.geoplatform.uasdm.graph;
 public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Collection";
+  public static java.lang.String COLLECTIONDATE = "collectionDate";
   public static java.lang.String COLLECTIONSENSOR = "collectionSensor";
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
   public static java.lang.String UAV = "uav";
-  private static final long serialVersionUID = 95547487;
+  private static final long serialVersionUID = 362021314;
   
   public CollectionBase()
   {
     super();
+  }
+  
+  public java.util.Date getCollectionDate()
+  {
+    return (java.util.Date) this.getObjectValue(COLLECTIONDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getCollectionDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(COLLECTIONDATE);
+  }
+  
+  public void setCollectionDate(java.util.Date value)
+  {
+    this.setValue(COLLECTIONDATE, value);
   }
   
   public gov.geoplatform.uasdm.graph.Sensor getCollectionSensor()

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 141775571)
+@com.runwaysdk.business.ClassSignature(hash = 1784506269)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,6 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class CollectionReportBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
+  public static java.lang.String ACTOR = "actor";
   public static java.lang.String ALLSTORAGESIZE = "allStorageSize";
   public static java.lang.String BUREAU = "bureau";
   public static java.lang.String BUREAUNAME = "bureauName";
@@ -57,11 +58,63 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String UAV = "uav";
   public static java.lang.String USERNAME = "userName";
   public static java.lang.String VIDEO = "video";
-  private static final long serialVersionUID = 141775571;
+  private static final long serialVersionUID = 1784506269;
   
   public CollectionReportBase()
   {
     super();
+  }
+  
+  public com.runwaysdk.system.Actor getActor()
+  {
+    if (getValue(ACTOR).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return com.runwaysdk.system.Actor.get(getValue(ACTOR));
+    }
+  }
+  
+  public String getActorOid()
+  {
+    return getValue(ACTOR);
+  }
+  
+  public void validateActor()
+  {
+    this.validateAttribute(ACTOR);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getActorMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(ACTOR);
+  }
+  
+  public void setActor(com.runwaysdk.system.Actor value)
+  {
+    if(value == null)
+    {
+      setValue(ACTOR, "");
+    }
+    else
+    {
+      setValue(ACTOR, value.getOid());
+    }
+  }
+  
+  public void setActorId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(ACTOR, "");
+    }
+    else
+    {
+      setValue(ACTOR, oid);
+    }
   }
   
   public Long getAllStorageSize()

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -473561796)
+@com.runwaysdk.business.ClassSignature(hash = -1698705132)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,29 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.CollectionReport.CLASS;
+  }
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor()
+  {
+    return getActor(null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR);
+
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR);
+
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR, mdAttributeIF, this, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableLong getAllStorageSize()
   {
@@ -860,7 +883,11 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR)) 
+    {
+       return new com.runwaysdk.system.ActorQuery.ActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
     {
        return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
@@ -923,6 +950,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionReportQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor();
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias);
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getAllStorageSize();
     public com.runwaysdk.query.SelectableLong getAllStorageSize(String alias);
     public com.runwaysdk.query.SelectableLong getAllStorageSize(String alias, String displayLabel);
@@ -1096,6 +1126,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
       return this.NE(collectionReport.getOid());
     }
 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor()
+  {
+    return getActor(null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias)
+  {
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR, alias, null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR,  alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableLong getAllStorageSize()
   {
     return getAllStorageSize(null);
@@ -1882,7 +1929,11 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR)) 
+    {
+       return new com.runwaysdk.system.ActorQuery.ActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
     {
        return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
@@ -1922,6 +1973,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionReportQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor();
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias);
+    public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getAllStorageSize();
     public com.runwaysdk.query.SelectableLong getAllStorageSize(String alias);
     public com.runwaysdk.query.SelectableLong getAllStorageSize(String alias, String displayLabel);
@@ -2144,6 +2198,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
 
       return this.containsExactly(itemIdArray);
   }
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor()
+  {
+    return getActor(null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias)
+  {
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR, alias, null);
+
+  }
+ 
+  public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getActor(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR,  alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableLong getAllStorageSize()
   {
     return getAllStorageSize(null);
@@ -2930,7 +3001,11 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   {
     String name = mdAttributeIF.definesAttribute();
     
-    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
+    if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ACTOR)) 
+    {
+       return new com.runwaysdk.system.ActorQuery.ActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.BUREAU)) 
     {
        return new gov.geoplatform.uasdm.bus.BureauQuery.BureauQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }

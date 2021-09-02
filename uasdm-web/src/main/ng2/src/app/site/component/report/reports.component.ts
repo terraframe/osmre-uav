@@ -22,6 +22,7 @@ export class ReportsComponent implements OnInit {
     cols: any = [
         { header: 'Collection', field: 'collectionName', type: 'TEXT', sortable: true },
         { header: 'Collection Owner', field: 'userName', type: 'TEXT', sortable: true },
+        { header: 'Collection Date', field: 'collectionDate', type: 'DATE', sortable: true },
         { header: 'Mission', field: 'missionName', type: 'TEXT', sortable: true },
         { header: 'Project', field: 'projectName', type: 'TEXT', sortable: true },
         { header: 'Site', field: 'siteName', type: 'TEXT', sortable: true },
@@ -32,7 +33,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Sensor', field: 'sensorName', type: 'TEXT', sortable: true },
         { header: 'FAA Id Number', field: 'faaIdNumber', type: 'TEXT', sortable: true },
         { header: 'Serial Number', field: 'serialNumber', type: 'TEXT', sortable: true },
-        { header: 'ODM Processing', field: 'odmProcessing', type: 'BOOLEAN', sortable: false },
+        { header: 'ODM Processing', field: 'odmProcessing', type: 'TEXT', sortable: false },
         { header: 'RAW Images Count', field: 'rawImagesCount', type: 'NUMBER', sortable: false },
         { header: 'EROS Metadata Complete', field: 'erosMetadataComplete', type: 'BOOLEAN', sortable: false },
         { header: 'Video', field: 'video', type: 'BOOLEAN', sortable: false },
@@ -40,13 +41,18 @@ export class ReportsComponent implements OnInit {
         { header: 'Point Cloud', field: 'pointCloud', type: 'BOOLEAN', sortable: false },
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
+        { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true },
     ];
 
     loading: boolean = true;
 
+    booleanOptions: any = [];
+
     rows: Report[];
 
-    constructor(private service: ReportService) { }
+    constructor(private service: ReportService) { 
+        this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
+    }
 
     ngOnInit(): void {
         // this.onPageChange(1);

@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1410662061)
+@com.runwaysdk.business.ClassSignature(hash = 1444833565)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  private static final long serialVersionUID = -1410662061;
+  private static final long serialVersionUID = 1444833565;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -27,6 +27,7 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
     return CLASS;
   }
   
+  public static java.lang.String ACTOR = "actor";
   public static java.lang.String ALLSTORAGESIZE = "allStorageSize";
   public static java.lang.String BUREAU = "bureau";
   public static java.lang.String BUREAUNAME = "bureauName";
@@ -73,6 +74,55 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String UAV = "uav";
   public static java.lang.String USERNAME = "userName";
   public static java.lang.String VIDEO = "video";
+  public com.runwaysdk.system.ActorDTO getActor()
+  {
+    if(getValue(ACTOR) == null || getValue(ACTOR).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return com.runwaysdk.system.ActorDTO.get(getRequest(), getValue(ACTOR));
+    }
+  }
+  
+  public String getActorOid()
+  {
+    return getValue(ACTOR);
+  }
+  
+  public void setActor(com.runwaysdk.system.ActorDTO value)
+  {
+    if(value == null)
+    {
+      setValue(ACTOR, "");
+    }
+    else
+    {
+      setValue(ACTOR, value.getOid());
+    }
+  }
+  
+  public boolean isActorWritable()
+  {
+    return isWritable(ACTOR);
+  }
+  
+  public boolean isActorReadable()
+  {
+    return isReadable(ACTOR);
+  }
+  
+  public boolean isActorModified()
+  {
+    return isModified(ACTOR);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getActorMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(ACTOR).getAttributeMdDTO();
+  }
+  
   public Long getAllStorageSize()
   {
     return com.runwaysdk.constants.MdAttributeLongUtil.getTypeSafeValue(getValue(ALLSTORAGESIZE));

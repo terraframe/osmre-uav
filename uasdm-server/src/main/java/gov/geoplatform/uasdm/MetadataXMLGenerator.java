@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.SolrService;
 
 public class MetadataXMLGenerator
@@ -240,7 +241,9 @@ public class MetadataXMLGenerator
       this.collection.setMetadataUploaded(true);
       this.collection.apply();
 
-      CollectionReport.update(this.collection);
+      Long calculateSize = RemoteFileFacade.calculateSize(this.collection);
+
+      CollectionReport.update(this.collection, calculateSize);
     }
     finally
     {

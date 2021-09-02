@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -44,8 +45,10 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -57,8 +60,8 @@ import gov.geoplatform.uasdm.view.SiteObject;
 public class Util
 {
   public static final TimeZone SYSTEM_TIMEZONE = TimeZone.getTimeZone("UTC");
-  
-  public static final int BUFFER_SIZE = 1024;
+
+  public static final int      BUFFER_SIZE     = 1024;
 
   public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
   {
@@ -67,38 +70,60 @@ public class Util
 
   public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
   {
-//    if (folder.equals(ImageryComponent.ORTHO))
-//    {
-//      for (SiteObject object : objects)
-//      {
-//        String key = object.getKey();
-//
-//        if (key.endsWith(".tif"))
-//        {
-//          String storeName = imageryComponent.getStoreName(key);
-//
-//          if (GeoserverFacade.layerExists(storeName))
-//          {
-//            object.setImageKey(storeName);
-//          }
-//        }
-//      }
-//    }
+    // if (folder.equals(ImageryComponent.ORTHO))
+    // {
+    // for (SiteObject object : objects)
+    // {
+    // String key = object.getKey();
+    //
+    // if (key.endsWith(".tif"))
+    // {
+    // String storeName = imageryComponent.getStoreName(key);
+    //
+    // if (GeoserverFacade.layerExists(storeName))
+    // {
+    // object.setImageKey(storeName);
+    // }
+    // }
+    // }
+    // }
   }
-  
+
   public static String formatIso8601(Date date, boolean includeTime)
+  {
+    if (date != null)
+    {
+
+      if (!includeTime)
+      {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        formatter.setTimeZone(SYSTEM_TIMEZONE);
+        return formatter.format(date);
+      }
+      else
+      {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        formatter.setTimeZone(SYSTEM_TIMEZONE);
+        return formatter.format(date);
+      }
+    }
+
+    return null;
+  }
+
+  public static Date parseIso8601(String date, boolean includeTime) throws ParseException
   {
     if (!includeTime)
     {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
       formatter.setTimeZone(SYSTEM_TIMEZONE);
-      return formatter.format(date);
+      return formatter.parse(date);
     }
     else
     {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       formatter.setTimeZone(SYSTEM_TIMEZONE);
-      return formatter.format(date);
+      return formatter.parse(date);
     }
   }
 
@@ -120,20 +145,20 @@ public class Util
 
   public static void deleteS3Object(String key, ImageryComponent imageryComponent)
   {
-//    if (key.endsWith(".tif"))
-//    {
-//      String[] paths = key.split("/");
-//
-//      if (paths.length > 1)
-//      {
-//        if (paths[paths.length - 2].startsWith(ImageryComponent.ORTHO))
-//        {
-//          String storeName = imageryComponent.getStoreName(key);
-//
-//          Util.removeCoverageStore(workspace, storeName);
-//        }
-//      }
-//    }
+    // if (key.endsWith(".tif"))
+    // {
+    // String[] paths = key.split("/");
+    //
+    // if (paths.length > 1)
+    // {
+    // if (paths[paths.length - 2].startsWith(ImageryComponent.ORTHO))
+    // {
+    // String storeName = imageryComponent.getStoreName(key);
+    //
+    // Util.removeCoverageStore(workspace, storeName);
+    // }
+    // }
+    // }
   }
 
   public static boolean isVideoFile(String path)
@@ -178,11 +203,11 @@ public class Util
       try (ZipFile zipFile = new ZipFile(fArchive))
       {
         Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-        
+
         while (entries.hasMoreElements())
         {
           ZipArchiveEntry entry = entries.nextElement();
-          
+
           try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
           {
             try (FileOutputStream fos = new FileOutputStream(tmp))
@@ -196,13 +221,13 @@ public class Util
                 }
               }
             }
-  
+
             // Upload the file to S3
             String filename = entry.getName();
             String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
-  
+
             boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
-  
+
             if (success)
             {
               filenames.add(filename);
@@ -214,7 +239,7 @@ public class Util
     catch (IOException e)
     {
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-      
+
       throw new InvalidZipException();
     }
 
@@ -320,6 +345,13 @@ public class Util
         component.createDocumentIfNotExist(key, name);
 
         SolrService.updateOrCreateDocument(ancestors, component, key, name);
+
+        if (component instanceof CollectionIF)
+        {
+          Long calculateSize = RemoteFileFacade.calculateSize(component);
+
+          CollectionReport.update((CollectionIF) component, calculateSize);
+        }
 
         return true;
       }
