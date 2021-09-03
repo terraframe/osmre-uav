@@ -26,6 +26,7 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from 'angular-animations';
+import { ActivatedRoute } from '@angular/router';
 
 
 declare var acp: any;
@@ -141,7 +142,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   tasks: Task[] = [];
 
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
-    private modalService: BsModalService, private metadataService: MetadataService) {
+    private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute) {
 
     this.subject = new Subject();
     this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
@@ -186,6 +187,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tasks.push(message.content);
       }
     });
+
+    const oid = this.route.snapshot.params['oid'];
+    const action = this.route.snapshot.params['action'];
+
+    if(oid != null && action != null && action === 'collection') {
+      this.handleViewSite(oid);
+    }
   }
 
   ngOnDestroy(): void {
@@ -993,105 +1001,4 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
   }
-
-
-
-  //    /*
-  //     *  Context menu visibility functions
-  //     */
-  //    public canEdit = ( item: any ): boolean => {
-  //        if ( this.admin ) {
-  //            return true;
-  //        }
-  //        else if ( this.worker ) {
-  //            return ( item.data.type === "Mission" || item.data.type === "Collection" );
-  //        }
-  //
-  //        return false;
-  //    }
-  //
-  //    public canRunOrtho = ( item: any ): boolean => {
-  //        if ( item.data == null || item.data.type !== "Collection" ) {
-  //            return false;
-  //        }
-  //
-  //        return true;
-  //
-  //        // TODO : If we don't have raw images uploaded then they can't run ortho
-  //
-  //        // TODO : Different roles?
-  //        //      if ( this.admin ) {
-  //        //        return true;
-  //        //      }
-  //        //
-  //        //      return false;
-  //    }
-  //
-  //    public canDelete = ( item: any ): boolean => {
-  //        if ( this.admin ) {
-  //            return true;
-  //        }
-  //
-  //        return false;
-  //    }
-  //
-  //    public canAddChild = ( item: any ): boolean => {
-  //        if ( this.admin && item.data.type !== "Collection" && item.data.type !== "Imagery" ) {
-  //            return true;
-  //        }
-  //        else if ( this.worker && ( item.data.type === "Project" || item.data.type === "Mission" ) ) {
-  //            return true;
-  //        }
-  //
-  //        return false;
-  //    }
-  //
-  //    public canCreateImageDir( item: any ): boolean {
-  //        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.data.type === 'Project' ) {
-  //            return true;
-  //        }
-  //    }
-  //
-  //    public canEditSite = ( item: any ): boolean => {
-  //        return item.data.type === "Site" && this.canEdit( item );
-  //    }
-  //
-  //    public hasMapImage = ( item: any ): boolean => {
-  //        return ( item.data.imageKey != null );
-  //    }
-  //
-  //    public isSite = ( item: any ): boolean => {
-  //        return item.data.type === "Site";
-  //    }
-  //
-  //    public isImageDir = ( item: any ): boolean => {
-  //        return item.data.type === "Imagery";
-  //    }
-  //
-  //    public isCollection = ( item: any ): boolean => {
-  //        return item.data.type === "Collection";
-  //    }
-  //
-  //    public canUpload = ( item: any ): boolean => {
-  //        // Only allow direct uploads on Imagery child nodes
-  //        if ( gpAppType && gpAppType.toLowerCase() === 'nps' && item.parent.data.type !== "Collection" ) {
-  //            if ( item.data.name === "raw" ) {
-  //                return true;
-  //            }
-  //            else if ( item.data.name === "georef" ) {
-  //                return true;
-  //            }
-  //            else if ( item.data.name === "ortho" ) {
-  //                return true;
-  //            }
-  //            // else if(item.data.type === "Collection"){
-  //            //     return true;
-  //            // }
-  //            // else if(item.data.type === "Imagery"){
-  //            //     return true;
-  //            // }
-  //        }
-  //
-  //        return false;
-  //    }
 }

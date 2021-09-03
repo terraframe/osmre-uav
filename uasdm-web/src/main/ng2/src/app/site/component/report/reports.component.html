@@ -21,21 +21,32 @@
 				<tr>
 					<th *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
 
+						<input *ngSwitchCase="'URL'" pInputText type="text"
+							(input)="dt.filter($event.target.value, col.field, 'contains')">
 						<input *ngSwitchCase="'TEXT'" pInputText type="text"
 							(input)="dt.filter($event.target.value, col.field, 'contains')">
 						<input *ngSwitchCase="'NUMBER'" pInputText type="number"
 							(input)="dt.filter($event.target.value, col.field, 'equals')">
 						<p-dropdown *ngSwitchCase="'BOOLEAN'" [options]="booleanOptions"
-							(onChange)="dt.filter($event.value.value, col.field, 'equals')"
-							optionLabel="label" optionValue="value" [virtualScroll]="true"></p-dropdown>
+							(onChange)="dt.filter($event.value.value, col.field, 'equals')" optionLabel="label"
+							optionValue="value" [virtualScroll]="true"></p-dropdown>
 					</th>
 				</tr>
 			</ng-template>
 
 			<ng-template pTemplate="body" let-rowData let-columns="columns">
 				<tr>
-					<td *ngFor="let col of columns" style="width:250px">
-						{{rowData[col.field]}}
+					<td *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
+						<ng-container *ngSwitchCase="'URL'">
+							<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
+								{{rowData[col.field]}}</a>
+						</ng-container>
+						<ng-container *ngSwitchCase="'CONSTANT'">
+							<a *ngIf="rowData[col.field] != null" (click)="onClick(rowData, col)"> {{col.text}}</a>
+						</ng-container>
+						<ng-container *ngSwitchDefault>
+							{{rowData[col.field]}}
+						</ng-container>
 					</td>
 				</tr>
 			</ng-template>

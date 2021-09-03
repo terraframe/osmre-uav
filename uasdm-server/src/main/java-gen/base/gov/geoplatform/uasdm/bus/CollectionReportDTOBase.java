@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1444833565)
+@com.runwaysdk.business.ClassSignature(hash = 1246733163)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  private static final long serialVersionUID = 1444833565;
+  private static final long serialVersionUID = 1246733163;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -55,6 +55,7 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PLATFORMNAME = "platformName";
   public static java.lang.String POINTCLOUD = "pointCloud";
+  public static java.lang.String PRODUCT = "product";
   public static java.lang.String PRODUCTSLINK = "productsLink";
   public static java.lang.String PRODUCTSSHARED = "productsShared";
   public static java.lang.String PROJECT = "project";

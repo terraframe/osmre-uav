@@ -5,6 +5,9 @@ import { PageResult } from '@shared/model/page';
 
 import { Report } from '@site/model/report';
 import { ReportService } from '@site/service/report.service';
+import { ProductService } from '@site/service/product.service';
+import { BsModalService } from 'ngx-bootstrap';
+import { ProductModalComponent } from '../modal/product-modal.component';
 @Component({
     selector: 'reports',
     templateUrl: './reports.component.html',
@@ -20,7 +23,7 @@ export class ReportsComponent implements OnInit {
     message: string = null;
 
     cols: any = [
-        { header: 'Collection', field: 'collectionName', type: 'TEXT', sortable: true },
+        { header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true },
         { header: 'Collection Owner', field: 'userName', type: 'TEXT', sortable: true },
         { header: 'Collection Date', field: 'collectionDate', type: 'DATE', sortable: true },
         { header: 'Mission', field: 'missionName', type: 'TEXT', sortable: true },
@@ -42,6 +45,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true },
+        { header: '', field:'product', text: 'View Product', type: 'CONSTANT', sortable: false },
     ];
 
     loading: boolean = true;
@@ -50,7 +54,7 @@ export class ReportsComponent implements OnInit {
 
     rows: Report[];
 
-    constructor(private service: ReportService) { 
+    constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService) {
         this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
     }
 
@@ -70,5 +74,25 @@ export class ReportsComponent implements OnInit {
                 this.loading = false;
             });
         }, 1000);
+    }
+
+    onClick(row: any, column: any): void {
+
+        if (column.field === 'product') {
+
+            const oid = row['product'];
+
+            if (oid != null && oid.length > 0) {
+                this.pService.getDetail(oid, 1, 20).then(detail => {
+                    const bsModalRef = this.modalService.show(ProductModalComponent, {
+                        animated: true,
+                        backdrop: true,
+                        ignoreBackdropClick: true,
+                        'class': 'product-info-modal'
+                    });
+                    bsModalRef.content.init(detail);
+                });
+            }
+        }
     }
 }

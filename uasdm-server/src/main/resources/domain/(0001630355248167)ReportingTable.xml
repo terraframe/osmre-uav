@@ -12,6 +12,7 @@
 					<graphReference name="uav" type="gov.geoplatform.uasdm.graph.UAV" required="true" label="UAV" />
 					<graphReference name="sensor" type="gov.geoplatform.uasdm.graph.Sensor" required="true" label="Sensor" />
 					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="true" label="Platform" />
+					<graphReference name="product" type="gov.geoplatform.uasdm.graph.Product" required="false" label="Product" />
 
 					<char name="bureauName" required="false" label="Bureau" size="4096" />
 					<char name="userName" required="false" label="User Name" size="4096" />
@@ -45,14 +46,20 @@
 		<permissions>
 			<role roleName="geoprism.admin.Administrator">
 				<grant>
-					<mdBusinessPermission
-						type="gov.geoplatform.uasdm.bus.CollectionReport">
+					<mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionReport">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+				</grant>
+			</role>
+			<role roleName="geoprism.admin.DashboardBuilder">
+				<grant>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionReport">
 						<operation name="ALL" />
 					</mdBusinessPermission>
 				</grant>
 			</role>
 		</permissions>
-			
+
 	</doIt>
 	<undoIt>
 		<delete>

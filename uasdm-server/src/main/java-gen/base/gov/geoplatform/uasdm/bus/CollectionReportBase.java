@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1784506269)
+@com.runwaysdk.business.ClassSignature(hash = -666848021)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -39,6 +39,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PLATFORMNAME = "platformName";
   public static java.lang.String POINTCLOUD = "pointCloud";
+  public static java.lang.String PRODUCT = "product";
   public static java.lang.String PRODUCTSLINK = "productsLink";
   public static java.lang.String PRODUCTSSHARED = "productsShared";
   public static java.lang.String PROJECT = "project";
@@ -58,7 +59,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String UAV = "uav";
   public static java.lang.String USERNAME = "userName";
   public static java.lang.String VIDEO = "video";
-  private static final long serialVersionUID = 1784506269;
+  private static final long serialVersionUID = -666848021;
   
   public CollectionReportBase()
   {
@@ -906,6 +907,34 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     else
     {
       setValue(POINTCLOUD, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public gov.geoplatform.uasdm.graph.Product getProduct()
+  {
+    return (gov.geoplatform.uasdm.graph.Product)com.runwaysdk.business.graph.VertexObject.get("gov.geoplatform.uasdm.graph.Product", getValue(PRODUCT));
+  }
+  
+  public void validateProduct()
+  {
+    this.validateAttribute(PRODUCT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getProductMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(PRODUCT);
+  }
+  
+  public void setProduct(gov.geoplatform.uasdm.graph.Product value)
+  {
+    if(value == null)
+    {
+      setValue(PRODUCT, "");
+    }
+    else
+    {
+      setValue(PRODUCT, value.getOid());
     }
   }
   

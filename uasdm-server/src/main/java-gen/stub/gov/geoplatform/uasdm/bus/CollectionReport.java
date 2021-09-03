@@ -50,6 +50,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.SITENAME, this.getSiteName());
     object.put(CollectionReport.PROJECTNAME, this.getProjectName());
     object.put(CollectionReport.MISSIONNAME, this.getMissionName());
+    object.put(CollectionReport.COLLECTION, this.getValue(COLLECTION));
     object.put(CollectionReport.COLLECTIONNAME, this.getCollectionName());
     object.put(CollectionReport.COLLECTIONDATE, Util.formatIso8601(this.getCollectionDate(), false));
     object.put(CollectionReport.PLATFORMNAME, this.getPlatformName());
@@ -65,6 +66,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.HILLSHADE, this.getHillshade());
     object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
     object.put(CollectionReport.ALLSTORAGESIZE, this.getAllStorageSize());
+    object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
 
     return object;
   }
@@ -327,6 +329,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         CollectionReport report = iterator.next();
         report.appLock();
         report.setProductsShared(product.getPublished());
+        report.setProduct(product);
         report.apply();
       }
     }

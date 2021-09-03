@@ -63,6 +63,9 @@ export class MetadataPageComponent implements OnInit {
 	}
 
 	onSensorChange(): void {
+
+		this.metaObject = null;
+
 		this.service.getUAVMetadata(this.page.selection.uav, this.page.selection.sensor).then((options) => {
 
 			this.metaObject = {
@@ -85,6 +88,7 @@ export class MetadataPageComponent implements OnInit {
 
 	getUavInformation(oid: string, reset: boolean): void {
 		this.uav = null;
+		this.metaObject = null;
 
 		if (reset) {
 			this.page.selection.uav = null;

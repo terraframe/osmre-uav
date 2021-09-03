@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1698705132)
+@com.runwaysdk.business.ClassSignature(hash = 507255764)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -556,6 +556,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableUUID getProduct()
+  {
+    return getProduct(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProductsLink()
   {
     return getProductsLink(null);
@@ -1034,6 +1051,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableBoolean getPointCloud();
     public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias);
     public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProduct();
+    public com.runwaysdk.query.SelectableUUID getProduct(String alias);
+    public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProductsLink();
     public com.runwaysdk.query.SelectableChar getProductsLink(String alias);
     public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel);
@@ -1602,6 +1622,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableUUID getProduct()
+  {
+    return getProduct(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProductsLink()
   {
     return getProductsLink(null);
@@ -2057,6 +2094,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableBoolean getPointCloud();
     public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias);
     public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProduct();
+    public com.runwaysdk.query.SelectableUUID getProduct(String alias);
+    public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProductsLink();
     public com.runwaysdk.query.SelectableChar getProductsLink(String alias);
     public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel);
@@ -2672,6 +2712,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProduct()
+  {
+    return getProduct(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getProductsLink()
