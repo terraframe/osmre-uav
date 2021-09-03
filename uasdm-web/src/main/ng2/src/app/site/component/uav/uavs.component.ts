@@ -3,12 +3,12 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { PageResult } from '@shared/model/page';
 
 import { UAV } from '@site/model/uav';
 import { UAVService } from '@site/service/uav.service';
-import { UAVComponent } from './uav.component';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
 
 @Component({
     selector: 'uavs',
@@ -16,30 +16,49 @@ import { Router } from '@angular/router';
     styles: ['./uavs.css']
 })
 export class UAVsComponent implements OnInit {
-    res: PageResult<UAV> = {
-        resultSet: [],
-        count: 0,
-        pageNumber: 1,
-        pageSize: 10
-    };
     bsModalRef: BsModalRef;
     message: string = null;
+
+    config: GenericTableConfig;
+    cols: any = [
+        { header: 'Serial Number', field: 'serialNumber', type: 'TEXT', sortable: true },
+        { header: 'FAA Id Number', field: 'faaNumber', type: 'TEXT', sortable: true },
+        { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
+        { header: '', type: 'ACTIONS', sortable: false },
+    ];
+    refresh: Subject<void>;
 
     constructor(private service: UAVService, private router: Router, private modalService: BsModalService) { }
 
     ngOnInit(): void {
-        this.service.page(1).then(res => {
-            this.res = res;
-        });
+        this.config = {
+            service: this.service,
+            remove: true,
+            view: true,
+            create: true,
+            label: 'UAV'
+        }
+
+        this.refresh = new Subject<void>();
+    }
+
+    onClick(event: TableEvent): void {
+        if (event.type === 'view') {
+            this.onView(event.row as UAV);
+        }
+        else if (event.type === 'remove') {
+            this.onRemove(event.row as UAV);
+        }
+        else if (event.type === 'create') {
+            this.newInstance();
+        }
     }
 
     remove(uav: UAV): void {
-        this.service.remove(uav.oid).then(response => {
-            this.res.resultSet = this.res.resultSet.filter(h => h.oid !== uav.oid);
-        });
+        this.refresh.next();
     }
 
-    onClickRemove(uav: UAV): void {
+    onRemove(uav: UAV): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
@@ -54,33 +73,11 @@ export class UAVsComponent implements OnInit {
         });
     }
 
-    view(uav: UAV): void {
+    onView(uav: UAV): void {
         this.router.navigate(['/site/uav', uav.oid]);
     }
 
     newInstance(): void {
         this.router.navigate(['/site/uav', '__NEW__']);
-    }
-
-    showModal(uav: UAV, newInstance: boolean): void {
-        this.bsModalRef = this.modalService.show(UAVComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-        });
-        this.bsModalRef.content.uav = uav;
-        this.bsModalRef.content.newInstance = newInstance;
-
-        let that = this;
-        this.bsModalRef.content.onUAVChange.subscribe(data => {
-            this.onPageChange(this.res.pageNumber);
-        });
-
-    }
-
-    onPageChange(pageNumber: number): void {
-        this.service.page(pageNumber).then(res => {
-            this.res = res;
-        });
     }
 }

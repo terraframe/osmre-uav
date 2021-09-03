@@ -219,31 +219,16 @@ public class Sensor extends SensorBase implements JSONSerializable
 
   public static Long getCount()
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+    GraphPageQuery<Sensor> query = new GraphPageQuery<Sensor>(Sensor.CLASS);
 
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
-
-    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
-
-    return query.getSingleResult();
+    return query.getCount();
   }
 
-  public static Page<Sensor> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Sensor> getPage(JSONObject criteria)
   {
-    final Long count = Sensor.getCount();
+    GraphPageQuery<Sensor> query = new GraphPageQuery<Sensor>(Sensor.CLASS, criteria);
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.NAME);
-
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY " + mdAttribute.getColumnName());
-    statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
-
-    final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
-
-    return new Page<Sensor>(count, pageNumber, pageSize, query.getResults());
+    return query.getPage();
   }
 
   public static JSONArray getAll()

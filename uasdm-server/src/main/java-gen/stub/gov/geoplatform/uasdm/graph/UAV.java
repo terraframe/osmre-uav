@@ -192,31 +192,16 @@ public class UAV extends UAVBase implements JSONSerializable
 
   public static Long getCount()
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
+    GraphPageQuery<UAV> query = new GraphPageQuery<UAV>(UAV.CLASS);
 
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
-
-    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
-
-    return query.getSingleResult();
+    return query.getCount();
   }
 
-  public static Page<UAV> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<UAV> getPage(JSONObject criteria)
   {
-    final Long count = UAV.getCount();
+    GraphPageQuery<UAV> query = new GraphPageQuery<UAV>(UAV.CLASS, criteria);
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(UAV.SERIALNUMBER);
-
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY " + mdAttribute.getColumnName());
-    statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
-
-    final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
-
-    return new Page<UAV>(count, pageNumber, pageSize, query.getResults());
+    return query.getPage();
   }
 
   public static boolean isPlatformReferenced(Platform platform)

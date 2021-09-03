@@ -209,31 +209,16 @@ public class Platform extends PlatformBase implements JSONSerializable
 
   public static Long getCount()
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    GraphPageQuery<Platform> query = new GraphPageQuery<Platform>(Platform.CLASS);
 
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
-
-    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
-
-    return query.getSingleResult();
+    return query.getCount();
   }
 
-  public static Page<Platform> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Platform> getPage(JSONObject criteria)
   {
-    final Long count = Platform.getCount();
+    GraphPageQuery<Platform> query = new GraphPageQuery<Platform>(Platform.CLASS, criteria);
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.NAME);
-
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-    statement.append(" ORDER BY " + mdAttribute.getColumnName());
-    statement.append(" SKIP " + ( ( pageNumber - 1 ) * pageSize ) + " LIMIT " + pageSize);
-
-    final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
-
-    return new Page<Platform>(count, pageNumber, pageSize, query.getResults());
+    return query.getPage();
   }
 
   public static JSONArray getAll()

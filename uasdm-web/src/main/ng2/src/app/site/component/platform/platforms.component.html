@@ -5,38 +5,6 @@
 
 		<h2>Platforms</h2>
 
-		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-		
-		<div class="list-table-wrapper">
-			<table id="manage-platforms-table"
-				class="list-table table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th class="label-column">Name</th>
-						<th class="label-column">Description</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let platform of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
-						class="fade-ngRepeat-item">
-						<td class="button-column">
-						  <a class="fa fa-eye ico-edit" (click)="view(platform)" title="View platform"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform)" title="Remove platform"></a>
-					    </td>
-						<td class="label-column">{{ platform.name }}</td>
-						<td class="label-column">{{ platform.description }}</td>
-					</tr>
-					<tr>
-						<td class="button-column">
-						  <a class="fa fa-plus" (click)="newInstance()" title="Add new platform"></a>
-						</td>
-					</tr>
-
-				</tbody>
-			</table>
-		</div>
-		
-		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>		
 	</div>
 </div>

@@ -3,12 +3,12 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { PageResult } from '@shared/model/page';
 
 import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
-import { PlatformComponent } from './platform.component';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
 
 @Component({
     selector: 'platforms',
@@ -16,30 +16,48 @@ import { Router } from '@angular/router';
     styles: ['./platforms.css']
 })
 export class PlatformsComponent implements OnInit {
-    res: PageResult<Platform> = {
-        resultSet: [],
-        count: 0,
-        pageNumber: 1,
-        pageSize: 10
-    };
     bsModalRef: BsModalRef;
     message: string = null;
+
+    config: GenericTableConfig;
+    cols: any = [
+        { header: 'Name', field: 'name', type: 'TEXT', sortable: true },
+        { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
+        { header: '', type: 'ACTIONS', sortable: false },
+    ];
+    refresh: Subject<void>;
 
     constructor(private service: PlatformService, private router: Router, private modalService: BsModalService) { }
 
     ngOnInit(): void {
-        this.service.page(1).then(res => {
-            this.res = res;
-        });
+        this.config = {
+            service: this.service,
+            remove: true,
+            view: true,
+            create: true,
+            label: 'Platform'
+        }
+
+        this.refresh = new Subject<void>();
+    }
+
+    onClick(event: TableEvent): void {
+        if (event.type === 'view') {
+            this.onView(event.row as Platform);
+        }
+        else if (event.type === 'remove') {
+            this.onRemove(event.row as Platform);
+        }
+        else if (event.type === 'create') {
+            this.newInstance();
+        }
     }
 
     remove(platform: Platform): void {
-        this.service.remove(platform.oid).then(response => {
-            this.res.resultSet = this.res.resultSet.filter(h => h.oid !== platform.oid);
-        });
+        this.refresh.next();
     }
 
-    onClickRemove(platform: Platform): void {
+    onRemove(platform: Platform): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
             backdrop: true,
@@ -54,33 +72,11 @@ export class PlatformsComponent implements OnInit {
         });
     }
 
-    view(platform: Platform): void {
+    onView(platform: Platform): void {
         this.router.navigate(['/site/platform', platform.oid]);
     }
 
     newInstance(): void {
         this.router.navigate(['/site/platform', '__NEW__']);
-    }
-
-    showModal(platform: Platform, newInstance: boolean): void {
-        this.bsModalRef = this.modalService.show(PlatformComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-        });
-        this.bsModalRef.content.platform = platform;
-        this.bsModalRef.content.newInstance = newInstance;
-
-        let that = this;
-        this.bsModalRef.content.onPlatformChange.subscribe(data => {
-            this.onPageChange(this.res.pageNumber);
-        });
-
-    }
-
-    onPageChange(pageNumber: number): void {
-        this.service.page(pageNumber).then(res => {
-            this.res = res;
-        });
     }
 }

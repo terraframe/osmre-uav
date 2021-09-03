@@ -49,7 +49,7 @@
 			</tr>
 		</ng-template>
         <ng-template pTemplate="paginatorleft">
-            <p-button *ngIf="config.create" type="button" icon="pi pi-plus" styleClass="p-button-text" [title]="'Add new ' + config.label" (click)="onClick('create', null)"></p-button>
+            <p-button *ngIf="config.create" type="button" icon="pi pi-plus" [style]="{'border':'solid 1px'}" styleClass="p-button-text" [label]="'Add new ' + config.label" (click)="onClick('create', null)"></p-button>
         </ng-template>
 	</p-table>
 

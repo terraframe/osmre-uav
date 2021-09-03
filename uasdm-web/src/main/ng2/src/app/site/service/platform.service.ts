@@ -17,17 +17,12 @@ export class PlatformService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
-    page(p: number): Promise<PageResult<Platform>> {
+    page(criteria: Object): Promise<PageResult<Platform>> {
         let params: HttpParams = new HttpParams();
-        params = params.set('number', p.toString());
-
-        this.eventService.start();
+        params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
             .get<PageResult<Platform>>(acp + '/platform/page', { params: params })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
             .toPromise();
     }
 

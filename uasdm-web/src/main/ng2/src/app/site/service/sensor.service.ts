@@ -9,25 +9,21 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
 import { Sensor } from '../model/sensor';
+import { GenericTableService } from '@site/model/generic-table';
 
 declare var acp: any;
 
 @Injectable()
-export class SensorService {
+export class SensorService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
-    page(p: number): Promise<PageResult<Sensor>> {
+    page(criteria: Object): Promise<PageResult<Sensor>> {
         let params: HttpParams = new HttpParams();
-        params = params.set('number', p.toString());
-
-        this.eventService.start();
+        params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
             .get<PageResult<Sensor>>(acp + '/sensor/page', { params: params })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
             .toPromise();
     }
 

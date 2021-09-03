@@ -1,0 +1,167 @@
+package gov.geoplatform.uasdm.graph;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.json.JSONObject;
+
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
+import com.runwaysdk.query.OrderBy.SortOrder;
+
+import gov.geoplatform.uasdm.model.JSONSerializable;
+import gov.geoplatform.uasdm.model.Page;
+
+public class GraphPageQuery<T extends JSONSerializable>
+{
+  private String     type;
+
+  private JSONObject criteria;
+
+  public GraphPageQuery(String type)
+  {
+    this(type, new JSONObject());
+  }
+
+  public GraphPageQuery(String type, JSONObject criteria)
+  {
+    super();
+    this.type = type;
+    this.criteria = criteria;
+  }
+
+  @SuppressWarnings("unchecked")
+  public Long getCount()
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+
+    Map<String, Object> parameters = new HashMap<String, Object>();
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      int i = 0;
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(attributeName);
+
+        if (mdAttribute != null)
+        {
+
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            parameters.put(attributeName, "%" + value + "%");
+
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + ".toUpperCase() LIKE :" + attributeName);
+          }
+          else if (mode.equals("equals"))
+          {
+            parameters.put(attributeName, value);
+
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + " = :" + attributeName);
+          }
+
+          i++;
+        }
+      }
+    }
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString(), parameters);
+
+    return query.getSingleResult();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Page<T> getPage()
+  {
+    int pageSize = 10;
+    int pageNumber = 1;
+
+    Long count = this.getCount();
+
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(this.type);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+
+    Map<String, Object> parameters = new HashMap<String, Object>();
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      int i = 0;
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(attributeName);
+
+        if (mdAttribute != null)
+        {
+
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            parameters.put(attributeName, "%" + value.toUpperCase() + "%");
+
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + ".toUpperCase() LIKE :" + attributeName);
+          }
+          else if (mode.equals("equals"))
+          {
+            parameters.put(attributeName, value);
+
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + " = :" + attributeName);
+          }
+
+          i++;
+        }
+      }
+    }
+
+    if (criteria.has("sortField") && criteria.has("sortOrder"))
+    {
+      String field = criteria.getString("sortField");
+      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+      statement.append(" ORDER BY " + field + " " + order.name());
+    }
+
+    if (criteria.has("first") && criteria.has("rows"))
+    {
+      int first = criteria.getInt("first");
+      int rows = criteria.getInt("rows");
+
+      statement.append(" SKIP " + first + " LIMIT " + rows);
+
+      pageNumber = ( first / rows ) + 1;
+    }
+
+    final GraphQuery<T> query = new GraphQuery<T>(statement.toString(), parameters);
+
+    return new Page<T>(count, pageNumber, pageSize, query.getResults());
+  }
+
+}

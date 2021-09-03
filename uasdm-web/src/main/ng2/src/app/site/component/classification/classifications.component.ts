@@ -22,23 +22,16 @@ declare let acp: string;
 export class ClassificationsComponent implements OnInit {
 
     metadata: ClassificationComponentMetadata;
+    
+    bsModalRef: BsModalRef;
+    message: string = null;
 
+    config: GenericTableConfig;
     cols: any = [
         { header: 'Code', field: 'code', type: 'TEXT', sortable: true },
         { header: 'Label', field: 'label', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
     ];
-
-    res: PageResult<Classification> = {
-        resultSet: [],
-        count: 0,
-        pageNumber: 1,
-        pageSize: 10
-    };
-    bsModalRef: BsModalRef;
-    message: string = null;
-
-    config: GenericTableConfig;
     refresh: Subject<void>;
 
     constructor(private activatedroute: ActivatedRoute, private router: Router, private service: ClassificationService, private modalService: BsModalService) {

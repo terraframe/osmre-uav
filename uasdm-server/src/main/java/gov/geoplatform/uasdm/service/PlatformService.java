@@ -22,14 +22,13 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.graph.Platform;
-import gov.geoplatform.uasdm.graph.Sensor;
 
 public class PlatformService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return Platform.getPage(pageNumber, 20).toJSON();
+    return Platform.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)

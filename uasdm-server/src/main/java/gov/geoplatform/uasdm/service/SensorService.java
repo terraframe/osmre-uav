@@ -26,9 +26,9 @@ import gov.geoplatform.uasdm.graph.Sensor;
 public class SensorService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return Sensor.getPage(pageNumber, 20).toJSON();
+    return Sensor.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)

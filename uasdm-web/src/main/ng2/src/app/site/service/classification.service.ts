@@ -29,13 +29,8 @@ export class ClassificationService implements GenericTableService {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
-        // this.eventService.start();
-
         return this.http
             .get<PageResult<Classification>>(acp + '/' + baseUrl + '/page', { params: params })
-            // .pipe(finalize(() => {
-            //     this.eventService.complete();
-            // }))
             .toPromise();
     }
 

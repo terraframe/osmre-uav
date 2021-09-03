@@ -42,9 +42,9 @@ public class PlatformController
   }
 
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "number") Integer number) throws JSONException
+  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
   {
-    JSONObject page = this.service.page(request.getSessionId(), number);
+    JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
 
     return new RestBodyResponse(page);
   }

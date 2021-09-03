@@ -30,9 +30,9 @@ import gov.geoplatform.uasdm.graph.UAV;
 public class UAVService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return UAV.getPage(pageNumber, 20).toJSON();
+    return UAV.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)
