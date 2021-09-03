@@ -7,7 +7,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { Router } from '@angular/router';
-import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -20,7 +20,7 @@ export class SensorsComponent implements OnInit {
     message: string = null;
 
     config: GenericTableConfig;
-    cols: any = [
+    cols: GenericTableColumn[] = [
         { header: 'Name', field: 'name', type: 'TEXT', sortable: true },
         { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
@@ -29,7 +29,7 @@ export class SensorsComponent implements OnInit {
 
 
     constructor(private service: SensorService, private modalService: BsModalService, private router: Router) { }
-    
+
 
     ngOnInit(): void {
 
@@ -81,5 +81,6 @@ export class SensorsComponent implements OnInit {
     }
 
     newInstance(): void {
-        this.router.navigate(['/site/sensor', '__NEW__']);    }
+        this.router.navigate(['/site/sensor', '__NEW__']);
+    }
 }

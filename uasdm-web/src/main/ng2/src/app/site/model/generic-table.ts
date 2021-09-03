@@ -12,7 +12,18 @@ export class GenericTableConfig {
     label: string;
 }
 
+export class GenericTableColumn {
+    header: string;
+    type: string;
+    sortable: boolean;
+    field?: string;
+    baseUrl?: string;
+    urlField?: string;
+    text?: string
+}
+
 export class TableEvent {
     type: string;
     row?: Object;
+    col?: GenericTableColumn;
 }

@@ -9,7 +9,7 @@ import { Classification, ClassificationComponentMetadata } from '@site/model/cla
 import { ClassificationComponent } from './classification.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClassificationService } from '@site/service/classification.service';
-import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 import { Subject } from 'rxjs';
 
 declare let acp: string;
@@ -22,12 +22,12 @@ declare let acp: string;
 export class ClassificationsComponent implements OnInit {
 
     metadata: ClassificationComponentMetadata;
-    
+
     bsModalRef: BsModalRef;
     message: string = null;
 
     config: GenericTableConfig;
-    cols: any = [
+    cols: GenericTableColumn[] = [
         { header: 'Code', field: 'code', type: 'TEXT', sortable: true },
         { header: 'Label', field: 'label', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },

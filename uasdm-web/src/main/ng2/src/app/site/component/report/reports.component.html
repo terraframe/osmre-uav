@@ -5,6 +5,10 @@
 
 		<h2>Report</h2>
 
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
+
+				<!--
+
 		<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true"
 			styleClass="ui-table-customers" [lazy]="true" (onLazyLoad)="onPageChange($event)" [paginator]="true"
 			[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading">
@@ -52,7 +56,6 @@
 			</ng-template>
 		</p-table>
 
-		<!--
 		
 		<pagination-controls *ngIf="page.count > page.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
 

@@ -3,7 +3,7 @@ import { LazyLoadEvent } from 'primeng/api';
 
 import { PageResult } from '@shared/model/page';
 
-import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 import { Subject } from 'rxjs';
 @Component({
     selector: 'generic-table',
@@ -18,7 +18,7 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         pageSize: 10
     };
 
-    @Input() cols: any = [];
+    @Input() cols: GenericTableColumn[] = [];
 
     @Input() baseUrl: string = null;
 
@@ -39,16 +39,23 @@ export class GenericTableComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // this.onPageChange(1);
-        this.refresh.subscribe(() => {
-            if (this.event != null) {
-                this.onPageChange(this.event);
-            }
-        });
+
+
+
+        if (this.refresh != null) {
+            this.refresh.subscribe(() => {
+                if (this.event != null) {
+                    this.onPageChange(this.event);
+                }
+            });
+        }
     }
 
     ngOnDestroy(): void {
-        this.refresh.unsubscribe(); 0
+
+        if (this.refresh != null) {
+            this.refresh.unsubscribe(); 0
+        }
     }
 
     onPageChange(event: LazyLoadEvent): void {
@@ -64,10 +71,11 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         }, 1000);
     }
 
-    onClick(type: string, row: Object): void {
+    onClick(type: string, row: Object, col: GenericTableColumn): void {
         this.click.emit({
-            type:type,
-            row:row
+            type: type,
+            row: row,
+            col: col
         });
     }
 }

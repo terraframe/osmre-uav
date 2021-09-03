@@ -9,11 +9,12 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
 import { Report } from '@site/model/report';
+import { GenericTableService } from '@site/model/generic-table';
 
 declare var acp: any;
 
 @Injectable()
-export class ReportService {
+export class ReportService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 

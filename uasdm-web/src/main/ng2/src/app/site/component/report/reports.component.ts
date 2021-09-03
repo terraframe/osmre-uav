@@ -8,21 +8,17 @@ import { ReportService } from '@site/service/report.service';
 import { ProductService } from '@site/service/product.service';
 import { BsModalService } from 'ngx-bootstrap';
 import { ProductModalComponent } from '../modal/product-modal.component';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 @Component({
     selector: 'reports',
     templateUrl: './reports.component.html',
     styles: ['./reports.css']
 })
 export class ReportsComponent implements OnInit {
-    page: PageResult<Report> = {
-        resultSet: [],
-        count: 0,
-        pageNumber: 1,
-        pageSize: 10
-    };
     message: string = null;
 
-    cols: any = [
+    config: GenericTableConfig;
+    cols: GenericTableColumn[] = [
         { header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true },
         { header: 'Collection Owner', field: 'userName', type: 'TEXT', sortable: true },
         { header: 'Collection Date', field: 'collectionDate', type: 'DATE', sortable: true },
@@ -45,54 +41,42 @@ export class ReportsComponent implements OnInit {
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true },
-        { header: '', field:'product', text: 'View Product', type: 'CONSTANT', sortable: false },
+        { header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false },
     ];
 
-    loading: boolean = true;
-
-    booleanOptions: any = [];
-
-    rows: Report[];
-
     constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService) {
-        this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
     }
 
     ngOnInit(): void {
-        // this.onPageChange(1);
+        this.config = {
+            service: this.service,
+            remove: false,
+            view: false,
+            create: false,
+            label: 'row'
+        }
     }
 
-    onPageChange(event: LazyLoadEvent): void {
-        this.loading = true;
 
-        console.log(event);
+    onClick(event: TableEvent): void {
+        if (event.type === 'custom') {
+            if (event.col.field === 'product') {
 
-        setTimeout(() => {
-            this.service.page(event).then(page => {
-                this.page = page;
-            }).finally(() => {
-                this.loading = false;
-            });
-        }, 1000);
-    }
+                const oid = event.row['product'];
 
-    onClick(row: any, column: any): void {
-
-        if (column.field === 'product') {
-
-            const oid = row['product'];
-
-            if (oid != null && oid.length > 0) {
-                this.pService.getDetail(oid, 1, 20).then(detail => {
-                    const bsModalRef = this.modalService.show(ProductModalComponent, {
-                        animated: true,
-                        backdrop: true,
-                        ignoreBackdropClick: true,
-                        'class': 'product-info-modal'
+                if (oid != null && oid.length > 0) {
+                    this.pService.getDetail(oid, 1, 20).then(detail => {
+                        const bsModalRef = this.modalService.show(ProductModalComponent, {
+                            animated: true,
+                            backdrop: true,
+                            ignoreBackdropClick: true,
+                            'class': 'product-info-modal'
+                        });
+                        bsModalRef.content.init(detail);
                     });
-                    bsModalRef.content.init(detail);
-                });
+                }
             }
+
         }
     }
 }

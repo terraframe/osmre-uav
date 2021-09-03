@@ -8,7 +8,7 @@ import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 
 @Component({
     selector: 'platforms',
@@ -20,7 +20,7 @@ export class PlatformsComponent implements OnInit {
     message: string = null;
 
     config: GenericTableConfig;
-    cols: any = [
+    cols: GenericTableColumn[] = [
         { header: 'Name', field: 'name', type: 'TEXT', sortable: true },
         { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },

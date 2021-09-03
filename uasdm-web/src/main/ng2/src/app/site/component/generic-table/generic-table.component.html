@@ -34,13 +34,19 @@
 				<td *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
 					<ng-container *ngSwitchCase="'URL'">
 						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
-							{{rowData[col.field]}}</a>
+							{{rowData[col.field]}}
+						</a>
 					</ng-container>
 					<ng-container *ngSwitchCase="'ACTIONS'">
-						<a *ngIf="config.view" class="fa fa-eye ico-edit" (click)="onClick('view', rowData)"
+						<a *ngIf="config.view" class="fa fa-eye ico-edit" (click)="onClick('view', rowData, col)"
 							[title]="'View ' + config.label"></a>
-						<a *ngIf="config.remove" class="fa fa-trash-alt ico-remove" (click)="onClick('edit', rowData)"
-							[title]="'Remove ' + config.label"></a>
+						<a *ngIf="config.remove" class="fa fa-trash-alt ico-remove"
+							(click)="onClick('edit', rowData, col)" [title]="'Remove ' + config.label"></a>
+					</ng-container>
+					<ng-container *ngSwitchCase="'CONSTANT'">
+						<a *ngIf="rowData[col.field] != null" (click)="onClick('custom', rowData, col)">
+							{{col.text}}
+						</a>
 					</ng-container>
 					<ng-container *ngSwitchDefault>
 						{{rowData[col.field]}}
@@ -48,9 +54,11 @@
 				</td>
 			</tr>
 		</ng-template>
-        <ng-template pTemplate="paginatorleft">
-            <p-button *ngIf="config.create" type="button" icon="pi pi-plus" [style]="{'border':'solid 1px'}" styleClass="p-button-text" [label]="'Add new ' + config.label" (click)="onClick('create', null)"></p-button>
-        </ng-template>
+		<ng-template pTemplate="paginatorleft">
+			<p-button *ngIf="config.create" type="button" icon="pi pi-plus" [style]="{'border':'solid 1px'}"
+				styleClass="p-button-text" [label]="'Add new ' + config.label" (click)="onClick('create', null, null)">
+			</p-button>
+		</ng-template>
 	</p-table>
 
 </div>

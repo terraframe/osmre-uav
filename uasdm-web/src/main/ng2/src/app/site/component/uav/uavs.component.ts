@@ -8,7 +8,7 @@ import { UAV } from '@site/model/uav';
 import { UAVService } from '@site/service/uav.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 
 @Component({
     selector: 'uavs',
@@ -20,7 +20,7 @@ export class UAVsComponent implements OnInit {
     message: string = null;
 
     config: GenericTableConfig;
-    cols: any = [
+    cols: GenericTableColumn[] = [
         { header: 'Serial Number', field: 'serialNumber', type: 'TEXT', sortable: true },
         { header: 'FAA Id Number', field: 'faaNumber', type: 'TEXT', sortable: true },
         { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
