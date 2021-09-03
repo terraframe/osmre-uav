@@ -8,6 +8,7 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 import { PageResult } from '@shared/model/page';
 import { Classification } from '@site/model/classification';
 import { Injectable } from '@angular/core';
+import { GenericTableService } from '@site/model/generic-table';
 
 declare var acp: any;
 
@@ -19,22 +20,22 @@ export enum Endpoint {
 }
 
 @Injectable()
-export class ClassificationService {
+export class ClassificationService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) {
     }
 
-    page(baseUrl: string, p: number): Promise<PageResult<Classification>> {
+    page(criteria: Object, baseUrl: string): Promise<PageResult<Classification>> {
         let params: HttpParams = new HttpParams();
-        params = params.set('number', p.toString());
+        params = params.set('criteria', JSON.stringify(criteria));
 
-        this.eventService.start();
+        // this.eventService.start();
 
         return this.http
             .get<PageResult<Classification>>(acp + '/' + baseUrl + '/page', { params: params })
-            .pipe(finalize(() => {
-                this.eventService.complete();
-            }))
+            // .pipe(finalize(() => {
+            //     this.eventService.complete();
+            // }))
             .toPromise();
     }
 

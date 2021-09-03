@@ -33,9 +33,9 @@ public class PlatformType extends PlatformTypeBase implements Classification
     return Classification.getCount(PlatformType.CLASS);
   }
 
-  public static Page<Classification> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Classification> getPage(JSONObject criteria)
   {
-    return Classification.getPage(PlatformType.CLASS, pageNumber, pageSize);
+    return Classification.getPage(PlatformType.CLASS, criteria);
   }
 
   public static JSONArray getAll()

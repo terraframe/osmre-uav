@@ -17,7 +17,7 @@ export class ReportService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
-    page(criteria: any): Promise<PageResult<Report>> {
+    page(criteria: Object): Promise<PageResult<Report>> {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 

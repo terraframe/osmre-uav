@@ -33,9 +33,9 @@ public class PlatformManufacturer extends PlatformManufacturerBase implements Cl
     return Classification.getCount(PlatformManufacturer.CLASS);
   }
 
-  public static Page<Classification> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Classification> getPage(JSONObject criteria)
   {
-    return Classification.getPage(PlatformManufacturer.CLASS, pageNumber, pageSize);
+    return Classification.getPage(PlatformManufacturer.CLASS, criteria);
   }
 
   public static JSONArray getAll()

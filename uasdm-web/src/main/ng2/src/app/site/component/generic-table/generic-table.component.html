@@ -1,0 +1,56 @@
+<div>
+
+	<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true"
+		styleClass="ui-table-customers" [lazy]="true" (onLazyLoad)="onPageChange($event)" [paginator]="true"
+		[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading">
+
+		<ng-template pTemplate="header" let-columns>
+			<tr>
+				<th *ngFor="let col of columns" [pSortableColumn]="col.field" style="width:250px">
+					{{col.header}}
+					<p-sortIcon *ngIf="col.sortable" [field]="col.field" ariaLabel="Activate to sort"
+						ariaLabelDesc="Activate to sort in descending order"
+						ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+				</th>
+			</tr>
+			<tr>
+				<th *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
+
+					<input *ngSwitchCase="'URL'" pInputText type="text"
+						(input)="dt.filter($event.target.value, col.field, 'contains')">
+					<input *ngSwitchCase="'TEXT'" pInputText type="text"
+						(input)="dt.filter($event.target.value, col.field, 'contains')">
+					<input *ngSwitchCase="'NUMBER'" pInputText type="number"
+						(input)="dt.filter($event.target.value, col.field, 'equals')">
+					<p-dropdown *ngSwitchCase="'BOOLEAN'" [options]="booleanOptions"
+						(onChange)="dt.filter($event.value.value, col.field, 'equals')" optionLabel="label"
+						optionValue="value" [virtualScroll]="true"></p-dropdown>
+				</th>
+			</tr>
+		</ng-template>
+
+		<ng-template pTemplate="body" let-rowData let-columns="columns">
+			<tr>
+				<td *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
+					<ng-container *ngSwitchCase="'URL'">
+						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
+							{{rowData[col.field]}}</a>
+					</ng-container>
+					<ng-container *ngSwitchCase="'ACTIONS'">
+						<a *ngIf="config.view" class="fa fa-eye ico-edit" (click)="onClick('view', rowData)"
+							[title]="'View ' + config.label"></a>
+						<a *ngIf="config.remove" class="fa fa-trash-alt ico-remove" (click)="onClick('edit', rowData)"
+							[title]="'Remove ' + config.label"></a>
+					</ng-container>
+					<ng-container *ngSwitchDefault>
+						{{rowData[col.field]}}
+					</ng-container>
+				</td>
+			</tr>
+		</ng-template>
+        <ng-template pTemplate="paginatorleft">
+            <p-button *ngIf="config.create" type="button" icon="pi pi-plus" styleClass="p-button-text" [title]="'Add new ' + config.label" (click)="onClick('create', null)"></p-button>
+        </ng-template>
+	</p-table>
+
+</div>

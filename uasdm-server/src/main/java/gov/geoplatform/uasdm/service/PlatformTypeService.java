@@ -26,9 +26,9 @@ import gov.geoplatform.uasdm.graph.PlatformType;
 public class PlatformTypeService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return PlatformType.getPage(pageNumber, 20).toJSON();
+    return PlatformType.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)

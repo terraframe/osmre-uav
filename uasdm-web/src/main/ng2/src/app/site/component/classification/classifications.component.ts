@@ -9,6 +9,8 @@ import { Classification, ClassificationComponentMetadata } from '@site/model/cla
 import { ClassificationComponent } from './classification.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClassificationService } from '@site/service/classification.service';
+import { GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { Subject } from 'rxjs';
 
 declare let acp: string;
 
@@ -21,6 +23,12 @@ export class ClassificationsComponent implements OnInit {
 
     metadata: ClassificationComponentMetadata;
 
+    cols: any = [
+        { header: 'Code', field: 'code', type: 'TEXT', sortable: true },
+        { header: 'Label', field: 'label', type: 'TEXT', sortable: true },
+        { header: '', type: 'ACTIONS', sortable: false },
+    ];
+
     res: PageResult<Classification> = {
         resultSet: [],
         count: 0,
@@ -30,26 +38,53 @@ export class ClassificationsComponent implements OnInit {
     bsModalRef: BsModalRef;
     message: string = null;
 
-    constructor(private activatedroute: ActivatedRoute, private router: Router, private service: ClassificationService, private modalService: BsModalService) { }
+    config: GenericTableConfig;
+    refresh: Subject<void>;
+
+    constructor(private activatedroute: ActivatedRoute, private router: Router, private service: ClassificationService, private modalService: BsModalService) {
+    }
 
     ngOnInit(): void {
         this.activatedroute.data.subscribe(data => {
             this.metadata = data as ClassificationComponentMetadata;
 
-            if(this.metadata.columns === undefined) {
+            if (this.metadata.columns === undefined) {
                 this.metadata.columns = [];
             }
 
-            this.service.page(this.metadata.baseUrl, 1).then(res => {
-                this.res = res;
-            });
+            this.config = {
+                service: this.service,
+                remove: true,
+                view: true,
+                create: true,
+                label: this.metadata.label
+            }
+
+            this.refresh = new Subject<void>();
+
+            // this.service.page(this.metadata.baseUrl, 1).then(res => {
+            //     this.res = res;
+            // });
 
         })
     }
 
+    onClick(event: TableEvent): void {
+        if (event.type === 'view') {
+            this.onView(event.row as Classification);
+        }
+        else if (event.type === 'remove') {
+            this.onRemove(event.row as Classification);
+        }
+        else if (event.type === 'create') {
+            this.newInstance();
+        }
+    }
+
     remove(classification: Classification): void {
         this.service.remove(this.metadata.baseUrl, classification.oid).then(response => {
-            this.res.resultSet = this.res.resultSet.filter(h => h.oid !== classification.oid);
+            // this.res.resultSet = this.res.resultSet.filter(h => h.oid !== classification.oid);
+            this.refresh.next();
         });
     }
 
@@ -74,24 +109,5 @@ export class ClassificationsComponent implements OnInit {
 
     newInstance(): void {
         this.router.navigate(['/site/' + this.metadata.baseUrl, '__NEW__']);
-    }
-
-    showModal(classification: Classification, newInstance: boolean): void {
-        this.bsModalRef = this.modalService.show(ClassificationComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-        });
-        this.bsModalRef.content.init(this.metadata, classification, newInstance);
-
-        this.bsModalRef.content.onClassificationChange.subscribe(data => {
-            this.onPageChange(this.res.pageNumber);
-        });
-    }
-
-    onPageChange(pageNumber: number): void {
-        this.service.page(this.metadata.baseUrl, pageNumber).then(res => {
-            this.res = res;
-        });
     }
 }

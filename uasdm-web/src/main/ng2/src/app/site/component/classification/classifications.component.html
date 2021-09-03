@@ -5,45 +5,6 @@
 
 		<h2>{{metadata.title}}</h2>
 
-		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-
-		<div class="list-table-wrapper">
-			<table id="manage-classifications-table" class="list-table table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th class="label-column">Code</th>
-						<th class="label-column">Label</th>
-						<th *ngFor="let column of metadata.columns" class="label-column">{{column.label}}</th>						
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let classification of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
-						class="fade-ngRepeat-item">
-						<td class="button-column">
-							<a class="fa fa-eye ico-edit" (click)="onView(classification)"
-								[title]="'Edit ' + metadata.label"></a>
-							<a class="fa fa-trash-alt ico-remove" (click)="onRemove(classification)"
-								[title]="'Remove ' + metadata.label"></a>
-						</td>
-						<td class="label-column">{{ classification.code }}</td>
-						<td class="label-column">{{ classification.label }}</td>
-						<td *ngFor="let column of metadata.columns" class="label-column">
-							<ng-container *ngIf="column.type === 'boolean'">
-								{{classification[column.name] === true ? 'Yes' : 'No'}}
-							</ng-container>
-						</td>						
-					</tr>
-					<tr>
-						<td class="button-column">
-							<a class="fa fa-plus" (click)="newInstance()" [title]="'Add new ' + metadata.label"></a>
-						</td>
-					</tr>
-
-				</tbody>
-			</table>
-		</div>
-
-		<pagination-controls *ngIf="res.count > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" [baseUrl]="metadata.baseUrl" (click)="onClick($event)"></generic-table>		
 	</div>
 </div>

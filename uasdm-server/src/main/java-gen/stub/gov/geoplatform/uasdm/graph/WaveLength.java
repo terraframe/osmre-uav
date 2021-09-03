@@ -19,9 +19,9 @@ public class WaveLength extends WaveLengthBase implements Classification
     return Classification.getCount(WaveLength.CLASS);
   }
 
-  public static Page<Classification> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Classification> getPage(JSONObject criteria)
   {
-    return Classification.getPage(WaveLength.CLASS, pageNumber, pageSize);
+    return Classification.getPage(WaveLength.CLASS, criteria);
   }
 
   public static JSONArray getAll()

@@ -18,6 +18,7 @@ import { TableModule } from 'primeng/table';
 import { SliderModule } from 'primeng/slider';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ButtonModule } from 'primeng/button';
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
@@ -59,6 +60,7 @@ import { UAVService } from './service/uav.service';
 import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
 import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
+import { GenericTableComponent } from './component/generic-table/generic-table.component';
 
 @NgModule({
 	imports: [
@@ -82,7 +84,8 @@ import { ReportService } from './service/report.service';
         TableModule,
 		SliderModule,
 		DropdownModule,
-		MultiSelectModule
+		MultiSelectModule,
+		ButtonModule
 	],
 	declarations: [
 		MapAttributeComponent,
@@ -109,7 +112,8 @@ import { ReportService } from './service/report.service';
 		UAVsComponent,
 		UAVComponent,
 		MetadataPageComponent,
-		ReportsComponent
+		ReportsComponent,
+		GenericTableComponent
 	],
 	providers: [
 		CanDeactivateGuardService,

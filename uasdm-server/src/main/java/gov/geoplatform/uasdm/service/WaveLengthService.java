@@ -26,9 +26,9 @@ import gov.geoplatform.uasdm.graph.WaveLength;
 public class WaveLengthService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return WaveLength.getPage(pageNumber, 20).toJSON();
+    return WaveLength.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)

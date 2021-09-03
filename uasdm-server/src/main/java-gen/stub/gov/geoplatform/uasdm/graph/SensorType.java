@@ -50,9 +50,9 @@ public class SensorType extends SensorTypeBase implements Classification
     return Classification.getCount(SensorType.CLASS);
   }
 
-  public static Page<Classification> getPage(Integer pageNumber, Integer pageSize)
+  public static Page<Classification> getPage(JSONObject criteria)
   {
-    return Classification.getPage(SensorType.CLASS, pageNumber, pageSize);
+    return Classification.getPage(SensorType.CLASS, criteria);
   }
 
   public static JSONArray getAll()
