@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams, HttpBackend } from '@angular/common/http';
-
-// import 'rxjs/add/operator/toPromise';
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 
 import { EventService } from '@shared/service/event.service';
@@ -9,7 +7,7 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
 import { MetadataOptions, UAV } from '../model/uav';
-import { GenericTableService } from '@site/model/generic-table';
+import { GenericTableService } from '@shared/model/generic-table';
 
 declare var acp: any;
 

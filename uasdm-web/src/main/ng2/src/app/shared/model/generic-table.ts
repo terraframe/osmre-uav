@@ -1,4 +1,4 @@
-import { PageResult } from "@shared/model/page";
+import { PageResult } from "./page";
 
 export interface GenericTableService {
     page(criteria: Object, baseUrl?: string): Promise<PageResult<Object>>;
@@ -7,8 +7,9 @@ export interface GenericTableService {
 export class GenericTableConfig {
     service: GenericTableService;
     remove: boolean;
-    view: boolean;
-    create: boolean;
+    view?: boolean;
+    edit?: boolean;
+    create?: boolean;
     label: string;
 }
 
@@ -20,6 +21,7 @@ export class GenericTableColumn {
     baseUrl?: string;
     urlField?: string;
     text?: string
+    filter?: boolean;
 }
 
 export class TableEvent {

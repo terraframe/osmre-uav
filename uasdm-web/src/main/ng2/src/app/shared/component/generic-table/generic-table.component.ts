@@ -3,8 +3,8 @@ import { LazyLoadEvent } from 'primeng/api';
 
 import { PageResult } from '@shared/model/page';
 
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
 import { Subject } from 'rxjs';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 @Component({
     selector: 'generic-table',
     templateUrl: './generic-table.component.html',

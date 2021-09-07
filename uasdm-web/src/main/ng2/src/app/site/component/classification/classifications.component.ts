@@ -4,12 +4,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 
-import { PageResult } from '@shared/model/page';
 import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
-import { ClassificationComponent } from './classification.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClassificationService } from '@site/service/classification.service';
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
 
 declare let acp: string;

@@ -8,7 +8,7 @@ import { UAV } from '@site/model/uav';
 import { UAVService } from '@site/service/uav.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
 @Component({
     selector: 'uavs',

@@ -7,7 +7,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { Router } from '@angular/router';
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
 
 @Component({

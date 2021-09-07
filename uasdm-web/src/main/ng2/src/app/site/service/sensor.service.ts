@@ -9,7 +9,7 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
 import { Sensor } from '../model/sensor';
-import { GenericTableService } from '@site/model/generic-table';
+import { GenericTableService } from '@shared/model/generic-table';
 
 declare var acp: any;
 

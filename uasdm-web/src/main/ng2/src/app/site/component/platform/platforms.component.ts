@@ -8,7 +8,7 @@ import { Platform } from '@site/model/platform';
 import { PlatformService } from '@site/service/platform.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
 @Component({
     selector: 'platforms',

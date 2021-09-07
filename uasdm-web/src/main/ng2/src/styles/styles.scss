@@ -631,3 +631,13 @@ ngx-file-drop > div > div {
 ngx-file-drop button {
   margin: 10px !important;
 }
+
+// Fix for scrollable issue with primeng table when trying to scroll on an empty table
+// This also causes the scrollable drop down options to appear for list filering, but its ugly
+.ui-table-scrollable-wrapper {
+  overflow: auto !important;
+  }
+  
+  .ui-table-scrollable-header, .ui-table-scrollable-body, .ui-table-scrollable-footer {
+  overflow: visible !important;
+  }

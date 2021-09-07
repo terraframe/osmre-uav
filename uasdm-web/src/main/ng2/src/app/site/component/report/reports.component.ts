@@ -1,14 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { LazyLoadEvent } from 'primeng/api';
-
-import { PageResult } from '@shared/model/page';
-
-import { Report } from '@site/model/report';
 import { ReportService } from '@site/service/report.service';
 import { ProductService } from '@site/service/product.service';
 import { BsModalService } from 'ngx-bootstrap';
 import { ProductModalComponent } from '../modal/product-modal.component';
-import { GenericTableColumn, GenericTableConfig, TableEvent } from '@site/model/generic-table';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
+
 @Component({
     selector: 'reports',
     templateUrl: './reports.component.html',

@@ -18,7 +18,7 @@
 ///
 
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 
 // import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
@@ -27,25 +27,21 @@ import { EventService } from '@shared/service/event.service';
 import { PageResult } from '@shared/model/page';
 
 import { Account, User, UserInvite } from '../model/account';
+import { GenericTableService } from '@shared/model/generic-table';
 
 declare var acp: any;
 
 @Injectable()
-export class AccountService {
+export class AccountService implements GenericTableService {
 
     constructor( private eventService: EventService, private http: HttpClient ) { }
 
-    page( p: number ): Promise<PageResult<User>> {
+    page( criteria: Object ): Promise<PageResult<User>> {
         let params: HttpParams = new HttpParams();
-        params = params.set( 'number', p.toString() );
-
-        this.eventService.start();
+        params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
             .get<PageResult<User>>( acp + '/uasdm-account/page', { params: params } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
             .toPromise()
     }
 
