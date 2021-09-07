@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,9 +24,13 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.InnerJoinEq;
 import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.query.Selectable;
+import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.system.SingleActor;
 
@@ -44,7 +49,8 @@ public class UserInfo extends UserInfoBase
     super();
   }
 
-  public static JSONObject page(Integer pageSize, Integer pageNumber)
+  @SuppressWarnings("unchecked")
+  public static JSONObject page(JSONObject criteria)
   {
     ValueQuery vQuery = new ValueQuery(new QueryFactory());
 
@@ -52,12 +58,82 @@ public class UserInfo extends UserInfoBase
     UserInfoQuery iQuery = new UserInfoQuery(vQuery);
     BureauQuery bQuery = new BureauQuery(vQuery);
 
-    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
-    vQuery.WHERE(new LeftJoinEq(iQuery.getBureau(), bQuery.getOid()));
+    SelectableChar bureau = bQuery.getName(UserInfo.BUREAU);
 
     vQuery.SELECT(uQuery.getOid(), uQuery.getUsername(), uQuery.getFirstName(), uQuery.getLastName(), uQuery.getPhoneNumber(), uQuery.getEmail());
-    vQuery.SELECT(bQuery.getName());
-    vQuery.ORDER_BY_ASC(uQuery.getUsername());
+    vQuery.SELECT(bureau);
+
+    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
+//    vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+    vQuery.WHERE(new LeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        Selectable attribute = null;
+
+        if (attributeName.equals(UserInfo.BUREAU))
+        {
+          attribute = bureau;
+        }
+        else
+        {
+          attribute = uQuery.get(attributeName);
+        }
+
+        if (attribute != null)
+        {
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            SelectableChar selectable = (SelectableChar) attribute;
+
+            vQuery.WHERE(selectable.LIKEi("%" + value + "%"));
+          }
+          else if (mode.equals("equals"))
+          {
+            vQuery.WHERE(attribute.EQ(value));
+          }
+        }
+      }
+    }
+
+    int pageSize = 10;
+    int pageNumber = 1;
+
+    if (criteria.has("first") && criteria.has("rows"))
+    {
+      int first = criteria.getInt("first");
+      pageSize = criteria.getInt("rows");
+      pageNumber = ( first / pageSize ) + 1;
+
+      vQuery.restrictRows(pageSize, pageNumber);
+    }
+
+    if (criteria.has("sortField") && criteria.has("sortOrder"))
+    {
+      String field = criteria.getString("sortField");
+      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+      if (field.equals(UserInfo.BUREAU))
+      {
+        vQuery.ORDER_BY(bureau, order);
+      }
+      else
+      {
+        vQuery.ORDER_BY(uQuery.getS(field), order);
+      }
+    }
 
     JSONArray results = new JSONArray();
 
@@ -76,7 +152,7 @@ public class UserInfo extends UserInfoBase
         result.put(GeoprismUser.LASTNAME, vObject.getValue(GeoprismUser.LASTNAME));
         result.put(GeoprismUser.PHONENUMBER, vObject.getValue(GeoprismUser.PHONENUMBER));
         result.put(GeoprismUser.EMAIL, vObject.getValue(GeoprismUser.EMAIL));
-        result.put(UserInfo.BUREAU, vObject.getValue(Bureau.NAME));
+        result.put(UserInfo.BUREAU, vObject.getValue(UserInfo.BUREAU));
 
         results.put(result);
       }

@@ -14,7 +14,6 @@ import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
-import com.runwaysdk.system.Actor;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.Util;
