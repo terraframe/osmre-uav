@@ -45,7 +45,7 @@ export class AccountsComponent implements OnInit {
 		{ header: 'Last name', field: 'lastName', type: 'TEXT', sortable: true },
 		{ header: 'Phone Number', field: 'phoneNumber', type: 'TEXT', sortable: true },
 		{ header: 'Email Address', field: 'email', type: 'TEXT', sortable: true },
-		{ header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true, filter: false },
+		{ header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true, filter: true },
 		{ header: '', type: 'ACTIONS', sortable: false },
 	];
 	refresh: Subject<void>;
@@ -62,7 +62,7 @@ export class AccountsComponent implements OnInit {
 		this.config = {
 			service: this.service,
 			remove: true,
-			view: true,
+			edit: true,
 			create: true,
 			label: 'User'
 		}
@@ -71,8 +71,8 @@ export class AccountsComponent implements OnInit {
 	}
 
 	onClick(event: TableEvent): void {
-		if (event.type === 'view') {
-			this.onView(event.row as User);
+		if (event.type === 'edit') {
+			this.onEdit(event.row as User);
 		}
 		else if (event.type === 'remove') {
 			this.onRemove(event.row as User);
@@ -105,7 +105,7 @@ export class AccountsComponent implements OnInit {
 		});
 	}
 
-	onView(user: User): void {
+	onEdit(user: User): void {
 		this.service.edit(user.oid).then(account => {
 			this.bsModalRef = this.modalService.show(AccountComponent, {
 				animated: true,

@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.BasicLeftJoinEq;
 import com.runwaysdk.query.InnerJoinEq;
 import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
@@ -65,7 +66,7 @@ public class UserInfo extends UserInfoBase
 
     vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
 //    vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
-    vQuery.WHERE(new LeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
 
     if (criteria.has("filters"))
     {
@@ -117,7 +118,7 @@ public class UserInfo extends UserInfoBase
       pageSize = criteria.getInt("rows");
       pageNumber = ( first / pageSize ) + 1;
 
-      vQuery.restrictRows(pageSize, pageNumber);
+//      vQuery.restrictRows(pageSize, pageNumber);
     }
 
     if (criteria.has("sortField") && criteria.has("sortOrder"))
