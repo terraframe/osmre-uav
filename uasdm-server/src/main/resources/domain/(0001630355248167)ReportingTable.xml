@@ -1,23 +1,21 @@
-<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version_gis.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<doIt>
 		<create>
 			<mdBusiness name="gov.geoplatform.uasdm.bus.CollectionReport" label="Collection Report" generateController="false">
 				<attributes>
-					<graphReference name="site" type="gov.geoplatform.uasdm.graph.Site" required="true" label="Site" />
-					<graphReference name="project" type="gov.geoplatform.uasdm.graph.Project" required="true" label="Project" />
-					<graphReference name="mission" type="gov.geoplatform.uasdm.graph.Mission" required="true" label="Mission" />
-					<graphReference name="collection" type="gov.geoplatform.uasdm.graph.Collection" required="true" label="Collection" />
-					<reference name="bureau" type="gov.geoplatform.uasdm.bus.Bureau" required="true" label="Bureau" />
-					<reference name="actor" type="com.runwaysdk.system.Actor" required="true" label="Actor" />
-					<graphReference name="uav" type="gov.geoplatform.uasdm.graph.UAV" required="true" label="UAV" />
-					<graphReference name="sensor" type="gov.geoplatform.uasdm.graph.Sensor" required="true" label="Sensor" />
-					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="true" label="Platform" />
+					<graphReference name="site" type="gov.geoplatform.uasdm.graph.Site" required="false" label="Site" />
+					<graphReference name="project" type="gov.geoplatform.uasdm.graph.Project" required="false" label="Project" />
+					<graphReference name="mission" type="gov.geoplatform.uasdm.graph.Mission" required="false" label="Mission" />
+					<graphReference name="collection" type="gov.geoplatform.uasdm.graph.Collection" required="false" label="Collection" />
+					<reference name="bureau" type="gov.geoplatform.uasdm.bus.Bureau" required="false" label="Bureau" />
+					<reference name="actor" type="com.runwaysdk.system.Actor" required="false" label="Actor" />
+					<graphReference name="uav" type="gov.geoplatform.uasdm.graph.UAV" required="false" label="UAV" />
+					<graphReference name="sensor" type="gov.geoplatform.uasdm.graph.Sensor" required="false" label="Sensor" />
+					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="false" label="Platform" />
 					<graphReference name="product" type="gov.geoplatform.uasdm.graph.Product" required="false" label="Product" />
 
 					<char name="bureauName" required="false" label="Bureau" size="4096" />
 					<char name="userName" required="false" label="User Name" size="4096" />
-					<decimal name="siteLatDecimalDegree" required="false" label="Site Lat Decimal Degree" length="32" decimal="20" />
-					<decimal name="siteLongDecimalDegree" required="false" label="Site Long Decimal Degree" length="32" decimal="20" />
 					<char name="siteName" required="false" label="Site Name" size="4096" />
 					<char name="projectName" required="false" label="Project Name" size="4096" />
 					<char name="missionName" required="false" label="Mission Name" size="4096" />
@@ -40,6 +38,9 @@
 					<long name="allStorageSize" required="false" label="All Storage Size" />
 					<long name="downloadCounts" required="false" label="Download counts" />
 					<boolean name="erosArchived" required="false" label="EROS Archived" />
+					<boolean name="exists" required="false" label="Collection exists" />	
+					
+					<point name="geometry" srid="4326" dimension="2" required="false" label="Geometry" />													
 				</attributes>
 			</mdBusiness>
 		</create>

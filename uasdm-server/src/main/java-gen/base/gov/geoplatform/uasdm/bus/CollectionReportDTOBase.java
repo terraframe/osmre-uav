@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1246733163)
+@com.runwaysdk.business.ClassSignature(hash = 1931532021)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  private static final long serialVersionUID = 1246733163;
+  private static final long serialVersionUID = 1931532021;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -40,7 +40,9 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String EROSARCHIVED = "erosArchived";
   public static java.lang.String EROSMETADATACOMPLETE = "erosMetadataComplete";
+  public static java.lang.String EXISTS = "exists";
   public static java.lang.String FAAIDNUMBER = "faaIdNumber";
+  public static java.lang.String GEOMETRY = "geometry";
   public static java.lang.String HILLSHADE = "hillshade";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
@@ -67,8 +69,6 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SERIALNUMBER = "serialNumber";
   public static java.lang.String SITE = "site";
-  public static java.lang.String SITELATDECIMALDEGREE = "siteLatDecimalDegree";
-  public static java.lang.String SITELONGDECIMALDEGREE = "siteLongDecimalDegree";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String SITENAME = "siteName";
   public static java.lang.String TYPE = "type";
@@ -543,6 +543,43 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(EROSMETADATACOMPLETE).getAttributeMdDTO();
   }
   
+  public Boolean getExists()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(EXISTS));
+  }
+  
+  public void setExists(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(EXISTS, "");
+    }
+    else
+    {
+      setValue(EXISTS, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isExistsWritable()
+  {
+    return isWritable(EXISTS);
+  }
+  
+  public boolean isExistsReadable()
+  {
+    return isReadable(EXISTS);
+  }
+  
+  public boolean isExistsModified()
+  {
+    return isModified(EXISTS);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getExistsMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(EXISTS).getAttributeMdDTO();
+  }
+  
   public String getFaaIdNumber()
   {
     return getValue(FAAIDNUMBER);
@@ -578,6 +615,43 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getFaaIdNumberMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(FAAIDNUMBER).getAttributeMdDTO();
+  }
+  
+  public com.vividsolutions.jts.geom.Point getGeometry()
+  {
+    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOMETRY);
+  }
+  
+  public void setGeometry(com.vividsolutions.jts.geom.Point value)
+  {
+    if(value == null)
+    {
+      setValue(GEOMETRY, "");
+    }
+    else
+    {
+      setValue(GEOMETRY, value);
+    }
+  }
+  
+  public boolean isGeometryWritable()
+  {
+    return isWritable(GEOMETRY);
+  }
+  
+  public boolean isGeometryReadable()
+  {
+    return isReadable(GEOMETRY);
+  }
+  
+  public boolean isGeometryModified()
+  {
+    return isModified(GEOMETRY);
+  }
+  
+  public final com.runwaysdk.gis.transport.metadata.AttributePointMdDTO getGeometryMd()
+  {
+    return (com.runwaysdk.gis.transport.metadata.AttributePointMdDTO) getAttributeDTO(GEOMETRY).getAttributeMdDTO();
   }
   
   public Boolean getHillshade()
@@ -1269,80 +1343,6 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getSerialNumberMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SERIALNUMBER).getAttributeMdDTO();
-  }
-  
-  public java.math.BigDecimal getSiteLatDecimalDegree()
-  {
-    return com.runwaysdk.constants.MdAttributeDecimalUtil.getTypeSafeValue(getValue(SITELATDECIMALDEGREE));
-  }
-  
-  public void setSiteLatDecimalDegree(java.math.BigDecimal value)
-  {
-    if(value == null)
-    {
-      setValue(SITELATDECIMALDEGREE, "");
-    }
-    else
-    {
-      setValue(SITELATDECIMALDEGREE, value.toString());
-    }
-  }
-  
-  public boolean isSiteLatDecimalDegreeWritable()
-  {
-    return isWritable(SITELATDECIMALDEGREE);
-  }
-  
-  public boolean isSiteLatDecimalDegreeReadable()
-  {
-    return isReadable(SITELATDECIMALDEGREE);
-  }
-  
-  public boolean isSiteLatDecimalDegreeModified()
-  {
-    return isModified(SITELATDECIMALDEGREE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDecMdDTO getSiteLatDecimalDegreeMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDecMdDTO) getAttributeDTO(SITELATDECIMALDEGREE).getAttributeMdDTO();
-  }
-  
-  public java.math.BigDecimal getSiteLongDecimalDegree()
-  {
-    return com.runwaysdk.constants.MdAttributeDecimalUtil.getTypeSafeValue(getValue(SITELONGDECIMALDEGREE));
-  }
-  
-  public void setSiteLongDecimalDegree(java.math.BigDecimal value)
-  {
-    if(value == null)
-    {
-      setValue(SITELONGDECIMALDEGREE, "");
-    }
-    else
-    {
-      setValue(SITELONGDECIMALDEGREE, value.toString());
-    }
-  }
-  
-  public boolean isSiteLongDecimalDegreeWritable()
-  {
-    return isWritable(SITELONGDECIMALDEGREE);
-  }
-  
-  public boolean isSiteLongDecimalDegreeReadable()
-  {
-    return isReadable(SITELONGDECIMALDEGREE);
-  }
-  
-  public boolean isSiteLongDecimalDegreeModified()
-  {
-    return isModified(SITELONGDECIMALDEGREE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDecMdDTO getSiteLongDecimalDegreeMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDecMdDTO) getAttributeDTO(SITELONGDECIMALDEGREE).getAttributeMdDTO();
   }
   
   public String getSiteMaster()

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 507255764)
+@com.runwaysdk.business.ClassSignature(hash = 1337746028)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -283,6 +283,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.EROSMETADATACOMPLETE, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableBoolean getExists()
+  {
+    return getExists(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getFaaIdNumber()
   {
     return getFaaIdNumber(null);
@@ -298,6 +315,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.FAAIDNUMBER, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeometry()
+  {
+    return getGeometry(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableBoolean getHillshade()
@@ -760,40 +794,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.SITE, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree()
-  {
-    return getSiteLatDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree()
-  {
-    return getSiteLongDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableChar getSiteMaster()
   {
     return getSiteMaster(null);
@@ -1006,9 +1006,15 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete();
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete(String alias);
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getExists();
+    public com.runwaysdk.query.SelectableBoolean getExists(String alias);
+    public com.runwaysdk.query.SelectableBoolean getExists(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getFaaIdNumber();
     public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias);
     public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableGeometry getGeometry();
+    public com.runwaysdk.query.SelectableGeometry getGeometry(String alias);
+    public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getHillshade();
     public com.runwaysdk.query.SelectableBoolean getHillshade(String alias);
     public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel);
@@ -1087,12 +1093,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableUUID getSite();
     public com.runwaysdk.query.SelectableUUID getSite(String alias);
     public com.runwaysdk.query.SelectableUUID getSite(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree();
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias);
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree();
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias);
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getSiteMaster();
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias);
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel);
@@ -1367,6 +1367,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EROSMETADATACOMPLETE, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableBoolean getExists()
+  {
+    return getExists(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getFaaIdNumber()
   {
     return getFaaIdNumber(null);
@@ -1382,6 +1399,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.FAAIDNUMBER, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeometry()
+  {
+    return getGeometry(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableBoolean getHillshade()
@@ -1826,40 +1860,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITE, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree()
-  {
-    return getSiteLatDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree()
-  {
-    return getSiteLongDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableChar getSiteMaster()
   {
     return getSiteMaster(null);
@@ -2049,9 +2049,15 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete();
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete(String alias);
     public com.runwaysdk.query.SelectableBoolean getErosMetadataComplete(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getExists();
+    public com.runwaysdk.query.SelectableBoolean getExists(String alias);
+    public com.runwaysdk.query.SelectableBoolean getExists(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getFaaIdNumber();
     public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias);
     public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableGeometry getGeometry();
+    public com.runwaysdk.query.SelectableGeometry getGeometry(String alias);
+    public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getHillshade();
     public com.runwaysdk.query.SelectableBoolean getHillshade(String alias);
     public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel);
@@ -2130,12 +2136,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableUUID getSite();
     public com.runwaysdk.query.SelectableUUID getSite(String alias);
     public com.runwaysdk.query.SelectableUUID getSite(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree();
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias);
-    public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree();
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias);
-    public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getSiteMaster();
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias);
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel);
@@ -2459,6 +2459,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EROSMETADATACOMPLETE, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableBoolean getExists()
+  {
+    return getExists(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getExists(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.EXISTS, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getFaaIdNumber()
   {
     return getFaaIdNumber(null);
@@ -2474,6 +2491,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getFaaIdNumber(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.FAAIDNUMBER, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableGeometry getGeometry()
+  {
+    return getGeometry(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableBoolean getHillshade()
@@ -2916,40 +2950,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableUUID getSite(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITE, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree()
-  {
-    return getSiteLatDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLatDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELATDECIMALDEGREE, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree()
-  {
-    return getSiteLongDecimalDegree(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableDecimal getSiteLongDecimalDegree(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableDecimal)this.get(gov.geoplatform.uasdm.bus.CollectionReport.SITELONGDECIMALDEGREE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getSiteMaster()

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -66,7 +66,7 @@ public class Document extends DocumentBase implements DocumentIF
   public void delete(boolean removeFromS3, boolean deleteLayers)
   {
     List<GeoserverLayer> layers = this.getLayers();
-    
+
     if (deleteLayers)
     {
       for (GeoserverLayer layer : layers)
@@ -74,14 +74,14 @@ public class Document extends DocumentBase implements DocumentIF
         layer.delete(false);
       }
     }
-    
+
     super.delete();
-    
+
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       this.deleteS3File(this.getS3location());
     }
-    
+
     if (deleteLayers)
     {
       if (deleteLayers)
@@ -104,7 +104,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   protected void deleteS3File(String key)
   {
-    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key);
+    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key, this.getComponent());
     command.doIt();
   }
 
@@ -129,7 +129,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     document.setName(name);
     document.apply(uasComponent);
-    
+
     return document;
   }
 
@@ -151,7 +151,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     this.addChild((Product) product, mdEdge).apply();
   }
-  
+
   public List<GeoserverLayer> getLayers()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_HAS_LAYER);

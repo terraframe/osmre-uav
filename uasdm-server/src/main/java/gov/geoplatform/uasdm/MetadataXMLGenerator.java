@@ -240,10 +240,8 @@ public class MetadataXMLGenerator
       this.collection.appLock();
       this.collection.setMetadataUploaded(true);
       this.collection.apply();
-
-      Long calculateSize = RemoteFileFacade.calculateSize(this.collection);
-
-      CollectionReport.update(this.collection, calculateSize);
+      
+      CollectionReport.update(this.collection);
     }
     finally
     {

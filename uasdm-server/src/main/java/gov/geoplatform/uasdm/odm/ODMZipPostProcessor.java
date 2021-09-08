@@ -240,9 +240,7 @@ public class ODMZipPostProcessor
 
       if (this.collection instanceof CollectionIF)
       {
-        Long calculateSize = RemoteFileFacade.calculateSize(this.collection);
-
-        CollectionReport.update((CollectionIF) this.collection, calculateSize);
+        CollectionReport.updateSize((CollectionIF) this.collection);
       }
     }
   }
@@ -475,9 +473,7 @@ public class ODMZipPostProcessor
 
       if (this.uploader.collection instanceof CollectionIF)
       {
-        Long calculateSize = RemoteFileFacade.calculateSize(this.uploader.collection);
-
-        CollectionReport.update((CollectionIF) this.uploader.collection, calculateSize);
+        CollectionReport.updateSize((CollectionIF) this.uploader.collection);
       }
     }
   }

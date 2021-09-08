@@ -21,8 +21,8 @@ export class ReportsComponent implements OnInit {
         { header: 'Mission', field: 'missionName', type: 'TEXT', sortable: true },
         { header: 'Project', field: 'projectName', type: 'TEXT', sortable: true },
         { header: 'Site', field: 'siteName', type: 'TEXT', sortable: true },
-        { header: 'Latitude', field: 'siteLatDecimalDegree', type: 'NUMBER', sortable: false },
-        { header: 'Longitude', field: 'siteLongDecimalDegree', type: 'NUMBER', sortable: false },
+        { header: 'Latitude', field: 'siteLatDecimalDegree', type: 'NUMBER', sortable: false, filter: false },
+        { header: 'Longitude', field: 'siteLongDecimalDegree', type: 'NUMBER', sortable: false, filter: false },
         { header: 'Bureau', field: 'bureauName', type: 'TEXT', sortable: true },
         { header: 'Platform', field: 'platformName', type: 'TEXT', sortable: true },
         { header: 'Sensor', field: 'sensorName', type: 'TEXT', sortable: true },
@@ -36,7 +36,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Point Cloud', field: 'pointCloud', type: 'BOOLEAN', sortable: false },
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
-        { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true },
+        { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
         { header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false },
     ];
 

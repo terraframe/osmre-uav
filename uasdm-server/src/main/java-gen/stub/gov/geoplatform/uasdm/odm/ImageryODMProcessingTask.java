@@ -166,9 +166,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
       if (component instanceof CollectionIF)
       {
-        Long calculateSize = RemoteFileFacade.calculateSize((CollectionIF) component);
-
-        CollectionReport.update((CollectionIF) component, calculateSize);
+        CollectionReport.updateSize((CollectionIF) component);
       }
     }
     catch (IOException e)

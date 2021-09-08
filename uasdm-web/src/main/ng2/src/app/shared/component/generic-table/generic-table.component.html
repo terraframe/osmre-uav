@@ -48,7 +48,7 @@
 					</ng-container>
 					<ng-container *ngSwitchCase="'CONSTANT'">
 						<a *ngIf="rowData[col.field] != null" (click)="onClick('custom', rowData, col)">
-							{{col.text}}
+							{{col.text}} 
 						</a>
 					</ng-container>
 					<ng-container *ngSwitchDefault>

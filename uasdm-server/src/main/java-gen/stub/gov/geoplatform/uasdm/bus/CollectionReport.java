@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,9 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import net.geoprism.GeoprismUser;
 
 public class CollectionReport extends CollectionReportBase implements JSONSerializable
@@ -44,8 +48,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     JSONObject object = new JSONObject();
     object.put(CollectionReport.USERNAME, this.getUserName());
     object.put(CollectionReport.BUREAUNAME, this.getBureauName());
-    object.put(CollectionReport.SITELATDECIMALDEGREE, this.getSiteLatDecimalDegree());
-    object.put(CollectionReport.SITELONGDECIMALDEGREE, this.getSiteLongDecimalDegree());
     object.put(CollectionReport.SITENAME, this.getSiteName());
     object.put(CollectionReport.PROJECTNAME, this.getProjectName());
     object.put(CollectionReport.MISSIONNAME, this.getMissionName());
@@ -64,8 +66,26 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.POINTCLOUD, this.getPointCloud());
     object.put(CollectionReport.HILLSHADE, this.getHillshade());
     object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
-    object.put(CollectionReport.ALLSTORAGESIZE, this.getAllStorageSize());
     object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
+
+    Long storageSize = this.getAllStorageSize();
+
+    if (storageSize != null)
+    {
+      // Convert storage size to gb
+      BigDecimal size = new BigDecimal(storageSize);
+      size = size.divide(new BigDecimal(Math.pow(1024, 3)), 4, RoundingMode.HALF_UP);
+
+      object.put(CollectionReport.ALLSTORAGESIZE, size.toString() + " GB");
+    }
+
+    Point geometry = this.getGeometry();
+
+    if (geometry != null)
+    {
+      object.put("siteLatDecimalDegree", geometry.getY());
+      object.put("siteLongDecimalDegree", geometry.getX());
+    }
 
     return object;
   }
@@ -79,7 +99,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     gov.geoplatform.uasdm.graph.Mission mission = (gov.geoplatform.uasdm.graph.Mission) ancestors.stream().filter(a -> ( a instanceof gov.geoplatform.uasdm.graph.Mission )).findFirst().get();
     gov.geoplatform.uasdm.graph.Collection collection = (gov.geoplatform.uasdm.graph.Collection) child;
     gov.geoplatform.uasdm.graph.UAV uav = child.getUav();
-    Platform platform = uav.getPlatform();
     Sensor sensor = child.getSensor();
     Bureau bureau = site.getBureau();
     GeoprismUser owner = (GeoprismUser) collection.getOwner();
@@ -87,36 +106,97 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     Point geometry = site.getGeoPoint();
 
     CollectionReport report = new CollectionReport();
-    report.setActor(owner);
     report.setSite(site);
+    report.setGeometry(geometry);
     report.setProject(project);
     report.setMission(mission);
-    report.setCollection(collection);
-    report.setCollectionDate(collection.getCollectionDate());
-    report.setUav(uav);
-    report.setPlatform(platform);
-    report.setSensor(sensor);
-    report.setBureau(bureau);
-    report.setUserName(owner.getUsername());
-    report.setBureauName(bureau.getName());
-    report.setSiteLatDecimalDegree(new BigDecimal(geometry.getY()));
-    report.setSiteLongDecimalDegree(new BigDecimal(geometry.getX()));
     report.setSiteName(site.getName());
     report.setProjectName(project.getName());
     report.setMissionName(mission.getName());
+    report.setCollection(collection);
+    report.setCollectionDate(collection.getCollectionDate());
     report.setCollectionName(collection.getName());
-    report.setPlatformName(platform.getName());
-    report.setSensorName(sensor.getName());
-    report.setFaaIdNumber(uav.getFaaNumber());
-    report.setSerialNumber(uav.getSerialNumber());
+    report.setErosMetadataComplete(collection.getMetadataUploaded());
     report.setProductsShared(false);
     report.setOdmProcessing("not requested");
     report.setAllStorageSize(0L);
-    report.apply();
 
-    /*
-     * <char name="userName" required="false" label="User Name" size="4096" />
-     */
+    if (owner != null)
+    {
+      report.setActor(owner);
+      report.setUserName(owner.getUsername());
+    }
+
+    if (bureau != null)
+    {
+      report.setBureau(bureau);
+      report.setBureauName(bureau.getName());
+    }
+
+    if (uav != null)
+    {
+      report.setUav(uav);
+      report.setFaaIdNumber(uav.getFaaNumber());
+      report.setSerialNumber(uav.getSerialNumber());
+
+      Platform platform = uav.getPlatform();
+
+      if (platform != null)
+      {
+        report.setPlatform(platform);
+        report.setPlatformName(platform.getName());
+      }
+    }
+
+    if (sensor != null)
+    {
+      report.setSensor(sensor);
+      report.setSensorName(sensor.getName());
+    }
+
+    if (collection != null)
+    {
+      List<Product> products = collection.getProducts();
+
+      if (products.size() > 0)
+      {
+        Product product = products.get(0);
+
+        report.setProductsShared(product.getPublished());
+        report.setOdmProcessing(ODMStatus.COMPLETED.getLabel());
+      }
+      else
+      {
+        report.setProductsShared(false);
+
+        List<AbstractWorkflowTask> tasks = collection.getTasks();
+        long count = tasks.stream().filter(t -> ( tasks instanceof ODMProcessingTask )).count();
+
+        if (count > 0)
+        {
+          report.setOdmProcessing(ODMStatus.FAILED.getLabel());
+        }
+        else
+        {
+          report.setOdmProcessing("not requested");
+        }
+      }
+
+      List<DocumentIF> documents = collection.getDocuments();
+      List<DocumentIF> rawDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.RAW + "/")).collect(Collectors.toList());
+      List<DocumentIF> videoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.VIDEO + "/")).collect(Collectors.toList());
+      List<DocumentIF> orthoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.ORTHO + "/")).collect(Collectors.toList());
+      List<DocumentIF> pointCloudDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.PTCLOUD + "/")).collect(Collectors.toList());
+      List<DocumentIF> demDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.DEM + "/")).collect(Collectors.toList());
+
+      report.setRawImagesCount(rawDocuments.size());
+      report.setVideo(videoDocuments.size() > 0);
+      report.setOrthomosaic(orthoDocuments.size() > 0);
+      report.setPointCloud(pointCloudDocuments.size() > 0);
+      report.setHillshade(demDocuments.size() > 0);
+    }
+
+    report.apply();
   }
 
   @Transaction
@@ -159,6 +239,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.setErosMetadataComplete(collection.getMetadataUploaded());
         report.apply();
       }
+    }
+  }
+
+  public static List<CollectionReport> getForCollection(CollectionIF collection)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(collection.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      return new LinkedList<CollectionReport>(iterator.getAll());
     }
   }
 
@@ -205,13 +296,10 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     {
       while (iterator.hasNext())
       {
-        Point point = site.getGeoPoint();
-
         CollectionReport report = iterator.next();
         report.appLock();
         report.setSiteName(site.getName());
-        report.setSiteLatDecimalDegree(new BigDecimal(point.getY()));
-        report.setSiteLongDecimalDegree(new BigDecimal(point.getX()));
+        report.setGeometry(site.getGeoPoint());
         report.apply();
       }
     }
@@ -351,8 +439,10 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
-  public static void update(CollectionIF collection, Long storageSize)
+  public static void updateIncludeSize(CollectionIF collection)
   {
+    Long storageSize = RemoteFileFacade.calculateSize(collection);
+
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
 
@@ -365,6 +455,25 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.setCollectionName(collection.getName());
         report.setCollectionDate(collection.getCollectionDate());
         report.setErosMetadataComplete(collection.getMetadataUploaded());
+        report.setAllStorageSize(storageSize);
+        report.apply();
+      }
+    }
+  }
+
+  public static void updateSize(CollectionIF collection)
+  {
+    Long storageSize = RemoteFileFacade.calculateSize(collection);
+
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(collection.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
         report.setAllStorageSize(storageSize);
         report.apply();
       }
@@ -433,6 +542,27 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     try (OIterator<? extends CollectionReport> iterator = query.getIterator())
     {
       return new Page<CollectionReport>(count, pageNumber, pageSize, new LinkedList<CollectionReport>(iterator.getAll()));
+    }
+  }
+
+  public void markDeleted(Collection collection)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(collection.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setCollection(null);
+        report.setMission(null);
+        report.setProject(null);
+        report.setSite(null);
+        report.setExists(false);
+        report.apply();
+      }
     }
   }
 

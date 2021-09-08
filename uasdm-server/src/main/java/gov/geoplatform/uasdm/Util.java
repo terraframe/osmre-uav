@@ -348,9 +348,7 @@ public class Util
 
         if (component instanceof CollectionIF)
         {
-          Long calculateSize = RemoteFileFacade.calculateSize(component);
-
-          CollectionReport.update((CollectionIF) component, calculateSize);
+          CollectionReport.updateSize((CollectionIF) component);
         }
 
         return true;

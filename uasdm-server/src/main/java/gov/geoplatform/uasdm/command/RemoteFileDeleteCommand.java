@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.command;
 
@@ -20,17 +20,23 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.Command;
 
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class RemoteFileDeleteCommand implements Command
 {
-  private Logger log = LoggerFactory.getLogger(RemoteFileDeleteCommand.class);
+  private Logger         log = LoggerFactory.getLogger(RemoteFileDeleteCommand.class);
 
-  private String key;
+  private String         key;
 
-  public RemoteFileDeleteCommand(String key)
+  private UasComponentIF component;
+
+  public RemoteFileDeleteCommand(String key, UasComponentIF component)
   {
     this.key = key;
+    this.component = component;
   }
 
   /**
@@ -41,6 +47,11 @@ public class RemoteFileDeleteCommand implements Command
     log.info("Deleting key [" + this.key + "] from S3");
 
     RemoteFileFacade.deleteObjects(key);
+
+    if (this.component instanceof CollectionIF)
+    {
+      CollectionReport.updateSize((CollectionIF) this.component);
+    }
   }
 
   /**

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -666848021)
+@com.runwaysdk.business.ClassSignature(hash = 624629109)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -24,7 +24,9 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String EROSARCHIVED = "erosArchived";
   public static java.lang.String EROSMETADATACOMPLETE = "erosMetadataComplete";
+  public static java.lang.String EXISTS = "exists";
   public static java.lang.String FAAIDNUMBER = "faaIdNumber";
+  public static java.lang.String GEOMETRY = "geometry";
   public static java.lang.String HILLSHADE = "hillshade";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
@@ -51,15 +53,13 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SERIALNUMBER = "serialNumber";
   public static java.lang.String SITE = "site";
-  public static java.lang.String SITELATDECIMALDEGREE = "siteLatDecimalDegree";
-  public static java.lang.String SITELONGDECIMALDEGREE = "siteLongDecimalDegree";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String SITENAME = "siteName";
   public static java.lang.String TYPE = "type";
   public static java.lang.String UAV = "uav";
   public static java.lang.String USERNAME = "userName";
   public static java.lang.String VIDEO = "video";
-  private static final long serialVersionUID = -666848021;
+  private static final long serialVersionUID = 624629109;
   
   public CollectionReportBase()
   {
@@ -490,6 +490,34 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     }
   }
   
+  public Boolean getExists()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(EXISTS));
+  }
+  
+  public void validateExists()
+  {
+    this.validateAttribute(EXISTS);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getExistsMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(EXISTS);
+  }
+  
+  public void setExists(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(EXISTS, "");
+    }
+    else
+    {
+      setValue(EXISTS, java.lang.Boolean.toString(value));
+    }
+  }
+  
   public String getFaaIdNumber()
   {
     return getValue(FAAIDNUMBER);
@@ -515,6 +543,34 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     else
     {
       setValue(FAAIDNUMBER, value);
+    }
+  }
+  
+  public com.vividsolutions.jts.geom.Point getGeometry()
+  {
+    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOMETRY);
+  }
+  
+  public void validateGeometry()
+  {
+    this.validateAttribute(GEOMETRY);
+  }
+  
+  public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getGeometryMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(GEOMETRY);
+  }
+  
+  public void setGeometry(com.vividsolutions.jts.geom.Point value)
+  {
+    if(value == null)
+    {
+      setValue(GEOMETRY, "");
+    }
+    else
+    {
+      setValue(GEOMETRY, value);
     }
   }
   
@@ -1231,62 +1287,6 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     else
     {
       setValue(SITE, value.getOid());
-    }
-  }
-  
-  public java.math.BigDecimal getSiteLatDecimalDegree()
-  {
-    return com.runwaysdk.constants.MdAttributeDecimalUtil.getTypeSafeValue(getValue(SITELATDECIMALDEGREE));
-  }
-  
-  public void validateSiteLatDecimalDegree()
-  {
-    this.validateAttribute(SITELATDECIMALDEGREE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getSiteLatDecimalDegreeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(SITELATDECIMALDEGREE);
-  }
-  
-  public void setSiteLatDecimalDegree(java.math.BigDecimal value)
-  {
-    if(value == null)
-    {
-      setValue(SITELATDECIMALDEGREE, "");
-    }
-    else
-    {
-      setValue(SITELATDECIMALDEGREE, value.toString());
-    }
-  }
-  
-  public java.math.BigDecimal getSiteLongDecimalDegree()
-  {
-    return com.runwaysdk.constants.MdAttributeDecimalUtil.getTypeSafeValue(getValue(SITELONGDECIMALDEGREE));
-  }
-  
-  public void validateSiteLongDecimalDegree()
-  {
-    this.validateAttribute(SITELONGDECIMALDEGREE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getSiteLongDecimalDegreeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(SITELONGDECIMALDEGREE);
-  }
-  
-  public void setSiteLongDecimalDegree(java.math.BigDecimal value)
-  {
-    if(value == null)
-    {
-      setValue(SITELONGDECIMALDEGREE, "");
-    }
-    else
-    {
-      setValue(SITELONGDECIMALDEGREE, value.toString());
     }
   }
   
