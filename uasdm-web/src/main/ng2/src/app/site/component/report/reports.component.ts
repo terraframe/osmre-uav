@@ -15,7 +15,15 @@ export class ReportsComponent implements OnInit {
 
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
-        { header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true },
+        {
+            header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true, columnType: (row: Object) => {
+                if (!row['exists']) {
+                    return 'TEXT';
+                }
+
+                return 'URL';
+            }
+        },
         { header: 'Collection Owner', field: 'userName', type: 'TEXT', sortable: true },
         { header: 'Collection Date', field: 'collectionDate', type: 'DATE', sortable: true },
         { header: 'Mission', field: 'missionName', type: 'TEXT', sortable: true },
@@ -37,7 +45,15 @@ export class ReportsComponent implements OnInit {
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
-        { header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false },
+        {
+            header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
+                if (row['product'] == null || row['product'].length === 0) {
+                    return 'NONE';
+                }
+
+                return 'CONSTANT';
+            }
+        },
     ];
 
     constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService) {

@@ -32,7 +32,7 @@
 
 		<ng-template pTemplate="body" let-rowData let-columns="columns">
 			<tr>
-				<td *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
+				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" style="width:250px">
 					<ng-container *ngSwitchCase="'URL'">
 						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
 							{{rowData[col.field]}}
@@ -48,8 +48,10 @@
 					</ng-container>
 					<ng-container *ngSwitchCase="'CONSTANT'">
 						<a *ngIf="rowData[col.field] != null" (click)="onClick('custom', rowData, col)">
-							{{col.text}} 
+							{{col.text}}
 						</a>
+					</ng-container>
+					<ng-container *ngSwitchCase="'NONE'">
 					</ng-container>
 					<ng-container *ngSwitchDefault>
 						{{rowData[col.field]}}

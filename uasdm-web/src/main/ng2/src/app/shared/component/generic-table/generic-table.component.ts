@@ -78,4 +78,12 @@ export class GenericTableComponent implements OnInit, OnDestroy {
             col: col
         });
     }
+
+    getColumnType(row: Object, col: GenericTableColumn): string {
+        if (col.columnType != null) {
+            return col.columnType(row);
+        }
+
+        return col.type;
+    }
 }

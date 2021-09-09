@@ -130,7 +130,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             {
               CollectionReport.create((CollectionIF) child);
 
-              new MetadataXMLGenerator((CollectionIF) child, selection).generateAndUpload();
+              new MetadataXMLGenerator().generateAndUpload((CollectionIF) child, selection);
             }
           }
 

@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,17 +33,17 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
-import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.SensorType;
 import net.geoprism.GeoprismUser;
 import net.lingala.zip4j.ZipFile;
 
@@ -95,9 +96,9 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
 
-      if (component instanceof Collection)
+      if (component instanceof CollectionIF)
       {
-        calculateImageSize(infile, (Collection) component);
+        calculateImageSize(infile, (CollectionIF) component);
       }
     }
 
@@ -131,7 +132,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile, isMultispectral);
   }
 
-  private void calculateImageSize(ApplicationResource zip, Collection collection)
+  private void calculateImageSize(ApplicationResource zip, CollectionIF collection)
   {
     try
     {
@@ -141,24 +142,42 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       {
         new ZipFile(zip.getUnderlyingFile()).extractAll(parentFolder.getAbsolutePath());
 
-        File[] files = parentFolder.listFiles();
-
-        for (File file : files)
+        File[] files = parentFolder.listFiles(new FilenameFilter()
         {
-          String ext = FilenameUtils.getExtension(file.getName()).toLowerCase();
-          if (ArrayUtils.contains(ImageryUploadEvent.formats, ext))
+          @Override
+          public boolean accept(File dir, String name)
           {
-            BufferedImage bimg = ImageIO.read(file);
-            int width = bimg.getWidth();
-            int height = bimg.getHeight();
+            String ext = FilenameUtils.getExtension(name).toLowerCase();
 
-            collection.appLock();
-            collection.setImageHeight(height);
-            collection.setImageWidth(width);
-            collection.apply();
-
-            return;
+            return ArrayUtils.contains(ImageryUploadEvent.formats, ext);
           }
+        });
+
+        if (files.length > 0)
+        {
+          File file = files[0];
+          BufferedImage bimg = ImageIO.read(file);
+
+          int width = bimg.getWidth();
+          int height = bimg.getHeight();
+
+          collection.appLock();
+          collection.setImageHeight(height);
+          collection.setImageWidth(width);
+          collection.apply();
+
+          // Update the metadata
+          FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
+
+          if (metadata != null)
+          {
+            metadata.getSensor().setImageWidth(Integer.toString(width));
+            metadata.getSensor().setImageHeight(Integer.toString(height));
+
+            MetadataXMLGenerator generator = new MetadataXMLGenerator();
+            generator.generateAndUpload(collection, metadata);
+          }
+
         }
       }
       finally

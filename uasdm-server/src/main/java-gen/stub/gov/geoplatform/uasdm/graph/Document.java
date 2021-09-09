@@ -75,12 +75,12 @@ public class Document extends DocumentBase implements DocumentIF
       }
     }
 
-    super.delete();
-
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       this.deleteS3File(this.getS3location());
     }
+
+    super.delete();
 
     if (deleteLayers)
     {

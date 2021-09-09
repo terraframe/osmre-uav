@@ -230,10 +230,10 @@ public class ODMZipPostProcessor
 
   protected void uploadAllZip(CloseableFile allZip)
   {
-    String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
-
     if (DevProperties.uploadAllZip())
     {
+      String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
+
       Util.uploadFileToS3(allZip, allKey, null);
 
       documents.add(this.collection.createDocumentIfNotExist(allKey, allZip.getName()));

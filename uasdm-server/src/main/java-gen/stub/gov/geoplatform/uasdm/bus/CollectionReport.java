@@ -67,6 +67,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.HILLSHADE, this.getHillshade());
     object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
     object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
+    object.put(CollectionReport.EXISTS, this.getExists());
 
     Long storageSize = this.getAllStorageSize();
 
@@ -120,6 +121,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     report.setProductsShared(false);
     report.setOdmProcessing("not requested");
     report.setAllStorageSize(0L);
+    report.setExists(true);
 
     if (owner != null)
     {
@@ -162,6 +164,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       {
         Product product = products.get(0);
 
+        report.setProduct(product);
         report.setProductsShared(product.getPublished());
         report.setOdmProcessing(ODMStatus.COMPLETED.getLabel());
       }
@@ -561,6 +564,24 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.setProject(null);
         report.setSite(null);
         report.setExists(false);
+        report.apply();
+      }
+    }
+  }
+
+  public static void remove(Product product)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getProduct().EQ(product.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setProductsShared(false);
+        report.setProduct(null);
         report.apply();
       }
     }

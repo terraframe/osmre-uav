@@ -54,4 +54,8 @@ public interface CollectionIF extends UasComponentIF
   public UAV getUav();
 
   public Date getCollectionDate();
+
+  public void setImageHeight(Integer imageHeight);
+
+  public void setImageWidth(Integer imageWidth);
 }

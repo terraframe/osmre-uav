@@ -22,6 +22,7 @@ export class GenericTableColumn {
     urlField?: string;
     text?: string
     filter?: boolean;
+    columnType?: Function;
 }
 
 export class TableEvent {
