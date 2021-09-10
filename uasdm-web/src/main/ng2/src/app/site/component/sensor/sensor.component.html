@@ -60,6 +60,9 @@
       </div>
       <div class="form-group">
         <label>Wave Length</label>
+        <span *ngIf="sensor.wavelengths.length === 0" class="error-message">
+          A sensor requires at least one Wave Length
+        </span>
         <div *ngFor="let wavelength of wavelengths">
           <boolean-field [value]="sensor.wavelengths && (-1 !== sensor.wavelengths.indexOf(wavelength.oid))"
             [label]="wavelength.label" (valueChange)="updateSelectedWaveLength(wavelength, $event)"
@@ -78,7 +81,7 @@
       <div *ngIf="mode === 'WRITE'" class="btn-holder" style="text-align: right;">
         <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
         <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
-          [disabled]="!ngForm.valid">Apply</button>
+          [disabled]="!ngForm.valid || sensor.wavelengths.length === 0">Apply</button>
       </div>
       <div *ngIf="mode === 'READ'" class="btn-holder" style="text-align: right;">
         <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>

@@ -50,6 +50,10 @@
         </div>
         <div *ngIf="mode === 'WRITE'" class="form-group">
           <label>Sensors</label>
+          <span *ngIf="platform.sensors.length === 0" class="error-message">
+            A platform requires at least one sensor
+          </span>
+
           <div *ngFor="let sensor of sensors">
             <boolean-field [value]="platform.sensors && (-1 !== platform.sensors.indexOf(sensor.oid))"
               [label]="sensor.name" (valueChange)="updateSelectedSensor(sensor, $event)">
@@ -67,7 +71,7 @@
         <div *ngIf="mode === 'WRITE'" class="btn-holder" style="text-align: right;">
           <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
           <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
-            [disabled]="!ngForm.valid">Apply</button>
+            [disabled]="!ngForm.valid || platform.sensors.length === 0">Apply</button>
         </div>
         <div *ngIf="mode === 'READ'" class="btn-holder" style="text-align: right;">
           <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
