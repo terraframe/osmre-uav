@@ -199,6 +199,13 @@ public class Platform extends PlatformBase implements JSONSerializable
       }
     }
 
+    if (set.size() == 0)
+    {
+      GenericException exception = new GenericException();
+      exception.setUserMessage("A platform must be assigned at least one sensor");
+      throw exception;
+    }
+
     for (String oid : set)
     {
       platform.addPlatformHasSensorChild(Sensor.get(oid)).apply();

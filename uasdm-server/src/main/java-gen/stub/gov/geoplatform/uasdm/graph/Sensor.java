@@ -15,6 +15,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.JSONSerializable;
@@ -207,6 +208,13 @@ public class Sensor extends SensorBase implements JSONSerializable
           sensor.removeSensorHasWaveLengthChild(wavelength);
         }
       }
+    }
+
+    if (set.size() == 0)
+    {
+      GenericException exception = new GenericException();
+      exception.setUserMessage("A sensor must have at least one wavelength");
+      throw exception;
     }
 
     for (String oid : set)
