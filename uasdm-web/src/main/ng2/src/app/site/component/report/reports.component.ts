@@ -45,6 +45,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
+        { header: 'Number of Downloads', field: 'downloadCounts', type: 'NUMBER', sortable: true, filter: false },
         {
             header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
                 if (row['product'] == null || row['product'].length === 0) {

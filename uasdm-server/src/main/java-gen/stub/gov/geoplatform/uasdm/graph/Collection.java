@@ -52,7 +52,9 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -153,6 +155,27 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
 
     return object;
+  }
+
+  @Override
+  public RemoteFileObject download(String key)
+  {
+    CollectionReport.updateDownloadCount(this);
+
+    return super.download(key);
+  }
+
+  @Override
+  public RemoteFileObject download(String key, List<Range> ranges)
+  {
+    long isStart = ranges.stream().filter(r -> r.getStart().equals(0L)).count();
+
+    if (isStart > 0)
+    {
+      CollectionReport.updateDownloadCount(this);
+    }
+
+    return super.download(key, ranges);
   }
 
   /**

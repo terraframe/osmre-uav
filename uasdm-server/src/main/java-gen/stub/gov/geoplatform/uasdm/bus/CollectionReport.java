@@ -68,6 +68,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
     object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
     object.put(CollectionReport.EXISTS, this.getExists());
+    object.put(CollectionReport.DOWNLOADCOUNTS, this.getDownloadCounts());
 
     Long storageSize = this.getAllStorageSize();
 
@@ -122,17 +123,26 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     report.setOdmProcessing("not requested");
     report.setAllStorageSize(0L);
     report.setExists(true);
+    report.setDownloadCounts(0L);
 
     if (owner != null)
     {
       report.setActor(owner);
       report.setUserName(owner.getUsername());
     }
+    else
+    {
+      report.setUserName("N/A");
+    }
 
     if (bureau != null)
     {
       report.setBureau(bureau);
       report.setBureauName(bureau.getName());
+    }
+    else
+    {
+      report.setBureauName("N/A");
     }
 
     if (uav != null)
@@ -149,11 +159,21 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.setPlatformName(platform.getName());
       }
     }
+    else
+    {
+      report.setFaaIdNumber("N/A");
+      report.setSerialNumber("N/A");
+      report.setPlatformName("N/A");
+    }
 
     if (sensor != null)
     {
       report.setSensor(sensor);
       report.setSensorName(sensor.getName());
+    }
+    else
+    {
+      report.setSensorName("N/A");
     }
 
     if (collection != null)
@@ -582,6 +602,23 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.appLock();
         report.setProductsShared(false);
         report.setProduct(null);
+        report.apply();
+      }
+    }
+  }
+
+  public static void updateDownloadCount(CollectionIF collection)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(collection.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setDownloadCounts(report.getDownloadCounts() != null ? ( report.getDownloadCounts() + 1 ) : 1L);
         report.apply();
       }
     }
