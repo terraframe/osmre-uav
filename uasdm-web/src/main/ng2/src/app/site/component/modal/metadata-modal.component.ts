@@ -6,8 +6,7 @@ import { Subject } from 'rxjs';
 import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '@site/service/management.service';
 
-import { Sensor } from '@site/model/sensor';
-import { Platform } from '@site/model/platform';
+import { WAVELENGTHS } from '@site/model/sensor';
 
 @Component({
 	selector: 'metadata-modal',
@@ -29,43 +28,22 @@ export class MetadataModalComponent {
 	// imageWidth: string;
 
 	metaObject: any = {
-		collectionId: "",
-		// agency:{
-		//     name:"Department of Interior",
-		//     shortName: "",
-		//     fieldCenter: ""
-		// },
 		pointOfContact: {
 			name: "",
 			email: ""
 		},
-		// project: {
-		//     name:"",
-		//     shortName:"",
-		//     description:""
-		// },
-		// mission: {
-		//     name:"",
-		//     description:""
-		// },
-		// collect: {
-		//     name:"",
-		//     description:""
-		// },
-		uav: {
-			name: "",
-			bureau: "",
-			platformType: "",
-			manufacturer: "",
+		platform: {
+			otherName: "",
+			class: "",
+			type: "",
 			serialNumber: "",
-			faaNumber: ""
+			faaIdNumber: ""
 		},
 		sensor: {
-			name: "",
-			sensorType: "",
+			otherName: "",
+			type: "",
+			model: "",
 			wavelength: [],
-			// imageWidth:"",
-			// imageHeight:"",
 			sensorWidth: "",
 			sensorWidthUnits: "mm",
 			sensorHeight: "",
@@ -83,10 +61,7 @@ export class MetadataModalComponent {
      */
 	public onMetadataChange: Subject<string>;
 
-	wavelengths: string[] = [];
-
-	otherSensorId: string = "";
-	otherPlatformId: string = "";
+	wavelengths: string[] = WAVELENGTHS;
 
 	constructor(public bsModalRef: BsModalRef, private service: ManagementService) { }
 
@@ -95,12 +70,10 @@ export class MetadataModalComponent {
 
 		this.onMetadataChange = new Subject();
 
-		this.service.getMetadataOptions(this.collectionId).then((options) => {
+		this.service.getMetadataOptions(null).then((options) => {
 
 			this.metaObject.pointOfContact.name = options.name;
 			this.metaObject.pointOfContact.email = options.email;
-			this.metaObject.sensor = options.sensor;
-			this.metaObject.uav = options.uav;
 
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
@@ -110,17 +83,33 @@ export class MetadataModalComponent {
 
 	handleSubmit(): void {
 
-		this.metaObject.collectionId = this.collectionId;
 		// this.metaObject.imageWidth = this.imageWidth;
 		// this.metaObject.imageHeight = this.imageHeight;
 
-		this.service.submitCollectionMetadata(this.metaObject).then(() => {
+		this.service.submitCollectionMetadata(this.collectionId, this.metaObject).then(() => {
 			this.bsModalRef.hide();
 			this.onMetadataChange.next(this.collectionId);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
+	
+	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
+
+		const indexOf = this.metaObject.sensor.wavelength.indexOf(wavelength)
+
+		if (checked) {
+
+			if (indexOf < 0) {
+				this.metaObject.sensor.wavelength.push(wavelength);
+
+			}
+		} else {
+			if (indexOf > -1) {
+				this.metaObject.sensor.wavelength.splice(indexOf, 1);
+			}
+		}
+	}	
 
 	error(err: HttpErrorResponse): void {
 	  this.message = ErrorHandler.getMessageFromError(err);

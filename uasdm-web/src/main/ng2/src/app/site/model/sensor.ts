@@ -18,3 +18,5 @@ export class Sensor {
     }[];
 
 }
+
+export const WAVELENGTHS: string[] = ["Natural Color RGB", "Thermal", "Red Edge", "Near Infra Red", "LiDAR", "Other"];

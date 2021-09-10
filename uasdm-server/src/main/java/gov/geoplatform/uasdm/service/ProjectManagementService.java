@@ -70,6 +70,7 @@ import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -575,9 +576,13 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void submitMetadata(String sessionId, String json)
+  public void submitMetadata(String sessionId, String collectionId, String json)
   {
-//    new MetadataXMLGenerator(json).generateAndUpload();
+    CollectionIF collection = ComponentFacade.getCollection(collectionId);
+
+    FlightMetadata metadata = FlightMetadata.parse(collection, new JSONObject(json));
+
+    new MetadataXMLGenerator().generateAndUpload(collection, metadata);
   }
 
   @Request(RequestType.SESSION)
