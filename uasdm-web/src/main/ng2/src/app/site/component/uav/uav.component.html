@@ -36,7 +36,7 @@
         <div class="form-group">
           <label>FAA Number</label>
           <input [(ngModel)]="uav.faaNumber" name="faaNumber" type="input" class="form-control" placeholder="FAA Number"
-            [disabled]="mode === 'READ'" required />
+            [disabled]="mode === 'READ'" required max="10" maxlength="10" />
         </div>
         <div class="form-group">
           <label>Description</label>
