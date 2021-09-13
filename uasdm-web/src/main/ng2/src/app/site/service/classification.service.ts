@@ -10,14 +10,14 @@ import { Classification } from '@site/model/classification';
 import { Injectable } from '@angular/core';
 import { GenericTableService } from '@shared/model/generic-table';
 
-declare var acp: any;
-
 export enum Endpoint {
     SENSOR_TYPE = '/sensor-type',
     PLATFORM_TYPE = '/platform-type',
     PLATFORM_MANUFACTURER = '/platform-manufacturer',
     WAVE_LENGTH = '/wave-length'
 }
+
+declare var acp: any;
 
 @Injectable()
 export class ClassificationService implements GenericTableService {
@@ -26,6 +26,10 @@ export class ClassificationService implements GenericTableService {
     }
 
     page(criteria: Object, baseUrl: string): Promise<PageResult<Classification>> {
+
+        console.log('ACP', acp);
+        console.log('Base URL', baseUrl);
+
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
