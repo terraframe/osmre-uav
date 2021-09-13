@@ -60,6 +60,8 @@ public class Platform extends PlatformBase implements JSONSerializable
       throw message;
     }
 
+    CollectionReport.handleDelete(this);
+
     super.delete();
   }
 

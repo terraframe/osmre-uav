@@ -74,7 +74,6 @@ export class ClassificationsComponent implements OnInit {
 
     remove(classification: Classification): void {
         this.service.remove(this.metadata.baseUrl, classification.oid).then(response => {
-            // this.res.resultSet = this.res.resultSet.filter(h => h.oid !== classification.oid);
             this.refresh.next();
         });
     }

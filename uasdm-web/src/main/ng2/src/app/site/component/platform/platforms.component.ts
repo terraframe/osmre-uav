@@ -54,7 +54,9 @@ export class PlatformsComponent implements OnInit {
     }
 
     remove(platform: Platform): void {
-        this.refresh.next();
+        this.service.remove(platform.oid).then(response => {
+            this.refresh.next();
+        });
     }
 
     onRemove(platform: Platform): void {

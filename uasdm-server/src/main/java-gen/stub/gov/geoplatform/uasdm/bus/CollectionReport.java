@@ -568,7 +568,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
-  public void markDeleted(Collection collection)
+  public void handleDelete(Collection collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
@@ -589,7 +589,24 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
-  public static void remove(Product product)
+  public static void handleDelete(gov.geoplatform.uasdm.graph.UAV uav)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getUav().EQ(uav.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setUav(null);
+        report.apply();
+      }
+    }
+  }
+
+  public static void handleDelete(Product product)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getProduct().EQ(product.getOid()));
@@ -602,6 +619,57 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.appLock();
         report.setProductsShared(false);
         report.setProduct(null);
+        report.apply();
+      }
+    }
+  }
+
+  public static void handleDelete(GeoprismUser actor)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getActor().EQ(actor.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setActor(null);
+        report.apply();
+      }
+    }
+  }
+
+  public static void handleDelete(gov.geoplatform.uasdm.graph.Sensor sensor)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getSensor().EQ(sensor.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setSensor(null);
+        report.apply();
+      }
+    }
+  }
+
+  public static void handleDelete(gov.geoplatform.uasdm.graph.Platform platform)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getPlatform().EQ(platform.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+        report.appLock();
+        report.setPlatform(null);
         report.apply();
       }
     }

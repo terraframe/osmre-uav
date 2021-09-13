@@ -65,7 +65,8 @@ public class UserInfo extends UserInfoBase
     vQuery.SELECT(bureau);
 
     vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
-//    vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+    // vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU),
+    // bQuery.getOid()));
     vQuery.WHERE(new BasicLeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
 
     if (criteria.has("filters"))
@@ -118,7 +119,7 @@ public class UserInfo extends UserInfoBase
       pageSize = criteria.getInt("rows");
       pageNumber = ( first / pageSize ) + 1;
 
-//      vQuery.restrictRows(pageSize, pageNumber);
+      // vQuery.restrictRows(pageSize, pageNumber);
     }
 
     if (criteria.has("sortField") && criteria.has("sortOrder"))
@@ -211,6 +212,8 @@ public class UserInfo extends UserInfoBase
     {
       info.delete();
     }
+
+    CollectionReport.handleDelete(user);
 
     user.delete();
   }

@@ -55,6 +55,8 @@ public class UAV extends UAVBase implements JSONSerializable
       throw message;
     }
 
+    CollectionReport.handleDelete(this);
+
     super.delete();
   }
 
