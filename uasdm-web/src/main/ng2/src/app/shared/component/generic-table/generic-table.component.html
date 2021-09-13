@@ -44,7 +44,7 @@
 						<a *ngIf="config.edit" class="fa fa-pencil-alt ico-edit" (click)="onClick('edit', rowData, col)"
 							[title]="'Edit ' + config.label"></a>
 						<a *ngIf="config.remove" class="fa fa-trash-alt ico-remove"
-							(click)="onClick('edit', rowData, col)" [title]="'Remove ' + config.label"></a>
+							(click)="onClick('remove', rowData, col)" [title]="'Remove ' + config.label"></a>
 					</ng-container>
 					<ng-container *ngSwitchCase="'CONSTANT'">
 						<a *ngIf="rowData[col.field] != null" (click)="onClick('custom', rowData, col)">
