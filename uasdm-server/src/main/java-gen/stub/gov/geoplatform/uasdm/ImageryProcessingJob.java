@@ -48,6 +48,7 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.scheduler.ExecutionContext;
 import com.runwaysdk.system.scheduler.JobHistory;
+import com.runwaysdk.system.scheduler.JobHistoryRecord;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -132,7 +133,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   }
 
   @Override
-  public boolean canResume()
+  public boolean canResume(JobHistoryRecord record)
   {
     return true;
   }
