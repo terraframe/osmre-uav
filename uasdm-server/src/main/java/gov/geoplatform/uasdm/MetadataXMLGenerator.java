@@ -92,7 +92,7 @@ public class MetadataXMLGenerator
     JSONObject pointOfContact = selection.getJSONObject("pointOfContact");
 
     metadata.setName(pointOfContact.getString("name"));
-    metadata.setName(pointOfContact.getString("email"));
+    metadata.setEmail(pointOfContact.getString("email"));
 
     UasComponentIF proj = ancestors.get(1);
 
