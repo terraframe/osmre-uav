@@ -34,7 +34,7 @@ export class ClassificationService implements GenericTableService {
         params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<Classification>>(acp + '/' + baseUrl + '/page', { params: params })
+            .get<PageResult<Classification>>(acp + baseUrl + '/page', { params: params })
             .toPromise();
     }
 
@@ -44,7 +44,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<Classification[]>(acp + '/' + baseUrl + '/get-all', { params: params })
+            .get<Classification[]>(acp + baseUrl + '/get-all', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -61,7 +61,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<Classification>(acp + '/' + baseUrl + '/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<Classification>(acp + baseUrl + '/get', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -77,7 +77,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<Classification>(acp + '/' + baseUrl + '/newInstance', JSON.stringify({}), { headers: headers })
+            .post<Classification>(acp + baseUrl + '/newInstance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -93,7 +93,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>(acp + '/' + baseUrl + '/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<void>(acp + baseUrl + '/remove', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -109,7 +109,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Classification>(acp + '/' + baseUrl + '/apply', JSON.stringify({ classification: classification }), { headers: headers })
+            .post<Classification>(acp + baseUrl + '/apply', JSON.stringify({ classification: classification }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
