@@ -27,9 +27,6 @@ export class ClassificationService implements GenericTableService {
 
     page(criteria: Object, baseUrl: string): Promise<PageResult<Classification>> {
 
-        console.log('ACP', acp);
-        console.log('Base URL', baseUrl);
-
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
