@@ -113,7 +113,7 @@ public class MetadataXMLGenerator
     PlatformType platformType = platform.getPlatformType();
 
     metadata.getPlatform().setName(platform.getName());
-    metadata.getPlatform().setType(platformType.getLabel());
+    metadata.getPlatform().setType(platformType.getName());
     metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
     metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
 
@@ -121,10 +121,10 @@ public class MetadataXMLGenerator
     SensorType sensorType = sensor.getSensorType();
 
     List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
-    JSONArray array = wavelengths.stream().map(w -> w.getLabel()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+    JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
     metadata.getSensor().setName(sensor.getName());
-    metadata.getSensor().setType(sensorType.getLabel());
+    metadata.getSensor().setType(sensorType.getName());
     metadata.getSensor().setModel(sensor.getModel());
     metadata.getSensor().setWavelength(array.toString());
 

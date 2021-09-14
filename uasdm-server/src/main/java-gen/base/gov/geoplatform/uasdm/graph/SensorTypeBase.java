@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 361326457)
+@com.runwaysdk.business.ClassSignature(hash = 860472209)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,32 +11,15 @@ package gov.geoplatform.uasdm.graph;
 public abstract class SensorTypeBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.SensorType";
-  public static java.lang.String CODE = "code";
   public static java.lang.String ISMULTISPECTRAL = "isMultispectral";
-  public static java.lang.String LABEL = "label";
+  public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 361326457;
+  private static final long serialVersionUID = 860472209;
   
   public SensorTypeBase()
   {
     super();
-  }
-  
-  public String getCode()
-  {
-    return (String) this.getObjectValue(CODE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getCodeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.SensorType.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(CODE);
-  }
-  
-  public void setCode(String value)
-  {
-    this.setValue(CODE, value);
   }
   
   public Boolean getIsMultispectral()
@@ -55,20 +38,20 @@ public abstract class SensorTypeBase extends com.runwaysdk.business.graph.Vertex
     this.setValue(ISMULTISPECTRAL, value);
   }
   
-  public String getLabel()
+  public String getName()
   {
-    return (String) this.getObjectValue(LABEL);
+    return (String) this.getObjectValue(NAME);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getLabelMd()
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getNameMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.SensorType.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(LABEL);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(NAME);
   }
   
-  public void setLabel(String value)
+  public void setName(String value)
   {
-    this.setValue(LABEL, value);
+    this.setValue(NAME, value);
   }
   
   public String getOid()

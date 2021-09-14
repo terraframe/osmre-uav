@@ -48,8 +48,7 @@ public class WaveLength extends WaveLengthBase implements Classification
       classification = new WaveLength();
     }
 
-    classification.setCode(json.getString(WaveLength.CODE));
-    classification.setLabel(json.getString(WaveLength.LABEL));
+    classification.setName(json.getString(WaveLength.NAME));
 
     if (json.has(WaveLength.SEQ))
     {

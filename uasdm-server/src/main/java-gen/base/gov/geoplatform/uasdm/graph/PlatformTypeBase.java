@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 988908686)
+@com.runwaysdk.business.ClassSignature(hash = -1625959570)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,47 +11,30 @@ package gov.geoplatform.uasdm.graph;
 public abstract class PlatformTypeBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.PlatformType";
-  public static java.lang.String CODE = "code";
-  public static java.lang.String LABEL = "label";
+  public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 988908686;
+  private static final long serialVersionUID = -1625959570;
   
   public PlatformTypeBase()
   {
     super();
   }
   
-  public String getCode()
+  public String getName()
   {
-    return (String) this.getObjectValue(CODE);
+    return (String) this.getObjectValue(NAME);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getCodeMd()
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getNameMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.PlatformType.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(CODE);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(NAME);
   }
   
-  public void setCode(String value)
+  public void setName(String value)
   {
-    this.setValue(CODE, value);
-  }
-  
-  public String getLabel()
-  {
-    return (String) this.getObjectValue(LABEL);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getLabelMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.PlatformType.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(LABEL);
-  }
-  
-  public void setLabel(String value)
-  {
-    this.setValue(LABEL, value);
+    this.setValue(NAME, value);
   }
   
   public String getOid()

@@ -62,8 +62,7 @@ public class PlatformType extends PlatformTypeBase implements Classification
       classification = new PlatformType();
     }
 
-    classification.setCode(json.getString(PlatformType.CODE));
-    classification.setLabel(json.getString(PlatformType.LABEL));
+    classification.setName(json.getString(PlatformType.NAME));
 
     if (json.has(PlatformType.SEQ))
     {

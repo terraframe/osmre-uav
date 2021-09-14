@@ -129,14 +129,14 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
-    object.put(Sensor.SENSORTYPE, sensorType.getLabel());
+    object.put(Sensor.SENSORTYPE, sensorType.getName());
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
     object.put("wavelengths", (JSONArray) wavelengths.stream().map(w -> {
       JSONObject obj = new JSONObject();
       obj.put(WaveLength.OID, w.getOid());
-      obj.put(WaveLength.LABEL, w.getLabel());
+      obj.put(WaveLength.NAME, w.getName());
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
 
