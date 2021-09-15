@@ -71,6 +71,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
     object.put(CollectionReport.EXISTS, this.getExists());
     object.put(CollectionReport.DOWNLOADCOUNTS, this.getDownloadCounts());
+    object.put(CollectionReport.DELETEDATE, Util.formatIso8601(this.getDeleteDate(), false));
 
     Long storageSize = this.getAllStorageSize();
 
