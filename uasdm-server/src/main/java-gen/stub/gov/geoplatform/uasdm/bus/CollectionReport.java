@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.bus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -598,6 +599,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         report.setProject(null);
         report.setSite(null);
         report.setExists(false);
+        report.setDeleteDate(new Date());
         report.apply();
       }
     }

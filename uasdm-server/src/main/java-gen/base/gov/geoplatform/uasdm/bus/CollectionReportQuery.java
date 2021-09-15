@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1337746028)
+@com.runwaysdk.business.ClassSignature(hash = -1617817034)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -207,6 +207,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.CREATEDBY);
 
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.CREATEDBY, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableMoment getDeleteDate()
+  {
+    return getDeleteDate(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getDownloadCounts()
@@ -994,6 +1011,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy();
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias);
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableMoment getDeleteDate();
+    public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias);
+    public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getDownloadCounts();
     public com.runwaysdk.query.SelectableLong getDownloadCounts(String alias);
     public com.runwaysdk.query.SelectableLong getDownloadCounts(String alias, String displayLabel);
@@ -1297,6 +1317,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.CREATEDBY,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableMoment getDeleteDate()
+  {
+    return getDeleteDate(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getDownloadCounts()
@@ -2037,6 +2074,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy();
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias);
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableMoment getDeleteDate();
+    public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias);
+    public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getDownloadCounts();
     public com.runwaysdk.query.SelectableLong getDownloadCounts(String alias);
     public com.runwaysdk.query.SelectableLong getDownloadCounts(String alias, String displayLabel);
@@ -2389,6 +2429,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.CREATEDBY,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableMoment getDeleteDate()
+  {
+    return getDeleteDate(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableMoment getDeleteDate(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.CollectionReport.DELETEDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getDownloadCounts()

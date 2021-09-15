@@ -39,6 +39,7 @@
 					<long name="downloadCounts" required="false" label="Download counts" />
 					<boolean name="erosArchived" required="false" label="EROS Archived" />
 					<boolean name="exists" required="false" label="Collection exists" />	
+					<date name="deleteDate" required="false" label="Delete Date" />
 					
 					<point name="geometry" srid="4326" dimension="2" required="false" label="Geometry" />													
 				</attributes>

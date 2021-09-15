@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 624629109)
+@com.runwaysdk.business.ClassSignature(hash = -740452033)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -20,6 +20,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String COLLECTIONNAME = "collectionName";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
+  public static java.lang.String DELETEDATE = "deleteDate";
   public static java.lang.String DOWNLOADCOUNTS = "downloadCounts";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String EROSARCHIVED = "erosArchived";
@@ -59,7 +60,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public static java.lang.String UAV = "uav";
   public static java.lang.String USERNAME = "userName";
   public static java.lang.String VIDEO = "video";
-  private static final long serialVersionUID = 624629109;
+  private static final long serialVersionUID = -740452033;
   
   public CollectionReportBase()
   {
@@ -352,6 +353,34 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(CREATEDBY);
+  }
+  
+  public java.util.Date getDeleteDate()
+  {
+    return com.runwaysdk.constants.MdAttributeDateUtil.getTypeSafeValue(getValue(DELETEDATE));
+  }
+  
+  public void validateDeleteDate()
+  {
+    this.validateAttribute(DELETEDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getDeleteDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(DELETEDATE);
+  }
+  
+  public void setDeleteDate(java.util.Date value)
+  {
+    if(value == null)
+    {
+      setValue(DELETEDATE, "");
+    }
+    else
+    {
+      setValue(DELETEDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATE_FORMAT).format(value));
+    }
   }
   
   public Long getDownloadCounts()
