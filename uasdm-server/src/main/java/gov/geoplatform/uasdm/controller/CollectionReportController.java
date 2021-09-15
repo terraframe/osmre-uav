@@ -23,6 +23,7 @@ import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
+import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
@@ -45,5 +46,13 @@ public class CollectionReportController
     JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
 
     return new RestBodyResponse(page);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "export-csv")
+  public ResponseIF exportCSV(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  {
+    JSONObject json = criteria != null ? new JSONObject(criteria) : null;
+
+    return new InputStreamResponse(this.service.exportCSV(request.getSessionId(), json), "text/csv", "report.csv");
   }
 }

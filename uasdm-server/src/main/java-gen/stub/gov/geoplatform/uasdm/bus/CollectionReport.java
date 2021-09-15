@@ -1,7 +1,13 @@
 package gov.geoplatform.uasdm.bus;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,9 +17,12 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.opencsv.CSVWriter;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OrderBy.SortOrder;
+import com.runwaysdk.session.Request;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
@@ -506,84 +515,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public static Page<CollectionReport> page(JSONObject criteria)
-  {
-    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
-    int pageSize = 10;
-    int pageNumber = 1;
-
-    if (criteria.has("first") && criteria.has("rows"))
-    {
-      int first = criteria.getInt("first");
-      pageSize = criteria.getInt("rows");
-      pageNumber = ( first / pageSize ) + 1;
-
-      query.restrictRows(pageSize, pageNumber);
-    }
-
-    if (criteria.has("sortField") && criteria.has("sortOrder"))
-    {
-      String field = criteria.getString("sortField");
-      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-      query.ORDER_BY(query.getS(field), order);
-    }
-    else if (criteria.has("multiSortMeta"))
-    {
-      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
-
-      for (int i = 0; i < sorts.length(); i++)
-      {
-        JSONObject sort = sorts.getJSONObject(i);
-
-        String field = sort.getString("field");
-        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-        query.ORDER_BY(query.getS(field), order);
-      }
-    }
-
-    if (criteria.has("filters"))
-    {
-      JSONObject filters = criteria.getJSONObject("filters");
-      Iterator<String> keys = filters.keys();
-
-      while (keys.hasNext())
-      {
-        String attributeName = keys.next();
-
-        Selectable attribute = query.get(attributeName);
-
-        if (attribute != null)
-        {
-          JSONObject filter = filters.getJSONObject(attributeName);
-
-          String value = filter.get("value").toString();
-          String mode = filter.get("matchMode").toString();
-
-          if (mode.equals("contains"))
-          {
-            SelectableChar selectable = (SelectableChar) attribute;
-
-            query.WHERE(selectable.LIKEi("%" + value + "%"));
-          }
-          else if (mode.equals("equals"))
-          {
-            query.WHERE(attribute.EQ(value));
-          }
-        }
-      }
-    }
-
-    long count = query.getCount();
-
-    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
-    {
-      return new Page<CollectionReport>(count, pageNumber, pageSize, new LinkedList<CollectionReport>(iterator.getAll()));
-    }
-  }
-
   public void handleDelete(Collection collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -709,4 +640,260 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public static InputStream exportCSV(JSONObject criteria)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+
+    if (criteria != null)
+    {
+
+      if (criteria.has("sortField") && criteria.has("sortOrder"))
+      {
+        String field = criteria.getString("sortField");
+        SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+        query.ORDER_BY(query.getS(field), order);
+      }
+      else if (criteria.has("multiSortMeta"))
+      {
+        JSONArray sorts = criteria.getJSONArray("multiSortMeta");
+
+        for (int i = 0; i < sorts.length(); i++)
+        {
+          JSONObject sort = sorts.getJSONObject(i);
+
+          String field = sort.getString("field");
+          SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+          query.ORDER_BY(query.getS(field), order);
+        }
+      }
+
+      if (criteria.has("filters"))
+      {
+        JSONObject filters = criteria.getJSONObject("filters");
+        Iterator<String> keys = filters.keys();
+
+        while (keys.hasNext())
+        {
+          String attributeName = keys.next();
+
+          Selectable attribute = query.get(attributeName);
+
+          if (attribute != null)
+          {
+            JSONObject filter = filters.getJSONObject(attributeName);
+
+            String value = filter.get("value").toString();
+            String mode = filter.get("matchMode").toString();
+
+            if (mode.equals("contains"))
+            {
+              SelectableChar selectable = (SelectableChar) attribute;
+
+              query.WHERE(selectable.LIKEi("%" + value + "%"));
+            }
+            else if (mode.equals("equals"))
+            {
+              query.WHERE(attribute.EQ(value));
+            }
+          }
+        }
+      }
+    }
+
+    try
+    {
+      final PipedInputStream istream = new PipedInputStream();
+      final PipedOutputStream ostream = new PipedOutputStream(istream);
+
+      Thread t = new Thread(new Runnable()
+      {
+        @Override
+        @Request
+        public void run()
+        {
+          try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(ostream)))
+          {
+            ArrayList<String> headers = new ArrayList<String>();
+            headers.add("Collection");
+            headers.add("Collection Owner");
+            headers.add("Collection Date");
+            headers.add("Mission");
+            headers.add("Project");
+            headers.add("Site");
+            headers.add("Latitude");
+            headers.add("Longitude");
+            headers.add("Bureau");
+            headers.add("Platform");
+            headers.add("Sensor");
+            headers.add("FAA Id Number");
+            headers.add("Serial Number");
+            headers.add("ODM Processing");
+            headers.add("RAW Images Count");
+            headers.add("EROS Metadata Complete");
+            headers.add("Video");
+            headers.add("Orthomosaic");
+            headers.add("Point Cloud");
+            headers.add("Hillshade");
+            headers.add("Products Shared");
+            headers.add("Storage size");
+            headers.add("Number of Downloads");
+            headers.add("Date of Delete");
+
+            writer.writeNext(headers.toArray(new String[headers.size()]));
+
+            try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+            {
+              while (iterator.hasNext())
+              {
+                CollectionReport row = iterator.next();
+
+                ArrayList<String> line = new ArrayList<String>();
+                line.add(row.getCollectionName());
+                line.add(row.getUserName());
+                line.add(Util.formatIso8601(row.getCollectionDate(), false));
+                line.add(row.getMissionName());
+                line.add(row.getProjectName());
+                line.add(row.getSiteName());
+
+                Point geometry = row.getGeometry();
+
+                if (geometry != null)
+                {
+                  line.add(Double.toString(geometry.getY()));
+                  line.add(Double.toString(geometry.getX()));
+                }
+                else
+                {
+                  line.add("");
+                  line.add("");
+                }
+
+                line.add(row.getBureauName());
+                line.add(row.getPlatformName());
+                line.add(row.getSensorName());
+                line.add(row.getFaaIdNumber());
+                line.add(row.getSerialNumber());
+                line.add(row.getOdmProcessing());
+                line.add(row.getRawImagesCount().toString());
+                line.add(row.getErosMetadataComplete().toString());
+                line.add(row.getVideo().toString());
+                line.add(row.getOrthomosaic().toString());
+                line.add(row.getPointCloud().toString());
+                line.add(row.getHillshade().toString());
+                line.add(row.getProductsShared().toString());
+                line.add(row.getAllStorageSize().toString());
+                line.add(row.getDownloadCounts().toString());
+                line.add(Util.formatIso8601(row.getDeleteDate(), false));
+
+                writer.writeNext(line.toArray(new String[line.size()]));
+              }
+            }
+          }
+          catch (IOException e)
+          {
+            throw new ProgrammingErrorException(e);
+          }
+          finally
+          {
+            try
+            {
+              ostream.close();
+            }
+            catch (IOException e)
+            {
+            }
+          }
+        }
+      });
+      t.setDaemon(true);
+      t.start();
+
+      return istream;
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static Page<CollectionReport> page(JSONObject criteria)
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    int pageSize = 10;
+    int pageNumber = 1;
+
+    if (criteria.has("first") && criteria.has("rows"))
+    {
+      int first = criteria.getInt("first");
+      pageSize = criteria.getInt("rows");
+      pageNumber = ( first / pageSize ) + 1;
+
+      query.restrictRows(pageSize, pageNumber);
+    }
+
+    if (criteria.has("sortField") && criteria.has("sortOrder"))
+    {
+      String field = criteria.getString("sortField");
+      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+      query.ORDER_BY(query.getS(field), order);
+    }
+    else if (criteria.has("multiSortMeta"))
+    {
+      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
+
+      for (int i = 0; i < sorts.length(); i++)
+      {
+        JSONObject sort = sorts.getJSONObject(i);
+
+        String field = sort.getString("field");
+        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+        query.ORDER_BY(query.getS(field), order);
+      }
+    }
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        Selectable attribute = query.get(attributeName);
+
+        if (attribute != null)
+        {
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            SelectableChar selectable = (SelectableChar) attribute;
+
+            query.WHERE(selectable.LIKEi("%" + value + "%"));
+          }
+          else if (mode.equals("equals"))
+          {
+            query.WHERE(attribute.EQ(value));
+          }
+        }
+      }
+    }
+
+    long count = query.getCount();
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      return new Page<CollectionReport>(count, pageNumber, pageSize, new LinkedList<CollectionReport>(iterator.getAll()));
+    }
+  }
 }

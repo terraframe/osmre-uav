@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.service;
 
+import java.io.InputStream;
+
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
@@ -13,6 +15,12 @@ public class CollectionReportService
   public JSONObject page(String sessionId, JSONObject criteria)
   {
     return CollectionReport.page(criteria).toJSON();
+  }
+
+  @Request(RequestType.SESSION)
+  public InputStream exportCSV(String sessionId, JSONObject criteria)
+  {
+    return CollectionReport.exportCSV(criteria);
   }
 
 }

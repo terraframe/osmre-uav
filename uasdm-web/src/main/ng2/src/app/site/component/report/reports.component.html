@@ -5,7 +5,14 @@
 
 		<h2>Report</h2>
 
-		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
+		<div class="row">
+            <input class="btn btn-primary pull-right" type="submit" value="Export CSV" (click)="onExportCSV()">
+        </div>
+
+        <div class="row">
+			<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
+        </div>
+
 
 	</div>
 </div>

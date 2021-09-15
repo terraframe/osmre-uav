@@ -5,6 +5,8 @@ import { BsModalService } from 'ngx-bootstrap';
 import { ProductModalComponent } from '../modal/product-modal.component';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
+declare var acp: any;
+
 @Component({
     selector: 'reports',
     templateUrl: './reports.component.html',
@@ -71,6 +73,9 @@ export class ReportsComponent implements OnInit {
         }
     }
 
+    onExportCSV(): void {
+        window.open(acp + '/collection-report/export-csv', '_blank');
+    }
 
     onClick(event: TableEvent): void {
         if (event.type === 'custom') {
