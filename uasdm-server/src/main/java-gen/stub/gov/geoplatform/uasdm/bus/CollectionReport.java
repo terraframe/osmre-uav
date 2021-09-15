@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -525,7 +526,20 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
 
       query.ORDER_BY(query.getS(field), order);
+    }
+    else if (criteria.has("multiSortMeta"))
+    {
+      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
 
+      for (int i = 0; i < sorts.length(); i++)
+      {
+        JSONObject sort = sorts.getJSONObject(i);
+
+        String field = sort.getString("field");
+        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+        query.ORDER_BY(query.getS(field), order);
+      }
     }
 
     if (criteria.has("filters"))

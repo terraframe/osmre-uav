@@ -1,6 +1,6 @@
 <div>
 
-	<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true"
+	<p-table #dt sortMode="multiple" [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true"
 		styleClass="ui-table-customers" [lazy]="true" (onLazyLoad)="onPageChange($event)" [paginator]="true"
 		[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading">
 

@@ -36,7 +36,7 @@
           <select [(ngModel)]="platform.platformType" [disabled]="mode === 'READ'" name="platformType" type="input"
             class="form-control" placeholder="Type" required>
             <option></option>
-            <option *ngFor="let type of types" [value]="type.oid">{{type.label}}</option>
+            <option *ngFor="let type of types" [value]="type.oid">{{type.name}}</option>
           </select>
         </div>
         <div class="form-group">
@@ -44,7 +44,7 @@
           <select [(ngModel)]="platform.manufacturer" [disabled]="mode === 'READ'" name="manufacturer" type="input"
             class="form-control" placeholder="Type" required>
             <option></option>
-            <option *ngFor="let manufacturer of manufacturers" [value]="manufacturer.oid">{{manufacturer.label}}
+            <option *ngFor="let manufacturer of manufacturers" [value]="manufacturer.oid">{{manufacturer.name}}
             </option>
           </select>
         </div>

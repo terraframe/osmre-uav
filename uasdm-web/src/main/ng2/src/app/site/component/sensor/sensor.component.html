@@ -39,7 +39,7 @@
         <select [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control"
           [disabled]="mode === 'READ'" required>
           <option></option>
-          <option *ngFor="let type of types" [value]="type.oid">{{type.label}}</option>
+          <option *ngFor="let type of types" [value]="type.oid">{{type.name}}</option>
         </select>
       </div>
       <div class="form-group">
@@ -65,7 +65,7 @@
         </span>
         <div *ngFor="let wavelength of wavelengths">
           <boolean-field [value]="sensor.wavelengths && (-1 !== sensor.wavelengths.indexOf(wavelength.oid))"
-            [label]="wavelength.label" (valueChange)="updateSelectedWaveLength(wavelength, $event)"
+            [label]="wavelength.name" (valueChange)="updateSelectedWaveLength(wavelength, $event)"
             [disabled]="mode === 'READ'"></boolean-field>
         </div>
       </div>
