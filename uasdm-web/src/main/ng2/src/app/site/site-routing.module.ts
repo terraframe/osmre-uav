@@ -16,8 +16,10 @@ import { ClassificationsComponent } from './component/classification/classificat
 import { Endpoint } from './service/classification.service';
 import { ClassificationComponent } from './component/classification/classification.component';
 import { UAVsComponent } from './component/uav/uavs.component';
+import { UAVsPageComponent } from './component/uav/uavs-page.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { ReportsComponent } from './component/report/reports.component';
+import { EquipmentComponent } from './component/equipment/equipment.component';
 
 const routes: Routes = [
     {
@@ -169,12 +171,18 @@ const routes: Routes = [
     {
         path: 'uavs',
         canActivate: [AdminGuardService],
-        component: UAVsComponent,
+        component: UAVsPageComponent,
     },
     {
         path: 'uav/:oid',
         canActivate: [AdminGuardService],
         component: UAVComponent,
+    },
+    {
+        path: 'equipment',
+        canActivate: [AdminGuardService],
+        component: EquipmentComponent,
+        data: {}
     }
 ];
 

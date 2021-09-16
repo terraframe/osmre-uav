@@ -8,7 +8,7 @@ import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/mode
 @Component({
     selector: 'generic-table',
     templateUrl: './generic-table.component.html',
-    styles: ['./generic-table.css']
+    styleUrls: ['./generic-table.css']
 })
 export class GenericTableComponent implements OnInit, OnDestroy {
     page: PageResult<Object> = {

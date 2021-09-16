@@ -1774,7 +1774,12 @@ div.alert.alertbox {
   font-family: 'arial', 'sans-serif';
 }    
 
-
+.modal-dialog {
+    width: 90%;
+}
+.modal-content {
+    padding: 20px;
+}
 
 .user-notice {
 	font-size: 14px;

@@ -32,6 +32,7 @@ import { PlatformsComponent } from './component/platform/platforms.component';
 import { PlatformComponent } from './component/platform/platform.component';
 import { ClassificationsComponent } from './component/classification/classifications.component';
 import { ClassificationComponent } from './component/classification/classification.component';
+import { EquipmentComponent } from './component/equipment/equipment.component';
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -48,6 +49,7 @@ import { ClassificationService } from './service/classification.service';
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { UAVsComponent } from './component/uav/uavs.component';
+import { UAVsPageComponent } from './component/uav/uavs-page.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { UAVService } from './service/uav.service';
 import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
@@ -96,9 +98,11 @@ import { ReportService } from './service/report.service';
 		ClassificationsComponent,
 		ClassificationComponent,
 		UAVsComponent,
+        UAVsPageComponent,
 		UAVComponent,
 		MetadataPageComponent,
-		ReportsComponent
+		ReportsComponent,
+        EquipmentComponent
 	],
 	providers: [
 		CanDeactivateGuardService,

@@ -1,10 +1,10 @@
 <div>
-	<uasdm-header></uasdm-header>
+<!-- 	<uasdm-header></uasdm-header> -->
 
-	<div id="app-container" class="container">
+<!-- 	<div id="app-container" class="container"> -->
 
-		<h2>{{metadata.title}}</h2>
+		<h4>{{_metadata.title}}</h4>
 
-		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" [baseUrl]="metadata.baseUrl" (click)="onClick($event)"></generic-table>		
-	</div>
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" [baseUrl]="_metadata.baseUrl" (click)="onClick($event)"></generic-table>		
+<!-- 	</div> -->
 </div>

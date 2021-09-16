@@ -1,18 +1,22 @@
 <div>
-    <uasdm-header></uasdm-header>
+<!--     <uasdm-header></uasdm-header> -->
 
-    <div id="app-container" class="container">
+<!--     <div id="app-container" class="container"> -->
 
-        <h2>
-            <localize key="accounts.title"></localize>
-        </h2>
+        <h3>
+            Manage Accounts
+<!--             <localize key="accounts.title"></localize> -->
+        </h3>
         <div class="row">
-            <input class="btn btn-primary pull-right" type="submit" value="Invite User" (click)="inviteUsers()">
-            <!-- TODO : Localize -->
+            <div class="col-md-12">
+                <button (click)="inviteUsers()" class="btn btn-primary pull-right" style="margin:10px 0;">Invite User</button>
+            </div>
         </div>
 
         <div class="row">
-            <generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>		
+            <div class="col-md-12">
+                <generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>
+            </div>
         </div>
-    </div>
+<!--     </div> -->
 </div>

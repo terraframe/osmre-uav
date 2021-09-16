@@ -19,7 +19,20 @@ declare let acp: string;
 })
 export class ClassificationsComponent implements OnInit {
 
-    metadata: ClassificationComponentMetadata;
+    _metadata: ClassificationComponentMetadata = {label: "", title: "", baseUrl: ""};
+    @Input() set metadata(value: ClassificationComponentMetadata) {
+        this._metadata.title = value.title;
+        this._metadata.label = value.label;
+        this._metadata.baseUrl = value.baseUrl;
+        
+        this.config = {
+                service: this.service,
+                remove: true,
+                view: true,
+                create: true,
+                label: value.label
+            }
+    }
 
     bsModalRef: BsModalRef;
     message: string = null;
@@ -36,28 +49,29 @@ export class ClassificationsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.activatedroute.data.subscribe(data => {
-            this.metadata = data as ClassificationComponentMetadata;
-
-            if (this.metadata.columns === undefined) {
-                this.metadata.columns = [];
-            }
-
-            this.config = {
-                service: this.service,
-                remove: true,
-                view: true,
-                create: true,
-                label: this.metadata.label
-            }
-
-            this.refresh = new Subject<void>();
-
-            // this.service.page(this.metadata.baseUrl, 1).then(res => {
-            //     this.res = res;
-            // });
-
-        })
+//        this.activatedroute.data.subscribe(data => {
+//            this.metadata = data as ClassificationComponentMetadata;
+//            console.log(data)
+//
+////            if (this.metadata.columns === undefined) {
+////                this.metadata.columns = [];
+////            }
+////
+////            this.config = {
+////                service: this.service,
+////                remove: true,
+////                view: true,
+////                create: true,
+////                label: this.metadata.label
+////            }
+//
+//            this.refresh = new Subject<void>();
+//
+//            // this.service.page(this.metadata.baseUrl, 1).then(res => {
+//            //     this.res = res;
+//            // });
+//
+//        })
     }
 
     onClick(event: TableEvent): void {
@@ -73,7 +87,7 @@ export class ClassificationsComponent implements OnInit {
     }
 
     remove(classification: Classification): void {
-        this.service.remove(this.metadata.baseUrl, classification.oid).then(response => {
+        this.service.remove(this._metadata.baseUrl, classification.oid).then(response => {
             // this.res.resultSet = this.res.resultSet.filter(h => h.oid !== classification.oid);
             this.refresh.next();
         });
@@ -85,7 +99,7 @@ export class ClassificationsComponent implements OnInit {
             backdrop: true,
             ignoreBackdropClick: true,
         });
-        this.bsModalRef.content.message = "Are you sure you want to remove the " + this.metadata.label + " [" + classification.label + "]";
+        this.bsModalRef.content.message = "Are you sure you want to remove the " + this._metadata.label + " [" + classification.label + "]";
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = "Delete";
 
@@ -95,10 +109,10 @@ export class ClassificationsComponent implements OnInit {
     }
 
     onView(classification: Classification): void {
-        this.router.navigate(['/site/' + this.metadata.baseUrl, classification.oid]);
+        this.router.navigate(['/site/' + this._metadata.baseUrl, classification.oid]);
     }
 
     newInstance(): void {
-        this.router.navigate(['/site/' + this.metadata.baseUrl, '__NEW__']);
+        this.router.navigate(['/site/' + this._metadata.baseUrl, '__NEW__']);
     }
 }

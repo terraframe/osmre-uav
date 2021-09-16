@@ -20,32 +20,31 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { ClassificationsComponent } from '@site/component/classification/classifications.component';
+
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-
-import { EmailComponent } from '@admin/component/email/email.component';
-
-import { AuthService } from '@shared/service/auth.service';
 
 declare let acp: string;
 
 @Component({
-    selector: 'system-info',
-    templateUrl: './system-info.component.html',
-    styles: ['./system-info.css']
+    selector: 'equipment',
+    templateUrl: './equipment.component.html',
+    styleUrls: ['./equipment.css']
 })
-export class SystemInfoComponent implements OnInit {
-    
-    userName: string = "";
-    admin: boolean = false;
+export class EquipmentComponent implements OnInit {
 
-    private bsModalRef: BsModalRef;
+    bsModalRef: BsModalRef;
     
-    constructor(private modalService: BsModalService, private authService: AuthService) { }
+    isSensorTypeCollapsed: boolean = true;
+    isSensorWavelengthCollapsed: boolean = true;
+    isPlatformTypeCollapsed: boolean = true;
+    isPlatformManufacturerCollapsed: boolean = true;
+    
+    constructor(private modalService: BsModalService) { }
 
     ngOnInit(): void {
-        this.userName = this.authService.getUserName();
-        this.admin = this.authService.isAdmin();
     }
+    
 
 }
