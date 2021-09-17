@@ -48,6 +48,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
         { header: 'Number of Downloads', field: 'downloadCounts', type: 'NUMBER', sortable: true, filter: false },
+        { header: 'Date of Create', field: 'createDate', type: 'DATE', sortable: true, filter: false },
         { header: 'Date of Delete', field: 'deleteDate', type: 'DATE', sortable: true, filter: false },
         {
             header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
