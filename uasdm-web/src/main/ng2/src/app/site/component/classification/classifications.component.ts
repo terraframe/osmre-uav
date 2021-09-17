@@ -5,12 +5,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 
 import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ClassificationService } from '@site/service/classification.service';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
-
-declare let acp: string;
 
 @Component({
     selector: 'classifications',
@@ -39,12 +37,12 @@ export class ClassificationsComponent implements OnInit {
 
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
-        { header: 'Name', field: 'label', type: 'TEXT', sortable: true },
+        { header: 'Name', field: 'name', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
     ];
     refresh: Subject<void>;
 
-    constructor(private activatedroute: ActivatedRoute, private router: Router, private service: ClassificationService, private modalService: BsModalService) {
+    constructor(private router: Router, private service: ClassificationService, private modalService: BsModalService) {
     }
 
     ngOnInit(): void {
