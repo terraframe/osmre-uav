@@ -229,7 +229,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     for (CollectionReport report : reports)
     {
-      report.markDeleted(this);
+      report.handleDelete(this);
     }
 
     super.delete();

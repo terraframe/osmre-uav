@@ -115,8 +115,8 @@ public class Product extends ProductBase implements ProductIF
     {
       document.delete(removeFromS3, true);
     }
-    
-    CollectionReport.remove(this);    
+
+    CollectionReport.handleDelete(this);
 
     super.delete();
   }

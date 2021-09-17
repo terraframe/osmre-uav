@@ -1,9 +1,8 @@
 
 export class Classification {
     oid: string;
-    code: string;
-    label: string;
-    seq: number;
+    name: string;
+    seq?: number;
 }
 
 export class ClassificationComponentMetadata {

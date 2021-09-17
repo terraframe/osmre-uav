@@ -1,6 +1,6 @@
 <div>
 
-	<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true" [resizableColumns]="true"
+	<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true" [resizableColumns]="true" sortMode="single"
 		styleClass="p-datatable-gridlines" [lazy]="true" (onLazyLoad)="onPageChange($event)" [paginator]="true"
 		[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading">
     
@@ -12,15 +12,15 @@
 
 		<ng-template pTemplate="header" let-columns>
 			<tr>
-				<th *ngFor="let col of columns" [pSortableColumn]="col.field" style="width:250px" pResizableColumn>
+				<th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngClass]="{'actions-col' : col.type === 'ACTIONS'}" pResizableColumn>
 					{{col.header}}
 					<p-sortIcon *ngIf="col.sortable" [field]="col.field" ariaLabel="Activate to sort" style="float:right;"
-						ariaLabelDesc="Activate to sort in descending order"
-						ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+						ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+                    </p-sortIcon>
 				</th>
 			</tr>
 			<tr>
-				<th *ngFor="let col of columns" [ngSwitch]="col.type" style="width:250px">
+				<th *ngFor="let col of columns" [ngSwitch]="col.type">
 					<ng-container *ngIf="col.filter !== false">
 						<input *ngSwitchCase="'URL'" pInputText type="text" placeholder="Filter by URL..."
 							(input)="dt.filter($event.target.value, col.field, 'contains')">
@@ -28,7 +28,7 @@
 							(input)="dt.filter($event.target.value, col.field, 'contains')">
 						<input *ngSwitchCase="'NUMBER'" pInputText type="number" placeholder="Filter by number..."
 							(input)="dt.filter($event.target.value, col.field, 'equals')">
-						<p-dropdown *ngSwitchCase="'BOOLEAN'" [options]="booleanOptions" placeholder="Filter by category..."
+						<p-dropdown *ngSwitchCase="'BOOLEAN'" appendTo="body" [options]="booleanOptions" placeholder="Filter by category..."
 							(onChange)="dt.filter($event.value.value, col.field, 'equals')" optionLabel="label"
 							optionValue="value" [virtualScroll]="true"></p-dropdown>
 					</ng-container>
@@ -38,7 +38,7 @@
 
 		<ng-template pTemplate="body" let-rowData let-columns="columns">
 			<tr>
-				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column" style="width:250px">
+				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column" [ngClass]="{'actions-col' : col.type === 'ACTIONS'}">
 					<ng-container *ngSwitchCase="'URL'">
 						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
 							{{rowData[col.field]}}
@@ -50,7 +50,7 @@
 						<a *ngIf="config.edit" class="fa fa-pencil-alt ico-edit" (click)="onClick('edit', rowData, col)"
 							[title]="'Edit ' + config.label"></a>
 						<a *ngIf="config.remove" class="fa fa-trash-alt ico-remove"
-							(click)="onClick('edit', rowData, col)" [title]="'Remove ' + config.label"></a>
+							(click)="onClick('remove', rowData, col)" [title]="'Remove ' + config.label"></a>
 					</ng-container>
 					<ng-container *ngSwitchCase="'CONSTANT'">
 						<a *ngIf="rowData[col.field] != null" (click)="onClick('custom', rowData, col)">

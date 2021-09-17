@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -147,6 +148,27 @@ public class GraphPageQuery<T extends JSONSerializable>
       SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
 
       statement.append(" ORDER BY " + field + " " + order.name());
+    }
+    else if (criteria.has("multiSortMeta"))
+    {
+      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
+
+      for (int i = 0; i < sorts.length(); i++)
+      {
+        JSONObject sort = sorts.getJSONObject(i);
+
+        String field = sort.getString("field");
+        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+        if (i == 0)
+        {
+          statement.append(" ORDER BY " + field + " " + order.name());
+        }
+        else
+        {
+          statement.append(", " + field + " " + order.name());
+        }
+      }
     }
 
     if (criteria.has("first") && criteria.has("rows"))

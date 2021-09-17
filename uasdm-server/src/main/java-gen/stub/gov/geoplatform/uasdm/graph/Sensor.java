@@ -50,6 +50,14 @@ public class Sensor extends SensorBase implements JSONSerializable
     }
   }
 
+  @Override
+  public void delete()
+  {
+    CollectionReport.handleDelete(this);
+
+    super.delete();
+  }
+
   public SensorType getSensorType()
   {
     return SensorType.get(this.getObjectValue(SENSORTYPE));
@@ -121,14 +129,14 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
-    object.put(Sensor.SENSORTYPE, sensorType.getLabel());
+    object.put(Sensor.SENSORTYPE, sensorType.getName());
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
     object.put("wavelengths", (JSONArray) wavelengths.stream().map(w -> {
       JSONObject obj = new JSONObject();
       obj.put(WaveLength.OID, w.getOid());
-      obj.put(WaveLength.LABEL, w.getLabel());
+      obj.put(WaveLength.NAME, w.getName());
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
 
@@ -193,6 +201,9 @@ public class Sensor extends SensorBase implements JSONSerializable
       set.add(array.getString(i));
     }
 
+    // Assign wavelength edges
+    int count = 0;
+
     if (!isNew)
     {
       List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
@@ -202,6 +213,8 @@ public class Sensor extends SensorBase implements JSONSerializable
         if (set.contains(wavelength.getOid()))
         {
           set.remove(wavelength.getOid());
+
+          count++;
         }
         else
         {
@@ -210,16 +223,18 @@ public class Sensor extends SensorBase implements JSONSerializable
       }
     }
 
-    if (set.size() == 0)
+    for (String oid : set)
+    {
+      sensor.addSensorHasWaveLengthChild(WaveLength.get(oid)).apply();
+
+      count++;
+    }
+
+    if (count == 0)
     {
       GenericException exception = new GenericException();
       exception.setUserMessage("A sensor must have at least one wavelength");
       throw exception;
-    }
-
-    for (String oid : set)
-    {
-      sensor.addSensorHasWaveLengthChild(WaveLength.get(oid)).apply();
     }
 
     return sensor;

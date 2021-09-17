@@ -19,21 +19,16 @@ public interface Classification extends JSONSerializable
 
   public Long getSeq();
 
-  public String getCode();
+  public String getName();
 
-  public void setCode(String value);
-
-  public String getLabel();
-
-  public void setLabel(String value);
+  public void setName(String value);
 
   @Override
   default JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
     object.put("oid", this.getOid());
-    object.put("code", this.getCode());
-    object.put("label", this.getLabel());
+    object.put("name", this.getName());
 
     if (this.getSeq() != null)
     {

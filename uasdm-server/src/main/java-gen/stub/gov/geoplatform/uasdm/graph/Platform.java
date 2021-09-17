@@ -60,6 +60,8 @@ public class Platform extends PlatformBase implements JSONSerializable
       throw message;
     }
 
+    CollectionReport.handleDelete(this);
+
     super.delete();
   }
 
@@ -182,6 +184,9 @@ public class Platform extends PlatformBase implements JSONSerializable
       set.add(array.getString(i));
     }
 
+    // Assign sensor edges
+    int count = 0;
+
     if (!isNew)
     {
       List<Sensor> sensors = platform.getPlatformHasSensorChildSensors();
@@ -191,6 +196,8 @@ public class Platform extends PlatformBase implements JSONSerializable
         if (set.contains(sensor.getOid()))
         {
           set.remove(sensor.getOid());
+
+          count++;
         }
         else
         {
@@ -199,16 +206,18 @@ public class Platform extends PlatformBase implements JSONSerializable
       }
     }
 
-    if (set.size() == 0)
+    for (String oid : set)
+    {
+      platform.addPlatformHasSensorChild(Sensor.get(oid)).apply();
+
+      count++;
+    }
+
+    if (count == 0)
     {
       GenericException exception = new GenericException();
       exception.setUserMessage("A platform must be assigned at least one sensor");
       throw exception;
-    }
-
-    for (String oid : set)
-    {
-      platform.addPlatformHasSensorChild(Sensor.get(oid)).apply();
     }
 
     return platform;

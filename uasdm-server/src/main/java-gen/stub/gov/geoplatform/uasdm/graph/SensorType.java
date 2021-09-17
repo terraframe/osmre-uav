@@ -33,8 +33,7 @@ public class SensorType extends SensorTypeBase implements Classification
   {
     JSONObject object = new JSONObject();
     object.put(SensorType.OID, this.getOid());
-    object.put(SensorType.CODE, this.getCode());
-    object.put(SensorType.LABEL, this.getLabel());
+    object.put(SensorType.NAME, this.getName());
     object.put(SensorType.ISMULTISPECTRAL, this.getIsMultispectral());
 
     if (this.getSeq() != null)
@@ -79,8 +78,7 @@ public class SensorType extends SensorTypeBase implements Classification
       classification = new SensorType();
     }
 
-    classification.setCode(json.getString(SensorType.CODE));
-    classification.setLabel(json.getString(SensorType.LABEL));
+    classification.setName(json.getString(SensorType.NAME));
 
     if (json.has(SensorType.ISMULTISPECTRAL))
     {

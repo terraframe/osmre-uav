@@ -58,7 +58,9 @@ export class SensorsComponent implements OnInit {
 
 
     remove(sensor: Sensor): void {
-        this.refresh.next();
+        this.service.remove(sensor.oid).then(response => {
+            this.refresh.next();
+        });
     }
 
     onRemove(sensor: Sensor): void {

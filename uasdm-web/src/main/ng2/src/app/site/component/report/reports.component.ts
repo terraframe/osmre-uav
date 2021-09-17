@@ -5,6 +5,8 @@ import { BsModalService } from 'ngx-bootstrap';
 import { ProductModalComponent } from '../modal/product-modal.component';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
+declare var acp: any;
+
 @Component({
     selector: 'reports',
     templateUrl: './reports.component.html',
@@ -46,6 +48,7 @@ export class ReportsComponent implements OnInit {
         { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
         { header: 'Number of Downloads', field: 'downloadCounts', type: 'NUMBER', sortable: true, filter: false },
+        { header: 'Date of Delete', field: 'deleteDate', type: 'DATE', sortable: true, filter: false },
         {
             header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
                 if (row['product'] == null || row['product'].length === 0) {
@@ -70,6 +73,9 @@ export class ReportsComponent implements OnInit {
         }
     }
 
+    onExportCSV(): void {
+        window.open(acp + '/collection-report/export-csv', '_blank');
+    }
 
     onClick(event: TableEvent): void {
         if (event.type === 'custom') {

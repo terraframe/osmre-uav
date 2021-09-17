@@ -55,7 +55,9 @@ export class UAVsComponent implements OnInit {
     }
 
     remove(uav: UAV): void {
-        this.refresh.next();
+        this.service.remove(uav.oid).then(response => {
+            this.refresh.next();
+        });
     }
 
     onRemove(uav: UAV): void {

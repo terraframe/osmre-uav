@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1931532021)
+@com.runwaysdk.business.ClassSignature(hash = -1617864001)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  private static final long serialVersionUID = 1931532021;
+  private static final long serialVersionUID = -1617864001;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -36,6 +36,7 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String COLLECTIONNAME = "collectionName";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
+  public static java.lang.String DELETEDATE = "deleteDate";
   public static java.lang.String DOWNLOADCOUNTS = "downloadCounts";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String EROSARCHIVED = "erosArchived";
@@ -381,6 +382,43 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getCreatedByMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(CREATEDBY).getAttributeMdDTO();
+  }
+  
+  public java.util.Date getDeleteDate()
+  {
+    return com.runwaysdk.constants.MdAttributeDateUtil.getTypeSafeValue(getValue(DELETEDATE));
+  }
+  
+  public void setDeleteDate(java.util.Date value)
+  {
+    if(value == null)
+    {
+      setValue(DELETEDATE, "");
+    }
+    else
+    {
+      setValue(DELETEDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATE_FORMAT).format(value));
+    }
+  }
+  
+  public boolean isDeleteDateWritable()
+  {
+    return isWritable(DELETEDATE);
+  }
+  
+  public boolean isDeleteDateReadable()
+  {
+    return isReadable(DELETEDATE);
+  }
+  
+  public boolean isDeleteDateModified()
+  {
+    return isModified(DELETEDATE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeDateMdDTO getDeleteDateMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeDateMdDTO) getAttributeDTO(DELETEDATE).getAttributeMdDTO();
   }
   
   public Long getDownloadCounts()

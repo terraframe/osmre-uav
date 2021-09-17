@@ -55,6 +55,8 @@ public class UAV extends UAVBase implements JSONSerializable
       throw message;
     }
 
+    CollectionReport.handleDelete(this);
+
     super.delete();
   }
 
@@ -101,8 +103,8 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(UAV.FAANUMBER, this.getFaaNumber());
     object.put(UAV.BUREAU, bureau.getName());
     object.put(Platform.NAME, platform.getName());
-    object.put(Platform.PLATFORMTYPE, platformType.getLabel());
-    object.put(Platform.MANUFACTURER, manufacturer.getLabel());
+    object.put(Platform.PLATFORMTYPE, platformType.getName());
+    object.put(Platform.MANUFACTURER, manufacturer.getName());
 
     return object;
   }
@@ -182,7 +184,7 @@ public class UAV extends UAVBase implements JSONSerializable
     obj.put(UAV.SERIALNUMBER, this.getSerialNumber());
     obj.put(UAV.FAANUMBER, this.getFaaNumber());
     obj.put(UAV.PLATFORM, platform.getName());
-    obj.put(Platform.PLATFORMTYPE, platformType.getLabel());
+    obj.put(Platform.PLATFORMTYPE, platformType.getName());
     obj.put(UAV.BUREAU, bureau.getDisplayLabel());
     obj.put("sensors", array);
     obj.put("pointOfContact", pointOfContact);

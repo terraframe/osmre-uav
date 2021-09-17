@@ -15,3 +15,17 @@
 :host ::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
   background-color: red;
 }
+
+.actions-col {
+    width: 100px;
+    text-align: center;
+}
+
+td,
+th {
+    width: 200px;
+}
+
+.ui-table-scrollable-header.ui-widget-header {
+        overflow:visible;
+    } 

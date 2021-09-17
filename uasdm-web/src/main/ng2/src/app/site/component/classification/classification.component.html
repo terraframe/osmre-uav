@@ -19,13 +19,8 @@
 
     <form #ngForm="ngForm">
       <div class="form-group">
-        <label>Code</label>
-        <input [(ngModel)]="classification.code" name="code" type="input" class="form-control" placeholder="Code"
-          [disabled]="!newInstance || mode === 'READ'" required />
-      </div>
-      <div class="form-group">
-        <label>Label</label>
-        <input [(ngModel)]="classification.label" name="label" type="input" class="form-control" placeholder="Label"
+        <label>Name</label>
+        <input [(ngModel)]="classification.name" name="label" type="input" class="form-control" placeholder="Name"
           [disabled]="mode === 'READ'" required />
       </div>
       <div *ngFor="let column of metadata.columns" class="form-group">

@@ -39,8 +39,7 @@ export class ClassificationsComponent implements OnInit {
 
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
-        { header: 'Code', field: 'code', type: 'TEXT', sortable: true },
-        { header: 'Label', field: 'label', type: 'TEXT', sortable: true },
+        { header: 'Name', field: 'label', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
     ];
     refresh: Subject<void>;
@@ -99,7 +98,7 @@ export class ClassificationsComponent implements OnInit {
             backdrop: true,
             ignoreBackdropClick: true,
         });
-        this.bsModalRef.content.message = "Are you sure you want to remove the " + this._metadata.label + " [" + classification.label + "]";
+        this.bsModalRef.content.message = "Are you sure you want to remove the " + this._metadata.label + " [" + classification.name + "]";
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = "Delete";
 

@@ -62,8 +62,7 @@ public class PlatformManufacturer extends PlatformManufacturerBase implements Cl
       classification = new PlatformManufacturer();
     }
 
-    classification.setCode(json.getString(PlatformManufacturer.CODE));
-    classification.setLabel(json.getString(PlatformManufacturer.LABEL));
+    classification.setName(json.getString(PlatformManufacturer.NAME));
 
     if (json.has(PlatformManufacturer.SEQ))
     {
