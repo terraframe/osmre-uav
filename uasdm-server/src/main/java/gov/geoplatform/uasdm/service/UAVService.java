@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.graph.Bureau;
 import gov.geoplatform.uasdm.graph.UAV;
 
 public class UAVService

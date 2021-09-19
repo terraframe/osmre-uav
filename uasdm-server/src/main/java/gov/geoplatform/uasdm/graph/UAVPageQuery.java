@@ -2,7 +2,9 @@ package gov.geoplatform.uasdm.graph;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,31 +15,22 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OrderBy.SortOrder;
 
-import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 
-public class GraphPageQuery<T extends JSONSerializable>
+public class UAVPageQuery
 {
-  private String     type;
-
   private JSONObject criteria;
 
-  public GraphPageQuery(String type)
-  {
-    this(type, new JSONObject());
-  }
-
-  public GraphPageQuery(String type, JSONObject criteria)
+  public UAVPageQuery(JSONObject criteria)
   {
     super();
-    this.type = type;
     this.criteria = criteria;
   }
 
   @SuppressWarnings("unchecked")
   public Long getCount()
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(this.type);
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
@@ -89,14 +82,14 @@ public class GraphPageQuery<T extends JSONSerializable>
   }
 
   @SuppressWarnings("unchecked")
-  public Page<T> getPage()
+  public Page<UAVPageView> getPage()
   {
     int pageSize = 10;
     int pageNumber = 1;
 
     Long count = this.getCount();
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(this.type);
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
@@ -115,10 +108,10 @@ public class GraphPageQuery<T extends JSONSerializable>
         String attributeName = keys.next();
 
         MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(attributeName);
+        String columnName = this.getColumnName(attributeName);
 
         if (mdAttribute != null)
         {
-
           JSONObject filter = filters.getJSONObject(attributeName);
 
           String value = filter.get("value").toString();
@@ -128,13 +121,13 @@ public class GraphPageQuery<T extends JSONSerializable>
           {
             parameters.put(attributeName, "%" + value.toUpperCase() + "%");
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + ".toUpperCase() LIKE :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + ".toUpperCase() LIKE :" + attributeName);
           }
           else if (mode.equals("equals"))
           {
             parameters.put(attributeName, value);
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + attributeName + " = :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + " = :" + attributeName);
           }
 
           i++;
@@ -147,7 +140,7 @@ public class GraphPageQuery<T extends JSONSerializable>
       String field = criteria.getString("sortField");
       SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
 
-      statement.append(" ORDER BY " + field + " " + order.name());
+      statement.append(" ORDER BY " + this.getColumnName(field) + " " + order.name());
     }
     else if (criteria.has("multiSortMeta"))
     {
@@ -162,11 +155,11 @@ public class GraphPageQuery<T extends JSONSerializable>
 
         if (i == 0)
         {
-          statement.append(" ORDER BY " + field + " " + order.name());
+          statement.append(" ORDER BY " + this.getColumnName(field) + " " + order.name());
         }
         else
         {
-          statement.append(", " + field + " " + order.name());
+          statement.append(", " + this.getColumnName(field) + " " + order.name());
         }
       }
     }
@@ -181,9 +174,32 @@ public class GraphPageQuery<T extends JSONSerializable>
       pageNumber = ( first / rows ) + 1;
     }
 
-    final GraphQuery<T> query = new GraphQuery<T>(statement.toString(), parameters);
+    final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString(), parameters);
 
-    return new Page<T>(count, pageNumber, pageSize, query.getResults());
+    List<UAVPageView> results = getResults(query);
+
+    return new Page<UAVPageView>(count, pageNumber, pageSize, results);
+  }
+
+  private List<UAVPageView> getResults(final GraphQuery<UAV> query)
+  {
+    List<UAV> results = query.getResults();
+
+    return results.stream().map(uav -> new UAVPageView(uav)).collect(Collectors.toList());
+  }
+
+  private String getColumnName(String attributeName)
+  {
+    if (attributeName.equals(UAV.BUREAU))
+    {
+      return UAV.BUREAU + "." + Bureau.NAME;
+    }
+    else if (attributeName.equals(UAV.PLATFORM))
+    {
+      return UAV.PLATFORM + "." + Platform.NAME;
+    }
+
+    return attributeName;
   }
 
 }

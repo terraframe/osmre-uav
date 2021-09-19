@@ -57,7 +57,7 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     super.delete();
   }
-
+  
   public SensorType getSensorType()
   {
     return SensorType.get(this.getObjectValue(SENSORTYPE));

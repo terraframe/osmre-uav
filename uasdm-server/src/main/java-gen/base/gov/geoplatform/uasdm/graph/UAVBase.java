@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 457920942)
+@com.runwaysdk.business.ClassSignature(hash = 2077719650)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -18,44 +18,27 @@ public abstract class UAVBase extends com.runwaysdk.business.graph.VertexObject
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SERIALNUMBER = "serialNumber";
-  private static final long serialVersionUID = 457920942;
+  private static final long serialVersionUID = 2077719650;
   
   public UAVBase()
   {
     super();
   }
   
-  public gov.geoplatform.uasdm.bus.Bureau getBureau()
+  public gov.geoplatform.uasdm.graph.Bureau getBureau()
   {
-    if (this.getObjectValue(BUREAU) == null)
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Bureau.get( (String) this.getObjectValue(BUREAU));
-    }
+    return (gov.geoplatform.uasdm.graph.Bureau) this.getObjectValue(BUREAU);
   }
   
-  public String getBureauOid()
-  {
-    return (String) this.getObjectValue(BUREAU);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getBureauMd()
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getBureauMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.UAV.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(BUREAU);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(BUREAU);
   }
   
-  public void setBureau(gov.geoplatform.uasdm.bus.Bureau value)
+  public void setBureau(gov.geoplatform.uasdm.graph.Bureau value)
   {
-    this.setValue(BUREAU, value.getOid());
-  }
-  
-  public void setBureauId(java.lang.String oid)
-  {
-    this.setValue(BUREAU, oid);
+    this.setValue(BUREAU, value);
   }
   
   public String getDescription()

@@ -17,7 +17,6 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
@@ -60,6 +59,17 @@ public class UAV extends UAVBase implements JSONSerializable
     super.delete();
   }
 
+  public String getBureauOid()
+  {
+    return this.getObjectValue(BUREAU);
+  }
+
+  @Override
+  public Bureau getBureau()
+  {
+    return Bureau.get(getBureauOid());
+  }
+
   public Platform getPlatform()
   {
     return Platform.get(this.getObjectValue(PLATFORM));
@@ -73,7 +83,7 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(UAV.SERIALNUMBER, this.getSerialNumber());
     object.put(UAV.FAANUMBER, this.getFaaNumber());
     object.put(UAV.DESCRIPTION, this.getDescription());
-    object.put(UAV.BUREAU, this.getBureauOid());
+    object.put(UAV.BUREAU, (String) this.getObjectValue(BUREAU));
 
     String platform = this.getObjectValue(UAV.PLATFORM);
 
@@ -132,7 +142,7 @@ public class UAV extends UAVBase implements JSONSerializable
     uav.setSerialNumber(json.getString(UAV.SERIALNUMBER));
     uav.setFaaNumber(json.getString(UAV.FAANUMBER));
     uav.setDescription(json.has(UAV.DESCRIPTION) ? json.getString(UAV.DESCRIPTION) : null);
-    uav.setBureauId(json.getString(UAV.BUREAU));
+    uav.setBureau(Bureau.get(json.getString(UAV.BUREAU)));
 
     if (json.has(UAV.PLATFORM))
     {
@@ -199,9 +209,9 @@ public class UAV extends UAVBase implements JSONSerializable
     return query.getCount();
   }
 
-  public static Page<UAV> getPage(JSONObject criteria)
+  public static Page<UAVPageView> getPage(JSONObject criteria)
   {
-    GraphPageQuery<UAV> query = new GraphPageQuery<UAV>(UAV.CLASS, criteria);
+    UAVPageQuery query = new UAVPageQuery(criteria);
 
     return query.getPage();
   }
