@@ -741,6 +741,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
             headers.add("Products Shared");
             headers.add("Storage size");
             headers.add("Number of Downloads");
+            headers.add("Date of Creation");
             headers.add("Date of Delete");
 
             writer.writeNext(headers.toArray(new String[headers.size()]));
@@ -787,6 +788,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
                 line.add(row.getProductsShared().toString());
                 line.add(row.getAllStorageSize().toString());
                 line.add(row.getDownloadCounts().toString());
+                line.add(Util.formatIso8601(row.getCreateDate(), false));
                 line.add(Util.formatIso8601(row.getDeleteDate(), false));
 
                 writer.writeNext(line.toArray(new String[line.size()]));
