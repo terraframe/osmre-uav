@@ -24,6 +24,8 @@ export class UAVsComponent implements OnInit {
         { header: 'Serial Number', field: 'serialNumber', type: 'TEXT', sortable: true },
         { header: 'FAA Id Number', field: 'faaNumber', type: 'TEXT', sortable: true },
         { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
+        { header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true },
+        { header: 'Platform', field: 'platform', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
     ];
     refresh: Subject<void>;
