@@ -259,6 +259,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Collection collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -289,6 +290,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Mission mission)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -306,6 +308,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Project project)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -323,6 +326,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Site site)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -341,6 +345,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.UAV uav)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -359,6 +364,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Sensor sensor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -376,6 +382,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Platform platform)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -393,6 +400,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(Collection collection, DocumentIF document)
   {
     List<DocumentIF> documents = collection.getDocuments();
@@ -421,6 +429,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(String component, String status)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -438,6 +447,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(Product product)
   {
     UasComponent component = product.getComponent();
@@ -458,6 +468,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void update(GeoprismUser actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -475,6 +486,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void updateIncludeSize(CollectionIF collection)
   {
     Long storageSize = RemoteFileFacade.calculateSize(collection);
@@ -497,6 +509,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void updateSize(CollectionIF collection)
   {
     Long storageSize = RemoteFileFacade.calculateSize(collection);
@@ -516,6 +529,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public void handleDelete(Collection collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -538,6 +552,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void handleDelete(gov.geoplatform.uasdm.graph.UAV uav)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -555,6 +570,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void handleDelete(Product product)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -573,6 +589,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void handleDelete(GeoprismUser actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -590,6 +607,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void handleDelete(gov.geoplatform.uasdm.graph.Sensor sensor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -607,6 +625,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void handleDelete(gov.geoplatform.uasdm.graph.Platform platform)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
@@ -624,6 +643,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     }
   }
 
+  @Transaction
   public static void updateDownloadCount(CollectionIF collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
