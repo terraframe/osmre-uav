@@ -412,6 +412,11 @@ export class UploadModalComponent implements OnInit {
 						return false;
 					}
 
+					if (this.hasField('collectionDate') && (page.selection.collectionDate == null || page.selection.collectionDate.length === 0)) {
+						return false;
+					}
+
+
 					return true;
 				}
 
