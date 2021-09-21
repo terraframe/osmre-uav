@@ -91,6 +91,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage(resp.getError());
         this.apply();
+        
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -98,6 +100,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
+        
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
       }
       else
       {
@@ -120,6 +124,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
+      
+      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
     }
   }
 

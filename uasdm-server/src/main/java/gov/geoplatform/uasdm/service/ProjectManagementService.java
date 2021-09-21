@@ -50,6 +50,7 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
@@ -159,6 +160,8 @@ public class ProjectManagementService
         task.apply();
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
 
         throw t;
       }

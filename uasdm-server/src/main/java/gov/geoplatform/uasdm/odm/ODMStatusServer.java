@@ -302,6 +302,8 @@ public class ODMStatusServer
 
             sendEmail(task);
 
+            CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+
             // throw ex;
             continue;
           }
@@ -315,6 +317,8 @@ public class ODMStatusServer
             it.remove();
 
             sendEmail(task);
+
+            CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
           }
           else if (!resp.hasError() && resp.getHTTPResponse().isError())
           {
@@ -325,6 +329,8 @@ public class ODMStatusServer
             task.apply();
 
             it.remove();
+
+            CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
           }
           else
           {
@@ -342,6 +348,8 @@ public class ODMStatusServer
               sendEmail(task);
 
               removeFromOdm(task, task.getOdmUUID());
+
+              CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
             }
             else if (ODMStatus.FAILED.equals(respStatus))
             {
@@ -356,6 +364,8 @@ public class ODMStatusServer
               sendEmail(task);
 
               removeFromOdm(task, task.getOdmUUID());
+
+              CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
             }
             else if (ODMStatus.RUNNING.equals(respStatus))
             {
@@ -453,8 +463,8 @@ public class ODMStatusServer
           task.apply();
 
           it.remove();
-          
-          CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
+
+          CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
         }
       }
     }
@@ -630,7 +640,7 @@ public class ODMStatusServer
     {
       try
       {
-        ProductIF product = runInTrans();
+        runInTrans();
 
         uploadTask.lock();
         uploadTask.setStatus(ODMStatus.COMPLETED.getLabel());
@@ -640,8 +650,8 @@ public class ODMStatusServer
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
         ODMStatusServer.sendEmail(uploadTask);
-        
-        CollectionReport.update(uploadTask.getImageryComponentOid(), ODMStatus.COMPLETED.getLabel());        
+
+        CollectionReport.update(uploadTask.getImageryComponentOid(), ODMStatus.COMPLETED.getLabel());
       }
       catch (Throwable t)
       {

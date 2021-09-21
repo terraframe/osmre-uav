@@ -432,17 +432,20 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   @Transaction
   public static void update(String component, String status)
   {
-    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
-    query.WHERE(query.getCollection().EQ(component));
-
-    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    if (component != null && component.length() > 0)
     {
-      while (iterator.hasNext())
+      CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+      query.WHERE(query.getCollection().EQ(component));
+
+      try (OIterator<? extends CollectionReport> iterator = query.getIterator())
       {
-        CollectionReport report = iterator.next();
-        report.appLock();
-        report.setOdmProcessing(status);
-        report.apply();
+        while (iterator.hasNext())
+        {
+          CollectionReport report = iterator.next();
+          report.appLock();
+          report.setOdmProcessing(status);
+          report.apply();
+        }
       }
     }
   }
