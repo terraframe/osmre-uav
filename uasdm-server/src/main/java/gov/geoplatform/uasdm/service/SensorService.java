@@ -34,7 +34,7 @@ public class SensorService
   @Request(RequestType.SESSION)
   public JSONArray getAll(String sessionId)
   {
-    return Sensor.getAll();
+    return Sensor.getAllJson();
   }
 
   @Request(RequestType.SESSION)

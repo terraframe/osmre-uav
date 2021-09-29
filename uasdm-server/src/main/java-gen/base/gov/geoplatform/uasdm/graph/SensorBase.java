@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 44710905)
+@com.runwaysdk.business.ClassSignature(hash = -163921926)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -19,11 +19,13 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public static java.lang.String OID = "oid";
   public static java.lang.String PIXELSIZEHEIGHT = "pixelSizeHeight";
   public static java.lang.String PIXELSIZEWIDTH = "pixelSizeWidth";
+  public static java.lang.String REALSENSORHEIGHT = "realSensorHeight";
+  public static java.lang.String REALSENSORWIDTH = "realSensorWidth";
   public static java.lang.String SENSORHEIGHT = "sensorHeight";
   public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SENSORWIDTH = "sensorWidth";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 44710905;
+  private static final long serialVersionUID = -163921926;
   
   public SensorBase()
   {
@@ -151,6 +153,38 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setPixelSizeWidth(Integer value)
   {
     this.setValue(PIXELSIZEWIDTH, value);
+  }
+  
+  public java.math.BigDecimal getRealSensorHeight()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(REALSENSORHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getRealSensorHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(REALSENSORHEIGHT);
+  }
+  
+  public void setRealSensorHeight(java.math.BigDecimal value)
+  {
+    this.setValue(REALSENSORHEIGHT, value);
+  }
+  
+  public java.math.BigDecimal getRealSensorWidth()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(REALSENSORWIDTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getRealSensorWidthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(REALSENSORWIDTH);
+  }
+  
+  public void setRealSensorWidth(java.math.BigDecimal value)
+  {
+    this.setValue(REALSENSORWIDTH, value);
   }
   
   public Integer getSensorHeight()

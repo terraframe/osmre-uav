@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     super.delete();
   }
-  
+
   public SensorType getSensorType()
   {
     return SensorType.get(this.getObjectValue(SENSORTYPE));
@@ -73,8 +74,8 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.MODEL, this.getModel());
     object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
-    object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
-    object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
+    object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
+    object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
 
     if (this.getDateCreated() != null)
     {
@@ -127,8 +128,8 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.MODEL, this.getModel());
     object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
     object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
-    object.put(Sensor.SENSORHEIGHT, this.getSensorHeight());
-    object.put(Sensor.SENSORWIDTH, this.getSensorWidth());
+    object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
+    object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.SENSORTYPE, sensorType.getName());
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
@@ -167,8 +168,8 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     sensor.setPixelSizeHeight(json.getInt(Sensor.PIXELSIZEHEIGHT));
     sensor.setPixelSizeWidth(json.getInt(Sensor.PIXELSIZEWIDTH));
-    sensor.setSensorHeight(json.getInt(Sensor.SENSORHEIGHT));
-    sensor.setSensorWidth(json.getInt(Sensor.SENSORWIDTH));
+    sensor.setRealSensorHeight(new BigDecimal(json.getDouble(Sensor.SENSORHEIGHT)));
+    sensor.setRealSensorWidth(new BigDecimal(json.getDouble(Sensor.SENSORWIDTH)));
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
     sensor.setModel(json.has(Sensor.MODEL) ? json.getString(Sensor.MODEL) : null);
 
@@ -254,7 +255,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     return query.getPage();
   }
 
-  public static JSONArray getAll()
+  public static List<Sensor> getAll()
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.NAME);
@@ -265,9 +266,12 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
 
-    List<Sensor> results = query.getResults();
+    return query.getResults();
+  }
 
-    return results.stream().map(w -> {
+  public static JSONArray getAllJson()
+  {
+    return getAll().stream().map(w -> {
       JSONObject obj = new JSONObject();
       obj.put(Sensor.OID, w.getOid());
       obj.put(Sensor.NAME, w.getName());

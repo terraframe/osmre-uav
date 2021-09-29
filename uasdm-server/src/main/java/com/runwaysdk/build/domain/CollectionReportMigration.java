@@ -40,7 +40,7 @@ public class CollectionReportMigration implements Runnable
 
   public static void start()
   {
-    Thread t = new Thread(new MissingRawDocumentFixer(), "CollectionReportMigration");
+    Thread t = new Thread(new CollectionReportMigration(), "CollectionReportMigration");
     t.setDaemon(true);
     t.start();
   }
