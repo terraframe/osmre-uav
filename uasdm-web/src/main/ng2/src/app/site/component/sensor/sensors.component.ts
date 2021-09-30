@@ -22,7 +22,9 @@ export class SensorsComponent implements OnInit {
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
         { header: 'Name', field: 'name', type: 'TEXT', sortable: true },
+        { header: 'Model', field: 'model', type: 'TEXT', sortable: true },
         { header: 'Description', field: 'description', type: 'TEXT', sortable: true },
+        { header: 'Type', field: 'sensorType', type: 'TEXT', sortable: true },
         { header: '', type: 'ACTIONS', sortable: false },
     ];
     refresh: Subject<void>;
@@ -39,7 +41,7 @@ export class SensorsComponent implements OnInit {
             view: true,
             create: true,
             label: 'Sensor',
-            sort: {field: 'name', order: 1},
+            sort: { field: 'name', order: 1 },
         }
 
         this.refresh = new Subject<void>();
