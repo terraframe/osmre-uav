@@ -67,14 +67,16 @@ export class PlatformComponent implements OnInit {
         this.message = null;
 
         this.service.apply(this.platform).then(data => {
-            this.platform = data;
-            this.mode = 'READ';
+            // this.platform = data;
+            // this.mode = 'READ';
 
-            if (this.newInstance) {
-                this.router.navigate(['/site/platform', data.oid]);
-                this.newInstance = false;
-                this.original = data;
-            }
+            // if (this.newInstance) {
+            //     this.router.navigate(['/site/platform', data.oid]);
+            //     this.newInstance = false;
+            //     this.original = data;
+            // }
+            this.router.navigate(['/site/equipment']);
+
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });

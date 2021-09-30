@@ -53,34 +53,14 @@ const routes: Routes = [
         component: ReportsComponent
     },
     {
-        path: 'sensors',
-        canActivate: [AdminGuardService],
-        component: SensorsComponent,
-    },
-    {
         path: 'sensor/:oid',
         canActivate: [AdminGuardService],
         component: SensorComponent,
     },
     {
-        path: 'platforms',
-        canActivate: [AdminGuardService],
-        component: PlatformsComponent,
-    },
-    {
         path: 'platform/:oid',
         canActivate: [AdminGuardService],
         component: PlatformComponent,
-    },
-    {
-        path: 'platform-manufacturers',
-        canActivate: [AdminGuardService],
-        component: ClassificationsComponent,
-        data: {
-            title: 'Platform Manufacturer',
-            label: 'manufacturer',
-            baseUrl: Endpoint.PLATFORM_MANUFACTURER
-        }
     },
     {
         path: 'platform-manufacturer/:oid',
@@ -93,16 +73,6 @@ const routes: Routes = [
         }
     },
     {
-        path: 'platform-types',
-        canActivate: [AdminGuardService],
-        component: ClassificationsComponent,
-        data: {
-            title: 'Platform Type',
-            label: 'type',
-            baseUrl: Endpoint.PLATFORM_TYPE
-        }
-    },
-    {
         path: 'platform-type/:oid',
         canActivate: [AdminGuardService],
         component: ClassificationComponent,
@@ -111,24 +81,6 @@ const routes: Routes = [
             label: 'type',
             baseUrl: Endpoint.PLATFORM_TYPE
         }
-    },
-    {
-        path: 'sensor-types',
-        canActivate: [AdminGuardService],
-        component: ClassificationsComponent,
-        data: {
-            title: 'Sensor Type',
-            label: 'type',
-            baseUrl: Endpoint.SENSOR_TYPE,
-            columns: [
-                {
-                    name: 'isMultispectral',
-                    label: 'Is Multispectral',
-                    type: 'boolean'
-                }
-            ]
-        }
-
     },
     {
         path: 'sensor-type/:oid',
@@ -147,16 +99,6 @@ const routes: Routes = [
             ]
         }
 
-    },
-    {
-        path: 'wave-lengths',
-        canActivate: [AdminGuardService],
-        component: ClassificationsComponent,
-        data: {
-            title: 'Wave Length',
-            label: 'wave length',
-            baseUrl: Endpoint.WAVE_LENGTH
-        }
     },
     {
         path: 'wave-length/:oid',
