@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -161,7 +161,7 @@ public class ProjectManagementService
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
+        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
 
         throw t;
       }
@@ -720,8 +720,15 @@ public class ProjectManagementService
         UAV uav = collection.getUav();
         Sensor sensor = collection.getSensor();
 
-        response.put("uav", uav.toView());
-        response.put("sensor", sensor.toView());
+        if (uav != null)
+        {
+          response.put("uav", uav.toView());
+        }
+
+        if (sensor != null)
+        {
+          response.put("sensor", sensor.toView());
+        }
       }
     }
 
