@@ -38,7 +38,8 @@ export class SensorsComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Sensor'
+            label: 'Sensor',
+            sort: {field: 'name', order: 1},
         }
 
         this.refresh = new Subject<void>();

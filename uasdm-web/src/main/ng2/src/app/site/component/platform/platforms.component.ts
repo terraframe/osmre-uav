@@ -35,7 +35,8 @@ export class PlatformsComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Platform'
+            label: 'Platform',
+            sort: {field: 'name', order: 1}
         }
 
         this.refresh = new Subject<void>();

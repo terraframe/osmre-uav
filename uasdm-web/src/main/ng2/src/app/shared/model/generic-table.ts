@@ -11,6 +11,7 @@ export class GenericTableConfig {
     edit?: boolean;
     create?: boolean;
     label: string;
+    sort?: {field: string, order: number};
 }
 
 export class GenericTableColumn {

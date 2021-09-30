@@ -2,7 +2,8 @@
 
 	<p-table #dt [columns]="cols" [value]="page.resultSet" [autoLayout]="true" [scrollable]="true" [resizableColumns]="true" sortMode="multiple"
 		styleClass="p-datatable-gridlines" [lazy]="true" (onLazyLoad)="onPageChange($event)" [paginator]="true"
-		[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading">
+		[totalRecords]="page.count" [rows]="page.pageSize" [loading]="loading"
+		[multiSortMeta]="config.sort != null ? [config.sort] : []">
     
         <ng-template pTemplate="colgroup" let-columns>
             <colgroup>

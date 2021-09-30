@@ -34,13 +34,20 @@ export class GenericTableComponent implements OnInit, OnDestroy {
 
     event: LazyLoadEvent = null;
 
+    defaultSort:any =null;
+
     constructor() {
         this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
     }
 
     ngOnInit(): void {
 
-
+        if(this.config.sortField != null) {
+            this.defaultSort = {field: this.config.sortField, order: this.config.sortOrder || -1}
+        }
+        else {
+            this.defaultSort = {field: this.cols[0].field, order: -1}
+        }
 
         if (this.refresh != null) {
             this.refresh.subscribe(() => {
