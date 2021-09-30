@@ -1,0 +1,27 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<update>
+<!-- 
+			<mdVertex name="gov.geoplatform.uasdm.graph.Sensor">
+				<attributes>
+					<integer name="pixelSizeWidth" required="false" label="Pixel Size Width" />
+					<integer name="pixelSizeHeight" required="false" label="Pixel Size Height" />
+				</attributes>
+				<create>
+
+					<attributes>
+						<decimal name="realPixelSizeWidth" required="false" label="Pixel Size Width" length="20" decimal="5" />
+						<decimal name="realPixelSizeHeight" required="false" label="Pixel Size Height" length="20" decimal="5" />
+					</attributes>
+				</create>
+			</mdVertex>
+ -->		
+		</update>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.graph.Sensor.realPixelSizeWidth" type="com.runwaysdk.system.metadata.MdAttribute" />
+			<object key="gov.geoplatform.uasdm.graph.Sensor.realPixelSizeHeight" type="com.runwaysdk.system.metadata.MdAttribute" />
+		</delete>
+	</undoIt>
+</version>

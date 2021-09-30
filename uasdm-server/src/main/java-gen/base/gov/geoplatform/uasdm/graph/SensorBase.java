@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -163921926)
+@com.runwaysdk.business.ClassSignature(hash = 361660861)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -34,13 +19,15 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public static java.lang.String OID = "oid";
   public static java.lang.String PIXELSIZEHEIGHT = "pixelSizeHeight";
   public static java.lang.String PIXELSIZEWIDTH = "pixelSizeWidth";
+  public static java.lang.String REALPIXELSIZEHEIGHT = "realPixelSizeHeight";
+  public static java.lang.String REALPIXELSIZEWIDTH = "realPixelSizeWidth";
   public static java.lang.String REALSENSORHEIGHT = "realSensorHeight";
   public static java.lang.String REALSENSORWIDTH = "realSensorWidth";
   public static java.lang.String SENSORHEIGHT = "sensorHeight";
   public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SENSORWIDTH = "sensorWidth";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -163921926;
+  private static final long serialVersionUID = 361660861;
   
   public SensorBase()
   {
@@ -168,6 +155,38 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setPixelSizeWidth(Integer value)
   {
     this.setValue(PIXELSIZEWIDTH, value);
+  }
+  
+  public java.math.BigDecimal getRealPixelSizeHeight()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(REALPIXELSIZEHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getRealPixelSizeHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(REALPIXELSIZEHEIGHT);
+  }
+  
+  public void setRealPixelSizeHeight(java.math.BigDecimal value)
+  {
+    this.setValue(REALPIXELSIZEHEIGHT, value);
+  }
+  
+  public java.math.BigDecimal getRealPixelSizeWidth()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(REALPIXELSIZEWIDTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getRealPixelSizeWidthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(REALPIXELSIZEWIDTH);
+  }
+  
+  public void setRealPixelSizeWidth(java.math.BigDecimal value)
+  {
+    this.setValue(REALPIXELSIZEWIDTH, value);
   }
   
   public java.math.BigDecimal getRealSensorHeight()

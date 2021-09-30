@@ -39,8 +39,8 @@ public class SensorPageView implements JSONSerializable
     object.put(Sensor.NAME, this.sensor.getName());
     object.put(Sensor.DESCRIPTION, this.sensor.getDescription());
     object.put(Sensor.MODEL, this.sensor.getModel());
-    object.put(Sensor.PIXELSIZEHEIGHT, this.sensor.getPixelSizeHeight());
-    object.put(Sensor.PIXELSIZEWIDTH, this.sensor.getPixelSizeWidth());
+    object.put(Sensor.PIXELSIZEHEIGHT, this.sensor.getRealPixelSizeHeight());
+    object.put(Sensor.PIXELSIZEWIDTH, this.sensor.getRealPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.sensor.getRealSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.sensor.getRealSensorWidth());
 

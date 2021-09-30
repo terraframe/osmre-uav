@@ -87,8 +87,8 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
     object.put(Sensor.MODEL, this.getModel());
-    object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
-    object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
+    object.put(Sensor.PIXELSIZEHEIGHT, this.getRealPixelSizeHeight());
+    object.put(Sensor.PIXELSIZEWIDTH, this.getRealPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
 
@@ -141,8 +141,8 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.NAME, this.getName());
     object.put(Sensor.DESCRIPTION, this.getDescription());
     object.put(Sensor.MODEL, this.getModel());
-    object.put(Sensor.PIXELSIZEHEIGHT, this.getPixelSizeHeight());
-    object.put(Sensor.PIXELSIZEWIDTH, this.getPixelSizeWidth());
+    object.put(Sensor.PIXELSIZEHEIGHT, this.getRealPixelSizeHeight());
+    object.put(Sensor.PIXELSIZEWIDTH, this.getRealPixelSizeWidth());
     object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.SENSORTYPE, sensorType.getName());
@@ -181,8 +181,8 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     sensor.setName(json.getString(Sensor.NAME));
 
-    sensor.setPixelSizeHeight(json.getInt(Sensor.PIXELSIZEHEIGHT));
-    sensor.setPixelSizeWidth(json.getInt(Sensor.PIXELSIZEWIDTH));
+    sensor.setRealPixelSizeHeight(new BigDecimal(json.getDouble(Sensor.PIXELSIZEHEIGHT)));
+    sensor.setRealPixelSizeWidth(new BigDecimal(json.getDouble(Sensor.PIXELSIZEWIDTH)));
     sensor.setRealSensorHeight(new BigDecimal(json.getDouble(Sensor.SENSORHEIGHT)));
     sensor.setRealSensorWidth(new BigDecimal(json.getDouble(Sensor.SENSORWIDTH)));
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);

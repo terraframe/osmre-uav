@@ -144,8 +144,8 @@ public class MetadataXMLGenerator
 
     metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
     metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
-    metadata.getSensor().setPixelSizeWidth(sensor.getPixelSizeWidth().toString());
-    metadata.getSensor().setPixelSizeHeight(sensor.getPixelSizeHeight().toString());
+    metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+    metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
 
     return metadata;
   }
