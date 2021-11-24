@@ -520,6 +520,10 @@ div.row-holder .chk-area, div.row-holder .rad-area {
 	border:1px solid #b3b3b3;
 	background:#b3b3b3 url(../images/sprite.png) no-repeat -65px -20px;
 }
+.chk-disabled:hover,
+.chk-checked.chk-disabled:hover {
+    cursor: not-allowed;
+}
 
 .checkbox-container {
 	display: block;
@@ -1373,7 +1377,7 @@ select{
 	cursor: pointer;
     border: 1px solid #767676;
     border-radius: 8px;
-    background-color: white !important;
+    background-color: white;
     padding-left: 5px;
     
     	/* reset */
@@ -1406,6 +1410,8 @@ select:active {
 }
 select[disabled] {
     color: #999;
+    background-color: #eeeeee;
+    border-color: #ccc;
 }
 
 option[selected]{ font-weight:bold}
@@ -2454,8 +2460,8 @@ input.form-control {
   color:#333;
   border:1px solid;
   border-color: #767676; /* IE fallback */
-  border-color: var(--theme-input-text-border);;
-  border-radius: 8px;
+  border-color: var(--theme-input-text-border);
+  border-radius: 4px;
   background:white;
   outline:none;
   box-shadow:none;
@@ -2471,6 +2477,10 @@ input.form-control:active,
     outline: 0;
     /* -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(107, 165, 66,.6);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(107, 165, 66,.6); */
+}
+select.form-control,
+textarea.form-control {
+    border-color: #767676;
 }
 
 input[type="file"]:focus, 
@@ -2502,11 +2512,16 @@ input[type="email"]::-moz-placeholder{
 	color:#333;
 	opacity:1;
 }
+.form-control[disabled],
+select[disabled],
 input[type="text"][disabled],
 input[type="password"][disabled],
 input[type="number"][disabled],
 input[type="email"][disabled] {
     color: #999;
+    box-shadow: none;
+    background-color: #eeeeee;
+    border-color: #ccc;
 }
 input[type="text"]:-ms-input-placeholder,
 input[type="password"]:-ms-input-placeholder,
@@ -2526,14 +2541,15 @@ input[type="email"]:-moz-placeholder{color:#333;}
     border-color: #007276; 
     border-color:var(--theme-input-text-border-active);
 } */
+select:disabled,
 input[type="text"]:disabled,
 input[type="password"]:disabled,
 input[type="number"]:disabled,
 input[type="email"]:disabled {
     color: #999;
     box-shadow: none;
-    border-color: #767676;
-    border-color: var(--theme-input-text-border);
+    background-color: #eeeeee;
+    border-color: #ccc;
 }
 
 input[type="textarea"]{

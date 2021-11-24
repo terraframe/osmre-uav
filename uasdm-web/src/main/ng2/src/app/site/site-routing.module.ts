@@ -54,12 +54,12 @@ const routes: Routes = [
     },
     {
         path: 'sensor/:oid',
-        canActivate: [AdminGuardService],
+        canActivate: [AuthGuard],
         component: SensorComponent,
     },
     {
         path: 'platform/:oid',
-        canActivate: [AdminGuardService],
+        canActivate: [AuthGuard],
         component: PlatformComponent,
     },
     {

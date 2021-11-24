@@ -31,6 +31,9 @@ import org.json.JSONObject;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import gov.geoplatform.uasdm.graph.Platform;
+import gov.geoplatform.uasdm.graph.Sensor;
+
 public class SiteItem implements TreeComponent
 {
   public static String        ID                 = "id";
@@ -54,6 +57,14 @@ public class SiteItem implements TreeComponent
   public static String        CHILDREN           = "children";
 
   public static String        GEOMETRY           = "geometry";
+  
+  public static String        UAV                = "uav";
+
+  public static String        PILOT_NAME              = "pilotName";
+  
+  public static String        PLATFORM           = "platform";
+  
+  public static String        SENSOR             = "sensor";
 
   private String              id;
 
@@ -74,6 +85,14 @@ public class SiteItem implements TreeComponent
   private Geometry            geometry;
 
   private Integer             numberOfChildren;
+  
+  private String              pilotName;
+  
+  private gov.geoplatform.uasdm.graph.UAV          uav;
+
+  private Platform            platform;
+  
+  private Sensor              sensor;
 
   private List<TreeComponent> children;
 
@@ -234,6 +253,35 @@ public class SiteItem implements TreeComponent
       obj.put(OWNER_EMAIL, this.getOwnerEmail());
       obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
       obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+      
+      if (this.getType().equals("Collection"))
+      {
+        gov.geoplatform.uasdm.graph.UAV uav = this.getUav();
+        String pilotName = this.getPilotName();
+        Sensor sensor = this.getSensor();
+        Platform platform = this.getPlatform();
+        
+        if (uav != null)
+        {
+          obj.put(UAV, uav.toJSON());
+        }
+        
+        if (uav != null)
+        {
+          obj.put("pilotName", pilotName);
+        }
+        
+        if (uav != null)
+        {
+          obj.put("sensor", sensor.toJSON());
+        }
+        
+        if (uav != null)
+        {
+          obj.put("platform", platform.toJSON());
+        }
+        
+      }
 
       for (Entry<String, Object> entry : entries)
       {
@@ -382,5 +430,45 @@ public class SiteItem implements TreeComponent
     }
 
     return list;
+  }
+
+  public gov.geoplatform.uasdm.graph.UAV getUav()
+  {
+    return uav;
+  }
+
+  public void setUav(gov.geoplatform.uasdm.graph.UAV uav)
+  {
+    this.uav = uav;
+  }
+
+  public String getPilotName()
+  {
+    return pilotName;
+  }
+
+  public void setPilotName(String pilotName)
+  {
+    this.pilotName = pilotName;
+  }
+
+  public Platform getPlatform()
+  {
+    return platform;
+  }
+
+  public void setPlatform(Platform platform)
+  {
+    this.platform = platform;
+  }
+
+  public Sensor getSensor()
+  {
+    return sensor;
+  }
+
+  public void setSensor(Sensor sensor)
+  {
+    this.sensor = sensor;
   }
 }

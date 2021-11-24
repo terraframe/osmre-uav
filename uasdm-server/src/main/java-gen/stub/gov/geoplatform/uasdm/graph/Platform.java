@@ -108,11 +108,11 @@ public class Platform extends PlatformBase implements JSONSerializable
       object.put(Platform.DATEUPDATED, Util.formatIso8601(this.getDateUpdated(), false));
     }
 
-    String platformType = this.getObjectValue(Platform.PLATFORMTYPE);
+    PlatformType platformType = this.getPlatformType();
 
     if (platformType != null)
     {
-      object.put(Platform.PLATFORMTYPE, platformType);
+      object.put(Platform.PLATFORMTYPE, platformType.toJSON());
     }
 
     String manufacturer = this.getObjectValue(Platform.MANUFACTURER);

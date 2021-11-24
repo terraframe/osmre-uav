@@ -324,8 +324,8 @@ export class LeafModalComponent implements OnInit {
 	}
 	
 	capitalize(str): string {
-    return str.replace(/^\w/, c => c.toUpperCase());
-  }
+        return str.replace(/^\w/, c => c.toUpperCase());
+    }
 
 
 	showVideo(item: SiteEntity): void {

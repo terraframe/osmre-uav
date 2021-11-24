@@ -27,10 +27,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
-import gov.geoplatform.uasdm.bus.Collection;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -43,6 +46,7 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.view.FlightMetadata.SensorMetadata;
 
 public abstract class Converter
 {
@@ -84,6 +88,37 @@ public abstract class Converter
     if (metadata)
     {
       siteItem.setAttributes(attributes);
+    }
+    
+    if (uasComponent != null)
+    {
+      if (uasComponent instanceof Collection)
+      {
+        FlightMetadata fMetadata = FlightMetadata.get(uasComponent, Collection.RAW, uasComponent.getFolderName() + MetadataXMLGenerator.FILENAME);
+
+        if (fMetadata != null)
+        {
+          siteItem.setPilotName(fMetadata.getName());
+        }
+        
+        Sensor sensor = ((CollectionIF) uasComponent).getSensor();
+        if(sensor != null)
+        {
+          siteItem.setSensor(sensor);
+        }
+        
+        UAV uav = ((CollectionIF) uasComponent).getUav();
+        if(uav != null)
+        {
+          siteItem.setUav(uav);
+          
+          Platform platform = uav.getPlatform();
+          if(platform != null)
+          {
+            siteItem.setPlatform(platform);
+          }
+        }
+      }
     }
 
     return siteItem;
@@ -240,7 +275,7 @@ public abstract class Converter
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
-
+    
     List<GeoserverLayer> layers = ( (Product) product ).getLayers();
     view.setLayers(layers);
 
@@ -293,7 +328,24 @@ public abstract class Converter
     if (metadata != null)
     {
       view.setPilotName(metadata.getName());
-      view.setSensor(metadata.getSensor().getName());
+    }
+    
+    Sensor sensor = ((CollectionIF) collection).getSensor();
+    if(sensor != null)
+    {
+      view.setSensor(sensor.toJSON());
+    }
+    
+    UAV uav = ((CollectionIF) collection).getUav();
+    if(uav != null)
+    {
+      view.setUAV(uav.toJSON());
+      
+      Platform platform = uav.getPlatform();
+      if(platform != null)
+      {
+        view.setPlatform(platform.toJSON());
+      }
     }
 
     view.setDateTime(product.getLastUpdateDate());

@@ -11,12 +11,17 @@ import { SensorService } from '@site/service/sensor.service';
 import { Sensor } from '@site/model/sensor';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { AuthService } from '@shared/service/auth.service';
+
 @Component({
     selector: 'platform',
     templateUrl: './platform.component.html',
     styleUrls: []
 })
 export class PlatformComponent implements OnInit {
+    
+    isAdmin:boolean = false;
+    
     original: Platform;
     platform: Platform;
     newInstance: boolean = false;
@@ -29,9 +34,11 @@ export class PlatformComponent implements OnInit {
     mode: string = 'READ';
 
     constructor(private service: PlatformService, private sensorService: SensorService,
-        private classificationService: ClassificationService,
-        private route: ActivatedRoute, private router: Router
-    ) { }
+        private classificationService: ClassificationService, private authService: AuthService,
+        private route: ActivatedRoute, private router: Router) { 
+            
+        this.isAdmin = this.authService.isAdmin(); 
+    }
 
     ngOnInit(): void {
         const oid = this.route.snapshot.params['oid'];

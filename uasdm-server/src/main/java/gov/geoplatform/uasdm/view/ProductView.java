@@ -119,7 +119,7 @@ public class ProductView
   {
     this.layers = layers;
   }
-
+  
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
@@ -169,4 +169,5 @@ public class ProductView
 
     return array;
   }
+
 }

@@ -102,11 +102,11 @@ public class Sensor extends SensorBase implements JSONSerializable
       object.put(Sensor.DATEUPDATED, Util.formatIso8601(this.getDateUpdated(), false));
     }
 
-    String sensorType = this.getObjectValue(Sensor.SENSORTYPE);
+    SensorType sensorType = this.getSensorType();
 
     if (sensorType != null)
     {
-      object.put(Sensor.SENSORTYPE, sensorType);
+      object.put(Sensor.SENSORTYPE, sensorType.toJSON());
     }
 
     if (this.getSeq() != null)

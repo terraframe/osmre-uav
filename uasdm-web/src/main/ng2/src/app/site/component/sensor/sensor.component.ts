@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ErrorHandler } from '@shared/component';
 
@@ -7,7 +8,8 @@ import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { ClassificationService, Endpoint } from '@site/service/classification.service';
 import { Classification } from '@site/model/classification';
-import { ActivatedRoute, Router } from '@angular/router';
+
+import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
@@ -16,6 +18,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 	styleUrls: []
 })
 export class SensorComponent implements OnInit {
+    
+    isAdmin:boolean = false;
+    
     original: Sensor;
 	sensor: Sensor;
 	newInstance: boolean = false;
@@ -26,8 +31,10 @@ export class SensorComponent implements OnInit {
 	types: Classification[] = [];
     mode: string = 'READ';
 
-	constructor(private service: SensorService, private classificationService: ClassificationService, private route: ActivatedRoute, private router: Router
-		) { }
+	constructor(private service: SensorService, private classificationService: ClassificationService, private route: ActivatedRoute, private router: Router,
+		private authService: AuthService) { 
+            this.isAdmin = this.authService.isAdmin();
+        }
 
 	ngOnInit(): void {
         const oid = this.route.snapshot.params['oid'];
