@@ -28,6 +28,9 @@ sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-2-248.us
 export ANSIBLE_HOST_KEY_CHECKING=false
 export NODE_OPTIONS="--max_old_space_size=1500"
 
+export DOCKER_CLIENT_TIMEOUT=120
+export COMPOSE_HTTP_TIMEOUT=120
+
 
 if [ "$build_artifact" == "true" ]; then
   :
