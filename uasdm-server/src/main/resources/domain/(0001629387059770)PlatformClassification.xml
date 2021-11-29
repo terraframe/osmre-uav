@@ -1,0 +1,235 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<create>
+			<mdVertex name="gov.geoplatform.uasdm.graph.PlatformType" label="Platform Type">
+				<attributes>
+					<char name="name" required="true" label="Label" size="4096" indexType="unique index" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.PlatformManufacturer" label="Platform Manufacturer">
+				<attributes>
+				<char name="name" required="true" label="Label" size="4096" indexType="unique index" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.SensorType" label="Sensor Type">
+				<attributes>
+					<char name="name" required="true" label="Label" size="4096" />
+					<boolean name="isMultispectral" required="true" label="Is Multispectral" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.WaveLength" label="Wave Length">
+				<attributes>
+					<char name="name" required="true" label="Label" size="4096" indexType="unique index" />
+				</attributes>
+			</mdVertex>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Sensor" label="Sensor">
+				<attributes>
+					<char name="name" required="true" label="Name" size="128" indexType="unique index"/>
+					<integer name="pixelSizeWidth" required="true" label="Pixel Size Width" />
+					<integer name="pixelSizeHeight" required="true" label="Pixel Size Height" />
+					<integer name="sensorWidth" required="true" label="Sensor Width" />
+					<integer name="sensorHeight" required="true" label="Sensor Height" />
+					<char name="model" required="false" label="Model" size="1024" />
+					<char name="description" label="Description" size="1024" />
+					<graphReference name="sensorType" type="gov.geoplatform.uasdm.graph.SensorType" required="true" label="Sensor Type" />
+					<date name="dateCreated" required="true" label="Date Created" />
+					<date name="dateUpdated" required="true" label="Date Updated" />
+				</attributes>
+			</mdVertex>
+			<mdEdge name="gov.geoplatform.uasdm.graph.SensorHasWaveLength" label="Sensor Has Wave Length" parent="gov.geoplatform.uasdm.graph.Sensor" child="gov.geoplatform.uasdm.graph.WaveLength">
+			</mdEdge>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Platform" label="Platform">
+				<attributes>
+					<char name="name" required="true" label="Name" size="128" indexType="unique index" />
+					<char name="description" label="Description" size="1024" />
+					<graphReference name="manufacturer" type="gov.geoplatform.uasdm.graph.PlatformManufacturer" required="true" label="Platform Manufacturer" />
+					<graphReference name="platformType" type="gov.geoplatform.uasdm.graph.PlatformType" required="true" label="Platform Type" />
+					<date name="dateCreated" required="true" label="Date Created" />
+					<date name="dateUpdated" required="true" label="Date Updated" />
+				</attributes>
+			</mdVertex>
+			<mdEdge name="gov.geoplatform.uasdm.graph.PlatformHasSensor" label="Platform Has Sensor" parent="gov.geoplatform.uasdm.graph.Platform" child="gov.geoplatform.uasdm.graph.Sensor">
+			</mdEdge>
+			<mdVertex name="gov.geoplatform.uasdm.graph.UAV" label="UAV">
+				<attributes>
+					<char name="serialNumber" required="true" label="Serial Number" size="128" />
+					<char name="faaNumber" required="true" label="FAA Number" size="10" />
+					<char name="description" label="Description" size="1024" />
+					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="true" label="Platform" />
+					<graphReference name="bureau" type="gov.geoplatform.uasdm.graph.Bureau" required="true" label="Bureau" />
+				</attributes>
+			</mdVertex>
+
+			<mdException name="gov.geoplatform.uasdm.GenericException" message="{userMessage}" label="Generic Exception">
+				<attributes>
+					<text name="userMessage" label="User Message" />
+				</attributes>
+			</mdException>
+
+
+			<!-- CREATE DEFAULT OPTIONS -->
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="Fixed Wing">
+				<attribute name="name" value="Fixed Wing" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="Hybrid">
+				<attribute name="name" value="Hybrid" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="Multi-rotor">
+				<attribute name="name" value="Multi-rotor" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="Helicopter">
+				<attribute name="name" value="Helicopter" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="VTOL Fixed-wing">
+				<attribute name="name" value="VTOL Fixed-wing" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformType" key="Quadcopter">
+				<attribute name="name" value="Quadcopter" />
+			</vertex>
+
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformManufacturer" key="Parrot Anafi USA">
+				<attribute name="name" value="Parrot Anafi USA" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformManufacturer" key="DJI">
+				<attribute name="name" value="DJI" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.PlatformManufacturer" key="Trimble">
+				<attribute name="name" value="Trimble" />
+			</vertex>
+
+			<vertex type="gov.geoplatform.uasdm.graph.SensorType" key="CMOS">
+				<attribute name="name" value="CMOS" />
+				<attribute name="isMultispectral" value="false" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.SensorType" key="Laser">
+				<attribute name="name" value="Laser" />
+				<attribute name="isMultispectral" value="false" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.SensorType" key="Multispectral">
+				<attribute name="name" value="Multispectral" />
+				<attribute name="isMultispectral" value="true" />
+			</vertex>
+
+
+			<vertex type="gov.geoplatform.uasdm.graph.WaveLength" key="LiDAR">
+				<attribute name="name" value="LiDAR" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.WaveLength" key="Natural Color RGB">
+				<attribute name="name" value="Natural Color RGB" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.WaveLength" key="Near InfraRed">
+				<attribute name="name" value="Near InfraRed" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.WaveLength" key="Red Edge">
+				<attribute name="name" value="Red Edge" />
+			</vertex>
+			<vertex type="gov.geoplatform.uasdm.graph.WaveLength" key="Thermal">
+				<attribute name="name" value="Thermal" />
+			</vertex>
+		</create>
+		<permissions>
+			<role roleName="geoprism.admin.Administrator">
+				<grant>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.PlatformType">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.PlatformManufacturer">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.SensorType">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.WaveLength">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.Sensor">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.Platform">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+					<mdRelationshipPermission type="gov.geoplatform.uasdm.graph.SensorHasWaveLength">
+						<operation name="ALL" />
+					</mdRelationshipPermission>
+					<mdRelationshipPermission type="gov.geoplatform.uasdm.graph.PlatformHasSensor">
+						<operation name="ALL" />
+					</mdRelationshipPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.UAV">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+				</grant>
+			</role>
+			<role roleName="geoprism.admin.DashboardBuilder">
+				<grant>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.PlatformType">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.PlatformManufacturer">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.SensorType">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.WaveLength">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.Sensor">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.Platform">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+					<mdRelationshipPermission type="gov.geoplatform.uasdm.graph.SensorHasWaveLength">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdRelationshipPermission>
+					<mdRelationshipPermission type="gov.geoplatform.uasdm.graph.PlatformHasSensor">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdRelationshipPermission>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.graph.UAV">
+						<operation name="READ" />
+						<operation name="READ_ALL_ATTRIBUTES" />
+					</mdBusinessPermission>
+				</grant>
+			</role>
+		</permissions>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.GenericException" type="com.runwaysdk.system.metadata.MdException" />
+			<object key="gov.geoplatform.uasdm.graph.UAV" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.PlatformHasSensor" type="com.runwaysdk.system.metadata.MdEdge" />
+			<object key="gov.geoplatform.uasdm.graph.Platform" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.SensorHasWaveLength" type="com.runwaysdk.system.metadata.MdEdge" />
+			<object key="gov.geoplatform.uasdm.graph.Sensor" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.PlatformType" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.PlatformManufacturer" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.SensorType" type="com.runwaysdk.system.metadata.MdVertex" />
+			<object key="gov.geoplatform.uasdm.graph.WaveLength" type="com.runwaysdk.system.metadata.MdVertex" />
+		</delete>
+	</undoIt>
+</version>

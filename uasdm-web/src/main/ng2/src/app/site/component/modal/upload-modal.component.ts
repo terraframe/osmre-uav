@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, KeyValueDiffers, HostListener
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
-import { interval, Subject } from 'rxjs';
+import { interval, Observable, Observer, Subject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 
 //use Fine Uploader UI for traditional endpoints
@@ -26,7 +26,7 @@ import {
 
 declare var acp: string;
 
-class Page {
+export class Page {
 	index: number;
 	selection: Selection;
 	options: SiteEntity[];
@@ -49,14 +49,14 @@ export class UploadModalComponent implements OnInit {
 
 	message: string = "";
 
-    /* 
-     * Form values
-     */
+	/* 
+	 * Form values
+	 */
 	values = { create: false } as UploadForm;
 
-    /*
-     * FineUploader for uploading large files
-     */
+	/*
+	 * FineUploader for uploading large files
+	 */
 	uploader = null as FineUploader;
 
 	disabled: boolean = false;
@@ -75,29 +75,29 @@ export class UploadModalComponent implements OnInit {
 	taskFinishedNotifications: any[] = [];
 
 
-    /*
-     * Flag indicating if the upload should be processed by ODM
-     */
+	/*
+	 * Flag indicating if the upload should be processed by ODM
+	 */
 	processUpload: boolean = true;
 
-    /*
-     * List of hierarchies
-     */
+	/*
+	 * List of hierarchies
+	 */
 	hierarchy: string[] = [];
 
-    /*
-     * List of selections: One per hierarchy type
-     */
+	/*
+	 * List of selections: One per hierarchy type
+	 */
 	selections: Selection[] = [];
 
-    /*
-     * List of previous selection labels
-     */
+	/*
+	 * List of previous selection labels
+	 */
 	labels: string[] = [];
 
-    /*
-     * List of pages
-     */
+	/*
+	 * List of pages
+	 */
 	pages: Page[] = [{
 		index: 0,
 		selection: null,
@@ -105,14 +105,14 @@ export class UploadModalComponent implements OnInit {
 		type: 'FILE',
 	}];
 
-    /*
-     * Current page  
-     */
+	/*
+	 * Current page  
+	 */
 	hierarchyChange: boolean = false;
 
-    /*
-     * Current page  
-     */
+	/*
+	 * Current page  
+	 */
 	page: Page = this.pages[0];
 
 	sensors: Sensor[] = [];
@@ -171,11 +171,11 @@ export class UploadModalComponent implements OnInit {
 				validation: {
 					allowedExtensions: ['zip', 'tar.gz']
 				},
-				showMessage: function(message: string) {
+				showMessage: function (message: string) {
 					// 
 				},
 				callbacks: {
-					onUpload: function(id: any, name: any): void {
+					onUpload: function (id: any, name: any): void {
 						that.disabled = true;
 						this.finishedTask = null;
 
@@ -185,11 +185,11 @@ export class UploadModalComponent implements OnInit {
 							that.message = "";
 						}
 					},
-					onProgress: function(id: any, name: any, uploadedBytes: any, totalBytes: any): void {
+					onProgress: function (id: any, name: any, uploadedBytes: any, totalBytes: any): void {
 					},
-					onUploadChunk: function(id: any, name: any, chunkData: any): void {
+					onUploadChunk: function (id: any, name: any, chunkData: any): void {
 					},
-					onUploadChunkSuccess: function(id: any, chunkData: any, responseJSON: any, xhr: any): void {
+					onUploadChunkSuccess: function (id: any, chunkData: any, responseJSON: any, xhr: any): void {
 
 						if (responseJSON.message && responseJSON.message.currentTask && !that.currentTask) {
 							that.currentTask = responseJSON.message.currentTask;
@@ -209,7 +209,7 @@ export class UploadModalComponent implements OnInit {
 								});
 						}
 					},
-					onComplete: function(id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
+					onComplete: function (id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
 						that.disabled = false;
 						that.finishedTask = that.currentTask;
 						that.currentTask = null;
@@ -246,7 +246,7 @@ export class UploadModalComponent implements OnInit {
 
 						that.onUploadComplete.next();
 					},
-					onCancel: function(id: number, name: string) {
+					onCancel: function (id: number, name: string) {
 						//that.currentTask = null;
 
 						if (that.currentTask && that.currentTask.uploadId) {
@@ -274,7 +274,7 @@ export class UploadModalComponent implements OnInit {
 
 						clearInterval(that.uplodeCounterInterfal);
 					},
-					onError: function(id: number, errorReason: string, xhrOrXdr: string) {
+					onError: function (id: number, errorReason: string, xhrOrXdr: string) {
 						that.error({ error: { message: xhrOrXdr } });
 					}
 
@@ -304,12 +304,12 @@ export class UploadModalComponent implements OnInit {
 		this.onUploadComplete = new Subject();
 		this.onHierarchyChange = new Subject();
 
-		this.service.getMetadataOptions(null).then((options) => {
-			this.sensors = options.sensors;
-			this.platforms = options.platforms;
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
+		// this.service.getMetadataOptions(null).then((options) => {
+		// 	this.sensors = options.sensors;
+		// 	this.platforms = options.platforms;
+		// }).catch((err: HttpErrorResponse) => {
+		// 	this.error(err);
+		// });
 	}
 
 	init(entities: SiteEntity[]): void {
@@ -404,13 +404,18 @@ export class UploadModalComponent implements OnInit {
 					return true;
 				}
 				else if (page.selection.label != null && page.selection.label.length > 0) {
-					if (this.hasField('platform') && (page.selection.platform == null || page.selection.platform.length === 0)) {
+					if (this.hasField('uav') && (page.selection.uav == null || page.selection.uav.length === 0)) {
 						return false;
 					}
 
 					if (this.hasField('sensor') && (page.selection.sensor == null || page.selection.sensor.length === 0)) {
 						return false;
 					}
+
+					if (this.hasField('collectionDate') && (page.selection.collectionDate == null || page.selection.collectionDate.length === 0)) {
+						return false;
+					}
+
 
 					return true;
 				}
@@ -501,7 +506,7 @@ export class UploadModalComponent implements OnInit {
 				this.modalStepConfig = {
 					"steps": [
 						{ "label": "Category", "active": true, "enabled": false },
-						{ "label": "Final", "active": true, "enabled": true }
+						{ "label": "Final", "active": true, "enabled": false }
 					]
 				};
 			}
@@ -537,9 +542,9 @@ export class UploadModalComponent implements OnInit {
 
 
 		if (!this.existingTask) {
-            /*
-             * Validate form values before uploading
-             */
+			/*
+			 * Validate form values before uploading
+			 */
 			const selection = this.selections[this.selections.length - 1];
 
 			//            if ( selection.value == null  ) {
@@ -629,7 +634,7 @@ export class UploadModalComponent implements OnInit {
 	}
 
 	error(err: any): void {
-	  this.message = ErrorHandler.getMessageFromError(err);
+		this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 	public canDeactivate(): boolean {

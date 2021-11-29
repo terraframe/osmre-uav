@@ -17,11 +17,13 @@ package gov.geoplatform.uasdm.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -30,6 +32,7 @@ import org.xml.sax.SAXException;
 import com.amazonaws.AmazonClientException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -401,7 +404,7 @@ public class FlightMetadata
 
     this.setProject(this.parseLocation(document, "Project"));
     this.setMission(this.parseLocation(document, "Mission"));
-    this.setCollection(this.parseLocation(document, "Collection"));
+    this.setCollection(this.parseLocation(document, "Collect"));
 
     this.parsePlatform(document);
     this.parseSensor(document);
@@ -455,14 +458,14 @@ public class FlightMetadata
       return LocationMetadata.parse(item);
     }
 
-    return null;
+    return new LocationMetadata();
   }
 
   public static FlightMetadata get(UasComponentIF component, String folderName, String filename)
   {
     FlightMetadata metadata = new FlightMetadata();
 
-    String key = component.getS3location() + folderName + "/" + component.getName() + filename;
+    String key = component.getS3location() + folderName + "/" + filename;
 
     try (RemoteFileObject object = component.download(key))
     {
@@ -485,6 +488,72 @@ public class FlightMetadata
     {
       // Metadata doesn't exist
     }
+
+    return metadata;
+  }
+
+  public static FlightMetadata parse(CollectionIF collection, JSONObject json)
+  {
+    List<UasComponentIF> ancestors = collection.getAncestors();
+
+    FlightMetadata metadata = new FlightMetadata();
+
+    JSONObject pointOfContact = json.getJSONObject("pointOfContact");
+
+    metadata.setName(pointOfContact.getString("name"));
+    metadata.setEmail(pointOfContact.getString("email"));
+
+    UasComponentIF proj = ancestors.get(1);
+
+    metadata.getProject().setName(proj.getName());
+    metadata.getProject().setShortName(proj.getName());
+    metadata.getProject().setDescription(proj.getDescription());
+
+    UasComponentIF mission = ancestors.get(0);
+
+    metadata.getMission().setName(mission.getName());
+    metadata.getMission().setDescription(mission.getDescription());
+
+    metadata.getCollection().setName(collection.getName());
+    metadata.getCollection().setDescription(collection.getDescription());
+
+    JSONObject jPlatform = json.getJSONObject("platform");
+
+    metadata.getPlatform().setName(jPlatform.getString("otherName"));
+    metadata.getPlatform().setType(jPlatform.getString("type"));
+    metadata.getPlatform().setSerialNumber(jPlatform.get("serialNumber").toString());
+    metadata.getPlatform().setFaaIdNumber(jPlatform.get("faaIdNumber").toString());
+
+    JSONObject jSensor = json.getJSONObject("sensor");
+    metadata.getSensor().setName(jSensor.getString("otherName"));
+    metadata.getSensor().setType(jSensor.getString("type"));
+    metadata.getSensor().setModel(jSensor.getString("model"));
+    metadata.getSensor().setWavelength(jSensor.getJSONArray("wavelength").toString());
+
+    Integer width = collection.getImageWidth();
+    if (width != null && width != 0)
+    {
+      metadata.getSensor().setImageWidth(String.valueOf(width));
+    }
+    else
+    {
+      metadata.getSensor().setImageWidth("");
+    }
+
+    Integer height = collection.getImageHeight();
+    if (height != null && height != 0)
+    {
+      metadata.getSensor().setImageHeight(String.valueOf(height));
+    }
+    else
+    {
+      metadata.getSensor().setImageHeight("");
+    }
+
+    metadata.getSensor().setSensorWidth(jSensor.get("sensorWidth").toString());
+    metadata.getSensor().setSensorHeight(jSensor.get("sensorHeight").toString());
+    metadata.getSensor().setPixelSizeWidth(jSensor.get("pixelSizeWidth").toString());
+    metadata.getSensor().setPixelSizeHeight(jSensor.get("pixelSizeHeight").toString());
 
     return metadata;
   }

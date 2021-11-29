@@ -1,7 +1,16 @@
 export class Platform {
-    newInstance: boolean;
     oid: string;
     name: string;
-    displayLabel: string;
-    platformType: string;
+    label: string;
+    description?: string;
+    dateCreated?: string;
+    dateUpdate?: string;
+    platformType: PlatformType;
+    manufacturer: string;
+    sensors: string[];
+}
+
+export class PlatformType {
+    name: string;
+    oid: string;
 }

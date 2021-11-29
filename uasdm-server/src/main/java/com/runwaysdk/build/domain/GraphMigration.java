@@ -222,8 +222,8 @@ public class GraphMigration
       dest.setValue(Collection.IMAGEHEIGHT, cSource.getImageHeight());
       dest.setValue(Collection.IMAGEWIDTH, cSource.getImageWidth());
       dest.setValue(Collection.METADATAUPLOADED, cSource.getMetadataUploaded());
-      dest.setValue(Collection.PLATFORM, source.getValue(Collection.PLATFORM));
-      dest.setValue(Collection.SENSOR, source.getValue(Collection.SENSOR));
+//      dest.setValue(Collection.PLATFORM, source.getValue(Collection.PLATFORM));
+//      dest.setValue(Collection.SENSOR, source.getValue(Collection.SENSOR));
 
       final List<AllPrivilegeType> privilegeTypes = cSource.getPrivilegeType();
 

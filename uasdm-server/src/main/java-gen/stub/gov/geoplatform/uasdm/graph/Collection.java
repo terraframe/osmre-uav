@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -41,6 +42,8 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -49,7 +52,9 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -152,6 +157,27 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return object;
   }
 
+  @Override
+  public RemoteFileObject download(String key)
+  {
+    CollectionReport.updateDownloadCount(this);
+
+    return super.download(key);
+  }
+
+  @Override
+  public RemoteFileObject download(String key, List<Range> ranges)
+  {
+    long isStart = ranges.stream().filter(r -> r.getStart().equals(0L)).count();
+
+    if (isStart > 0)
+    {
+      CollectionReport.updateDownloadCount(this);
+    }
+
+    return super.download(key, ranges);
+  }
+
   /**
    * Creates the object and builds the relationship with the parent.
    * 
@@ -199,6 +225,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       event.delete();
     }
 
+    List<CollectionReport> reports = this.getReports();
+
+    for (CollectionReport report : reports)
+    {
+      report.handleDelete(this);
+    }
+
     super.delete();
 
     if (!this.getS3location().trim().equals(""))
@@ -239,6 +272,17 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
     {
       return new LinkedList<CollectionUploadEvent>(iterator.getAll());
+    }
+  }
+
+  public List<CollectionReport> getReports()
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getCollection().EQ(this.getOid()));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      return new LinkedList<CollectionReport>(iterator.getAll());
     }
   }
 
@@ -396,6 +440,60 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return workflowTask;
   }
 
+  @Override
+  public UAV getUav()
+  {
+    String oid = this.getObjectValue(UAV);
+
+    if (oid != null && oid.length() > 0)
+    {
+      return ( gov.geoplatform.uasdm.graph.UAV.get(oid) );
+    }
+
+    return null;
+  }
+
+  @Override
+  public Sensor getSensor()
+  {
+    String oid = this.getObjectValue(COLLECTIONSENSOR);
+
+    if (oid != null && oid.length() > 0)
+    {
+      return ( gov.geoplatform.uasdm.graph.Sensor.get(oid) );
+    }
+
+    return null;
+  }
+
+  @Override
+  public boolean isMultiSpectral()
+  {
+    Sensor sensor = this.getSensor();
+
+    if (sensor != null)
+    {
+      SensorType type = sensor.getSensorType();
+
+      if (type.getIsMultispectral())
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public DocumentIF createDocumentIfNotExist(String key, String name)
+  {
+    DocumentIF document = super.createDocumentIfNotExist(key, name);
+
+    CollectionReport.update(this, document);
+
+    return document;
+  }
+
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)
   {
     SingleActor singleActor = GeoprismUser.getCurrentUser();
@@ -465,6 +563,23 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     return "OUT('" + mdEdge.getDBClassName() + "')";
+  }
+
+  public static boolean isUAVReferenced(UAV uav)
+  {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.UAV);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :uav");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString());
+    query.setParameter("uav", uav.getRID());
+
+    Long result = query.getSingleResult();
+
+    return ( result != null && result > 0 );
   }
 
 }

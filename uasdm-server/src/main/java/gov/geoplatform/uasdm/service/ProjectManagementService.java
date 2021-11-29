@@ -50,11 +50,12 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
-import gov.geoplatform.uasdm.bus.Platform;
-import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -70,6 +71,7 @@ import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParser;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -144,7 +146,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new FileResource(zip), collection.getSensor().isMultiSpectral());
+        task.initiate(new FileResource(zip), collection.isMultiSpectral());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -158,6 +160,8 @@ public class ProjectManagementService
         task.apply();
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
 
         throw t;
       }
@@ -183,7 +187,7 @@ public class ProjectManagementService
 
     return children;
   }
-  
+
   @Request(RequestType.SESSION)
   public UasComponent getComponent(String sessionId, String componentId)
   {
@@ -575,9 +579,13 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void submitMetadata(String sessionId, String json)
+  public void submitMetadata(String sessionId, String collectionId, String json)
   {
-    new MetadataXMLGenerator(json).generateAndUpload();
+    CollectionIF collection = ComponentFacade.getCollection(collectionId);
+
+    FlightMetadata metadata = FlightMetadata.parse(collection, new JSONObject(json));
+
+    new MetadataXMLGenerator().generateAndUpload(collection, metadata);
   }
 
   @Request(RequestType.SESSION)
@@ -697,8 +705,8 @@ public class ProjectManagementService
     SingleActorDAOIF user = Session.getCurrentSession().getUser();
 
     JSONObject response = new JSONObject();
-    response.put("sensors", Sensor.getAll());
-    response.put("platforms", Platform.getAll());
+    // response.put("sensors", Sensor.getAll());
+    // response.put("platforms", Platform.getAll());
     response.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
     response.put("email", user.getValue(GeoprismUser.EMAIL));
 
@@ -708,10 +716,34 @@ public class ProjectManagementService
 
       if (component instanceof CollectionIF)
       {
-        response.put("platform", (String) component.getObjectValue(Collection.PLATFORM));
-        response.put("sensor", (String) component.getObjectValue(Collection.SENSOR));
+        CollectionIF collection = (CollectionIF) component;
+        UAV uav = collection.getUav();
+        Sensor sensor = collection.getSensor();
+
+        if (uav != null)
+        {
+          response.put("uav", uav.toView());
+        }
+
+        if (sensor != null)
+        {
+          response.put("sensor", sensor.toView());
+        }
       }
     }
+
+    return response;
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getUAVMetadata(String sessionId, String uavId, String sensorId)
+  {
+    UAV uav = UAV.get(uavId);
+    Sensor sensor = Sensor.get(sensorId);
+
+    JSONObject response = new JSONObject();
+    response.put("uav", uav.toView());
+    response.put("sensor", sensor.toView());
 
     return response;
   }
@@ -737,11 +769,11 @@ public class ProjectManagementService
   public RemoteFileObject downloadOdmAll(String sessionId, String colId)
   {
     Collection collection = Collection.get(colId);
-    
+
     List<Product> products = collection.getProducts();
-    
-    products.sort( (a,b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()) );
-    
+
+    products.sort((a, b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()));
+
     return products.get(0).downloadAllZip();
   }
 

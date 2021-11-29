@@ -1,43 +1,82 @@
-<div *ngIf="platform != null" class="modal-body">
-  <div *ngIf="message != null" class="error-container">
-    <div class="label-holder">
-      <strong>Error</strong>
-    </div>
-    <div class="holder">
-      <div>
-        <p class="error-message">{{message}}</p>
+<div>
+  <uasdm-header></uasdm-header>
+
+  <div id="app-container" class="container">
+
+    <div *ngIf="platform != null" class="modal-body">
+      <div *ngIf="message != null" class="error-container">
+        <div class="label-holder">
+          <strong>Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
       </div>
+
+      <div class="modal-title-container">
+        <h3>Platform</h3>
+      </div>
+
+      <form #ngForm="ngForm">
+        <div class="form-group">
+          <label>Name</label>
+          <input [(ngModel)]="platform.name" name="name" type="input" class="form-control" placeholder="Name"
+            [disabled]="mode === 'READ'" required />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="platform.description" [disabled]="mode === 'READ'" name="description" type="input"
+            class="form-control" placeholder="Description">
+      </textarea>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select [(ngModel)]="platform.platformType" [disabled]="mode === 'READ'" name="platformType" type="input"
+            class="form-control" placeholder="Type" required>
+            <option></option>
+            <option *ngFor="let type of types" [value]="type.oid">{{type.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Manufacturer</label>
+          <select [(ngModel)]="platform.manufacturer" [disabled]="mode === 'READ'" name="manufacturer" type="input"
+            class="form-control" placeholder="Type" required>
+            <option></option>
+            <option *ngFor="let manufacturer of manufacturers" [value]="manufacturer.oid">{{manufacturer.name}}
+            </option>
+          </select>
+        </div>
+        <div *ngIf="mode === 'WRITE'" class="form-group">
+          <label>Sensors</label>
+          <span *ngIf="platform.sensors.length === 0" class="error-message">
+            A platform requires at least one sensor
+          </span>
+
+          <div *ngFor="let sensor of sensors">
+            <boolean-field [value]="platform.sensors && (-1 !== platform.sensors.indexOf(sensor.oid))"
+              [label]="sensor.name" (valueChange)="updateSelectedSensor(sensor, $event)">
+            </boolean-field>
+          </div>
+        </div>
+        <div *ngIf="mode === 'READ'" class="form-group">
+          <label>Sensors</label>
+          <ul>
+            <li *ngFor="let oid of platform.sensors">
+              <a [routerLink]="['/site/sensor', oid]">{{getSensorName(oid)}}</a>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
+          <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+            [disabled]="!ngForm.valid || platform.sensors.length === 0">Apply</button>
+        </div>
+        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
+          <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+        </div>
+      </form>
     </div>
   </div>
-
-  <div class="modal-title-container">
-    <h3>Platform</h3>
-  </div>
-
-  <form #ngForm="ngForm">
-    <div class="form-group">
-      <label>Name</label>
-      <input [(ngModel)]="platform.name" name="name" type="input" class="form-control" placeholder="Name" [disabled]="!newInstance" required />
-    </div>
-    <div class="form-group">
-      <label>Label</label>
-      <input [(ngModel)]="platform.displayLabel" name="displayLabel" type="input" class="form-control" placeholder="Display Label" required />
-    </div>
-    <div class="form-group">
-      <label>Type</label>
-      <select [(ngModel)]="platform.platformType" name="platformType" type="input" class="form-control" required>
-        <option></option> 
-        <option>Fixed Wing</option>
-        <option>Hybrid</option>
-        <option>Multi-rotor</option>
-        <option>Helicopter</option>
-        <option>VTOL Fixed-wing</option>
-        <option>Quadcopter</option>
-      </select>
-    </div>
-    <div class="btn-holder" style="text-align: right;">
-      <button type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()" [disabled]="!ngForm.valid">Apply</button>
-    </div>
-  </form>
 </div>

@@ -31,7 +31,11 @@ public class ProductDetailView extends ProductView
 
   private Date             dateTime;
 
-  private String           sensor;
+  private JSONObject       sensor;
+  
+  private JSONObject       platform;
+  
+  private JSONObject       UAV;
 
   public String getPilotName()
   {
@@ -52,15 +56,35 @@ public class ProductDetailView extends ProductView
   {
     this.dateTime = dateTime;
   }
-
-  public String getSensor()
+  
+  public JSONObject getSensor()
   {
     return sensor;
   }
 
-  public void setSensor(String sensor)
+  public void setSensor(JSONObject sensor)
   {
     this.sensor = sensor;
+  }
+
+  public JSONObject getPlatform()
+  {
+    return platform;
+  }
+
+  public void setPlatform(JSONObject platform)
+  {
+    this.platform = platform;
+  }
+
+  public JSONObject getUAV()
+  {
+    return UAV;
+  }
+
+  public void setUAV(JSONObject uAV)
+  {
+    UAV = uAV;
   }
 
   public Page<DocumentIF> getPage()
@@ -76,11 +100,16 @@ public class ProductDetailView extends ProductView
   public JSONObject toJSON()
   {
     JSONObject object = super.toJSON();
-    object.put("pilotName", this.pilotName);
-    object.put("dateTime", Util.formatIso8601(this.dateTime, true));
-    object.put("sensor", this.sensor);
+    object.put("pilotName", this.getPilotName());
+    object.put("dateTime", Util.formatIso8601(this.getDateTime(), true));
+    
+    object.put("sensor", this.getSensor());
+    object.put("platform", this.getPlatform());
+    object.put("uav", this.getUAV());
+    
     object.put("page", page.toJSON());
 
     return object;
   }
+
 }

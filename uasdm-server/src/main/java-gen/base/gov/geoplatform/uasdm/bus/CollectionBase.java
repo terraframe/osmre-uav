@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1599470764)
+@com.runwaysdk.business.ClassSignature(hash = 1057314700)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -29,10 +29,8 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
-  public static java.lang.String SENSOR = "sensor";
-  private static final long serialVersionUID = 1599470764;
+  private static final long serialVersionUID = 1057314700;
   
   public CollectionBase()
   {
@@ -123,58 +121,6 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
     }
   }
   
-  public gov.geoplatform.uasdm.bus.Platform getPlatform()
-  {
-    if (getValue(PLATFORM).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Platform.get(getValue(PLATFORM));
-    }
-  }
-  
-  public String getPlatformOid()
-  {
-    return getValue(PLATFORM);
-  }
-  
-  public void validatePlatform()
-  {
-    this.validateAttribute(PLATFORM);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getPlatformMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Collection.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(PLATFORM);
-  }
-  
-  public void setPlatform(gov.geoplatform.uasdm.bus.Platform value)
-  {
-    if(value == null)
-    {
-      setValue(PLATFORM, "");
-    }
-    else
-    {
-      setValue(PLATFORM, value.getOid());
-    }
-  }
-  
-  public void setPlatformId(java.lang.String oid)
-  {
-    if(oid == null)
-    {
-      setValue(PLATFORM, "");
-    }
-    else
-    {
-      setValue(PLATFORM, oid);
-    }
-  }
-  
   @SuppressWarnings("unchecked")
   public java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeType> getPrivilegeType()
   {
@@ -211,58 +157,6 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.bus.UasCompon
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Collection.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF)mdClassIF.definesAttribute(PRIVILEGETYPE);
-  }
-  
-  public gov.geoplatform.uasdm.bus.Sensor getSensor()
-  {
-    if (getValue(SENSOR).trim().equals(""))
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Sensor.get(getValue(SENSOR));
-    }
-  }
-  
-  public String getSensorOid()
-  {
-    return getValue(SENSOR);
-  }
-  
-  public void validateSensor()
-  {
-    this.validateAttribute(SENSOR);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getSensorMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.Collection.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(SENSOR);
-  }
-  
-  public void setSensor(gov.geoplatform.uasdm.bus.Sensor value)
-  {
-    if(value == null)
-    {
-      setValue(SENSOR, "");
-    }
-    else
-    {
-      setValue(SENSOR, value.getOid());
-    }
-  }
-  
-  public void setSensorId(java.lang.String oid)
-  {
-    if(oid == null)
-    {
-      setValue(SENSOR, "");
-    }
-    else
-    {
-      setValue(SENSOR, oid);
-    }
   }
   
   protected String getDeclaredType()

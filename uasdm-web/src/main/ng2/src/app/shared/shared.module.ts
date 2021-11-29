@@ -10,6 +10,12 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 
+import { TableModule } from 'primeng/table';
+import { SliderModule } from 'primeng/slider';
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ButtonModule } from 'primeng/button';
+
 import { UasdmHeaderComponent } from './component/header/header.component';
 import { LocalizeComponent } from './component/localize/localize.component';
 import { LoadingBarComponent } from './component/loading-bar/loading-bar.component';
@@ -20,6 +26,7 @@ import { BasicConfirmModalComponent } from './component/modal/basic-confirm-moda
 import { NotificationModalComponent } from './component/modal/notification-modal.component';
 import { ModalStepIndicatorComponent } from './modal/step-indicator/modal-step-indicator.component';
 import { PasswordStrengthBarComponent } from './component/password-strength-bar/password-strength-bar.component';
+import { GenericTableComponent } from './component/generic-table/generic-table.component';
 
 import { LocalizePipe } from './pipe/localize.pipe';
 import { KeysPipe } from './pipe/keys.pipe';
@@ -53,7 +60,13 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		BsDropdownModule,
 		TypeaheadModule,
 		AccordionModule,
-		CollapseModule.forRoot()
+		CollapseModule.forRoot(),
+
+        TableModule,
+		SliderModule,
+		DropdownModule,
+		MultiSelectModule,
+		ButtonModule
 	],
 	declarations: [
 		UasdmHeaderComponent,
@@ -74,7 +87,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		IdmDatePipe,
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
-		PasswordValidatorDirective
+		PasswordValidatorDirective,
+		GenericTableComponent
 	],
 	exports: [
 		UasdmHeaderComponent,
@@ -94,7 +108,8 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 		IdmDatePipe,
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
-		PasswordValidatorDirective
+		PasswordValidatorDirective,
+		GenericTableComponent
 	],
 	entryComponents: [
 		ErrorModalComponent,

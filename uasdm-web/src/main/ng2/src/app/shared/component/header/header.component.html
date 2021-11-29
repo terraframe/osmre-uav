@@ -32,37 +32,64 @@
             <li role="menuitem">
               <a class="dropdown-item" routerLink="/site/viewer" routerLinkActive="active">Site Viewer</a>
             </li>
+            <li role="menuitem">
+              <a class="dropdown-item" routerLink="/site/report" routerLinkActive="active">Report</a>
+            </li>
+
             <hr *ngIf="admin">
 
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/accounts" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="accounts.link"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/session-events" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 Session event log -->
+<!--               </a> -->
+<!--             </li>             -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/logos" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="Icons"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/email" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="email.link"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platforms" routerLinkActive="active">Platforms</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platform-manufacturers" routerLinkActive="active">Platform Manufacturers</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platform-types" routerLinkActive="active">Platform Types</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/sensors" routerLinkActive="active">Sensors</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/sensor-types" routerLinkActive="active">Sensor Types</a> -->
+<!--             </li> -->
             <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/admin/accounts" routerLinkActive="active">
-                <i></i>
-                <localize key="accounts.link"></localize>
-              </a>
+              <a class="dropdown-item" routerLink="/site/uavs" routerLinkActive="active">UAV</a>
+            </li>
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/wave-lengths" routerLinkActive="active">Wave Lengths</a> -->
+<!--             </li> -->
+            <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/site/equipment" routerLinkActive="active">Equipment</a>
             </li>
             <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/admin/session-events" routerLinkActive="active">
-                <i></i>
-                Session event log
+              <a class="dropdown-item" routerLink="/admin/system-configuration" routerLinkActive="active">
+                <i></i>System Configuration
               </a>
-            </li>            
-            <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/admin/logos" routerLinkActive="active">
-                <i></i>
-                <localize key="Icons"></localize>
-              </a>
-            </li>
-            <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/admin/email" routerLinkActive="active">
-                <i></i>
-                <localize key="email.link"></localize>
-              </a>
-            </li>
-            <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/site/sensors" routerLinkActive="active">Sensors</a>
-            </li>
-            <li *ngIf="admin" role="menuitem">
-              <a class="dropdown-item" routerLink="/site/platforms" routerLinkActive="active">Platforms</a>
             </li>
             <li *ngIf="admin" role="menuitem">
               <a class="dropdown-item" routerLink="/admin/system-info" routerLinkActive="active">

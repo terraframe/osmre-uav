@@ -18,6 +18,7 @@
 ///
 
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { Email } from '../../model/email';
 import { EmailService } from '../../service/email.service';
@@ -39,18 +40,26 @@ export class EmailComponent implements OnInit {
 		from: '',
 		to: '',
 	};
+    
+    public onSuccess: Subject<any>;
 
 	constructor(private service: EmailService) { }
 
 	ngOnInit(): void {
+        this.onSuccess = new Subject();
+        
 		this.service.getInstance().then(email => {
 			this.email = email;
 		});
 	}
 
 	onSubmit(): void {
+        let that = this;
+        
 		this.service.apply(this.email).then(email => {
 			this.email = email;
+            
+            that.onSuccess.next();
 		});
 	}
 }

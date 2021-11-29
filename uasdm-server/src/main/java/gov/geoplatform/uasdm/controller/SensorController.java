@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,11 +42,19 @@ public class SensorController
   }
 
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "number") Integer number) throws JSONException
+  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
   {
-    JSONObject page = this.service.page(request.getSessionId(), number);
+    JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
 
     return new RestBodyResponse(page);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-all")
+  public ResponseIF getAll(ClientRequestIF request) throws JSONException
+  {
+    JSONArray list = this.service.getAll(request.getSessionId());
+
+    return new RestBodyResponse(list);
   }
 
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
@@ -78,22 +87,6 @@ public class SensorController
   public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
   {
     JSONObject response = this.service.get(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "lock")
-  public ResponseIF lock(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JSONObject response = this.service.lock(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "unlock")
-  public ResponseIF unlock(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JSONObject response = this.service.unlock(request.getSessionId(), oid);
 
     return new RestBodyResponse(response);
   }

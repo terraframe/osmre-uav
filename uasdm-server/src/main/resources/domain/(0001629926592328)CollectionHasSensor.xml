@@ -1,0 +1,49 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version
+	xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<update>
+			<mdVertex name="gov.geoplatform.uasdm.graph.Collection">
+				<create>
+					<attributes>
+						<graphReference name="uav"
+							type="gov.geoplatform.uasdm.graph.UAV" required="false"
+							label="UAV" />
+						<graphReference name="collectionSensor"
+							type="gov.geoplatform.uasdm.graph.Sensor" required="false"
+							label="Sensor" />
+					    <date name="collectionDate" required="false" label="Collection Date" description="Date collection was flown" />
+						
+					</attributes>
+				</create>
+			</mdVertex>
+		</update>
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.graph.Collection.uav"
+				type="com.runwaysdk.system.metadata.MdAttribute" />
+			<object key="gov.geoplatform.uasdm.graph.Collection.collectionSensor"
+				type="com.runwaysdk.system.metadata.MdAttribute" />
+			<object key="gov.geoplatform.uasdm.graph.Collection.collectionDate"
+				type="com.runwaysdk.system.metadata.MdAttribute" />
+		</delete>
+	</undoIt>
+</version>

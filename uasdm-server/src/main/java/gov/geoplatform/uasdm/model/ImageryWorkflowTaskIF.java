@@ -15,14 +15,21 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.dataaccess.DataAccessException;
 
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.view.RequestParser;
 
@@ -88,18 +95,43 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           {
             child = component.createChild(selection.getString("type"));
             child.setName(name);
+            // child.setValue(Collection.U, value);
 
-            if (child instanceof CollectionIF && selection.has(Collection.PLATFORM))
+            if (child instanceof CollectionIF && selection.has(Collection.UAV))
             {
-              child.setValue(Collection.PLATFORM, selection.getString(Collection.PLATFORM));
+              child.setValue(Collection.UAV, selection.getString(Collection.UAV));
             }
 
-            if (child instanceof CollectionIF && selection.has(Collection.SENSOR))
+            if (child instanceof CollectionIF && selection.has("sensor"))
             {
-              child.setValue(Collection.SENSOR, selection.getString(Collection.SENSOR));
+              child.setValue(Collection.COLLECTIONSENSOR, selection.getString("sensor"));
+            }
+
+            if (child instanceof CollectionIF && selection.has("collectionDate"))
+            {
+              try
+              {
+                Date date = Util.parseIso8601(selection.getString("collectionDate"), false);
+
+                child.setValue(Collection.COLLECTIONDATE, date);
+              }
+              catch (ParseException e)
+              {
+                GenericException exception = new GenericException(e);
+                exception.setUserMessage(e.getMessage());
+                throw exception;
+              }
             }
 
             child.applyWithParent(component);
+
+            // Upload the metadata file
+            if (child instanceof CollectionIF)
+            {
+              CollectionReport.create((CollectionIF) child);
+
+              new MetadataXMLGenerator().generateAndUpload((CollectionIF) child, selection);
+            }
           }
 
           component = child;

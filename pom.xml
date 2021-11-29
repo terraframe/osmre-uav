@@ -20,7 +20,7 @@
 
   <groupId>gov.osmre.uasdm</groupId>
   <artifactId>uasdm</artifactId>
-  <version>0.13.3-SNAPSHOT</version>
+  <version>0.14.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UASDM</name>
@@ -32,7 +32,7 @@
   </modules>
 
   <properties>
-    <geoprism.version>0.9.31</geoprism.version>
+    <geoprism.version>0.10.5</geoprism.version>
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>

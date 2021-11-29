@@ -15,13 +15,15 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
-import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -39,12 +41,21 @@ public interface CollectionIF extends UasComponentIF
 
   public void apply();
 
-  public Sensor getSensor();
-
   public JSONObject toMetadataMessage();
 
   public void appLock();
 
   public Set<String> getExcludes();
 
+  public boolean isMultiSpectral();
+
+  public Sensor getSensor();
+
+  public UAV getUav();
+
+  public Date getCollectionDate();
+
+  public void setImageHeight(Integer imageHeight);
+
+  public void setImageWidth(Integer imageWidth);
 }

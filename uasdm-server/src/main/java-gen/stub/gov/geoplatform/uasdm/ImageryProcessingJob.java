@@ -48,6 +48,7 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.scheduler.ExecutionContext;
 import com.runwaysdk.system.scheduler.JobHistory;
+import com.runwaysdk.system.scheduler.JobHistoryRecord;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -85,7 +86,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    
+
     File newArchive = validateArchive(archive, task);
 
     if (newArchive == null)
@@ -132,7 +133,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   }
 
   @Override
-  public boolean canResume()
+  public boolean canResume(JobHistoryRecord record)
   {
     return true;
   }
@@ -152,22 +153,22 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
   }
-  
+
   private static CloseableFile validateArchive(File archive, AbstractUploadTask task)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
 
     boolean hasFiles = false;
-    
+
     byte buffer[] = new byte[Util.BUFFER_SIZE];
-    
+
     CloseableFile newZip;
-    
+
     try
     {
       newZip = new CloseableFile(File.createTempFile("noSubFolders", "." + ext));
-      
+
       if (ext.equalsIgnoreCase("zip"))
       {
         try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newZip))))
@@ -175,25 +176,25 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
           try (ZipFile zipFile = new ZipFile(archive))
           {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-    
+
             while (entries.hasMoreElements())
             {
               ZipArchiveEntry entry = entries.nextElement();
-    
+
               String filename = entry.getName();
-    
+
               boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-    
+
               if (!entry.isDirectory())
               {
                 hasFiles = hasFiles || isValid;
-                
+
                 int len;
-                
+
                 filename = FilenameUtils.getName(filename);
-  
+
                 zos.putNextEntry(new ZipEntry(filename));
-  
+
                 try (InputStream zis = zipFile.getInputStream(entry))
                 {
                   while ( ( len = zis.read(buffer) ) > 0)
@@ -201,7 +202,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                     zos.write(buffer, 0, len);
                   }
                 }
-  
+
                 zos.closeEntry();
               }
             }
@@ -210,37 +211,34 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else if (ext.equalsIgnoreCase("gz"))
       {
-        try (FileOutputStream fOut = new FileOutputStream(newZip);
-            BufferedOutputStream buffOut = new BufferedOutputStream(fOut);
-            GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut);
-            TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut))
+        try (FileOutputStream fOut = new FileOutputStream(newZip); BufferedOutputStream buffOut = new BufferedOutputStream(fOut); GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut); TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut))
         {
           try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(new FileInputStream(archive)))
           {
             try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
             {
               TarArchiveEntry entry;
-    
+
               while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
               {
                 String filename = entry.getName();
-    
+
                 boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
-    
+
                 if (!entry.isDirectory())
                 {
                   hasFiles = hasFiles || isValid;
-                  
+
                   int count;
-                  
+
                   filename = FilenameUtils.getName(filename);
-                  
+
                   TarArchiveEntry tarEntry = new TarArchiveEntry(filename);
-                  
+
                   tarEntry.setSize(entry.getSize());
 
                   tOut.putArchiveEntry(tarEntry);
-                  
+
                   while ( ( count = tarIn.read(buffer, 0, Util.BUFFER_SIZE) ) != -1)
                   {
                     tOut.write(buffer, 0, count);

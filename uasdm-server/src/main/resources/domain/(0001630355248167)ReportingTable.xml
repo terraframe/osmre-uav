@@ -1,0 +1,88 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version_gis.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<doIt>
+		<create>
+			<mdBusiness name="gov.geoplatform.uasdm.bus.CollectionReport" label="Collection Report" generateController="false">
+				<attributes>
+					<graphReference name="site" type="gov.geoplatform.uasdm.graph.Site" required="false" label="Site" />
+					<graphReference name="project" type="gov.geoplatform.uasdm.graph.Project" required="false" label="Project" />
+					<graphReference name="mission" type="gov.geoplatform.uasdm.graph.Mission" required="false" label="Mission" />
+					<graphReference name="collection" type="gov.geoplatform.uasdm.graph.Collection" required="false" label="Collection" />
+					<reference name="bureau" type="gov.geoplatform.uasdm.bus.Bureau" required="false" label="Bureau" />
+					<reference name="actor" type="com.runwaysdk.system.Actor" required="false" label="Actor" />
+					<graphReference name="uav" type="gov.geoplatform.uasdm.graph.UAV" required="false" label="UAV" />
+					<graphReference name="sensor" type="gov.geoplatform.uasdm.graph.Sensor" required="false" label="Sensor" />
+					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="false" label="Platform" />
+					<graphReference name="product" type="gov.geoplatform.uasdm.graph.Product" required="false" label="Product" />
+
+					<char name="bureauName" required="false" label="Bureau" size="4096" />
+					<char name="userName" required="false" label="User Name" size="4096" />
+					<char name="siteName" required="false" label="Site Name" size="4096" />
+					<char name="projectName" required="false" label="Project Name" size="4096" />
+					<char name="missionName" required="false" label="Mission Name" size="4096" />
+					<char name="collectionName" required="false" label="Collection Name" size="4096" />
+					<date name="collectionDate" required="false" label="Collection Date" />
+					<char name="platformName" required="false" label="Platform Name" size="4096" />
+					<char name="sensorName" required="false" label="Sensor Name" size="4096" />
+					<char name="faaIdNumber" required="false" label="FAA ID Number" size="4096" />
+					<char name="serialNumber" required="false" label="Serial Number" size="4096" />
+					<boolean name="erosMetadataComplete" required="false" label="EROS Metadata Complete" />
+					<integer name="rawImagesCount" required="false" label="Raw Images Count" />
+					<char name="rawImagesLink" required="false" label="Raw Images Link" size="4096" />
+					<char name="odmProcessing" required="false" label="ODM Processing" size="4096" />
+					<boolean name="video" required="false" label="Video" />
+					<boolean name="orthomosaic" required="false" label="Orthomosaic" />
+					<boolean name="pointCloud" required="false" label="Point Cloud" />
+					<boolean name="hillshade" required="false" label="Hillshade" />
+					<boolean name="productsShared" required="false" label="Products Shared" />
+					<char name="productsLink" required="false" label="Products Link" size="4096" />
+					<long name="allStorageSize" required="false" label="All Storage Size" />
+					<long name="downloadCounts" required="false" label="Download counts" />
+					<boolean name="erosArchived" required="false" label="EROS Archived" />
+					<boolean name="exists" required="false" label="Collection exists" />	
+					<date name="deleteDate" required="false" label="Delete Date" />
+					
+					<point name="geometry" srid="4326" dimension="2" required="false" label="Geometry" />													
+				</attributes>
+			</mdBusiness>
+		</create>
+		<permissions>
+			<role roleName="geoprism.admin.Administrator">
+				<grant>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionReport">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+				</grant>
+			</role>
+			<role roleName="geoprism.admin.DashboardBuilder">
+				<grant>
+					<mdBusinessPermission type="gov.geoplatform.uasdm.bus.CollectionReport">
+						<operation name="ALL" />
+					</mdBusinessPermission>
+				</grant>
+			</role>
+		</permissions>
+
+	</doIt>
+	<undoIt>
+		<delete>
+			<object key="gov.geoplatform.uasdm.bus.CollectionReport" type="com.runwaysdk.system.metadata.MdBusiness" />
+		</delete>
+	</undoIt>
+</version>

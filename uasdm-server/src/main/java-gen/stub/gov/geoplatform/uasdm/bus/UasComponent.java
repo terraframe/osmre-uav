@@ -274,7 +274,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected void deleteS3Folder(String key, String folderName)
   {
-    new RemoteFileDeleteCommand(key).doIt();
+    new RemoteFileDeleteCommand(key, this).doIt();
   }
 
   public static boolean isDuplicateFolderName(String parentId, String oid, String folderName)

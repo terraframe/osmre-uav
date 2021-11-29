@@ -9,105 +9,99 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
 import { PageResult } from '@shared/model/page';
 import { Platform } from '../model/platform';
+import { GenericTableService } from '@shared/model/generic-table';
 
 declare var acp: any;
 
 @Injectable()
-export class PlatformService {
+export class PlatformService implements GenericTableService {
 
-    constructor( private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService ) { }
+    constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
-    page( p: number ): Promise<PageResult<Platform>> {
+    page(criteria: Object): Promise<PageResult<Platform>> {
         let params: HttpParams = new HttpParams();
-        params = params.set( 'number', p.toString() );
-
-        this.eventService.start();
+        params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<Platform>>( acp + '/platform/page', { params: params } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .get<PageResult<Platform>>(acp + '/platform/page', { params: params })
             .toPromise();
     }
 
-    edit( oid: string ): Promise<Platform> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
+    getAll(): Promise<{ oid: string, name: string }[]> {
+        let params: HttpParams = new HttpParams();
 
         this.eventService.start();
 
         return this.http
-            .post<Platform>( acp + '/platform/lock', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .get<{ oid: string, name: string }[]>(acp + '/platform/get-all', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
+            .toPromise();
+    }
+
+
+    get(oid: string): Promise<Platform> {
+
+        let headers = new HttpHeaders({
+            'Content-Type': 'application/json'
+        });
+
+        this.eventService.start();
+
+        return this.http
+            .post<Platform>(acp + '/platform/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
     newInstance(): Promise<Platform> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.http
-            .post<Platform>( acp + '/platform/newInstance', JSON.stringify( {} ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<Platform>(acp + '/platform/newInstance', JSON.stringify({}), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    remove( oid: string ): Promise<void> {
+    remove(oid: string): Promise<void> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.http
-            .post<void>( acp + '/platform/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<void>(acp + '/platform/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
-    apply( platform: Platform ): Promise<Platform> {
+    apply(platform: Platform): Promise<Platform> {
 
-        let headers = new HttpHeaders( {
+        let headers = new HttpHeaders({
             'Content-Type': 'application/json'
-        } );
+        });
 
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Platform>( acp + '/platform/apply', JSON.stringify( { platform: platform } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
-            .toPromise();
-    }
-
-    unlock( oid: string ): Promise<void> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
-
-        this.eventService.start();
-
-        return this.noErrorHttpClient
-            .post<void>( acp + '/platform/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
+            .post<Platform>(acp + '/platform/apply', JSON.stringify({ platform: platform }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 }

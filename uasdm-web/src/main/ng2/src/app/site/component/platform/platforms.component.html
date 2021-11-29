@@ -1,44 +1,10 @@
 <div>
-	<uasdm-header></uasdm-header>
+<!-- 	<uasdm-header></uasdm-header> -->
 
-	<div id="app-container" class="container">
+<!-- 	<div id="app-container" class="container"> -->
 
 		<h2>Platforms</h2>
 
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-		
-		<div class="list-table-wrapper">
-			<table id="manage-platforms-table"
-				class="list-table table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th class="label-column">Name</th>
-						<th class="label-column">Label</th>
-						<th class="label-column">Type</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let platform of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
-						class="fade-ngRepeat-item">
-						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(platform)" title="Edit platform"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(platform)" title="Remove platform"></a>
-					    </td>
-						<td class="label-column">{{ platform.name }}</td>
-						<td class="label-column">{{ platform.displayLabel }}</td>
-						<td class="label-column">{{ platform.platformType }}</td>
-					</tr>
-					<tr>
-						<td class="button-column">
-						  <a class="fa fa-plus" (click)="newInstance()" title="Add new platform"></a>
-						</td>
-					</tr>
-
-				</tbody>
-			</table>
-		</div>
-		
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-	</div>
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>		
+<!-- 	</div> -->
 </div>

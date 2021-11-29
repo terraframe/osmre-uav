@@ -80,24 +80,14 @@
               </button>
             </div>
           </div>
-          <div [@fadeInOnEnter] class="row" *ngIf="hasField('platform')">
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('collectionDate')">
             <div class="col-md-8">
-              <label for="platform" style="margin-top: 10px;">Platform:</label>
-              <select [(ngModel)]="page.selection.platform" name="platform" type="input" required>
-                <option></option>
-                <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.displayLabel}}</option>
-              </select>
+              <label for="platform" style="margin-top: 10px;">Collection Date:</label>
+              <input [(ngModel)]="page.selection.collectionDate" name="collectionDate" type="date" class="form-control" required />
             </div>
           </div>
-          <div [@fadeInOnEnter] class="row" *ngIf="hasField('sensor')">
-            <div class="col-md-8">
-              <label for="sensor" style="margin-top: 10px;">Sensor:</label>
-              <select [(ngModel)]="page.selection.sensor" name="sensor" type="input" required>
-                <option></option>
-                <option *ngFor="let sensor of sensors" [value]="sensor.oid">{{sensor.displayLabel}}</option>
-              </select>
-            </div>
-          </div>
+
+          <metadata-page *ngIf="hasField('uav')" [(page)]="page"></metadata-page>
         </div>
       </div>
     </div>
@@ -119,7 +109,8 @@
             placeholder="Output product name prefix..." />
         </div>
         <div class="form-group">
-           <boolean-field [value]="processUpload" label="Generate products from raw images" (valueChange)="updateProcessUpload($event)"></boolean-field>
+          <boolean-field [value]="processUpload" label="Generate products from raw images"
+            (valueChange)="updateProcessUpload($event)"></boolean-field>
         </div>
       </div>
     </div>
@@ -192,7 +183,8 @@
             <h4>All files uploaded through the upload wizard must</h4>
             <ul>
               <li>be compressed into a .zip or .tar.gz format </li>
-              <li>not contain spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or apostrophes in any file name</li>
+              <li>not contain spaces or special characters such as <,>, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or
+                  apostrophes in any file name</li>
             </ul>
 
             <h4>

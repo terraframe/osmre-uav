@@ -13,6 +13,7 @@ import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
+import { SystemConfigurationComponent } from './component/system/system-configuration.component';
 
 const routes: Routes = [
     {
@@ -66,6 +67,11 @@ const routes: Routes = [
     {
         path: 'system-info',
         component: SystemInfoComponent,
+        data: {}
+    },
+    {
+        path: 'system-configuration',
+        component: SystemConfigurationComponent,
         data: {}
     }
 ];

@@ -84,11 +84,10 @@ public class CollectionDocumentMigration implements Runnable
             }
           }
 
-          if (pDocuments.size() > 0)
-          {
-            Product product = Product.createIfNotExist(col);
-            product.addDocuments(pDocuments);
+          Product product = Product.find(col);
 
+          if (product != null)
+          {
             for (DocumentIF document : rDocuments)
             {
               document.addGeneratedProduct(product);

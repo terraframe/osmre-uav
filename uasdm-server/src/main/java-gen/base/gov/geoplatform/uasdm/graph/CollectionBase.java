@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -2021737723)
+@com.runwaysdk.business.ClassSignature(hash = 362021314)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,17 +26,50 @@ package gov.geoplatform.uasdm.graph;
 public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Collection";
+  public static java.lang.String COLLECTIONDATE = "collectionDate";
+  public static java.lang.String COLLECTIONSENSOR = "collectionSensor";
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
-  public static java.lang.String SENSOR = "sensor";
-  private static final long serialVersionUID = -2021737723;
+  public static java.lang.String UAV = "uav";
+  private static final long serialVersionUID = 362021314;
   
   public CollectionBase()
   {
     super();
+  }
+  
+  public java.util.Date getCollectionDate()
+  {
+    return (java.util.Date) this.getObjectValue(COLLECTIONDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getCollectionDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(COLLECTIONDATE);
+  }
+  
+  public void setCollectionDate(java.util.Date value)
+  {
+    this.setValue(COLLECTIONDATE, value);
+  }
+  
+  public gov.geoplatform.uasdm.graph.Sensor getCollectionSensor()
+  {
+    return (gov.geoplatform.uasdm.graph.Sensor) this.getObjectValue(COLLECTIONSENSOR);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getCollectionSensorMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(COLLECTIONSENSOR);
+  }
+  
+  public void setCollectionSensor(gov.geoplatform.uasdm.graph.Sensor value)
+  {
+    this.setValue(COLLECTIONSENSOR, value);
   }
   
   public Integer getImageHeight()
@@ -87,39 +120,6 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     this.setValue(METADATAUPLOADED, value);
   }
   
-  public gov.geoplatform.uasdm.bus.Platform getPlatform()
-  {
-    if (this.getObjectValue(PLATFORM) == null)
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Platform.get( (String) this.getObjectValue(PLATFORM));
-    }
-  }
-  
-  public String getPlatformOid()
-  {
-    return (String) this.getObjectValue(PLATFORM);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getPlatformMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(PLATFORM);
-  }
-  
-  public void setPlatform(gov.geoplatform.uasdm.bus.Platform value)
-  {
-    this.setValue(PLATFORM, value.getOid());
-  }
-  
-  public void setPlatformId(java.lang.String oid)
-  {
-    this.setValue(PLATFORM, oid);
-  }
-  
   @SuppressWarnings("unchecked")
   public java.util.List<gov.geoplatform.uasdm.bus.AllPrivilegeType> getPrivilegeType()
   {
@@ -153,37 +153,20 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     return (com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF)mdClassIF.definesAttribute(PRIVILEGETYPE);
   }
   
-  public gov.geoplatform.uasdm.bus.Sensor getSensor()
+  public gov.geoplatform.uasdm.graph.UAV getUav()
   {
-    if (this.getObjectValue(SENSOR) == null)
-    {
-      return null;
-    }
-    else
-    {
-      return gov.geoplatform.uasdm.bus.Sensor.get( (String) this.getObjectValue(SENSOR));
-    }
+    return (gov.geoplatform.uasdm.graph.UAV) this.getObjectValue(UAV);
   }
   
-  public String getSensorOid()
-  {
-    return (String) this.getObjectValue(SENSOR);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getSensorMd()
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getUavMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(SENSOR);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(UAV);
   }
   
-  public void setSensor(gov.geoplatform.uasdm.bus.Sensor value)
+  public void setUav(gov.geoplatform.uasdm.graph.UAV value)
   {
-    this.setValue(SENSOR, value.getOid());
-  }
-  
-  public void setSensorId(java.lang.String oid)
-  {
-    this.setValue(SENSOR, oid);
+    this.setValue(UAV, value);
   }
   
   protected String getDeclaredType()
@@ -191,14 +174,14 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     return CLASS;
   }
   
-  public void addMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
+  public com.runwaysdk.business.graph.EdgeObject addMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
   {
-    super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    return super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   public void removeMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
   {
-    super.addParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    super.removeParent(mission, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   @SuppressWarnings("unchecked")

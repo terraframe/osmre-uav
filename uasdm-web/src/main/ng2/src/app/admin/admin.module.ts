@@ -42,6 +42,7 @@ import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
+import { SystemConfigurationComponent } from './component/system/system-configuration.component';
 
 import { AdminRoutingModule } from './admin-routing.module';
 
@@ -73,6 +74,7 @@ import { SharedModule } from '../shared/shared.module';
 		EmailComponent,
 		SystemInfoComponent,
 		SessionEventComponent,
+        SystemConfigurationComponent
 	],
 	providers: [
 		SystemLogoService,

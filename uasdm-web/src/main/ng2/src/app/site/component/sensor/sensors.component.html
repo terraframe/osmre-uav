@@ -1,46 +1,10 @@
 <div>
-    <uasdm-header></uasdm-header>
+<!--     <uasdm-header></uasdm-header> -->
 
-    <div id="app-container" class="container">
+<!--     <div id="app-container" class="container"> -->
 
 		<h2>Sensors</h2>
 
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-		
-		<div class="list-table-wrapper">
-			<table id="manage-sensors-table"
-				class="list-table table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th class="label-column">Name</th>
-						<th class="label-column">Label</th>
-						<th class="label-column">Type</th>
-						<th class="label-column">Model</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let sensor of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
-						class="fade-ngRepeat-item">
-						<td class="button-column">
-						  <a class="fa fa-pencil-alt ico-edit" (click)="edit(sensor)" title="Edit sensor"></a>
-						  <a class="fa fa-trash-alt ico-remove" (click)="onClickRemove(sensor)" title="Remove sensor"></a>
-					    </td>
-						<td class="label-column">{{ sensor.name }}</td>
-						<td class="label-column">{{ sensor.displayLabel }}</td>
-						<td class="label-column">{{ sensor.sensorType }}</td>
-						<td class="label-column">{{ sensor.model }}</td>
-					</tr>
-					<tr>
-						<td class="button-column">
-						  <a class="fa fa-plus" (click)="newInstance()" title="Add new sensor"></a>
-						</td>
-					</tr>
-
-				</tbody>
-			</table>
-		</div>
-		
-		<pagination-controls *ngIf="res.resultSet.length > res.pageSize" (pageChange)="onPageChange($event)"></pagination-controls>
-	</div>
+		<generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>		
+<!-- 	</div> -->
 </div>

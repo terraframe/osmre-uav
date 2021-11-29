@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,14 +24,20 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.BasicLeftJoinEq;
+import com.runwaysdk.query.InnerJoinEq;
 import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.query.Selectable;
+import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.BureauQuery;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
 
@@ -43,7 +50,8 @@ public class UserInfo extends UserInfoBase
     super();
   }
 
-  public static JSONObject page(Integer pageSize, Integer pageNumber)
+  @SuppressWarnings("unchecked")
+  public static JSONObject page(JSONObject criteria)
   {
     ValueQuery vQuery = new ValueQuery(new QueryFactory());
 
@@ -51,12 +59,86 @@ public class UserInfo extends UserInfoBase
     UserInfoQuery iQuery = new UserInfoQuery(vQuery);
     BureauQuery bQuery = new BureauQuery(vQuery);
 
-    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
-    vQuery.WHERE(new LeftJoinEq(iQuery.getBureau(), bQuery.getOid()));
-
     vQuery.SELECT(uQuery.getOid(), uQuery.getUsername(), uQuery.getFirstName(), uQuery.getLastName(), uQuery.getPhoneNumber(), uQuery.getEmail());
-    vQuery.SELECT(bQuery.getName());
-    vQuery.ORDER_BY_ASC(uQuery.getUsername());
+    vQuery.SELECT(bQuery.getName(UserInfo.BUREAU));
+
+    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
+    // vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU),
+    // bQuery.getOid()));
+    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+
+    if (criteria.has("filters"))
+    {
+      JSONObject filters = criteria.getJSONObject("filters");
+      Iterator<String> keys = filters.keys();
+
+      while (keys.hasNext())
+      {
+        String attributeName = keys.next();
+
+        Selectable attribute = null;
+
+        if (attributeName.equals(UserInfo.BUREAU))
+        {
+          attribute = bQuery.getName(UserInfo.BUREAU);
+        }
+        else
+        {
+          attribute = uQuery.get(attributeName);
+        }
+
+        if (attribute != null)
+        {
+          JSONObject filter = filters.getJSONObject(attributeName);
+
+          String value = filter.get("value").toString();
+          String mode = filter.get("matchMode").toString();
+
+          if (mode.equals("contains"))
+          {
+            SelectableChar selectable = (SelectableChar) attribute;
+
+            vQuery.WHERE(selectable.LIKEi("%" + value + "%"));
+          }
+          else if (mode.equals("equals"))
+          {
+            vQuery.WHERE(attribute.EQ(value));
+          }
+        }
+      }
+    }
+
+    int pageSize = 10;
+    int pageNumber = 1;
+
+    if (criteria.has("first") && criteria.has("rows"))
+    {
+      int first = criteria.getInt("first");
+      pageSize = criteria.getInt("rows");
+      pageNumber = ( first / pageSize ) + 1;
+    }
+
+    if (criteria.has("sortField") && criteria.has("sortOrder"))
+    {
+      String field = criteria.getString("sortField");
+      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+      addSort(vQuery, uQuery, bQuery, field, order);
+    }
+    else if (criteria.has("multiSortMeta"))
+    {
+      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
+
+      for (int i = 0; i < sorts.length(); i++)
+      {
+        JSONObject sort = sorts.getJSONObject(i);
+
+        String field = sort.getString("field");
+        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
+
+        addSort(vQuery, uQuery, bQuery, field, order);
+      }
+    }
 
     JSONArray results = new JSONArray();
 
@@ -75,7 +157,7 @@ public class UserInfo extends UserInfoBase
         result.put(GeoprismUser.LASTNAME, vObject.getValue(GeoprismUser.LASTNAME));
         result.put(GeoprismUser.PHONENUMBER, vObject.getValue(GeoprismUser.PHONENUMBER));
         result.put(GeoprismUser.EMAIL, vObject.getValue(GeoprismUser.EMAIL));
-        result.put(UserInfo.BUREAU, vObject.getValue(Bureau.NAME));
+        result.put(UserInfo.BUREAU, vObject.getValue(UserInfo.BUREAU));
 
         results.put(result);
       }
@@ -92,7 +174,18 @@ public class UserInfo extends UserInfoBase
     page.put("pageSize", pageSize);
 
     return page;
+  }
 
+  private static void addSort(ValueQuery vQuery, GeoprismUserQuery uQuery, BureauQuery bQuery, String field, SortOrder order)
+  {
+    if (field.equals(UserInfo.BUREAU))
+    {
+      vQuery.ORDER_BY(bQuery.getName(UserInfo.BUREAU), order);
+    }
+    else
+    {
+      vQuery.ORDER_BY(uQuery.getS(field), order);
+    }
   }
 
   @Transaction
@@ -134,6 +227,8 @@ public class UserInfo extends UserInfoBase
     {
       info.delete();
     }
+
+    CollectionReport.handleDelete(user);
 
     user.delete();
   }
@@ -192,6 +287,8 @@ public class UserInfo extends UserInfoBase
     }
 
     info.apply();
+
+    CollectionReport.update(user);
 
     return serialize(user, info);
   }

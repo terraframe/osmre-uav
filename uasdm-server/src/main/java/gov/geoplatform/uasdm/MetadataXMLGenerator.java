@@ -18,8 +18,8 @@ package gov.geoplatform.uasdm;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.Collector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,10 +28,12 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,56 +44,117 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
-import gov.geoplatform.uasdm.bus.Platform;
-import gov.geoplatform.uasdm.bus.Sensor;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Platform;
+import gov.geoplatform.uasdm.graph.PlatformType;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.SensorType;
+import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.view.FlightMetadata;
 
 public class MetadataXMLGenerator
 {
-  private static final Logger logger   = LoggerFactory.getLogger(MetadataXMLGenerator.class);
+  private static final Logger    logger   = LoggerFactory.getLogger(MetadataXMLGenerator.class);
 
-  public static final String  FILENAME = "_uasmetadata.xml";
+  public static final String     FILENAME = "_uasmetadata.xml";
 
-  private Document            dom;
+  private DocumentBuilderFactory factory;
 
-  private JSONObject          json;
+  private DocumentBuilder        builder;
 
-  private CollectionIF        collection;
-
-  public MetadataXMLGenerator(String json)
+  public MetadataXMLGenerator()
   {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = null;
+    this.factory = DocumentBuilderFactory.newInstance();
+    this.builder = null;
 
     try
     {
-      builder = factory.newDocumentBuilder();
+      this.builder = this.factory.newDocumentBuilder();
     }
     catch (ParserConfigurationException e)
     {
       throw new ConversionException(e);
     }
 
-    this.dom = builder.newDocument();
-    this.dom.setStrictErrorChecking(false);
-    this.dom.setXmlStandalone(true);
-    parseJson(json);
   }
 
-  private void parseJson(String sJson)
+  public FlightMetadata generate(CollectionIF collection, JSONObject selection)
   {
-    json = new JSONObject(sJson);
+    FlightMetadata metadata = new FlightMetadata();
 
-    this.collection = ComponentFacade.getCollection(json.getString("collectionId"));
-  }
-
-  public void generate(OutputStream out)
-  {
     List<UasComponentIF> ancestors = collection.getAncestors();
+
+    JSONObject pointOfContact = selection.getJSONObject("pointOfContact");
+
+    metadata.setName(pointOfContact.getString("name"));
+    metadata.setEmail(pointOfContact.getString("email"));
+
+    UasComponentIF proj = ancestors.get(1);
+
+    metadata.getProject().setName(proj.getName());
+    metadata.getProject().setShortName(proj.getName());
+    metadata.getProject().setDescription(proj.getDescription());
+
+    UasComponentIF mission = ancestors.get(0);
+
+    metadata.getMission().setName(mission.getName());
+    metadata.getMission().setDescription(mission.getDescription());
+
+    metadata.getCollection().setName(collection.getName());
+    metadata.getCollection().setDescription(collection.getDescription());
+
+    UAV uav = collection.getUav();
+    Platform platform = uav.getPlatform();
+    PlatformType platformType = platform.getPlatformType();
+
+    metadata.getPlatform().setName(platform.getName());
+    metadata.getPlatform().setType(platformType.getName());
+    metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
+    metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
+
+    Sensor sensor = collection.getSensor();
+    SensorType sensorType = sensor.getSensorType();
+
+    List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
+    JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+
+    metadata.getSensor().setName(sensor.getName());
+    metadata.getSensor().setType(sensorType.getName());
+    metadata.getSensor().setModel(sensor.getModel());
+    metadata.getSensor().setWavelength(array.toString());
+
+    Integer width = collection.getImageWidth();
+
+    if (width != null && width != 0)
+    {
+      metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
+    }
+
+    Integer height = collection.getImageHeight();
+
+    if (height != null && height != 0)
+    {
+      metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
+    }
+
+    metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
+    metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
+    metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+    metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+
+    return metadata;
+  }
+
+  public Document generate(CollectionIF collection, FlightMetadata metadata)
+  {
+    Document dom = this.builder.newDocument();
+    dom.setStrictErrorChecking(false);
+    dom.setXmlStandalone(true);
 
     Element e = null;
 
@@ -105,134 +168,115 @@ public class MetadataXMLGenerator
     e.setAttribute("fieldCenter", "");
     root.appendChild(e);
 
-    JSONObject pointOfContact = json.getJSONObject("pointOfContact");
     e = dom.createElement("PointOfContact");
-    e.setAttribute("name", pointOfContact.getString("name"));
-    e.setAttribute("email", pointOfContact.getString("email"));
+    e.setAttribute("name", metadata.getName());
+    e.setAttribute("email", metadata.getEmail());
     root.appendChild(e);
 
-    UasComponentIF proj = ancestors.get(1);
     e = dom.createElement("Project");
-    e.setAttribute("name", proj.getName());
-    e.setAttribute("shortName", proj.getName());
-    e.setAttribute("description", proj.getDescription());
+    e.setAttribute("name", metadata.getProject().getName());
+    e.setAttribute("shortName", metadata.getProject().getShortName());
+    e.setAttribute("description", metadata.getProject().getDescription());
     root.appendChild(e);
 
-    UasComponentIF mission = ancestors.get(0);
     e = dom.createElement("Mission");
-    e.setAttribute("name", mission.getName());
-    e.setAttribute("description", mission.getDescription());
+    e.setAttribute("name", metadata.getMission().getName());
+    e.setAttribute("description", metadata.getMission().getDescription());
     root.appendChild(e);
 
     e = dom.createElement("Collect");
-    e.setAttribute("name", collection.getName());
-    e.setAttribute("description", collection.getDescription());
+    e.setAttribute("name", metadata.getCollection().getName());
+    e.setAttribute("description", metadata.getCollection().getDescription());
     root.appendChild(e);
 
-    JSONObject jPlatform = json.getJSONObject("platform");
-    String platformId = jPlatform.getString("name");
-    Platform platform = Platform.get(platformId);
-
-    String platformName = platform.isOther() ? jPlatform.getString("otherName") : platform.getDisplayLabel();
+    String platformName = metadata.getPlatform().getName();
     e = dom.createElement("Platform");
     e.setAttribute("name", platformName);
-    e.setAttribute("class", jPlatform.getString("class"));
-    e.setAttribute("type", jPlatform.getString("type"));
-    e.setAttribute("serialNumber", jPlatform.get("serialNumber").toString());
-    e.setAttribute("faaIdNumber", jPlatform.get("faaIdNumber").toString());
+    // e.setAttribute("class", jPlatform.getString("class"));
+    e.setAttribute("type", metadata.getPlatform().getType());
+    e.setAttribute("serialNumber", metadata.getPlatform().getSerialNumber());
+    e.setAttribute("faaIdNumber", metadata.getPlatform().getFaaIdNumber());
     root.appendChild(e);
 
-    JSONObject jSensor = json.getJSONObject("sensor");
-    String sensorId = jSensor.getString("name");
-    Sensor sensor = Sensor.get(sensorId);
-
-    String sensorName = sensor.isOther() ? jSensor.getString("otherName") : sensor.getDisplayLabel();
-
     e = dom.createElement("Sensor");
-    e.setAttribute("name", sensorName);
-    e.setAttribute("type", jSensor.getString("type"));
-    e.setAttribute("model", jSensor.getString("model"));
-    e.setAttribute("wavelength", jSensor.getJSONArray("wavelength").toString());
-    // e.setAttribute("imageWidth", sensor.getString("imageWidth"));
-    // e.setAttribute("imageHeight", sensor.getString("imageHeight"));
-    Integer width = collection.getImageWidth();
-    if (width != null && width != 0)
+    e.setAttribute("name", metadata.getSensor().getName());
+    e.setAttribute("type", metadata.getSensor().getType());
+    e.setAttribute("model", metadata.getSensor().getModel());
+    e.setAttribute("wavelength", metadata.getSensor().getWavelength());
+
+    String width = metadata.getSensor().getImageWidth();
+    if (width != null && width.length() > 0)
     {
-      e.setAttribute("imageWidth", String.valueOf(collection.getImageWidth()));
+      e.setAttribute("imageWidth", width);
     }
     else
     {
       e.setAttribute("imageWidth", "");
     }
-    Integer height = collection.getImageHeight();
-    if (height != null && height != 0)
+
+    String height = metadata.getSensor().getImageHeight();
+    if (height != null && height.length() > 0)
     {
-      e.setAttribute("imageHeight", String.valueOf(collection.getImageHeight()));
+      e.setAttribute("imageHeight", height);
     }
     else
     {
       e.setAttribute("imageHeight", "");
     }
-    e.setAttribute("sensorWidth", jSensor.get("sensorWidth").toString());
-    e.setAttribute("sensorWidthUnits", jSensor.get("sensorWidthUnits").toString());
-    e.setAttribute("sensorHeight", jSensor.get("sensorHeight").toString());
-    e.setAttribute("sensorHeightUnits", jSensor.get("sensorHeightUnits").toString());
-    e.setAttribute("pixelSizeWidth", jSensor.get("pixelSizeWidth").toString());
-    e.setAttribute("pixelSizeHeight", jSensor.get("pixelSizeHeight").toString());
+
+    e.setAttribute("sensorWidth", metadata.getSensor().getSensorWidth());
+    e.setAttribute("sensorWidthUnits", "mm");
+    e.setAttribute("sensorHeight", metadata.getSensor().getSensorHeight());
+    e.setAttribute("sensorHeightUnits", "mm");
+    e.setAttribute("pixelSizeWidth", metadata.getSensor().getPixelSizeWidth());
+    e.setAttribute("pixelSizeHeight", metadata.getSensor().getPixelSizeHeight());
     root.appendChild(e);
 
     e = dom.createElement("Upload");
     e.setAttribute("dataType", "raw");
     root.appendChild(e);
 
-    try
-    {
-      Transformer tr = TransformerFactory.newInstance().newTransformer();
-      tr.setOutputProperty(OutputKeys.INDENT, "yes");
-      tr.setOutputProperty(OutputKeys.METHOD, "xml");
-      tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-      // tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
-      tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-      // send DOM to file
-      tr.transform(new DOMSource(dom), new StreamResult(out));
-
-    }
-    catch (TransformerException te)
-    {
-      logger.error("Unexpected error while generating IDM metadata.", te);
-      throw new ProgrammingErrorException(te);
-    }
+    return dom;
   }
 
   @Transaction
-  public void generateAndUpload()
+  public void generateAndUpload(CollectionIF collection, JSONObject selection)
+  {
+    FlightMetadata metadata = this.generate(collection, selection);
+
+    this.generateAndUpload(collection, metadata);
+  }
+
+  @Transaction
+  public void generateAndUpload(CollectionIF collection, FlightMetadata metadata)
+  {
+    Document document = generate(collection, metadata);
+
+    this.upload(collection, document);
+  }
+
+  private void upload(CollectionIF collection, Document document) throws TransformerFactoryConfigurationError
   {
     File temp = null;
+
     try
     {
-      temp = new File(AppProperties.getTempDirectory(), "metadata.xml");
 
-      try (FileOutputStream fos = new FileOutputStream(temp))
-      {
-        this.generate(fos);
-      }
-      catch (IOException e)
-      {
-        throw new ProgrammingErrorException(e);
-      }
+      temp = createTempFile(document);
 
-      String fileName = this.collection.getFolderName() + FILENAME;
-      String key = this.collection.getS3location() + Collection.RAW + "/" + this.collection.getFolderName() + FILENAME;
+      String fileName = collection.getFolderName() + FILENAME;
+      String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
-      this.collection.createDocumentIfNotExist(key, fileName);
+      collection.createDocumentIfNotExist(key, fileName);
 
-      SolrService.updateOrCreateMetadataDocument(this.collection.getAncestors(), this.collection, key, fileName, temp);
+      SolrService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 
-      this.collection.appLock();
-      this.collection.setMetadataUploaded(true);
-      this.collection.apply();
+      collection.appLock();
+      collection.setMetadataUploaded(true);
+      collection.apply();
+
+      CollectionReport.updateIncludeSize(collection);
     }
     finally
     {
@@ -241,6 +285,38 @@ public class MetadataXMLGenerator
         FileUtils.deleteQuietly(temp);
       }
     }
+  }
+
+  private File createTempFile(Document document) throws TransformerFactoryConfigurationError
+  {
+    File temp = new File(AppProperties.getTempDirectory(), "metadata.xml");
+
+    try (FileOutputStream fos = new FileOutputStream(temp))
+    {
+      try
+      {
+        Transformer tr = TransformerFactory.newInstance().newTransformer();
+        tr.setOutputProperty(OutputKeys.INDENT, "yes");
+        tr.setOutputProperty(OutputKeys.METHOD, "xml");
+        tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        // tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
+        tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        // send DOM to file
+        tr.transform(new DOMSource(document), new StreamResult(fos));
+
+      }
+      catch (TransformerException te)
+      {
+        logger.error("Unexpected error while generating IDM metadata.", te);
+        throw new ProgrammingErrorException(te);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+    return temp;
   }
 
 }

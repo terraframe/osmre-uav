@@ -1,4 +1,7 @@
 import { PageResult } from '@shared/model/page';
+import { Sensor } from './sensor';
+import { Platform } from './platform';
+import { UAV } from './uav'
 
 export class Condition {
 	name: string;
@@ -43,6 +46,10 @@ export class SiteEntity {
 	children?: SiteEntity[];
 	active?: boolean;
 	exclude?: boolean;
+    sensor: Sensor;
+    platform: Platform;
+    uav: UAV;
+    pilot?: string;
 }
 
 export class CollectionHierarchy {
@@ -63,8 +70,13 @@ export class Selection {
 	isNew: boolean;
 	value: string;
 	label: string;
-	platform?: string;
+	uav?: string;
 	sensor?: string;
+	collectionDate? : string;
+	pointOfContact?: {
+		name: string,
+		email: string
+	}
 };
 
 
@@ -106,7 +118,7 @@ export class Task {
 	visible?: boolean;
 	showError?: boolean;
 	ancestors?: string[];
-  sensorName?: string;
+	sensorName?: string;
 }
 
 export class TaskGroup {
@@ -155,15 +167,28 @@ export class Product {
 }
 
 export class GeoserverLayer {
-  workspace: string;
-  classification: string;
-  key: string;
-  isMapped?: boolean;
+	workspace: string;
+	classification: string;
+	key: string;
+	isMapped?: boolean;
 }
 
+//export class ProductDetail extends Product {
+//	pilotName: string;
+//	dateTime: string;
+//	sensorName: string;
+//    sensorId: string;
+//    sensorType: string;
+//    sensorModel: string;
+//    sensorDescription: string;
+//	page?: PageResult<ProductDocument>;
+//}
+
 export class ProductDetail extends Product {
-	pilotName: string;
-	dateTime: string;
-	sensor: string;
-	page?: PageResult<ProductDocument>;
+    pilotName: string;
+    dateTime: string;
+    sensor: Sensor;
+    platform: Platform;
+    uav: UAV;
+    page?: PageResult<ProductDocument>;
 }

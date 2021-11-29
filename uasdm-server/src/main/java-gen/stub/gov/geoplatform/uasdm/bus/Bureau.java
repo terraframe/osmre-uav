@@ -34,6 +34,23 @@ public class Bureau extends BureauBase
     super();
   }
 
+  @Override
+  public void apply()
+  {
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (isNew)
+    {
+      gov.geoplatform.uasdm.graph.Bureau.create(this);
+    }
+    else
+    {
+      gov.geoplatform.uasdm.graph.Bureau.update(this);
+    }
+  }
+
   public static List<Option> getOptions()
   {
     List<Option> options = new LinkedList<Option>();

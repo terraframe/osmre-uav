@@ -52,7 +52,27 @@
 
       <div class="row">
         <div class="col-md-12">
-          <label>Sensor Information:</label> &nbsp; {{product.sensor}}
+          <label>Sensor Information:</label>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td><a [routerLink]="['/site/sensor', product.sensor.oid]" target="_blank">{{product.sensor.name}}</a></td>
+              </tr>
+              <tr>
+                <td>Type</td>
+                <td> {{product.sensor.sensorType.name}}</td>
+              </tr>
+              <tr>
+                <td>Model</td>
+                <td>{{product.sensor.model}}</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{{product.sensor.description}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -88,7 +108,7 @@
       <div class="row" style="background-color: #ececec;">
         <div class="btn-holder" style="text-align: right;margin:20px 20px 20px 20px;">
           <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-          <button type="button" class="btn btn-secondary" (click)="handleDownload()">Download ODM Files</button>
+          <button type="button" class="btn btn-secondary" style="margin-left: 5px;" (click)="handleDownload()">Download ODM Files</button>
           <button (click)="handleGoto()" class="btn btn-primary" style="margin-left: 5px;">
             Collection Details
           </button>

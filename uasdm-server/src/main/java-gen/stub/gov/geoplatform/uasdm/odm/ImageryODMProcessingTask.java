@@ -34,7 +34,11 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -87,6 +91,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage(resp.getError());
         this.apply();
+        
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -94,6 +100,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
+        
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
       }
       else
       {
@@ -116,6 +124,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
+      
+      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
     }
   }
 
@@ -157,6 +167,13 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       String geoRefLocation = imagery.buildGeoRefKey();
 
       Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", this);
+
+      ImageryComponent component = this.getImageryComponent();
+
+      if (component instanceof CollectionIF)
+      {
+        CollectionReport.updateSize((CollectionIF) component);
+      }
     }
     catch (IOException e)
     {

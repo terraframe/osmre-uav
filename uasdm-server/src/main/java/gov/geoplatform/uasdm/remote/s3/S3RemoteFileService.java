@@ -107,7 +107,9 @@ public class S3RemoteFileService implements RemoteFileService
 
     GetObjectRequest request = new GetObjectRequest(bucketName, key);
 
-    return new S3ObjectWrapper(client.getObject(request));
+    S3Object object = client.getObject(request);
+
+    return new S3ObjectWrapper(object);
   }
 
   @Override
@@ -239,12 +241,12 @@ public class S3RemoteFileService implements RemoteFileService
   public boolean objectExists(String key)
   {
     AmazonS3 client = S3ClientFactory.createClient();
-    
+
     String bucketName = AppProperties.getBucketName();
-    
+
     return client.doesObjectExist(bucketName, key);
   }
-  
+
   @Override
   public int getItemCount(String key)
   {
@@ -364,6 +366,58 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
+  public Long calculateSize(UasComponentIF component)
+  {
+    String key = component.getS3location();
+
+    try
+    {
+      AmazonS3 client = S3ClientFactory.createClient();
+
+      String bucketName = AppProperties.getBucketName();
+
+      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+
+      long size = 0;
+
+      ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+      while (true)
+      {
+        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
+        Iterator<S3ObjectSummary> objIter = list.iterator();
+
+        while (objIter.hasNext())
+        {
+          S3ObjectSummary summary = objIter.next();
+
+          size += summary.getSize();
+        }
+
+        // If the bucket contains many objects, the listObjects() call
+        // might not return all of the objects in the first listing. Check to
+        // see whether the listing was truncated.
+        if (objectListing.isTruncated())
+        {
+          objectListing = client.listNextBatchOfObjects(objectListing);
+        }
+        else
+        {
+          break;
+        }
+      }
+
+      return size;
+    }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
+
+      throw e;
+    }
+  }
+
+  @Override
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
   {
     try
@@ -451,7 +505,7 @@ public class S3RemoteFileService implements RemoteFileService
       logger.error("Exception occured while uploading [" + key + "].", e);
     }
   }
-  
+
   @Override
   public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
   {

@@ -66,7 +66,7 @@ public class Document extends DocumentBase implements DocumentIF
   public void delete(boolean removeFromS3, boolean deleteLayers)
   {
     List<GeoserverLayer> layers = this.getLayers();
-    
+
     if (deleteLayers)
     {
       for (GeoserverLayer layer : layers)
@@ -74,14 +74,14 @@ public class Document extends DocumentBase implements DocumentIF
         layer.delete(false);
       }
     }
-    
-    super.delete();
-    
+
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       this.deleteS3File(this.getS3location());
     }
-    
+
+    super.delete();
+
     if (deleteLayers)
     {
       if (deleteLayers)
@@ -104,7 +104,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   protected void deleteS3File(String key)
   {
-    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key);
+    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key, this.getComponent());
     command.doIt();
   }
 
@@ -151,7 +151,7 @@ public class Document extends DocumentBase implements DocumentIF
 
     this.addChild((Product) product, mdEdge).apply();
   }
-  
+
   public List<GeoserverLayer> getLayers()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_HAS_LAYER);

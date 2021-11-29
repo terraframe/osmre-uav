@@ -56,6 +56,7 @@ import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
@@ -238,6 +239,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       {
         SolrService.updateComponent(this);
       }
+
+      CollectionReport.update(this);
     }
   }
 
@@ -347,7 +350,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       document.delete();
     }
-    
+
     CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this.getOid()));
     try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
@@ -398,7 +401,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected void deleteS3Folder(String key, String folderName)
   {
-    new RemoteFileDeleteCommand(key).doIt();
+    new RemoteFileDeleteCommand(key, this).doIt();
   }
 
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)

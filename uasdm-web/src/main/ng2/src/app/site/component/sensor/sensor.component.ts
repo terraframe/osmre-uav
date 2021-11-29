@@ -1,12 +1,15 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor, WAVELENGTHS } from '@site/model/sensor';
+import { Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
+import { ClassificationService, Endpoint } from '@site/service/classification.service';
+import { Classification } from '@site/model/classification';
+
+import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
@@ -15,69 +18,98 @@ import { SensorService } from '@site/service/sensor.service';
 	styleUrls: []
 })
 export class SensorComponent implements OnInit {
+    
+    isAdmin:boolean = false;
+    
+    original: Sensor;
 	sensor: Sensor;
 	newInstance: boolean = false;
 
 	message: string = null;
 
-	waveLengths: string[] = WAVELENGTHS;
+	wavelengths: Classification[] = [];
+	types: Classification[] = [];
+    mode: string = 'READ';
 
-    /*
-     * Observable subject for TreeNode changes.  Called when create is successful 
-     */
-	public onSensorChange: Subject<Sensor>;
-
-	constructor(private service: SensorService, public bsModalRef: BsModalRef) { }
+	constructor(private service: SensorService, private classificationService: ClassificationService, private route: ActivatedRoute, private router: Router,
+		private authService: AuthService) { 
+            this.isAdmin = this.authService.isAdmin();
+        }
 
 	ngOnInit(): void {
-		this.onSensorChange = new Subject();
+        const oid = this.route.snapshot.params['oid'];
+
+        if (oid === '__NEW__') {
+            this.service.newInstance().then((sensor: Sensor) => {
+                this.sensor = sensor;
+                this.newInstance = true;
+                this.mode = 'WRITE';
+            });
+        }
+        else {
+            this.service.get(oid).then((sensor: Sensor) => {
+                this.sensor = sensor;
+                this.original = JSON.parse(JSON.stringify(this.sensor));
+            });
+        }
+
+		this.classificationService.getAll(Endpoint.WAVE_LENGTH).then(wavelengths => {
+			this.wavelengths = wavelengths;
+		});
+
+		this.classificationService.getAll(Endpoint.SENSOR_TYPE).then(types => {
+			this.types = types;
+		});
 	}
 
 	handleOnSubmit(): void {
 		this.message = null;
 
 		this.service.apply(this.sensor).then(data => {
-			this.onSensorChange.next(data);
-			this.bsModalRef.hide();
+            // this.sensor = data;
+            // this.mode = 'READ';
+
+            // if (this.newInstance) {
+            //     this.router.navigate(['/site/sensor', data.oid]);
+			// 	this.newInstance = false;
+            //     this.original = data;
+            // }
+			this.router.navigate(['/site/equipment']);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
 
-	handleOnCancel(): void {
-		this.message = null;
+    handleOnCancel(): void {
+        this.message = null;
 
-		if (this.newInstance) {
-			this.bsModalRef.hide();
-		}
-		else {
-			this.service.unlock(this.sensor.oid).then(data => {
-				this.bsModalRef.hide();
-			}).catch((err: HttpErrorResponse) => {
-				this.error(err);
-			});
-		}
-	}
+        this.sensor = JSON.parse(JSON.stringify(this.original));    
+        this.mode = 'READ';
+    }
 
-	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
+    handleOnEdit(): void {
+        this.mode = 'WRITE';
+    }
 
-		const indexOf = this.sensor.waveLength.indexOf(wavelength)
+	updateSelectedWaveLength(wavelength: Classification, checked: boolean): void {
+
+		const indexOf = this.sensor.wavelengths.findIndex(w => wavelength.oid === w);
 
 		if (checked) {
 
 			if (indexOf < 0) {
-				this.sensor.waveLength.push(wavelength);
+				this.sensor.wavelengths.push(wavelength.oid);
 
 			}
 		} else {
 			if (indexOf > -1) {
-				this.sensor.waveLength.splice(indexOf, 1);
+				this.sensor.wavelengths.splice(indexOf, 1);
 			}
 		}
 	}
 
 	error(err: HttpErrorResponse): void {
-	  this.message = ErrorHandler.getMessageFromError(err);
+		this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

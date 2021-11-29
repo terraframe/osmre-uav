@@ -1,0 +1,129 @@
+<ng-container>
+    <div *ngIf="page.selection.pointOfContact != null" [@fadeInOnEnter] class="row" style="margin-top: 20px;">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Point Of Contact</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="pointOfContact.name">Name</label>
+                        <input type="text" name="pointOfContact.name" [(ngModel)]="page.selection.pointOfContact.name"
+                            [maxlength]="100" [required]="false" [disabled]="false"
+                            (change)="this.handlePageChange()" />
+                    </div>
+                    <div class="form-group">
+                        <label for="pointOfContact.email">Email</label>
+                        <input type="text" name="pointOfContact.email" [(ngModel)]="page.selection.pointOfContact.email"
+                            [maxlength]="255" [required]="false" [disabled]="false"
+                            (change)="this.handlePageChange()" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row" [@fadeInOnEnter]>
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Platform</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="platform.name">UAV</label>
+                        <input class="form-control search-input" type="text" placeholder="Search..."
+                            [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
+                            (typeaheadOnSelect)="handleUavClick($event)" [typeaheadOptionsLimit]="10"
+                            typeaheadOptionField="serialNumber" [ngModelOptions]="{standalone: true}"
+                            (keydown.enter)="$event.preventDefault()" required />
+                    </div>
+
+
+                    <ng-container *ngIf="uav != null">
+                        <div class="form-group">
+                            <label for="sensor.type">Name</label>
+                            {{uav.platform}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.type">Type</label>
+                            {{uav.platformType}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.type">Serial Number</label>
+                            {{uav.serialNumber}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.type">FAA Id Number</label>
+                            {{uav.faaNumber}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.type">Bureau</label>
+                            {{uav.bureau}}
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="uav != null" [@fadeInOnEnter] class="row">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Sensor</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="sensor.name">Name</label>
+                        <select [(ngModel)]="page.selection.sensor" name="sensor" class="form-control"
+                            (change)="onSensorChange()" required>
+                            <option></option>
+                            <option *ngFor="let sensor of uav.sensors" [value]="sensor.oid">{{sensor.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <ng-container *ngIf="metaObject != null">
+
+                        <div class="form-group">
+                            <label for="sensor.type">Type</label>
+                            {{metaObject.sensor.sensorType}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.wavelength">Wave Length</label>
+                            <ul>
+                                <li *ngFor="let wavelength of metaObject.sensor.wavelengths">
+                                    {{wavelength.name}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Width</label>
+                            {{metaObject.sensor.sensorWidth}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Width Units</label>
+                            Millimeters
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorHeight">Sensor Height</label>
+                            {{metaObject.sensor.sensorHeight}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.sensorWidth">Sensor Height Units</label>
+                            Millimeters
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
+                            {{metaObject.sensor.pixelSizeWidth}}
+                        </div>
+                        <div class="form-group">
+                            <label for="sensor.pixelSizeHeight">Pixel Size Height</label>
+                            {{metaObject.sensor.pixelSizeHeight}}
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</ng-container>

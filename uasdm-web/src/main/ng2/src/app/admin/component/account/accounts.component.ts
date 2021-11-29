@@ -17,19 +17,19 @@
 /// License along with Runway SDK(tm).  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { PageResult } from '@shared/model/page';
+import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
 import { User, Account } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 import { AccountComponent } from './account.component';
 import { AccountInviteComponent } from './account-invite.component';
+import { Subject } from 'rxjs';
 
 @Component({
 	selector: 'accounts',
@@ -37,29 +37,53 @@ import { AccountInviteComponent } from './account-invite.component';
 	styles: ['./accounts.css']
 })
 export class AccountsComponent implements OnInit {
-	res: PageResult<User> = {
-		resultSet: [],
-		count: 0,
-		pageNumber: 1,
-		pageSize: 10
-	};
-	p: number = 1;
 
-    /*
-     * Reference to the modal current showing
-    */
+	config: GenericTableConfig;
+	cols: GenericTableColumn[] = [
+		{ header: 'Username', field: 'username', type: 'TEXT', sortable: true },
+		{ header: 'First name', field: 'firstName', type: 'TEXT', sortable: true },
+		{ header: 'Last name', field: 'lastName', type: 'TEXT', sortable: true },
+		{ header: 'Phone Number', field: 'phoneNumber', type: 'TEXT', sortable: true },
+		{ header: 'Email Address', field: 'email', type: 'TEXT', sortable: true },
+		{ header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true, filter: true },
+		{ header: '', type: 'ACTIONS', sortable: false },
+	];
+	refresh: Subject<void>;
+
+	/*
+	 * Reference to the modal current showing
+	*/
 	private bsModalRef: BsModalRef;
 
 
 	constructor(private router: Router, private service: AccountService, private modalService: BsModalService) { }
 
 	ngOnInit(): void {
-		this.service.page(this.p).then(res => {
-			this.res = res;
-		});
+		this.config = {
+			service: this.service,
+			remove: true,
+			edit: true,
+			create: true,
+			label: 'User'
+		}
+
+		this.refresh = new Subject<void>();
 	}
 
-	handleDelete(user: User): void {
+	onClick(event: TableEvent): void {
+		if (event.type === 'edit') {
+			this.onEdit(event.row as User);
+		}
+		else if (event.type === 'remove') {
+			this.onRemove(event.row as User);
+		}
+		else if (event.type === 'create') {
+			this.newInstance();
+		}
+	}
+
+
+	onRemove(user: User): void {
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true,
@@ -77,11 +101,11 @@ export class AccountsComponent implements OnInit {
 
 	remove(user: User): void {
 		this.service.remove(user.oid).then(response => {
-			this.res.resultSet = this.res.resultSet.filter(h => h.oid !== user.oid);
+			this.refresh.next();
 		});
 	}
 
-	edit(user: User): void {
+	onEdit(user: User): void {
 		this.service.edit(user.oid).then(account => {
 			this.bsModalRef = this.modalService.show(AccountComponent, {
 				animated: true,
@@ -91,13 +115,13 @@ export class AccountsComponent implements OnInit {
 			});
 			this.bsModalRef.content.init(account);
 
-			this.bsModalRef.content.onAccountChange.subscribe(entity => {
-				this.onPageChange(this.p);
+			this.bsModalRef.content.onAccountChange.subscribe(() => {
+				this.refresh.next();
 			});
 		});
 	}
 
-	newInstance(pageNumber: number): void {
+	newInstance(): void {
 		this.service.newInvite().then(account => {
 			this.bsModalRef = this.modalService.show(AccountComponent, {
 				animated: true,
@@ -107,17 +131,9 @@ export class AccountsComponent implements OnInit {
 			});
 			this.bsModalRef.content.init(account);
 
-			this.bsModalRef.content.onAccountChange.subscribe(entity => {
-				this.onPageChange(this.p);
+			this.bsModalRef.content.onAccountChange.subscribe(() => {
+				this.refresh.next();
 			});
-		});
-	}
-
-	onPageChange(pageNumber: number): void {
-		this.service.page(pageNumber).then(res => {
-			this.res = res;
-
-			this.p = pageNumber;
 		});
 	}
 

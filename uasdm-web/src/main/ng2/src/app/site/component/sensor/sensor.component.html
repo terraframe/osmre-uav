@@ -1,45 +1,91 @@
-<div *ngIf="sensor != null" class="modal-body">
-  <div *ngIf="message != null" class="error-container">
-    <div class="label-holder">
-      <strong>Error</strong>
-    </div>
-    <div class="holder">
-      <div>
-        <p class="error-message">{{message}}</p>
+<div>
+  <uasdm-header></uasdm-header>
+
+  <div id="app-container" class="container">
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{message}}</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="modal-title-container">
-    <h3>Sensor</h3>
-  </div>
+    <div class="modal-title-container">
+      <h3>Sensor</h3>
+    </div>
 
-  <form #ngForm="ngForm">
-    <div class="form-group">
-      <label>Name</label>
-      <input [(ngModel)]="sensor.name" name="name" type="input" class="form-control" placeholder="Name" [disabled]="!newInstance" required />
-    </div>
-    <div class="form-group">
-      <label>Label</label>
-      <input [(ngModel)]="sensor.displayLabel" name="displayLabel" type="input" class="form-control" placeholder="Display Label" required />
-    </div>
-    <div class="form-group">
-      <label>Type</label>
-      <input [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control" placeholder="Type" required />
-    </div>
-    <div class="form-group">
-      <label>Model</label>
-      <input [(ngModel)]="sensor.model" name="model" type="input" class="form-control" placeholder="Model" required />
-    </div>
-    <div class="form-group">
-      <label>Wave Length</label>
-      <div *ngFor="let wavelength of waveLengths">
-        <boolean-field [value]="sensor.waveLength && (-1 !== sensor.waveLength.indexOf(wavelength))" [label]="wavelength" (valueChange)="updateSelectedWaveLength(wavelength, $event)"></boolean-field>
+    <form #ngForm="ngForm">
+      <div class="form-group">
+        <label>Name</label>
+        <input [(ngModel)]="sensor.name" name="name" type="input" class="form-control" placeholder="Name"
+          [disabled]="mode === 'READ'" required />
       </div>
-    </div>
-    <div class="btn-holder" style="text-align: right;">
-      <button type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-      <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()" [disabled]="!ngForm.valid">Apply</button>
-    </div>
-  </form>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="sensor.description" name="description" type="input" class="form-control"
+          [disabled]="mode === 'READ'" placeholder="Description">
+        </textarea>
+      </div>
+      <div class="form-group">
+        <label>Model</label>
+        <input [(ngModel)]="sensor.model" name="model" type="input" class="form-control" placeholder="Model"
+          [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="sensor.sensorType" name="sensorType" type="input" class="form-control"
+          [disabled]="mode === 'READ'" required>
+          <option></option>
+          <option *ngFor="let type of types" [value]="type.oid">{{type.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Pixel Size Width</label>
+        <input [(ngModel)]="sensor.pixelSizeWidth" name="pixelSizeWidth" type="number" step="0" class="form-control" [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
+        <label>Pixel Size Height</label>
+        <input [(ngModel)]="sensor.pixelSizeHeight" name="pixelSizeHeight" type="number" step="0" class="form-control" [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
+        <label>Sensor Width</label> (millimeters)
+        <input [(ngModel)]="sensor.sensorWidth" name="sensorWidth" type="number" step="0" class="form-control" [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
+        <label>Sensor Height</label> (millimeters)
+        <input [(ngModel)]="sensor.sensorHeight" name="sensorHeight" type="number" step="0" class="form-control" [disabled]="mode === 'READ'" required />
+      </div>
+      <div class="form-group">
+        <label>Wave Length</label>
+        <span *ngIf="sensor.wavelengths.length === 0" class="error-message">
+          A sensor requires at least one Wave Length
+        </span>
+        <div *ngFor="let wavelength of wavelengths">
+          <boolean-field [value]="sensor.wavelengths && (-1 !== sensor.wavelengths.indexOf(wavelength.oid))"
+            [label]="wavelength.name" (valueChange)="updateSelectedWaveLength(wavelength, $event)"
+            [disabled]="mode === 'READ'"></boolean-field>
+        </div>
+      </div>
+      <div *ngIf="mode === 'READ' && sensor.platforms != null && sensor.platforms.length > 0" class="form-group">
+        <label>Used on Platforms</label>
+        <ul>
+          <li *ngFor="let platform of sensor.platforms">
+            <a [routerLink]="['/site/platform', platform.oid]">{{platform.name}}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
+        <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+          [disabled]="!ngForm.valid || sensor.wavelengths.length === 0">Apply</button>
+      </div>
+      <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
+        <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+      </div>
+    </form>
+  </div>
 </div>

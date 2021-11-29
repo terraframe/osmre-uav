@@ -1,6 +1,6 @@
 <div>
   <div class="check-block form-group">
-    <div (click)="toggle()" [ngClass]="{'chk-checked' : value}" ng-style="chkstyle" class="jcf-unselectable chk-area">
+    <div (click)="toggle()" [ngClass]="{'chk-checked' : value, 'chk-disabled' : disabled}" ng-style="chkstyle" class="jcf-unselectable chk-area">
       <span></span>
     </div>
 

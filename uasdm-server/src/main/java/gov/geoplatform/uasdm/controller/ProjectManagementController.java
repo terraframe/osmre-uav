@@ -111,6 +111,12 @@ public class ProjectManagementController
     return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId(), id));
   }
 
+  @Endpoint(url = "uav-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getUAVMetadata(ClientRequestIF request, @RequestParamter(name = "uavId") String uavId, @RequestParamter(name = "sensorId") String sensorId)
+  {
+    return new RestBodyResponse(this.service.getUAVMetadata(request.getSessionId(), uavId, sensorId));
+  }
+
   @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF newDefaultChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
   {
@@ -201,9 +207,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "submit-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "json") String json)
+  public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "json") String json)
   {
-    this.service.submitMetadata(request.getSessionId(), json);
+    this.service.submitMetadata(request.getSessionId(), collectionId, json);
 
     return new RestResponse();
   }

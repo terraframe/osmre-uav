@@ -17,6 +17,51 @@
           <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" class="dot pending" style="margin-left: 0;margin-bottom: 5px;"></span></h2>
         </div>
       </div>
+      
+      
+      
+      
+      <div class="row">
+        <div class="col-md-12">
+<!--           <label>Pilot Name: </label> &nbsp; {{product.pilotName}} -->
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+<!--           <label>Date/Time: </label> &nbsp; {{product.dateTime | idmdate}} -->
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label>Sensor Information:</label>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td><a [routerLink]="['/site/sensor', entity.sensor.oid]" target="_blank">{{entity.sensor.name}}</a></td>
+              </tr>
+              <tr>
+                <td>Type</td>
+                <td> {{entity.sensor.sensorType.name}}</td>
+              </tr>
+              <tr>
+                <td>Model</td>
+                <td>{{entity.sensor.model}}</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{{entity.sensor.description}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      
+      
+      
 
       <div class="row">
         <div class="col-md-12">

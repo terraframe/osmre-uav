@@ -60,7 +60,7 @@ public class Document extends DocumentBase implements DocumentIF
 
   protected void deleteS3File(String key)
   {
-    new RemoteFileDeleteCommand(key).doIt();
+    new RemoteFileDeleteCommand(key, this.getComponent()).doIt();
   }
 
   @Override

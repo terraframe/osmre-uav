@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,8 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -74,6 +77,30 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public String getSolrNameField()
   {
     return "collectionName";
+  }
+
+  @Override
+  public Date getCollectionDate()
+  {
+    return null;
+  }
+
+  @Override
+  public UAV getUav()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Sensor getSensor()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isMultiSpectral()
+  {
+    throw new UnsupportedOperationException();
   }
 
   public ComponentHasComponent addComponent(UasComponent uasComponent)
@@ -342,7 +369,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.log;
   }
-  
+
   @Override
   public Set<String> getExcludes()
   {

@@ -33,9 +33,9 @@ import net.geoprism.GeoprismUser;
 public class AccountService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, String sortAttribute, boolean order, Integer pageSize, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return UserInfo.page(pageSize, pageNumber);
+    return UserInfo.page(criteria);
   }
 
   @Request(RequestType.SESSION)

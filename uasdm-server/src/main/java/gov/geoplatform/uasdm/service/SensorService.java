@@ -15,30 +15,32 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.bus.Sensor;
-import gov.geoplatform.uasdm.bus.SensorQuery;
+import gov.geoplatform.uasdm.graph.Sensor;
 
 public class SensorService
 {
   @Request(RequestType.SESSION)
-  public JSONObject page(String sessionId, Integer pageNumber)
+  public JSONObject page(String sessionId, JSONObject criteria)
   {
-    SensorQuery query = Sensor.page(20, pageNumber);
-    query.WHERE(query.getName().NE(Sensor.OTHER));
+    return Sensor.getPage(criteria).toJSON();
+  }
 
-    return Sensor.toJSON(query);
+  @Request(RequestType.SESSION)
+  public JSONArray getAll(String sessionId)
+  {
+    return Sensor.getAllJson();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject apply(String sessionId, JSONObject json)
   {
-    Sensor sensor = Sensor.fromJSON(json);
-    sensor.apply();
+    Sensor sensor = Sensor.apply(json);
 
     return sensor.toJSON();
   }
@@ -58,18 +60,6 @@ public class SensorService
   public JSONObject get(String sessionId, String oid)
   {
     return Sensor.get(oid).toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONObject lock(String sessionId, String oid)
-  {
-    return Sensor.lock(oid).toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONObject unlock(String sessionId, String oid)
-  {
-    return Sensor.unlock(oid).toJSON();
   }
 
   @Request(RequestType.SESSION)

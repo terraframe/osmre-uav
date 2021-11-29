@@ -30,7 +30,9 @@ import { SensorsComponent } from './component/sensor/sensors.component';
 import { SensorComponent } from './component/sensor/sensor.component';
 import { PlatformsComponent } from './component/platform/platforms.component';
 import { PlatformComponent } from './component/platform/platform.component';
-
+import { ClassificationsComponent } from './component/classification/classifications.component';
+import { ClassificationComponent } from './component/classification/classification.component';
+import { EquipmentComponent } from './component/equipment/equipment.component';
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -42,9 +44,17 @@ import { CanDeactivateGuardService } from './service/can.deactivate.guard.servic
 import { SensorService } from './service/sensor.service';
 import { PlatformService } from './service/platform.service';
 import { MetadataService } from './service/metadata.service';
+import { ClassificationService } from './service/classification.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { UAVsComponent } from './component/uav/uavs.component';
+import { UAVsPageComponent } from './component/uav/uavs-page.component';
+import { UAVComponent } from './component/uav/uav.component';
+import { UAVService } from './service/uav.service';
+import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
+import { ReportsComponent } from './component/report/reports.component';
+import { ReportService } from './service/report.service';
 
 @NgModule({
 	imports: [
@@ -63,7 +73,7 @@ import { SharedModule } from '../shared/shared.module';
 		CollapseModule.forRoot(),
 		SharedModule,
 		SiteRoutingModule,
-		NgxFileDropModule
+		NgxFileDropModule,
 	],
 	declarations: [
 		MapAttributeComponent,
@@ -84,7 +94,15 @@ import { SharedModule } from '../shared/shared.module';
 		SensorsComponent,
 		PlatformComponent,
 		PlatformsComponent,
-		TasksPanelComponent
+		TasksPanelComponent,
+		ClassificationsComponent,
+		ClassificationComponent,
+		UAVsComponent,
+        UAVsPageComponent,
+		UAVComponent,
+		MetadataPageComponent,
+		ReportsComponent,
+        EquipmentComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -93,17 +111,18 @@ import { SharedModule } from '../shared/shared.module';
 		MapService,
 		SensorService,
 		PlatformService,
-		MetadataService
+		MetadataService,
+		ClassificationService,
+		UAVService,
+		ReportService
 	],
 	entryComponents: [
 		UploadModalComponent,
 		EntityModalComponent,
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
-		SensorComponent,
 		LeafModalComponent,
-		ProductModalComponent,
-		PlatformComponent
+		ProductModalComponent
 	]
 })
 export class SiteModule { }
