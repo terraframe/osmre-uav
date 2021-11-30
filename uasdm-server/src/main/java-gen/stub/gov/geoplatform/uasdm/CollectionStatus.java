@@ -133,7 +133,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     collectionStatus.apply();
   }
 
-  private static String mergeTaskGroupStatuses(Map<String, LinkedList<WorkflowTask>> componentTasks)
+  public static String mergeTaskGroupStatuses(Map<String, LinkedList<WorkflowTask>> componentTasks)
   {
     String status = componentTasks.values().stream().map(tasks -> getGroupStatus(tasks)).reduce("Complete", (a, b) -> {
       if (a.equals("Processing") || b.equals("Processing"))
@@ -181,7 +181,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     return status;
   }
 
-  private static Map<String, LinkedList<WorkflowTask>> createTaskGroups(List<? extends WorkflowTask> tasks)
+  public static Map<String, LinkedList<WorkflowTask>> createTaskGroups(List<? extends WorkflowTask> tasks)
   {
     Map<String, LinkedList<WorkflowTask>> taskGroups = new HashMap<String, LinkedList<WorkflowTask>>();
 

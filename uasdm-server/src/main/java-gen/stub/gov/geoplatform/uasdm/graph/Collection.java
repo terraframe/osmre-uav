@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -40,6 +41,8 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.CannotDeleteProcessingCollection;
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -207,10 +210,29 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       this.createS3Folder(this.buildOrthoKey());
     }
   }
+  
+  public String getStatus()
+  {
+    List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(this.getOid());
+
+    Map<String, LinkedList<WorkflowTask>> taskGroups = CollectionStatus.createTaskGroups(tasks);
+    
+    String status = CollectionStatus.mergeTaskGroupStatuses(taskGroups);
+    
+    return status;
+  }
 
   @Transaction
   public void delete()
   {
+    String status = this.getStatus();
+    if (status == "Processing")
+    {
+      CannotDeleteProcessingCollection ex = new CannotDeleteProcessingCollection();
+      ex.setCollectionName(this.getName());
+      throw ex;
+    }
+    
     List<AbstractWorkflowTask> tasks = this.getTasks();
 
     for (AbstractWorkflowTask task : tasks)

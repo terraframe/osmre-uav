@@ -1,0 +1,18 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.CannotDeleteProcessingCollection" 
+                   label="Invalid Name" 
+                   description="Thrown when a user attempts to delete a collection which is currently in processing." 
+                   message="Cannot delete collection {collectionName} because it is currently in the middle of processing. Please wait until it is finished.">
+          <attributes>
+            <text name="collectionName" required="true" label="Collection Name" />
+          </attributes>
+      </mdException>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
