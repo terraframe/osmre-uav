@@ -9,9 +9,12 @@ export class IdmDatePipe implements PipeTransform {
   transform(date: Date | string, format: string = "MMM dd, yyyy hh:mm:ss"): string {
     date = new Date(date);
     
-    let transformed: string = new DatePipe(this.locale).transform(date, format);
-    
-    transformed = transformed + " " + this.getTimezoneName();
+    let transformed: string = null;
+    if(this.isValidDate(date)){
+        transformed = new DatePipe(this.locale).transform(date, format);
+        
+        transformed = transformed + " " + this.getTimezoneName();
+    }
     
     return transformed;
   }
@@ -35,5 +38,9 @@ export class IdmDatePipe implements PipeTransform {
       // in some magic case when short representation of date is not present in the long one
       return Intl.DateTimeFormat().resolvedOptions().timeZone;
     }
+  }
+  
+  private isValidDate(d: Date) {
+    return d instanceof Date && !isNaN(d.getTime());
   }
 }

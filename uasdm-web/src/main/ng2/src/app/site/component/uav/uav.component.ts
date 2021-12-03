@@ -6,6 +6,7 @@ import { ErrorHandler } from '@shared/component';
 import { UAV } from '@site/model/uav';
 import { UAVService } from '@site/service/uav.service';
 import { PlatformService } from '@site/service/platform.service';
+import { AuthService } from '@shared/service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -14,6 +15,9 @@ import { ActivatedRoute, Router } from '@angular/router';
     styleUrls: []
 })
 export class UAVComponent implements OnInit {
+    
+    isAdmin:boolean = false;
+    
     original: UAV;
     uav: UAV;
     newInstance: boolean = false;
@@ -24,9 +28,11 @@ export class UAVComponent implements OnInit {
     platforms: { oid: string, name: string }[] = [];
     mode: string = 'READ';
 
-    constructor(private service: UAVService, private platformService: PlatformService,
+    constructor(private service: UAVService, private platformService: PlatformService, private authService: AuthService,
         private route: ActivatedRoute, private router: Router
-    ) { }
+    ) {
+        this.isAdmin = this.authService.isAdmin();
+     }
 
     ngOnInit(): void {
         const oid = this.route.snapshot.params['oid'];

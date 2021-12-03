@@ -65,6 +65,10 @@ public class SiteItem implements TreeComponent
   public static String        PLATFORM           = "platform";
   
   public static String        SENSOR             = "sensor";
+  
+  public static String        COLLECTION_DATE    = "collectionDate";
+  
+  public static String        DATE_TIME    = "dateTime";
 
   private String              id;
 
@@ -87,6 +91,10 @@ public class SiteItem implements TreeComponent
   private Integer             numberOfChildren;
   
   private String              pilotName;
+  
+  private String              collectionDate;
+  
+  private String              dateTime;
   
   private gov.geoplatform.uasdm.graph.UAV          uav;
 
@@ -260,23 +268,24 @@ public class SiteItem implements TreeComponent
         String pilotName = this.getPilotName();
         Sensor sensor = this.getSensor();
         Platform platform = this.getPlatform();
+        String collectionDate = this.getCollectionDate();
+        String dateTime = this.getDateTime();
+        
+        obj.put("pilotName", pilotName);
+        obj.put("collectionDate", collectionDate);
+        obj.put("dateTime", dateTime);
         
         if (uav != null)
         {
           obj.put(UAV, uav.toJSON());
         }
         
-        if (uav != null)
-        {
-          obj.put("pilotName", pilotName);
-        }
-        
-        if (uav != null)
+        if (sensor != null)
         {
           obj.put("sensor", sensor.toJSON());
         }
         
-        if (uav != null)
+        if (platform != null)
         {
           obj.put("platform", platform.toJSON());
         }
@@ -450,6 +459,26 @@ public class SiteItem implements TreeComponent
   public void setPilotName(String pilotName)
   {
     this.pilotName = pilotName;
+  }
+  
+  public String getCollectionDate()
+  {
+    return collectionDate;
+  }
+
+  public void setCollectionDate(String collectionDate)
+  {
+    this.collectionDate = collectionDate;
+  }
+  
+  public String getDateTime()
+  {
+    return dateTime;
+  }
+
+  public void setDateTime(String dateTime)
+  {
+    this.dateTime = dateTime;
   }
 
   public Platform getPlatform()

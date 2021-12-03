@@ -18,25 +18,29 @@
         </div>
       </div>
       
-      
-      
-      
       <div class="row">
         <div class="col-md-12">
-<!--           <label>Pilot Name: </label> &nbsp; {{product.pilotName}} -->
+          <label>Pilot Name: </label> &nbsp; {{entity.pilotName}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-<!--           <label>Date/Time: </label> &nbsp; {{product.dateTime | idmdate}} -->
+          <label>Upload Date: </label> &nbsp; {{entity.dateTime | idmdate : "MMM dd, yyyy"}}
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <label>Collection Date: </label> &nbsp; {{entity.collectionDate | idmdate : "MMM dd, yyyy"}}
         </div>
       </div>
 
       <div class="row">
-        <div class="col-md-12">
-          <label>Sensor Information:</label>
-          <table class="table table-bordered">
+        <div class="col-md-6">
+          <label>Sensor:</label>
+          
+          <table *ngIf="entity.sensor" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Name</td>
@@ -50,15 +54,66 @@
                 <td>Model</td>
                 <td>{{entity.sensor.model}}</td>
               </tr>
-              <tr>
-                <td>Description</td>
-                <td>{{entity.sensor.description}}</td>
-              </tr>
+<!--               <tr> -->
+<!--                 <td>Description</td> -->
+<!--                 <td>{{entity.sensor.description}}</td> -->
+<!--               </tr> -->
             </tbody>
           </table>
+          
+          <p *ngIf="!entity.sensor" style="font-style:italic;">Sensor metadata is not available for this collection.</p>
+        </div>
+        
+        <div class="col-md-6">
+          <label>Platform:</label>
+          
+          <table *ngIf="entity.platform" class="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td><a [routerLink]="['/site/platform', entity.platform.oid]" target="_blank">{{entity.platform.name}}</a></td>
+              </tr>
+              <tr>
+                <td>Type</td>
+                <td> {{entity.platform.platformType.name}}</td>
+              </tr>
+<!--               <tr> -->
+<!--                 <td>Description</td> -->
+<!--                 <td>{{entity.platform.description}}</td> -->
+<!--               </tr> -->
+            </tbody>
+          </table>
+          
+          <p *ngIf="!entity.platform" style="font-style:italic;">Platform metadata is not available for this collection.</p>
         </div>
       </div>
       
+      
+      <div class="row">
+        <div class="col-md-12">
+          <label>UAV:</label>
+          
+          <table *ngIf="entity.uav" class="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Serial Number</td>
+                <td><a [routerLink]="['/site/uav', entity.uav.oid]" target="_blank">{{entity.uav.serialNumber}}</a></td>
+              </tr>
+              <tr>
+                <td>Type</td>
+                <td> {{entity.uav.faaNumber}}</td>
+              </tr>
+<!--               <tr> -->
+<!--                 <td>Description</td> -->
+<!--                 <td>{{entity.uav.description}}</td> -->
+<!--               </tr> -->
+            </tbody>
+          </table>
+          
+          <p *ngIf="!entity.platform" style="font-style:italic;">UAV metadata is not available for this collection.</p>
+          
+        </div>
+      </div>
       
       
       

@@ -117,7 +117,7 @@ const routes: Routes = [
     },
     {
         path: 'uav/:oid',
-        canActivate: [AdminGuardService],
+        canActivate: [AuthGuard],
         component: UAVComponent,
     },
     {

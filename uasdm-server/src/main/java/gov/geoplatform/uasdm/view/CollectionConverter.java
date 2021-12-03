@@ -15,7 +15,16 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.json.JSONArray;
+
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.GeoprismActorIF;
@@ -70,6 +79,20 @@ public class CollectionConverter extends Converter
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
+      
+      if (collection.getCollectionDate() != null)
+      {
+        String date = Util.formatIso8601(collection.getCollectionDate(), false);
+        siteItem.setCollectionDate(date);
+      }
+      
+      List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
+      if (tasks.size() > 0)
+      {
+        WorkflowTask lastTask = tasks.get(tasks.size()-1);
+        siteItem.setDateTime(Util.formatIso8601(lastTask.getLastUpdateDate(), false));
+      }
+      
     }
 
     return siteItem;

@@ -27,6 +27,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
@@ -321,7 +323,7 @@ public abstract class Converter
     Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
 
     // Get metadata
-    UasComponentIF collection = product.getComponent();
+    CollectionIF collection = (CollectionIF) product.getComponent();
 
     FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
 
@@ -347,7 +349,12 @@ public abstract class Converter
         view.setPlatform(platform.toJSON());
       }
     }
-
+    
+    if (collection.getCollectionDate() != null)
+    {
+      view.setCollectionDate(collection.getCollectionDate());
+    }
+    
     view.setDateTime(product.getLastUpdateDate());
     view.setPage(page);
 

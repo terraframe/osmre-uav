@@ -49,7 +49,9 @@ export class SiteEntity {
     sensor: Sensor;
     platform: Platform;
     uav: UAV;
-    pilot?: string;
+    pilotName?: string;
+    dateTime?: string;
+    collectionDate?: string;
 }
 
 export class CollectionHierarchy {
@@ -187,6 +189,7 @@ export class GeoserverLayer {
 export class ProductDetail extends Product {
     pilotName: string;
     dateTime: string;
+    collectionDate: string;
     sensor: Sensor;
     platform: Platform;
     uav: UAV;

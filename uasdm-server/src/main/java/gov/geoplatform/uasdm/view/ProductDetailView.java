@@ -30,6 +30,8 @@ public class ProductDetailView extends ProductView
   private String           pilotName;
 
   private Date             dateTime;
+  
+  private Date             collectionDate;
 
   private JSONObject       sensor;
   
@@ -86,6 +88,16 @@ public class ProductDetailView extends ProductView
   {
     UAV = uAV;
   }
+  
+  public Date getCollectionDate()
+  {
+    return collectionDate;
+  }
+
+  public void setCollectionDate(Date collectionDate)
+  {
+    this.collectionDate = collectionDate;
+  }
 
   public Page<DocumentIF> getPage()
   {
@@ -102,6 +114,7 @@ public class ProductDetailView extends ProductView
     JSONObject object = super.toJSON();
     object.put("pilotName", this.getPilotName());
     object.put("dateTime", Util.formatIso8601(this.getDateTime(), true));
+    object.put("collectionDate", Util.formatIso8601(this.getCollectionDate(), false));
     
     object.put("sensor", this.getSensor());
     object.put("platform", this.getPlatform());
