@@ -1,0 +1,52 @@
+version: '3'
+services:
+  orientdb:
+    container_name: uasdm-orientdb
+    image: 'orientdb:3.0'
+    environment:
+      ORIENTDB_ROOT_PASSWORD: "root"
+      ORIENTDB_OPTS_MEMORY: "-Xms512M -Xmx2G"
+    volumes:
+      - "/data/orientdb/databases:/orientdb/databases"
+      - "/data/orientdb/backup:/orientdb/backup"
+    restart: always
+    ulimits:
+      nofile:
+        soft: 500000
+        hard: 500000
+    ports:
+     - "2424:2424"
+     - "2480:2480"
+  postgres:
+    container_name: uasdm-postgres
+    image: 'postgis/postgis:9.5-3.0'
+    command: postgres -c max_locks_per_transaction=100 -c max_wal_size=2048
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: uasdm
+      POSTGRES_PASSWORD: uasdm
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /data/postgres:/var/lib/postgresql/data
+    restart: always
+    ports:
+     - "5432:5432"
+  web:
+    container_name: uasdm
+    image: uasdm
+    environment:
+      JAVA_OPTS: "-Xms1024m -Xmx4000m -Ddatabase.hostURL=uasdm-postgres -Dorientdb.db.url=remote:uasdm-orientdb"
+      POSTGRES_PORT: 5432
+      POSTGRES_ROOT_USERNAME: postgres
+      POSTGRES_ROOT_PASSWORD: uasdm
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - /data/uasdm:/data/geoprism
+    depends_on:
+      - postgres
+      - orientdb
+    restart: always
+    entrypoint: wait-for-it.sh -t 0 uasdm-postgres:5432 --
+    command: catalina.sh run # https://github.com/docker/compose/issues/3140

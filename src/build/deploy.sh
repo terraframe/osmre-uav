@@ -28,6 +28,9 @@ sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-2-248.us
 export ANSIBLE_HOST_KEY_CHECKING=false
 export NODE_OPTIONS="--max_old_space_size=1500"
 
+export DOCKER_CLIENT_TIMEOUT=120
+export COMPOSE_HTTP_TIMEOUT=120
+
 
 if [ "$build_artifact" == "true" ]; then
   :
@@ -64,8 +67,19 @@ if [ "$build_artifact" == "true" ]; then
   :
   cd $WORKSPACE/uasdm
   mvn clean deploy -B
+else
+  if [ "$tag" == "latest" ]; then
+    mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget --user=$NEXUS_IDM_READ_USERNAME --password=$NEXUS_IDM_READ_PASSWORD -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=LATEST"
+  else
+    mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget --user=$NEXUS_IDM_READ_USERNAME --password=$NEXUS_IDM_READ_PASSWORD -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=$tag"
+  fi
 fi
 
+#if [ "$tag" == "latest" ]; then
+  # Build a Docker image
+  cd $WORKSPACE/uasdm/src/build/docker/uasdm
+  ./build.sh
+#fi
 
 :
 : ----------------------------------
@@ -82,4 +96,4 @@ ln -s $WORKSPACE/geoprism-platform/ansible/inventory ./inventory
 [ -h ../permissions ] && unlink ../permissions
 ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
 
-ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb artifact_version=$version"
+ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"

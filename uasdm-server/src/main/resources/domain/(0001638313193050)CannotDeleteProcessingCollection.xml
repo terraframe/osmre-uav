@@ -1,0 +1,35 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.CannotDeleteProcessingCollection" 
+                   label="Invalid Name" 
+                   description="Thrown when a user attempts to delete a collection which is currently in processing." 
+                   message="Cannot delete collection {collectionName} because it is currently in the middle of processing. Please wait until it is finished.">
+          <attributes>
+            <text name="collectionName" required="true" label="Collection Name" />
+          </attributes>
+      </mdException>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
