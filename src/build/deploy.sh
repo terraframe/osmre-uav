@@ -31,6 +31,11 @@ export NODE_OPTIONS="--max_old_space_size=1500"
 export DOCKER_CLIENT_TIMEOUT=120
 export COMPOSE_HTTP_TIMEOUT=120
 
+if [ "$check_dependencies" == "true" ]; then
+  ## Check for published exploits on our dependencies ##
+  cd $WORKSPACE/uasdm
+  mvn validate -P dependency-check
+fi
 
 if [ "$build_artifact" == "true" ]; then
   :
@@ -38,6 +43,7 @@ if [ "$build_artifact" == "true" ]; then
   :  BUILD
   : ----------------------------------
   :
+  
   ## Build angular source ##
   cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
   npm version
