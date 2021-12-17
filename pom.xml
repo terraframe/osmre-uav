@@ -32,7 +32,7 @@
   </modules>
 
   <properties>
-    <geoprism.version>0.10.5</geoprism.version>
+    <geoprism.version>0.10.16</geoprism.version>
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -91,38 +91,6 @@
       <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>
-  
-  <profiles>
-    <profile>
-      <id>dependency-check</id>
-      <activation>
-        <property>
-          <name>dependency-check</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>5.3.2</version>
-            <configuration>
-              <failBuildOnCVSS>7</failBuildOnCVSS>
-            </configuration>
-            <executions>
-              <execution>
-                <id>new-schema</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <build>
     <plugins>

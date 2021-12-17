@@ -31,12 +31,6 @@ export NODE_OPTIONS="--max_old_space_size=1500"
 export DOCKER_CLIENT_TIMEOUT=120
 export COMPOSE_HTTP_TIMEOUT=120
 
-if [ "$check_dependencies" == "true" ]; then
-  ## Check for published exploits on our dependencies ##
-  cd $WORKSPACE/uasdm
-  mvn validate -P dependency-check
-fi
-
 if [ "$build_artifact" == "true" ]; then
   :
   : ----------------------------------
@@ -81,25 +75,26 @@ else
   fi
 fi
 
-#if [ "$tag" == "latest" ]; then
-  # Build a Docker image
-  cd $WORKSPACE/uasdm/src/build/docker/uasdm
-  ./build.sh
-#fi
-
 :
 : ----------------------------------
 :  DEPLOY
 : ----------------------------------
 :
 
-cd $WORKSPACE/geoprism-cloud/ansible
+if [ "$deploy" == "true" ]; then
+  # Build a Docker image
+  cd $WORKSPACE/uasdm/src/build/docker/uasdm
+  ./build.sh
 
-[ -h ./inventory ] && unlink ./inventory
-[ -d ./inventory ] && rm -r ./inventory
-ln -s $WORKSPACE/geoprism-platform/ansible/inventory ./inventory
+  # Run Ansible deploy
+  cd $WORKSPACE/geoprism-cloud/ansible
 
-[ -h ../permissions ] && unlink ../permissions
-ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
+  [ -h ./inventory ] && unlink ./inventory
+  [ -d ./inventory ] && rm -r ./inventory
+  ln -s $WORKSPACE/geoprism-platform/ansible/inventory ./inventory
 
-ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
+  [ -h ../permissions ] && unlink ../permissions
+  ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
+
+  ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
+fi
