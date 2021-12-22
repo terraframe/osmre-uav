@@ -74,7 +74,8 @@ else
     cp $WORKSPACE/uasdm/src/build/shell/artifact-download.pom.xml $WORKSPACE/uasdm/uasdm-web/target/artifact-download/pom.xml
     cd $WORKSPACE/uasdm/uasdm-web/target/artifact-download
     
-    mvn dependency:copy -Dartifact=gov.osmre.uasdm:uasdm-web:LATEST:war -DoutputDirectory=../ -Dmdep.stripVersion=true
+    mvn dependency:copy -B -Dartifact=gov.osmre.uasdm:uasdm-web:LATEST:war -DoutputDirectory=../ -Dmdep.stripVersion=true
+    mv ../uasdm-web.war ../uasdm.war
   else
     mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-web/$tag/uasdm-web-$tag.war"
   fi
