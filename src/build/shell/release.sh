@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-#if curl --user ansible:sPc0*059 -f -s --head "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=$IDM_VERSION" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
-#    echo "The release version $IDM_VERSION has already been deployed! Please ensure you are releasing the correct version of geoprism."
+#if curl -f -s --head "https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-server/$CGR_RELEASE_VERSION/uasdm-server-$CGR_RELEASE_VERSION.jar" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
+#    echo "The release version $IDM_VERSION has already been deployed! Please ensure you are releasing the correct version."
 #    exit 1
 #fi
 
@@ -102,7 +102,7 @@ if [ "$release_github" == "true" ]; then
   
   gh config set prompt disabled
   
-  # TODO : Downloadable artifacts
-  
-  gh release create $IDM_VERSION
+  sleep 180 # Cloudsmith takes a little bit to process the artifact before its downloadable.
+  wget https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-web/$IDM_VERSION/uasdm-web-$IDM_VERSION.war -O uasdm-web-$IDM_VERSION.war
+  gh release create $IDM_VERSION "uasdm-web-$IDM_VERSION.war#Webapp War Artifact"
 fi

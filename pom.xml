@@ -70,26 +70,64 @@
   
   <repositories>
     <repository>
-      <id>terraframe</id>
-      <name>terraframe</name>
-      <url>https://nexus.terraframe.com/content/groups/allrepos</url>
-      <layout>default</layout>
+      <id>terraframe-public</id>
+      <url>https://dl.cloudsmith.io/public/terraframe/public/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>terraframe-runwaysdk</id>
+      <url>https://dl.cloudsmith.io/public/terraframe/runwaysdk/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>terraframe-geoprism</id>
+      <url>https://dl.cloudsmith.io/public/terraframe/geoprism/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>terraframe-geoprism-registry</id>
+      <url>https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
     </repository>
   </repositories>
 
   <distributionManagement>
-    <repository>
-      <id>terraframe-private-releases</id>
-      <name>terraframe-private-releases</name>
-      <url>https://nexus.terraframe.com/content/repositories/terraframe-private-releases/</url>
-      <layout>default</layout>
-    </repository>
     <snapshotRepository>
-      <id>terraframe-private-snapshots</id>
-      <name>terraframe-private-snapshots</name>
-      <url>https://nexus.terraframe.com/content/repositories/terraframe-private-snapshots/</url>
-      <layout>default</layout>
+      <id>cloudsmith</id>
+      <url>https://maven.cloudsmith.io/terraframe/osmre-uav/</url>
     </snapshotRepository>
+    <repository>
+      <id>cloudsmith</id>
+      <url>https://maven.cloudsmith.io/terraframe/osmre-uav/</url>
+    </repository>
   </distributionManagement>
 
   <build>

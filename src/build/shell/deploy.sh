@@ -69,9 +69,14 @@ if [ "$build_artifact" == "true" ]; then
   mvn clean deploy -B
 else
   if [ "$tag" == "latest" ]; then
-    mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget --user=$NEXUS_IDM_READ_USERNAME --password=$NEXUS_IDM_READ_PASSWORD -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=LATEST"
+    # As far as I can tell Cloudsmith doesn't support fetching the latest version of an artifact from their REST API. So we're using Maven dependency:copy plugin.
+    mkdir -p $WORKSPACE/uasdm/uasdm-web/target/artifact-download
+    cp $WORKSPACE/uasdm/src/build/shell/artifact-download.pom.xml $WORKSPACE/uasdm/uasdm-web/target/artifact-download/pom.xml
+    cd $WORKSPACE/uasdm/uasdm-web/target/artifact-download
+    
+    mvn dependency:copy -Dartifact=gov.osmre.uasdm:uasdm-web:LATEST:war -DoutputDirectory=../ -Dmdep.stripVersion=true
   else
-    mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget --user=$NEXUS_IDM_READ_USERNAME --password=$NEXUS_IDM_READ_PASSWORD -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "http://nexus.terraframe.com/service/local/artifact/maven/redirect?r=private&g=gov.osmre.uasdm&a=uasdm-web&p=war&v=$tag"
+    mkdir -p $WORKSPACE/uasdm/uasdm-web/target && wget -nv -O $WORKSPACE/uasdm/uasdm-web/target/uasdm.war "https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-web/$tag/uasdm-web-$tag.war"
   fi
 fi
 
