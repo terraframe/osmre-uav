@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-servlet-filter-adapter</artifactId>
-      <version>12.0.2</version>
+      <version>13.0.0</version>
     </dependency>
     <dependency>
       <groupId>javax.websocket</groupId>
@@ -99,7 +99,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.11.884</version>
+	  <version>1.12.139</version>
 	</dependency>
     <dependency>
       <groupId>org.apache.solr</groupId>
@@ -160,7 +160,7 @@
     <dependency>
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
-      <version>3.6.0</version>
+      <version>3.6.3</version>
       <type>pom</type>
       <exclusions>
         <exclusion>
@@ -267,7 +267,7 @@
                   <mainClass>com.runwaysdk.dataaccess.io.UndoAll</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
@@ -314,7 +314,7 @@
                   <mainClass>net.geoprism.ImportSchema</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
