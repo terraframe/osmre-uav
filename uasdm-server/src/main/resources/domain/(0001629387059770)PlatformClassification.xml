@@ -42,10 +42,10 @@
 			<mdVertex name="gov.geoplatform.uasdm.graph.Sensor" label="Sensor">
 				<attributes>
 					<char name="name" required="true" label="Name" size="128" indexType="unique index"/>
-					<integer name="pixelSizeWidth" required="true" label="Pixel Size Width" />
-					<integer name="pixelSizeHeight" required="true" label="Pixel Size Height" />
-					<integer name="sensorWidth" required="true" label="Sensor Width" />
-					<integer name="sensorHeight" required="true" label="Sensor Height" />
+					<integer name="pixelSizeWidth" required="false" label="Pixel Size Width" />
+					<integer name="pixelSizeHeight" required="false" label="Pixel Size Height" />
+					<integer name="sensorWidth" required="false" label="Sensor Width" />
+					<integer name="sensorHeight" required="false" label="Sensor Height" />
 					<char name="model" required="false" label="Model" size="1024" />
 					<char name="description" label="Description" size="1024" />
 					<graphReference name="sensorType" type="gov.geoplatform.uasdm.graph.SensorType" required="true" label="Sensor Type" />
