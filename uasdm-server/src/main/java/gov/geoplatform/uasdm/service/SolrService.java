@@ -1,24 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,7 +39,8 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.xml.TextAndAttributeXMLParser;
+import org.apache.tika.parser.xml.XMLParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
@@ -161,6 +161,11 @@ public class SolrService
 
   public static void updateOrCreateMetadataDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name, File metadata)
   {
+    String content = getContent(metadata);
+    
+    System.out.println("Content:");
+    System.out.println(content);
+
     if (AppProperties.isSolrEnabled())
     {
 
@@ -172,57 +177,60 @@ public class SolrService
 
         try
         {
-          try (StringWriter writer = new StringWriter())
+          SolrInputDocument iDocument = new SolrInputDocument();
+          iDocument.setField(component.getSolrIdField(), component.getOid());
+          iDocument.setField(component.getSolrNameField(), component.getName());
+          iDocument.setField("key", key);
+          iDocument.setField("filename", name);
+          iDocument.setField("content", content);
+
+          for (UasComponentIF ancestor : ancestors)
           {
-            AutoDetectParser parser = new AutoDetectParser();
-
-            ParseContext context = new ParseContext();
-            context.set(Parser.class, parser);
-
-            try (FileInputStream istream = new FileInputStream(metadata))
-            {
-              parser.parse(istream, new BodyContentHandler(writer), new Metadata(), context);
-            }
-
-            SolrInputDocument iDocument = new SolrInputDocument();
-            iDocument.setField(component.getSolrIdField(), component.getOid());
-            iDocument.setField(component.getSolrNameField(), component.getName());
-            iDocument.setField("key", key);
-            iDocument.setField("filename", name);
-            iDocument.setField("content", writer.toString());
-
-            for (UasComponentIF ancestor : ancestors)
-            {
-              iDocument.setField(ancestor.getSolrIdField(), ancestor.getOid());
-              iDocument.setField(ancestor.getSolrNameField(), ancestor.getName());
-            }
-
-            if (document != null)
-            {
-              iDocument.setField("id", document.getFieldValue("id"));
-            }
-            else
-            {
-              iDocument.setField("id", UUID.randomUUID().toString());
-            }
-
-            client.add(iDocument);
-            client.commit();
+            iDocument.setField(ancestor.getSolrIdField(), ancestor.getOid());
+            iDocument.setField(ancestor.getSolrNameField(), ancestor.getName());
           }
+
+          if (document != null)
+          {
+            iDocument.setField("id", document.getFieldValue("id"));
+          }
+          else
+          {
+            iDocument.setField("id", UUID.randomUUID().toString());
+          }
+
+          client.add(iDocument);
+          client.commit();
         }
         finally
         {
           client.close();
         }
       }
-      catch (SAXException | TikaException e)
-      {
-        throw new ProgrammingErrorException(e);
-      }
       catch (SolrServerException | IOException e)
       {
         throw new ProgrammingErrorException(e);
       }
+    }
+  }
+
+  private static String getContent(File metadata)
+  {
+    try
+    {
+      BodyContentHandler handler = new BodyContentHandler();
+      AutoDetectParser parser = new AutoDetectParser();
+
+      try (FileInputStream istream = new FileInputStream(metadata))
+      {
+        parser.parse(istream, handler, new Metadata());
+      }
+
+      return handler.toString();
+    }
+    catch (SAXException | TikaException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
   }
 
@@ -473,5 +481,5 @@ public class SolrService
     }
 
     return results;
-  }
+  }  
 }
