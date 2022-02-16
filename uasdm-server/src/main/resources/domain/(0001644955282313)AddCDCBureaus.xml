@@ -1,0 +1,21 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+    
+        <object key="CDC_LSHTM" type="gov.geoplatform.uasdm.bus.Bureau">
+            <attribute name="name" value="CDC/LSHTM" />
+            <attribute name="displayLabel" value="CDC/LSHTM" />
+        </object>
+        
+        <object key="CDC" type="gov.geoplatform.uasdm.bus.Bureau">
+            <attribute name="name" value="CDC" />
+            <attribute name="displayLabel" value="CDC" />
+        </object>
+    
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
