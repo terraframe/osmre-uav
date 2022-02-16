@@ -58,8 +58,12 @@ public class GraphBureauMigration implements Runnable
       while (iterator.hasNext())
       {
         Bureau bureau = iterator.next();
-
-        gov.geoplatform.uasdm.graph.Bureau.create(bureau);
+        
+        gov.geoplatform.uasdm.graph.Bureau existingBureau = gov.geoplatform.uasdm.graph.Bureau.getBySource(bureau);
+        if(existingBureau == null)
+        {
+          gov.geoplatform.uasdm.graph.Bureau.create(bureau);
+        }
       }
     }
   }
