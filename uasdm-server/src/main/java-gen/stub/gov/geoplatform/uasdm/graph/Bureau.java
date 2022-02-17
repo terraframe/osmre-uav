@@ -69,7 +69,7 @@ public class Bureau extends BureauBase
     builder.append(" WHERE " + mdAttribute.getColumnName() + " = :bureau");
 
     final GraphQuery<Bureau> query = new GraphQuery<Bureau>(builder.toString());
-    query.setParameter("bureau", source);
+    query.setParameter("bureau", source.getOid());
 
     return query.getSingleResult();
   }
