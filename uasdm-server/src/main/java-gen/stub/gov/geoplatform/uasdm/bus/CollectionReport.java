@@ -44,6 +44,7 @@ import com.runwaysdk.query.SelectableChar;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
@@ -97,7 +98,27 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.DOWNLOADCOUNTS, this.getDownloadCounts());
     object.put(CollectionReport.DELETEDATE, Util.formatIso8601(this.getDeleteDate(), false));
     object.put(CollectionReport.CREATEDATE, Util.formatIso8601(this.getCreateDate(), false));
-
+    
+    if (this.getValue(PRODUCT) != null)
+    {
+      Product product = Product.get(this.getValue(PRODUCT));
+      
+      List<GeoserverLayer> layers = product.getLayers();
+      
+      if (layers.size() > 0)
+      {
+        JSONArray availableServices = new JSONArray();
+        for (GeoserverLayer layer : layers) {
+          String workspace = layer.getWorkspace();
+          String layerName = layer.getStoreName();
+          
+          availableServices.put(workspace.concat(":".concat(layerName)));
+        }
+        
+        object.put("productURLs", availableServices);
+      }
+    }
+    
     Long storageSize = this.getAllStorageSize();
 
     if (storageSize != null)

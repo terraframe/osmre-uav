@@ -24,16 +24,13 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
-import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class GeoserverLayer extends GeoserverLayerBase

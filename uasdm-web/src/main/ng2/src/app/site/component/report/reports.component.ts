@@ -51,12 +51,21 @@ export class ReportsComponent implements OnInit {
         { header: 'Date of Create', field: 'createDate', type: 'DATE', sortable: true, filter: false },
         { header: 'Date of Delete', field: 'deleteDate', type: 'DATE', sortable: true, filter: false },
         {
-            header: '', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
+            header: 'Product', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
                 if (row['product'] == null || row['product'].length === 0) {
                     return 'NONE';
                 }
 
                 return 'CONSTANT';
+            }
+        },
+        {
+            header: 'Map Services', field: 'productURLs', type: 'STRING-ARRAY', sortable: false, columnType: (row: Object) => {
+                if (row['product'] == null || row['product'].length === 0) {
+                    return 'NONE';
+                }
+
+                return 'STRING-ARRAY';
             }
         },
     ];
