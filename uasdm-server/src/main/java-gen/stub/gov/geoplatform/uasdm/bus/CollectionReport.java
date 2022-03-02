@@ -102,20 +102,23 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     if (this.getValue(PRODUCT) != null)
     {
       Product product = Product.get(this.getValue(PRODUCT));
-      
-      List<GeoserverLayer> layers = product.getLayers();
-      
-      if (layers.size() > 0)
+      if (product != null)
       {
-        JSONArray availableServices = new JSONArray();
-        for (GeoserverLayer layer : layers) {
-          String workspace = layer.getWorkspace();
-          String layerName = layer.getStoreName();
-          
-          availableServices.put(workspace.concat(":".concat(layerName)));
-        }
+        List<GeoserverLayer> layers = product.getLayers();
         
-        object.put("productURLs", availableServices);
+        if (layers.size() > 0)
+        {
+          JSONArray availableServices = new JSONArray();
+          for (GeoserverLayer layer : layers) {
+            String workspace = layer.getWorkspace();
+            String layerName = layer.getStoreName();
+             
+            availableServices.put(workspace.concat(":".concat(layerName)));
+          }
+         
+          object.put("productURLs", availableServices);
+         
+        }
       }
     }
     
