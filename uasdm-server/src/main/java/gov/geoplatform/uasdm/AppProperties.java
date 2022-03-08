@@ -219,4 +219,9 @@ public class AppProperties
   {
     return Singleton.getProps().getString("eros.ecs.subnets");
   }
+  
+  public static String getAppDisclaimer()
+  {
+    return Singleton.getProps().getString("app.disclaimer");
+  }
 }

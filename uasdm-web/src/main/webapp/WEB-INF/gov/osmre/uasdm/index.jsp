@@ -49,6 +49,7 @@ body {
   window.gpAppType = "<%=AppProperties.getDeploymentType()%>";
   
   window.uasdmKeycloakEnabled = <%=AppProperties.isKeycloakEnabled()%>;
+  window.uasAppDisclaimer = "<%=AppProperties.getAppDisclaimer()%>";
 </script>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">

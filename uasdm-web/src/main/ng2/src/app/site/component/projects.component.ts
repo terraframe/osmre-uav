@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
+import { NotificationModalComponent } from '@shared/component/modal/notification-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 
 import { SiteEntity, Product, Task, GeoserverLayer } from '../model/management';
@@ -21,6 +22,7 @@ import { AccessibleSupportModalComponent } from './modal/accessible-support-moda
 import { ManagementService } from '../service/management.service';
 import { MapService } from '../service/map.service';
 import { MetadataService } from '../service/metadata.service';
+import { CookieService } from 'ngx-cookie-service';
 
 import {
   fadeInOnEnterAnimation,
@@ -142,7 +144,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   tasks: Task[] = [];
 
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
-    private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute) {
+    private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
+    private cookieService: CookieService) {
 
     this.subject = new Subject();
     this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
@@ -296,6 +299,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       let mousemovePanel = document.getElementById("mousemove-panel");
       mousemovePanel.textContent = "";
     });
+    
+    
+    // Show disclaimer
+    if( ! Boolean( this.cookieService.get("acceptedDisclaimer") ) ){
+	
+	    this.bsModalRef = this.modalService.show(NotificationModalComponent, {
+	      animated: true,
+	      backdrop: true,
+	      ignoreBackdropClick: true,
+	    });
+	    this.bsModalRef.content.message = (window as any).uasAppDisclaimer;
+	    this.bsModalRef.content.submitText = 'I Accept';
+	    
+	    (<NotificationModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
+      		this.cookieService.set('acceptedDisclaimer', "true");
+    	});
+	}    
+    
   }
 
   addLayers(): void {
