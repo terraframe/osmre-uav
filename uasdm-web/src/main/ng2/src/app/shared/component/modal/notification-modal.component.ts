@@ -13,6 +13,8 @@ export class NotificationModalComponent {
      * Message
      */
     @Input() message: string = '';
+    
+    @Input() messageTitle: string = '';
 
     @Input() data: any;
 

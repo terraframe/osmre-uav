@@ -309,6 +309,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 	      backdrop: true,
 	      ignoreBackdropClick: true,
 	    });
+	    this.bsModalRef.content.messageTitle="Disclaimer";
 	    this.bsModalRef.content.message = (window as any).uasAppDisclaimer;
 	    this.bsModalRef.content.submitText = 'I Accept';
 	    
