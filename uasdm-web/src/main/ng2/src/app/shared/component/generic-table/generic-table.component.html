@@ -13,7 +13,8 @@
 
 		<ng-template pTemplate="header" let-columns>
 			<tr>
-				<th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngClass]="{'actions-col' : col.type === 'ACTIONS'}" pResizableColumn>
+				<th *ngFor="let col of columns" [pSortableColumn]="col.field" [pSortableColumnDisabled]="col.type === 'STRING-ARRAY' || col.field === 'product'" 
+                    [ngClass]="{'actions-col' : col.type === 'ACTIONS', 'map-service-col' : col.type === 'STRING-ARRAY'}" pResizableColumn>
 					{{col.header}}
 					<p-sortIcon *ngIf="col.sortable" [field]="col.field" ariaLabel="Activate to sort" style="float:right;"
 						ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
@@ -22,7 +23,7 @@
 			</tr>
 			<tr>
 				<th *ngFor="let col of columns" [ngSwitch]="col.type">
-					<ng-container *ngIf="col.filter !== false">
+					<ng-container *ngIf="col.filter !== false" >
 						<input *ngSwitchCase="'URL'" pInputText type="text" placeholder="Filter by URL..."
 							(input)="dt.filter($event.target.value, col.field, 'contains')">
 						<input *ngSwitchCase="'TEXT'" pInputText type="text" placeholder="Filter by text..."
@@ -39,7 +40,7 @@
 
 		<ng-template pTemplate="body" let-rowData let-columns="columns">
 			<tr>
-				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column" [ngClass]="{'actions-col' : col.type === 'ACTIONS'}">
+				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column" [ngClass]="{'actions-col' : col.type === 'ACTIONS', 'map-service-col' : col.type === 'STRING-ARRAY'}">
 					<ng-container *ngSwitchCase="'URL'">
 						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
 							{{rowData[col.field]}}
@@ -58,6 +59,17 @@
 							{{col.text}}
 						</a>
 					</ng-container>
+                    <ng-container *ngSwitchCase="'STRING-ARRAY'">
+                        <ul>
+                            <li *ngFor="let service of rowData[col.field]; let i = index">
+                                {{service}}
+                                <span *ngIf="i < rowData[col.field].length-1">
+                                    <br>
+                                    <br>
+                                </span>
+                            </li>
+                        </ul>
+                    </ng-container>
 					<ng-container *ngSwitchCase="'NONE'">
 					</ng-container>
 					<ng-container *ngSwitchDefault>

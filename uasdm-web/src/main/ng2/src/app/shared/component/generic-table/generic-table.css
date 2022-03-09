@@ -21,6 +21,10 @@
     text-align: center;
 }
 
+.map-service-col {
+    width: 300px;
+}
+
 td,
 th {
     width: 200px;
