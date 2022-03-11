@@ -19,82 +19,93 @@
 #    exit 1
 #fi
 
-git config --global user.name $GIT_TF_BUILDER_USERNAME
+git config --global user.name "$GIT_TF_BUILDER_USERNAME"
 git config --global user.email builder@terraframe.com
 
 . $NVM_DIR/nvm.sh && nvm install lts/erbium
 
 if [ "$release_uasdm" == "true" ]; then
   ## Update IDM Version in System Component and Commit Compiled NodeJS Source
-  cd $WORKSPACE
-  rm -rf builderdev
-  mkdir builderdev
-  cd builderdev
-  git clone -b master git@github.com:terraframe/osmre-uav.git
-  cd osmre-uav
-  git checkout dev
+  cd $WORKSPACE/uasdm
+  
+  git checkout $release_branch
+  git pull
   sed -i -E "s_<span id=\"automated-version-replace\">.*</span>_<span id=\"automated-version-replace\">$IDM_VERSION</span>_g" uasdm-web/src/main/ng2/src/app/admin/component/system/system-info.component.html
   cd uasdm-web/src/main/ng2
   npm install
   node -v && npm -v
   node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
-  cd $WORKSPACE/builderdev/osmre-uav
+  cd $WORKSPACE/uasdm
   git add -A
   git diff-index --quiet HEAD || git commit -m 'Preparing for release'
-  git push
-  cd $WORKSPACE
-  rm -rf builderdev
+  if [ "$dry_run" == "false" ]; then
+    git push
+  else
+    git reset --hard
+    git clean -fdx
+  fi
   
   ## License Headers
   cd $WORKSPACE/uasdm
-  git checkout dev
-  git pull
+  git checkout $release_branch
   mvn license:format -B
   git add -A
   git diff-index --quiet HEAD || git commit -m 'License headers'
-  git push
-  git checkout master
-  git merge dev
-  git push
+  if [ "$dry_run" == "false" ]; then
+    git push
+  else
+    git reset --hard
+    git clean -fdx
+  fi
   
+  # Release
   cd $WORKSPACE/uasdm
-  
-  mvn release:prepare -B -Dtag=$IDM_VERSION \
+  git checkout $release_branch
+  mvn release:prepare -B -DdryRun=$dry_run -Dtag=$IDM_VERSION \
                    -DreleaseVersion=$IDM_VERSION \
                    -DdevelopmentVersion=$IDM_NEXT
                    
-  mvn release:perform -B -Darguments="-Dmaven.javadoc.skip=true -Dmaven.site.skip=true"
+  mvn release:perform -B -DdryRun=$dry_run -Darguments="-Dmaven.javadoc.skip=true -Dmaven.site.skip=true"
+fi
+
+if [ "$release_docker" == "true" ]; then
+  cd $WORKSPACE/uasdm/src/build/docker/uasdm
+  export tag=$IDM_VERSION
+  ./build.sh
   
-  
-  cd ..
-  rm -rf rwdev
-  mkdir rwdev
-  cd rwdev
-  git clone -b master git@github.com:terraframe/osmre-uav.git
-  cd osmre-uav
-  git checkout dev
-  git merge master
-  git push
+  if [ "$dry_run" == "false" ]; then
+    ./release.sh
+  fi
 fi
 
 if [ "$tag_platform" == "true" ]; then
-  cd $WORKSPACE
-  git clone -b master git@github.com:terraframe/geoprism-platform.git
-  cd geoprism-platform
+  cd $WORKSPACE/geoprism-platform
+  
+  git checkout master
   git merge origin/dev
-  git push
-  git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
-  git push origin idm-$IDM_VERSION
+  
+  if [ "$dry_run" == "false" ]; then
+    git push
+    git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
+    git push origin idm-$IDM_VERSION
+  else
+    git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
+  fi
 fi
 
 if [ "$tag_cloud" == "true" ]; then
-  cd $WORKSPACE
-  git clone -b master git@github.com:terraframe/geoprism-cloud.git
-  cd geoprism-cloud
+  cd $WORKSPACE/geoprism-cloud
+  
+  git checkout master
   git merge origin/dev
-  git push
-  git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
-  git push origin idm-$IDM_VERSION
+  
+  if [ "$dry_run" == "false" ]; then
+    git push
+    git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
+    git push origin idm-$IDM_VERSION
+  else
+    git tag -a idm-$IDM_VERSION -m "Deployment scripts for IDM version $IDM_VERSION"
+  fi
 fi
 
 if [ "$release_github" == "true" ]; then
@@ -102,7 +113,11 @@ if [ "$release_github" == "true" ]; then
   
   gh config set prompt disabled
   
-  sleep 180 # Cloudsmith takes a little bit to process the artifact before its downloadable.
-  wget https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-web/$IDM_VERSION/uasdm-web-$IDM_VERSION.war -O uasdm-web-$IDM_VERSION.war
-  gh release create $IDM_VERSION "uasdm-web-$IDM_VERSION.war#Webapp War Artifact"
+  if [ "$dry_run" == "false" ]; then
+    # TODO : We really should be using the artifacts we compiled earlier.
+    sleep 180 # Cloudsmith takes a little bit to process the artifact before its downloadable.
+    
+    wget https://dl.cloudsmith.io/public/terraframe/osmre-uav/maven/gov/osmre/uasdm/uasdm-web/$IDM_VERSION/uasdm-web-$IDM_VERSION.war -O uasdm-web-$IDM_VERSION.war
+    gh release create $IDM_VERSION "uasdm-web-$IDM_VERSION.war#Webapp War Artifact"
+  fi
 fi

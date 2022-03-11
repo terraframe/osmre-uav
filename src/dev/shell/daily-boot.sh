@@ -43,6 +43,7 @@ git pull
 
 # Run Docker containers
 sudo docker start orientdb
+sudo docker start postgres
 sudo docker start solr
 sudo docker start uasdm-nodeodm
 
@@ -50,7 +51,7 @@ sudo docker start uasdm-nodeodm
 pkill -f -SIGINT catalina || true
 sleep 2
 
-# Run the cgr webserver
+# Run the webserver
 cd $UASDM_PROJECT
 mvn clean
 gnome-terminal -x sh -c "mvn install -P ng2-dev,cargo-run-uasdm"

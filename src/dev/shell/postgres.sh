@@ -15,17 +15,21 @@
 # limitations under the License.
 #
 
-# Run this with sudo
+# Run with super user
 
-CONTAINER_NAME=uasdm-postgres
+CONTAINER_NAME=postgres
 POSTGRES_PORT=5442
 POSTGRES_ROOT_PASS=postgres
+CONTAINER_DATA_DIR=/data/postgres
 
 # Exit immediately if anything errors out
 set -e
+
+# Delete any existing data directory
+rm -rf $CONTAINER_DATA_DIR
 
 # Kill any running containers by name of what we're about to run
 docker rm -f $(docker ps -a -q --filter="name=$CONTAINER_NAME") > /dev/null || true
 
 # Pull & Run the container
-docker run --name $CONTAINER_NAME -e POSTGRES_PASSWORD=$POSTGRES_ROOT_PASS -d -p $POSTGRES_PORT:5432 postgis/postgis:13-master
+docker run --name $CONTAINER_NAME -e POSTGRES_PASSWORD=$POSTGRES_ROOT_PASS -v $CONTAINER_DATA_DIR:/var/lib/postgresql/data -d -p $POSTGRES_PORT:5432 postgis/postgis:14-3.2
