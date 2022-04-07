@@ -1,5 +1,5 @@
 # Imagery Data Manager (IDM) 
-# (formerly osmre-uav) 
+(formerly osmre-uav) 
 
 IDM is an application on GeoPlatform.gov (https://www.geoplatform.gov/apps), which is a US cross-agency collaborative effort and shared service that embodies the principles and spirit of open government, emphasizing government-to-citizen communication, accountability, and transparency. Organizations working with US agencies can request access to use IDM at no cost.
 
