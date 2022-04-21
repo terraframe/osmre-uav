@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-servlet-filter-adapter</artifactId>
-      <version>12.0.2</version>
+      <version>17.0.0</version>
     </dependency>
     <dependency>
       <groupId>javax.websocket</groupId>
@@ -260,7 +260,7 @@
                   <mainClass>com.runwaysdk.dataaccess.io.UndoAll</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
@@ -307,7 +307,7 @@
                   <mainClass>net.geoprism.ImportSchema</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
