@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -41,6 +41,7 @@ import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -576,6 +577,31 @@ public class ProjectManagementService
     //
     // UasComponent.validateFolderName(missionId, folderName);
     // }
+  }
+
+  @Request(RequestType.SESSION)
+  public void applyMetadata(String sessionId, String json)
+  {
+    applyMetadata(new JSONObject(json));
+  }
+
+  @Transaction
+  public void applyMetadata(JSONObject object)
+  {
+    String collectionId = object.getString("value");
+    String uavId = object.getString("uav");
+    String sensorId = object.getString("sensor");
+
+    CollectionIF collection = ComponentFacade.getCollection(collectionId);
+
+    UAV uav = ( uavId != null && uavId.length() > 0 ) ? UAV.get(uavId) : null;
+    Sensor sensor = ( sensorId != null && sensorId.length() > 0 ) ? Sensor.get(sensorId) : null;
+
+    collection.setUav(uav);
+    collection.setSensor(sensor);
+    collection.apply();
+
+    new MetadataXMLGenerator().generateAndUpload(collection, object);
   }
 
   @Request(RequestType.SESSION)

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -38,7 +38,9 @@ import gov.geoplatform.uasdm.model.Page;
 
 public class Platform extends PlatformBase implements JSONSerializable
 {
-  private static final long serialVersionUID = -62034328;
+  private static final long  serialVersionUID  = -62034328;
+
+  public static final String PLATFORM_TYPE_OID = "platformTypeOid";
 
   public Platform()
   {
@@ -112,6 +114,7 @@ public class Platform extends PlatformBase implements JSONSerializable
 
     if (platformType != null)
     {
+      object.put(Platform.PLATFORM_TYPE_OID, platformType.getOid());
       object.put(Platform.PLATFORMTYPE, platformType.toJSON());
     }
 
@@ -159,9 +162,9 @@ public class Platform extends PlatformBase implements JSONSerializable
     platform.setName(json.getString(Platform.NAME));
     platform.setDescription(json.has(Platform.DESCRIPTION) ? json.getString(Platform.DESCRIPTION) : null);
 
-    if (json.has(Platform.PLATFORMTYPE))
+    if (json.has(PLATFORM_TYPE_OID))
     {
-      String oid = json.getString(Platform.PLATFORMTYPE);
+      String oid = json.getString(PLATFORM_TYPE_OID);
 
       platform.setPlatformType(PlatformType.get(oid));
     }

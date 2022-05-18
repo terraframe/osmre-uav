@@ -138,7 +138,15 @@ public class ProjectManagementController
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
   }
-
+  
+  @Endpoint(url = "apply-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF applyMetadata(ClientRequestIF request, @RequestParamter(name = "selection") String selection)
+  {
+    this.service.applyMetadata(request.getSessionId(), selection);
+    
+    return new RestResponse();
+  }
+  
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {

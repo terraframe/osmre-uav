@@ -51,8 +51,12 @@ public interface CollectionIF extends UasComponentIF
 
   public Sensor getSensor();
 
-  public UAV getUav();
+  public void setSensor(Sensor sensor);
 
+  public UAV getUav();
+  
+  public void setUav(UAV uav);
+  
   public Date getCollectionDate();
 
   public void setImageHeight(Integer imageHeight);

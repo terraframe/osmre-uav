@@ -487,6 +487,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return null;
   }
+  
+  @Override
+  public void setSensor(Sensor sensor)
+  {
+    this.setCollectionSensor(sensor);
+  }
 
   @Override
   public boolean isMultiSpectral()
