@@ -27,10 +27,10 @@ import {
 declare var acp: string;
 
 export class Page {
-	index: number;
-	selection: Selection;
-	options: SiteEntity[];
-	type: string
+	index?: number;
+	selection?: Selection;
+	options?: SiteEntity[];
+	type?: string
 };
 
 @Component({

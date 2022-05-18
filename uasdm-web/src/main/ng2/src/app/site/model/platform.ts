@@ -5,7 +5,8 @@ export class Platform {
     description?: string;
     dateCreated?: string;
     dateUpdate?: string;
-    platformType: PlatformType;
+    platformTypeOid?: string;
+    platformType?: PlatformType;
     manufacturer: string;
     sensors: string[];
 }

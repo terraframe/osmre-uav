@@ -6,7 +6,8 @@ import { Subject } from 'rxjs';
 import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '@site/service/management.service';
 
-import { WAVELENGTHS } from '@site/model/sensor';
+import { Selection } from '@site/model/management';
+import { Page } from './upload-modal.component';
 
 @Component({
 	selector: 'metadata-modal',
@@ -14,9 +15,9 @@ import { WAVELENGTHS } from '@site/model/sensor';
 	styleUrls: []
 })
 export class MetadataModalComponent {
-    /*
-     * collectionId for the metadata
-     */
+	/*
+	 * collectionId for the metadata
+	 */
 	collectionId: string;
 
 	message: string = null;
@@ -27,91 +28,59 @@ export class MetadataModalComponent {
 
 	// imageWidth: string;
 
-	metaObject: any = {
-		pointOfContact: {
-			name: "",
-			email: ""
-		},
-		platform: {
-			otherName: "",
-			class: "",
-			type: "",
-			serialNumber: "",
-			faaIdNumber: ""
-		},
-		sensor: {
-			otherName: "",
-			type: "",
-			model: "",
-			wavelength: [],
-			sensorWidth: "",
-			sensorWidthUnits: "mm",
-			sensorHeight: "",
-			sensorHeightUnits: "mm",
-			pixelSizeWidth: "",
-			pixelSizeHeight: ""
-		},
-		upload: {
-			dataType: "raw"
-		}
-	};
+	page: Page = null;
 
-    /*
-     * Observable subject called when metadata upload is successful
-     */
-	public onMetadataChange: Subject<string>;
+	/*
+	 * Observable subject called when metadata upload is successful
+	 */
+	public onMetadataChange: Subject<Selection>;
 
-	wavelengths: string[] = WAVELENGTHS;
 
 	constructor(public bsModalRef: BsModalRef, private service: ManagementService) { }
 
-	init(collectionId: string): void {
+	init(collectionId: string, collectionName: string): void {
 		this.collectionId = collectionId;
 
 		this.onMetadataChange = new Subject();
 
-		this.service.getMetadataOptions(null).then((options) => {
+		this.service.getMetadataOptions(this.collectionId).then((options) => {
 
-			this.metaObject.pointOfContact.name = options.name;
-			this.metaObject.pointOfContact.email = options.email;
+			this.page = {
+				selection: {
+					type: 'CATEGORY',
+					isNew: false,
+					value: this.collectionId,
+					label: collectionName,
+					uav: options.uav.oid,
+					sensor: options.sensor.oid,
+					pointOfContact: {
+						name: options.name,
+						email: options.email
+					}
+				}
+			}
 
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
+	}
+
+	close(): void {
+		this.bsModalRef.hide();
 	}
 
 
 	handleSubmit(): void {
 
-		// this.metaObject.imageWidth = this.imageWidth;
-		// this.metaObject.imageHeight = this.imageHeight;
-
-		this.service.submitCollectionMetadata(this.collectionId, this.metaObject).then(() => {
+		this.service.applyMetadata(this.page.selection).then(() => {
 			this.bsModalRef.hide();
-			this.onMetadataChange.next(this.collectionId);
+			this.onMetadataChange.next(this.page.selection);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
-	
-	updateSelectedWaveLength(wavelength: string, checked: boolean): void {
-
-		const indexOf = this.metaObject.sensor.wavelength.indexOf(wavelength)
-
-		if (checked) {
-
-			if (indexOf < 0) {
-				this.metaObject.sensor.wavelength.push(wavelength);
-
-			}
-		} else {
-			if (indexOf > -1) {
-				this.metaObject.sensor.wavelength.splice(indexOf, 1);
-			}
-		}
-	}	
 
 	error(err: HttpErrorResponse): void {
-	  this.message = ErrorHandler.getMessageFromError(err);
+		this.message = ErrorHandler.getMessageFromError(err);
 	}
 }

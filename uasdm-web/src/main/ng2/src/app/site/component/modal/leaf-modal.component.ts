@@ -316,7 +316,7 @@ export class LeafModalComponent implements OnInit {
 			ignoreBackdropClick: true,
 			'class': 'upload-modal'
 		});
-		modalRef.content.init(this.entity.id);
+		modalRef.content.init(this.entity.id, this.entity.name);
 
 		modalRef.content.onMetadataChange.subscribe(() => {
 			this.entity.metadataUploaded = true;

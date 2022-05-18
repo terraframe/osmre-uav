@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
           <label>Type</label>
-          <select [(ngModel)]="platform.platformType" [disabled]="mode === 'READ'" name="platformType" type="input"
+          <select [(ngModel)]="platform.platformTypeOid" [disabled]="mode === 'READ'" name="platformType" type="input"
             class="form-control" placeholder="Type" required>
             <option></option>
             <option *ngFor="let type of types" [value]="type.oid">{{type.name}}</option>

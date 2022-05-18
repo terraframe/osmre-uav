@@ -10,7 +10,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -424,6 +424,23 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
+
+	applyMetadata(selection: Selection): Promise<void> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<void>(acp + '/project/apply-metadata', JSON.stringify({ selection: selection }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
 
 	pushToEros(collectionId: string): Promise<void> {
 
