@@ -34,7 +34,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -83,16 +82,14 @@ public class MetadataXMLGenerator
 
   }
 
-  public FlightMetadata generate(CollectionIF collection, JSONObject selection)
+  public FlightMetadata generate(CollectionIF collection)
   {
     FlightMetadata metadata = new FlightMetadata();
 
     List<UasComponentIF> ancestors = collection.getAncestors();
 
-    JSONObject pointOfContact = selection.getJSONObject("pointOfContact");
-
-    metadata.setName(pointOfContact.getString("name"));
-    metadata.setEmail(pointOfContact.getString("email"));
+    metadata.setName(collection.getPocName());
+    metadata.setEmail(collection.getPocEmail());
 
     UasComponentIF proj = ancestors.get(1);
 
@@ -240,9 +237,9 @@ public class MetadataXMLGenerator
   }
 
   @Transaction
-  public void generateAndUpload(CollectionIF collection, JSONObject selection)
+  public void generateAndUpload(CollectionIF collection)
   {
-    FlightMetadata metadata = this.generate(collection, selection);
+    FlightMetadata metadata = this.generate(collection);
 
     this.generateAndUpload(collection, metadata);
   }

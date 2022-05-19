@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 362021314)
+@com.runwaysdk.business.ClassSignature(hash = -1227296019)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -31,9 +16,11 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public static java.lang.String IMAGEHEIGHT = "imageHeight";
   public static java.lang.String IMAGEWIDTH = "imageWidth";
   public static java.lang.String METADATAUPLOADED = "metadataUploaded";
+  public static java.lang.String POCEMAIL = "pocEmail";
+  public static java.lang.String POCNAME = "pocName";
   public static java.lang.String PRIVILEGETYPE = "privilegeType";
   public static java.lang.String UAV = "uav";
-  private static final long serialVersionUID = 362021314;
+  private static final long serialVersionUID = -1227296019;
   
   public CollectionBase()
   {
@@ -118,6 +105,38 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setMetadataUploaded(Boolean value)
   {
     this.setValue(METADATAUPLOADED, value);
+  }
+  
+  public String getPocEmail()
+  {
+    return (String) this.getObjectValue(POCEMAIL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getPocEmailMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(POCEMAIL);
+  }
+  
+  public void setPocEmail(String value)
+  {
+    this.setValue(POCEMAIL, value);
+  }
+  
+  public String getPocName()
+  {
+    return (String) this.getObjectValue(POCNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getPocNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(POCNAME);
+  }
+  
+  public void setPocName(String value)
+  {
+    this.setValue(POCNAME, value);
   }
   
   @SuppressWarnings("unchecked")

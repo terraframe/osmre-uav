@@ -586,11 +586,11 @@ public class ProjectManagementService
   }
 
   @Transaction
-  public void applyMetadata(JSONObject object)
+  public void applyMetadata(JSONObject selection)
   {
-    String collectionId = object.getString("value");
-    String uavId = object.getString("uav");
-    String sensorId = object.getString("sensor");
+    String collectionId = selection.getString("value");
+    String uavId = selection.getString("uav");
+    String sensorId = selection.getString("sensor");
 
     CollectionIF collection = ComponentFacade.getCollection(collectionId);
 
@@ -599,9 +599,25 @@ public class ProjectManagementService
 
     collection.setUav(uav);
     collection.setSensor(sensor);
+
+    if (selection.has(Collection.POINT_OF_CONTACT))
+    {
+      JSONObject poc = selection.getJSONObject(Collection.POINT_OF_CONTACT);
+
+      if (poc.has(Collection.NAME))
+      {
+        collection.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
+      }
+
+      if (poc.has(Collection.EMAIL))
+      {
+        collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
+      }
+    }
+
     collection.apply();
 
-    new MetadataXMLGenerator().generateAndUpload(collection, object);
+    new MetadataXMLGenerator().generateAndUpload(collection);
   }
 
   @Request(RequestType.SESSION)
@@ -755,6 +771,9 @@ public class ProjectManagementService
         {
           response.put("sensor", sensor.toView());
         }
+
+        response.put("name", collection.getPocName());
+        response.put("email", collection.getPocEmail());
       }
     }
 

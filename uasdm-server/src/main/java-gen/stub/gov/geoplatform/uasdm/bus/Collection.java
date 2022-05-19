@@ -86,6 +86,18 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
+  public String getPocEmail()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String getPocName()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public UAV getUav()
   {
     throw new UnsupportedOperationException();

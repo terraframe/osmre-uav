@@ -62,4 +62,8 @@ public interface CollectionIF extends UasComponentIF
   public void setImageHeight(Integer imageHeight);
 
   public void setImageWidth(Integer imageWidth);
+
+  public String getPocName();
+
+  public String getPocEmail();
 }

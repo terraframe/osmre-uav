@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -68,6 +68,14 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public static final long    serialVersionUID = 166854005;
 
   private static final String PARENT_EDGE      = "gov.geoplatform.uasdm.graph.MissionHasCollection";
+
+  public static final String  SENSOR           = "sensor";
+
+  public static final String  POINT_OF_CONTACT = "pointOfContact";
+
+  public static final String  NAME             = "name";
+
+  public static final String  EMAIL            = "email";
 
   final Logger                log              = LoggerFactory.getLogger(Collection.class);
 
@@ -210,15 +218,15 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       this.createS3Folder(this.buildOrthoKey());
     }
   }
-  
+
   public String getStatus()
   {
     List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(this.getOid());
 
     Map<String, LinkedList<WorkflowTask>> taskGroups = CollectionStatus.createTaskGroups(tasks);
-    
+
     String status = CollectionStatus.mergeTaskGroupStatuses(taskGroups);
-    
+
     return status;
   }
 
@@ -232,7 +240,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       ex.setCollectionName(this.getName());
       throw ex;
     }
-    
+
     List<AbstractWorkflowTask> tasks = this.getTasks();
 
     for (AbstractWorkflowTask task : tasks)
@@ -487,7 +495,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return null;
   }
-  
+
   @Override
   public void setSensor(Sensor sensor)
   {

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -97,30 +97,49 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             child.setName(name);
             // child.setValue(Collection.U, value);
 
-            if (child instanceof CollectionIF && selection.has(Collection.UAV))
+            if (child instanceof CollectionIF)
             {
-              child.setValue(Collection.UAV, selection.getString(Collection.UAV));
-            }
-
-            if (child instanceof CollectionIF && selection.has("sensor"))
-            {
-              child.setValue(Collection.COLLECTIONSENSOR, selection.getString("sensor"));
-            }
-
-            if (child instanceof CollectionIF && selection.has("collectionDate"))
-            {
-              try
+              if (selection.has(Collection.UAV))
               {
-                Date date = Util.parseIso8601(selection.getString("collectionDate"), false);
+                child.setValue(Collection.UAV, selection.getString(Collection.UAV));
+              }
 
-                child.setValue(Collection.COLLECTIONDATE, date);
-              }
-              catch (ParseException e)
+              if (selection.has(Collection.SENSOR))
               {
-                GenericException exception = new GenericException(e);
-                exception.setUserMessage(e.getMessage());
-                throw exception;
+                child.setValue(Collection.COLLECTIONSENSOR, selection.getString(Collection.SENSOR));
               }
+
+              if (selection.has(Collection.COLLECTIONDATE))
+              {
+                try
+                {
+                  Date date = Util.parseIso8601(selection.getString(Collection.COLLECTIONDATE), false);
+
+                  child.setValue(Collection.COLLECTIONDATE, date);
+                }
+                catch (ParseException e)
+                {
+                  GenericException exception = new GenericException(e);
+                  exception.setUserMessage(e.getMessage());
+                  throw exception;
+                }
+              }
+
+              if (selection.has(Collection.POINT_OF_CONTACT))
+              {
+                JSONObject poc = selection.getJSONObject(Collection.POINT_OF_CONTACT);
+
+                if (poc.has(Collection.NAME))
+                {
+                  child.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
+                }
+                
+                if (poc.has(Collection.EMAIL))
+                {
+                  child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
+                }
+              }
+
             }
 
             child.applyWithParent(component);
@@ -130,7 +149,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             {
               CollectionReport.create((CollectionIF) child);
 
-              new MetadataXMLGenerator().generateAndUpload((CollectionIF) child, selection);
+              new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
             }
           }
 
