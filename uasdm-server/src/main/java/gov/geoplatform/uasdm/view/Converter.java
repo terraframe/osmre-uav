@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -91,31 +91,30 @@ public abstract class Converter
     {
       siteItem.setAttributes(attributes);
     }
-    
+
     if (uasComponent != null)
     {
       if (uasComponent instanceof Collection)
       {
-        FlightMetadata fMetadata = FlightMetadata.get(uasComponent, Collection.RAW, uasComponent.getFolderName() + MetadataXMLGenerator.FILENAME);
+        // FlightMetadata fMetadata = FlightMetadata.get(uasComponent,
+        // Collection.RAW, uasComponent.getFolderName() +
+        // MetadataXMLGenerator.FILENAME);
 
-        if (fMetadata != null)
-        {
-          siteItem.setPilotName(fMetadata.getName());
-        }
-        
-        Sensor sensor = ((CollectionIF) uasComponent).getSensor();
-        if(sensor != null)
+        siteItem.setPilotName( ( (CollectionIF) uasComponent ).getPocName());
+
+        Sensor sensor = ( (CollectionIF) uasComponent ).getSensor();
+        if (sensor != null)
         {
           siteItem.setSensor(sensor);
         }
-        
-        UAV uav = ((CollectionIF) uasComponent).getUav();
-        if(uav != null)
+
+        UAV uav = ( (CollectionIF) uasComponent ).getUav();
+        if (uav != null)
         {
           siteItem.setUav(uav);
-          
+
           Platform platform = uav.getPlatform();
-          if(platform != null)
+          if (platform != null)
           {
             siteItem.setPlatform(platform);
           }
@@ -277,7 +276,7 @@ public abstract class Converter
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
-    
+
     List<GeoserverLayer> layers = ( (Product) product ).getLayers();
     view.setLayers(layers);
 
@@ -325,36 +324,31 @@ public abstract class Converter
     // Get metadata
     CollectionIF collection = (CollectionIF) product.getComponent();
 
-    FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
+    view.setPilotName(collection.getPocName());
 
-    if (metadata != null)
-    {
-      view.setPilotName(metadata.getName());
-    }
-    
-    Sensor sensor = ((CollectionIF) collection).getSensor();
-    if(sensor != null)
+    Sensor sensor = ( (CollectionIF) collection ).getSensor();
+    if (sensor != null)
     {
       view.setSensor(sensor.toJSON());
     }
-    
-    UAV uav = ((CollectionIF) collection).getUav();
-    if(uav != null)
+
+    UAV uav = ( (CollectionIF) collection ).getUav();
+    if (uav != null)
     {
       view.setUAV(uav.toJSON());
-      
+
       Platform platform = uav.getPlatform();
-      if(platform != null)
+      if (platform != null)
       {
         view.setPlatform(platform.toJSON());
       }
     }
-    
+
     if (collection.getCollectionDate() != null)
     {
       view.setCollectionDate(collection.getCollectionDate());
     }
-    
+
     view.setDateTime(product.getLastUpdateDate());
     view.setPage(page);
 
