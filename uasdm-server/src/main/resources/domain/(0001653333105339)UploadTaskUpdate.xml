@@ -1,0 +1,18 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractUploadTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+        <create>
+          <attributes>
+            <char name="uploadTarget" required="false" label="Upload Target" size="256" />
+          </attributes>
+        </create>
+      </mdBusiness>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.folder" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+    </delete>
+  </undoIt>
+</version>

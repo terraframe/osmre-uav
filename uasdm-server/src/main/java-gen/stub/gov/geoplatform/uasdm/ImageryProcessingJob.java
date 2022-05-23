@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -22,7 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -60,6 +62,7 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -70,13 +73,12 @@ import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger  logger               = LoggerFactory.getLogger(ProjectManagementService.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
-  private static final long    serialVersionUID     = -339555201;
+  private static final long serialVersionUID = -339555201;
 
   // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
   // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
-  public static final String[] SUPPORTED_EXTENSIONS = new String[] { "jpg", "jpeg", "png" };
 
   public ImageryProcessingJob()
   {
@@ -102,7 +104,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
-      String uploadTarget = parser.getUploadTarget();
       VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
       Boolean processUpload = parser.getProcessUpload();
 
@@ -110,7 +111,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
       job.setWorkflowTask(task);
       job.setImageryFile(vfImageryZip.getOid());
-      job.setUploadTarget(uploadTarget);
+      job.setUploadTarget(task.getUploadTarget());
       job.setOutFileNamePrefix(outFileNamePrefix);
       job.setProcessUpload(processUpload);
       job.apply();
@@ -263,9 +264,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       if (!isMultispectral)
       {
+        List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
-        task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "));
+        task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(extensions, ", "));
         task.apply();
       }
       else
@@ -293,6 +296,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     boolean isVideo = Util.isVideoFile(filename);
     boolean isValidName = UasComponentIF.isValidName(filename);
     String ext = FilenameUtils.getExtension(filename).toLowerCase();
+    String uploadTarget = task.getUploadTarget();
 
     if (isDirectory)
     {
@@ -309,6 +313,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         return false;
       }
 
+      List<String> extensions = getSupportedExtensions(uploadTarget);
+
       if (isMultispectral)
       {
         if (!filename.endsWith(".tif"))
@@ -319,15 +325,37 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else
       {
-        if (!ArrayUtils.contains(SUPPORTED_EXTENSIONS, ext))
+        if (!extensions.contains(ext))
         {
-          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(SUPPORTED_EXTENSIONS, ", "), TaskActionType.ERROR.getType());
+          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR.getType());
           return false;
         }
       }
     }
 
     return true;
+  }
+
+  public static List<String> getSupportedExtensions(String uploadTarget)
+  {
+    if (uploadTarget.equals(ImageryComponent.DEM))
+    {
+      return Arrays.asList("tif");
+    }
+    else if (uploadTarget.equals(ImageryComponent.ORTHO))
+    {
+      return Arrays.asList("png", "tif");
+    }
+    else if (uploadTarget.equals(ImageryComponent.PTCLOUD))
+    {
+      return Arrays.asList("laz");
+    }
+    else if (uploadTarget.equals(ImageryComponent.VIDEO))
+    {
+      return Arrays.asList("mp4");
+    }
+
+    return Arrays.asList("jpg", "jpeg", "png");
   }
 
   private static boolean isMultispectral(AbstractWorkflowTask task)

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -62,11 +62,11 @@ import gov.geoplatform.uasdm.view.TreeComponent;
 @Controller(url = "project")
 public class ProjectManagementController
 {
-  public static final String       JSP_DIR   = "/WEB-INF/";
+  public static final String JSP_DIR = "/WEB-INF/";
 
-  public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
+  public static final String INDEX_JSP = "gov/osmre/uasdm/index.jsp";
 
-  private static final Logger      logger    = LoggerFactory.getLogger(ProjectManagementController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
 
   private ProjectManagementService service;
 
@@ -138,15 +138,26 @@ public class ProjectManagementController
     response.set("attributes", AttributeType.toJSON(item.getAttributes()));
     return response;
   }
-  
+
   @Endpoint(url = "apply-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyMetadata(ClientRequestIF request, @RequestParamter(name = "selection") String selection)
   {
     this.service.applyMetadata(request.getSessionId(), selection);
-    
+
     return new RestResponse();
   }
-  
+
+  @Endpoint(url = "create-collection", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF createCollection(ClientRequestIF request, @RequestParamter(name = "selections") String selections)
+  {
+    String oid = this.service.createCollection(request.getSessionId(), selections);
+
+    RestResponse response = new RestResponse();
+    response.set("oid", oid);
+
+    return response;
+  }
+
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
   {
@@ -303,6 +314,14 @@ public class ProjectManagementController
   public ResponseIF getTask(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
     JSONObject response = new WorkflowService().getTask(request.getSessionId(), id);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(url = "get-upload-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getUploadTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  {
+    JSONObject response = new WorkflowService().getUploadTask(request.getSessionId(), uploadId);
 
     return new RestBodyResponse(response);
   }

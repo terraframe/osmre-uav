@@ -15,9 +15,6 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-import java.text.DateFormat;
-import java.util.Locale;
-
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.Util;
@@ -33,6 +30,12 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
   public ImageryWorkflowTask()
   {
     super();
+  }
+  
+  @Override
+  public String getUploadTarget()
+  {
+    return "imagery";
   }
 
   public ImageryComponent getImageryComponent()

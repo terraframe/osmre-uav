@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1968419316)
+@com.runwaysdk.business.ClassSignature(hash = 2068833733)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -70,6 +55,40 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getUploadTarget()
+  {
+    return getUploadTarget(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
+
+  }
   /**  
    * Returns an iterator of Business objects that match the query criteria specified
    * on this query object. 
@@ -105,6 +124,12 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getUploadTarget();
+    public com.runwaysdk.query.SelectableChar getUploadTarget(String alias);
+    public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getWorkflowType();
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias);
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel);
 
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.bus.WorkflowTask workflowTask);
 
@@ -157,6 +182,40 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getUploadTarget()
+  {
+    return getUploadTarget(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
+
+  }
   }
 
 /**
@@ -169,6 +228,12 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getUploadTarget();
+    public com.runwaysdk.query.SelectableChar getUploadTarget(String alias);
+    public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getWorkflowType();
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias);
+    public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel);
 
     public com.runwaysdk.query.Condition containsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
     public com.runwaysdk.query.Condition notContainsAny(gov.geoplatform.uasdm.bus.WorkflowTask ... workflowTask);
@@ -268,6 +333,40 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getUploadTarget()
+  {
+    return getUploadTarget(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.UPLOADTARGET, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getWorkflowType()
+  {
+    return getWorkflowType(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getWorkflowType(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.WORKFLOWTYPE, alias, displayLabel);
 
   }
   }

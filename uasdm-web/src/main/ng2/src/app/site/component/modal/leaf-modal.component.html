@@ -242,14 +242,18 @@
 
           <div class="btn-holder" style="margin: 20px 20px 10px 20px;">
             <div class="row">
-              <div class="col-sm-2">
+              <div class="col-sm-4">
                 <button type="button" class="btn btn-warning"
                   [disabled]="processRunning" (click)="handleSetMetadata()">
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
                 </button>
+                <button type="button" class="btn btn-primary"
+                  [disabled]="processRunning" (click)="handleUpload()">
+                  Upload
+                </button>
               </div>
-              <div class="col-md-10" style="text-align: right;">
+              <div class="col-md-8" style="text-align: right;">
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
                 <button *ngIf="processable" type="button" class="btn btn-secondary" title="Downloads all files in the {{folder.name}} folder." [disabled]="processRunning"
                   (click)="handleDownload()" style="margin-left: 5px;">

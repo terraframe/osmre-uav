@@ -17,6 +17,7 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
+import { UploadModalComponent } from './upload-modal.component';
 
 declare var acp: string;
 
@@ -322,6 +323,23 @@ export class LeafModalComponent implements OnInit {
 			this.entity.metadataUploaded = true;
 		});
 	}
+
+	handleUpload(): void {
+
+		const modal = this.modalService.show(UploadModalComponent, {
+		  animated: true,
+		  backdrop: true,
+		  ignoreBackdropClick: true,
+		  'class': 'upload-modal'
+		});
+		modal.content.init(this.entity.id, this.folder.name);
+	
+		// modal.content.onUploadComplete.subscribe(oid => {
+	
+		//   this.handleViewSite(oid);
+		// });
+	  }
+
 	
 	capitalize(str): string {
         return str.replace(/^\w/, c => c.toUpperCase());

@@ -15,7 +15,6 @@ import { AuthService } from '@shared/service/auth.service';
 import { SiteEntity, Product, Task, GeoserverLayer } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
-import { UploadModalComponent } from './modal/upload-modal.component';
 import { LeafModalComponent } from './modal/leaf-modal.component';
 import { AccessibleSupportModalComponent } from './modal/accessible-support-modal.component';
 
@@ -29,6 +28,10 @@ import {
   fadeOutOnLeaveAnimation
 } from 'angular-animations';
 import { ActivatedRoute } from '@angular/router';
+import { CreateCollectionModalComponent } from './modal/create-collection-modal.component';
+import { FineUploader, UIOptions } from 'fine-uploader';
+import { FineUploaderBasic } from 'fine-uploader/lib/core';
+import { UploadModalComponent } from './modal/upload-modal.component';
 
 
 declare var acp: any;
@@ -49,68 +52,68 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // imageToShow: any;
   userName: string = "";
 
-    /*
-     * Template for the delete confirmation
-     */
+  /*
+   * Template for the delete confirmation
+   */
   @ViewChild('confirmTemplate') public confirmTemplate: TemplateRef<any>;
 
-    /* 
-     * Datasource to get search responses
-     */
+  /* 
+   * Datasource to get search responses
+   */
   dataSource: Observable<any>;
 
-    /* 
-     * Model for text being searched
-     */
+  /* 
+   * Model for text being searched
+   */
   search: string = "";
 
-    /* 
-     * Root nodes of the tree
-     */
+  /* 
+   * Root nodes of the tree
+   */
   nodes = [] as SiteEntity[];
-  
+
   allPointsBounds;
 
-    /* 
-     * Root nodes of the tree
-     */
+  /* 
+   * Root nodes of the tree
+   */
   supportingData = [] as SiteEntity[];
 
-    /* 
-     * Breadcrumb of previous sites clicked on
-     */
+  /* 
+   * Breadcrumb of previous sites clicked on
+   */
   breadcrumbs = [] as SiteEntity[];
 
-    /* 
-     * Root nodes of the tree
-     */
+  /* 
+   * Root nodes of the tree
+   */
   current: SiteEntity;
 
-    /* 
-     * mapbox-gl map
-     */
+  /* 
+   * mapbox-gl map
+   */
   map: Map;
 
-    /* 
-     * Flag denoting if the user is an admin
-     */
+  /* 
+   * Flag denoting if the user is an admin
+   */
   admin: boolean = false;
 
-    /* 
-     * Flag denoting if the user is a worker
-     */
+  /* 
+   * Flag denoting if the user is a worker
+   */
   worker: boolean = false;
 
-    /* 
-     * Flag denoting the draw control is active
-     */
+  /* 
+   * Flag denoting the draw control is active
+   */
   active: boolean = false;
-  
+
   loadingSites: boolean = true;
 
-    /* 
-     * List of base layers
-     */
+  /* 
+   * List of base layers
+   */
   baseLayers: any[] = [{
     label: 'Outdoors',
     id: 'outdoors-v11',
@@ -134,14 +137,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
   subject: Subject<MapboxEvent<MouseEvent | TouchEvent | WheelEvent>>;
 
-    /*
-     * Reference to the modal current showing
-    */
+  /*
+   * Reference to the modal current showing
+  */
   private bsModalRef: BsModalRef;
 
   notifier: WebSocketSubject<any>;
 
   tasks: Task[] = [];
+
+  existingTask: {
+    task: Task,
+    filename: string
+  } = null;
 
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
     private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
@@ -150,7 +158,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subject = new Subject();
     this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
 
-    this.dataSource = Observable.create((observer: any) => {
+    this.dataSource = new Observable((observer: any) => {
 
       this.mapService.mbForwardGeocode(this.search).then(response => {
         const match = response.features;
@@ -194,10 +202,76 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     const oid = this.route.snapshot.params['oid'];
     const action = this.route.snapshot.params['action'];
 
-    if(oid != null && action != null && action === 'collection') {
+    if (oid != null && action != null && action === 'collection') {
       this.handleViewSite(oid);
     }
+
+    let uiOptions: UIOptions = {
+      debug: false,
+      autoUpload: false,
+      multiple: false,
+      request: {
+        endpoint: acp + "/file/upload",
+        forceMultipart: true
+      },
+      resume: {
+        enabled: true,
+        recordsExpireIn: 1
+      },
+      chunking: {
+        enabled: true
+      },
+      retry: {
+        enableAuto: true
+      },
+      text: {
+        defaultResponseError: "Upload failed"
+      },
+      failedUploadTextDisplay: {
+        mode: 'none'
+      },
+      validation: {
+        allowedExtensions: ['zip', 'tar.gz']
+      },
+      showMessage: function (message: string) {
+        // 
+      },
+      callbacks: {
+        onUpload: function (id: any, name: any): void {
+        },
+        onProgress: function (id: any, name: any, uploadedBytes: any, totalBytes: any): void {
+        },
+        onUploadChunk: function (id: any, name: any, chunkData: any): void {
+        },
+        onUploadChunkSuccess: function (id: any, chunkData: any, responseJSON: any, xhr: any): void {
+        },
+        onComplete: function (id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
+        },
+        onCancel: function (id: number, name: string) {
+        },
+        onError: function (id: number, errorReason: string, xhrOrXdr: string) {
+        }
+
+      }
+    };
+
+    const uploader = new FineUploaderBasic(uiOptions);
+
+    let resumables = uploader.getResumableFilesData() as any[];
+    if (resumables.length > 0) {
+      const resumable = resumables[0];
+
+      this.service.getUploadTask(resumable.uuid).then(task => {
+        this.existingTask = {
+          task: task,
+          filename: resumable.name
+        };
+
+        console.log(this.existingTask);
+      })
+    }
   }
+
 
   ngOnDestroy(): void {
     this.map.remove();
@@ -295,29 +369,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // MapboxGL doesn't have a good way to detect when moving off the map
     let sidebar = document.getElementById("navigator-left-sidebar");
-    sidebar.addEventListener("mouseenter", function() {
+    sidebar.addEventListener("mouseenter", function () {
       let mousemovePanel = document.getElementById("mousemove-panel");
       mousemovePanel.textContent = "";
     });
-    
-    
+
+
     // Show disclaimer
-    if( ! Boolean( this.cookieService.get("acceptedDisclaimer") ) ){
-	
-	    this.bsModalRef = this.modalService.show(NotificationModalComponent, {
-	      animated: true,
-	      backdrop: true,
-	      ignoreBackdropClick: true,
-	    });
-	    this.bsModalRef.content.messageTitle="Disclaimer";
-	    this.bsModalRef.content.message = (window as any).uasAppDisclaimer;
-	    this.bsModalRef.content.submitText = 'I Accept';
-	    
-	    (<NotificationModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
-      		this.cookieService.set('acceptedDisclaimer', "true");
-    	});
-	}    
-    
+    if (!Boolean(this.cookieService.get("acceptedDisclaimer"))) {
+
+      this.bsModalRef = this.modalService.show(NotificationModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+      });
+      this.bsModalRef.content.messageTitle = "Disclaimer";
+      this.bsModalRef.content.message = (window as any).uasAppDisclaimer;
+      this.bsModalRef.content.submitText = 'I Accept';
+
+      (<NotificationModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
+        this.cookieService.set('acceptedDisclaimer', "true");
+      });
+    }
+
   }
 
   addLayers(): void {
@@ -381,8 +455,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.layers.forEach(layer => {
-      if (layer.isMapped)
-      {
+      if (layer.isMapped) {
         this.addImageLayer(layer);
       }
     });
@@ -467,9 +540,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tasks.splice(idx, 1);
   }
 
-  handleUploadFile(): void {
+  handleCreateCollection(): void {
 
-    this.bsModalRef = this.modalService.show(UploadModalComponent, {
+    this.bsModalRef = this.modalService.show(CreateCollectionModalComponent, {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
@@ -477,11 +550,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.bsModalRef.content.init(this.breadcrumbs);
 
-    this.bsModalRef.content.onUploadComplete.subscribe(node => {
+    this.bsModalRef.content.onCreateComplete.subscribe(oid => {
 
-      this.service.getItems(this.current.id, null).then(nodes => {
-        this.setNodes(nodes);
-      });
+      this.handleViewSite(oid);
     });
   }
 
@@ -525,6 +596,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         center: node.geometry.coordinates
       });
     }
+  }
+
+  handleExistingTask(): void {
+
+    const modal = this.modalService.show(UploadModalComponent, {
+      animated: true,
+      backdrop: true,
+      ignoreBackdropClick: true,
+      'class': 'upload-modal'
+    });
+    modal.content.init(this.existingTask.task.collection, this.existingTask.task.uploadTarget);
+    modal.content.onUploadCancel.subscribe(() => {
+      this.existingTask = null;
+    });
+    modal.content.onUploadComplete.subscribe(() => {
+      this.existingTask = null;
+    });
+
   }
 
   handleEdit(node: SiteEntity, event: any): void {
@@ -739,7 +828,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
   }
-  
+
   handleMapOrtho(product: Product): void {
 
     const layer = this.getLayerByClassification("ORTHO", product);
@@ -768,23 +857,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-  
+
   getLayerByClassification(classification: string, product: Product): GeoserverLayer {
     let len = product.layers.length;
-  
-    for (let i = 0; i < len; ++i)
-    {
+
+    for (let i = 0; i < len; ++i) {
       let layer: GeoserverLayer = product.layers[i];
-    
-      if (layer.classification === classification)
-      {
+
+      if (layer.classification === classification) {
         return layer;
       }
     }
-  
+
     return null;
   }
-  
+
   handleMapDem(product: Product): void {
 
     const layer = this.getLayerByClassification("DEM_DSM", product);
@@ -857,11 +944,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (event != null) {
       event.stopPropagation();
     }
-    
-    if (node != null && node.geometry != null && node.geometry.type === "Point")
-    {
+
+    if (node != null && node.geometry != null && node.geometry.type === "Point") {
       //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
-      
+
       this.map.easeTo({
         center: node.geometry.coordinates,
         zoom: 8
@@ -945,16 +1031,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(node: SiteEntity): void {
 
     if (node != null) {
-      if (node.geometry != null && node.geometry.type === "Point")
-      {
+      if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
-        
+
         this.map.easeTo({
           center: node.geometry.coordinates,
           zoom: 8
         });
       }
-    
+
       this.service.getItems(node.id, null).then(nodes => {
         var indexOf = this.breadcrumbs.findIndex(i => i.id === node.id);
 
@@ -970,13 +1055,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.breadcrumbs = [];
         this.setNodes(nodes);
         this.staticTabs.tabs[0].active = true;
-      
+
         this.map.fitBounds(this.allPointsBounds, { padding: 50 });
-        
+
         // This hack exists because the handleExtentChange method gets called immediately after we do fitBounds
         // and it gets called with some really closely zoomed-in bbox which dumps our nodes we just fetched...
         let that = this;
-        window.setTimeout(function(){
+        window.setTimeout(function () {
           that.current = null;
         }, 500);
       });

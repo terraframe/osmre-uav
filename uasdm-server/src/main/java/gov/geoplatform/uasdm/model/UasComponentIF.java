@@ -77,7 +77,7 @@ public interface UasComponentIF extends ComponentIF
 
   public List<DocumentIF> getDocuments();
 
-  public AbstractWorkflowTask createWorkflowTask(String uuid);
+  public AbstractWorkflowTask createWorkflowTask(String uuid, String uploadTarget);
 
   public Actor getOwner();
 

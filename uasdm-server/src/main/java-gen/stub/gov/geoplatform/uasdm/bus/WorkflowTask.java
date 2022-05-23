@@ -234,6 +234,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     JSONObject obj = super.toJSON();
     obj.put("uploadId", this.getUploadId());
+    obj.put("uploadTarget", this.getUploadTarget());
     obj.put("collection", component.getOid());
     obj.put("collectionLabel", component.getName());
     obj.put("message", this.getMessage());

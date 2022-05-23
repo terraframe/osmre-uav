@@ -37,6 +37,7 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -92,7 +93,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     // Only upload to ODM if there are valid image files which were successfully
     // uploaded to s3
-    if (processUpload && ( !DevProperties.uploadRaw() || Util.hasImages(uploadedFiles) ))
+    if (processUpload && uploadTarget.equals(ImageryComponent.RAW) && ( !DevProperties.uploadRaw() || Util.hasImages(uploadedFiles) ))
     {
       startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
 

@@ -55,6 +55,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -459,10 +460,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);
+    workflowTask.setUploadTarget(uploadTarget);
     workflowTask.setComponent(this.getOid());
     workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
     workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
@@ -616,6 +618,14 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     Long result = query.getSingleResult();
 
     return ( result != null && result > 0 );
+  }
+
+  @Transaction
+  public static String createCollection(JSONArray selections)
+  {
+    UasComponentIF component = ImageryWorkflowTaskIF.createUasComponent(selections);
+
+    return component.getOid();
   }
 
 }

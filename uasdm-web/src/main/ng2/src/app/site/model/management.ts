@@ -117,6 +117,7 @@ export class Task {
 	collection: string;
 	collectionLabel: string;
 	type: string;
+	uploadTarget?: string;
 	visible?: boolean;
 	showError?: boolean;
 	ancestors?: string[];

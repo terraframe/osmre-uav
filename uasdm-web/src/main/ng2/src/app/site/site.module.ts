@@ -55,6 +55,7 @@ import { UAVService } from './service/uav.service';
 import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
 import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
+import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
 
 @NgModule({
 	imports: [
@@ -81,6 +82,7 @@ import { ReportService } from './service/report.service';
 		EntityModalComponent,
 		MetadataModalComponent,
 		ImagePreviewModalComponent,
+		CreateCollectionModalComponent,
 		UploadModalComponent,
 		LeafModalComponent,
 		AccessibleSupportModalComponent,
@@ -117,6 +119,7 @@ import { ReportService } from './service/report.service';
 		ReportService
 	],
 	entryComponents: [
+		CreateCollectionModalComponent,
 		UploadModalComponent,
 		EntityModalComponent,
 		ImagePreviewModalComponent,

@@ -183,7 +183,7 @@
             <footer class="sidebar-footer">
               <div class="row" *ngIf="current != null" style="background:white;">
                 <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-                  <button (click)="handleUploadFile()" class="btn btn-primary">Upload</button>              
+                  <button (click)="handleCreateCollection()" class="btn btn-primary">Create Collection</button>              
                 </div>
               </div>
               <div class="row" *ngIf="current == null" style="background:white;">
@@ -197,6 +197,10 @@
         <div class="col-md-9" id="site-explorer-map">
             <div class="row">
                 <article style="position: absolute;z-index: 5;margin-left: 100px;margin-top: 10px;">
+                  <alert *ngIf="existingTask != null" type="danger" [dismissible]="false">
+                    <strong>Unfinished upload</strong> detected on file <strong>{{existingTask.filename}}</strong> for Collection <strong>{{existingTask.task.collectionLabel}}</strong>. <a (click)="handleExistingTask()">Click to resolve</a>
+                  </alert>
+
                   <div class="idm-toast" *ngFor="let task of tasks; let idx = index">
                     <alert *ngIf="task.status === 'Complete' && task.actions.length === 0" type="success" [dismissible]="true" (onClosed)="handleCloseToast(idx)">
                       <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. <a (click)="handleViewSite(task.collection)">Goto the collection view</a>

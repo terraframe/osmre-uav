@@ -337,6 +337,18 @@ export class ManagementService {
 			.toPromise();
 	}
 
+	getUploadTask(uploadId: string): Promise<Task> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('uploadId', uploadId);
+
+		return this.http
+			.get<Task>(acp + '/project/get-upload-task', { params: params })
+			.toPromise();
+	}
+
+
+
 	getMissingMetadata(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
 
 		let params: HttpParams = new HttpParams();
@@ -435,6 +447,22 @@ export class ManagementService {
 
 		return this.http
 			.post<void>(acp + '/project/apply-metadata', JSON.stringify({ selection: selection }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
+	createCollection(selections: Selection[]): Promise<{ oid: string }> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<{ oid: string }>(acp + '/project/create-collection', JSON.stringify({ selections: selections }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

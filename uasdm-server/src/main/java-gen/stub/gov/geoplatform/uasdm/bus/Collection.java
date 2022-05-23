@@ -401,7 +401,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);

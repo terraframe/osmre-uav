@@ -33,8 +33,10 @@
       </div>
     </div>
 
-    <div class="row" *ngIf="!existingTask && labels.length > 0">
-      <div class="col-md-2"></div>
+    <!--
+
+      <div class="row" *ngIf="!existingTask && labels.length > 0">
+        <div class="col-md-2"></div>
       <div class="col-md-8">
         <ul class="breadcrumb">
           <li [@fadeInOnEnter] *ngFor="let label of labels">
@@ -43,65 +45,13 @@
         </ul>
       </div>
     </div>
+  -->
 
-    <!-- Section for each page -->
-    <div class="row" *ngIf="page.type === 'CATEGORY'">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
-
-        <div class="form-group">
-          <label [for]="page.selection.type">{{page.selection.type}}:</label>
-
-          <div *ngIf="!page.selection.isNew" class="row">
-            <div class="col-md-8">
-              <select [name]="page.selection.type" [(ngModel)]="page.selection.value" [disabled]="page.selection.isNew"
-                required>
-                <option></option>
-                <option *ngFor="let option of page.options" [value]="option.id">{{option.name}}</option>
-              </select>
-            </div>
-            <div class="col-md-2">
-              <button *ngIf="!page.selection.isNew" type="button btn btn-primary" class="btn btn-primary"
-                (click)="setIsNew(true)">
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-        <div [@fadeInOnEnter] *ngIf="page.selection.isNew" class="form-group">
-          <div class="row">
-            <div class="col-md-8">
-              <input autofocus [(ngModel)]="page.selection.label" name="label" type="input" class="form-control"
-                [placeholder]="page.selection.type + ' name...'" required />
-            </div>
-            <div class="col-md-2">
-              <button type="button btn btn-primary" class="btn btn-primary" (click)="setIsNew(false)">
-                Cancel
-              </button>
-            </div>
-          </div>
-          <div [@fadeInOnEnter] class="row" *ngIf="hasField('collectionDate')">
-            <div class="col-md-8">
-              <label for="platform" style="margin-top: 10px;">Collection Date:</label>
-              <input [(ngModel)]="page.selection.collectionDate" name="collectionDate" type="date" class="form-control" required />
-            </div>
-          </div>
-
-          <metadata-page *ngIf="hasField('uav')" [(page)]="page"></metadata-page>
-        </div>
-      </div>
-    </div>
 
     <!-- Summary page -->
     <div [@fadeInOnEnter] class="row" *ngIf="page.type === 'SUMMARY' && !existingTask && currentTask == null">
       <div class="col-md-2"></div>
       <div class="col-md-8">
-
-        <div *ngFor="let selection of selections" class="form-group">
-          <label [for]="selection.type">{{selection.type}}:</label>
-          <input [(ngModel)]="selection.label" [name]="selection.type" type="input" class="form-control" disabled
-            required />
-        </div>
 
         <div class="form-group">
           <label for="outFileName">Output Product Name Prefix</label>
@@ -140,11 +90,6 @@
                 please re-upload your file and we will try our best to continue where you left off.
               </h4>
 
-              <hr>
-              <button type="button" class="btn btn-danger" style="margin-top: 20px;" (click)="removeUpload($event)">
-                <i class="icon-upload icon-white"></i>
-                Cancel Upload
-              </button>
               <!-- 
                             <button type="button" class="btn btn-primary" style="margin-top: 20px;"
                                 (click)="showUploadPanel()">
@@ -261,21 +206,14 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn-holder" style="text-align: right;">
+          <button *ngIf="existingTask && !currentTask" type="button" [disabled]="disabled" class="btn btn-danger" (click)="removeUpload()">
+            <i class="icon-upload icon-white"></i>
+            Cancel Upload
+          </button>
+
           <button type="button" [disabled]="disabled" (click)="close()" [disabled]="disabled" class="btn btn-default"
             role="button" aria-disabled="false" style="padding: 4px 18px;">
             <span class="ui-button-text">Close</span>
-          </button>
-
-          <button *ngIf="!existingTask && page.index > 0" type="button btn btn-primary" [disabled]="disabled"
-            class="btn btn-secondary" (click)="handleBackPage()">
-            <i class="icon-upload icon-white"></i>
-            Back
-          </button>
-
-          <button *ngIf="!existingTask && page.index < (pages.length - 1)" type="button btn btn-primary"
-            [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleNextPage()">
-            <i class="icon-upload icon-white"></i>
-            Next
           </button>
 
           <button *ngIf="page.index === (pages.length - 1)" type="button btn btn-primary"

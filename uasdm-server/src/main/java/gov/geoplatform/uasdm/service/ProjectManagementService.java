@@ -64,6 +64,7 @@ import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -820,6 +821,14 @@ public class ProjectManagementService
     products.sort((a, b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()));
 
     return products.get(0).downloadAllZip();
+  }
+
+  @Request(RequestType.SESSION)
+  public String createCollection(String sessionId, String json)
+  {
+    JSONArray selections = new JSONArray(json);
+
+    return Collection.createCollection(selections);
   }
 
   // public void logLoginAttempt(String sessionId, String username)

@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 92640853)
+@com.runwaysdk.business.ClassSignature(hash = -1591598514)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -27,7 +12,9 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
   public static java.lang.String COMPONENT = "component";
-  private static final long serialVersionUID = 92640853;
+  public static java.lang.String UPLOADTARGET = "uploadTarget";
+  public static java.lang.String WORKFLOWTYPE = "workflowType";
+  private static final long serialVersionUID = -1591598514;
   
   public WorkflowTaskBase()
   {
@@ -59,6 +46,62 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
     else
     {
       setValue(COMPONENT, value);
+    }
+  }
+  
+  public String getUploadTarget()
+  {
+    return getValue(UPLOADTARGET);
+  }
+  
+  public void validateUploadTarget()
+  {
+    this.validateAttribute(UPLOADTARGET);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getUploadTargetMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(UPLOADTARGET);
+  }
+  
+  public void setUploadTarget(String value)
+  {
+    if(value == null)
+    {
+      setValue(UPLOADTARGET, "");
+    }
+    else
+    {
+      setValue(UPLOADTARGET, value);
+    }
+  }
+  
+  public String getWorkflowType()
+  {
+    return getValue(WORKFLOWTYPE);
+  }
+  
+  public void validateWorkflowType()
+  {
+    this.validateAttribute(WORKFLOWTYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getWorkflowTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(WORKFLOWTYPE);
+  }
+  
+  public void setWorkflowType(String value)
+  {
+    if(value == null)
+    {
+      setValue(WORKFLOWTYPE, "");
+    }
+    else
+    {
+      setValue(WORKFLOWTYPE, value);
     }
   }
   

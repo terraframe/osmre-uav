@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -27,63 +27,65 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.json.JSONArray;
 
+import gov.geoplatform.uasdm.model.ImageryComponent;
+
 public class RequestParser
 {
-  private static String       FILENAME_PARAM       = "qqfile";
+  private static String FILENAME_PARAM = "qqfile";
 
-  private static String       PART_INDEX_PARAM     = "qqpartindex";
+  private static String PART_INDEX_PARAM = "qqpartindex";
 
-  private static String       FILE_SIZE_PARAM      = "qqtotalfilesize";
+  private static String FILE_SIZE_PARAM = "qqtotalfilesize";
 
-  private static String       TOTAL_PARTS_PARAM    = "qqtotalparts";
+  private static String TOTAL_PARTS_PARAM = "qqtotalparts";
 
-  private static String       UUID_PARAM           = "qquuid";
+  private static String UUID_PARAM = "qquuid";
 
-  private static String       PART_FILENAME_PARAM  = "qqfilename";
+  private static String PART_FILENAME_PARAM = "qqfilename";
 
-  private static String       PART_RESUME_PARAM    = "qqresume";
+  private static String PART_RESUME_PARAM = "qqresume";
 
-  private static String       METHOD_PARAM         = "_method";
+  private static String METHOD_PARAM = "_method";
 
-  private static String       GENERATE_ERROR_PARAM = "generateError";
+  private static String GENERATE_ERROR_PARAM = "generateError";
 
-  private static String       UAS_COMPONENT_OID    = "uasComponentOid";
+  private static String UAS_COMPONENT_OID = "uasComponentOid";
 
-  private static String       PROCESS_UPLOAD       = "processUpload";
+  private static String PROCESS_UPLOAD = "processUpload";
 
-  private static String       SELECTIONS           = "selections";
+  private static String SELECTIONS = "selections";
 
-  private static String       UPLOAD_TARGET        = "uploadTarget";
+  private static String UPLOAD_TARGET = "uploadTarget";
 
-  private String              filename;
+  private String filename;
 
-  private FileItem            uploadItem;
+  private FileItem uploadItem;
 
-  private boolean             generateError;
+  private boolean generateError;
 
-  private int                 partIndex            = -1;
+  private int partIndex = -1;
 
-  private long                totalFileSize;
+  private long totalFileSize;
 
-  private int                 totalParts;
+  private int totalParts;
 
-  private String              uuid;
+  private String uuid;
 
-  private String              originalFilename;
+  private String originalFilename;
 
-  private String              method;
+  private String method;
 
-  private Map<String, String> customParams         = new HashMap<>();
+  private Map<String, String> customParams = new HashMap<>();
 
-  private Boolean             resume;
+  private Boolean resume;
 
-  private String              uasComponentOid;
+  private String uasComponentOid;
 
-  private String              uploadTarget;
+  private String uploadTarget;
 
-  private Boolean             processUpload;
+  private Boolean processUpload;
 
-  private JSONArray           selections;
+  private JSONArray selections;
 
   private RequestParser()
   {
@@ -175,7 +177,7 @@ public class RequestParser
 
   public String getUploadTarget()
   {
-    return uploadTarget;
+    return ( uploadTarget != null ) ? uploadTarget : ImageryComponent.RAW;
   }
 
   public String getOriginalFilename()

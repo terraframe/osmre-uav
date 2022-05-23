@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef, KeyValueDiffers, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, KeyValueDiffers, HostListener, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
-import { interval, Observable, Observer, Subject } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 
 //use Fine Uploader UI for traditional endpoints
@@ -42,7 +42,7 @@ export class Page {
 		fadeOutOnLeaveAnimation()
 	]
 })
-export class UploadModalComponent implements OnInit {
+export class UploadModalComponent implements OnInit, OnDestroy {
 	objectKeys = Object.keys;
 
 	importedValues: boolean = false;
@@ -85,10 +85,9 @@ export class UploadModalComponent implements OnInit {
 	 */
 	hierarchy: string[] = [];
 
-	/*
-	 * List of selections: One per hierarchy type
-	 */
-	selections: Selection[] = [];
+	uasComponentOid: string = null;
+
+	uploadTarget: string = null;
 
 	/*
 	 * List of previous selection labels
@@ -118,16 +117,14 @@ export class UploadModalComponent implements OnInit {
 	sensors: Sensor[] = [];
 	platforms: Platform[] = [];
 
-	public onUploadComplete: Subject<any>;
-
-	public onHierarchyChange: Subject<boolean>;
+	public onUploadComplete: Subject<void>;
+	public onUploadCancel: Subject<void>;
 
 	// modalState: any = {"state":'category', "attribute":"", "termOption":""}
 
 	modalStepConfig: StepConfig = {
 		"steps": [
-			{ "label": "Category", "active": true, "enabled": true },
-			{ "label": "Final", "active": true, "enabled": false }
+			{ "label": "Final", "active": true, "enabled": true }
 		]
 	};
 
@@ -215,13 +212,13 @@ export class UploadModalComponent implements OnInit {
 						that.currentTask = null;
 						that.existingTask = false;
 
-						if (!that.hierarchyChange) {
-							for (let i = 0; i < that.selections.length; i++) {
-								if (that.selections[i].isNew) {
-									that.hierarchyChange = true;
-								}
-							}
-						}
+						// if (!that.hierarchyChange) {
+						// 	for (let i = 0; i < that.selections.length; i++) {
+						// 		if (that.selections[i].isNew) {
+						// 			that.hierarchyChange = true;
+						// 		}
+						// 	}
+						// }
 
 						if (that.taskPolling) {
 							that.taskPolling.unsubscribe();
@@ -286,6 +283,23 @@ export class UploadModalComponent implements OnInit {
 		}
 	}
 
+	ngOnInit(): void {
+		this.onUploadComplete = new Subject();
+		this.onUploadCancel = new Subject();
+
+		// this.service.getMetadataOptions(null).then((options) => {
+		// 	this.sensors = options.sensors;
+		// 	this.platforms = options.platforms;
+		// }).catch((err: HttpErrorResponse) => {
+		// 	this.error(err);
+		// });
+	}
+
+	ngOnDestroy(): void {
+		this.onUploadComplete.unsubscribe();
+		this.onUploadCancel.unsubscribe();
+	}
+
 	ngAfterViewInit() {
 
 	}
@@ -300,48 +314,13 @@ export class UploadModalComponent implements OnInit {
 		}
 	}
 
-	ngOnInit(): void {
-		this.onUploadComplete = new Subject();
-		this.onHierarchyChange = new Subject();
+	init(uasComponentOid: string, uploadTarget: string): void {
+		this.uasComponentOid = uasComponentOid;
+		this.uploadTarget = uploadTarget;
 
-		// this.service.getMetadataOptions(null).then((options) => {
-		// 	this.sensors = options.sensors;
-		// 	this.platforms = options.platforms;
-		// }).catch((err: HttpErrorResponse) => {
-		// 	this.error(err);
-		// });
-	}
-
-	init(entities: SiteEntity[]): void {
 		this.hierarchy = this.metadataService.getHierarchy();
-		this.selections = [];
+		// this.selections = [];
 		this.pages = [];
-
-		for (let i = 0; i < this.hierarchy.length; i++) {
-			const type = this.hierarchy[i];
-
-			const index = entities.findIndex(entity => { return entity.type === type });
-
-			if (index !== -1) {
-				const entity = entities[index];
-
-				this.selections.push({ type: type, isNew: false, value: entity.id, label: entity.name });
-			}
-			else {
-				this.selections.push({ type: type, isNew: false, value: null, label: '' });
-			}
-
-			if (i > 0) {
-				this.pages.push({
-					index: (this.pages.length),
-					selection: this.selections[i],
-					options: [],
-					type: 'CATEGORY'
-				});
-			}
-		}
-
-		this.labels.push(this.selections[0].label);
 
 		this.pages.push({
 			index: (this.pages.length),
@@ -352,14 +331,6 @@ export class UploadModalComponent implements OnInit {
 
 		this.page = this.pages[0];
 
-		this.service.getChildren(this.selections[0].value).then(children => {
-			this.pages[0].options = children.filter(child => {
-				return child.type === this.pages[0].selection.type;
-			});
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
-
 		// Handle the case where there is an existing file upload
 		if (this.existingTask) {
 			this.page = this.pages[this.pages.length - 1];
@@ -367,10 +338,6 @@ export class UploadModalComponent implements OnInit {
 	}
 
 	close(): void {
-		if (this.hierarchyChange) {
-			this.onHierarchyChange.next(true);
-		}
-
 		this.bsModalRef.hide();
 	}
 
@@ -545,15 +512,16 @@ export class UploadModalComponent implements OnInit {
 			/*
 			 * Validate form values before uploading
 			 */
-			const selection = this.selections[this.selections.length - 1];
+			// const selection = this.selections[this.selections.length - 1];
 
 			//            if ( selection.value == null  ) {
 			//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
 			//            }
 			//            else {
 			//                this.values.uasComponentOid = selection.value;
-			this.values.selections = JSON.stringify(this.selections);
-			this.values.uploadTarget = this.metadataService.getUploadTarget(selection.type);
+			// this.values.selections = JSON.stringify(this.selections);
+			this.values.uploadTarget = this.uploadTarget;
+			this.values.uasComponentOid = this.uasComponentOid;
 			this.values.processUpload = this.processUpload;
 
 			this.uploader.setParams(this.values);
@@ -569,19 +537,17 @@ export class UploadModalComponent implements OnInit {
 		return this.metadataService.hasExtraField(this.page.selection.type, fieldName);
 	}
 
-	removeUpload(event: any): void {
-		let that = this;
-
-		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
+	removeUpload(): void {
+		const modal = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 		});
-		this.bsModalRef.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
-		this.bsModalRef.content.type = 'DANGER';
-		this.bsModalRef.content.submitText = 'Cancel Upload';
+		modal.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
+		modal.content.type = 'DANGER';
+		modal.content.submitText = 'Cancel Upload';
 
-		this.bsModalRef.content.onConfirm.subscribe(data => {
+		modal.content.onConfirm.subscribe(data => {
 			this.service.removeTask(this.uploader.getResumableFilesData()[0].uuid)
 				.then(() => {
 					//that.uploader.clearStoredFiles();
@@ -590,9 +556,13 @@ export class UploadModalComponent implements OnInit {
 					// The above clearStoredFiles() and cancelAll() methods don't appear to work so 
 					// we are clearing localStorage manually.
 					localStorage.clear();
-					that.existingTask = false;
+
+					this.existingTask = false;
 					this.page = this.pages[0];
-					//                    that.showUploadPanel();
+
+					this.onUploadCancel.next();
+
+					this.bsModalRef.hide();
 				}).catch((err: HttpErrorResponse) => {
 					this.error(err);
 				});
@@ -603,15 +573,6 @@ export class UploadModalComponent implements OnInit {
 		this.processUpload = checked;
 	}
 
-
-	//    hideUploadPanel(): void {
-	//        this.uploadVisible = false;
-	//    }
-	//
-	//    showUploadPanel(): void {
-	//        this.uploadVisible = true;
-	//        this.selectedContinue = true;
-	//    }
 
 	countUpload(thisRef: any): void {
 		let ct = 0;
@@ -633,10 +594,6 @@ export class UploadModalComponent implements OnInit {
 		thisRef.uplodeCounterInterfal = setInterval(incrementSeconds, 1000);
 	}
 
-	error(err: any): void {
-		this.message = ErrorHandler.getMessageFromError(err);
-	}
-
 	public canDeactivate(): boolean {
 		return this.disabled;
 	}
@@ -647,4 +604,10 @@ export class UploadModalComponent implements OnInit {
 			$event.returnValue = 'An upload is currently in progress. Are you sure you want to leave?';
 		}
 	}
+
+	error(err: any): void {
+		this.message = ErrorHandler.getMessageFromError(err);
+	}
+
+
 }

@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.dataaccess.DataAccessException;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
@@ -77,96 +78,101 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     {
       JSONArray selections = parser.getSelections();
 
-      // The root object will always already be created
-      UasComponentIF component = ComponentFacade.getComponent(selections.getJSONObject(0).getString("value"));
-
-      for (int i = 1; i < selections.length(); i++)
-      {
-        JSONObject selection = selections.getJSONObject(i);
-
-        if (selection.getBoolean("isNew"))
-        {
-          String name = selection.getString("label");
-
-          // Try to find a component with the same name and parent
-          UasComponentIF child = component.getChild(name);
-
-          if (child == null)
-          {
-            child = component.createChild(selection.getString("type"));
-            child.setName(name);
-            // child.setValue(Collection.U, value);
-
-            if (child instanceof CollectionIF)
-            {
-              if (selection.has(Collection.UAV))
-              {
-                child.setValue(Collection.UAV, selection.getString(Collection.UAV));
-              }
-
-              if (selection.has(Collection.SENSOR))
-              {
-                child.setValue(Collection.COLLECTIONSENSOR, selection.getString(Collection.SENSOR));
-              }
-
-              if (selection.has(Collection.COLLECTIONDATE))
-              {
-                try
-                {
-                  Date date = Util.parseIso8601(selection.getString(Collection.COLLECTIONDATE), false);
-
-                  child.setValue(Collection.COLLECTIONDATE, date);
-                }
-                catch (ParseException e)
-                {
-                  GenericException exception = new GenericException(e);
-                  exception.setUserMessage(e.getMessage());
-                  throw exception;
-                }
-              }
-
-              if (selection.has(Collection.POINT_OF_CONTACT))
-              {
-                JSONObject poc = selection.getJSONObject(Collection.POINT_OF_CONTACT);
-
-                if (poc.has(Collection.NAME))
-                {
-                  child.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
-                }
-                
-                if (poc.has(Collection.EMAIL))
-                {
-                  child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
-                }
-              }
-
-            }
-
-            child.applyWithParent(component);
-
-            // Upload the metadata file
-            if (child instanceof CollectionIF)
-            {
-              CollectionReport.create((CollectionIF) child);
-
-              new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
-            }
-          }
-
-          component = child;
-        }
-        else
-        {
-          component = ComponentFacade.getComponent(selection.getString("value"));
-        }
-      }
-
-      return component;
+      return createUasComponent(selections);
     }
     else
     {
       return null;
     }
+  }
+
+  public static UasComponentIF createUasComponent(JSONArray selections)
+  {
+    // The root object will always already be created
+    UasComponentIF component = ComponentFacade.getComponent(selections.getJSONObject(0).getString("value"));
+
+    for (int i = 1; i < selections.length(); i++)
+    {
+      JSONObject selection = selections.getJSONObject(i);
+
+      if (selection.getBoolean("isNew"))
+      {
+        String name = selection.getString("label");
+
+        // Try to find a component with the same name and parent
+        UasComponentIF child = component.getChild(name);
+
+        if (child == null)
+        {
+          child = component.createChild(selection.getString("type"));
+          child.setName(name);
+          // child.setValue(Collection.U, value);
+
+          if (child instanceof CollectionIF)
+          {
+            if (selection.has(Collection.UAV))
+            {
+              child.setValue(Collection.UAV, selection.getString(Collection.UAV));
+            }
+
+            if (selection.has(Collection.SENSOR))
+            {
+              child.setValue(Collection.COLLECTIONSENSOR, selection.getString(Collection.SENSOR));
+            }
+
+            if (selection.has(Collection.COLLECTIONDATE))
+            {
+              try
+              {
+                Date date = Util.parseIso8601(selection.getString(Collection.COLLECTIONDATE), false);
+
+                child.setValue(Collection.COLLECTIONDATE, date);
+              }
+              catch (ParseException e)
+              {
+                GenericException exception = new GenericException(e);
+                exception.setUserMessage(e.getMessage());
+                throw exception;
+              }
+            }
+
+            if (selection.has(Collection.POINT_OF_CONTACT))
+            {
+              JSONObject poc = selection.getJSONObject(Collection.POINT_OF_CONTACT);
+
+              if (poc.has(Collection.NAME))
+              {
+                child.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
+              }
+              
+              if (poc.has(Collection.EMAIL))
+              {
+                child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
+              }
+            }
+
+          }
+
+          child.applyWithParent(component);
+
+          // Upload the metadata file
+          if (child instanceof CollectionIF)
+          {
+            CollectionReport.create((CollectionIF) child);
+
+            new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
+          }
+        }
+
+        component = child;
+      }
+      else
+      {
+        component = ComponentFacade.getComponent(selection.getString("value"));
+      }
+    }
+
+    return component;
   }
 
   /**

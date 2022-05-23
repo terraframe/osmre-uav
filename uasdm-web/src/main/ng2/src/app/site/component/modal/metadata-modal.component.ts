@@ -24,9 +24,7 @@ export class MetadataModalComponent {
 
 	disabled: boolean = false;
 
-	// imageHeight: string;
-
-	// imageWidth: string;
+	isOldFormat: boolean = false;
 
 	page: Page = null;
 
@@ -44,6 +42,8 @@ export class MetadataModalComponent {
 		this.onMetadataChange = new Subject();
 
 		this.service.getMetadataOptions(this.collectionId).then((options) => {
+
+			this.isOldFormat = (options.uav == null || options.sensor == null);
 
 			this.page = {
 				selection: {

@@ -630,7 +630,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public abstract List<AbstractWorkflowTask> getTasks();
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
     throw new UnsupportedOperationException();
   }

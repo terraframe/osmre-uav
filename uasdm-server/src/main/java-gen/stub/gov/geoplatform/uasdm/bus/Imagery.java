@@ -229,7 +229,7 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId)
+  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
     ImageryWorkflowTask task = new ImageryWorkflowTask();
     task.setUploadId(uploadId);

@@ -55,14 +55,6 @@ export class MetadataService {
         return false;
     }
 
-    getUploadTarget( type: string ): string {
-        if ( type === 'Imagery' ) {
-            return 'imagery';
-        }
-
-        return 'raw';
-    }
-
     getHierarchy(): string[] {
 
         return ['Site', 'Project', 'Mission', 'Collection'];
