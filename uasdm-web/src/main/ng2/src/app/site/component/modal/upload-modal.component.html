@@ -49,30 +49,32 @@
 
 
     <!-- Summary page -->
-    <div [@fadeInOnEnter] class="row" *ngIf="page.type === 'SUMMARY' && !existingTask && currentTask == null">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
+    <ng-container *ngIf="page.type === 'SUMMARY' && !existingTask && currentTask == null">
 
-        <div class="form-group">
-          <label for="outFileName">Output Product Name Prefix</label>
-          <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
-            placeholder="Output product name prefix..." />
-        </div>
-        <div class="form-group">
-          <boolean-field [value]="processUpload" label="Generate products from raw images"
-            (valueChange)="updateProcessUpload($event)"></boolean-field>
+      <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'raw'">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="form-group">
+            <boolean-field [value]="processUpload" label="Generate products from raw images"
+              (valueChange)="updateProcessUpload($event)"></boolean-field>
+          </div>
+          <div class="form-group" *ngIf="processUpload">
+            <label for="outFileName">Output Product Name Prefix</label>
+            <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
+              placeholder="Output product name prefix..." />
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- <div [@fadeInOnEnter] class="row" *ngIf="finishedTask != null">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
-        <a (click)="handleAddMetadata(finishedTask)">Add Metadata</a>
+      <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'ortho'">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="form-group">
+            <boolean-field [value]="processUpload" label="Make available as a product"
+              (valueChange)="updateProcessUpload($event)"></boolean-field>
+          </div>
+        </div>
       </div>
-      <div class="col-md-2"></div>
-    </div> -->
-
+    </ng-container>
 
     <div [@fadeInOnEnter] [hidden]="page.type !== 'FILE' && page.type !== 'SUMMARY'" class="row">
       <div class="col-md-2"></div>
@@ -142,7 +144,7 @@
                   <th>Formats</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody *ngIf="uploadTarget === 'row'">
                 <tr>
                   <td>RGB Image Data</td>
                   <td>jpg, jpeg, png</td>
@@ -153,6 +155,30 @@
                 </tr>
                 <tr>
                   <td>Video</td>
+                  <td>mp4</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'ptcloud'">
+                <tr>
+                  <td></td>
+                  <td>laz</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'dem'">
+                <tr>
+                  <td></td>
+                  <td>tif</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'ortho'">
+                <tr>
+                  <td></td>
+                  <td>tif, png</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'video'">
+                <tr>
+                  <td></td>
                   <td>mp4</td>
                 </tr>
               </tbody>
@@ -206,7 +232,8 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn-holder" style="text-align: right;">
-          <button *ngIf="existingTask && !currentTask" type="button" [disabled]="disabled" class="btn btn-danger" (click)="removeUpload()">
+          <button *ngIf="existingTask && !currentTask" type="button" [disabled]="disabled" class="btn btn-danger"
+            (click)="removeUpload()">
             <i class="icon-upload icon-white"></i>
             Cancel Upload
           </button>

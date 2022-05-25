@@ -119,6 +119,10 @@ public abstract class Converter
             siteItem.setPlatform(platform);
           }
         }
+
+        Product product = Product.find(uasComponent);
+
+        siteItem.setValue("hasProduct", product != null);
       }
     }
 

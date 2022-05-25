@@ -646,11 +646,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     throw new UnsupportedOperationException();
   }
 
-  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
-  {
-    throw new UnsupportedOperationException();
-  }
-
   public Integer getNumberOfChildren()
   {
     return this.getChildren().size();

@@ -78,14 +78,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	/*
 	 * Flag indicating if the upload should be processed by ODM
 	 */
-	processUpload: boolean = true;
+	processUpload: boolean = false;
 
 	/*
 	 * List of hierarchies
 	 */
 	hierarchy: string[] = [];
 
-	uasComponentOid: string = null;
+	component: SiteEntity = null;
 
 	uploadTarget: string = null;
 
@@ -136,9 +136,22 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 		const that = this;
 
-		if (elem != null && this.uploader == null) {
+		if (elem != null && this.uploader == null && this.uploadTarget != null) {
 
-			let uiOptions: UIOptions = {
+			const extensions = ['zip', 'tar.gz'];
+
+			if (this.uploadTarget === 'ortho') {
+				extensions.push('tif')
+				extensions.push('png');
+			}
+			else if (this.uploadTarget === 'dem') {
+				extensions.push('tif')
+			}
+			else if (this.uploadTarget === 'ptcloud') {
+				extensions.push('laz')
+			}
+
+			const uiOptions: UIOptions = {
 				debug: false,
 				autoUpload: false,
 				multiple: false,
@@ -166,7 +179,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 					//responseProperty: 'error'
 				},
 				validation: {
-					allowedExtensions: ['zip', 'tar.gz']
+					allowedExtensions: extensions
 				},
 				showMessage: function (message: string) {
 					// 
@@ -314,9 +327,10 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	init(uasComponentOid: string, uploadTarget: string): void {
-		this.uasComponentOid = uasComponentOid;
+	init(component: SiteEntity, uploadTarget: string): void {
+		this.component = component;
 		this.uploadTarget = uploadTarget;
+		this.processUpload = this.uploadTarget === 'raw';
 
 		this.hierarchy = this.metadataService.getHierarchy();
 		// this.selections = [];
@@ -509,29 +523,48 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 
 		if (!this.existingTask) {
-			/*
-			 * Validate form values before uploading
-			 */
-			// const selection = this.selections[this.selections.length - 1];
 
-			//            if ( selection.value == null  ) {
-			//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
-			//            }
-			//            else {
-			//                this.values.uasComponentOid = selection.value;
-			// this.values.selections = JSON.stringify(this.selections);
-			this.values.uploadTarget = this.uploadTarget;
-			this.values.uasComponentOid = this.uasComponentOid;
-			this.values.processUpload = this.processUpload;
+			const execute = () => {
+				/*
+				 * Validate form values before uploading
+				 */
+				// const selection = this.selections[this.selections.length - 1];
 
-			this.uploader.setParams(this.values);
-			this.uploader.uploadStoredFiles();
-			//            }
+				//            if ( selection.value == null  ) {
+				//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
+				//            }
+				//            else {
+				//                this.values.uasComponentOid = selection.value;
+				// this.values.selections = JSON.stringify(this.selections);
+				this.values.uploadTarget = this.uploadTarget;
+				this.values.uasComponentOid = this.component.id;
+				this.values.processUpload = this.processUpload;
+
+				this.uploader.setParams(this.values);
+				this.uploader.uploadStoredFiles();
+				//            }
+			};
+
+			if (this.uploadTarget === 'raw' && this.component.hasProduct && this.processUpload) {
+				const modal = this.modalService.show(BasicConfirmModalComponent, {
+					animated: true,
+					backdrop: true,
+					ignoreBackdropClick: true,
+				});
+				modal.content.message = 'An orthorectified image already exists in this collection. It will be deleted if you create another one. Do you still wish to proceed and create an orthorectified image?';
+				modal.content.submitText = 'Continue';
+				modal.content.onConfirm.subscribe(execute);
+			}
+			else {
+				execute();
+			}
 		}
 		else {
 			this.uploader.uploadStoredFiles();
 		}
 	}
+
+
 
 	hasField(fieldName: string): boolean {
 		return this.metadataService.hasExtraField(this.page.selection.type, fieldName);

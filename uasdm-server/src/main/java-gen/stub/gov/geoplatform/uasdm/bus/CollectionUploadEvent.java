@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -29,6 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 
@@ -36,8 +38,12 @@ import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -50,9 +56,9 @@ import net.lingala.zip4j.ZipFile;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
-  private static final Logger logger           = LoggerFactory.getLogger(CollectionUploadEvent.class);
+  private static final Logger logger = LoggerFactory.getLogger(CollectionUploadEvent.class);
 
-  private static final long   serialVersionUID = -285847093;
+  private static final long serialVersionUID = -285847093;
 
   public CollectionUploadEvent()
   {
@@ -101,6 +107,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       {
         calculateImageSize(infile, (CollectionIF) component);
       }
+    }
+    else if (processUpload && uploadTarget.equals(ImageryComponent.ORTHO))
+    {
+      this.createProduct(task, infile);
     }
 
     // handleMetadataWorkflow(task);
@@ -192,21 +202,41 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  // private void handleMetadataWorkflow(WorkflowTask uploadTask)
-  // {
-  // if (this.getCollection().getMetadataUploaded())
-  // {
-  // WorkflowTask task = new WorkflowTask();
-  // task.setUploadId(uploadTask.getUploadId());
-  // task.setCollectionId(uploadTask.getCollectionOid());
-  // task.setGeoprismUser(uploadTask.getGeoprismUser());
-  // task.setWorkflowType(WorkflowTask.NEEDS_METADATA);
-  // task.setStatus("Message");
-  // task.setTaskLabel("Missing Metadata");
-  // task.setMessage("Metadata is missing for Collection [" +
-  // uploadTask.getCollection().getName() + "].");
-  // task.apply();
-  // }
-  // }
+  @Transaction
+  public ProductIF createProduct(WorkflowTask task, ApplicationResource infile)
+  {
+    Collection collection = Collection.get(task.getComponent());
+
+    Product product = (Product) collection.createProductIfNotExist();
+
+    // TODO clear files?? I don't think this works in the current workflow
+    // product.clear();
+
+    List<DocumentIF> documents = collection.getDocuments().stream().filter(doc -> {
+      return !doc.getS3location().contains("/raw/");
+    }).collect(Collectors.toList());
+
+     product.addDocuments(documents);
+
+    // Product is manually uploaded, so its not generated from any files
+    // List<DocumentIF> raws = collection.getDocuments().stream().filter(doc ->
+    // {
+    // return doc.getS3location().contains("/raw/");
+    // }).collect(Collectors.toList());
+    //
+    // for (DocumentIF raw : raws)
+    // {
+    // if (list.size() == 0 || list.contains(raw.getName()))
+    // {
+    // raw.addGeneratedProduct(product);
+    // }
+    // }
+
+    product.createImageService(true);
+
+    product.updateBoundingBox();
+
+    return product;
+  }
 
 }

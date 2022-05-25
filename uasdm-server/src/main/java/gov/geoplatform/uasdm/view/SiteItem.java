@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -36,71 +36,71 @@ import gov.geoplatform.uasdm.graph.Sensor;
 
 public class SiteItem implements TreeComponent
 {
-  public static String        ID                 = "id";
+  public static String ID = "id";
 
-  public static String        TYPE               = "type";
+  public static String TYPE = "type";
 
-  public static String        TYPE_LABEL         = "typeLabel";
+  public static String TYPE_LABEL = "typeLabel";
 
-  public static String        OWNER_NAME         = "ownerName";
+  public static String OWNER_NAME = "ownerName";
 
-  public static String        OWNER_PHONE        = "ownerPhone";
+  public static String OWNER_PHONE = "ownerPhone";
 
-  public static String        OWNER_EMAIL        = "ownerEmail";
+  public static String OWNER_EMAIL = "ownerEmail";
 
-  public static String        PRIVILEGE_TYPE     = "privilegeType";
+  public static String PRIVILEGE_TYPE = "privilegeType";
 
-  public static String        NUMBER_OF_CHILDREN = "numberOfChildren";
+  public static String NUMBER_OF_CHILDREN = "numberOfChildren";
 
-  public static String        METADATA_UPLOADED  = "metadataUploaded";
+  public static String METADATA_UPLOADED = "metadataUploaded";
 
-  public static String        CHILDREN           = "children";
+  public static String CHILDREN = "children";
 
-  public static String        GEOMETRY           = "geometry";
-  
-  public static String        UAV                = "uav";
+  public static String GEOMETRY = "geometry";
 
-  public static String        PILOT_NAME              = "pilotName";
-  
-  public static String        PLATFORM           = "platform";
-  
-  public static String        SENSOR             = "sensor";
-  
-  public static String        COLLECTION_DATE    = "collectionDate";
-  
-  public static String        DATE_TIME    = "dateTime";
+  public static String UAV = "uav";
 
-  private String              id;
+  public static String PILOT_NAME = "pilotName";
 
-  private String              type;
+  public static String PLATFORM = "platform";
 
-  private String              typeLabel;
+  public static String SENSOR = "sensor";
 
-  private String              ownerName;
+  public static String COLLECTION_DATE = "collectionDate";
 
-  private String              ownerPhone;
+  public static String DATE_TIME = "dateTime";
 
-  private String              ownerEmail;
+  private String id;
 
-  private String              privilegeType;
+  private String type;
 
-  private Boolean             metadataUploaded;
+  private String typeLabel;
 
-  private Geometry            geometry;
+  private String ownerName;
 
-  private Integer             numberOfChildren;
-  
-  private String              pilotName;
-  
-  private String              collectionDate;
-  
-  private String              dateTime;
-  
-  private gov.geoplatform.uasdm.graph.UAV          uav;
+  private String ownerPhone;
 
-  private Platform            platform;
-  
-  private Sensor              sensor;
+  private String ownerEmail;
+
+  private String privilegeType;
+
+  private Boolean metadataUploaded;
+
+  private Geometry geometry;
+
+  private Integer numberOfChildren;
+
+  private String pilotName;
+
+  private String collectionDate;
+
+  private String dateTime;
+
+  private gov.geoplatform.uasdm.graph.UAV uav;
+
+  private Platform platform;
+
+  private Sensor sensor;
 
   private List<TreeComponent> children;
 
@@ -261,7 +261,7 @@ public class SiteItem implements TreeComponent
       obj.put(OWNER_EMAIL, this.getOwnerEmail());
       obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
       obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
-      
+
       if (this.getType().equals("Collection"))
       {
         gov.geoplatform.uasdm.graph.UAV uav = this.getUav();
@@ -270,26 +270,26 @@ public class SiteItem implements TreeComponent
         Platform platform = this.getPlatform();
         String collectionDate = this.getCollectionDate();
         String dateTime = this.getDateTime();
-        
+
         obj.put("pilotName", pilotName);
         obj.put("collectionDate", collectionDate);
         obj.put("dateTime", dateTime);
-        
+
         if (uav != null)
         {
           obj.put(UAV, uav.toJSON());
         }
-        
+
         if (sensor != null)
         {
           obj.put("sensor", sensor.toJSON());
         }
-        
+
         if (platform != null)
         {
           obj.put("platform", platform.toJSON());
         }
-        
+
       }
 
       for (Entry<String, Object> entry : entries)
@@ -349,7 +349,7 @@ public class SiteItem implements TreeComponent
     item.setId(object.getString(ID));
     item.setType(object.getString(TYPE));
     item.setTypeLabel(object.getString(TYPE_LABEL));
-//    item.setNumberOfChildren(object.getBoolean(HAS_CHILDREN));
+    // item.setNumberOfChildren(object.getBoolean(HAS_CHILDREN));
 
     // These fields are not set on the object, but rather are properties of the
     // owner itself.
@@ -460,7 +460,7 @@ public class SiteItem implements TreeComponent
   {
     this.pilotName = pilotName;
   }
-  
+
   public String getCollectionDate()
   {
     return collectionDate;
@@ -470,7 +470,7 @@ public class SiteItem implements TreeComponent
   {
     this.collectionDate = collectionDate;
   }
-  
+
   public String getDateTime()
   {
     return dateTime;

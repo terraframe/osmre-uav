@@ -38,7 +38,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +87,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public static void processFiles(RequestParser parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
 
-    File newArchive = validateArchive(archive, task);
+    File newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task) : validateFile(archive, task);
 
     if (newArchive == null)
     {
@@ -153,6 +153,47 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     super.afterJobExecute(history);
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+  }
+
+  private static CloseableFile validateFile(File archive, AbstractUploadTask task)
+  {
+    String filename = FilenameUtils.getName(archive.getName());
+    String ext = FilenameUtils.getExtension(archive.getName());
+
+    boolean isValid = validateFile(filename, archive.isDirectory(), false, task);
+
+    if (!isValid)
+    {
+      List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("The zip did not contain any files to process. Files must be at the top-most level of the zip (not in a sub-directory), they must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(extensions, ", "));
+      task.apply();
+
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+      }
+
+      return null;
+    }
+
+    try
+    {
+      CloseableFile tmp = new CloseableFile(File.createTempFile("noSubFolders", "." + ext));
+
+      FileUtils.copyFile(archive, tmp);
+
+      return tmp;
+    }
+    catch (IOException e)
+    {
+      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), TaskActionType.ERROR.getType());
+
+      throw new InvalidZipException(e);
+    }
+
   }
 
   private static CloseableFile validateArchive(File archive, AbstractUploadTask task)

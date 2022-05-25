@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 import { ModalTypes } from '../../model/modal';
@@ -8,7 +8,7 @@ import { ModalTypes } from '../../model/modal';
     templateUrl: './notification-modal.component.html',
     styleUrls: []
 } )
-export class NotificationModalComponent {
+export class NotificationModalComponent implements OnInit, OnDestroy {
     /*
      * Message
      */
@@ -31,6 +31,10 @@ export class NotificationModalComponent {
 
     ngOnInit(): void {
         this.onConfirm = new Subject();
+    }
+
+    ngOnDestroy(): void {
+        this.onConfirm.unsubscribe();
     }
 
     confirm(): void {

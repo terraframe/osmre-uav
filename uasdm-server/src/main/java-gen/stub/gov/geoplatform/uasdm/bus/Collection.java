@@ -293,12 +293,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
-  {
-    return Util.uploadZipArchive(task, archive, this, uploadTarget);
-  }
-
-  @Override
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();

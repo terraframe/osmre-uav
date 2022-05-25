@@ -151,12 +151,6 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
   }
 
   @Override
-  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
-  {
-    return Util.uploadZipArchive(task, archive, this, uploadTarget);
-  }
-
-  @Override
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
     List<SiteObject> objects = new LinkedList<SiteObject>();

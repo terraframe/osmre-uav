@@ -187,8 +187,10 @@ public class Util
     {
       return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
     }
-
-    return new LinkedList<String>();
+    else
+    {
+      return uploadFile(task, archive, imageryComponent, uploadTarget);
+    }
   }
 
   public static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
@@ -300,7 +302,12 @@ public class Util
               }
 
               // Upload the file to S3
-              String folder = uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename) ? ImageryComponent.VIDEO : ImageryComponent.RAW;
+              String folder = uploadTarget;
+
+              if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename))
+              {
+                folder = ImageryComponent.VIDEO;
+              }
 
               boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
 
@@ -318,6 +325,32 @@ public class Util
       task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
 
       throw new ProgrammingErrorException(e);
+    }
+
+    return filenames;
+  }
+
+  public static List<String> uploadFile(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  {
+    List<UasComponentIF> ancestors = imageryComponent.getAncestors();
+    List<String> filenames = new LinkedList<String>();
+
+    try (CloseableFile file = archive.openNewFile())
+    {
+      // Upload the file to S3
+      String folder = uploadTarget;
+
+      if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(archive.getName()))
+      {
+        folder = ImageryComponent.VIDEO;
+      }
+
+      boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), archive.getName(), file, imageryComponent);
+
+      if (success)
+      {
+        filenames.add(archive.getName());
+      }
     }
 
     return filenames;

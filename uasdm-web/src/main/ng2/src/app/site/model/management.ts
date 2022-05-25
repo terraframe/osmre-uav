@@ -35,7 +35,7 @@ export class SiteEntity {
 	type: string;
 	component: string;
 	key: string;
-	metadataUploaded: boolean;
+	metadataUploaded?: boolean;
 	geometry?: any;
 	numberOfChildren: number;
 	lastModified?: string;
@@ -46,12 +46,13 @@ export class SiteEntity {
 	children?: SiteEntity[];
 	active?: boolean;
 	exclude?: boolean;
-    sensor: Sensor;
-    platform: Platform;
-    uav: UAV;
+    sensor?: Sensor;
+    platform?: Platform;
+    uav?: UAV;
     pilotName?: string;
     dateTime?: string;
     collectionDate?: string;
+	hasProduct?: boolean;
 }
 
 export class CollectionHierarchy {

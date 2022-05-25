@@ -332,7 +332,7 @@ export class LeafModalComponent implements OnInit {
 		  ignoreBackdropClick: true,
 		  'class': 'upload-modal'
 		});
-		modal.content.init(this.entity.id, this.folder.name);
+		modal.content.init(this.entity, this.folder.name);
 	
 		// modal.content.onUploadComplete.subscribe(oid => {
 	

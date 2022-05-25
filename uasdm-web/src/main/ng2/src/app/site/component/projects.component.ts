@@ -29,7 +29,7 @@ import {
 } from 'angular-animations';
 import { ActivatedRoute } from '@angular/router';
 import { CreateCollectionModalComponent } from './modal/create-collection-modal.component';
-import { FineUploader, UIOptions } from 'fine-uploader';
+import { UIOptions } from 'fine-uploader';
 import { FineUploaderBasic } from 'fine-uploader/lib/core';
 import { UploadModalComponent } from './modal/upload-modal.component';
 
@@ -600,20 +600,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleExistingTask(): void {
 
-    const modal = this.modalService.show(UploadModalComponent, {
-      animated: true,
-      backdrop: true,
-      ignoreBackdropClick: true,
-      'class': 'upload-modal'
-    });
-    modal.content.init(this.existingTask.task.collection, this.existingTask.task.uploadTarget);
-    modal.content.onUploadCancel.subscribe(() => {
-      this.existingTask = null;
-    });
-    modal.content.onUploadComplete.subscribe(() => {
-      this.existingTask = null;
-    });
+    this.service.view(this.existingTask.task.collection).then(resp => {
+      const modal = this.modalService.show(UploadModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        'class': 'upload-modal'
+      });
+      modal.content.init(resp.item, this.existingTask.task.uploadTarget);
+      modal.content.onUploadCancel.subscribe(() => {
+        this.existingTask = null;
+      });
+      modal.content.onUploadComplete.subscribe(() => {
+        this.existingTask = null;
+      });
 
+    });
   }
 
   handleEdit(node: SiteEntity, event: any): void {

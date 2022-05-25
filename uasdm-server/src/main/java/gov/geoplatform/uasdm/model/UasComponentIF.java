@@ -89,8 +89,6 @@ public interface UasComponentIF extends ComponentIF
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
 
-  public List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
-
   public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream);
 
   public DocumentIF createDocumentIfNotExist(String key, String name);
