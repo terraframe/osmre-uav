@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1591598514)
+@com.runwaysdk.business.ClassSignature(hash = -1848749839)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,9 +12,12 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
   public static java.lang.String COMPONENT = "component";
+  public static java.lang.String PROCESSDEM = "processDem";
+  public static java.lang.String PROCESSORTHO = "processOrtho";
+  public static java.lang.String PROCESSPTCLOUD = "processPtcloud";
   public static java.lang.String UPLOADTARGET = "uploadTarget";
   public static java.lang.String WORKFLOWTYPE = "workflowType";
-  private static final long serialVersionUID = -1591598514;
+  private static final long serialVersionUID = -1848749839;
   
   public WorkflowTaskBase()
   {
@@ -46,6 +49,90 @@ public abstract class WorkflowTaskBase extends gov.geoplatform.uasdm.bus.Abstrac
     else
     {
       setValue(COMPONENT, value);
+    }
+  }
+  
+  public Boolean getProcessDem()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSDEM));
+  }
+  
+  public void validateProcessDem()
+  {
+    this.validateAttribute(PROCESSDEM);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getProcessDemMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PROCESSDEM);
+  }
+  
+  public void setProcessDem(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSDEM, "");
+    }
+    else
+    {
+      setValue(PROCESSDEM, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public Boolean getProcessOrtho()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSORTHO));
+  }
+  
+  public void validateProcessOrtho()
+  {
+    this.validateAttribute(PROCESSORTHO);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getProcessOrthoMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PROCESSORTHO);
+  }
+  
+  public void setProcessOrtho(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSORTHO, "");
+    }
+    else
+    {
+      setValue(PROCESSORTHO, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public Boolean getProcessPtcloud()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSPTCLOUD));
+  }
+  
+  public void validateProcessPtcloud()
+  {
+    this.validateAttribute(PROCESSPTCLOUD);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getProcessPtcloudMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.WorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PROCESSPTCLOUD);
+  }
+  
+  public void setProcessPtcloud(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSPTCLOUD, "");
+    }
+    else
+    {
+      setValue(PROCESSPTCLOUD, java.lang.Boolean.toString(value));
     }
   }
   

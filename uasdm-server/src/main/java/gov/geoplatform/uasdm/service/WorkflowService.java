@@ -55,6 +55,16 @@ public class WorkflowService
     {
       UasComponentIF uasComponent = ImageryWorkflowTaskIF.getOrCreateUasComponentFromRequestParser(parser);
       task = uasComponent.createWorkflowTask(parser.getUuid(), parser.getUploadTarget());
+      task.setDescription(parser.getDescription());
+      task.setTool(parser.getTool());
+
+      if (task instanceof WorkflowTask)
+      {
+        WorkflowTask workflowTask = (WorkflowTask) task;
+        workflowTask.setProcessDem(parser.getProcessDem());
+        workflowTask.setProcessOrtho(parser.getProcessOrtho());
+        workflowTask.setProcessPtcloud(parser.getProcessPtcloud());
+      }
     }
     else
     {
@@ -170,7 +180,7 @@ public class WorkflowService
   public JSONObject getUploadTask(String sessionId, String uploadId)
   {
     AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
-    
+
     return task.toJSON();
   }
 

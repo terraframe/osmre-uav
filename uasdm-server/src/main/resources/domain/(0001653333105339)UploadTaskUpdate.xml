@@ -1,18 +1,46 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <update>
-      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask" extends="gov.geoplatform.uasdm.bus.AbstractUploadTask"  label="Task"  cacheAlgorithm="nothing" generateController="false" isAbstract="false" generateSource="true"  >
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
+        <create>
+          <attributes>
+            <char name="description" label="Description" size="4096" required="false" />
+            <char name="tool" label="Tool" size="256" required="false" />            
+          </attributes>
+        </create>
+      </mdBusiness>  
+      <mdBusiness name="gov.geoplatform.uasdm.bus.WorkflowTask">
         <create>
           <attributes>
             <char name="uploadTarget" required="false" label="Upload Target" size="256" />
+            <boolean name="processDem" label="Process DEM" required="false" />
+            <boolean name="processOrtho" label="Process Ortho" required="false" />            
+            <boolean name="processPtcloud" label="Process Ptcloud" required="false" />                        
           </attributes>
         </create>
-      </mdBusiness>    
+      </mdBusiness>  
+      <mdVertex name="gov.geoplatform.uasdm.graph.Document">
+        <create>      
+          <attributes>
+            <char name="description" label="Description" size="4096" required="false" />
+            <char name="tool" label="Tool" size="256" required="false" />
+            <dateTime name="lastModified" label="Last Modified Date" required="false" />          
+          </attributes>
+        </create>        
+      </mdVertex>    
     </update>
   </doIt>
   <undoIt>
     <delete>
-      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.folder" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.description" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.tool" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.graph.Document.description" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.graph.Document.tool" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.graph.Document.lastModified" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.processDem" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.processOrtho" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.processPtcloud" type="com.runwaysdk.system.metadata.MdAttribute"></object>
+      <object key="gov.geoplatform.uasdm.bus.WorkflowTask.uploadTarget" type="com.runwaysdk.system.metadata.MdAttribute"></object>
     </delete>
   </undoIt>
 </version>

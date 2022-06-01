@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -30,37 +30,45 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
 {
-  public static final String KEY               = "key";
+  public static final String KEY = "key";
 
-  public static final String NAME              = "name";
+  public static final String NAME = "name";
 
-  public static final String COMPONENT         = "component";
+  public static final String COMPONENT = "component";
 
-  public static final String FOLDER            = "folder";
+  public static final String FOLDER = "folder";
 
-  public static final String OBJECT            = "object";
+  public static final String OBJECT = "object";
 
-  public static final String IMAGE_KEY         = "imageKey";
+  public static final String IMAGE_KEY = "imageKey";
 
   public static final String LAST_MODIFIED_KEY = "lastModified";
 
-  public static final String EXCLUDE           = "exclude";
+  public static final String EXCLUDE = "exclude";
 
-  private String             id;
+  public static final String DESCRIPTION = "description";
 
-  private String             name;
+  public static final String TOOL = "tool";
 
-  private String             componentId;
+  private String id;
 
-  private String             key;
+  private String name;
 
-  private String             type;
+  private String componentId;
 
-  private String             imageKey;
+  private String key;
 
-  private Date               lastModified;
+  private String type;
 
-  private Boolean            exclude;
+  private String imageKey;
+
+  private Date lastModified;
+
+  private Boolean exclude;
+
+  private String description;
+
+  private String tool;
 
   public String getId()
   {
@@ -131,15 +139,35 @@ public class SiteObject implements TreeComponent
   {
     this.lastModified = lastModified;
   }
-  
+
   public Boolean getExclude()
   {
     return exclude;
   }
-  
+
   public void setExclude(Boolean exclude)
   {
     this.exclude = exclude;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
+  public String getTool()
+  {
+    return tool;
+  }
+
+  public void setTool(String tool)
+  {
+    this.tool = tool;
   }
 
   @Override
@@ -158,6 +186,8 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.COMPONENT, this.componentId);
     json.put(SiteObject.LAST_MODIFIED_KEY, this.lastModified);
     json.put(SiteObject.EXCLUDE, this.exclude);
+    json.put(SiteObject.DESCRIPTION, this.description);
+    json.put(SiteObject.TOOL, this.tool);
 
     // if (this.type.equals(SiteObject.FOLDER))
     // {
@@ -191,7 +221,6 @@ public class SiteObject implements TreeComponent
 
   public static SiteObject create(ComponentIF component, DocumentIF document)
   {
-
     String key = document.getS3location();
     String name = FilenameUtils.getName(key);
 
@@ -201,10 +230,10 @@ public class SiteObject implements TreeComponent
     object.setComponentId(component.getOid());
     object.setKey(key);
     object.setType(SiteObject.OBJECT);
-//    object.setExclude(true);
     object.setExclude(document.getExclude() != null && document.getExclude());
-
-    // object.setLastModified(document.getLastModified());
+    object.setLastModified(document.getLastModified());
+    object.setDescription(document.getDescription());
+    object.setTool(document.getTool());
 
     return object;
   }

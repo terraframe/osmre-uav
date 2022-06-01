@@ -46,14 +46,23 @@ export class SiteEntity {
 	children?: SiteEntity[];
 	active?: boolean;
 	exclude?: boolean;
-    sensor?: Sensor;
-    platform?: Platform;
-    uav?: UAV;
-    pilotName?: string;
-    dateTime?: string;
-    collectionDate?: string;
+	sensor?: Sensor;
+	platform?: Platform;
+	uav?: UAV;
+	pilotName?: string;
+	dateTime?: string;
+	collectionDate?: string;
 	hasProduct?: boolean;
+	description?: string;
+	tool?: string;
 }
+
+export class CollectionArtifacts {
+	dem?: SiteEntity
+	ortho?: SiteEntity
+	ptcloud?: SiteEntity
+}
+
 
 export class CollectionHierarchy {
 	site: string;
@@ -75,7 +84,7 @@ export class Selection {
 	label: string;
 	uav?: string;
 	sensor?: string;
-	collectionDate? : string;
+	collectionDate?: string;
 	pointOfContact?: {
 		name: string,
 		email: string
@@ -96,6 +105,11 @@ export class UploadForm {
 	uploadTarget: string;
 	selections: string;
 	processUpload: boolean;
+	processOrtho: boolean;
+	processDem: boolean;
+	processPtcloud: boolean;
+	tool?: string;
+	description?: string;
 }
 
 export class Action {
@@ -189,11 +203,11 @@ export class GeoserverLayer {
 //}
 
 export class ProductDetail extends Product {
-    pilotName: string;
-    dateTime: string;
-    collectionDate: string;
-    sensor: Sensor;
-    platform: Platform;
-    uav: UAV;
-    page?: PageResult<ProductDocument>;
+	pilotName: string;
+	dateTime: string;
+	collectionDate: string;
+	sensor: Sensor;
+	platform: Platform;
+	uav: UAV;
+	page?: PageResult<ProductDocument>;
 }

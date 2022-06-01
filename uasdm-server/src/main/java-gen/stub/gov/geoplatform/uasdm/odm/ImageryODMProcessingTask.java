@@ -58,6 +58,24 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
   {
     return this.getImagery();
   }
+  
+  @Override
+  public Boolean getProcessDem()
+  {
+    return false;
+  }
+  
+  @Override
+  public Boolean getProcessOrtho()
+  {
+    return false;
+  }
+  
+  @Override
+  public Boolean getProcessPtcloud()
+  {
+    return false;
+  }
 
   @Override
   public JSONObject toJSON()

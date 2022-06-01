@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.bus;
 
+import java.util.Date;
+
 import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -83,6 +85,24 @@ public class Document extends DocumentBase implements DocumentIF
     {
       this.addGeneratedProducts((Product) product).apply();
     }
+  }
+
+  @Override
+  public Date getLastModified()
+  {
+    return this.getLastUpdateDate();
+  }
+  
+  @Override
+  public String getDescription()
+  {
+    return null;
+  }
+  
+  @Override
+  public String getTool()
+  {
+    return null;
   }
 
   public DocumentGeneratedProduct getDocumentGeneratedProduct(ProductIF product)

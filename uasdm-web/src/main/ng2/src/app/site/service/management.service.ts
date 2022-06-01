@@ -10,7 +10,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -73,6 +73,37 @@ export class ManagementService {
 			.get<SiteEntity[]>(acp + '/project/items', { params: params })
 			.toPromise()
 	}
+
+	getArtifacts(id: string): Promise<CollectionArtifacts> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+
+		return this.http
+			.get<CollectionArtifacts>(acp + '/project/get-artifacts', { params: params })
+			.toPromise()
+	}
+
+	removeArtifacts(id: string, folder: string): Promise<CollectionArtifacts> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			id: id,
+			folder: folder
+		};
+
+		this.eventService.start();
+
+		return this.http
+			.post<CollectionArtifacts>(acp + '/project/remove-artifacts', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
+
 
 	roots(id: string, bounds: LngLatBounds): Promise<SiteEntity[]> {
 		let params: HttpParams = new HttpParams();

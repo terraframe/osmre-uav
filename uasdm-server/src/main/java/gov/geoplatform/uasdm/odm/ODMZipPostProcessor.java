@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -59,27 +59,27 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public class ODMZipPostProcessor
 {
-  private static final Logger  logger    = LoggerFactory.getLogger(ODMZipPostProcessor.class);
+  private static final Logger logger = LoggerFactory.getLogger(ODMZipPostProcessor.class);
 
-  public static final String   DEM_GDAL  = Product.ODM_ALL_DIR + "/gdal";
+  public static final String DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
 
-  public static final String   POTREE    = Product.ODM_ALL_DIR + "/entwine_pointcloud";
+  public static final String POTREE = Product.ODM_ALL_DIR + "/entwine_pointcloud";
 
-  protected List<DocumentIF>   documents = new LinkedList<DocumentIF>();
+  protected List<DocumentIF> documents = new LinkedList<DocumentIF>();
 
-  protected ODMUploadTaskIF    uploadTask;
+  protected ODMUploadTaskIF uploadTask;
 
   protected List<S3FileUpload> config;
 
-  protected UasComponentIF     collection;
+  protected UasComponentIF collection;
 
-  protected String             filePrefix;
+  protected String filePrefix;
 
-  protected String             s3Location;
+  protected String s3Location;
 
-  protected CloseableFile      allZip;
+  protected CloseableFile allZip;
 
-  protected Product            product;
+  protected Product product;
 
   // public ODMZipPostProcessor(List<S3FileUpload> config, UasComponentIF
   // component, ODMUploadTaskIF uploadTask, Product product)
@@ -135,18 +135,39 @@ public class ODMZipPostProcessor
   {
     List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
 
-    processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] { "dsm.tif", "dtm.tif" }));
+    if (this.uploadTask.getProcessDem())
+    {
+      processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
+          "dsm.tif", "dtm.tif"
+      }));
 
-    processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] { "dsm.tif" }));
+      processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] {
+          "dsm.tif"
+      }));
+    }
 
-    processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] { "odm_georeferenced_model.laz" }));
+    if (this.uploadTask.getProcessOrtho())
+    {
+      processingConfigs.add(new ManagedDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] {
+          "odm_orthophoto.png", "odm_orthophoto.tif"
+      }));
+    }
 
-    processingConfigs.add(new ManagedDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] { "odm_orthophoto.png", "odm_orthophoto.tif" }));
+    if (this.uploadTask.getProcessPtcloud())
+    {
+      processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] {
+          "odm_georeferenced_model.laz"
+      }));
 
-    processingConfigs.add(new ManagedDocument("micasense", "micasense", null));
+      processingConfigs.add(new ManagedDocument("micasense", "micasense", null));
 
-    processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[] { "ept.json", "ept-build.json" }, false));
-    processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[] { "ept-sources", "ept-hierarchy", "ept-data" }, true));
+      processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[] {
+          "ept.json", "ept-build.json"
+      }, false));
+      processingConfigs.add(new S3FileUpload("entwine_pointcloud", POTREE, new String[] {
+          "ept-sources", "ept-hierarchy", "ept-data"
+      }, true));
+    }
 
     this.config = processingConfigs;
   }
@@ -236,7 +257,7 @@ public class ODMZipPostProcessor
 
       Util.uploadFileToS3(allZip, allKey, null);
 
-      documents.add(this.collection.createDocumentIfNotExist(allKey, allZip.getName()));
+      documents.add(this.collection.createDocumentIfNotExist(allKey, allZip.getName(), null, "ODM"));
 
       if (this.collection instanceof CollectionIF)
       {
@@ -321,15 +342,15 @@ public class ODMZipPostProcessor
   {
     protected ODMZipPostProcessor uploader;
 
-    private String                odmFolderName;
+    private String odmFolderName;
 
-    private String                s3FolderName;
+    private String s3FolderName;
 
-    private String[]              mandatoryFiles;
+    private String[] mandatoryFiles;
 
-    private ArrayList<String>     processedFiles;
+    private ArrayList<String> processedFiles;
 
-    private boolean               isDirectory;
+    private boolean isDirectory;
 
     public S3FileUpload(String odmFolderName, String s3FolderName, String[] mandatoryFiles, boolean isDirectory)
     {
@@ -510,7 +531,7 @@ public class ODMZipPostProcessor
 
       if (!file.isDirectory())
       {
-        this.uploader.documents.add(this.uploader.collection.createDocumentIfNotExist(key, file.getName()));
+        this.uploader.documents.add(this.uploader.collection.createDocumentIfNotExist(key, file.getName(), null, "ODM"));
 
         if (searchable)
         {
@@ -534,7 +555,9 @@ public class ODMZipPostProcessor
 
       File hillshade = new File(file.getParent(), basename + "-gdal.tif");
 
-      this.executeProcess(new String[] { "gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath() });
+      this.executeProcess(new String[] {
+          "gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath()
+      });
 
       if (hillshade.exists())
       {

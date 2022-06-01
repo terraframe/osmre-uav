@@ -53,9 +53,19 @@ public class RequestParser
 
   private static String PROCESS_UPLOAD = "processUpload";
 
+  private static String PROCESS_DEM = "processDem";
+
+  private static String PROCESS_ORTHO = "processOrtho";
+
+  private static String PROCESS_PTCLOUD = "processPtcloud";
+
   private static String SELECTIONS = "selections";
 
   private static String UPLOAD_TARGET = "uploadTarget";
+
+  private static String DESCRIPTION = "description";
+
+  private static String TOOL = "tool";
 
   private String filename;
 
@@ -83,7 +93,17 @@ public class RequestParser
 
   private String uploadTarget;
 
+  private String description;
+
+  private String tool;
+
   private Boolean processUpload;
+
+  private Boolean processPtcloud;
+
+  private Boolean processOrtho;
+
+  private Boolean processDem;
 
   private JSONArray selections;
 
@@ -170,6 +190,21 @@ public class RequestParser
     return processUpload;
   }
 
+  public Boolean getProcessDem()
+  {
+    return processDem;
+  }
+
+  public Boolean getProcessOrtho()
+  {
+    return processOrtho;
+  }
+
+  public Boolean getProcessPtcloud()
+  {
+    return processPtcloud;
+  }
+
   public JSONArray getSelections()
   {
     return selections;
@@ -178,6 +213,16 @@ public class RequestParser
   public String getUploadTarget()
   {
     return ( uploadTarget != null ) ? uploadTarget : ImageryComponent.RAW;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public String getTool()
+  {
+    return tool;
   }
 
   public String getOriginalFilename()
@@ -241,6 +286,21 @@ public class RequestParser
       requestParser.processUpload = Boolean.valueOf(multipartUploadParser.getParams().get(PROCESS_UPLOAD));
     }
 
+    if (requestParser.processPtcloud == null)
+    {
+      requestParser.processPtcloud = Boolean.valueOf(multipartUploadParser.getParams().get(PROCESS_PTCLOUD));
+    }
+
+    if (requestParser.processOrtho == null)
+    {
+      requestParser.processOrtho = Boolean.valueOf(multipartUploadParser.getParams().get(PROCESS_ORTHO));
+    }
+
+    if (requestParser.processDem == null)
+    {
+      requestParser.processDem = Boolean.valueOf(multipartUploadParser.getParams().get(PROCESS_DEM));
+    }
+
     if (requestParser.selections == null && multipartUploadParser.getParams().containsKey(SELECTIONS))
     {
       requestParser.selections = new JSONArray(multipartUploadParser.getParams().get(SELECTIONS));
@@ -249,6 +309,16 @@ public class RequestParser
     if (requestParser.uploadTarget == null)
     {
       requestParser.uploadTarget = multipartUploadParser.getParams().get(UPLOAD_TARGET);
+    }
+
+    if (requestParser.description == null)
+    {
+      requestParser.description = multipartUploadParser.getParams().get(DESCRIPTION);
+    }
+
+    if (requestParser.tool == null)
+    {
+      requestParser.tool = multipartUploadParser.getParams().get(TOOL);
     }
 
     if (requestParser.originalFilename == null)
@@ -310,9 +380,34 @@ public class RequestParser
       requestParser.processUpload = Boolean.valueOf(req.getParameter(PROCESS_UPLOAD));
     }
 
+    if (requestParser.processPtcloud == null)
+    {
+      requestParser.processPtcloud = Boolean.valueOf(req.getParameter(PROCESS_PTCLOUD));
+    }
+
+    if (requestParser.processOrtho == null)
+    {
+      requestParser.processOrtho = Boolean.valueOf(req.getParameter(PROCESS_ORTHO));
+    }
+
+    if (requestParser.processDem == null)
+    {
+      requestParser.processDem = Boolean.valueOf(req.getParameter(PROCESS_DEM));
+    }
+
     if (requestParser.uploadTarget == null)
     {
       requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);
+    }
+
+    if (requestParser.description == null)
+    {
+      requestParser.description = req.getParameter(DESCRIPTION);
+    }
+
+    if (requestParser.tool == null)
+    {
+      requestParser.tool = req.getParameter(TOOL);
     }
 
     if (requestParser.method == null)
@@ -363,9 +458,30 @@ public class RequestParser
       {
         requestParser.processUpload = Boolean.valueOf(value);
       }
+      else if (key.equals(PROCESS_DEM))
+      {
+        requestParser.processDem = Boolean.valueOf(value);
+      }
+      else if (key.equals(PROCESS_ORTHO))
+      {
+        requestParser.processOrtho = Boolean.valueOf(value);
+      }
+      else if (key.equals(PROCESS_PTCLOUD))
+      {
+        requestParser.processPtcloud = Boolean.valueOf(value);
+      }
+
       else if (key.equals(UPLOAD_TARGET))
       {
         requestParser.uploadTarget = value;
+      }
+      else if (key.equals(DESCRIPTION))
+      {
+        requestParser.description = value;
+      }
+      else if (key.equals(TOOL))
+      {
+        requestParser.tool = value;
       }
       else if (key.equals(METHOD_PARAM))
       {

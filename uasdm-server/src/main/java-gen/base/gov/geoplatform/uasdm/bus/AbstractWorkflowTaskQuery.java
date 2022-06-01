@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 2017609345)
+@com.runwaysdk.business.ClassSignature(hash = 1754585183)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -91,6 +76,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CREATEDBY);
 
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CREATEDBY, mdAttributeIF, this, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getDescription()
+  {
+    return getDescription(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
 
   }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
@@ -344,6 +346,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TASKLABEL, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getTool()
+  {
+    return getTool(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getType()
   {
     return getType(null);
@@ -434,6 +453,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy();
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias);
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getDescription();
+    public com.runwaysdk.query.SelectableChar getDescription(String alias);
+    public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
@@ -473,6 +495,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getTaskLabel();
     public com.runwaysdk.query.SelectableChar getTaskLabel(String alias);
     public com.runwaysdk.query.SelectableChar getTaskLabel(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getTool();
+    public com.runwaysdk.query.SelectableChar getTool(String alias);
+    public com.runwaysdk.query.SelectableChar getTool(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getType();
     public com.runwaysdk.query.SelectableChar getType(String alias);
     public com.runwaysdk.query.SelectableChar getType(String alias, String displayLabel);
@@ -543,6 +568,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CREATEDBY,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getDescription()
+  {
+    return getDescription(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
 
   }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
@@ -766,6 +808,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TASKLABEL, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getTool()
+  {
+    return getTool(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getType()
   {
     return getType(null);
@@ -833,6 +892,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy();
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias);
     public com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF getCreatedBy(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getDescription();
+    public com.runwaysdk.query.SelectableChar getDescription(String alias);
+    public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
@@ -872,6 +934,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getTaskLabel();
     public com.runwaysdk.query.SelectableChar getTaskLabel(String alias);
     public com.runwaysdk.query.SelectableChar getTaskLabel(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getTool();
+    public com.runwaysdk.query.SelectableChar getTool(String alias);
+    public com.runwaysdk.query.SelectableChar getTool(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getType();
     public com.runwaysdk.query.SelectableChar getType(String alias);
     public com.runwaysdk.query.SelectableChar getType(String alias, String displayLabel);
@@ -993,6 +1058,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.SingleActorQuery.SingleActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CREATEDBY,  alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getDescription()
+  {
+    return getDescription(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
+
+  }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
   {
     return getEntityDomain(null);
@@ -1212,6 +1294,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getTaskLabel(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TASKLABEL, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getTool()
+  {
+    return getTool(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getTool(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TOOL, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getType()

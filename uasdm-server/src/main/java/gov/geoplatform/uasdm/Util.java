@@ -363,7 +363,7 @@ public class Util
 
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
-    final DocumentIF document = component.createDocumentIfNotExist(key, fileName);
+    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, null, null);
 
     if (document.isNew())
     {
@@ -385,7 +385,7 @@ public class Util
         Util.uploadFileToS3(tmp, key, task);
 
         final UasComponentIF component = imageryComponent.getUasComponent();
-        component.createDocumentIfNotExist(key, name);
+        component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool());
 
         SolrService.updateOrCreateDocument(ancestors, component, key, name);
 

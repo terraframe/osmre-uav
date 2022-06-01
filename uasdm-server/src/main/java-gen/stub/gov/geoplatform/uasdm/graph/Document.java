@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -47,6 +48,8 @@ public class Document extends DocumentBase implements DocumentIF
   public void apply(UasComponentIF component)
   {
     final boolean isNew = this.isNew();
+    
+    this.setLastModified(new Date());
 
     this.apply();
 
@@ -114,7 +117,7 @@ public class Document extends DocumentBase implements DocumentIF
     return this.getS3location();
   }
 
-  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name)
+  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name, String description, String tool)
   {
     Document document = Document.find(key);
 
@@ -128,6 +131,8 @@ public class Document extends DocumentBase implements DocumentIF
     }
 
     document.setName(name);
+    document.setDescription(description);
+    document.setTool(tool);
     document.apply(uasComponent);
 
     return document;

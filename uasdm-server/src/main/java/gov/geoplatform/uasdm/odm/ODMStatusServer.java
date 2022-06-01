@@ -482,6 +482,7 @@ public class ODMStatusServer
         imageryOdmUploadTask.setOdmUUID(task.getOdmUUID());
         imageryOdmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         imageryOdmUploadTask.setProcessingTask(task);
+        
         // imageryOdmUploadTask.setTaskLabel("Uploading Orthorectification
         // Artifacts for [" + task.getCollection().getName() + "].");
         imageryOdmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");
@@ -499,6 +500,9 @@ public class ODMStatusServer
         odmUploadTask.setOdmUUID(task.getOdmUUID());
         odmUploadTask.setStatus(ODMStatus.RUNNING.getLabel());
         odmUploadTask.setProcessingTask(task);
+        odmUploadTask.setProcessDem(task.getProcessDem());
+        odmUploadTask.setProcessOrtho(task.getProcessOrtho());
+        odmUploadTask.setProcessPtcloud(task.getProcessPtcloud());
         // uploadTask.setTaskLabel("Uploading Orthorectification Artifacts for
         // [" + task.getCollection().getName() + "].");
         odmUploadTask.setTaskLabel("UAV data orthorectification upload for collection [" + task.getImageryComponent().getName() + "]");

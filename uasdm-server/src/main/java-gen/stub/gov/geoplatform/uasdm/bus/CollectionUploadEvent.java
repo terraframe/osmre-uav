@@ -32,19 +32,21 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.GdalProcessor;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.FlightMetadata;
@@ -135,6 +137,9 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setComponent(component.getOid());
     task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setProcessDem(uploadTask.getProcessDem());
+    task.setProcessOrtho(uploadTask.getProcessOrtho());
+    task.setProcessPtcloud(uploadTask.getProcessPtcloud());
     task.setTaskLabel("UAV data orthorectification for collection [" + component.getName() + "]");
     task.setMessage("The images uploaded to ['" + component.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.setFilePrefix(outFileNamePrefix);
@@ -217,20 +222,18 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }).collect(Collectors.toList());
 
      product.addDocuments(documents);
-
-    // Product is manually uploaded, so its not generated from any files
-    // List<DocumentIF> raws = collection.getDocuments().stream().filter(doc ->
-    // {
-    // return doc.getS3location().contains("/raw/");
-    // }).collect(Collectors.toList());
-    //
-    // for (DocumentIF raw : raws)
-    // {
-    // if (list.size() == 0 || list.contains(raw.getName()))
-    // {
-    // raw.addGeneratedProduct(product);
-    // }
-    // }
+     
+    // Create the png for the uploaded file
+    try (CloseableFile file = infile.openNewFile())
+    {
+        new GdalProcessor(collection, task, product, file).process();
+    }
+    catch (InterruptedException e)
+    {
+//      task.add
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     product.createImageService(true);
 

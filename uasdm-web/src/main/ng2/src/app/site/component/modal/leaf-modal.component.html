@@ -14,10 +14,11 @@
     <div *ngIf="entity != null">
       <div class="row">
         <div class="col-md-12">
-          <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" class="dot pending" style="margin-left: 0;margin-bottom: 5px;"></span></h2>
+          <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" class="dot pending"
+              style="margin-left: 0;margin-bottom: 5px;"></span></h2>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="col-md-12">
           <label>Pilot Name: </label> &nbsp; {{entity.pilotName}}
@@ -29,7 +30,7 @@
           <label>Upload Date: </label> &nbsp; {{entity.dateTime | idmdate : "MMM dd, yyyy"}}
         </div>
       </div>
-      
+
       <div class="row">
         <div class="col-md-12">
           <label>Collection Date: </label> &nbsp; {{entity.collectionDate | idmdate : "MMM dd, yyyy"}}
@@ -39,12 +40,13 @@
       <div class="row">
         <div class="col-md-6">
           <label>Sensor:</label>
-          
+
           <table *ngIf="entity.sensor" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Name</td>
-                <td><a [routerLink]="['/site/sensor', entity.sensor.oid]" target="_blank">{{entity.sensor.name}}</a></td>
+                <td><a [routerLink]="['/site/sensor', entity.sensor.oid]" target="_blank">{{entity.sensor.name}}</a>
+                </td>
               </tr>
               <tr>
                 <td>Type</td>
@@ -54,45 +56,47 @@
                 <td>Model</td>
                 <td>{{entity.sensor.model}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{entity.sensor.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{entity.sensor.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
+
           <p *ngIf="!entity.sensor" style="font-style:italic;">Sensor metadata is not available for this collection.</p>
         </div>
-        
+
         <div class="col-md-6">
           <label>Platform:</label>
-          
+
           <table *ngIf="entity.platform" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Name</td>
-                <td><a [routerLink]="['/site/platform', entity.platform.oid]" target="_blank">{{entity.platform.name}}</a></td>
+                <td><a [routerLink]="['/site/platform', entity.platform.oid]"
+                    target="_blank">{{entity.platform.name}}</a></td>
               </tr>
               <tr>
                 <td>Type</td>
                 <td> {{entity.platform.platformType.name}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{entity.platform.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{entity.platform.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
-          <p *ngIf="!entity.platform" style="font-style:italic;">Platform metadata is not available for this collection.</p>
+
+          <p *ngIf="!entity.platform" style="font-style:italic;">Platform metadata is not available for this collection.
+          </p>
         </div>
       </div>
-      
-      
+
+
       <div class="row">
         <div class="col-md-12">
           <label>UAV:</label>
-          
+
           <table *ngIf="entity.uav" class="table table-bordered">
             <tbody>
               <tr>
@@ -103,20 +107,20 @@
                 <td>Type</td>
                 <td> {{entity.uav.faaNumber}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{entity.uav.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{entity.uav.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
+
           <p *ngIf="!entity.platform" style="font-style:italic;">UAV metadata is not available for this collection.</p>
-          
+
         </div>
       </div>
-      
-      
-      
+
+
+
 
       <div class="row">
         <div class="col-md-12">
@@ -131,99 +135,73 @@
       <div class="row">
         <div class="col-sm-12" style="padding: 0;">
           <tabset class="nav-full-width">
-            <tab *ngFor="let folder of folders" [heading]="folder.name" (selectTab)="onSelect(folder)">
 
-              <div [ngSwitch]="folder.name">
-                <div class="image-list-container" *ngSwitchDefault>
-                  <ul class="list-group row">
-                    <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-                      <a class="thumbnail non-clickable">
-                        <img [src]="context + '/net/geoprism/images/thumbnail-default.png'" alt="Image">
-                        <div class="caption">
-                          <h4 class="media-heading">{{item.name}}</h4>
-                        </div>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                
-                <div class="image-list-container" *ngSwitchCase="'ortho'">
-                  <ul class="list-group row">
-                    <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-                      <a class="thumbnail non-clickable">
-                        <img [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')" alt="Image">
-                        <div class="caption">
-                          <h4 class="media-heading">{{item.name}}</h4>
-                        </div>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                <div class="image-list-container" *ngSwitchCase="'raw'">
-                  <ul class="list-group row">
-                    <li
-                      *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
-                      class="list-group-item col-xs-3">
-                      <a class="thumbnail"
-                        [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
-                        <input type="checkbox" class="x-box" *ngIf="enableSelectableImages"
-                          [checked]="item.exclude" (change)="toggleExcludeImage($event, item)" />
-                        <img style="max-height: 150px" (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
-                          [ngClass]="{'img-disabled' : item.exclude}"
-                          [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
-                          alt="Image">
-                        <div class="caption">
-                          <h4 class="media-heading">
-                            {{item.name}}
-                          </h4>
-                        </div>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                <div *ngSwitchCase="'video'">
-                  <div *ngIf="video.src !== null">
-                    <div class="row">
-                      <div class="col-md-1"></div>
-                      <div class="col-md-10">
-                        <h3>
-                          {{video.name}}
-                          <a (click)="handleDownloadVideo(video.src)"><i class="fas fa-download"></i></a>
-                          <a class="pull-right" (click)="closeVideo()"><i class="fa fa-times"
-                              aria-hidden="true"></i></a>
-                        </h3>
+            <tab heading="raw" (selectTab)="onSelect('raw')">
+              <div class="image-list-container">
+                <ul class="list-group row">
+                  <li
+                    *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
+                    class="list-group-item col-xs-3">
+                    <a class="thumbnail"
+                      [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
+                      <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.exclude"
+                        (change)="toggleExcludeImage($event, item)" />
+                      <img style="max-height: 150px"
+                        (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+                        [ngClass]="{'img-disabled' : item.exclude}"
+                        [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
+                        alt="Image">
+                      <div class="caption">
+                        <h4 class="media-heading">
+                          {{item.name}}
+                        </h4>
                       </div>
-                      <div class="col-md-1"></div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-1"></div>
-                      <div class="col-md-10">
-                        <video style="width:100%" controls>
-                          <source [src]="video.src" type="video/mp4" />
-                          Browser not supported
-                        </video>
-                      </div>
-                      <div class="col-md-1"></div>
-                    </div>
-                  </div>
-
-                  <div class="image-list-container">
-                    <ul class="list-group row">
-                      <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-                        <a class="thumbnail" (click)="showVideo(item)">
-                          <img [src]="context + '/net/geoprism/images/thumbnail-video.png'" alt="Video">
-                          <div class="caption">
-                            <h4 class="media-heading">{{item.name}}</h4>
-                          </div>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
+                    </a>
+                  </li>
+                </ul>
               </div>
+            </tab>
+
+            <tab heading="video" (selectTab)="onSelect('video')">
+              <div *ngIf="video.src !== null">
+                <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-10">
+                    <h3>
+                      {{video.name}}
+                      <a (click)="handleDownloadVideo(video.src)"><i class="fas fa-download"></i></a>
+                      <a class="pull-right" (click)="closeVideo()"><i class="fa fa-times" aria-hidden="true"></i></a>
+                    </h3>
+                  </div>
+                  <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-10">
+                    <video style="width:100%" controls>
+                      <source [src]="video.src" type="video/mp4" />
+                      Browser not supported
+                    </video>
+                  </div>
+                  <div class="col-md-1"></div>
+                </div>
+              </div>
+
+              <div class="image-list-container">
+                <ul class="list-group row">
+                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+                    <a class="thumbnail" (click)="showVideo(item)">
+                      <img [src]="context + '/net/geoprism/images/thumbnail-video.png'" alt="Video">
+                      <div class="caption">
+                        <h4 class="media-heading">{{item.name}}</h4>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </tab>
+            <tab heading="artifacts" (selectTab)="onSelect('artifacts')">
+              <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning" (onError)="error($event)"></artifact-page>
             </tab>
           </tabset>
         </div>
@@ -231,7 +209,7 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <pagination-controls *ngIf="folder.name === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
+          <pagination-controls *ngIf="tabName === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
 
           <div *ngIf="showOrthoRerunMessage" style="text-align:right;padding-right:20px;">
             <p>{{statusMessage}}</p>
@@ -243,28 +221,32 @@
           <div class="btn-holder" style="margin: 20px 20px 10px 20px;">
             <div class="row">
               <div class="col-sm-4">
-                <button type="button" class="btn btn-warning"
-                  [disabled]="processRunning" (click)="handleSetMetadata()">
+                <button type="button" class="btn btn-warning" [disabled]="processRunning" (click)="handleSetMetadata()">
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
                 </button>
-                <button type="button" class="btn btn-primary"
-                  [disabled]="processRunning" (click)="handleUpload()">
+                <button *ngIf="tabName === 'raw'" type="button" class="btn btn-primary" [disabled]="processRunning" (click)="handleUpload()">
                   Upload
                 </button>
               </div>
               <div class="col-md-8" style="text-align: right;">
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-                <button *ngIf="processable" type="button" class="btn btn-secondary" title="Downloads all files in the {{folder.name}} folder." [disabled]="processRunning"
-                  (click)="handleDownload()" style="margin-left: 5px;">
-                  Download All {{capitalize(folder.name)}}
-                </button>
+<!--
+
+  <button *ngIf="processable" type="button" class="btn btn-secondary"
+  title="Downloads all files in the {{folder.name}} folder." [disabled]="processRunning"
+  (click)="handleDownload()" style="margin-left: 5px;">
+  Download All {{capitalize(folder.name)}}
+</button>
+-->                
                 <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
-                  (click)="handleDownloadOdmAll()" title="Downloads the all.zip file generated from ODM." style="margin-left: 5px;">
+                  (click)="handleDownloadOdmAll()" title="Downloads the all.zip file generated from ODM."
+                  style="margin-left: 5px;">
                   Download All Generated Data
                 </button>
                 <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning"
-                  (click)="handleRunOrtho()" class="btn btn-primary" title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
+                  (click)="handleRunOrtho()" class="btn btn-primary"
+                  title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
                   Reprocess Imagery
                   <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
                     style="color:white;vertical-align: middle;margin-left: 10px;"></i>

@@ -194,6 +194,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.notifier = webSocket(baseUrl + '/websocket/notify');
     this.notifier.subscribe(message => {
+      console.log(message);
       if (message.type === 'UPLOAD_JOB_CHANGE') {
         this.tasks.push(message.content);
       }

@@ -1,25 +1,10 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1671484312)
+@com.runwaysdk.business.ClassSignature(hash = -709260888)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
-  private static final long serialVersionUID = 1671484312;
+  private static final long serialVersionUID = -709260888;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -44,6 +29,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
+  public static java.lang.String DESCRIPTION = "description";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String GEOPRISMUSER = "geoprismUser";
   public static java.lang.String KEYNAME = "keyName";
@@ -57,6 +43,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String STATUS = "status";
   public static java.lang.String TASKLABEL = "taskLabel";
+  public static java.lang.String TOOL = "tool";
   public static java.lang.String TYPE = "type";
   public java.util.Date getCreateDate()
   {
@@ -118,6 +105,43 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getCreatedByMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(CREATEDBY).getAttributeMdDTO();
+  }
+  
+  public String getDescription()
+  {
+    return getValue(DESCRIPTION);
+  }
+  
+  public void setDescription(String value)
+  {
+    if(value == null)
+    {
+      setValue(DESCRIPTION, "");
+    }
+    else
+    {
+      setValue(DESCRIPTION, value);
+    }
+  }
+  
+  public boolean isDescriptionWritable()
+  {
+    return isWritable(DESCRIPTION);
+  }
+  
+  public boolean isDescriptionReadable()
+  {
+    return isReadable(DESCRIPTION);
+  }
+  
+  public boolean isDescriptionModified()
+  {
+    return isModified(DESCRIPTION);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getDescriptionMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(DESCRIPTION).getAttributeMdDTO();
   }
   
   public com.runwaysdk.system.metadata.MdDomainDTO getEntityDomain()
@@ -562,6 +586,43 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getTaskLabelMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(TASKLABEL).getAttributeMdDTO();
+  }
+  
+  public String getTool()
+  {
+    return getValue(TOOL);
+  }
+  
+  public void setTool(String value)
+  {
+    if(value == null)
+    {
+      setValue(TOOL, "");
+    }
+    else
+    {
+      setValue(TOOL, value);
+    }
+  }
+  
+  public boolean isToolWritable()
+  {
+    return isWritable(TOOL);
+  }
+  
+  public boolean isToolReadable()
+  {
+    return isReadable(TOOL);
+  }
+  
+  public boolean isToolModified()
+  {
+    return isModified(TOOL);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getToolMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(TOOL).getAttributeMdDTO();
   }
   
   public static gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)

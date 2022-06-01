@@ -517,9 +517,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name)
+  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool)
   {
-    DocumentIF document = super.createDocumentIfNotExist(key, name);
+    DocumentIF document = super.createDocumentIfNotExist(key, name, description, tool);
 
     CollectionReport.update(this, document);
 

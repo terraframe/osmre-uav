@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 1406334416)
+@com.runwaysdk.business.ClassSignature(hash = -1855874339)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,16 +11,35 @@ package gov.geoplatform.uasdm.graph;
 public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Document";
+  public static java.lang.String DESCRIPTION = "description";
   public static java.lang.String EXCLUDE = "exclude";
+  public static java.lang.String LASTMODIFIED = "lastModified";
   public static java.lang.String NAME = "name";
   public static java.lang.String OID = "oid";
   public static java.lang.String S3LOCATION = "s3location";
   public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 1406334416;
+  public static java.lang.String TOOL = "tool";
+  private static final long serialVersionUID = -1855874339;
   
   public DocumentBase()
   {
     super();
+  }
+  
+  public String getDescription()
+  {
+    return (String) this.getObjectValue(DESCRIPTION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getDescriptionMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(DESCRIPTION);
+  }
+  
+  public void setDescription(String value)
+  {
+    this.setValue(DESCRIPTION, value);
   }
   
   public Boolean getExclude()
@@ -52,6 +56,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setExclude(Boolean value)
   {
     this.setValue(EXCLUDE, value);
+  }
+  
+  public java.util.Date getLastModified()
+  {
+    return (java.util.Date) this.getObjectValue(LASTMODIFIED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getLastModifiedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(LASTMODIFIED);
+  }
+  
+  public void setLastModified(java.util.Date value)
+  {
+    this.setValue(LASTMODIFIED, value);
   }
   
   public String getName()
@@ -113,6 +133,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     this.setValue(SEQ, value);
   }
   
+  public String getTool()
+  {
+    return (String) this.getObjectValue(TOOL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getToolMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(TOOL);
+  }
+  
+  public void setTool(String value)
+  {
+    this.setValue(TOOL, value);
+  }
+  
   protected String getDeclaredType()
   {
     return CLASS;
@@ -132,6 +168,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public java.util.List<gov.geoplatform.uasdm.graph.Product> getDocumentGeneratedProductChildProducts()
   {
     return super.getChildren("gov.geoplatform.uasdm.graph.DocumentGeneratedProduct",gov.geoplatform.uasdm.graph.Product.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addDocumentHasLayerChild(gov.geoplatform.uasdm.geoserver.GeoserverLayer geoserverLayer)
+  {
+    return super.addChild(geoserverLayer, "gov.geoplatform.uasdm.geoserver.DocumentHasLayer");
+  }
+  
+  public void removeDocumentHasLayerChild(gov.geoplatform.uasdm.geoserver.GeoserverLayer geoserverLayer)
+  {
+    super.removeChild(geoserverLayer, "gov.geoplatform.uasdm.geoserver.DocumentHasLayer");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.geoserver.GeoserverLayer> getDocumentHasLayerChildGeoserverLayers()
+  {
+    return super.getChildren("gov.geoplatform.uasdm.geoserver.DocumentHasLayer",gov.geoplatform.uasdm.geoserver.GeoserverLayer.class);
   }
   
   public com.runwaysdk.business.graph.EdgeObject addComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)

@@ -360,6 +360,22 @@ public class ProjectManagementController
     return new RestBodyResponse(response);
   }
 
+  @Endpoint(url = "get-artifacts", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  {
+    JSONObject response = this.service.getArtifacts(request.getSessionId(), id);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(url = "remove-artifacts", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF removeArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder)
+  {
+    JSONObject response = this.service.removeArtifacts(request.getSessionId(), id, folder);
+    
+    return new RestBodyResponse(response);
+  }
+  
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {

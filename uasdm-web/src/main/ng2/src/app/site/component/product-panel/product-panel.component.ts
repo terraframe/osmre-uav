@@ -34,7 +34,7 @@ export class ProductPanelComponent {
     @Input() id: string;
 
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
-    
+
     @Output() public toggleMapDem = new EventEmitter<Product>();
 
     /* 
@@ -48,8 +48,10 @@ export class ProductPanelComponent {
      * Reference to the modal current showing
     */
     private bsModalRef: BsModalRef;
-    
+
     loading: boolean = false;
+
+    requestId: number = 0;
 
 
     constructor(private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
@@ -62,16 +64,21 @@ export class ProductPanelComponent {
     refreshProducts(id: string): void {
         this.products = [];
         this.thumbnails = {};
-        
+
         this.loading = true;
 
-        this.pService.getProducts(id).then(products => {
-            this.products = products;
-            this.loading = false;
+        const original = ++this.requestId;
 
-            this.products.forEach(product => {
-                this.getThumbnail(product);
-            });
+        this.pService.getProducts(id).then(products => {
+            if (original === this.requestId) {
+
+                this.products = products;
+                this.loading = false;
+
+                this.products.forEach(product => {
+                    this.getThumbnail(product);
+                });
+            }
         });
     }
 
@@ -86,37 +93,33 @@ export class ProductPanelComponent {
             reader.readAsDataURL(image);
         }
     }
-    
+
     hasOrthoLayer(product: Product): boolean {
-      let len = product.layers.length;
-      for (let i = 0; i < len; ++i)
-      {
-        if (product.layers[i].classification === 'ORTHO' && product.layers[i].key != null && product.layers[i].key.length > 0)
-        {
-          return true;
+        let len = product.layers.length;
+        for (let i = 0; i < len; ++i) {
+            if (product.layers[i].classification === 'ORTHO' && product.layers[i].key != null && product.layers[i].key.length > 0) {
+                return true;
+            }
         }
-      }
-      
-      return false;
+
+        return false;
     }
-    
+
     hasDemLayer(product: Product): boolean {
-      let len = product.layers.length;
-      for (let i = 0; i < len; ++i)
-      {
-        if ((product.layers[i].classification === 'DEM_DSM' || product.layers[i].classification === 'DEM_DTM') && product.layers[i].key != null && product.layers[i].key.length > 0)
-        {
-          return true;
+        let len = product.layers.length;
+        for (let i = 0; i < len; ++i) {
+            if ((product.layers[i].classification === 'DEM_DSM' || product.layers[i].classification === 'DEM_DTM') && product.layers[i].key != null && product.layers[i].key.length > 0) {
+                return true;
+            }
         }
-      }
-      
-      return false;
+
+        return false;
     }
 
     getThumbnail(product: Product): void {
 
         // imageKey only exists if an image actually exists on s3
-        if (product.imageKey) {
+        if (product.imageKey != null) {
             const component: string = product.entities[product.entities.length - 1].id;
             const rootPath: string = product.imageKey.substr(0, product.imageKey.lastIndexOf("/"));
             const fileName: string = /[^/]*$/.exec(product.imageKey)[0];
@@ -142,26 +145,23 @@ export class ProductPanelComponent {
     }
 
     handleMapIt(product: Product): void {
-      if (this.hasOrthoLayer(product))
-      {
-        this.toggleMapOrtho.emit(product);
-      }
+        if (this.hasOrthoLayer(product)) {
+            this.toggleMapOrtho.emit(product);
+        }
     }
-    
+
     handleMapDem(product: Product): void {
-      if (this.hasDemLayer(product))
-      {
-        this.toggleMapDem.emit(product);
-      }
+        if (this.hasDemLayer(product)) {
+            this.toggleMapDem.emit(product);
+        }
     }
-    
+
     handlePointcloud(product: Product): void {
-      if (product.hasPointcloud)
-      {
-        let componentId: string = product.entities[product.entities.length-1].id;
-      
-        window.open(acp + "/pointcloud/" + componentId + "/potree");
-      }
+        if (product.hasPointcloud) {
+            let componentId: string = product.entities[product.entities.length - 1].id;
+
+            window.open(acp + "/pointcloud/" + componentId + "/potree");
+        }
     }
 
     handleDelete(product: Product, event: any): void {
@@ -190,15 +190,19 @@ export class ProductPanelComponent {
     }
 
     previewImage(product: Product): void {
-        const component: string = product.entities[product.entities.length - 1].id;
 
-        this.bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: false,
-            'class': 'image-preview-modal'
-        });
-        this.bsModalRef.content.init(component, product.imageKey);
+        if (product.imageKey != null) {
+
+            const component: string = product.entities[product.entities.length - 1].id;
+
+            this.bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: false,
+                'class': 'image-preview-modal'
+            });
+            this.bsModalRef.content.init(component, product.imageKey);
+        }
     }
 
     handleGetInfo(product: Product): void {
@@ -215,9 +219,9 @@ export class ProductPanelComponent {
 
     handleTogglePublish(product: Product): void {
         this.pService.togglePublish(product.id).then(p => {
-            const mapIt:boolean = product.orthoMapped;
-            const demMapped:boolean = product.demMapped;
-            
+            const mapIt: boolean = product.orthoMapped;
+            const demMapped: boolean = product.demMapped;
+
             if (mapIt) {
                 this.toggleMapOrtho.emit(product);
             }

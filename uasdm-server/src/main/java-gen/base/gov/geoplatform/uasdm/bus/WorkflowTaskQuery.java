@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 2068833733)
+@com.runwaysdk.business.ClassSignature(hash = -1002943334)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -53,6 +53,57 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessDem()
+  {
+    return getProcessDem(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho()
+  {
+    return getProcessOrtho(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud()
+  {
+    return getProcessPtcloud(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getUploadTarget()
@@ -124,6 +175,15 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessDem();
+    public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho();
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud();
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getUploadTarget();
     public com.runwaysdk.query.SelectableChar getUploadTarget(String alias);
     public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel);
@@ -182,6 +242,57 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableBoolean getProcessDem()
+  {
+    return getProcessDem(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho()
+  {
+    return getProcessOrtho(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud()
+  {
+    return getProcessPtcloud(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getUploadTarget()
   {
     return getUploadTarget(null);
@@ -228,6 +339,15 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessDem();
+    public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho();
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud();
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias);
+    public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getUploadTarget();
     public com.runwaysdk.query.SelectableChar getUploadTarget(String alias);
     public com.runwaysdk.query.SelectableChar getUploadTarget(String alias, String displayLabel);
@@ -333,6 +453,57 @@ public  class WorkflowTaskQuery extends gov.geoplatform.uasdm.bus.AbstractUpload
   public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.COMPONENT, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessDem()
+  {
+    return getProcessDem(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessDem(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSDEM, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho()
+  {
+    return getProcessOrtho(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessOrtho(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSORTHO, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud()
+  {
+    return getProcessPtcloud(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableBoolean getProcessPtcloud(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.WorkflowTask.PROCESSPTCLOUD, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getUploadTarget()

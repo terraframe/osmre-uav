@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
@@ -92,9 +93,9 @@ public class ProjectManagementService
   {
     private ODMProcessingTask task;
 
-    private CollectionIF      collection;
+    private CollectionIF collection;
 
-    private Set<String>       excludes;
+    private Set<String> excludes;
 
     public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
@@ -642,6 +643,24 @@ public class ProjectManagementService
     UasComponentIF component = ComponentFacade.getComponent(id);
 
     return component.getSiteObjects(key, pageNumber, pageSize);
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getArtifacts(String sessionId, String id)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    return component.getArtifacts();
+  }
+  
+  @Request(RequestType.SESSION)
+  public JSONObject removeArtifacts(String sessionId, String id, String folder)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    component.removeArtifacts(folder);
+    
+    return component.getArtifacts();
   }
 
   public RemoteFileObject download(String sessionId, String id, String key)

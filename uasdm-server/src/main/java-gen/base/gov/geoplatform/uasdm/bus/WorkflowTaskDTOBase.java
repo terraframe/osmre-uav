@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -606854194)
+@com.runwaysdk.business.ClassSignature(hash = -570482831)
 public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.AbstractUploadTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.WorkflowTask";
-  private static final long serialVersionUID = -606854194;
+  private static final long serialVersionUID = -570482831;
   
   protected WorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -28,6 +28,9 @@ public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.Abst
   }
   
   public static java.lang.String COMPONENT = "component";
+  public static java.lang.String PROCESSDEM = "processDem";
+  public static java.lang.String PROCESSORTHO = "processOrtho";
+  public static java.lang.String PROCESSPTCLOUD = "processPtcloud";
   public static java.lang.String UPLOADTARGET = "uploadTarget";
   public static java.lang.String WORKFLOWTYPE = "workflowType";
   public String getComponent()
@@ -65,6 +68,117 @@ public abstract class WorkflowTaskDTOBase extends gov.geoplatform.uasdm.bus.Abst
   public final com.runwaysdk.transport.metadata.AttributeUUIDMdDTO getComponentMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeUUIDMdDTO) getAttributeDTO(COMPONENT).getAttributeMdDTO();
+  }
+  
+  public Boolean getProcessDem()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSDEM));
+  }
+  
+  public void setProcessDem(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSDEM, "");
+    }
+    else
+    {
+      setValue(PROCESSDEM, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isProcessDemWritable()
+  {
+    return isWritable(PROCESSDEM);
+  }
+  
+  public boolean isProcessDemReadable()
+  {
+    return isReadable(PROCESSDEM);
+  }
+  
+  public boolean isProcessDemModified()
+  {
+    return isModified(PROCESSDEM);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getProcessDemMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(PROCESSDEM).getAttributeMdDTO();
+  }
+  
+  public Boolean getProcessOrtho()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSORTHO));
+  }
+  
+  public void setProcessOrtho(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSORTHO, "");
+    }
+    else
+    {
+      setValue(PROCESSORTHO, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isProcessOrthoWritable()
+  {
+    return isWritable(PROCESSORTHO);
+  }
+  
+  public boolean isProcessOrthoReadable()
+  {
+    return isReadable(PROCESSORTHO);
+  }
+  
+  public boolean isProcessOrthoModified()
+  {
+    return isModified(PROCESSORTHO);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getProcessOrthoMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(PROCESSORTHO).getAttributeMdDTO();
+  }
+  
+  public Boolean getProcessPtcloud()
+  {
+    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PROCESSPTCLOUD));
+  }
+  
+  public void setProcessPtcloud(Boolean value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSPTCLOUD, "");
+    }
+    else
+    {
+      setValue(PROCESSPTCLOUD, java.lang.Boolean.toString(value));
+    }
+  }
+  
+  public boolean isProcessPtcloudWritable()
+  {
+    return isWritable(PROCESSPTCLOUD);
+  }
+  
+  public boolean isProcessPtcloudReadable()
+  {
+    return isReadable(PROCESSPTCLOUD);
+  }
+  
+  public boolean isProcessPtcloudModified()
+  {
+    return isModified(PROCESSPTCLOUD);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getProcessPtcloudMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(PROCESSPTCLOUD).getAttributeMdDTO();
   }
   
   public String getUploadTarget()

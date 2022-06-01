@@ -18,6 +18,7 @@ import {
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
 import { UploadModalComponent } from './upload-modal.component';
+import { ArtifactPageComponent } from './artifact-page.component';
 
 declare var acp: string;
 
@@ -25,7 +26,7 @@ declare var acp: string;
 	selector: 'leaf-modal',
 	templateUrl: './leaf-modal.component.html',
 	styles: [],
-	providers: [BasicConfirmModalComponent],
+	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
 	animations: [
 		fadeInOnEnterAnimation(),
 		fadeOutOnLeaveAnimation(),
@@ -41,9 +42,9 @@ export class LeafModalComponent implements OnInit {
 		this.init(ins.entity, ins.folders, ins.previous)
 	}
 
-    /* 
-     * Breadcrumb of previous sites clicked on
-     */
+	/* 
+	 * Breadcrumb of previous sites clicked on
+	 */
 	previous = [] as SiteEntity[];
 	folders: SiteEntity[] = [];
 	thumbnails: any = {};
@@ -52,22 +53,22 @@ export class LeafModalComponent implements OnInit {
 	statusMessage: string;
 	processable: boolean = false;
 	enableSelectableImages: boolean = false;
-	folder: SiteEntity;
+	tabName: string;
 	showOrthoRerunMessage: boolean = false;
 
 	constPageSize: number = 50;
 
 	page: SiteObjectsResultSet = new SiteObjectsResultSet();
 
-    /*
-     * Reference to the modal current showing
-    */
+	/*
+	 * Reference to the modal current showing
+	*/
 	private confirmModalRef: BsModalRef;
 
 
-    /*
-     * Observable subject for TreeNode changes.  Called when create is successful 
-     */
+	/*
+	 * Observable subject for TreeNode changes.  Called when create is successful 
+	 */
 	public onNodeChange: Subject<SiteEntity>;
 
 	video: { src: string, name: string } = { src: null, name: null };
@@ -95,9 +96,7 @@ export class LeafModalComponent implements OnInit {
 			this.previous.push(this.entity);
 		}
 
-		if (this.folders.length > 0) {
-			this.onSelect(this.folders[0]);
-		}
+		this.onSelect("raw");
 
 		this.processable = this.metadataService.isProcessable(entity.type);
 	}
@@ -131,37 +130,41 @@ export class LeafModalComponent implements OnInit {
 	}
 
 	onPageChange(pageNumber: number): void {
-		this.getData(this.folder.component, this.folder.name, pageNumber, this.page.pageSize);
+		this.getData(this.entity.id, this.tabName, pageNumber, this.page.pageSize);
 	}
 
-	onSelect(folder: SiteEntity): void {
-		this.page.results = [];
+	onSelect(tabName: string): void {
 
-		if (folder.name === "raw") {
-			this.enableSelectableImages = true;
-		} else {
-			this.enableSelectableImages = false;
-		}
+		this.tabName = tabName;
 
-		let pn: number = null;
-		let ps: number = null;
+		if (tabName === "raw" || tabName === "video") {
+			this.page.results = [];
 
-		if (folder.name === "raw") {
-			if (this.page.pageNumber == null) {
-				pn = 1;
+			if (tabName === "raw") {
+				this.enableSelectableImages = true;
+			} else {
+				this.enableSelectableImages = false;
 			}
-			else {
-				pn = this.page.pageNumber;
+
+			let pn: number = null;
+			let ps: number = null;
+
+			if (tabName === "raw") {
+				if (this.page.pageNumber == null) {
+					pn = 1;
+				}
+				else {
+					pn = this.page.pageNumber;
+				}
+				ps = this.constPageSize;
 			}
-			ps = this.constPageSize;
+
+			this.video.src = null;
+			this.video.name = null;
+
+			this.getData(this.entity.id, this.tabName, pn, ps);
+
 		}
-
-		this.folder = folder;
-
-		this.video.src = null;
-		this.video.name = null;
-
-		this.getData(folder.component, folder.name, pn, ps);
 	}
 
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
@@ -204,29 +207,29 @@ export class LeafModalComponent implements OnInit {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
-//
-//
-//		if (image.exclude) {
-//			this.excludes.push(image.name);
-//		}
-//		else {
-//			let position = this.excludes.indexOf(image.name);
-//			if (position > -1) {
-//				this.excludes.splice(position, 1);
-//			}
-//		}
+		//
+		//
+		//		if (image.exclude) {
+		//			this.excludes.push(image.name);
+		//		}
+		//		else {
+		//			let position = this.excludes.indexOf(image.name);
+		//			if (position > -1) {
+		//				this.excludes.splice(position, 1);
+		//			}
+		//		}
 	}
 
 	isProcessable(item: any): boolean {
 		return this.metadataService.isProcessable(item.type);
 	}
-	
+
 	handleErosPush(): void {
-	  this.processRunning = true;
-	
-	  this.service.pushToEros(this.entity.id).then(data => {
+		this.processRunning = true;
+
+		this.service.pushToEros(this.entity.id).then(data => {
 			this.processRunning = false;
-	
+
 			setTimeout(() => {
 				this.showOrthoRerunMessage = false;
 				this.statusMessage = "Your process is started.";
@@ -281,7 +284,9 @@ export class LeafModalComponent implements OnInit {
 
 	handleDownload(): void {
 
-		window.location.href = acp + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+		if (this.tabName === "raw" || this.tabName === "video") {
+			window.location.href = acp + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
+		}
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -289,17 +294,17 @@ export class LeafModalComponent implements OnInit {
 		//          this.error( err );
 		//      } );
 	}
-	
+
 	handleDownloadOdmAll(): void {
 
-    window.location.href = acp + '/project/download-odm-all?colId=' + this.entity.id;
+		window.location.href = acp + '/project/download-odm-all?colId=' + this.entity.id;
 
-    //      this.service.downloadAll( data.id ).then( data => {
-    //        
-    //      } ).catch(( err: HttpErrorResponse ) => {
-    //          this.error( err );
-    //      } );
-  }
+		//      this.service.downloadAll( data.id ).then( data => {
+		//        
+		//      } ).catch(( err: HttpErrorResponse ) => {
+		//          this.error( err );
+		//      } );
+	}
 
 	handleDownloadVideo(src: string): void {
 
@@ -307,7 +312,7 @@ export class LeafModalComponent implements OnInit {
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key;
+		window.location.href = acp + '/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 	handleSetMetadata(): void {
@@ -327,23 +332,23 @@ export class LeafModalComponent implements OnInit {
 	handleUpload(): void {
 
 		const modal = this.modalService.show(UploadModalComponent, {
-		  animated: true,
-		  backdrop: true,
-		  ignoreBackdropClick: true,
-		  'class': 'upload-modal'
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'upload-modal'
 		});
-		modal.content.init(this.entity, this.folder.name);
-	
+		modal.content.init(this.entity, "raw");
+
 		// modal.content.onUploadComplete.subscribe(oid => {
-	
+
 		//   this.handleViewSite(oid);
 		// });
-	  }
+	}
 
-	
+
 	capitalize(str): string {
-        return str.replace(/^\w/, c => c.toUpperCase());
-    }
+		return str.replace(/^\w/, c => c.toUpperCase());
+	}
 
 
 	showVideo(item: SiteEntity): void {
@@ -354,7 +359,7 @@ export class LeafModalComponent implements OnInit {
 		// Otherwise the video tag does not register that the src has changed.
 		setTimeout(() => {
 			this.video.name = item.name;
-			this.video.src = acp + '/project/download?id=' + this.folder.component + "&key=" + item.key; // + "#" + Math.random();
+			this.video.src = acp + '/project/download?id=' + this.entity.component + "&key=" + item.key; // + "#" + Math.random();
 		}, 200);
 	}
 
@@ -364,7 +369,7 @@ export class LeafModalComponent implements OnInit {
 	}
 
 	error(err: HttpErrorResponse): void {
-	  this.message = ErrorHandler.getMessageFromError(err);
+		this.message = ErrorHandler.getMessageFromError(err);
 	}
 
 }

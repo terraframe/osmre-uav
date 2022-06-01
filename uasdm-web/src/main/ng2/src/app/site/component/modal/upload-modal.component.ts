@@ -12,7 +12,7 @@ import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
-import { SiteEntity, UploadForm, Task, Selection } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -79,6 +79,9 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	 * Flag indicating if the upload should be processed by ODM
 	 */
 	processUpload: boolean = false;
+	processPtcloud: boolean = true;
+	processDem: boolean = true;
+	processOrtho: boolean = true;
 
 	/*
 	 * List of hierarchies
@@ -117,6 +120,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	sensors: Sensor[] = [];
 	platforms: Platform[] = [];
 
+	artifacts: CollectionArtifacts;
+
 	public onUploadComplete: Subject<void>;
 	public onUploadCancel: Subject<void>;
 
@@ -128,6 +133,18 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		]
 	};
 
+	sections = [{
+		label: 'Ptcloud',
+		folder: 'ptcloud'
+	}, {
+		label: 'DEM',
+		folder: 'dem'
+	}, {
+		label: 'Ortho',
+		folder: 'ortho'
+	}];
+
+
 	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers) {
 		this.differ = differs.find([]).create();
 	}
@@ -138,7 +155,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 		if (elem != null && this.uploader == null && this.uploadTarget != null) {
 
-			const extensions = ['zip', 'tar.gz'];
+			const extensions = [];
 
 			if (this.uploadTarget === 'ortho') {
 				extensions.push('tif')
@@ -149,6 +166,10 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 			}
 			else if (this.uploadTarget === 'ptcloud') {
 				extensions.push('laz')
+			}
+			else {
+				extensions.push('zip');
+				extensions.push('tar.gz');
 			}
 
 			const uiOptions: UIOptions = {
@@ -331,6 +352,16 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
 		this.processUpload = this.uploadTarget === 'raw';
+
+		if (this.uploadTarget === 'raw') {
+			this.service.getArtifacts(component.id).then(artifiacts => {
+				this.artifacts = artifiacts;
+
+				this.processDem = (this.artifacts.dem == null);
+				this.processOrtho = (this.artifacts.ortho == null);
+				this.processPtcloud = (this.artifacts.ptcloud == null);
+			});
+		}
 
 		this.hierarchy = this.metadataService.getHierarchy();
 		// this.selections = [];
@@ -539,25 +570,28 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 				this.values.uploadTarget = this.uploadTarget;
 				this.values.uasComponentOid = this.component.id;
 				this.values.processUpload = this.processUpload;
+				this.values.processDem = this.processDem;
+				this.values.processOrtho = this.processOrtho;
+				this.values.processPtcloud = this.processPtcloud;
 
 				this.uploader.setParams(this.values);
 				this.uploader.uploadStoredFiles();
 				//            }
 			};
 
-			if (this.uploadTarget === 'raw' && this.component.hasProduct && this.processUpload) {
-				const modal = this.modalService.show(BasicConfirmModalComponent, {
-					animated: true,
-					backdrop: true,
-					ignoreBackdropClick: true,
-				});
-				modal.content.message = 'An orthorectified image already exists in this collection. It will be deleted if you create another one. Do you still wish to proceed and create an orthorectified image?';
-				modal.content.submitText = 'Continue';
-				modal.content.onConfirm.subscribe(execute);
-			}
-			else {
-				execute();
-			}
+			// if (this.uploadTarget === 'raw' && this.component.hasProduct && this.processUpload) {
+			// 	const modal = this.modalService.show(BasicConfirmModalComponent, {
+			// 		animated: true,
+			// 		backdrop: true,
+			// 		ignoreBackdropClick: true,
+			// 	});
+			// 	modal.content.message = 'An orthorectified image already exists in this collection. It will be deleted if you create another one. Do you still wish to proceed and create an orthorectified image?';
+			// 	modal.content.submitText = 'Continue';
+			// 	modal.content.onConfirm.subscribe(execute);
+			// }
+			// else {
+			execute();
+			// }
 		}
 		else {
 			this.uploader.uploadStoredFiles();
@@ -601,11 +635,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 				});
 		});
 	}
-
-	updateProcessUpload(checked: boolean): void {
-		this.processUpload = checked;
-	}
-
 
 	countUpload(thisRef: any): void {
 		let ct = 0;

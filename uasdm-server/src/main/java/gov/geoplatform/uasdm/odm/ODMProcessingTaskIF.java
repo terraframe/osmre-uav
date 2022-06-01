@@ -46,4 +46,10 @@ public interface ODMProcessingTaskIF extends ImageryWorkflowTaskIF
   public void writeODMtoS3(JSONArray odmOutput);
 
   public List<String> getFileList();
+
+  public Boolean getProcessDem();
+
+  public Boolean getProcessOrtho();
+
+  public Boolean getProcessPtcloud();
 }

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -66,6 +66,7 @@ import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -85,7 +86,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 {
   private static final long serialVersionUID = -1526604195;
 
-  private Logger            log              = LoggerFactory.getLogger(UasComponent.class);
+  private Logger log = LoggerFactory.getLogger(UasComponent.class);
 
   public UasComponent()
   {
@@ -402,6 +403,46 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   protected void deleteS3Folder(String key, String folderName)
   {
     new RemoteFileDeleteCommand(key, this).doIt();
+  }
+
+  @Override
+  public JSONObject getArtifacts()
+  {
+    List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
+
+    JSONObject response = new JSONObject();
+
+    for (SiteObject object : objects)
+    {
+      if (object.getKey().contains("/" + ImageryComponent.DEM + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
+      {
+        response.put(ImageryComponent.DEM, object.toJSON());
+      }
+      else if (object.getKey().contains("/" + ImageryComponent.ORTHO + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
+      {
+        response.put(ImageryComponent.ORTHO, object.toJSON());
+      }
+      else if (object.getKey().contains("/" + ImageryComponent.PTCLOUD + "/") && object.getKey().toUpperCase().endsWith(".LAZ"))
+      {
+        response.put(ImageryComponent.PTCLOUD, object.toJSON());
+      }
+    }
+
+    return response;
+  }
+  
+  @Override
+  public void removeArtifacts(String folder)
+  {
+    List<Document> documents = new ArtifactQuery(this).getDocuments();
+
+    for (Document document : documents)
+    {
+      if (document.getS3location().contains("/" + folder + "/"))
+      {
+        document.delete(true, true);
+      }
+    }
   }
 
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
@@ -759,9 +800,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name)
+  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool)
   {
-    return Document.createIfNotExist(this, key, name);
+    return Document.createIfNotExist(this, key, name, description, tool);
   }
 
   @Override

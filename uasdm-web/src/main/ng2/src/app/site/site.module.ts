@@ -56,6 +56,7 @@ import { MetadataPageComponent } from './component/metadata-page/metadata-page.c
 import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
+import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 
 @NgModule({
 	imports: [
@@ -84,6 +85,7 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 		ImagePreviewModalComponent,
 		CreateCollectionModalComponent,
 		UploadModalComponent,
+		ArtifactPageComponent,
 		LeafModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
@@ -125,7 +127,8 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
 		LeafModalComponent,
-		ProductModalComponent
+		ProductModalComponent,
+		ArtifactPageComponent
 	]
 })
 export class SiteModule { }
