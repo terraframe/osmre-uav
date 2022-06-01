@@ -19,7 +19,7 @@ import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
-import { LeafModalComponent } from './component/modal/leaf-modal.component';
+import { CollectionModalComponent } from './component/modal/collection-modal.component';
 import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
 import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
@@ -57,6 +57,7 @@ import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
+import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 
 @NgModule({
 	imports: [
@@ -86,7 +87,8 @@ import { ArtifactPageComponent } from './component/modal/artifact-page.component
 		CreateCollectionModalComponent,
 		UploadModalComponent,
 		ArtifactPageComponent,
-		LeafModalComponent,
+		RunOrthoModalComponent,
+		CollectionModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
 		ProjectsComponent,
@@ -121,14 +123,14 @@ import { ArtifactPageComponent } from './component/modal/artifact-page.component
 		ReportService
 	],
 	entryComponents: [
+		RunOrthoModalComponent,
 		CreateCollectionModalComponent,
 		UploadModalComponent,
 		EntityModalComponent,
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
-		LeafModalComponent,
-		ProductModalComponent,
-		ArtifactPageComponent
+		CollectionModalComponent,
+		ProductModalComponent
 	]
 })
 export class SiteModule { }

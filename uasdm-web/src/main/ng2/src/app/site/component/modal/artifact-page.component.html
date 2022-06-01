@@ -13,16 +13,29 @@
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].tool : ''}}</td>
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].lastModified : ''}}</td>
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].description : ''}}</td>
-        <td>
-          <button *ngIf="artifacts[section.folder] != null" type="button" class="btn btn-warning" [disabled]="processRunning" (click)="handleRemove(section.folder)">
+        <td *ngIf="!edit">
+          <button *ngIf="artifacts[section.folder] != null" type="button" class="btn btn-warning"
+            [disabled]="processRunning" (click)="handleRemove(section.folder)">
             Remove
           </button>
-          <button *ngIf="artifacts[section.folder] == null" type="button" class="btn btn-primary" [disabled]="processRunning" (click)="handleUpload(section.folder)">
+          <button *ngIf="artifacts[section.folder] == null" type="button" class="btn btn-primary"
+            [disabled]="processRunning" (click)="handleUpload(section.folder)">
             Upload
           </button>
-
         </td>
-      </tr>  
+        <td *ngIf="edit">
+          <boolean-field *ngIf="section.folder === 'ptcloud'" [value]="processPtcloud"
+            (valueChange)="handlePtcloudChange($event)"
+            [label]="artifacts[section.folder] != null ? 'Overwirte' : 'Generate'">
+          </boolean-field>
+          <boolean-field *ngIf="section.folder === 'dem'" [value]="processDem" (valueChange)="handleDemChange($event)"
+            [label]="artifacts[section.folder] != null ? 'Overwirte' : 'Generate'"></boolean-field>
+          <boolean-field *ngIf="section.folder === 'ortho'" [value]="processOrtho"
+            (valueChange)="handleOrthoChange($event)"
+            [label]="artifacts[section.folder] != null ? 'Overwirte' : 'Generate'"></boolean-field>
+        </td>
+
+      </tr>
     </ng-container>
 
 

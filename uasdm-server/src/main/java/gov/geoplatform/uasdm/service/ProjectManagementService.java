@@ -420,7 +420,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void runOrtho(String sessionId, String id)
+  public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
 
@@ -429,6 +429,9 @@ public class ProjectManagementService
     task.setComponent(collection.getOid());
     task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setProcessDem(processDem);
+    task.setProcessOrtho(processOrtho);
+    task.setProcessPtcloud(processOrtho);
     task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
     task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
     task.apply();

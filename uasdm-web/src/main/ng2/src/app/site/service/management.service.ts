@@ -153,7 +153,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	runOrtho(id: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+	runOrtho(id: string, processPtcloud: boolean, processDem: boolean, processOrtho: boolean): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -161,8 +161,15 @@ export class ManagementService {
 
 		//   this.eventService.start();
 
+		const params = {
+			id: id,
+			processPtcloud: processPtcloud,
+			processDem: processDem,
+			processOrtho: processOrtho
+		};
+
 		return this.http
-			.post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/run-ortho', JSON.stringify({ id: id }), { headers: headers })
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(acp + '/project/run-ortho', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				//				this.eventService.complete();
 			}))

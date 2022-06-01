@@ -79,6 +79,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	 * Flag indicating if the upload should be processed by ODM
 	 */
 	processUpload: boolean = false;
+	
 	processPtcloud: boolean = true;
 	processDem: boolean = true;
 	processOrtho: boolean = true;
@@ -120,8 +121,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	sensors: Sensor[] = [];
 	platforms: Platform[] = [];
 
-	artifacts: CollectionArtifacts;
-
 	public onUploadComplete: Subject<void>;
 	public onUploadCancel: Subject<void>;
 
@@ -132,18 +131,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 			{ "label": "Final", "active": true, "enabled": true }
 		]
 	};
-
-	sections = [{
-		label: 'Ptcloud',
-		folder: 'ptcloud'
-	}, {
-		label: 'DEM',
-		folder: 'dem'
-	}, {
-		label: 'Ortho',
-		folder: 'ortho'
-	}];
-
 
 	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers) {
 		this.differ = differs.find([]).create();
@@ -352,16 +339,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
 		this.processUpload = this.uploadTarget === 'raw';
-
-		if (this.uploadTarget === 'raw') {
-			this.service.getArtifacts(component.id).then(artifiacts => {
-				this.artifacts = artifiacts;
-
-				this.processDem = (this.artifacts.dem == null);
-				this.processOrtho = (this.artifacts.ortho == null);
-				this.processPtcloud = (this.artifacts.ptcloud == null);
-			});
-		}
 
 		this.hierarchy = this.metadataService.getHierarchy();
 		// this.selections = [];

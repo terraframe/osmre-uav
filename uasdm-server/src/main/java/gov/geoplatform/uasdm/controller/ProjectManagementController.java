@@ -218,9 +218,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "processPtcloud") Boolean processPtcloud, @RequestParamter(name = "processDem") Boolean processDem, @RequestParamter(name = "processOrtho") Boolean processOrtho)
   {
-    this.service.runOrtho(request.getSessionId(), id);
+    this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho);
 
     return new RestResponse();
   }
@@ -372,10 +372,10 @@ public class ProjectManagementController
   public ResponseIF removeArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder)
   {
     JSONObject response = this.service.removeArtifacts(request.getSessionId(), id, folder);
-    
+
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {

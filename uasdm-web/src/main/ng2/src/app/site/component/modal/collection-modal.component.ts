@@ -19,12 +19,13 @@ import {
 } from 'angular-animations';
 import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
+import { RunOrthoModalComponent } from './run-ortho-modal.component';
 
 declare var acp: string;
 
 @Component({
-	selector: 'leaf-modal',
-	templateUrl: './leaf-modal.component.html',
+	selector: 'collection-modal',
+	templateUrl: './collection-modal.component.html',
 	styles: [],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
 	animations: [
@@ -34,7 +35,7 @@ declare var acp: string;
 		slideInRightOnEnterAnimation(),
 	]
 })
-export class LeafModalComponent implements OnInit {
+export class CollectionModalComponent implements OnInit {
 	entity: SiteEntity;
 
 	@Input()
@@ -59,12 +60,6 @@ export class LeafModalComponent implements OnInit {
 	constPageSize: number = 50;
 
 	page: SiteObjectsResultSet = new SiteObjectsResultSet();
-
-	/*
-	 * Reference to the modal current showing
-	*/
-	private confirmModalRef: BsModalRef;
-
 
 	/*
 	 * Observable subject for TreeNode changes.  Called when create is successful 
@@ -241,34 +236,18 @@ export class LeafModalComponent implements OnInit {
 
 	handleRunOrtho(): void {
 
-		// this.notificationModalRef = this.modalService.show( NotificationModalComponent, {
-		//     animated: true,
-		//     backdrop: true,
-		//     ignoreBackdropClick: true,
-		//     class: 'modal-dialog-centered'
-		// } );
-		// this.notificationModalRef.content.message = "Your ortho task is running for [" + this.entity.name + "]. You can view the current process and results on your tasks page.";
-		// this.notificationModalRef.content.submitText = 'OK';
-
-
-		event.stopPropagation();
-
-		this.confirmModalRef = this.modalService.show(BasicConfirmModalComponent, {
+		const confirmModalRef = this.modalService.show(RunOrthoModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'confirmation-modal'
 		});
-		this.confirmModalRef.content.message = 'Running this process will replace all output products for this ' + this.entity.type + '. Are you sure you want to re-process this data?';
-		// this.bsModalRef.content.data = node;
-		this.confirmModalRef.content.type = 'DANGER';
-		this.confirmModalRef.content.submitText = "Run Process";
-
-		(<BasicConfirmModalComponent>this.confirmModalRef.content).onConfirm.subscribe(data => {
+		confirmModalRef.content.init(this.entity);
+		confirmModalRef.content.onConfirm.subscribe(data => {
 			this.processRunning = true;
 			this.showOrthoRerunMessage = true;
 
-			this.service.runOrtho(this.entity.id).then(data => {
+			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho).then(() => {
 				this.processRunning = false;
 
 				setTimeout(() => {

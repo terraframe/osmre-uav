@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { MetadataModalComponent } from './modal/metadata-modal.component';
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { LeafModalComponent } from './modal/leaf-modal.component';
+import { CollectionModalComponent } from './modal/collection-modal.component';
 import { PageResult } from '@shared/model/page';
 
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
@@ -294,7 +294,7 @@ export class TasksComponent implements OnInit {
       const breadcrumbs = response.breadcrumbs;
 
       this.managementService.getItems(collectionId, null).then(nodes => {
-        this.bsModalRef = this.modalService.show(LeafModalComponent, {
+        this.bsModalRef = this.modalService.show(CollectionModalComponent, {
           animated: true,
           backdrop: true,
           ignoreBackdropClick: true,

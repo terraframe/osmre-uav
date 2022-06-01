@@ -5,7 +5,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ErrorHandler } from '@shared/component';
 
-import { LeafModalComponent } from './leaf-modal.component'
+import { CollectionModalComponent } from './collection-modal.component'
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 
 import { ProductDetail, SiteEntity } from '@site/model/management';
@@ -23,7 +23,7 @@ declare var acp: string;
 @Component({
 	selector: 'product-modal',
 	templateUrl: './product-modal.component.html',
-	providers: [LeafModalComponent],
+	providers: [CollectionModalComponent],
 	styleUrls: [],
 	animations: [
 		fadeInOnEnterAnimation(),

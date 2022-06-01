@@ -15,7 +15,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { SiteEntity, Product, Task, GeoserverLayer } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
-import { LeafModalComponent } from './modal/leaf-modal.component';
+import { CollectionModalComponent } from './modal/collection-modal.component';
 import { AccessibleSupportModalComponent } from './modal/accessible-support-modal.component';
 
 import { ManagementService } from '../service/management.service';
@@ -1102,7 +1102,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
     else {
-      this.bsModalRef = this.modalService.show(LeafModalComponent, {
+      this.bsModalRef = this.modalService.show(CollectionModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,

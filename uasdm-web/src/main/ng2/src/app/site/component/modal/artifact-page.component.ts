@@ -20,6 +20,15 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	@Input() entity: SiteEntity;
 	@Input() processRunning: boolean;
+	@Input() edit: boolean = false;
+
+	@Input() processPtcloud: boolean = false;
+	@Input() processDem: boolean = false;
+	@Input() processOrtho: boolean = false;
+
+	@Output() processPtcloudChange = new EventEmitter<boolean>();
+	@Output() processDemChange = new EventEmitter<boolean>();
+	@Output() processOrthoChange = new EventEmitter<boolean>();
 
 	@Output() onError = new EventEmitter<HttpErrorResponse>();
 
@@ -71,6 +80,10 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	loadArtifacts(): void {
 		this.service.getArtifacts(this.entity.id).then(artifacts => {
 			this.artifacts = artifacts;
+
+			this.processDem = (this.artifacts.dem == null);
+			this.processOrtho = (this.artifacts.ortho == null);
+			this.processPtcloud = (this.artifacts.ptcloud == null);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
@@ -186,6 +199,21 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 		//   this.handleViewSite(oid);
 		// });
+	}
+
+	handlePtcloudChange(value:boolean): void {
+		this.processPtcloud = value;
+		this.processPtcloudChange.emit(this.processPtcloud);
+	}
+
+	handleDemChange(value:boolean): void {
+		this.processDem = value;
+		this.processDemChange.emit(this.processDem);
+	}
+
+	handleOrthoChange(value:boolean): void {
+		this.processOrtho = value;
+		this.processOrthoChange.emit(this.processOrtho);
 	}
 
 
