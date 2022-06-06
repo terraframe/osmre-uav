@@ -27,14 +27,38 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
-public class ArtifactQuery
+public class ArtifactQuery implements SiteObjectDocumentQueryIF
 {
   private UasComponentIF component;
+
+  private Long skip;
+
+  private Long limit;
 
   public ArtifactQuery(UasComponentIF component)
   {
     super();
     this.component = component;
+  }
+
+  public Long getLimit()
+  {
+    return limit;
+  }
+
+  public void setLimit(Long limit)
+  {
+    this.limit = limit;
+  }
+
+  public Long getSkip()
+  {
+    return skip;
+  }
+
+  public void setSkip(Long skip)
+  {
+    this.skip = skip;
   }
 
   public GraphQuery<Document> getQuery()
@@ -44,14 +68,46 @@ public class ArtifactQuery
 
     StringBuilder ql = new StringBuilder();
     ql.append("SELECT FROM " + mdGraph.getDBClassName());
-    ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :s3location");
-    ql.append(" AND NOT (" + mdAttribute.getColumnName() + " LIKE :raw )");
+    ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :dem");
+    ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ortho");
+    ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
+
+    if (this.skip != null)
+    {
+      ql.append(" SKIP " + this.skip);
+    }
+
+    if (this.limit != null)
+    {
+      ql.append(" LIMIT " + this.limit);
+    }
 
     final GraphQuery<Document> query = new GraphQuery<Document>(ql.toString());
-    query.setParameter("s3location", component.getS3location() + "%");
-    query.setParameter("raw", component.getS3location() + ImageryComponent.RAW + "%");
+    query.setParameter("dem", component.getS3location() + ImageryComponent.DEM + "%");
+    query.setParameter("ortho", component.getS3location() + ImageryComponent.ORTHO + "%");
+    query.setParameter("ptcloud", component.getS3location() + ImageryComponent.PTCLOUD + "%");
 
     return query;
+  }
+
+  @Override
+  public Long getCount()
+  {
+    final MdVertexDAOIF mdGraph = MdVertexDAO.getMdVertexDAO(Document.CLASS);
+    MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
+
+    StringBuilder ql = new StringBuilder();
+    ql.append("SELECT COUNT(*) FROM " + mdGraph.getDBClassName());
+    ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :dem");
+    ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ortho");
+    ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(ql.toString());
+    query.setParameter("dem", component.getS3location() + ImageryComponent.DEM + "%");
+    query.setParameter("ortho", component.getS3location() + ImageryComponent.ORTHO + "%");
+    query.setParameter("ptcloud", component.getS3location() + ImageryComponent.PTCLOUD + "%");
+
+    return query.getSingleResult();
   }
 
   public List<SiteObject> getSiteObjects()

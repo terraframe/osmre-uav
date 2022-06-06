@@ -263,9 +263,7 @@ export class CollectionModalComponent implements OnInit {
 
 	handleDownload(): void {
 
-		if (this.tabName === "raw" || this.tabName === "video") {
-			window.location.href = acp + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
-		}
+		window.location.href = acp + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        

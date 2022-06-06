@@ -460,7 +460,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    SiteObjectDocumentQuery query = new SiteObjectDocumentQuery(this, folder);
+    SiteObjectDocumentQueryIF query = folder.equals("artifacts") ? new ArtifactQuery(this) : new SiteObjectDocumentQuery(this, folder);
 
     if (pageNumber != null && pageSize != null)
     {

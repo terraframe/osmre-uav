@@ -27,7 +27,7 @@ import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
-public class SiteObjectDocumentQuery
+public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
 {
   private UasComponentIF component;
 
