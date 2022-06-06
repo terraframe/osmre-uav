@@ -157,13 +157,20 @@ export class TaskGroupType {
 }
 
 export class Message {
-	collectionId: string;
-	collectionName: string;
-	ancestors: string[];
+	oid: string;
 	message: string;
-	imageWidth: string;
-	imageHeight: string;
+	type: string;
+	data: { [key: string]: any };
 }
+
+// export class Message {
+// 	collectionId: string;
+// 	collectionName: string;
+// 	ancestors: string[];
+// 	message: string;
+// 	imageWidth: string;
+// 	imageHeight: string;
+// }
 
 export class ProductDocument {
 	id: string;

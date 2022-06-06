@@ -49,6 +49,8 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
+import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
+import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -262,6 +264,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     {
       report.handleDelete(this);
     }
+    
+    MissingUploadMessage.remove(this);
+    
+    MissingMetadataMessage.remove(this);
 
     super.delete();
 

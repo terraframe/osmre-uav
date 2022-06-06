@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
@@ -40,13 +38,9 @@ import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.GdalProcessor;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.FlightMetadata;
@@ -82,6 +76,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     UasComponentIF component = task.getComponentInstance();
 
+    if (!uploadTarget.equals(ImageryComponent.RAW))
+    {
+      component.removeArtifacts(uploadTarget);
+    }
+
     List<String> uploadedFiles = new LinkedList<String>();
 
     if (DevProperties.uploadRaw())
@@ -110,9 +109,14 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
         calculateImageSize(infile, (CollectionIF) component);
       }
     }
-    else if (processUpload && uploadTarget.equals(ImageryComponent.ORTHO))
+    else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
     {
-      this.createProduct(task, infile);
+      this.startOrthoProcessing(task, infile);
+    }
+
+    if (uploadedFiles.size() > 0)
+    {
+      MissingUploadMessage.remove(component);
     }
 
     // handleMetadataWorkflow(task);
@@ -208,38 +212,25 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   }
 
   @Transaction
-  public ProductIF createProduct(WorkflowTask task, ApplicationResource infile)
+  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationResource infile)
   {
-    Collection collection = Collection.get(task.getComponent());
+    UasComponentIF component = uploadTask.getComponentInstance();
 
-    Product product = (Product) collection.createProductIfNotExist();
+    OrthoProcessingTask task = new OrthoProcessingTask();
+    task.setUploadId(uploadTask.getUploadId());
+    task.setComponent(component.getOid());
+    task.setGeoprismUser(GeoprismUser.getCurrentUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setProcessDem(uploadTask.getProcessDem());
+    task.setProcessOrtho(uploadTask.getProcessOrtho());
+    task.setProcessPtcloud(uploadTask.getProcessPtcloud());
+    task.setUploadTarget(uploadTask.getUploadTarget());
+    task.setTaskLabel("Ortho processesing task for collection [" + component.getName() + "]");
+    task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is submitted processing. Check back later for updates.");
+    task.apply();
 
-    // TODO clear files?? I don't think this works in the current workflow
-    // product.clear();
+    task.initiate(infile);
 
-    List<DocumentIF> documents = collection.getDocuments().stream().filter(doc -> {
-      return !doc.getS3location().contains("/raw/");
-    }).collect(Collectors.toList());
-
-     product.addDocuments(documents);
-     
-    // Create the png for the uploaded file
-    try (CloseableFile file = infile.openNewFile())
-    {
-        new GdalProcessor(collection, task, product, file).process();
-    }
-    catch (InterruptedException e)
-    {
-//      task.add
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-    product.createImageService(true);
-
-    product.updateBoundingBox();
-
-    return product;
   }
 
 }

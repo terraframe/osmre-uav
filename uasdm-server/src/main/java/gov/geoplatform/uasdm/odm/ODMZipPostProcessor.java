@@ -30,15 +30,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
-import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -47,7 +43,6 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.SolrService;
-import net.geoprism.gis.geoserver.GeoserverProperties;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -69,7 +64,7 @@ public class ODMZipPostProcessor
 
   protected ODMUploadTaskIF uploadTask;
 
-  protected List<S3FileUpload> config;
+  protected List<Processor> config;
 
   protected UasComponentIF collection;
 
@@ -125,7 +120,7 @@ public class ODMZipPostProcessor
 
   public void initConfig()
   {
-    for (S3FileUpload file : this.config)
+    for (Processor file : this.config)
     {
       file.setUploader(this);
     }
@@ -133,10 +128,16 @@ public class ODMZipPostProcessor
 
   public void buildProcessingConfig()
   {
-    List<S3FileUpload> processingConfigs = new ArrayList<S3FileUpload>();
+    List<Processor> processingConfigs = new ArrayList<Processor>();
 
     if (this.uploadTask.getProcessDem())
     {
+      this.collection.removeArtifacts(ImageryComponent.DEM);
+      this.collection.removeArtifacts(DEM_GDAL);
+      
+      processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
+          "dsm.tif", "dtm.tif"
+      }));
       processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
           "dsm.tif", "dtm.tif"
       }));
@@ -148,6 +149,8 @@ public class ODMZipPostProcessor
 
     if (this.uploadTask.getProcessOrtho())
     {
+      this.collection.removeArtifacts(ImageryComponent.ORTHO);
+
       processingConfigs.add(new ManagedDocument("odm_orthophoto", ImageryComponent.ORTHO, new String[] {
           "odm_orthophoto.png", "odm_orthophoto.tif"
       }));
@@ -155,6 +158,9 @@ public class ODMZipPostProcessor
 
     if (this.uploadTask.getProcessPtcloud())
     {
+      this.collection.removeArtifacts(ImageryComponent.PTCLOUD);
+      this.collection.removeArtifacts(POTREE);
+
       processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] {
           "odm_georeferenced_model.laz"
       }));
@@ -192,7 +198,7 @@ public class ODMZipPostProcessor
           throw new RuntimeException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }
 
-        for (S3FileUpload config : this.config)
+        for (Processor config : this.config)
         {
           this.processConfig(config, unzippedParentFolder);
         }
@@ -232,18 +238,18 @@ public class ODMZipPostProcessor
     return documents;
   }
 
-  protected void processConfig(S3FileUpload config, CloseableFile unzippedParentFolder) throws InterruptedException
+  protected void processConfig(Processor config, CloseableFile unzippedParentFolder) throws InterruptedException
   {
     if (Thread.interrupted())
     {
       throw new InterruptedException();
     }
 
-    File parentDir = new File(unzippedParentFolder, config.odmFolderName);
+    File parentDir = new File(unzippedParentFolder, config.getOdmFolderName());
 
     if (parentDir.exists())
     {
-      processDirectory(parentDir, config.s3FolderName, config, filePrefix);
+      processDirectory(parentDir, config.getS3FolderName(), config, filePrefix);
     }
 
     config.handleUnprocessedFiles();
@@ -266,7 +272,7 @@ public class ODMZipPostProcessor
     }
   }
 
-  protected void processDirectory(File parentDir, String s3FolderPrefix, S3FileUpload config, String filePrefix) throws InterruptedException
+  protected void processDirectory(File parentDir, String s3FolderPrefix, Processor config, String filePrefix) throws InterruptedException
   {
     File[] children = parentDir.listFiles();
 
@@ -338,7 +344,24 @@ public class ODMZipPostProcessor
     }
   }
 
-  public static class S3FileUpload
+  public static interface Processor
+  {
+
+    void setUploader(ODMZipPostProcessor odmZipPostProcessor);
+
+    void processFile(File child, String key);
+
+    boolean shouldProcessFile(File child);
+
+    String getOdmFolderName();
+
+    String getS3FolderName();
+
+    void handleUnprocessedFiles();
+
+  }
+
+  public static class S3FileUpload implements Processor
   {
     protected ODMZipPostProcessor uploader;
 
@@ -376,7 +399,7 @@ public class ODMZipPostProcessor
       return this.isDirectory;
     }
 
-    protected boolean shouldProcessFile(File file)
+    public boolean shouldProcessFile(File file)
     {
       String name = file.getName();
       if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
@@ -403,7 +426,7 @@ public class ODMZipPostProcessor
       return false;
     }
 
-    protected void handleUnprocessedFiles()
+    public void handleUnprocessedFiles()
     {
       List<String> unprocessed = this.getUnprocessedFiles();
 
@@ -481,7 +504,7 @@ public class ODMZipPostProcessor
       this.processedFiles = processedFiles;
     }
 
-    protected void processFile(File file, String key)
+    public void processFile(File file, String key)
     {
       if (file.isDirectory())
       {
@@ -525,7 +548,7 @@ public class ODMZipPostProcessor
     }
 
     @Override
-    protected void processFile(File file, String key)
+    public void processFile(File file, String key)
     {
       super.processFile(file, key);
 
@@ -549,7 +572,7 @@ public class ODMZipPostProcessor
     }
 
     @Override
-    protected void processFile(File file, String key)
+    public void processFile(File file, String key)
     {
       final String basename = FilenameUtils.getBaseName(file.getName());
 

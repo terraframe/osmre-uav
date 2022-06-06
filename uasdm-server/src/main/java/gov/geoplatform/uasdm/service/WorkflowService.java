@@ -25,6 +25,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.bus.AbstractMessage;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -157,6 +158,14 @@ public class WorkflowService
   public JSONArray getCollectionTasks(String sessionId, String collectionId)
   {
     return WorkflowTask.getCollectionTasks(collectionId);
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONObject getMessages(String sessionId, Integer pageNumber, Integer pageSize)
+  {
+    Page<AbstractMessage> page = AbstractMessage.getPage(pageNumber, pageSize);
+
+    return page.toJSON();
   }
 
   @Request(RequestType.SESSION)

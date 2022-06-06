@@ -53,6 +53,7 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
@@ -619,9 +620,9 @@ public class ProjectManagementService
         collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
-
+    
     collection.apply();
-
+    
     new MetadataXMLGenerator().generateAndUpload(collection);
   }
 

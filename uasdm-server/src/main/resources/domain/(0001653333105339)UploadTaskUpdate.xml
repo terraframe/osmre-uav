@@ -1,5 +1,29 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.OrthoProcessingTask" label="Ortho Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+      </mdBusiness>    
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractMessage" label="Abstract Message" cacheAlgorithm="nothing" generateController="false" isAbstract="true" generateSource="true"  >
+        <attributes>
+          <reference name="geoprismUser" label="user" required="true" type="com.runwaysdk.system.SingleActor" />
+        </attributes>
+      
+      </mdBusiness>    
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.MissingMetadataMessage" extends="gov.geoplatform.uasdm.bus.AbstractMessage"  label="Missing Metadata Message" generateSource="true"  >
+        <attributes>
+          <uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
+        </attributes>
+      </mdBusiness>
+
+      <mdBusiness name="gov.geoplatform.uasdm.bus.MissingUploadMessage" extends="gov.geoplatform.uasdm.bus.AbstractMessage"  label="Missing Upload Message" generateSource="true"  >
+        <attributes>
+          <uuid name="component" label="Component" required="true" immutable="false" type="gov.geoplatform.uasdm.bus.UasComponent" indexType="non-unique index" />
+        </attributes>
+      </mdBusiness>
+      
+    </create>
     <update>
       <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
         <create>
@@ -29,9 +53,47 @@
         </create>        
       </mdVertex>    
     </update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.OrthoProcessingTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.MissingMetadataMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.MissingUploadMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.OrthoProcessingTask">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.MissingMetadataMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.MissingUploadMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.AbstractMessage">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>    
   </doIt>
   <undoIt>
     <delete>
+      <object key="gov.geoplatform.uasdm.bus.OrthoProcessingTask" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+      <object key="gov.geoplatform.uasdm.bus.AbstractMessage" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+      <object key="gov.geoplatform.uasdm.bus.MissingMetadataMessage" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+      <object key="gov.geoplatform.uasdm.bus.MissingUploadMessage" type="com.runwaysdk.system.metadata.MdBusiness"></object>
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.description" type="com.runwaysdk.system.metadata.MdAttribute"></object>
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.tool" type="com.runwaysdk.system.metadata.MdAttribute"></object>
       <object key="gov.geoplatform.uasdm.graph.Document.description" type="com.runwaysdk.system.metadata.MdAttribute"></object>

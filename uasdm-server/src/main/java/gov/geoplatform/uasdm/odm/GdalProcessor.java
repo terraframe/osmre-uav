@@ -64,12 +64,20 @@ public class GdalProcessor
   {
     // Generate the file name
     List<S3FileUpload> processors = new LinkedList<GdalProcessor.S3FileUpload>();
-    processors.add(new GdalTransformProcessor(ImageryComponent.ORTHO, new String[] {
-        FilenameUtils.getBaseName(source.getName()) + ".png"
-    }));
-    processors.add(new GdalDemProcessor(ODMZipPostProcessor.DEM_GDAL, new String[] {
-        "dsm.tif"
-    }));
+
+    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.ORTHO))
+    {
+      processors.add(new GdalTransformProcessor(ImageryComponent.ORTHO, new String[] {
+          FilenameUtils.getBaseName(source.getName()) + ".png"
+      }));
+    }
+
+    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.DEM))
+    {
+      processors.add(new GdalDemProcessor(ODMZipPostProcessor.DEM_GDAL, new String[] {
+          "dsm.tif"
+      }));
+    }
 
     for (S3FileUpload processor : processors)
     {

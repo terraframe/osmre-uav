@@ -14,7 +14,6 @@ import { ManagementService } from '../service/management.service';
 
 declare var acp: any;
 
-
 @Component({
   selector: 'tasks',
   templateUrl: './tasks.component.html',
@@ -38,24 +37,24 @@ export class TasksComponent implements OnInit {
 
   statuses = [];
 
-    /*
-     * Token used to determine if a change has occured in the page before loading the polling values
-     */
+  /*
+   * Token used to determine if a change has occured in the page before loading the polling values
+   */
   token: number = 0;
 
-    /*
-     * Reference to the modal current showing
-     */
+  /*
+   * Reference to the modal current showing
+   */
   bsModalRef: BsModalRef;
 
-    /*
-     * List of messages
-     */
+  /*
+   * List of messages
+   */
   messages: PageResult<Message> = { count: 0, pageSize: 5, pageNumber: 1, resultSet: [] };
 
-    /*
-     * List of tasks
-     */
+  /*
+   * List of tasks
+   */
   // tasks: PageResult<Task>;
 
   notifier: WebSocketSubject<{ type: string, content: any }>;
@@ -68,7 +67,7 @@ export class TasksComponent implements OnInit {
       this.setTaskData(data);
     });
 
-    this.getMissingMetadata();
+    this.getMessages();
 
     let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
 
@@ -80,6 +79,7 @@ export class TasksComponent implements OnInit {
             this.updateTaskData(data);
           }
         });
+        this.getMessages();
       }
     });
 
@@ -243,12 +243,11 @@ export class TasksComponent implements OnInit {
     if (!this.visible[taskGroup.collectionId]) {
       this.visible[taskGroup.collectionId] = true;
 
-      if (taskGroup.groups == null && !taskGroup.loading)
-      {
+      if (taskGroup.groups == null && !taskGroup.loading) {
         taskGroup.loading = true;
         this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
           this.setGroupTasks(taskGroup, tasks);
-          
+
           taskGroup.loading = false;
         });
       }
@@ -260,29 +259,20 @@ export class TasksComponent implements OnInit {
 
 
   handleMessage(message: Message): void {
-    this.bsModalRef = this.modalService.show(MetadataModalComponent, {
-      animated: true,
-      backdrop: true,
-      ignoreBackdropClick: true,
-      'class': 'upload-modal'
-    });
-    this.bsModalRef.content.init(message.collectionId);
 
-    this.bsModalRef.content.onMetadataChange.subscribe((collectionId: string) => {
+    if (message.type === 'MissingMetadataMessage') {
+      this.bsModalRef = this.modalService.show(MetadataModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        'class': 'upload-modal'
+      });
+      this.bsModalRef.content.init(message.data.collectionId);
 
-      let index = -1;
-      for (let i = 0; i < this.messages.resultSet.length; i++) {
-        let msg = this.messages.resultSet[i];
-        if (msg.collectionId === collectionId) {
-          index = i;
-        }
-      }
-
-      if (index >= 0) {
-        this.messages.resultSet.splice(index, 1);
-      }
-
-    });
+      this.bsModalRef.content.onMetadataChange.subscribe(() => {
+        this.getMessages();
+      });
+    }
 
   }
 
@@ -340,19 +330,19 @@ export class TasksComponent implements OnInit {
           this.tasks.resultSet.splice(pos, 1);
         }
 
-        this.getMissingMetadata();
+        this.getMessages();
 
         this.totalTaskCount = this.tasks.count;
 
       });
   }
 
-  getMissingMetadata(): void {
+  getMessages(): void {
     this.onMessagePageChange(this.messages.pageNumber);
   }
 
   onMessagePageChange(pageNumber: number): void {
-    this.managementService.getMissingMetadata(this.messages.pageSize, pageNumber).then(messages => {
+    this.managementService.getMessages(this.messages.pageSize, pageNumber).then(messages => {
       this.messages = messages;
     });
   }

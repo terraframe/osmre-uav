@@ -387,13 +387,13 @@ export class ManagementService {
 
 
 
-	getMissingMetadata(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
+	getMessages(pageSize: number, pageNumber: number): Promise<PageResult<Message>> {
 
 		let params: HttpParams = new HttpParams();
 		params = params.set('pageSize', pageSize.toString());
 		params = params.set('pageNumber', pageNumber.toString());
 
-		return this.http.get<PageResult<Message>>(acp + '/project/missing-metadata', { params: params })
+		return this.http.get<PageResult<Message>>(acp + '/project/get-messages', { params: params })
 			.toPromise();
 	}
 

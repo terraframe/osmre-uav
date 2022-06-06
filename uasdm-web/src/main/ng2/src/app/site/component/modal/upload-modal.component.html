@@ -64,33 +64,36 @@
           </div>
         </div>
       </div>
-      <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'ortho'">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="form-group">
-            <boolean-field [(value)]="processUpload" label="Make available as a product"></boolean-field>
+      <ng-container *ngIf="uploadTarget !== 'raw'">
+
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <boolean-field [(value)]="processUpload" label="Make available as a product"></boolean-field>
+            </div>
           </div>
         </div>
-      </div>
-      <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget !== 'raw'">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="form-group">
-            <label for="description">Description</label>
-            <input [(ngModel)]="values.description" name="description" type="input" class="form-control"
-              placeholder="Description..." />
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input [(ngModel)]="values.description" name="description" type="input" class="form-control"
+                placeholder="Description..." />
+            </div>
           </div>
         </div>
-      </div>
-      <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget !== 'raw'">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="form-group">
-            <label for="description">Tool</label>
-            <input [(ngModel)]="values.tool" name="tool" type="input" class="form-control" placeholder="Tool..." />
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <label for="description">Tool</label>
+              <input [(ngModel)]="values.tool" name="tool" type="input" class="form-control" placeholder="Tool..." />
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
 
     </ng-container>
 

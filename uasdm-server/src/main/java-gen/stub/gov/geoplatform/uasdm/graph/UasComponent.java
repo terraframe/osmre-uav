@@ -430,8 +430,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     return response;
   }
-  
+
   @Override
+  @Transaction
   public void removeArtifacts(String folder)
   {
     List<Document> documents = new ArtifactQuery(this).getDocuments();
@@ -442,6 +443,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       {
         document.delete(true, true);
       }
+    }
+
+    if (new ArtifactQuery(this).getDocuments().size() == 0)
+    {
+      this.getProducts().forEach(product -> {
+        product.delete();
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
@@ -14,7 +14,7 @@ import { Page } from './upload-modal.component';
 	templateUrl: './metadata-modal.component.html',
 	styleUrls: []
 })
-export class MetadataModalComponent {
+export class MetadataModalComponent implements OnInit, OnDestroy {
 	/*
 	 * collectionId for the metadata
 	 */
@@ -36,10 +36,16 @@ export class MetadataModalComponent {
 
 	constructor(public bsModalRef: BsModalRef, private service: ManagementService) { }
 
+	ngOnInit(): void {
+		this.onMetadataChange = new Subject();
+	}
+
+	ngOnDestroy(): void {
+		this.onMetadataChange.unsubscribe();
+	}
+
 	init(collectionId: string, collectionName: string): void {
 		this.collectionId = collectionId;
-
-		this.onMetadataChange = new Subject();
 
 		this.service.getMetadataOptions(this.collectionId).then((options) => {
 
@@ -73,8 +79,8 @@ export class MetadataModalComponent {
 	handleSubmit(): void {
 
 		this.service.applyMetadata(this.page.selection).then(() => {
-			this.bsModalRef.hide();
 			this.onMetadataChange.next(this.page.selection);
+			this.bsModalRef.hide();
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});

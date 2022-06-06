@@ -326,10 +326,10 @@ public class ProjectManagementController
     return new RestBodyResponse(response);
   }
 
-  @Endpoint(url = "missing-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMissingMetadata(ClientRequestIF request, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
+  @Endpoint(url = "get-messages", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getMessages(ClientRequestIF request, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
   {
-    JSONObject response = new WorkflowService().getMissingMetadata(request.getSessionId(), pageNumber, pageSize);
+    JSONObject response = new WorkflowService().getMessages(request.getSessionId(), pageNumber, pageSize);
 
     return new RestBodyResponse(response);
   }

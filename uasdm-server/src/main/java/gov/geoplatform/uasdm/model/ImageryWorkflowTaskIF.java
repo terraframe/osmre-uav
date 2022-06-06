@@ -31,8 +31,10 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.view.RequestParser;
+import net.geoprism.GeoprismUser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
 {
@@ -144,7 +146,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
               {
                 child.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
               }
-              
+
               if (poc.has(Collection.EMAIL))
               {
                 child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
@@ -161,6 +163,11 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             CollectionReport.create((CollectionIF) child);
 
             new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
+
+            MissingUploadMessage message = new MissingUploadMessage();
+            message.setComponent(child.getOid());
+            message.setGeoprismUser(GeoprismUser.getCurrentUser());
+            message.apply();
           }
         }
 

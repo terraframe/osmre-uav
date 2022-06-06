@@ -44,6 +44,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.PlatformType;
@@ -272,6 +273,9 @@ public class MetadataXMLGenerator
       collection.appLock();
       collection.setMetadataUploaded(true);
       collection.apply();
+      
+      // Remove any messages
+      MissingMetadataMessage.remove(collection);
 
       CollectionReport.updateIncludeSize(collection);
     }
