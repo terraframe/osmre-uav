@@ -15,42 +15,69 @@
               <h3 class="col-sm-7">Issue</h3>
               <h3 class="col-sm-5" style="text-align:right; padding-right: 8em">Actions</h3>
             </div>
-            <div class="panel panel-default" *ngFor="let message of messages.resultSet | paginate: {id: 'message-pg-ctrl', itemsPerPage: messages.pageSize, currentPage: messages.pageNumber, totalItems: messages.count }">
+            <div class="panel panel-default"
+              *ngFor="let message of messages.resultSet | paginate: {id: 'message-pg-ctrl', itemsPerPage: messages.pageSize, currentPage: messages.pageNumber, totalItems: messages.count }">
               <!-- <div class="panel-heading">Panel heading without title</div> -->
-          
+
+
               <div class="panel-body">
                 <div class="row">
-                  <div class="col-sm-7">
-                    <div>
-                      <span class="dot pending" style="margin-left:0;"></span>
-                      {{message.message}}
-                    </div>
-                    <div style="margin-top:10px;margin-bottom:0;color:grey;">
-                      <ul class="breadcrumb" style="color:grey;">
-                        <li *ngFor="let ancestor of message.ancestors">
-                          <span > <b>{{ancestor}}</b> </span>
-                        </li>
-                        <li class="active">
-                          <a (click)="handleGoto(message.collectionId)" style="color: #007276;"> {{message.collectionName}}</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="col-sm-5" style="text-align: right;">
-                    <div>
-                      <button class="btn btn-default" (click)="handleGoto(message.collectionId)">View Collection</button>
-                      <button style="margin-left: 10px;" class="btn btn-primary" (click)="handleMessage(message)">Add Metadata</button>
-                    </div>
-                  </div>
+                  <ng-container [ngSwitch]="message.type">
+                    <ng-container *ngSwitchCase="'MissingMetadataMessage'">
+                      <div class="col-sm-7">
+                        <div>
+                          <span class="dot pending" style="margin-left:0;"></span>
+                          {{message.message}}
+                        </div>
+                        <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                          <ul class="breadcrumb" style="color:grey;">
+                            <li *ngFor="let ancestor of message.data.ancestors">
+                              <span> <b>{{ancestor}}</b> </span>
+                            </li>
+                            <li class="active">
+                              <a (click)="handleGoto(message.collectionId)" style="color: #007276;">
+                                {{message.data.collectionName}}</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="col-sm-5" style="text-align: right;">
+                        <div>
+                          <button class="btn btn-default" (click)="handleGoto(message.data.collectionId)">
+                            View Collection
+                          </button>
+                          <button style="margin-left: 10px;" class="btn btn-primary" (click)="handleMessage(message)">
+                            Add Metadata
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                      <div class="col-sm-7">
+                        <div>
+                          <span class="dot pending" style="margin-left:0;"></span>
+                          {{message.message}}
+                        </div>
+                      </div>
+                      <div class="col-sm-5" style="text-align: right;">
+                        <div>
+                          <button class="btn btn-default" (click)="handleGoto(message.data.component)">
+                            View Collection
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
                 </div>
               </div>
-          
+
             </div>
             <div class="row">
-              <pagination-controls id="message-pg-ctrl" (pageChange)="onMessagePageChange($event)"></pagination-controls>                  
+              <pagination-controls id="message-pg-ctrl" (pageChange)="onMessagePageChange($event)">
+              </pagination-controls>
             </div>
           </div>
-          
+
         </div>
 
       </div>
@@ -71,186 +98,207 @@
         <li>
           <a role="tab" data-toggle="tab" (click)="onTabClick($event, 'action-required')">Action Required</a>
         </li>
-<!-- 
+        <!-- 
         <li>
           <a role="tab" data-toggle="tab" (click)="onTabClick($event, 'success')">Successful</a>
         </li>
- -->        
+ -->
       </ul>
 
-      <div class="tab-content" >
+      <div class="tab-content">
 
         <div *ngIf="activeTab === 'action-required'" class="tab-pane active" id="action-required">
-          
+
           <div class="panel-group">
-            <div *ngFor="let taskGroup of taskPage.resultSet | paginate: { id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index" class="panel panel-default" style="background: none;border: none;">
-            
-                <div class="panel-heading clickable">
-                  <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
-                    <a data-toggle="collapse" (click)="setVisibility(taskGroup)" [attr.aria-expanded]="!visible[taskGroup.collectionId]"
-                      [attr.aria-controls]="'taskGroup'+ idx">
-                      <h4>{{taskGroup.label}}</h4>
-                    </a>
-                  </h4>
-                  
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}" ></span>
+            <div
+              *ngFor="let taskGroup of taskPage.resultSet | paginate: { id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index"
+              class="panel panel-default" style="background: none;border: none;">
 
-                  <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
+              <div class="panel-heading clickable">
+                <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
+                  <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
+                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{taskGroup.label}}</h4>
+                  </a>
+                </h4>
 
-                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
-                    <ul class="breadcrumb" style="color:grey;">
-                      <li *ngFor="let ancestor of taskGroup.ancestors">
-                        <span > <b>{{ancestor}}</b> </span>
-                      </li>
-                      <li class="active">
-                        {{taskGroup.label}}
-                      </li>
-                    </ul>
-                  </div>
+                <span class="dot"
+                  [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}"></span>
 
+                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
+                  Collection</button>
+
+                <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                  <ul class="breadcrumb" style="color:grey;">
+                    <li *ngFor="let ancestor of taskGroup.ancestors">
+                      <span> <b>{{ancestor}}</b> </span>
+                    </li>
+                    <li class="active">
+                      {{taskGroup.label}}
+                    </li>
+                  </ul>
                 </div>
-                
-                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
-                  <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
-                  
-                  <span *ngIf="!taskGroup.loading">
-	                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">                  
-	                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
-	
-	                      <!-- Upload Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'UPLOAD'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
-	                      </div>
-	
-	                      <!-- Process Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'PROCESS'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
-	                      </div>
-	
-	                      <!-- Store Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'STORE'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
-	                      </div>
-	                
-	                    </div>
-	                  </div>
-                  </span>
-                </div>
-            </div>
 
-             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
-          </div>
-        </div>
-        
-        <div *ngIf="activeTab === 'success'" class="tab-pane active" id="success">
-          <div class="panel-group">
-            <div *ngFor="let taskGroup of taskPage.resultSet | paginate: {id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index" class="panel panel-default" style="background: none;border: none;">
-            
-                <div class="panel-heading clickable">
-                  <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
-                    <a data-toggle="collapse" (click)="setVisibility(taskGroup)" [attr.aria-expanded]="!visible[taskGroup.collectionId]"
-                      [attr.aria-controls]="'taskGroup'+ idx">
-                      <h4>{{taskGroup.label}}</h4>
-                    </a>
-                  </h4>
-                  
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}" ></span>
+              </div>
 
-                  <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
+              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+                <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
 
-                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
-                    <ul class="breadcrumb" style="color:grey;">
-                      <li *ngFor="let ancestor of taskGroup.ancestors">
-                        <span > <b>{{ancestor}}</b> </span>
-                      </li>
-                      <li class="active">
-                        {{taskGroup.label}}
-                      </li>
-                    </ul>
-                  </div>
-
-                </div>
-                
-                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
-                
+                <span *ngIf="!taskGroup.loading">
                   <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
                     <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
 
+                      <!-- Upload Tasks -->
                       <div *ngIf="taskGroupType.type === 'UPLOAD'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'">
+                        </tasks-panel>
                       </div>
 
+                      <!-- Process Tasks -->
                       <div *ngIf="taskGroupType.type === 'PROCESS'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'">
+                        </tasks-panel>
                       </div>
 
+                      <!-- Store Tasks -->
                       <div *ngIf="taskGroupType.type === 'STORE'">
-                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'">
+                        </tasks-panel>
                       </div>
-                
+
                     </div>
                   </div>
-                </div>
+                </span>
+              </div>
             </div>
 
-             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
+            <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 'success'" class="tab-pane active" id="success">
+          <div class="panel-group">
+            <div
+              *ngFor="let taskGroup of taskPage.resultSet | paginate: {id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index"
+              class="panel panel-default" style="background: none;border: none;">
+
+              <div class="panel-heading clickable">
+                <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
+                  <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
+                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{taskGroup.label}}</h4>
+                  </a>
+                </h4>
+
+                <span class="dot"
+                  [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}"></span>
+
+                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
+                  Collection</button>
+
+                <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                  <ul class="breadcrumb" style="color:grey;">
+                    <li *ngFor="let ancestor of taskGroup.ancestors">
+                      <span> <b>{{ancestor}}</b> </span>
+                    </li>
+                    <li class="active">
+                      {{taskGroup.label}}
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+
+              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+
+                <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
+                  <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
+
+                    <div *ngIf="taskGroupType.type === 'UPLOAD'">
+                      <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'">
+                      </tasks-panel>
+                    </div>
+
+                    <div *ngIf="taskGroupType.type === 'PROCESS'">
+                      <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'">
+                      </tasks-panel>
+                    </div>
+
+                    <div *ngIf="taskGroupType.type === 'STORE'">
+                      <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'">
+                      </tasks-panel>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
           </div>
         </div>
 
         <div *ngIf="activeTab === 'all'" class="tab-pane active" id="all">
           <div class="panel-group">
-            <div *ngFor="let taskGroup of taskPage.resultSet | paginate: {id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index" class="panel panel-default" style="background: none;border: none;">
-            
-                <div class="panel-heading clickable">
-                  <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
-                    <a data-toggle="collapse" (click)="setVisibility(taskGroup)" [attr.aria-expanded]="!visible[taskGroup.collectionId]"
-                      [attr.aria-controls]="'taskGroup'+ idx">
-                      <h4>{{taskGroup.label}}</h4>
-                    </a>
-                  </h4>
-                  
-                  <span class="dot" [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}" ></span>
+            <div
+              *ngFor="let taskGroup of taskPage.resultSet | paginate: {id: 'tasks-pg-ctrl', itemsPerPage: taskPage.pageSize, currentPage: taskPage.pageNumber, totalItems: taskPage.count }; let idx=index"
+              class="panel panel-default" style="background: none;border: none;">
 
-                  <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View Collection</button>
+              <div class="panel-heading clickable">
+                <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
+                  <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
+                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{taskGroup.label}}</h4>
+                  </a>
+                </h4>
 
-                  <div style="margin-top:10px;margin-bottom:0;color:grey;">
-                    <ul class="breadcrumb" style="color:grey;">
-                      <li *ngFor="let ancestor of taskGroup.ancestors">
-                        <span > <b>{{ancestor}}</b> </span>
-                      </li>
-                      <li class="active">
-                        {{taskGroup.label}}
-                      </li>
-                    </ul>
+                <span class="dot"
+                  [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}"></span>
+
+                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
+                  Collection</button>
+
+                <div style="margin-top:10px;margin-bottom:0;color:grey;">
+                  <ul class="breadcrumb" style="color:grey;">
+                    <li *ngFor="let ancestor of taskGroup.ancestors">
+                      <span> <b>{{ancestor}}</b> </span>
+                    </li>
+                    <li class="active">
+                      {{taskGroup.label}}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+                <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
+
+                <span *ngIf="!taskGroup.loading">
+                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
+                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
+
+                      <!-- Upload Tasks -->
+                      <div *ngIf="taskGroupType.type === 'UPLOAD'">
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'">
+                        </tasks-panel>
+                      </div>
+
+                      <!-- Process Tasks -->
+                      <div *ngIf="taskGroupType.type === 'PROCESS'">
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'">
+                        </tasks-panel>
+                      </div>
+
+                      <!-- Store Tasks -->
+                      <div *ngIf="taskGroupType.type === 'STORE'">
+                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'">
+                        </tasks-panel>
+                      </div>
+
+                    </div>
                   </div>
-                </div>
-                
-                <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
-                  <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
-                  
-                  <span *ngIf="!taskGroup.loading">
-	                  <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
-	                    <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi" >
-	
-	                      <!-- Upload Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'UPLOAD'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Upload'" ></tasks-panel>
-	                      </div>
-	
-	                      <!-- Process Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'PROCESS'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'" ></tasks-panel>
-	                      </div>
-	
-	                      <!-- Store Tasks -->
-	                      <div *ngIf="taskGroupType.type === 'STORE'">
-	                        <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Store'" ></tasks-panel>
-	                      </div>
-	                
-	                    </div>
-	                  </div>
-                  </span>
-                </div>
+                </span>
+              </div>
             </div>
 
             <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
@@ -265,4 +313,3 @@
 
 
 </div>
-
