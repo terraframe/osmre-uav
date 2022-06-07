@@ -133,7 +133,6 @@ public class ODMZipPostProcessor
     if (this.uploadTask.getProcessDem())
     {
       this.collection.removeArtifacts(ImageryComponent.DEM);
-      this.collection.removeArtifacts(DEM_GDAL);
       
       processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
           "dsm.tif", "dtm.tif"
@@ -159,7 +158,6 @@ public class ODMZipPostProcessor
     if (this.uploadTask.getProcessPtcloud())
     {
       this.collection.removeArtifacts(ImageryComponent.PTCLOUD);
-      this.collection.removeArtifacts(POTREE);
 
       processingConfigs.add(new ManagedDocument("odm_georeferencing", ImageryComponent.PTCLOUD, new String[] {
           "odm_georeferenced_model.laz"

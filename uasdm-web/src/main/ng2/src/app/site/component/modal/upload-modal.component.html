@@ -66,11 +66,19 @@
       </div>
       <ng-container *ngIf="uploadTarget !== 'raw'">
 
-        <div [@fadeInOnEnter] class="row">
+        <div [@fadeInOnEnter] *ngIf="uploadTarget === 'ortho'" class="row">
           <div class="col-md-2"></div>
           <div class="col-md-8">
             <div class="form-group">
-              <boolean-field [(value)]="processUpload" label="Make available as a product"></boolean-field>
+              <boolean-field [(value)]="processOrtho" label="Generate png from upload"></boolean-field>
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] *ngIf="uploadTarget === 'dem'" class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <boolean-field [(value)]="processDem" label="Generate hillshade from tif"></boolean-field>
             </div>
           </div>
         </div>

@@ -78,7 +78,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	/*
 	 * Flag indicating if the upload should be processed by ODM
 	 */
-	processUpload: boolean = false;
+	processUpload: boolean = true;
 	
 	processPtcloud: boolean = true;
 	processDem: boolean = true;
@@ -146,7 +146,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 			if (this.uploadTarget === 'ortho') {
 				extensions.push('tif')
-				extensions.push('png');
 			}
 			else if (this.uploadTarget === 'dem') {
 				extensions.push('tif')
@@ -338,7 +337,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	init(component: SiteEntity, uploadTarget: string): void {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
-		this.processUpload = this.uploadTarget === 'raw';
+		// this.processUpload = this.uploadTarget === 'raw';
 
 		this.hierarchy = this.metadataService.getHierarchy();
 		// this.selections = [];

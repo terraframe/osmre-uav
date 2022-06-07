@@ -70,6 +70,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -435,7 +436,21 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Transaction
   public void removeArtifacts(String folder)
   {
-    List<Document> documents = new ArtifactQuery(this).getDocuments();
+    if (folder.equalsIgnoreCase(ImageryComponent.RAW) || folder.equalsIgnoreCase(ImageryComponent.VIDEO))
+    {
+      return;
+    }
+
+    List<Document> documents = new SiteObjectDocumentQuery(this, folder).getDocuments();
+
+    if (folder.equals(ImageryComponent.PTCLOUD))
+    {
+      documents.addAll(new SiteObjectDocumentQuery(this, ODMZipPostProcessor.POTREE).getDocuments());
+    }
+    else if (folder.equals(ImageryComponent.DEM))
+    {
+      documents.addAll(new SiteObjectDocumentQuery(this, ODMZipPostProcessor.DEM_GDAL).getDocuments());
+    }
 
     for (Document document : documents)
     {

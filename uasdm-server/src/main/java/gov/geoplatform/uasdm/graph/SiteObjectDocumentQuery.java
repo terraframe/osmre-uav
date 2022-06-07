@@ -23,7 +23,6 @@ import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
-import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -112,7 +111,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
 
   public List<SiteObject> getSiteObjects()
   {
-    List<Document> documents = this.getQuery().getResults();
+    List<Document> documents = getDocuments();
 
     LinkedList<SiteObject> objects = new LinkedList<SiteObject>();
 
@@ -122,5 +121,10 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     }
 
     return objects;
+  }
+
+  public List<Document> getDocuments()
+  {
+    return this.getQuery().getResults();
   }
 }

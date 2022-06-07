@@ -200,7 +200,7 @@
                 </ul>
               </div>
             </tab>
-            <tab heading="artifacts" (selectTab)="onSelect('artifacts')">
+            <tab heading="products" (selectTab)="onSelect('artifacts')">
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning" (onError)="error($event)"></artifact-page>
             </tab>
           </tabset>

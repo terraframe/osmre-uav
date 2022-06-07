@@ -23,14 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -44,7 +41,7 @@ public class GdalProcessor
 
   protected List<DocumentIF> documents = new LinkedList<DocumentIF>();
 
-  protected AbstractWorkflowTaskIF uploadTask;
+  protected OrthoProcessingTask uploadTask;
 
   protected CollectionIF collection;
 
@@ -52,7 +49,7 @@ public class GdalProcessor
 
   protected File source;
 
-  public GdalProcessor(CollectionIF collection, AbstractWorkflowTaskIF uploadTask, ProductIF product, File source)
+  public GdalProcessor(CollectionIF collection, OrthoProcessingTask uploadTask, ProductIF product, File source)
   {
     this.collection = collection;
     this.uploadTask = uploadTask;
@@ -65,14 +62,14 @@ public class GdalProcessor
     // Generate the file name
     List<S3FileUpload> processors = new LinkedList<GdalProcessor.S3FileUpload>();
 
-    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.ORTHO))
+    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.ORTHO) && this.uploadTask.getProcessOrtho())
     {
       processors.add(new GdalTransformProcessor(ImageryComponent.ORTHO, new String[] {
           FilenameUtils.getBaseName(source.getName()) + ".png"
       }));
     }
 
-    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.DEM))
+    if (this.uploadTask.getUploadTarget().equals(ImageryComponent.DEM)  && this.uploadTask.getProcessDem())
     {
       processors.add(new GdalDemProcessor(ODMZipPostProcessor.DEM_GDAL, new String[] {
           "dsm.tif"

@@ -47,13 +47,13 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     Collection collection = Collection.get(this.getComponent());
 
     Product product = (Product) collection.createProductIfNotExist();
-    
+
     List<DocumentIF> documents = collection.getDocuments().stream().filter(doc -> {
-      return !doc.getS3location().contains("/raw/");
+      return doc.getS3location().contains("/" + this.getUploadTarget() + "/");
     }).collect(Collectors.toList());
 
     product.addDocuments(documents);
-    
+
     // Create the png for the uploaded file
     try (CloseableFile file = infile.openNewFile())
     {
@@ -62,7 +62,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       product.createImageService(true);
 
       product.updateBoundingBox();
-      
+
       this.appLock();
       this.setStatus(ODMStatus.COMPLETED.getLabel());
       this.setMessage("Ortho has been processed");
