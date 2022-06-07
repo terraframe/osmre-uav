@@ -454,10 +454,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     for (Document document : documents)
     {
-      if (document.getS3location().contains("/" + folder + "/"))
-      {
-        document.delete(true, true);
-      }
+      document.delete(true, true);
     }
 
     if (new ArtifactQuery(this).getDocuments().size() == 0)

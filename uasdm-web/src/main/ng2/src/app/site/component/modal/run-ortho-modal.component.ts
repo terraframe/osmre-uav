@@ -17,10 +17,11 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
 
     message: string = null;
     entity: SiteEntity = null;
-
-    processPtcloud: boolean = true;
-    processDem: boolean = true;
-    processOrtho: boolean = true;
+    config = {
+		processPtcloud: false,
+		processDem: false,
+		processOrtho: false
+	};
 
     /*
      * Called on confirm
@@ -42,11 +43,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
     }
 
     confirm(): void {
-        this.onConfirm.next({
-            processPtcloud: this.processPtcloud,
-            processDem: this.processDem,
-            processOrtho: this.processOrtho
-        });
+        this.onConfirm.next(this.config);
         this.bsModalRef.hide();
     }
 

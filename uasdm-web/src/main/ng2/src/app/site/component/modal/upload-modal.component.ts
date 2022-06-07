@@ -79,10 +79,13 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	 * Flag indicating if the upload should be processed by ODM
 	 */
 	processUpload: boolean = true;
-	
-	processPtcloud: boolean = true;
-	processDem: boolean = true;
-	processOrtho: boolean = true;
+
+	// Upload config
+	config = {
+		processPtcloud: false,
+		processDem: false,
+		processOrtho: false
+	};
 
 	/*
 	 * List of hierarchies
@@ -546,9 +549,9 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 				this.values.uploadTarget = this.uploadTarget;
 				this.values.uasComponentOid = this.component.id;
 				this.values.processUpload = this.processUpload;
-				this.values.processDem = this.processDem;
-				this.values.processOrtho = this.processOrtho;
-				this.values.processPtcloud = this.processPtcloud;
+				this.values.processDem = this.config.processDem;
+				this.values.processOrtho = this.config.processOrtho;
+				this.values.processPtcloud = this.config.processPtcloud;
 
 				this.uploader.setParams(this.values);
 				this.uploader.uploadStoredFiles();

@@ -13,8 +13,8 @@
 
         <h3>Run ortho to process the following products: </h3>
 
-        <artifact-page *ngIf="entity != null" [edit]="true" [entity]="entity" [(processOrtho)]="processOrtho"
-            [(processDem)]="processDem" [(processPtcloud)]="processPtcloud" (onError)="error($event)"></artifact-page>
+        <artifact-page *ngIf="entity != null" [edit]="true" [entity]="entity" [config]="config"
+            (onError)="error($event)"></artifact-page>
     </div>
     <div class="modal-footer">
         <div class="btn-holder" style="text-align: right;">

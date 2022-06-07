@@ -181,7 +181,7 @@ public class ODMZipPostProcessor
     final String folderName = "odm-" + FilenameUtils.getName(s3Location) + "-" + new Random().nextInt();
 
     this.product = (Product) this.collection.createProductIfNotExist();
-    product.clear();
+//    product.clear();
 
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
     {

@@ -22,13 +22,11 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	@Input() processRunning: boolean;
 	@Input() edit: boolean = false;
 
-	@Input() processPtcloud: boolean = false;
-	@Input() processDem: boolean = false;
-	@Input() processOrtho: boolean = false;
-
-	@Output() processPtcloudChange = new EventEmitter<boolean>();
-	@Output() processDemChange = new EventEmitter<boolean>();
-	@Output() processOrthoChange = new EventEmitter<boolean>();
+	@Input() config = {
+		processPtcloud: false,
+		processDem: false,
+		processOrtho: false
+	};
 
 	@Output() onError = new EventEmitter<HttpErrorResponse>();
 
@@ -62,7 +60,6 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 		this.notifier = webSocket(baseUrl + '/websocket/notify');
 		this.notifier.subscribe(message => {
-			console.log(message);
 			if (message.type === 'UPLOAD_JOB_CHANGE'
 				&& message.content.status === 'Complete'
 				&& message.content.collection === this.entity.id) {
@@ -81,9 +78,9 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		this.service.getArtifacts(this.entity.id).then(artifacts => {
 			this.artifacts = artifacts;
 
-			this.processDem = (this.artifacts.dem == null);
-			this.processOrtho = (this.artifacts.ortho == null);
-			this.processPtcloud = (this.artifacts.ptcloud == null);
+			this.config.processDem = (this.artifacts.dem == null);
+			this.config.processOrtho = (this.artifacts.ortho == null);
+			this.config.processPtcloud = (this.artifacts.ptcloud == null);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
@@ -201,27 +198,9 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		// });
 	}
 
-	handlePtcloudChange(value:boolean): void {
-		this.processPtcloud = value;
-		this.processPtcloudChange.emit(this.processPtcloud);
-	}
-
-	handleDemChange(value:boolean): void {
-		this.processDem = value;
-		this.processDemChange.emit(this.processDem);
-	}
-
-	handleOrthoChange(value:boolean): void {
-		this.processOrtho = value;
-		this.processOrthoChange.emit(this.processOrtho);
-	}
-
-
 	capitalize(str): string {
 		return str.replace(/^\w/, c => c.toUpperCase());
 	}
-
-
 
 	error(err: HttpErrorResponse): void {
 		this.onError.emit(err);

@@ -54,8 +54,8 @@
       <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'raw'">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-          <artifact-page *ngIf="component != null" [edit]="true" [entity]="component" [(processOrtho)]="processOrtho"
-            [(processDem)]="processDem" [(processPtcloud)]="processPtcloud" (onError)="error($event)"></artifact-page>
+          <artifact-page *ngIf="component != null" [edit]="true" [entity]="component" [config]="config"
+            (onError)="error($event)"></artifact-page>
 
           <div class="form-group" *ngIf="processUpload">
             <label for="outFileName">Output Product Name Prefix</label>
@@ -70,7 +70,7 @@
           <div class="col-md-2"></div>
           <div class="col-md-8">
             <div class="form-group">
-              <boolean-field [(value)]="processOrtho" label="Generate png from upload"></boolean-field>
+              <boolean-field [(value)]="config.processOrtho" label="Generate png from upload"></boolean-field>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@
           <div class="col-md-2"></div>
           <div class="col-md-8">
             <div class="form-group">
-              <boolean-field [(value)]="processDem" label="Generate hillshade from tif"></boolean-field>
+              <boolean-field [(value)]="config.processDem" label="Generate hillshade from tif"></boolean-field>
             </div>
           </div>
         </div>
