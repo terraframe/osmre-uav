@@ -84,9 +84,9 @@ public class UAVController
   }
 
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "search")
-  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text) throws JSONException
+  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text, @RequestParamter(name = "field") String field) throws JSONException
   {
-    JSONArray response = this.service.search(request.getSessionId(), text);
+    JSONArray response = this.service.search(request.getSessionId(), text, field);
 
     return new RestBodyResponse(response);
   }

@@ -31,10 +31,20 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="platform.name">UAV</label>
+                        <div>
+                            <span>
+                                <input id="serialNumber" type="radio" value="serialNumber" name="field" [checked]="field === 'serialNumber'" [(ngModel)]="field">
+                                <label for="serialNumber">Serial Number</label>
+                            </span>
+                            <span>
+                                <input id="faaNumber" type="radio" value="faaNumber" name="field" [checked]="field === 'faaNumber'" [(ngModel)]="field">
+                                <label for="faaNumber">FAA Number</label>
+                            </span>
+                        </div>
                         <input class="form-control search-input" type="text" placeholder="Search..."
                             [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
                             (typeaheadOnSelect)="handleUavClick($event)" [typeaheadOptionsLimit]="10"
-                            typeaheadOptionField="serialNumber" [ngModelOptions]="{standalone: true}"
+                            [typeaheadOptionField]="field" [ngModelOptions]="{standalone: true}"
                             (keydown.enter)="$event.preventDefault()" required />
                     </div>
 

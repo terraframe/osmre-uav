@@ -81,9 +81,9 @@ public class UAVService
   }
 
   @Request(RequestType.SESSION)
-  public JSONArray search(String sessionId, String text)
+  public JSONArray search(String sessionId, String text, String field)
   {
-    List<UAV> uavs = UAV.search(text);
+    List<UAV> uavs = UAV.search(text, field);
 
     return uavs.stream().map(w -> {
       JSONObject object = new JSONObject();

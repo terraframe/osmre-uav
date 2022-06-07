@@ -25,6 +25,7 @@ export class MetadataPageComponent implements OnInit {
 	 */
 	dataSource: Observable<any>;
 	search: string = '';
+	field: string = 'serialNumber';
 
 	uav: MetadataOptions = null;
 
@@ -32,7 +33,7 @@ export class MetadataPageComponent implements OnInit {
 
 	constructor(private service: ManagementService, private uavService: UAVService) {
 		this.dataSource = new Observable((observer: Observer<object>) => {
-			this.uavService.search(this.search).then(results => {
+			this.uavService.search(this.search, this.field).then(results => {
 				observer.next(results);
 			})
 		});

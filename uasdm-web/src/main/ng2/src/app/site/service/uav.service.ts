@@ -90,10 +90,11 @@ export class UAVService implements GenericTableService {
             .toPromise();
     }
 
-    search(text: string): Promise<{ oid: string, serialNumber: string, faaNumber: string }[]> {
+    search(text: string, field: string): Promise<{ oid: string, serialNumber: string, faaNumber: string }[]> {
 
         let params: HttpParams = new HttpParams();
         params = params.set('text', text);
+        params = params.set('field', field);
 
         return this.http
             .get<{ oid: string, serialNumber: string, faaNumber: string }[]>(acp + '/uav/search', { params: params })

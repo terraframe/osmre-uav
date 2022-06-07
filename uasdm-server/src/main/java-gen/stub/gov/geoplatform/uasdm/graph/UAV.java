@@ -248,19 +248,19 @@ public class UAV extends UAVBase implements JSONSerializable
     return ( result != null && result > 0 );
   }
 
-  public static List<UAV> search(String text)
+  public static List<UAV> search(String text, String field)
   {
     if (text != null)
     {
       final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
-      MdAttributeDAOIF serialAttribute = mdVertex.definesAttribute(UAV.SERIALNUMBER);
-      MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
+      MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(field);
+//      MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
 
       StringBuilder statement = new StringBuilder();
       statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-      statement.append(" WHERE " + serialAttribute.getColumnName() + ".toUpperCase() LIKE :text");
-      statement.append(" OR " + faaAttribute.getColumnName() + ".toUpperCase() LIKE :text");
-      statement.append(" ORDER BY " + serialAttribute.getColumnName());
+      statement.append(" WHERE " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+//      statement.append(" OR " + faaAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+      statement.append(" ORDER BY " + mdAttribute.getColumnName());
 
       final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
       query.setParameter("text", "%" + text.toUpperCase() + "%");
