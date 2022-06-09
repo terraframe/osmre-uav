@@ -1,22 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.geoserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,18 +41,18 @@ import net.geoprism.gis.geoserver.GeoserverProperties;
 public class GeoserverPublisher
 {
   private static final Logger logger = LoggerFactory.getLogger(GeoserverPublisher.class);
-  
+
   private boolean geoserverInitialized;
-  
+
   public GeoserverPublisher()
   {
     geoserverInitialized = GeoserverInitializer.isInitialized();
   }
-  
+
   public void initializeGeoserver()
   {
     boolean rebuild = false;
-    
+
     if (!GeoserverFacade.workspaceExists(AppProperties.getPublicWorkspace()))
     {
       GeoserverFacade.publishWorkspace(AppProperties.getPublicWorkspace());
@@ -65,16 +66,16 @@ public class GeoserverPublisher
 
       rebuild = true;
     }
-    
+
     if (!GeoserverFacade.workspaceExists(AppProperties.getPublicHillshadeWorkspace()))
     {
       GeoserverFacade.publishWorkspace(AppProperties.getPublicHillshadeWorkspace());
 
       rebuild = true;
     }
-    
+
     geoserverInitialized = true;
-    
+
     if (rebuild)
     {
       GeoserverLayer.dirtyAllLayers();
@@ -90,7 +91,7 @@ public class GeoserverPublisher
         }
       }
     }
-    
+
     List<? extends GeoserverLayer> dirtyLayers = GeoserverLayer.getDirtyLayers();
 
     if (dirtyLayers.size() > 0)
@@ -99,13 +100,20 @@ public class GeoserverPublisher
 
       for (GeoserverLayer layer : dirtyLayers)
       {
-        unpublishLayer(layer, false);
-        publishLayer(layer);
-        
-        layer.setDirty(false);
-        layer.apply();
+        try
+        {
+          unpublishLayer(layer, false);
+          publishLayer(layer);
+
+          layer.setDirty(false);
+          layer.apply();
+        }
+        catch (Exception e)
+        {
+          logger.error("Unable to publish layer", e);
+        }
       }
-      
+
       ImageMosaicPublisher.refreshAll();
     }
     else
@@ -113,11 +121,11 @@ public class GeoserverPublisher
       ImageMosaicPublisher.initializeAll();
     }
   }
-  
+
   public void createImageServices(Document document, Product product, boolean refreshMosiac)
   {
     final UasComponent component = product.getComponent();
-    
+
     try
     {
       List<GeoserverLayer> publishableLayers = getPublishableLayers(document, product, component);
@@ -128,7 +136,7 @@ public class GeoserverPublisher
         {
           unpublishLayer(layer, false);
           publishLayer(layer);
-          
+
           layer.setDirty(false);
         }
         else
@@ -149,32 +157,32 @@ public class GeoserverPublisher
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   public void removeImageServices(Document document, Product product, boolean refreshMosiac)
   {
     if (!geoserverInitialized)
     {
       return;
     }
-    
+
     final UasComponent component = product.getComponent();
-    
+
     List<GeoserverLayer> publishableLayers = getPublishableLayers(document, product, component);
 
     for (GeoserverLayer layer : publishableLayers)
     {
       unpublishLayer(layer, false);
-      
+
       layer.delete(false);
     }
-    
+
     // Refresh the public mosaic
     if (refreshMosiac)
     {
       ImageMosaicPublisher.refreshAll();
     }
   }
-  
+
   public void togglePublic(List<GeoserverLayer> layers)
   {
     for (GeoserverLayer layer : layers)
@@ -182,11 +190,11 @@ public class GeoserverPublisher
       if (geoserverInitialized && this.isPublished(layer))
       {
         unpublishLayer(layer, false);
-        
+
         layer.setIsPublic(!layer.getIsPublic());
-        
+
         publishLayer(layer);
-        
+
         layer.setDirty(false);
         layer.apply();
       }
@@ -198,18 +206,18 @@ public class GeoserverPublisher
       }
     }
   }
-  
+
   public void refreshImageServices(Document document, Product product, UasComponent component)
   {
     createImageServices(document, product, false);
     removeImageServices(document, product, false);
-    
+
     if (geoserverInitialized)
     {
       ImageMosaicPublisher.refreshAll();
     }
   }
-  
+
   public void unpublishLayer(GeoserverLayer layer, boolean atEndOfTransaction)
   {
     if (geoserverInitialized)
@@ -227,7 +235,7 @@ public class GeoserverPublisher
       }
     }
   }
-  
+
   public boolean isPublished(GeoserverLayer layer)
   {
     if (geoserverInitialized)
@@ -239,7 +247,7 @@ public class GeoserverPublisher
       return false;
     }
   }
-  
+
   public void publishLayer(GeoserverLayer layer)
   {
     if (geoserverInitialized)
@@ -254,55 +262,58 @@ public class GeoserverPublisher
       layer.setDirty(true);
     }
   }
-  
+
   protected List<GeoserverLayer> getPublishableLayers(Document document, Product product, UasComponent collection)
   {
     List<SiteObject> publishedObjects = new ArrayList<SiteObject>();
-    
+
     publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ImageryComponent.ORTHO, null, null).getObjects()));
-    
+
     publishedObjects.addAll(filterSiteObjects(collection.getSiteObjects(ODMZipPostProcessor.DEM_GDAL, null, null).getObjects()));
-    
+
     return createPublishableLayersFromSiteObjects(document, product, collection, publishedObjects);
   }
-  
+
   protected List<GeoserverLayer> createPublishableLayersFromSiteObjects(Document document, Product product, UasComponent collection, List<SiteObject> siteObjects)
   {
     List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
-    
+
     for (SiteObject siteObject : siteObjects)
     {
       GeoserverLayer layer = GeoserverLayer.getByKey(siteObject.getKey());
-      
+
       if (layer == null)
       {
         layer = new GeoserverLayer(collection, siteObject.getKey(), product.getPublished());
         layer.apply();
-        
+
         document.addChild(layer, EdgeType.DOCUMENT_HAS_LAYER).apply();
       }
-      
+
       layers.add(layer);
     }
-    
+
     return layers;
   }
-  
+
   protected List<SiteObject> filterSiteObjects(List<SiteObject> objects)
   {
-    List<SiteObject> filtered = new ArrayList<SiteObject>();
-    
-    for (SiteObject object : objects)
-    {
-      for (LayerClassification classy : GeoserverLayer.LayerClassification.values())
-      {
-        if (object.getKey().endsWith(classy.getKeyPath()))
-        {
-          filtered.add(object);
-        }
-      }
-    }
-    
-    return filtered;
+    return objects.stream().filter(object -> object.getKey().endsWith(".tif")).collect(Collectors.toList());
+
+    // List<SiteObject> filtered = new ArrayList<SiteObject>();
+    //
+    // for (SiteObject object : objects)
+    // {
+    // for (LayerClassification classy :
+    // GeoserverLayer.LayerClassification.values())
+    // {
+    // if (object.getKey().endsWith(classy.getKeyPath()))
+    // {
+    // filtered.add(object);
+    // }
+    // }
+    // }
+    //
+    // return filtered;
   }
 }
