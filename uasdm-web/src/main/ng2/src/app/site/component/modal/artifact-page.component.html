@@ -3,7 +3,7 @@
     <ng-container *ngFor="let section of sections; let i = index">
       <thead>
         <th>{{section.label}}</th>
-        <th>{{i === 0 ? 'Tool' : ''}}</th>
+        <th>{{i === 0 ? 'Processing Software' : ''}}</th>
         <th>{{i === 0 ? 'Date' : ''}}</th>
         <th>{{i === 0 ? 'Description' : ''}}</th>
         <th></th>
@@ -13,7 +13,7 @@
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].tool : ''}}</td>
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].lastModified : ''}}</td>
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].description : ''}}</td>
-        <td *ngIf="!edit">
+        <td *ngIf="!edit" style="text-align:right;">
           <button *ngIf="artifacts[section.folder] != null" type="button" class="btn btn-warning"
             [disabled]="processRunning" (click)="handleRemove(section.folder)">
             Remove

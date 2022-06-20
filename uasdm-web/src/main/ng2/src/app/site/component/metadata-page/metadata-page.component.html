@@ -33,12 +33,12 @@
                         <label for="platform.name">UAV</label>
                         <div>
                             <span>
-                                <input id="serialNumber" type="radio" value="serialNumber" name="field" [checked]="field === 'serialNumber'" [(ngModel)]="field">
-                                <label for="serialNumber">Serial Number</label>
+                                <input id="serialNumber" style="height:auto;" type="radio" value="serialNumber" name="field" [checked]="field === 'serialNumber'" [(ngModel)]="field">
+                                <label for="serialNumber" style="margin-left: 5px;">Serial Number</label>
                             </span>
-                            <span>
-                                <input id="faaNumber" type="radio" value="faaNumber" name="field" [checked]="field === 'faaNumber'" [(ngModel)]="field">
-                                <label for="faaNumber">FAA Number</label>
+                            <span style="margin-left: 15px;">
+                                <input id="faaNumber" style="height:auto;" type="radio" value="faaNumber" name="field" [checked]="field === 'faaNumber'" [(ngModel)]="field">
+                                <label for="faaNumber" style="margin-left: 5px;">FAA Number</label>
                             </span>
                         </div>
                         <input class="form-control search-input" type="text" placeholder="Search..."
