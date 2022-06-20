@@ -1,4 +1,4 @@
-<div class="modal-body" [@fadeInOnEnter]>
+<div class="modal-body" style="padding-bottom: 0;" [@fadeInOnEnter]>
   <div>
     <div *ngIf="message != null" class="error-container">
       <div class="label-holder">
@@ -133,7 +133,7 @@
       </div>
 
       <div class="row">
-        <div class="col-sm-12" style="padding: 0;">
+        <div class="col-sm-12">
           <tabset class="nav-full-width">
 
             <tab heading="raw" (selectTab)="onSelect('raw')">
@@ -200,7 +200,7 @@
                 </ul>
               </div>
             </tab>
-            <tab heading="products" (selectTab)="onSelect('artifacts')">
+            <tab heading="products" style="margin-top:10px;" (selectTab)="onSelect('artifacts')">
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning" (onError)="error($event)"></artifact-page>
             </tab>
           </tabset>
@@ -218,7 +218,7 @@
             </p>
           </div>
 
-          <div class="btn-holder" style="margin: 20px 20px 10px 20px;">
+          <div class="btn-holder" style="margin: 20px 0px 10px 0px;">
             <div class="row">
               <div class="col-sm-4">
                 <button type="button" class="btn btn-warning" [disabled]="processRunning" (click)="handleSetMetadata()">
