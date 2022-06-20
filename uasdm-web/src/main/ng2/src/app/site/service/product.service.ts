@@ -14,9 +14,11 @@ export class ProductService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
 
-	getProducts(id: string): Promise<Product[]> {
+	getProducts(id: string, sortField: string, sortOrder: string): Promise<Product[]> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
+		params = params.set('sortField', sortField);
+		params = params.set('sortOrder', sortOrder);
 
 		return this.http.get<Product[]>(acp + '/product/get-all', { params: params }).toPromise();
 	}

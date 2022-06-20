@@ -153,6 +153,7 @@ public class Mission extends MissionBase implements MissionIF
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.MISSION_HAS_COLLECTION);
 
-    return "OUT('" + mdEdge.getDBClassName() + "')." + Collection.expandClause();
+//    return "OUT('" + mdEdge.getDBClassName() + "')." + Collection.expandClause();
+    return "OUT('" + mdEdge.getDBClassName() + "')";
   }
 }

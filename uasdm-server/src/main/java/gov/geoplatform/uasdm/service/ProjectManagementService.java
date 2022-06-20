@@ -231,11 +231,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> getRoots(String sessionId, String id, String bounds)
+  public List<TreeComponent> getRoots(String sessionId, String id, String conditions, String sort)
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
-    List<SiteIF> sites = ComponentFacade.getSites(bounds);
+    List<SiteIF> sites = ComponentFacade.getSites(conditions, sort);
 
     for (SiteIF s : sites)
     {
@@ -620,9 +620,9 @@ public class ProjectManagementService
         collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
-    
+
     collection.apply();
-    
+
     new MetadataXMLGenerator().generateAndUpload(collection);
   }
 
@@ -656,14 +656,14 @@ public class ProjectManagementService
 
     return component.getArtifacts();
   }
-  
+
   @Request(RequestType.SESSION)
   public JSONObject removeArtifacts(String sessionId, String id, String folder)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
     component.removeArtifacts(folder);
-    
+
     return component.getArtifacts();
   }
 
@@ -755,6 +755,9 @@ public class ProjectManagementService
     {
       items.addAll(this.getObjects(id, key, null, null).getObjects());
     }
+
+    // Sort by name
+    Collections.sort(items, (a, b) -> a.getName().compareTo(b.getName()));
 
     return items;
   }

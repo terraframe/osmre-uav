@@ -42,7 +42,7 @@ public interface ComponentStrategy
 
   public List<ProductIF> getProducts();
 
-  public List<SiteIF> getSites(String bounds);
+  public List<SiteIF> getSites(String conditions, String sort);
 
   public Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize);
 

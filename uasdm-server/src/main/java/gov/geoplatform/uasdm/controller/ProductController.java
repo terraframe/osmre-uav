@@ -50,9 +50,9 @@ public class ProductController
   }
 
   @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "sortField") String sortField, @RequestParamter(name = "sortOrder") String sortOrder) throws IOException
   {
-    List<ProductView> products = service.getProducts(request.getSessionId(), id);
+    List<ProductView> products = service.getProducts(request.getSessionId(), id, sortField, sortOrder);
 
     return new RestBodyResponse(ProductView.serialize(products));
   }

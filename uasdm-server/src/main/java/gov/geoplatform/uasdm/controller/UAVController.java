@@ -75,6 +75,14 @@ public class UAVController
     return new RestBodyResponse(response);
   }
 
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "bureaus")
+  public ResponseIF bureaus(ClientRequestIF request) throws JSONException
+  {
+    JSONArray response = this.service.bureaus(request.getSessionId());
+    
+    return new RestBodyResponse(response);
+  }
+  
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get")
   public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
   {

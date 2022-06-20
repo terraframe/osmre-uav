@@ -92,39 +92,6 @@ public abstract class Converter
       siteItem.setAttributes(attributes);
     }
 
-    if (uasComponent != null)
-    {
-      if (uasComponent instanceof Collection)
-      {
-        // FlightMetadata fMetadata = FlightMetadata.get(uasComponent,
-        // Collection.RAW, uasComponent.getFolderName() +
-        // MetadataXMLGenerator.FILENAME);
-
-        siteItem.setPilotName( ( (CollectionIF) uasComponent ).getPocName());
-
-        Sensor sensor = ( (CollectionIF) uasComponent ).getSensor();
-        if (sensor != null)
-        {
-          siteItem.setSensor(sensor);
-        }
-
-        UAV uav = ( (CollectionIF) uasComponent ).getUav();
-        if (uav != null)
-        {
-          siteItem.setUav(uav);
-
-          Platform platform = uav.getPlatform();
-          if (platform != null)
-          {
-            siteItem.setPlatform(platform);
-          }
-        }
-
-        Product product = Product.find(uasComponent);
-
-        siteItem.setValue("hasProduct", product != null);
-      }
-    }
 
     return siteItem;
   }

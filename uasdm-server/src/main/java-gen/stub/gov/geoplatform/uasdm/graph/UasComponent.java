@@ -722,13 +722,50 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public List<ProductIF> getDerivedProducts()
+  @Override
+  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
   {
+    /*
+     * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT
+     * EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0')) FROM
+     * #57:0 ) ORDER by collectionSensor.realPixelSizeWidth ASC )
+     */
+    sortField = sortField != null ? sortField : "name";
+    sortOrder = sortOrder != null ? sortOrder : "DESC";
+
     String expand = this.buildProductExpandClause();
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND(" + expand + ")");
-    statement.append(" FROM :rid");
+    statement.append("SELECT EXPAND( " + Collection.expandClause() + ") FROM (");
+    statement.append("  SELECT FROM (");
+    statement.append("    SELECT EXPAND(" + expand + ")");
+    statement.append("    FROM :rid ");
+    statement.append("  )");
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+    else if (sortField.equals("sensor"))
+    {
+      statement.append("  ORDER BY collectionSensor.name " + sortOrder);
+    }
+    else if (sortField.equals("serialNumber"))
+    {
+      statement.append("  ORDER BY uav.serialNumber " + sortOrder);
+    }
+    else if (sortField.equals("faaNumber"))
+    {
+      statement.append("  ORDER BY uav.faaNumber " + sortOrder);
+    }
+
+    statement.append(")");
+    
+    if (sortField.equals(Product.LASTUPDATEDATE))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+
 
     final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());

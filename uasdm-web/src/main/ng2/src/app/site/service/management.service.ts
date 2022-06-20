@@ -105,16 +105,21 @@ export class ManagementService {
 
 
 
-	roots(id: string, bounds: LngLatBounds): Promise<SiteEntity[]> {
+	roots(id: string, conditions: { field: string, value: any }[], sort?: string): Promise<SiteEntity[]> {
 		let params: HttpParams = new HttpParams();
 
 		if (id != null) {
 			params = params.set('id', id);
 		}
 
-		if (bounds != null) {
-			params = params.set('bounds', JSON.stringify(bounds));
+		if (conditions != null) {
+			params = params.set('conditions', JSON.stringify(conditions));
 		}
+
+		if (sort != null) {
+			params = params.set('sort', sort);
+		}
+
 
 		return this.http
 			.get<SiteEntity[]>(acp + '/project/roots', { params: params })
@@ -559,4 +564,14 @@ export class ManagementService {
 
 		return false;
 	}
+
+	bureaus(): Promise<{ value: string, label: string }[]> {
+		let params: HttpParams = new HttpParams();
+
+		return this.http
+			.get<{ value: string, label: string }[]>(acp + '/uav/bureaus', { params: params })
+			.toPromise()
+	}
+
+
 }

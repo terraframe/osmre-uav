@@ -74,9 +74,9 @@ public class GraphStrategy implements ComponentStrategy
     return Document.get(oid);
   }
 
-  public List<SiteIF> getSites(String bounds)
+  public List<SiteIF> getSites(String conditions, String sort)
   {
-    return Site.getSites(bounds);
+    return Site.getSites(conditions, sort);
   }
 
   @Override
