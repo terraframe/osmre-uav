@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTWriter;
 
+import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -113,7 +114,7 @@ public class Site extends SiteBase implements SiteIF
   @Request
   public static EqCondition getBureauCondition()
   {
-    return new EqCondition(Site.BUREAU, gov.geoplatform.uasdm.bus.Bureau.getByKey(gov.geoplatform.uasdm.bus.Bureau.OTHER).getOid());
+    return new EqCondition(Site.BUREAU, Bureau.getByKey(Bureau.OTHER).getOid());
   }
 
   @Request
