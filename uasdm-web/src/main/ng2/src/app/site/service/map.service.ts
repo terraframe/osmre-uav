@@ -19,25 +19,28 @@ declare var acp: any;
 @Injectable()
 export class MapService {
 
-    constructor( private http: HttpClient ) {
-        ( mapboxgl as any ).accessToken = mapboxKey;
+    constructor(private http: HttpClient) {
+        (mapboxgl as any).accessToken = mapboxKey;
     }
 
-    features(): Promise<{ features: GeoJSONSource, bbox: number[] }> {
+    features(conditions: { field: string, value: any }[]): Promise<{ features: GeoJSONSource, bbox: number[] }> {
         let params: HttpParams = new HttpParams();
+        if (conditions != null) {
+            params = params.set('conditions', JSON.stringify(conditions));
+        }
 
         return this.http
-            .get<{ features: GeoJSONSource, bbox: number[] }>( acp + '/project/features', { params: params } )
+            .get<{ features: GeoJSONSource, bbox: number[] }>(acp + '/project/features', { params: params })
             .toPromise()
     }
 
     mbForwardGeocode(searchText: string): Promise<any> {
         let params: HttpParams = new HttpParams();
 
-        let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/"+ searchText +".json?proximity=-74.70850,40.78375&access_token="+ mapboxKey;
+        let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + searchText + ".json?proximity=-74.70850,40.78375&access_token=" + mapboxKey;
 
         return this.http
-            .get( url, { params: params } )
+            .get(url, { params: params })
             .toPromise()
     }
 

@@ -50,7 +50,7 @@ public interface ComponentStrategy
 
   public UasComponentIF newRoot();
 
-  public JSONObject features() throws IOException;
+  public JSONObject features(String conditions) throws IOException;
 
   public JSONArray bbox();
 }

@@ -26,6 +26,7 @@ import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
@@ -65,6 +66,18 @@ public class Site extends SiteBase implements SiteIF
       e.setFolderName(this.getName());
 
       throw e;
+    }
+
+    String bureauOid = this.getBureauOid();
+
+    if (bureauOid != null && bureauOid.length() > 0)
+    {
+      Bureau bureau = Bureau.get(bureauOid);
+
+      if (bureau == null)
+      {
+        throw new ProgrammingErrorException("Bad oid for bureau value [" + bureauOid + "]");
+      }
     }
 
     super.applyWithParent(parent);

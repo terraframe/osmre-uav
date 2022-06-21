@@ -406,10 +406,10 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF features(ClientRequestIF request) throws IOException
+  public ResponseIF features(ClientRequestIF request, @RequestParamter(name = "conditions") String conditions) throws IOException
   {
     RestResponse response = new RestResponse();
-    response.set("features", this.service.features(request.getSessionId()));
+    response.set("features", this.service.features(request.getSessionId(), conditions));
     response.set("bbox", this.service.bbox(request.getSessionId()));
 
     return response;

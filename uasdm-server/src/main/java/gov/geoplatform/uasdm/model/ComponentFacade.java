@@ -90,9 +90,9 @@ public class ComponentFacade
     return STRATEGY.newRoot();
   }
 
-  public static JSONObject features() throws IOException
+  public static JSONObject features(String conditions) throws IOException
   {
-    return STRATEGY.features();
+    return STRATEGY.features(conditions);
   }
 
   public static JSONArray bbox()

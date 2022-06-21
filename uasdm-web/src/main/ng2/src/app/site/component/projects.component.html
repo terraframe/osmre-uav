@@ -81,7 +81,7 @@
             <tab heading="Data">
               <div id="hierarchy-tree-container"
                 class="location-management-widget-section location-management-list-container"
-                style="height: calc(100vh - 296px);overflow-y: auto;">
+                [style]="current != null ? 'height: calc(100vh - 296px);overflow-y: auto;' : 'height: calc(100vh - 360px);overflow-y: auto;'">
                 <div class="list-group">
 
                   <!-- If -->

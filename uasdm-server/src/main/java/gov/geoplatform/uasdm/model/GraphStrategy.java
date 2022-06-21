@@ -113,11 +113,11 @@ public class GraphStrategy implements ComponentStrategy
   {
     return new Site();
   }
-
+  
   @Override
-  public JSONObject features() throws IOException
+  public JSONObject features(String conditions) throws IOException
   {
-    return Site.features();
+    return Site.features(conditions);
   }
 
   @Override

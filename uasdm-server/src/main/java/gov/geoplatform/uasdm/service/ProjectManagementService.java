@@ -731,9 +731,9 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject features(String sessionId) throws IOException
+  public JSONObject features(String sessionId, String conditions) throws IOException
   {
-    return ComponentFacade.features();
+    return ComponentFacade.features(conditions);
   }
 
   @Request(RequestType.SESSION)

@@ -113,9 +113,9 @@ public class BusinessStrategy implements ComponentStrategy
   {
     return new Site();
   }
-
+  
   @Override
-  public JSONObject features() throws IOException
+  public JSONObject features(String conditions) throws IOException
   {
     return Site.features();
   }

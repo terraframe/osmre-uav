@@ -509,6 +509,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       conditions.push(this.filter);
     }
 
+    this.refreshMapPoints(false);
+    
     this.loadingSites = true;
 
     return this.service.roots(null, conditions, this.sort).then(nodes => {
@@ -538,7 +540,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Goes to the server and fetches all points for all sites. Returns GeoJSON which is then used to refresh the map.
    */
   refreshMapPoints(zoom: boolean): void {
-    this.mapService.features().then(data => {
+
+    const conditions = [];
+
+    if (this.bounds != null) {
+      conditions.push({
+        field: 'bounds',
+        value: this.bounds
+      });
+    }
+
+    if (this.filter.value != null && this.filter.value.length > 0) {
+      conditions.push(this.filter);
+    }
+
+
+    this.mapService.features(conditions).then(data => {
       (<any>this.map.getSource('sites')).setData(data.features);
 
       if (zoom) {
