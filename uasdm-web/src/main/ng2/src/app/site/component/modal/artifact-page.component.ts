@@ -30,6 +30,8 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	@Output() onError = new EventEmitter<HttpErrorResponse>();
 
+	loading = false; 
+	
 	artifacts: CollectionArtifacts;
 
 	sections = [{
@@ -75,7 +77,11 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	}
 
 	loadArtifacts(): void {
+		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(artifacts => {
+			
+			this.loading = false;
+			
 			this.artifacts = artifacts;
 
 			this.config.processDem = (this.artifacts.dem == null);
