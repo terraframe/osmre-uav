@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.xml.XMLParser;
+import org.apache.tika.sax.BodyContentHandler;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
@@ -39,7 +45,22 @@ public class Sandbox
 {
   public static void main(String[] args) throws Exception
   {
-    testGetCount();
+    BodyContentHandler handler = new BodyContentHandler();
+    Metadata metadata = new Metadata();
+    FileInputStream inputstream = new FileInputStream(new File("pom.xml"));
+    ParseContext pcontext = new ParseContext();
+    
+    //Xml parser
+    XMLParser xmlparser = new XMLParser(); 
+    xmlparser.parse(inputstream, handler, metadata, pcontext);
+    System.out.println("Contents of the document:" + handler.toString());
+    System.out.println("Metadata of the document:");
+    String[] metadataNames = metadata.names();
+    
+    for(String name : metadataNames) {
+       System.out.println(name + ": " + metadata.get(name));
+    }    
+//    testGetCount();
 
 //    testGeoserver();
   }

@@ -151,6 +151,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     filename: string
   } = null;
 
+  /* 
+   * Filter by bureau
+   */
+  filter = { field: 'bureau', value: '' };
+  bureaus: { value: string, label: string }[] = [];
+  bounds: LngLatBounds = null;
+  sort: string = "name";
+
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
     private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
     private cookieService: CookieService) {
@@ -188,6 +196,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.admin = this.authService.isAdmin();
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
+
+    this.service.bureaus().then(bureaus => {
+      this.bureaus = bureaus;
+    });
 
 
     let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
@@ -275,6 +287,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+
+    if (this.subject != null) {
+      this.subject.unsubscribe();
+    }
+
     this.map.remove();
 
     this.notifier.complete();
@@ -468,16 +485,39 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Sometimes bounds aren't valid for 4326, so validate it before sending to server
       if (this.isValidBounds(bounds)) {
-        this.loadingSites = true;
-        this.service.roots(null, bounds).then(nodes => {
-          this.nodes = nodes;
-          this.loadingSites = false;
-        });
+        this.bounds = bounds;
+
+        this.refreshSites();
       }
       else {
         // console.log("Invalid bounds", bounds);
       }
     }
+  }
+
+  refreshSites(): Promise<void> {
+    const conditions = [];
+
+    if (this.bounds != null) {
+      conditions.push({
+        field: 'bounds',
+        value: this.bounds
+      });
+    }
+
+    if (this.filter.value != null && this.filter.value.length > 0) {
+      conditions.push(this.filter);
+    }
+
+    this.refreshMapPoints(false);
+    
+    this.loadingSites = true;
+
+    return this.service.roots(null, conditions, this.sort).then(nodes => {
+      this.setNodes(nodes);
+    }).finally(() => {
+      this.loadingSites = false;
+    })
   }
 
   isValidBounds(bounds: LngLatBounds): boolean {
@@ -500,7 +540,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Goes to the server and fetches all points for all sites. Returns GeoJSON which is then used to refresh the map.
    */
   refreshMapPoints(zoom: boolean): void {
-    this.mapService.features().then(data => {
+
+    const conditions = [];
+
+    if (this.bounds != null) {
+      conditions.push({
+        field: 'bounds',
+        value: this.bounds
+      });
+    }
+
+    if (this.filter.value != null && this.filter.value.length > 0) {
+      conditions.push(this.filter);
+    }
+
+
+    this.mapService.features(conditions).then(data => {
       (<any>this.map.getSource('sites')).setData(data.features);
 
       if (zoom) {
@@ -1052,11 +1107,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     else if (this.breadcrumbs.length > 0) {
-      this.loadingSites = true;
-      this.service.roots(null, null).then(nodes => {
-        this.loadingSites = false;
+
+      this.refreshSites().then(() => {
         this.breadcrumbs = [];
-        this.setNodes(nodes);
         this.staticTabs.tabs[0].active = true;
 
         this.map.fitBounds(this.allPointsBounds, { padding: 50 });

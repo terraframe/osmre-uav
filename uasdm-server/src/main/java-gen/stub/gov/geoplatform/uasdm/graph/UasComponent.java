@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +52,9 @@ import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKTWriter;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
@@ -69,6 +73,7 @@ import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -579,16 +584,91 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return properties;
   }
 
-  public static JSONObject features() throws IOException
+  public static JSONObject features(String conditions) throws IOException
   {
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
+    final TreeMap<String, Object> parameters = new TreeMap<String, Object>();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
+
+    if (conditions != null && conditions.length() > 0)
+    {
+      JSONArray array = new JSONArray(conditions);
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        JSONObject condition = array.getJSONObject(i);
+
+        String field = condition.getString("field");
+
+        if (field.equalsIgnoreCase("bounds"))
+        {
+          // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
+          JSONObject object = condition.getJSONObject("value");
+
+          JSONObject sw = object.getJSONObject("_sw");
+          JSONObject ne = object.getJSONObject("_ne");
+
+          double x1 = sw.getDouble("lng");
+          double x2 = ne.getDouble("lng");
+          double y1 = sw.getDouble("lat");
+          double y2 = ne.getDouble("lat");
+
+          Envelope envelope = new Envelope(x1, x2, y1, y2);
+          WKTWriter wktwriter = new WKTWriter();
+          GeometryFactory factory = new GeometryFactory();
+          Geometry geometry = factory.toGeometry(envelope);
+
+          statement.append(i == 0 ? " WHERE" : " AND");
+          statement.append(" ST_WITHIN(geoPoint, ST_GeomFromText(:wkt)) = true");
+
+          parameters.put("wkt", wktwriter.write(geometry));
+        }
+        else if (field.equalsIgnoreCase(Site.BUREAU))
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(field.equalsIgnoreCase(Site.BUREAU) ? Site.CLASS : UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            String value = condition.getString("value");
+
+            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
+
+            parameters.put(mdAttribute.getColumnName(), value);
+          }
+
+        }
+        else
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            String value = condition.getString("value");
+
+            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
+
+            parameters.put(mdAttribute.getColumnName(), value);
+          }
+        }
+      }
+    }
+
+
+    final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString(), parameters);
+    final List<Site> sites = query.getResults();
+
     StringWriter sWriter = new StringWriter();
     JSONWriter writer = new JSONWriter(sWriter);
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
-
-    final GraphQuery<Site> query = new GraphQuery<Site>("SELECT FROM " + mdVertex.getDBClassName());
-    final List<Site> sites = query.getResults();
-
+   
     writer.object();
 
     writer.key("type");
@@ -722,13 +802,50 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public List<ProductIF> getDerivedProducts()
+  @Override
+  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
   {
+    /*
+     * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT
+     * EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0')) FROM
+     * #57:0 ) ORDER by collectionSensor.realPixelSizeWidth ASC )
+     */
+    sortField = sortField != null ? sortField : "name";
+    sortOrder = sortOrder != null ? sortOrder : "DESC";
+
     String expand = this.buildProductExpandClause();
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND(" + expand + ")");
-    statement.append(" FROM :rid");
+    statement.append("SELECT EXPAND( " + Collection.expandClause() + ") FROM (");
+    statement.append("  SELECT FROM (");
+    statement.append("    SELECT EXPAND(" + expand + ")");
+    statement.append("    FROM :rid ");
+    statement.append("  )");
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+    else if (sortField.equals("sensor"))
+    {
+      statement.append("  ORDER BY collectionSensor.name " + sortOrder);
+    }
+    else if (sortField.equals("serialNumber"))
+    {
+      statement.append("  ORDER BY uav.serialNumber " + sortOrder);
+    }
+    else if (sortField.equals("faaNumber"))
+    {
+      statement.append("  ORDER BY uav.faaNumber " + sortOrder);
+    }
+
+    statement.append(")");
+    
+    if (sortField.equals(Product.LASTUPDATEDATE))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+
 
     final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());

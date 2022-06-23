@@ -42,7 +42,7 @@ public interface ComponentStrategy
 
   public List<ProductIF> getProducts();
 
-  public List<SiteIF> getSites(String bounds);
+  public List<SiteIF> getSites(String conditions, String sort);
 
   public Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize);
 
@@ -50,7 +50,7 @@ public interface ComponentStrategy
 
   public UasComponentIF newRoot();
 
-  public JSONObject features() throws IOException;
+  public JSONObject features(String conditions) throws IOException;
 
   public JSONArray bbox();
 }

@@ -64,12 +64,12 @@ public class ProductService
   }
 
   @Request(RequestType.SESSION)
-  public List<ProductView> getProducts(String sessionId, String oid)
+  public List<ProductView> getProducts(String sessionId, String oid, String sortField, String sortOrder)
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
     final UasComponentIF parent = ComponentFacade.getComponent(oid);
-    final List<ProductIF> products = parent.getDerivedProducts();
+    final List<ProductIF> products = parent.getDerivedProducts(sortField, sortOrder);
 
     for (ProductIF product : products)
     {

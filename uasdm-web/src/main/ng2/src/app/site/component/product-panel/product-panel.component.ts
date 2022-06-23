@@ -44,6 +44,16 @@ export class ProductPanelComponent {
 
     thumbnails: any = {};
 
+    fields = [
+        { label: "Name", value: "name" },
+        { label: "Sensor", value: "sensor" },
+        { label: "Flight Number", value: "faaNumber" },
+        { label: "Serial Number", value: "serialNumber" },
+        { label: "Product Date", value: "lastUpdateDate" }
+    ];
+
+    sortField: string = "name";
+
     /*
      * Reference to the modal current showing
     */
@@ -61,6 +71,10 @@ export class ProductPanelComponent {
         this.refreshProducts(changes['id'].currentValue);
     }
 
+    refresh(): void {
+        this.refreshProducts(this.id);
+    }
+
     refreshProducts(id: string): void {
         this.products = [];
         this.thumbnails = {};
@@ -69,7 +83,7 @@ export class ProductPanelComponent {
 
         const original = ++this.requestId;
 
-        this.pService.getProducts(id).then(products => {
+        this.pService.getProducts(id, this.sortField, "ASC").then(products => {
             if (original === this.requestId) {
 
                 this.products = products;

@@ -52,7 +52,6 @@ export class SiteEntity {
 	pilotName?: string;
 	dateTime?: string;
 	collectionDate?: string;
-	hasProduct?: boolean;
 	description?: string;
 	tool?: string;
 }

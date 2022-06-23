@@ -115,6 +115,12 @@ public class SiteItem implements TreeComponent
     this.metadataUploaded = false;
   }
 
+  @Override
+  public String getName()
+  {
+    return (String) this.getValue("name");
+  }
+
   public String getId()
   {
     return id;

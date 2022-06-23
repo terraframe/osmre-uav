@@ -98,9 +98,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "bounds") String bounds)
+  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "conditions") String conditions, @RequestParamter(name = "sort") String sort)
   {
-    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id, bounds);
+    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id, conditions, sort);
 
     return new RestBodyResponse(SiteItem.serialize(roots));
   }
@@ -406,20 +406,20 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF features(ClientRequestIF request) throws IOException
+  public ResponseIF features(ClientRequestIF request, @RequestParamter(name = "conditions") String conditions) throws IOException
   {
     RestResponse response = new RestResponse();
-    response.set("features", this.service.features(request.getSessionId()));
+    response.set("features", this.service.features(request.getSessionId(), conditions));
     response.set("bbox", this.service.bbox(request.getSessionId()));
 
     return response;
   }
 
   @Endpoint(url = "products", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF products(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  public ResponseIF products(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "sortField") String sortField, @RequestParamter(name = "sortOrder") String sortOrder) throws IOException
   {
     ProductService service = new ProductService();
-    List<ProductView> products = service.getProducts(request.getSessionId(), id);
+    List<ProductView> products = service.getProducts(request.getSessionId(), id, sortField, sortOrder);
 
     return new RestBodyResponse(ProductView.serialize(products));
   }

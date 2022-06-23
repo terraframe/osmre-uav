@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -19,11 +19,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
@@ -32,8 +35,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTWriter;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -45,9 +48,9 @@ import gov.geoplatform.uasdm.view.Option;
 
 public class Site extends SiteBase implements SiteIF
 {
-  public static final long    serialVersionUID = 2038909434;
+  public static final long serialVersionUID = 2038909434;
 
-  private static final String CHILD_EDGE       = "gov.geoplatform.uasdm.graph.SiteHasProject";
+  private static final String CHILD_EDGE = "gov.geoplatform.uasdm.graph.SiteHasProject";
 
   public Site()
   {
@@ -63,6 +66,18 @@ public class Site extends SiteBase implements SiteIF
       e.setFolderName(this.getName());
 
       throw e;
+    }
+
+    String bureauOid = this.getBureauOid();
+
+    if (bureauOid != null && bureauOid.length() > 0)
+    {
+      Bureau bureau = Bureau.get(bureauOid);
+
+      if (bureau == null)
+      {
+        throw new ProgrammingErrorException("Bad oid for bureau value [" + bureauOid + "]");
+      }
     }
 
     super.applyWithParent(parent);
@@ -175,7 +190,7 @@ public class Site extends SiteBase implements SiteIF
     return ( query.getResults().size() > 0 );
   }
 
-  public static List<SiteIF> getSites(String bounds)
+  public static List<SiteIF> getSites(String conditions, String sort)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
@@ -184,31 +199,90 @@ public class Site extends SiteBase implements SiteIF
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName());
 
-    if (bounds != null && bounds.length() > 0)
+    if (conditions != null && conditions.length() > 0)
     {
-      // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
-      JSONObject object = new JSONObject(bounds);
+      JSONArray array = new JSONArray(conditions);
 
-      JSONObject sw = object.getJSONObject("_sw");
-      JSONObject ne = object.getJSONObject("_ne");
+      for (int i = 0; i < array.length(); i++)
+      {
+        JSONObject condition = array.getJSONObject(i);
 
-      double x1 = sw.getDouble("lng");
-      double x2 = ne.getDouble("lng");
-      double y1 = sw.getDouble("lat");
-      double y2 = ne.getDouble("lat");
+        String field = condition.getString("field");
 
-      Envelope envelope = new Envelope(x1, x2, y1, y2);
-      WKTWriter writer = new WKTWriter();
-      GeometryFactory factory = new GeometryFactory();
-      Geometry geometry = factory.toGeometry(envelope);
+        if (field.equalsIgnoreCase("bounds"))
+        {
+          // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
+          JSONObject object = condition.getJSONObject("value");
 
-//      statement.append(" WHERE ST_WITHIN(geoPoint, ST_GeomFromText('" + writer.write(geometry) + "')) = true");
-      statement.append(" WHERE ST_WITHIN(geoPoint, ST_GeomFromText(:wkt)) = true");
-//      statement.append(" WHERE ST_WITHIN(geoPoint, :location) = true");
+          JSONObject sw = object.getJSONObject("_sw");
+          JSONObject ne = object.getJSONObject("_ne");
 
-      parameters.put("wkt", writer.write(geometry));
+          double x1 = sw.getDouble("lng");
+          double x2 = ne.getDouble("lng");
+          double y1 = sw.getDouble("lat");
+          double y2 = ne.getDouble("lat");
 
-//      q.WHERE(new ST_WITHIN(q.getGeoPoint(), geometry));
+          Envelope envelope = new Envelope(x1, x2, y1, y2);
+          WKTWriter writer = new WKTWriter();
+          GeometryFactory factory = new GeometryFactory();
+          Geometry geometry = factory.toGeometry(envelope);
+
+          statement.append(i == 0 ? " WHERE" : " AND");
+          statement.append(" ST_WITHIN(geoPoint, ST_GeomFromText(:wkt)) = true");
+
+          parameters.put("wkt", writer.write(geometry));
+        }
+        else if (field.equalsIgnoreCase(Site.BUREAU))
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(field.equalsIgnoreCase(Site.BUREAU) ? Site.CLASS : UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            String value = condition.getString("value");
+
+            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
+
+            parameters.put(mdAttribute.getColumnName(), value);
+          }
+
+        }
+        else
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            String value = condition.getString("value");
+
+            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
+
+            parameters.put(mdAttribute.getColumnName(), value);
+          }
+        }
+      }
+    }
+
+    if (sort != null && sort.length() > 0)
+    {
+      MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(sort.equalsIgnoreCase(Site.BUREAU) ? Site.CLASS : UasComponent.CLASS);
+
+      MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(sort);
+
+      statement.append(" ORDER BY " + mdAttribute.getColumnName());
+    }
+    else
+    {
+      MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+
+      MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UasComponent.NAME);
+
+      statement.append(" ORDER BY " + mdAttribute.getColumnName());
     }
 
     final GraphQuery<SiteIF> query = new GraphQuery<SiteIF>(statement.toString(), parameters);

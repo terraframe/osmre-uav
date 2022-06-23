@@ -74,9 +74,9 @@ public class BusinessStrategy implements ComponentStrategy
     return Document.get(oid);
   }
 
-  public List<SiteIF> getSites(String bounds)
+  public List<SiteIF> getSites(String conditions, String sort)
   {
-    return Site.getSites(bounds);
+    return Site.getSites(conditions);
   }
 
   @Override
@@ -113,9 +113,9 @@ public class BusinessStrategy implements ComponentStrategy
   {
     return new Site();
   }
-
+  
   @Override
-  public JSONObject features() throws IOException
+  public JSONObject features(String conditions) throws IOException
   {
     return Site.features();
   }

@@ -101,7 +101,7 @@ public interface UasComponentIF extends ComponentIF
 
   public ProductIF createProductIfNotExist();
 
-  public List<ProductIF> getDerivedProducts();
+  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder);
 
   public List<UasComponentIF> getChildren();
 

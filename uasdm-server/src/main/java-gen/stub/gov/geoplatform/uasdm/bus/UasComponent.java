@@ -650,9 +650,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       return new LinkedList<Product>(iterator.getAll());
     }
   }
-
+  
   @Override
-  public List<ProductIF> getDerivedProducts()
+  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
   {
     List<ProductIF> list = new LinkedList<ProductIF>();
 
