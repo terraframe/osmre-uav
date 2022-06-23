@@ -1,13 +1,15 @@
 <ng-container>
     <div class="row">
         <div class="col-sm-12">
-            <label>
-                <label>Order</label>
-            </label>
-            <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
-                <option></option>
-                <option *ngFor="let option of fields" [value]="option.value">{{option.label}}</option>
-            </select>
+        	<div style="padding:10px 15px;">
+	            <label>
+	                <label>Order available products</label>
+	            </label>
+	            <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
+	                <option></option>
+	                <option *ngFor="let option of fields" [value]="option.value">{{option.label}}</option>
+	            </select>
+            </div>
         </div>
     </div>
 
