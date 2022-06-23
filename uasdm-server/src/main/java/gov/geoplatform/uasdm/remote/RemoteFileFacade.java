@@ -56,15 +56,30 @@ public class RemoteFileFacade
   {
     service.createFolder(key);
   }
+  
+  public static void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
+  {
+    service.copyObject(sourceKey, sourceBucket, destKey, destBucket);
+  }
 
   public static void deleteObject(String key)
   {
     service.deleteObject(key);
   }
-
+  
+  public static void deleteObject(String key, String bucket)
+  {
+    service.deleteObject(key, bucket);
+  }
+  
   public static void deleteObjects(String key)
   {
     service.deleteObjects(key);
+  }
+
+  public static void deleteObjects(String key, String bucket)
+  {
+    service.deleteObjects(key, bucket);
   }
 
   public static int getItemCount(String key)

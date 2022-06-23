@@ -37,10 +37,16 @@ public interface RemoteFileService
   public RemoteFileObject download(String key, List<Range> ranges);
 
   public void createFolder(String key);
+  
+  public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket);
 
   public void deleteObject(String key);
+  
+  public void deleteObject(String key, String bucket);
 
   public void deleteObjects(String key);
+  
+  public void deleteObjects(String key, String bucket);
 
   public int getItemCount(String key);
 

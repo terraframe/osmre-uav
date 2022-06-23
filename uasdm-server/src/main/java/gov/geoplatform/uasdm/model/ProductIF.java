@@ -51,8 +51,6 @@ public interface ProductIF extends ComponentIF
 
   public void delete();
 
-  public void createImageService(boolean refreshMosaic);
-
 //  public String getWorkspace();
 
   public boolean isPublished();

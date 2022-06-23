@@ -43,8 +43,8 @@ import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
 import com.vividsolutions.jts.geom.Point;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
@@ -104,16 +104,27 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       Product product = Product.get(this.getValue(PRODUCT));
       if (product != null)
       {
-        List<GeoserverLayer> layers = product.getLayers();
+        List<DocumentIF> mappables = product.getMappableDocuments();
         
-        if (layers.size() > 0)
+        if (mappables.size() > 0)
         {
           JSONArray availableServices = new JSONArray();
-          for (GeoserverLayer layer : layers) {
-            String workspace = layer.getWorkspace();
-            String layerName = layer.getStoreName();
-             
-            availableServices.put(workspace.concat(":".concat(layerName)));
+          for (DocumentIF mappable : mappables)
+          {
+            final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
+            
+            String sUrl;
+            
+            if (product.isPublished())
+            {
+              sUrl = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + layerS3Uri;
+            }
+            else
+            {
+              sUrl = "cog/tilejson.json?path=" + mappable.getS3location();
+            }
+            
+            availableServices.put(sUrl);
           }
          
           object.put("productURLs", availableServices);

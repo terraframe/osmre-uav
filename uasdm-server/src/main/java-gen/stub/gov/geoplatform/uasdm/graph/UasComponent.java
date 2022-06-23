@@ -459,7 +459,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     for (Document document : documents)
     {
-      document.delete(true, true);
+      document.delete(true);
     }
 
     if (new ArtifactQuery(this).getDocuments().size() == 0)

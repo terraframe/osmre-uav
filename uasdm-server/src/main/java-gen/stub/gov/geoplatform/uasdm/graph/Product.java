@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -27,12 +28,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.slf4j.Logger;
@@ -48,12 +49,9 @@ import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
-import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
-import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
@@ -63,7 +61,6 @@ import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.gis.geoserver.GeoserverFacade;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -113,7 +110,7 @@ public class Product extends ProductBase implements ProductIF
 
     for (DocumentIF document : documents)
     {
-      document.delete(removeFromS3, true);
+      document.delete(removeFromS3);
     }
 
     CollectionReport.handleDelete(this);
@@ -234,7 +231,7 @@ public class Product extends ProductBase implements ProductIF
 
     for (String orphan : orphans)
     {
-      Document.get(orphan).delete(false, true);
+      Document.get(orphan).delete(false);
     }
   }
 
@@ -248,105 +245,88 @@ public class Product extends ProductBase implements ProductIF
    */
   public String calculateBoundingBox()
   {
-    if (!gov.geoplatform.uasdm.geoserver.GeoserverInitializer.isInitialized())
-    {
-      return null;
-    }
+    DocumentIF mappable = null;
 
-    String workspace = null;
-    String mapKey = null;
-
-    for (GeoserverLayer layer : this.getLayers())
+    for (DocumentIF loop : this.getMappableDocuments())
     {
-      if (layer.getClassification().equals(LayerClassification.ORTHO))
+      if (loop.getName().contains("ortho/"))
       {
-        workspace = layer.getWorkspace();
-        mapKey = layer.getStoreName();
+        mappable = loop;
       }
     }
 
-    if (mapKey == null || workspace == null)
+    if (mappable == null)
     {
       return null;
     }
 
     try
     {
-      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(workspace, mapKey);
-
-      List<Layer> layers = capabilities.getLayerList();
-
-      Layer layer = null;
-
-      if (layers.size() == 0)
+      String url;
+      
+      if (this.isPublished())
       {
-        logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
-        return null;
-      }
-      else if (layers.size() == 1)
-      {
-        layer = layers.get(0);
+        url = AppProperties.getTitilerPublicUrl();
       }
       else
       {
-        for (Layer potential : layers)
-        {
-          if (potential.getName() != null && potential.getName().equals(mapKey))
-          {
-            layer = potential;
-            break;
-          }
-        }
-
-        if (layer == null)
-        {
-          logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
-          return null;
-        }
+        url = AppProperties.getTitilerPrivateUrl();
       }
-
-      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
-
-      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
+      
+      url = url + "/cog/bounds?url=";
+      
+      if (this.isPublished())
       {
-        String code = entry.getKey();
-        CRSEnvelope envelope = entry.getValue();
-
-        try
-        {
-          // Mapbox's docs say that it's in 3857 but it's bounding box method
-          // expects 4326.
-          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-
-          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
-          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
-
-          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
-
-          JSONArray json = new JSONArray();
-          json.put(env3857.getMinX());
-          json.put(env3857.getMaxX());
-          json.put(env3857.getMinY());
-          json.put(env3857.getMaxY());
-
-          return json.toString();
-        }
-        catch (Throwable t)
-        {
-          // Perhaps there is another bounding box we can try?
-        }
+        url = url + "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
       }
+      else
+      {
+        url = url + "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
+      }
+      
+      JSONArray jaBbox = new JSONArray(IOUtils.toString(new URL(url).openStream(), "UTF-8"));
+
+//      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
+//
+//      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
+//      {
+//        String code = entry.getKey();
+//        CRSEnvelope envelope = entry.getValue();
+//
+//        try
+//        {
+//          // Mapbox's docs say that it's in 3857 but it's bounding box method
+//          // expects 4326.
+//          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
+//          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+//          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+//
+//          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
+//          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
+//
+//          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
+//
+//          JSONArray json = new JSONArray();
+//          json.put(env3857.getMinX());
+//          json.put(env3857.getMaxX());
+//          json.put(env3857.getMinY());
+//          json.put(env3857.getMaxY());
+//
+//          return json.toString();
+//        }
+//        catch (Throwable t)
+//        {
+//          // Perhaps there is another bounding box we can try?
+//        }
+//      }
+      
+      return jaBbox.toString();
     }
     catch (Throwable t)
     {
-      logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].", t);
+      logger.error("Error when getting bounding box from mappable [" + mappable.getS3location() + "] for product [" + this.getName() + "].", t);
       return null;
     }
-
-    logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].");
-    return null;
   }
 
   public void updateBoundingBox()
@@ -391,22 +371,6 @@ public class Product extends ProductBase implements ProductIF
   public boolean isPublished()
   {
     return this.getPublished() != null && this.getPublished();
-  }
-
-  @Override
-  public void createImageService(boolean refreshMosaic)
-  {
-    GeoserverPublisher publisher = new GeoserverPublisher();
-
-    for (DocumentIF document : this.getDocuments())
-    {
-      publisher.createImageServices((Document) document, this, false);
-    }
-
-    if (refreshMosaic)
-    {
-      ImageMosaicPublisher.refreshAll();
-    }
   }
 
   /**
@@ -558,11 +522,21 @@ public class Product extends ProductBase implements ProductIF
     this.setPublished(!this.isPublished());
     this.apply();
 
-    List<GeoserverLayer> layers = this.getLayers();
+    List<DocumentIF> mappables = this.getMappableDocuments();
 
-    new GeoserverPublisher().togglePublic(layers);
-
-    ImageMosaicPublisher.refreshAll();
+    for (DocumentIF mappable : mappables)
+    {
+      if (this.isPublished())
+      {
+        // Add to public S3 bucket
+        RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
+      }
+      else
+      {
+        // Remove from public S3 bucket
+        RemoteFileFacade.deleteObject(mappable.getS3location(), AppProperties.getPublicBucketName());
+      }
+    }
   }
 
   @Override
@@ -598,27 +572,22 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public void deleteAllLayers()
+  public List<DocumentIF> getMappableDocuments()
   {
-    for (GeoserverLayer layer : this.getLayers())
-    {
-      layer.delete();
-    }
-  }
-
-  public List<GeoserverLayer> getLayers()
-  {
-    List<GeoserverLayer> layers = new ArrayList<GeoserverLayer>();
+    List<DocumentIF> mappableDocs = new ArrayList<DocumentIF>();
     List<DocumentIF> documents = this.getDocuments();
 
     for (DocumentIF document : documents)
     {
       Document gdoc = (Document) document;
 
-      layers.addAll(gdoc.getLayers());
+      if (gdoc.getName().endsWith((".tif")))
+      {
+        mappableDocs.add(gdoc);
+      }
     }
 
-    return layers;
+    return mappableDocs;
   }
 
   public static List<ProductIF> getProducts()

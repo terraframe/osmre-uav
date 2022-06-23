@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -224,7 +225,13 @@ public class ODMZipPostProcessor
       }
     }
 
-    product.createImageService(true);
+    if (product.getPublished())
+    {
+      for (DocumentIF mappable : product.getMappableDocuments())
+      {
+        RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
+      }
+    }
 
     product.updateBoundingBox();
 

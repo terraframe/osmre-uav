@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.GdalProcessor;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
 {
@@ -59,7 +61,13 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       new GdalProcessor(collection, this, product, file).process();
 
-      product.createImageService(true);
+      if (product.getPublished())
+      {
+        for (DocumentIF mappable : product.getMappableDocuments())
+        {
+          RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
+        }
+      }
 
       product.updateBoundingBox();
 

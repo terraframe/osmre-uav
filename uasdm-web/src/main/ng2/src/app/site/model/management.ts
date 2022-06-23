@@ -195,6 +195,8 @@ export class GeoserverLayer {
 	classification: string;
 	key: string;
 	isMapped?: boolean;
+  public: boolean;
+  url: string;
 }
 
 //export class ProductDetail extends Product {

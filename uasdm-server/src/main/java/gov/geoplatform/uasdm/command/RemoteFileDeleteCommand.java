@@ -30,12 +30,21 @@ public class RemoteFileDeleteCommand implements Command
   private Logger         log = LoggerFactory.getLogger(RemoteFileDeleteCommand.class);
 
   private String         key;
+  
+  private String         bucket;
 
   private UasComponentIF component;
-
+  
   public RemoteFileDeleteCommand(String key, UasComponentIF component)
   {
     this.key = key;
+    this.component = component;
+  }
+
+  public RemoteFileDeleteCommand(String key, String bucket, UasComponentIF component)
+  {
+    this.key = key;
+    this.bucket = bucket;
     this.component = component;
   }
 
@@ -44,9 +53,9 @@ public class RemoteFileDeleteCommand implements Command
    */
   public void doIt()
   {
-    log.info("Deleting key [" + this.key + "] from S3");
+    log.info("Deleting key [" + this.key + "] from S3 bucket [" + this.bucket + "]");
 
-    RemoteFileFacade.deleteObjects(key);
+    RemoteFileFacade.deleteObjects(this.key, this.bucket);
 
     if (this.component instanceof CollectionIF)
     {

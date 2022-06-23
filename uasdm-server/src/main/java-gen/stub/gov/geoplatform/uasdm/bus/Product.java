@@ -74,7 +74,7 @@ public class Product extends ProductBase implements ProductIF
 
     for (Document document : documents)
     {
-      document.delete(removeFromS3, true);
+      document.delete(removeFromS3);
     }
 
     super.delete();
@@ -312,12 +312,6 @@ public class Product extends ProductBase implements ProductIF
 //
 //    return GeoserverProperties.getWorkspace();
 //  }
-
-  @Override
-  public void createImageService(boolean refreshMosaic)
-  {
-//    GeoserverPublisher.createImageServices(this.isPublished(), this.getComponent(), refreshMosaic);
-  }
 
   @Override
   @Transaction

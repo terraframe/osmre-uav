@@ -26,7 +26,7 @@ import net.geoprism.GeoprismProperties;
 public class AppProperties
 {
   /**
-   * The server.properties configuration file
+   * The app.properties configuration file
    */
   private ConfigurationReaderIF props;
 
@@ -57,9 +57,24 @@ public class AppProperties
     }
   }
 
+  public static String getTitilerPrivateUrl()
+  {
+    return Singleton.getProps().getString("titiler.private.url");
+  }
+  
+  public static String getTitilerPublicUrl()
+  {
+    return Singleton.getProps().getString("titiler.public.url");
+  }
+  
   public static String getBucketName()
   {
     return Singleton.getProps().getString("bucket.name");
+  }
+  
+  public static String getPublicBucketName()
+  {
+    return Singleton.getProps().getString("bucket.public.name");
   }
 
   public static String getPublicWorkspace()

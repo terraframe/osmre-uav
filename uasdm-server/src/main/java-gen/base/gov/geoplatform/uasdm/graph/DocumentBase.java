@@ -170,22 +170,6 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getChildren("gov.geoplatform.uasdm.graph.DocumentGeneratedProduct",gov.geoplatform.uasdm.graph.Product.class);
   }
   
-  public com.runwaysdk.business.graph.EdgeObject addDocumentHasLayerChild(gov.geoplatform.uasdm.geoserver.GeoserverLayer geoserverLayer)
-  {
-    return super.addChild(geoserverLayer, "gov.geoplatform.uasdm.geoserver.DocumentHasLayer");
-  }
-  
-  public void removeDocumentHasLayerChild(gov.geoplatform.uasdm.geoserver.GeoserverLayer geoserverLayer)
-  {
-    super.removeChild(geoserverLayer, "gov.geoplatform.uasdm.geoserver.DocumentHasLayer");
-  }
-  
-  @SuppressWarnings("unchecked")
-  public java.util.List<gov.geoplatform.uasdm.geoserver.GeoserverLayer> getDocumentHasLayerChildGeoserverLayers()
-  {
-    return super.getChildren("gov.geoplatform.uasdm.geoserver.DocumentHasLayer",gov.geoplatform.uasdm.geoserver.GeoserverLayer.class);
-  }
-  
   public com.runwaysdk.business.graph.EdgeObject addComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
     return super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");

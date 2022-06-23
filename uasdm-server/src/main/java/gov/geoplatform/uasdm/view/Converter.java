@@ -26,12 +26,7 @@ import com.runwaysdk.session.SessionIF;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
-import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.controller.PointcloudController;
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
@@ -48,7 +43,6 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.view.FlightMetadata.SensorMetadata;
 
 public abstract class Converter
 {
@@ -248,8 +242,8 @@ public abstract class Converter
     view.setName(product.getName());
     view.setPublished(product.isPublished());
 
-    List<GeoserverLayer> layers = ( (Product) product ).getLayers();
-    view.setLayers(layers);
+    List<DocumentIF> mappables = ((Product)product).getMappableDocuments();
+    view.setMappables(mappables);
 
     if (product.getImageKey() == null || product.getImageKey().length() == 0)
     {
@@ -261,7 +255,7 @@ public abstract class Converter
       view.setImageKey(product.getImageKey());
     }
 
-    if (layers.size() > 0)
+    if (mappables.size() > 0)
     {
       if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
       {

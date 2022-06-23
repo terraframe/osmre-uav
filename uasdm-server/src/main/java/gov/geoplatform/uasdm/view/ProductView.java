@@ -15,12 +15,20 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.LayerClassification;
+import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 
 public class ProductView
 {
@@ -38,7 +46,7 @@ public class ProductView
   
   private boolean        hasPointcloud;
   
-  private List<GeoserverLayer> layers;
+  private List<DocumentIF> mappables;
   
   public String getId()
   {
@@ -110,14 +118,14 @@ public class ProductView
     this.published = published;
   }
   
-  public List<GeoserverLayer> getLayers()
+  public List<DocumentIF> getMappables()
   {
-    return layers;
+    return mappables;
   }
 
-  public void setLayers(List<GeoserverLayer> layers)
+  public void setMappables(List<DocumentIF> mappables)
   {
-    this.layers = layers;
+    this.mappables = mappables;
   }
   
   public JSONObject toJSON()
@@ -135,15 +143,44 @@ public class ProductView
     
     JSONArray jaLayers = new JSONArray();
     
-    for (GeoserverLayer layer : this.layers)
+    for (DocumentIF mappable : this.mappables)
     {
-      JSONObject joLayer = new JSONObject();
+      JSONObject layer = new JSONObject();
       
-      joLayer.put("workspace", layer.getWorkspace());
-      joLayer.put("classification", layer.getClassification().name());
-      joLayer.put("key", layer.getStoreName());
+      String url;
       
-      jaLayers.put(joLayer);
+      try
+      {
+        if (published)
+        {
+          final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
+          
+          url = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, "UTF-8");
+        }
+        else
+        {
+          url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), "UTF-8");
+        }
+      }
+      catch (UnsupportedEncodingException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+      
+      layer.put("key", mappable.getS3location());
+      
+      layer.put("url", url);
+      
+      if (mappable.getS3location().contains(ImageryComponent.ORTHO + "/"))
+      {
+        layer.put("classification", LayerClassification.ORTHO.name());
+      }
+      else if (mappable.getS3location().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
+      {
+        layer.put("classification", LayerClassification.DEM_DSM.name());
+      }
+      
+      jaLayers.put(layer);
     }
     
     object.put("layers", jaLayers);

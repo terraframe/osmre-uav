@@ -35,6 +35,7 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -164,14 +165,29 @@ public class S3RemoteFileService implements RemoteFileService
     // send request to S3 to create folder
     client.putObject(putObjectRequest);
   }
+  
+  @Override
+  public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
+  {
+    AmazonS3 client = S3ClientFactory.createClient();
+
+    CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
+
+    client.copyObject(request);
+  }
 
   @Override
   public void deleteObject(String key)
   {
+    this.deleteObject(key, AppProperties.getBucketName());
+  }
+  
+  @Override
+  public void deleteObject(String key, String bucket)
+  {
     AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
 
-    DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
+    DeleteObjectRequest request = new DeleteObjectRequest(bucket, key);
 
     client.deleteObject(request);
   }
@@ -179,11 +195,15 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void deleteObjects(String key)
   {
+    this.deleteObjects(key, AppProperties.getBucketName());
+  }
+  
+  @Override
+  public void deleteObjects(String key, String bucket)
+  {
     AmazonS3 client = S3ClientFactory.createClient();
 
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucket).withPrefix(key);
 
     ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
@@ -195,7 +215,7 @@ public class S3RemoteFileService implements RemoteFileService
       {
         String objectKey = objIter.next().getKey();
 
-        client.deleteObject(bucketName, objectKey);
+        client.deleteObject(bucket, objectKey);
       }
 
       // If the bucket contains many objects, the listObjects() call
@@ -213,14 +233,14 @@ public class S3RemoteFileService implements RemoteFileService
     }
 
     // Delete all object versions (required for versioned buckets).
-    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withPrefix(key));
+    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucket).withPrefix(key));
     while (true)
     {
       Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
       while (versionIter.hasNext())
       {
         S3VersionSummary vs = versionIter.next();
-        client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+        client.deleteVersion(bucket, vs.getKey(), vs.getVersionId());
       }
 
       if (versionList.isTruncated())
@@ -233,7 +253,7 @@ public class S3RemoteFileService implements RemoteFileService
       }
     }
 
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucket).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
   }
