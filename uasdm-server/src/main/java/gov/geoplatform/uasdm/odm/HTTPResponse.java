@@ -90,11 +90,21 @@ public class HTTPResponse
 
   public JSONObject getJSONObject() throws JSONException
   {
+    if (response == null)
+    {
+      throw new UnexpectedODMResponseException(null);
+    }
+    
     return new JSONObject(response);
   }
   
   public JSONArray getJSONArray() throws JSONException
   {
+    if (response == null)
+    {
+      throw new UnexpectedODMResponseException(null);
+    }
+    
     return new JSONArray(response);
   }
 
