@@ -68,27 +68,6 @@ public class Util
     RemoteFileFacade.uploadFile(child, key, task);
   }
 
-  public static void getSiteObjects(String folder, List<SiteObject> objects, UasComponentIF imageryComponent)
-  {
-    // if (folder.equals(ImageryComponent.ORTHO))
-    // {
-    // for (SiteObject object : objects)
-    // {
-    // String key = object.getKey();
-    //
-    // if (key.endsWith(".tif"))
-    // {
-    // String storeName = imageryComponent.getStoreName(key);
-    //
-    // if (GeoserverFacade.layerExists(storeName))
-    // {
-    // object.setImageKey(storeName);
-    // }
-    // }
-    // }
-    // }
-  }
-
   public static String formatIso8601(Date date, boolean includeTime)
   {
     if (date != null)

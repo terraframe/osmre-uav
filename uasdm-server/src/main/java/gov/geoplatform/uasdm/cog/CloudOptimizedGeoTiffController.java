@@ -1,4 +1,4 @@
-package gov.geoplatform.uasdm.controller;
+package gov.geoplatform.uasdm.cog;
 
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -18,10 +18,9 @@ import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.ViewResponse;
 import com.runwaysdk.request.ServletRequestIF;
 
-import gov.geoplatform.uasdm.service.CloudOptimizedGeoTiffService;
+import gov.geoplatform.uasdm.controller.ProjectManagementController;
 
 @Controller(url = "cog")
 public class CloudOptimizedGeoTiffController
@@ -102,10 +101,14 @@ public class CloudOptimizedGeoTiffController
       {
         throw new RuntimeException("Missing required parameter: z.");
       }
+      if (format == null)
+      {
+        throw new RuntimeException("Missing required parameter: format.");
+      }
       
       InputStream isTile = this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format);
       
-      return new InputStreamResponse(isTile, format);
+      return new InputStreamResponse(isTile, "image/" + format);
     }
     else
     {

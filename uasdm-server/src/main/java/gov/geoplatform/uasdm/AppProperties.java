@@ -77,16 +77,6 @@ public class AppProperties
     return Singleton.getProps().getString("bucket.public.name");
   }
 
-  public static String getPublicWorkspace()
-  {
-    return Singleton.getProps().getString("public.workspace", "image-public");
-  }
-  
-  public static String getPublicHillshadeWorkspace()
-  {
-    return Singleton.getProps().getString("geoserver.workspace.public.hillshade", "public-hillshade");
-  }
-
   public static String getBucketRegion()
   {
     return Singleton.getProps().getString("bucket.region");

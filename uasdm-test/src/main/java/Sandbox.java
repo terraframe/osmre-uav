@@ -35,11 +35,6 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
-import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
-import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
-import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
-import net.geoprism.gis.geoserver.GeoserverProperties;
 
 public class Sandbox
 {
@@ -62,7 +57,6 @@ public class Sandbox
     }    
 //    testGetCount();
 
-//    testGeoserver();
   }
 
   @Request
@@ -91,45 +85,5 @@ public class Sandbox
       }
     }
 
-  }
-
-  public static void testGeoserver() throws FileNotFoundException
-  {
-    String geoserverData = System.getProperty("GEOSERVER_DATA_DIR");
-
-    if (geoserverData == null)
-    {
-      throw new ProgrammingErrorException("Unable to find geoserver data directory: Please set the JVM arg GEOSERVER_DATA_DIR");
-    }
-
-    final File baseDir = new File(geoserverData + "/data/" + AppProperties.getPublicWorkspace());
-
-    final GeoServerRESTPublisher publisher = GeoserverProperties.getPublisher();
-    final String workspace = AppProperties.getPublicWorkspace();
-    final String layerName = "image-public";
-
-    final GSLayerEncoder layerEnc = new GSLayerEncoder();
-    layerEnc.setDefaultStyle("raster");
-
-    // coverage encoder
-    final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
-    coverageEnc.setName(layerName);
-    coverageEnc.setTitle(layerName);
-//    coverageEnc.setEnabled(true);
-//    coverageEnc.setNativeCRS("EPSG:4326");
-//    coverageEnc.setSRS("EPSG:4326");
-    coverageEnc.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
-
-    // ... many other options are supported
-
-    // create a new ImageMosaic layer...
-//    publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
-    final boolean published = publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
-
-    // check the results
-    if (!published)
-    {
-      System.out.println("Bad");
-    }
   }
 }

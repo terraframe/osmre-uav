@@ -22,6 +22,15 @@ DeployStage () {
   export TITILER_STACK_BUCKETS="[\"osmre-uas-${TITILER_STACK_STAGE}\"]"
   # TODO : This command cannot be automated yet because it requires user input.
   npm run cdk deploy "${TITILER_STACK_NAME}-lambda-${TITILER_STACK_STAGE}"
+  
+  # TODO : This cannot be automated (yet) because it requires output from the cdk deploy to be piped into here (in the route-id)
+  # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control-iam.html
+  # aws apigatewayv2 get-apis
+  # aws apigatewayv2 get-routes --api-id xxxx
+  aws apigatewayv2 update-route --api-id xxxx --route-id yyyyy --authorization-type AWS_IAM
+  
+  # TODO : Cannot be automated! Make sure that the system's IAM user has access to this route, ala:
+  # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
 
   export TITILER_STACK_NAME="titiler-public"
   export TITILER_STACK_BUCKETS="[\"osmre-uas-${TITILER_STACK_STAGE}-public\"]"

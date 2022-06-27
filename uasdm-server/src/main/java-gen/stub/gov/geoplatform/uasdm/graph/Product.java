@@ -15,27 +15,16 @@
  */
 package gov.geoplatform.uasdm.graph;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +41,8 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff;
+import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
@@ -237,13 +228,10 @@ public class Product extends ProductBase implements ProductIF
 
   /**
    * This method calculates a 4326 CRS bounding box for a given raster layer
-   * with the specified mapKey. This layer must exist on Geoserver before
-   * calling this method. If the bounding box cannot be calculated, for whatever
-   * reason, this method will return null.
-   * 
-   * @return A JSON array where [x1, x2, y1, y2]
+   * with the specified mapKey. The Cog must exist on S3 before calling this method.
+   * If the bounding box cannot be calculated, for whatever reason, this method will return null.
    */
-  public String calculateBoundingBox()
+  public BBoxView calculateBoundingBox()
   {
     DocumentIF mappable = null;
 
@@ -262,30 +250,6 @@ public class Product extends ProductBase implements ProductIF
 
     try
     {
-      String url;
-      
-      if (this.isPublished())
-      {
-        url = AppProperties.getTitilerPublicUrl();
-      }
-      else
-      {
-        url = AppProperties.getTitilerPrivateUrl();
-      }
-      
-      url = url + "/cog/bounds?url=";
-      
-      if (this.isPublished())
-      {
-        url = url + "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
-      }
-      else
-      {
-        url = url + "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
-      }
-      
-      JSONArray jaBbox = new JSONArray(IOUtils.toString(new URL(url).openStream(), "UTF-8"));
-
 //      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
 //
 //      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
@@ -320,7 +284,7 @@ public class Product extends ProductBase implements ProductIF
 //        }
 //      }
       
-      return jaBbox.toString();
+      return new CloudOptimizedGeoTiff(this, mappable).getBoundingBox();
     }
     catch (Throwable t)
     {
@@ -343,11 +307,11 @@ public class Product extends ProductBase implements ProductIF
       this.calculateKeys(components);
     }
 
-    String bbox = this.calculateBoundingBox();
+    BBoxView bbox = this.calculateBoundingBox();
 
     if (bbox != null)
     {
-      this.setBoundingBox(bbox);
+      this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
     }
   }
@@ -356,16 +320,6 @@ public class Product extends ProductBase implements ProductIF
   {
     return this.imageKey;
   }
-
-  // public String getWorkspace()
-  // {
-  // if (isPublished())
-  // {
-  // return AppProperties.getPublicWorkspace();
-  // }
-  //
-  // return GeoserverProperties.getWorkspace();
-  // }
 
   @Override
   public boolean isPublished()
@@ -550,25 +504,6 @@ public class Product extends ProductBase implements ProductIF
       {
         this.imageKey = document.getS3location();
       }
-      // else if (document.getName().endsWith(".tif"))
-      // {
-      // Document gdoc = (Document) document;
-      //
-      // for (GeoserverLayer layer : gdoc.getLayers())
-      // {
-      // if (layer.isPublished())
-      // {
-      // if (layer.getClassification().equals(LayerClassification.ORTHO))
-      // {
-      // this.mapKey = layer.getStoreName();
-      // }
-      // else if (layer.getClassification().equals(LayerClassification.DEM_DSM))
-      // {
-      // this.demKey = layer.getStoreName();
-      // }
-      // }
-      // }
-      // }
     }
   }
 

@@ -179,96 +179,6 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  /**
-   * This method calculates a 4326 CRS bounding box for a given raster layer
-   * with the specified mapKey. This layer must exist on Geoserver before
-   * calling this method. If the bounding box cannot be calculated, for whatever
-   * reason, this method will return null.
-   * 
-   * @return A JSON array where [x1, x2, y1, y2]
-   */
-  public String calculateBoundingBox(String mapKey)
-  {
-//    try
-//    {
-//      WMSCapabilities capabilities = GeoserverFacade.getCapabilities(this.getWorkspace(), mapKey);
-//
-//      List<Layer> layers = capabilities.getLayerList();
-//
-//      Layer layer = null;
-//
-//      if (layers.size() == 0)
-//      {
-//        logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver did not return any layers.");
-//        return null;
-//      }
-//      else if (layers.size() == 1)
-//      {
-//        layer = layers.get(0);
-//      }
-//      else
-//      {
-//        for (Layer potential : layers)
-//        {
-//          if (potential.getName() != null && potential.getName().equals(mapKey))
-//          {
-//            layer = potential;
-//            break;
-//          }
-//        }
-//
-//        if (layer == null)
-//        {
-//          logger.error("Unable to calculate bounding box for product [" + this.getName() + "]. Geoserver returned more than one layer and none of the layers matched what we were looking for.");
-//          return null;
-//        }
-//      }
-//
-//      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
-//
-//      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
-//      {
-//        String code = entry.getKey();
-//        CRSEnvelope envelope = entry.getValue();
-//
-//        try
-//        {
-//          // Mapbox's docs say that it's in 3857 but it's bounding box method
-//          // expects 4326.
-//          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-//          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-//
-//          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-//
-//          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
-//          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
-//
-//          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
-//
-//          JSONArray json = new JSONArray();
-//          json.put(env3857.getMinX());
-//          json.put(env3857.getMaxX());
-//          json.put(env3857.getMinY());
-//          json.put(env3857.getMaxY());
-//
-//          return json.toString();
-//        }
-//        catch (Throwable t)
-//        {
-//          // Perhaps there is another bounding box we can try?
-//        }
-//      }
-//    }
-//    catch (Throwable t)
-//    {
-//      logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].", t);
-//      return null;
-//    }
-
-    logger.error("Error when getting bounding box from layer [" + mapKey + "] for product [" + this.getName() + "].");
-    return null;
-  }
-
   public void updateBoundingBox()
   {
     UasComponent component = this.getComponent();
@@ -285,14 +195,14 @@ public class Product extends ProductBase implements ProductIF
 
     if (this.getMapKey() != null && this.getMapKey().length() > 0)
     {
-      String bbox = this.calculateBoundingBox(this.getMapKey());
-
-      if (bbox != null)
-      {
-        this.lock();
-        this.setBoundingBox(bbox);
-        this.apply();
-      }
+//      String bbox = this.calculateBoundingBox(this.getMapKey());
+//
+//      if (bbox != null)
+//      {
+//        this.lock();
+//        this.setBoundingBox(bbox);
+//        this.apply();
+//      }
     }
   }
 
@@ -302,59 +212,11 @@ public class Product extends ProductBase implements ProductIF
     return this.getPublished() != null && this.getPublished();
   }
 
-//  @Override
-//  public String getWorkspace()
-//  {
-//    if (isPublished())
-//    {
-//      return AppProperties.getPublicWorkspace();
-//    }
-//
-//    return GeoserverProperties.getWorkspace();
-//  }
-
   @Override
   @Transaction
   public void togglePublished()
   {
-//    String existing = this.getWorkspace();
-//
-//    this.setPublished(!this.isPublished());
-//    this.apply();
-//
-//    UasComponent component = this.getComponent();
-//
-//    GeoserverPublisher.removeImageServices(existing, component, false);
-//    
-//    GeoserverPublisher.createImageServices(this.getWorkspace(), component, true);
-  }
-
-  public void calculateKeys(List<UasComponentIF> components)
-  {
-//    List<Document> documents = new LinkedList<Document>();
-//    String workspace = this.getWorkspace();
-//
-//    try (OIterator<? extends Document> it = this.getAllDocuments())
-//    {
-//      documents.addAll(it.getAll());
-//    }
-//
-//    for (Document document : documents)
-//    {
-//      if (document.getName().endsWith(".png"))
-//      {
-//        this.imageKey = document.getS3location();
-//      }
-//      else if (document.getName().endsWith(".tif"))
-//      {
-//        String storeName = components.get(components.size() - 1).getStoreName(document.getS3location());
-//
-//        if (GeoserverFacade.layerExists(workspace, storeName))
-//        {
-//          this.mapKey = storeName;
-//        }
-//      }
-//    }
+    throw new UnsupportedOperationException();
   }
 
   public static List<ProductIF> getProduct()
