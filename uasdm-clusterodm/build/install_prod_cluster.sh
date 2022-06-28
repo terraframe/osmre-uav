@@ -41,15 +41,27 @@ $(aws ecr get-login --no-include-email --region us-east-1)
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 
 
+### If Fresh Install: Create data directories
+sudo mkdir -p /data/odm-cluster/dev/config
+sudo mkdir -p /data/odm-cluster/dev/data
+sudo mkdir -p /data/odm-cluster/dev/tmp
+sudo mkdir -p /data/odm-cluster/staging/config
+sudo mkdir -p /data/odm-cluster/staging/data
+sudo mkdir -p /data/odm-cluster/staging/tmp
+sudo mkdir -p /data/odm-cluster/prod/config
+sudo mkdir -p /data/odm-cluster/prod/data
+sudo mkdir -p /data/odm-cluster/prod/tmp
+sudo chown 1000:1000 -R /data/odm-cluster
+
+
 ### Make sure to add credentials back into the config files! They've been scraped out for open sourcing purposes
 ### If Fresh Install
-sudo mkdir -p /data/odm/config
 # Copy over the cluster-odm config file
 ### If Patch : you've made changes to the aws-config make sure to propagate them ###
 
-vim /data/odm/config/aws-config-dev.json
-vim /data/odm/config/aws-config-staging.json
-vim /data/odm/config/aws-config-prod.json
+vim /data/odm-cluster/dev/config/aws-config-dev.json
+vim /data/odm-cluster/staging/config/aws-config-staging.json
+vim /data/odm-cluster/prod/config/aws-config-prod.json
 
 ### If patch : You need to reboot the clusterodm server
 
@@ -58,7 +70,12 @@ vim /data/odm/config/aws-config-prod.json
 
 ##### These commands are specific to the DEV container!! ####
 
-docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 -v /data/odm/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp -v /data/odm-cluster/dev/data:/var/www/data --link uasdm-nodeodm-dev --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4001/
+docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 \
+  -v /data/odm-cluster/dev/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp \
+  -v /data/odm-cluster/dev/data:/var/www/data \
+  --link uasdm-nodeodm-dev \
+  --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4001/
 
 # If fresh install: (skip if patch)
 sleep 2;
@@ -67,7 +84,12 @@ sleep 2;
 
 ##### These commands are specific to the STAGING container!! ####
 
-docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 -v /data/odm/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp -v /data/odm-cluster/staging/data:/var/www/data --link uasdm-nodeodm-staging --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4002/
+docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 \
+  -v /data/odm-cluster/staging/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp \
+  -v /data/odm-cluster/staging/data:/var/www/data \
+  --link uasdm-nodeodm-staging \
+  --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4002/
 
 # If fresh install: (skip if patch)
 sleep 2;
@@ -76,7 +98,12 @@ sleep 2;
 
 ##### These commands are specific to the PROD container!! ####
 
-docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 -v /data/odm/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp -v /data/odm-cluster/prod/data:/var/www/data --link uasdm-nodeodm-prod --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4000/
+docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 \
+  -v /data/odm-cluster/prod/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp \
+  -v /data/odm-cluster/prod/data:/var/www/data \
+  --link uasdm-nodeodm-prod \
+  --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4000/
 
 # If fresh install: (skip if patch)
 sleep 2;
