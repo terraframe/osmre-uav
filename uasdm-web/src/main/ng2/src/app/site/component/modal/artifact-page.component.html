@@ -5,10 +5,10 @@
   <table *ngIf="artifacts != null" style="width: 100%;">
   	<thead>
         <th>Type</th>
+        <th>Name</th>
         <th>Processing Software</th>
         <th>Date</th>
         <th>Description</th>
-        <th></th>
         <th></th>
     </thead>
     <ng-container *ngFor="let section of sections; let i = index">
@@ -20,7 +20,7 @@
         <td>{{artifacts[section.folder] != null ? artifacts[section.folder].description : ''}}</td>
         <td *ngIf="!edit" style="text-align:right;">
           <button *ngIf="artifacts[section.folder] != null" type="button" class="btn btn-warning"
-            [disabled]="processRunning" (click)="handleRemove(section.folder)" style="margin: 5px 0;">
+            [disabled]="processRunning" (click)="handleRemove(section)" style="margin: 5px 0;">
             Remove
           </button>
           <button *ngIf="artifacts[section.folder] == null" type="button" class="btn btn-primary"
