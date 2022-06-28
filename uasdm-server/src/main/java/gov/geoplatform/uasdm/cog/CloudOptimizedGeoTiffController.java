@@ -103,7 +103,19 @@ public class CloudOptimizedGeoTiffController
       }
       if (format == null)
       {
-        throw new RuntimeException("Missing required parameter: format.");
+        format = "tif";
+      }
+      if (matrixSetId != null && matrixSetId.endsWith("/"))
+      {
+        matrixSetId = matrixSetId.substring(0, matrixSetId.length() - 1);
+      }
+      if (scale != null && scale.startsWith("@"))
+      {
+        scale = scale.substring(1);
+      }
+      if (scale != null && scale.endsWith("x"))
+      {
+        scale = scale.substring(0, scale.length() - 1);
       }
       
       InputStream isTile = this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format);

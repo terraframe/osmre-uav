@@ -29,10 +29,8 @@ public class S3ClientFactory
 {
   public static AmazonS3 createClient()
   {
-    final Regions region = Regions.valueOf(AppProperties.getBucketRegion());
-
     BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    AmazonS3 client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    AmazonS3 client = AmazonS3ClientBuilder.standard().withRegion(AppProperties.getBucketRegion()).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
 
     return client;
   }

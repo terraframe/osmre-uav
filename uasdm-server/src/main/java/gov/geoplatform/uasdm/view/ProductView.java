@@ -153,7 +153,7 @@ public class ProductView
       {
         if (published)
         {
-          final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
+          final String layerS3Uri = "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
           
           url = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, "UTF-8");
         }
@@ -170,6 +170,8 @@ public class ProductView
       layer.put("key", mappable.getS3location());
       
       layer.put("url", url);
+      
+      layer.put("public", this.published);
       
       if (mappable.getS3location().contains(ImageryComponent.ORTHO + "/"))
       {

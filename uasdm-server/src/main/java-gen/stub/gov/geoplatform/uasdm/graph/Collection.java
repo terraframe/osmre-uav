@@ -420,8 +420,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     SiteObjectsResultSet rs = super.getSiteObjects(folder, objects, pageNumber, pageSize);
 
-    Util.getSiteObjects(folder, objects, this);
-
     return rs;
   }
 

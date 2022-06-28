@@ -190,7 +190,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (this.getImageKey() == null || this.getMapKey() == null)
     {
-      this.calculateKeys(components);
+//      this.calculateKeys(components);
     }
 
     if (this.getMapKey() != null && this.getMapKey().length() > 0)
@@ -227,5 +227,11 @@ public class Product extends ProductBase implements ProductIF
     {
       return new LinkedList<ProductIF>(it.getAll());
     }
+  }
+
+  @Override
+  public void calculateKeys(List<UasComponentIF> components)
+  {
+    throw new UnsupportedOperationException();
   }
 }

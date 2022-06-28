@@ -142,22 +142,20 @@ public class CloudOptimizedGeoTiff
       {
         String sTile = jaTiles.getString(i);
         
-        Pattern pattern = Pattern.compile("\\/cog\\/" + CloudOptimizedGeoTiffController.TILES_REGEX);
-        Matcher matcher = pattern.matcher(sTile);
+        String replacedPath = sTile.replace(AppProperties.getTitilerPrivateUrl(), contextPath);
         
-        if (matcher.matches())
+        String pathEncoded = URLEncoder.encode(this.document.getS3location(), "UTF-8");
+        
+        if (replacedPath.contains("?"))
         {
-          String matrixSetId = matcher.group(1);
-          String z = matcher.group(2);
-          String x = matcher.group(3);
-          String y = matcher.group(4);
-          String scale = matcher.group(5);
-          String format = matcher.group(6);
-          
-          String pathEncoded = URLEncoder.encode(this.document.getS3location(), "UTF-8");
-          String encodedUrl = URLEncoder.encode(layerS3Uri, "UTF-8");
-          jaTiles.put(i, contextPath + "/cog/tiles/" + matrixSetId + "/" + z + "/" + x + "/" + y + "@" + scale + "x" + format + "?path=" + pathEncoded + "scale=" + scale + "&url=" + encodedUrl);
+          replacedPath = replacedPath + "&path=" + pathEncoded;
         }
+        else
+        {
+          replacedPath = replacedPath + "?path=" + pathEncoded;
+        }
+        
+        jaTiles.put(i, replacedPath);
       }
       
       return joTileJson;
@@ -212,7 +210,7 @@ public class CloudOptimizedGeoTiff
 
     // Sign it...
     AWS4Signer signer = new AWS4Signer();
-    signer.setRegionName(AppProperties.getBucketName());
+    signer.setRegionName(AppProperties.getBucketRegion());
     signer.setServiceName(request.getServiceName());
     signer.sign(request, awsCreds);
 
