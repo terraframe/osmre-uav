@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.model;
 
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 
 public enum LayerClassification
 {

@@ -28,7 +28,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.LayerClassification;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 
 public class ProductView
 {

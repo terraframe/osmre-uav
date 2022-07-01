@@ -43,12 +43,13 @@ import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff;
 import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -364,7 +365,7 @@ public class Product extends ProductBase implements ProductIF
    */
   public void refreshDocuments() throws InterruptedException
   {
-    final UasComponentIF collection = this.getComponent();
+    final CollectionIF collection = (CollectionIF) this.getComponent();
 
     boolean allZipExists = this.getAllZip() != null;
 

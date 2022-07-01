@@ -3,7 +3,7 @@ package gov.geoplatform.uasdm.bus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,10 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.odm.GdalProcessor;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.processing.GdalDemProcessor;
+import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
@@ -59,7 +61,15 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     // Create the png for the uploaded file
     try (CloseableFile file = infile.openNewFile())
     {
-      new GdalProcessor(collection, this, product, file).process();
+      if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
+      {
+        new GdalTransformProcessor(FilenameUtils.getBaseName(file.getName()) + ".png", this, product, collection, ImageryComponent.ORTHO).process(file, null);
+      }
+
+      if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
+      {
+        new GdalDemProcessor("dsm.tif", this, product, collection, ODMZipPostProcessor.DEM_GDAL).process(file, null);
+      }
 
       if (product.getPublished())
       {
@@ -76,22 +86,5 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       this.setMessage("Ortho has been processed");
       this.apply();
     }
-    catch (InterruptedException e)
-    {
-      this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage("The job encountered an unspecified error. [" + e.getLocalizedMessage() + "]. ");
-      this.apply();
-    }
-
-  }
-
-  /**
-   * Writes the ODM output to a log file on S3, if supported by the individual
-   * task implementation.
-   */
-  public void writeODMtoS3(JSONArray odmOutput)
-  {
-    // do nothing, as this does not pertain to Collections
   }
 }
