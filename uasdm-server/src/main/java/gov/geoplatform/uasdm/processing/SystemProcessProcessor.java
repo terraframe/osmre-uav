@@ -15,13 +15,15 @@ abstract public class SystemProcessProcessor extends ManagedDocument
 
   private static final Logger logger = LoggerFactory.getLogger(SystemProcessProcessor.class);
   
-  public SystemProcessProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, boolean searchable)
+  public SystemProcessProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix, boolean searchable)
   {
-    super(filename, progressTask, product, collection, s3FolderName, searchable);
+    super(filename, progressTask, product, collection, s3FolderName, prefix, searchable);
   }
   
-  protected void executeProcess(String[] commands)
+  protected boolean executeProcess(String[] commands)
   {
+    boolean errored = false;
+    
     final Runtime rt = Runtime.getRuntime();
 
     StringBuilder stdOut = new StringBuilder();
@@ -51,6 +53,7 @@ abstract public class SystemProcessProcessor extends ManagedDocument
           {
             stdErr.append(s + "\n");
           }
+          
         }
         catch (Throwable t)
         {
@@ -67,6 +70,7 @@ abstract public class SystemProcessProcessor extends ManagedDocument
     catch (InterruptedException e)
     {
       logger.error("Interrupted when processing dem file with gdal", e);
+      errored = true;
     }
 
     if (stdOut.toString().trim().length() > 0)
@@ -77,7 +81,10 @@ abstract public class SystemProcessProcessor extends ManagedDocument
     if (stdErr.toString().trim().length() > 0)
     {
       logger.error("Unexpected error while processing gdal transform [" + stdErr.toString() + "].");
+      errored = true;
     }
+    
+    return errored;
   }
   
 }

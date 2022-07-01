@@ -5,7 +5,7 @@ import java.io.File;
 public interface Processor
 {
 
-  void process(File file, String prefix);
+  void process(File file);
 
   String getFileName();
 

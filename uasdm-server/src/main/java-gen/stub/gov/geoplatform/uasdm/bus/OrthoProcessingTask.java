@@ -17,7 +17,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.processing.GdalDemProcessor;
+import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -63,12 +63,12 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
       {
-        new GdalTransformProcessor(FilenameUtils.getBaseName(file.getName()) + ".png", this, product, collection, ImageryComponent.ORTHO).process(file, null);
+        new GdalTransformProcessor(FilenameUtils.getBaseName(file.getName()) + ".png", this, product, collection, ImageryComponent.ORTHO, null).process(file);
       }
 
       if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
       {
-        new GdalDemProcessor("dsm.tif", this, product, collection, ODMZipPostProcessor.DEM_GDAL).process(file, null);
+        new HillshadeProcessor("dsm.tif", this, product, collection, ODMZipPostProcessor.DEM_GDAL, null).process(file);
       }
 
       if (product.getPublished())

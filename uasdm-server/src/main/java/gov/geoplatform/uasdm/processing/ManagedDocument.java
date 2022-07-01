@@ -19,14 +19,14 @@ public class ManagedDocument extends S3FileUpload
   
   private Product product;
 
-  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName)
+  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
   {
-    this(filename, progressTask, product, collection, s3FolderName, true);
+    this(filename, progressTask, product, collection, s3FolderName, prefix, true);
   }
 
-  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, boolean searchable)
+  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix, boolean searchable)
   {
-    super(filename, progressTask, collection, s3FolderName, false);
+    super(filename, progressTask, collection, s3FolderName, prefix, false);
 
     this.searchable = searchable;
     this.product = product;
@@ -42,12 +42,14 @@ public class ManagedDocument extends S3FileUpload
   }
 
   @Override
-  public void processFile(File file, String key)
+  public void processFile(File file)
   {
-    super.processFile(file, key);
+    super.processFile(file);
     
     if (!file.isDirectory())
     {
+      String key = this.getS3Key(file);
+      
       DocumentIF document = this.collection.createDocumentIfNotExist(key, file.getName(), null, "ODM");
       
       final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);

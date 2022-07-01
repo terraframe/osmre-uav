@@ -10,13 +10,13 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 
 public class GdalTransformProcessor extends SystemProcessProcessor
 {
-  public GdalTransformProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName)
+  public GdalTransformProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
   {
-    super(filename, progressTask, product, collection, s3FolderName, false);
+    super(filename, progressTask, product, collection, s3FolderName, prefix, false);
   }
   
   @Override
-  public void processFile(File file, String key)
+  public void processFile(File file)
   {
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -30,7 +30,7 @@ public class GdalTransformProcessor extends SystemProcessProcessor
 
     if (png.exists())
     {
-      super.processFile(png, key);
+      super.processFile(png);
     }
   }
 }

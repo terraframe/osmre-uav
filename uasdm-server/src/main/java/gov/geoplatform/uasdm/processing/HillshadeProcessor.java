@@ -8,15 +8,15 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
-public class GdalDemProcessor extends SystemProcessProcessor
+public class HillshadeProcessor extends SystemProcessProcessor
 {
-  public GdalDemProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName)
+  public HillshadeProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
   {
-    super(filename, progressTask, product, collection, s3FolderName, false);
+    super(filename, progressTask, product, collection, s3FolderName, prefix, false);
   }
 
   @Override
-  public void processFile(File file, String key)
+  public void processFile(File file)
   {
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -28,7 +28,7 @@ public class GdalDemProcessor extends SystemProcessProcessor
 
     if (hillshade.exists())
     {
-      super.processFile(hillshade, key);
+      super.processFile(hillshade);
     }
   }
 }

@@ -160,33 +160,33 @@ public class ODMZipPostProcessor
     if (this.progressTask.getProcessDem())
     {
       this.runProcessor(unzippedParentFolder, "odm_dem",
-          new ManagedDocument("dsm.tif", task, this.product, this.collection, ImageryComponent.DEM),
-          new ManagedDocument("dtm.tif", task, this.product, this.collection, ImageryComponent.DEM)
+          new ManagedDocument("dsm.tif", task, this.product, this.collection, ImageryComponent.DEM, this.filePrefix),
+          new ManagedDocument("dtm.tif", task, this.product, this.collection, ImageryComponent.DEM, this.filePrefix)
       );
 
-      this.runProcessor(unzippedParentFolder, "odm_dem", new GdalDemProcessor("dsm.tif", task, this.product, this.collection, DEM_GDAL));
+      this.runProcessor(unzippedParentFolder, "odm_dem", new HillshadeProcessor("dsm.tif", task, this.product, this.collection, DEM_GDAL, this.filePrefix));
     }
 
     if (this.progressTask.getProcessOrtho())
     {
       this.runProcessor(unzippedParentFolder, "odm_orthophoto",
-          new ManagedDocument("odm_orthophoto.png", task, this.product, this.collection, ImageryComponent.ORTHO),
-          new ManagedDocument("odm_orthophoto.tif", task, this.product, this.collection, ImageryComponent.ORTHO)
+          new ManagedDocument("odm_orthophoto.png", task, this.product, this.collection, ImageryComponent.ORTHO, this.filePrefix),
+          new ManagedDocument("odm_orthophoto.tif", task, this.product, this.collection, ImageryComponent.ORTHO, this.filePrefix)
       );
     }
     
     if (this.progressTask.getProcessPtcloud())
     {
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument("odm_georeferenced_model.laz", task, this.product, this.collection, ImageryComponent.PTCLOUD));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument("odm_georeferenced_model.laz", task, this.product, this.collection, ImageryComponent.PTCLOUD, this.filePrefix));
 
-      this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", task, this.product, this.collection, null));
+      this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", task, this.product, this.collection, null, this.filePrefix));
 
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud",
-          new S3FileUpload("ept.json", task, this.collection, POTREE, false),
-          new S3FileUpload("ept-build.json", task, this.collection, POTREE, false),
-          new S3FileUpload("ept-sources", task, this.collection, POTREE, true),
-          new S3FileUpload("ept-hierarchy", task, this.collection, POTREE, true),
-          new S3FileUpload("ept-data", task, this.collection, POTREE, true)
+          new S3FileUpload("ept.json", task, this.collection, POTREE, this.filePrefix, false),
+          new S3FileUpload("ept-build.json", task, this.collection, POTREE, this.filePrefix, false),
+          new S3FileUpload("ept-sources", task, this.collection, POTREE, this.filePrefix, true),
+          new S3FileUpload("ept-hierarchy", task, this.collection, POTREE, this.filePrefix, true),
+          new S3FileUpload("ept-data", task, this.collection, POTREE, this.filePrefix, true)
       );
     }
   }
@@ -211,7 +211,7 @@ public class ODMZipPostProcessor
           throw new InterruptedException();
         }
 
-        processor.process(file, this.filePrefix);
+        processor.process(file);
       }
     }
   }
