@@ -42,7 +42,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -556,7 +556,7 @@ public class ODMZipPostProcessor
 
         if (searchable)
         {
-          SolrService.updateOrCreateDocument(this.uploader.collection.getAncestors(), this.uploader.collection, key, file.getName());
+          IndexService.updateOrCreateDocument(this.uploader.collection.getAncestors(), this.uploader.collection, key, file.getName());
         }
       }
     }

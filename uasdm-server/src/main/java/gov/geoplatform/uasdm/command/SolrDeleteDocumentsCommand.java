@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.Command;
 
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class SolrDeleteDocumentsCommand implements Command
 {
@@ -43,7 +43,7 @@ public class SolrDeleteDocumentsCommand implements Command
   {
     log.info("Deleting all documents from solr wher the field [" + this.fieldId + "] equals [" + this.oid + "]");
 
-    SolrService.deleteDocuments(this.fieldId, this.oid);
+    IndexService.deleteDocuments(this.fieldId, this.oid);
   }
 
   /**

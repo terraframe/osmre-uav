@@ -33,7 +33,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class GdalProcessor
 {
@@ -202,7 +202,7 @@ public class GdalProcessor
 
         if (searchable)
         {
-          SolrService.updateOrCreateDocument(GdalProcessor.this.collection.getAncestors(), GdalProcessor.this.collection, key, file.getName());
+          IndexService.updateOrCreateDocument(GdalProcessor.this.collection.getAncestors(), GdalProcessor.this.collection, key, file.getName());
         }
       }
     }

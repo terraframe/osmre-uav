@@ -85,13 +85,7 @@ public class MockRemoteFileService implements RemoteFileService
   {
     return 0;
   }
-
-  @Override
-  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Integer pageNumber, Integer pageSize)
-  {
-    return new SiteObjectsResultSet(0, 1, 10, new LinkedList<SiteObject>(), folder);
-  }
-
+  
   @Override
   public void uploadFile(File file, String key, AbstractWorkflowTaskIF task)
   {
@@ -122,5 +116,33 @@ public class MockRemoteFileService implements RemoteFileService
   public Set<String> getCreates()
   {
     return creates;
+  }
+
+  @Override
+  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean objectExists(String key)
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public Long calculateSize(UasComponentIF component)
+  {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

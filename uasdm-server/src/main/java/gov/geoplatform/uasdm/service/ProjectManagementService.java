@@ -725,7 +725,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public List<QueryResult> search(String sessionId, String term)
   {
-    List<QueryResult> results = SolrService.query(term);
+    List<QueryResult> results = IndexService.query(term);
 
     return results;
   }

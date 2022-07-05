@@ -79,7 +79,7 @@ import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -212,7 +212,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (isNew)
     {
-      SolrService.createDocument(this.getAncestors(), this);
+      IndexService.createDocument(this.getAncestors(), this);
     }
   }
 
@@ -239,12 +239,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       if (isNameModified)
       {
-        SolrService.updateName(this);
+        IndexService.updateName(this);
       }
 
       if (needsUpdate)
       {
-        SolrService.updateComponent(this);
+        IndexService.updateComponent(this);
       }
 
       CollectionReport.update(this);

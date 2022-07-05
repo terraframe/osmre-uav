@@ -54,7 +54,7 @@ import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 
 public class MetadataXMLGenerator
@@ -268,7 +268,7 @@ public class MetadataXMLGenerator
 
       collection.createDocumentIfNotExist(key, fileName, null, null);
 
-      SolrService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
+      IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 
       collection.appLock();
       collection.setMetadataUploaded(true);

@@ -54,7 +54,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 public class Util
@@ -367,7 +367,7 @@ public class Util
 
     if (document.isNew())
     {
-      SolrService.updateOrCreateDocument(component.getAncestors(), component, key, fileName);
+      IndexService.updateOrCreateDocument(component.getAncestors(), component, key, fileName);
     }
 
     return document;
@@ -387,7 +387,7 @@ public class Util
         final UasComponentIF component = imageryComponent.getUasComponent();
         component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool());
 
-        SolrService.updateOrCreateDocument(ancestors, component, key, name);
+        IndexService.updateOrCreateDocument(ancestors, component, key, name);
 
         if (component instanceof CollectionIF)
         {

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -66,7 +66,7 @@ public class AppProperties
   {
     return Singleton.getProps().getString("public.workspace", "image-public");
   }
-  
+
   public static String getPublicHillshadeWorkspace()
   {
     return Singleton.getProps().getString("geoserver.workspace.public.hillshade", "public-hillshade");
@@ -97,16 +97,41 @@ public class AppProperties
     return Singleton.getProps().getString("solr.url", "http://localhost:8983/solr/uasdm");
   }
 
+  public static String getElasticsearchHost()
+  {
+    return Singleton.getProps().getString("elasticsearch.host", "localhost");
+  }
+
+  public static String getElasticsearchSchema()
+  {
+    return Singleton.getProps().getString("elasticsearch.host", "https");
+  }
+
+  public static int getElasticsearchPort()
+  {
+    return Singleton.getProps().getInteger("elasticsearch.host", 9200);
+  }
+
+  public static String getElasticsearchUsername()
+  {
+    return Singleton.getProps().getString("elasticsearch.username", "username");
+  }
+
+  public static String getElasticsearchPassword()
+  {
+    return Singleton.getProps().getString("elasticsearch.password", "password");
+  }
+
   public static Boolean isSolrEnabled()
   {
     return Singleton.getProps().getBoolean("solr.enabled", true);
   }
-  
+
   public static Boolean isKeycloakEnabled()
   {
     return Singleton.getProps().getBoolean("keycloak.enabled", false);
   }
-  
+
   public static InputStream getKeycloakConfig()
   {
     if (isKeycloakEnabled() && ConfigurationManager.checkExistence(UasdmConfigGroup.COMMON, "keycloak.json"))
@@ -153,13 +178,11 @@ public class AppProperties
   {
     return Singleton.getProps().getString("s3.secretKey");
   }
-  
-  
+
   /*
    * Eros Synchronization related properties
    */
-  
-  
+
   public static String getErosECSAccessKey()
   {
     return Singleton.getProps().getString("eros.ecs.accessKey");
@@ -174,37 +197,37 @@ public class AppProperties
   {
     return Singleton.getProps().getString("eros.ftp.serverUrl");
   }
-  
+
   public static String getErosFtpUsername()
   {
     return Singleton.getProps().getString("eros.ftp.username");
   }
-  
+
   public static String getErosFtpPassword()
   {
     return Singleton.getProps().getString("eros.ftp.password");
   }
-  
+
   public static String getErosFtpPassive()
   {
     return Singleton.getProps().getString("eros.ftp.passive");
   }
-  
+
   public static String getErosFtpPort()
   {
     return Singleton.getProps().getString("eros.ftp.port");
   }
-  
+
   public static String getErosFtpTargetPath()
   {
     return Singleton.getProps().getString("eros.ftp.targetPath");
   }
-  
+
   public static String getErosCluster()
   {
     return Singleton.getProps().getString("eros.ecs.cluster");
   }
-  
+
   public static String getErosTask()
   {
     return Singleton.getProps().getString("eros.ecs.task");
@@ -214,12 +237,12 @@ public class AppProperties
   {
     return Singleton.getProps().getString("eros.ecs.containerName");
   }
-  
+
   public static String getErosSubnets()
   {
     return Singleton.getProps().getString("eros.ecs.subnets");
   }
-  
+
   public static String getAppDisclaimer()
   {
     return Singleton.getProps().getString("app.disclaimer");

@@ -1,30 +1,37 @@
+
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.xml.XMLParser;
-import org.apache.tika.sax.BodyContentHandler;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.query.OIterator;
@@ -32,9 +39,19 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.index.elastic.ElasticDocument;
+import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
+import gov.geoplatform.uasdm.model.StacItem;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
@@ -45,24 +62,71 @@ public class Sandbox
 {
   public static void main(String[] args) throws Exception
   {
-    BodyContentHandler handler = new BodyContentHandler();
-    Metadata metadata = new Metadata();
-    FileInputStream inputstream = new FileInputStream(new File("pom.xml"));
-    ParseContext pcontext = new ParseContext();
-    
-    //Xml parser
-    XMLParser xmlparser = new XMLParser(); 
-    xmlparser.parse(inputstream, handler, metadata, pcontext);
-    System.out.println("Contents of the document:" + handler.toString());
-    System.out.println("Metadata of the document:");
-    String[] metadataNames = metadata.names();
-    
-    for(String name : metadataNames) {
-       System.out.println(name + ": " + metadata.get(name));
-    }    
-//    testGetCount();
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    StacItem result = mapper.readValue(new File("/home/jsmethie/git/osmre-uav/uasdm-test/src/test/resources/stac_item.json"), StacItem.class);
+    // mapper.writeValue(System.out, result);
+    System.out.println(mapper.writeValueAsString(result));
 
-//    testGeoserver();
+    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "JzhlvgF9NTA5JSoM7N7E"));
+
+    RestClientBuilder builder = RestClient.builder(new HttpHost("localhost", 9200, "https")).setHttpClientConfigCallback(new HttpClientConfigCallback()
+    {
+      @Override
+      public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder)
+      {
+        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+      }
+    });
+
+    // Create the low-level client
+    try (RestClient restClient = builder.build())
+    {
+      // Create the transport with a Jackson mapper
+      ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+
+      // And create the API client
+      ElasticsearchClient client = new ElasticsearchClient(transport);
+
+//      client.index(i -> i.index("stac").document(result));
+
+      SearchResponse<StacItem> search = client.search(s -> s.index("stac").query(q -> q.queryString(m -> m.fields("properties.title").query("Core*"))), StacItem.class);
+
+      HitsMetadata<StacItem> metadata = search.hits();
+
+      System.out.println(metadata.total());
+
+      List<Hit<StacItem>> hits = metadata.hits();
+
+      for (Hit<StacItem> hit : hits)
+      {
+        StacItem source = hit.source();
+
+        System.out.println(hit.id());
+        System.out.println(source.getId());
+        System.out.println(source.getGeometry());
+      }
+    }
+
+    // BodyContentHandler handler = new BodyContentHandler();
+    // Metadata metadata = new Metadata();
+    // FileInputStream inputstream = new FileInputStream(new File("pom.xml"));
+    // ParseContext pcontext = new ParseContext();
+    //
+    // //Xml parser
+    // XMLParser xmlparser = new XMLParser();
+    // xmlparser.parse(inputstream, handler, metadata, pcontext);
+    // System.out.println("Contents of the document:" + handler.toString());
+    // System.out.println("Metadata of the document:");
+    // String[] metadataNames = metadata.names();
+    //
+    // for(String name : metadataNames) {
+    // System.out.println(name + ": " + metadata.get(name));
+    // }
+    // testGetCount();
+
+    // testGeoserver();
   }
 
   @Request
@@ -115,15 +179,16 @@ public class Sandbox
     final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
     coverageEnc.setName(layerName);
     coverageEnc.setTitle(layerName);
-//    coverageEnc.setEnabled(true);
-//    coverageEnc.setNativeCRS("EPSG:4326");
-//    coverageEnc.setSRS("EPSG:4326");
+    // coverageEnc.setEnabled(true);
+    // coverageEnc.setNativeCRS("EPSG:4326");
+    // coverageEnc.setSRS("EPSG:4326");
     coverageEnc.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
 
     // ... many other options are supported
 
     // create a new ImageMosaic layer...
-//    publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
+    // publisher.publishExternalMosaic(workspace, layerName, baseDir,
+    // coverageEnc, layerEnc);
     final boolean published = publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
 
     // check the results

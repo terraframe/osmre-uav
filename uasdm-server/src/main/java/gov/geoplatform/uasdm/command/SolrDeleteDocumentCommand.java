@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.service.SolrService;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class SolrDeleteDocumentCommand implements Command
 {
@@ -44,7 +44,7 @@ public class SolrDeleteDocumentCommand implements Command
   {
     log.info("Deleting the document from solr with the component [" + this.component.getOid() + "] and key [" + this.key + "]");
 
-    SolrService.deleteDocument(component, key);
+    IndexService.deleteDocument(component, key);
   }
 
   /**
