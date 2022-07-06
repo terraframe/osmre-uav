@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class Document extends DocumentBase implements DocumentIF
 {
@@ -168,6 +169,12 @@ public class Document extends DocumentBase implements DocumentIF
     document.apply();
 
     return document;
+  }
+
+  @Override
+  public RemoteFileObject download()
+  {
+    throw new UnsupportedOperationException();
   }
 
 }

@@ -47,15 +47,15 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
+import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.service.SolrService;
-import gov.geoplatform.uasdm.view.SiteObject;
 
 public class Util
 {
@@ -63,9 +63,9 @@ public class Util
 
   public static final int BUFFER_SIZE = 1024;
 
-  public static void uploadFileToS3(File child, String key, AbstractWorkflowTaskIF task)
+  public static void uploadFileToS3(File child, String key, StatusMonitorIF monitor)
   {
-    RemoteFileFacade.uploadFile(child, key, task);
+    RemoteFileFacade.uploadFile(child, key, monitor);
   }
 
   public static String formatIso8601(Date date, boolean includeTime)
@@ -361,7 +361,7 @@ public class Util
 
       try
       {
-        Util.uploadFileToS3(tmp, key, task);
+        Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
 
         final UasComponentIF component = imageryComponent.getUasComponent();
         component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool());

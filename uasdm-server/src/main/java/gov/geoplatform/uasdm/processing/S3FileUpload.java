@@ -2,33 +2,33 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class S3FileUpload implements Processor
 {
-  protected String filename;
+  protected String s3Path;
   
-  protected String s3FolderName;
-
   protected boolean isDirectory;
   
-  protected AbstractWorkflowTask progressTask;
+  protected StatusMonitorIF monitor;
   
   protected CollectionIF collection;
   
-  protected String prefix;
-
-  public S3FileUpload(String filename, AbstractWorkflowTask progressTask, CollectionIF collection, String s3FolderName, String prefix, boolean isDirectory)
+  /**
+   * 
+   * @param s3Path The s3 target upload path, relative to the collection.
+   * @param collection
+   * @param isDirectory
+   * @param monitor
+   */
+  public S3FileUpload(String s3Path, CollectionIF collection, StatusMonitorIF monitor, boolean isDirectory)
   {
-    this.filename = filename;
-    this.progressTask = progressTask;
+    this.s3Path = s3Path;
+    this.monitor = monitor;
     this.collection = collection;
-    this.s3FolderName = s3FolderName;
     this.isDirectory = isDirectory;
-    this.prefix = prefix;
   }
 
   public boolean isDirectory()
@@ -36,70 +36,42 @@ public class S3FileUpload implements Processor
     return this.isDirectory;
   }
 
-  public String getS3FolderName()
+  public String getS3Path()
   {
-    return s3FolderName;
+    return s3Path;
   }
-
-  public void setS3FolderName(String s3FolderName)
+  
+  public void setS3Path(String s3Path)
   {
-    this.s3FolderName = s3FolderName;
+    this.s3Path = s3Path;
   }
   
   @Override
   public void process(File file)
   {
-    if (file.exists())
+    if (!file.exists())
     {
-      this.processFile(file);
-    }
-    else
-    {
-      this.handleUnprocessed();
-    }
-  }
-  
-  protected String getS3Key(File file)
-  {
-    String name = file.getName();
-    
-    if (prefix != null && prefix.length() > 0)
-    {
-      name = prefix + "_" + name;
+      this.monitor.addError("S3 uploader expected file [" + file.getAbsolutePath() + "] to exist.");
     }
     
-    String s3Folder = (this.getS3FolderName() == null) ? "" : this.getS3FolderName();
-    
-    String key = this.collection.getS3location() + s3Folder + "/" + name;
-    
-    return key;
-  }
-
-  public void processFile(File file)
-  {
     String key = this.getS3Key(file);
     
     if (file.isDirectory())
     {
-      RemoteFileFacade.uploadDirectory(file, key, this.progressTask, true);
+      RemoteFileFacade.uploadDirectory(file, key, this.monitor, true);
     }
     else
     {
-      RemoteFileFacade.uploadFile(file, key, this.progressTask);
+      RemoteFileFacade.uploadFile(file, key, this.monitor);
     }
 
     CollectionReport.updateSize((CollectionIF) this.collection);
   }
-
-  @Override
-  public String getFileName()
+  
+  protected String getS3Key(File file)
   {
-    return this.filename;
-  }
-
-  @Override
-  public void handleUnprocessed()
-  {
+    String key = this.collection.getS3location() + this.s3Path;
     
+    return key;
   }
 }

@@ -3,6 +3,8 @@ package gov.geoplatform.uasdm.processing;
 import java.io.File;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Product;
@@ -10,13 +12,15 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 
 public class GdalTransformProcessor extends SystemProcessProcessor
 {
-  public GdalTransformProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
+  private Logger logger = LoggerFactory.getLogger(GdalTransformProcessor.class);
+  
+  public GdalTransformProcessor(String filename, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
-    super(filename, progressTask, product, collection, s3FolderName, prefix, false);
+    super(filename, product, collection, monitor, false);
   }
   
   @Override
-  public void processFile(File file)
+  public void process(File file)
   {
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -30,7 +34,12 @@ public class GdalTransformProcessor extends SystemProcessProcessor
 
     if (png.exists())
     {
-      super.processFile(png);
+      super.process(png);
+    }
+    else
+    {
+      logger.info("Problem occurred generating gdal transform. PNG file did not exist at [" + png.getAbsolutePath() + "].");
+      monitor.addError("Problem occurred generating gdal transform. PNG file did not exist.");
     }
   }
 }

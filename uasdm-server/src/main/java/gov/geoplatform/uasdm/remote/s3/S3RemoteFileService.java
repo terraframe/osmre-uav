@@ -60,6 +60,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.RemoteFileService;
@@ -464,7 +465,7 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadFile(File file, String key, AbstractWorkflowTaskIF task)
+  public void uploadFile(File file, String key, StatusMonitorIF monitor)
   {
     try
     {
@@ -479,11 +480,9 @@ public class S3RemoteFileService implements RemoteFileService
           logger.info("Source: " + file.getAbsolutePath());
           logger.info("Destination: " + myUpload.getDescription());
 
-          if (task != null)
+          if (monitor != null)
           {
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
+            monitor.setMessage(myUpload.getDescription());
           }
         }
 
@@ -517,9 +516,9 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (Exception e)
     {
-      if (task != null)
+      if (monitor != null)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        monitor.addError(RunwayException.localizeThrowable(e, Session.getCurrentLocale()));
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);
@@ -527,7 +526,7 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
     try
     {
@@ -542,11 +541,9 @@ public class S3RemoteFileService implements RemoteFileService
           logger.info("Source: " + directory.getAbsolutePath());
           logger.info("Destination: " + myUpload.getDescription());
 
-          if (task != null)
+          if (monitor != null)
           {
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
+            monitor.setMessage(myUpload.getDescription());
           }
         }
 
@@ -580,9 +577,9 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (Exception e)
     {
-      if (task != null)
+      if (monitor != null)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        monitor.addError(RunwayException.localizeThrowable(e, Session.getCurrentLocale()));
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);

@@ -15,20 +15,32 @@ abstract public class SystemProcessProcessor extends ManagedDocument
 
   private static final Logger logger = LoggerFactory.getLogger(SystemProcessProcessor.class);
   
-  public SystemProcessProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix, boolean searchable)
+  private StringBuilder stdOut = null;
+  
+  private StringBuilder stdErr = null;
+  
+  public SystemProcessProcessor(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
   {
-    super(filename, progressTask, product, collection, s3FolderName, prefix, searchable);
+    super(s3Path, product, collection, monitor, searchable);
+  }
+  
+  public String getStdOut()
+  {
+    return stdOut.toString().trim();
+  }
+  
+  public String getStdErr()
+  {
+    return stdErr.toString().trim();
   }
   
   protected boolean executeProcess(String[] commands)
   {
-    boolean errored = false;
-    
     final Runtime rt = Runtime.getRuntime();
 
-    StringBuilder stdOut = new StringBuilder();
-    StringBuilder stdErr = new StringBuilder();
-
+    this.stdOut = new StringBuilder();
+    this.stdErr = new StringBuilder();
+    
     Thread t = new Thread()
     {
       public void run()
@@ -57,7 +69,7 @@ abstract public class SystemProcessProcessor extends ManagedDocument
         }
         catch (Throwable t)
         {
-          logger.error("Error occured while processing dem file with gdal.", t);
+          logger.error("Error occured while invoking system process.", t);
         }
       }
     };
@@ -69,22 +81,23 @@ abstract public class SystemProcessProcessor extends ManagedDocument
     }
     catch (InterruptedException e)
     {
-      logger.error("Interrupted when processing dem file with gdal", e);
-      errored = true;
+      this.monitor.addError("Interrupted when invoking system process.");
+      logger.info("Interrupted when invoking system process", e);
+      return false;
     }
 
-    if (stdOut.toString().trim().length() > 0)
+    if (this.getStdOut().length() > 0)
     {
-      logger.info("Processed transform with gdal [" + stdOut.toString() + "].");
+      logger.info("Invoked system process with output [" + stdOut.toString() + "].");
     }
 
-    if (stdErr.toString().trim().length() > 0)
+    if (this.getStdErr().length() > 0)
     {
-      logger.error("Unexpected error while processing gdal transform [" + stdErr.toString() + "].");
-      errored = true;
+      this.monitor.addError("Unexpected error invoking system process [" + this.getStdErr() + "].");
+      return false;
     }
     
-    return errored;
+    return true;
   }
   
 }

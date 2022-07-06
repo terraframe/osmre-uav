@@ -8,21 +8,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
 public class CogTifProcessor extends SystemProcessProcessor
 {
+  public static final String COG_EXTENSION = ".cog.tif";
+  
   private Logger logger = LoggerFactory.getLogger(CogTifProcessor.class);
   
-  public CogTifProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
+  public CogTifProcessor(String s3path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
-    super(filename, progressTask, product, collection, s3FolderName, prefix, false);
+    super(s3path, product, collection, monitor, false);
   }
 
   @Override
-  public void processFile(File file)
+  public void process(File file)
   {
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -33,33 +34,61 @@ public class CogTifProcessor extends SystemProcessProcessor
     }
     catch (IOException e)
     {
-      logger.error("Error copying file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
+      String msg = "Error copying file. Cog generation failed for [" + this.getS3Path() + "].";
+      logger.info(msg, e);
+      monitor.addError(msg);
       return;
     }
 
-    if (!this.executeProcess(new String[] {
-        "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16"
-      }))
+    try
     {
-      logger.error("Problem occurred generating overview file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
-      return;
+      if (!this.executeProcess(new String[] {
+          "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16"
+        }))
+      {
+        String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
+        logger.info(msg);
+        monitor.addError(msg);
+        return;
+      }
+      
+      // TODO : Re-run it if it fails?
+      
+      // If we're already a cog tif:
+      // if (this.getStdErr().contains("Adding new overviews invalidates the LAYOUT=IFDS_BEFORE_DATA property"))
+      
+      File cog = new File(file.getParent(), basename + COG_EXTENSION);
+      
+      try
+      {
+        if (!this.executeProcess(new String[] {
+            "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
+          }))
+        {
+          String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
+          logger.info(msg);
+          monitor.addError(msg);
+          return;
+        }
+    
+        if (overview.exists())
+        {
+          super.process(cog);
+        }
+        else
+        {
+          logger.info("Problem occurred generating cog file for [" + this.getS3Path() + "]. Overview file did not exist at [" + overview.getAbsolutePath() + "].");
+          monitor.addError("Problem occurred generating cog file for [" + this.getS3Path() + "]. Overview file did not exist.");
+        }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(cog);
+      }
     }
-    
-    // TODO : Re-run it if it fails?
-    
-    File cog = new File(file.getParent(), basename + "-cog.tif");
-    
-    if (!this.executeProcess(new String[] {
-        "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
-      }))
+    finally
     {
-      logger.error("Problem occurred generating cog file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
-      return;
-    }
-
-    if (overview.exists())
-    {
-      super.processFile(cog);
+      FileUtils.deleteQuietly(overview);
     }
   }
 }

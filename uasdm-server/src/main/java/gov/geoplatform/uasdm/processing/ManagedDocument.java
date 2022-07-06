@@ -18,33 +18,24 @@ public class ManagedDocument extends S3FileUpload
   private boolean searchable;
   
   private Product product;
-
-  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
+  
+  public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
-    this(filename, progressTask, product, collection, s3FolderName, prefix, true);
+    this(s3Path, product, collection, monitor, true);
   }
 
-  public ManagedDocument(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix, boolean searchable)
+  public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
   {
-    super(filename, progressTask, collection, s3FolderName, prefix, false);
+    super(s3Path, collection, monitor, false);
 
     this.searchable = searchable;
     this.product = product;
   }
 
   @Override
-  public void handleUnprocessed()
+  public void process(File file)
   {
-    if (this.progressTask != null)
-    {
-      this.progressTask.createAction("ODM did not produce an expected file [" + this.getS3FolderName() + "/" + this.filename + "].", "error");
-    }
-  }
-
-  @Override
-  public void processFile(File file)
-  {
-    super.processFile(file);
+    super.process(file);
     
     if (!file.isDirectory())
     {

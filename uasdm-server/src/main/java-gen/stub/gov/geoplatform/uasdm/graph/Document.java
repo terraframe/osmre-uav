@@ -33,6 +33,8 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class Document extends DocumentBase implements DocumentIF
 {
@@ -80,6 +82,11 @@ public class Document extends DocumentBase implements DocumentIF
     }
 
     super.delete();
+  }
+  
+  public RemoteFileObject download()
+  {
+    return RemoteFileFacade.download(this.getS3location());
   }
 
   public UasComponent getComponent()

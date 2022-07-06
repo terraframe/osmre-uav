@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -97,7 +98,7 @@ public class ODMZipPostProcessor
 
         this.product = (Product) this.collection.createProductIfNotExist();
         
-        this.processProduct(product, (AbstractWorkflowTask) this.progressTask, unzippedParentFolder);
+        this.processProduct(product, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask), unzippedParentFolder);
       }
     }
 
@@ -155,64 +156,66 @@ public class ODMZipPostProcessor
     }
   }
   
-  protected void processProduct(Product product, AbstractWorkflowTask task, CloseableFile unzippedParentFolder) throws InterruptedException
+  protected void processProduct(Product product, StatusMonitorIF monitor, CloseableFile unzippedParentFolder) throws InterruptedException
   {
     if (this.progressTask.getProcessDem())
     {
-      this.runProcessor(unzippedParentFolder, "odm_dem",
-          new ManagedDocument("dsm.tif", task, this.product, this.collection, ImageryComponent.DEM, this.filePrefix),
-          new ManagedDocument("dtm.tif", task, this.product, this.collection, ImageryComponent.DEM, this.filePrefix)
-      );
+      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "odm_dem", new HillshadeProcessor("dsm.tif", task, this.product, this.collection, DEM_GDAL, this.filePrefix));
+      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new HillshadeProcessor(buildS3Path(DEM_GDAL, this.filePrefix, "dsm.tif"), this.product, this.collection, monitor));
     }
 
     if (this.progressTask.getProcessOrtho())
     {
-      this.runProcessor(unzippedParentFolder, "odm_orthophoto",
-          new ManagedDocument("odm_orthophoto.png", task, this.product, this.collection, ImageryComponent.ORTHO, this.filePrefix),
-          new ManagedDocument("odm_orthophoto.tif", task, this.product, this.collection, ImageryComponent.ORTHO, this.filePrefix)
-      );
+      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto.png"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
     }
     
     if (this.progressTask.getProcessPtcloud())
     {
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument("odm_georeferenced_model.laz", task, this.product, this.collection, ImageryComponent.PTCLOUD, this.filePrefix));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", task, this.product, this.collection, null, this.filePrefix));
+      this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud",
-          new S3FileUpload("ept.json", task, this.collection, POTREE, this.filePrefix, false),
-          new S3FileUpload("ept-build.json", task, this.collection, POTREE, this.filePrefix, false),
-          new S3FileUpload("ept-sources", task, this.collection, POTREE, this.filePrefix, true),
-          new S3FileUpload("ept-hierarchy", task, this.collection, POTREE, this.filePrefix, true),
-          new S3FileUpload("ept-data", task, this.collection, POTREE, this.filePrefix, true)
-      );
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data.json"), this.collection, monitor, false));
     }
   }
+  
+  public static String buildS3Path(String folder, String prefix, String filename)
+  {
+    String path = folder + "/";
+    
+    if (prefix != null && prefix.length() > 0)
+    {
+      path = path + prefix + "_";
+    }
+    
+    path = path + filename;
+    
+    return path;
+  }
 
-  protected void runProcessor(CloseableFile unzippedParentFolder, String odmFolderName, Processor... processors) throws InterruptedException
+  protected void runProcessor(CloseableFile unzippedParentFolder, String odmFilePath, Processor processor) throws InterruptedException
   {
     if (Thread.interrupted())
     {
       throw new InterruptedException();
     }
 
-    File parentDir = new File(unzippedParentFolder, odmFolderName);
-
-    if (parentDir.exists())
+    File odmFile = new File(unzippedParentFolder, odmFilePath);
+    
+    if (!odmFile.exists())
     {
-      for (Processor processor : processors)
-      {
-        File file = new File(parentDir, processor.getFileName());
-  
-        if (Thread.interrupted())
-        {
-          throw new InterruptedException();
-        }
-
-        processor.process(file);
-      }
+      this.progressTask.createAction("ODM did not produce an expected file [" + odmFilePath + "].", TaskActionType.ERROR.getType());
+    }
+    else
+    {
+      processor.process(odmFile);
     }
   }
 

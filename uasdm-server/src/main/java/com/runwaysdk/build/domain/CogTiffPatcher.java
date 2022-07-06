@@ -1,27 +1,39 @@
 package com.runwaysdk.build.domain;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.StandardCopyOption;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.InMemoryMonitor;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import net.geoprism.GeoprismProperties;
 
 /**
  * Pulls all tifs from S3 and reuploads them as cog tiffs.
  * 
- * @author rich
+ * @author rrowlands
  */
 public class CogTiffPatcher
 {
   private static final Logger logger = LoggerFactory.getLogger(CogTiffPatcher.class);
   
-  public static void main(String[] args)
+  public static void main(String[] args) throws Throwable
   {
     new CogTiffPatcher().doIt();
   }
@@ -32,118 +44,77 @@ public class CogTiffPatcher
   }
   
   @Request
-  public void doIt()
+  public void doIt() throws Throwable
   {
-    File ortho = new File("/home/rich/dev/projects/uasdm/data/cogtiff/necedah_9thave_wetland/temp/non-cog-ortho.tif");
-    
-    final String basename = FilenameUtils.getBaseName(ortho.getName());
-    
-    FileUtils.deleteQuietly(new File(ortho.getParent(), basename + "-overview.tif"));
-    FileUtils.deleteQuietly(new File(ortho.getParent(), basename + "-cog.tif"));
-    
-    processFile(ortho);
+    this.refreshAllProducts();
   }
   
-  public void processFile(File file)
+  public void refreshAllProducts() throws Throwable
   {
-    final String basename = FilenameUtils.getBaseName(file.getName());
+    final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
 
-    File overview = new File(file.getParent(), basename + "-overview.tif");
-    try
-    {
-      FileUtils.copyFile(file, overview);
-    }
-    catch (IOException e)
-    {
-      logger.error("Error copying file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
-      return;
-    }
+    StringBuilder sb = new StringBuilder();
 
-    if (!this.executeProcess(new String[] {
-        "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16"
-      }))
-    {
-      logger.error("Problem occurred generating overview file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
-      return;
-    }
-    
-    // TODO : Re-run it if it fails?
-    
-    File cog = new File(file.getParent(), basename + "-cog.tif");
-    
-    if (!this.executeProcess(new String[] {
-        "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
-      }))
-    {
-      logger.error("Problem occurred generating cog file. Cog generation failed for file [" + file.getAbsolutePath() + "].");
-      return;
-    }
-  }
-  
-  protected boolean executeProcess(String[] commands)
-  {
-    boolean success = true;
-    
-    final Runtime rt = Runtime.getRuntime();
+    sb.append("SELECT FROM " + mdProduct.getDBClassName());
 
-    StringBuilder stdOut = new StringBuilder();
-    StringBuilder stdErr = new StringBuilder();
+    GraphQuery<Product> gq = new GraphQuery<Product>(sb.toString());
 
-    Thread t = new Thread()
+    List<Product> results = gq.getResults();
+    
+    List<String> errors = new LinkedList<String>();
+    
+    int num = 0;
+
+    for (Product product : results)
     {
-      public void run()
+      logger.info("Refreshing tifs for product [" + product.getName() + " : " + product.getOid() + "].");
+      
+      final CollectionIF collection = (CollectionIF) product.getComponent();
+
+      List<DocumentIF> documents = product.getDocuments();
+      
+      for (DocumentIF document : documents)
       {
-        try
+        if (document.getName().endsWith(".tif") && !document.getName().endsWith(CogTifProcessor.COG_EXTENSION))
         {
-          Process proc = rt.exec(commands);
-
-          BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-          BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-          // read the output from the command
-          String s = null;
-          while ( ( s = stdInput.readLine() ) != null)
+          logger.info("Converting [" + document.getS3location() + "] to a cog tif.");
+          
+          RemoteFileObject remote = document.download();
+          
+          try (CloseableFile tif = GeoprismProperties.newTempFile())
           {
-            stdOut.append(s + "\n");
-          }
-
-          // read any errors from the attempted command
-          while ( ( s = stdError.readLine() ) != null)
-          {
-            stdErr.append(s + "\n");
+            java.nio.file.Files.copy(
+              remote.openNewStream(),
+              tif.toPath(),
+              StandardCopyOption.REPLACE_EXISTING);
+            
+            final InMemoryMonitor monitor = new InMemoryMonitor();
+            
+            String s3Path = document.getS3location();
+            s3Path = s3Path.substring(0, s3Path.lastIndexOf(".")) + CogTifProcessor.COG_EXTENSION;
+            
+            CogTifProcessor processor = new CogTifProcessor(s3Path, product, collection, monitor);
+            processor.process(tif);
+            
+            if (monitor.getErrors().size() > 0 || WorkflowTaskStatus.ERROR.equals(monitor.getStatus()))
+            {
+              // throw new RuntimeException("Error encountered when processing [" + document.getS3location() + "] [" + document.getOid() + "].");
+              errors.addAll(monitor.getErrors());
+            }
           }
           
-        }
-        catch (Throwable t)
-        {
-          logger.error("Error occured while processing dem file with gdal.", t);
+          num = num + 1;
         }
       }
-    };
-    t.start();
-
-    try
-    {
-      t.join(10000);
-    }
-    catch (InterruptedException e)
-    {
-      logger.error("Interrupted when processing dem file with gdal", e);
-      success = false;
-    }
-
-    if (stdOut.toString().trim().length() > 0)
-    {
-      logger.info("Processed transform with gdal [" + stdOut.toString() + "].");
-    }
-
-    if (stdErr.toString().trim().length() > 0)
-    {
-      logger.error("Unexpected error while processing gdal transform [" + stdErr.toString() + "].");
-      success = false;
     }
     
-    return success;
+    if (errors.size() > 0)
+    {
+      logger.error("Patching completed. " + num + " documents were converted. The following errors were generated: \n" + StringUtils.join(errors, "\n"));
+    }
+    else
+    {
+      logger.info("Patching completed. " + num + " documents were converted.");
+    }
   }
 }

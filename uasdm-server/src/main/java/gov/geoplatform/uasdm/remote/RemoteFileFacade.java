@@ -24,6 +24,7 @@ import java.util.List;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -92,9 +93,9 @@ public class RemoteFileFacade
     return service.getSiteObjects(component, folder, objects, pageNumber, pageSize);
   }
 
-  public static void uploadFile(File child, String key, AbstractWorkflowTaskIF task)
+  public static void uploadFile(File child, String key, StatusMonitorIF monitor)
   {
-    service.uploadFile(child, key, task);
+    service.uploadFile(child, key, monitor);
   }
 
   public static void uploadFile(String key, RemoteFileMetadata metadata, InputStream stream)
@@ -107,9 +108,9 @@ public class RemoteFileFacade
     return service.calculateSize(component);
   }
 
-  public static void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  public static void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
-    service.uploadDirectory(directory, key, task, includeSubDirectories);
+    service.uploadDirectory(directory, key, monitor, includeSubDirectories);
   }
 
   public static boolean objectExists(String key)

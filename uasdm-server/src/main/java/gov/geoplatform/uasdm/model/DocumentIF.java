@@ -21,6 +21,8 @@ import org.json.JSONObject;
 
 import com.runwaysdk.ComponentIF;
 
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+
 public interface DocumentIF extends ComponentIF, JSONSerializable
 {
 
@@ -49,5 +51,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
   public String getDescription();
 
   public String getTool();
+  
+  public RemoteFileObject download();
 
 }

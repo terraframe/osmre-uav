@@ -49,6 +49,7 @@ import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -517,7 +518,7 @@ public class Product extends ProductBase implements ProductIF
     {
       Document gdoc = (Document) document;
 
-      if (gdoc.getName().endsWith((".tif")))
+      if (gdoc.getName().endsWith((CogTifProcessor.COG_EXTENSION)))
       {
         mappableDocs.add(gdoc);
       }

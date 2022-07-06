@@ -17,9 +17,10 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
+import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
@@ -63,12 +64,14 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
       {
-        new GdalTransformProcessor(FilenameUtils.getBaseName(file.getName()) + ".png", this, product, collection, ImageryComponent.ORTHO, null).process(file);
+        // TODO : Detect if cog
+        
+        new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + FilenameUtils.getBaseName(file.getName()) + ".png", product, collection, new WorkflowTaskMonitor(this)).process(file);
       }
 
       if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
       {
-        new HillshadeProcessor("dsm.tif", this, product, collection, ODMZipPostProcessor.DEM_GDAL, null).process(file);
+        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm.tif", product, collection, new WorkflowTaskMonitor(this)).process(file);
       }
 
       if (product.getPublished())

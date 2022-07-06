@@ -3,24 +3,27 @@ package gov.geoplatform.uasdm.processing;
 import java.io.File;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
 public class HillshadeProcessor extends SystemProcessProcessor
 {
-  public HillshadeProcessor(String filename, AbstractWorkflowTask progressTask, Product product, CollectionIF collection, String s3FolderName, String prefix)
+  private Logger logger = LoggerFactory.getLogger(HillshadeProcessor.class);
+  
+  public HillshadeProcessor(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
-    super(filename, progressTask, product, collection, s3FolderName, prefix, false);
+    super(s3Path, product, collection, monitor, false);
   }
 
   @Override
-  public void processFile(File file)
+  public void process(File file)
   {
     final String basename = FilenameUtils.getBaseName(file.getName());
 
-    File hillshade = new File(file.getParent(), basename + "-gdal.tif");
+    File hillshade = new File(file.getParent(), basename + "-gdal" + CogTifProcessor.COG_EXTENSION);
 
     this.executeProcess(new String[] {
         "gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath()
@@ -28,7 +31,12 @@ public class HillshadeProcessor extends SystemProcessProcessor
 
     if (hillshade.exists())
     {
-      super.processFile(hillshade);
+      super.process(hillshade);
+    }
+    else
+    {
+      logger.info("Problem occurred generating gdal transform. Hillshade file did not exist at [" + hillshade.getAbsolutePath() + "].");
+      monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
     }
   }
 }
