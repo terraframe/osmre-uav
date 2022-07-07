@@ -21,9 +21,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,7 @@ import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -236,16 +239,21 @@ public class Product extends ProductBase implements ProductIF
   public BBoxView calculateBoundingBox()
   {
     DocumentIF mappable = null;
-
-    for (DocumentIF loop : this.getMappableDocuments())
+    
+    List<DocumentIF> mappables = this.getMappableDocuments();
+    
+    Optional<DocumentIF> ortho = mappables.stream().filter(doc -> doc.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)).findFirst();
+    Optional<DocumentIF> hillshade = mappables.stream().filter(doc -> doc.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION)).findFirst();
+    
+    if (ortho.isPresent())
     {
-      if (loop.getName().contains("ortho/"))
-      {
-        mappable = loop;
-      }
+      mappable = ortho.get();
     }
-
-    if (mappable == null)
+    else if (hillshade.isPresent())
+    {
+      mappable = hillshade.get();
+    }
+    else
     {
       return null;
     }
@@ -513,12 +521,13 @@ public class Product extends ProductBase implements ProductIF
   {
     List<DocumentIF> mappableDocs = new ArrayList<DocumentIF>();
     List<DocumentIF> documents = this.getDocuments();
-
+    
     for (DocumentIF document : documents)
     {
       Document gdoc = (Document) document;
 
-      if (gdoc.getName().endsWith((CogTifProcessor.COG_EXTENSION)))
+      if (gdoc.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
+          || gdoc.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION))
       {
         mappableDocs.add(gdoc);
       }

@@ -38,28 +38,37 @@ import gov.geoplatform.uasdm.model.ProductIF;
 public class CloudOptimizedGeoTiff
 {
   
+  /**
+   * -90 to 90 for latitude and -180 to 180 for longitude
+   */
   public static class BBoxView
   {
-    String minx;
-    String maxx;
-    String miny;
-    String maxy;
+    double minLat;
+    double maxLat;
+    double minLong;
+    double maxLong;
     
-    public BBoxView(String minx, String maxx, String miny, String maxy)
+    public BBoxView(double minLong, double minLat, double maxLong, double maxLat)
     {
-      this.minx = minx;
-      this.maxx = maxx;
-      this.miny = miny;
-      this.maxy = maxy;
+      this.minLat = minLat;
+      this.maxLat = maxLat;
+      this.minLong = minLong;
+      this.maxLong = maxLong;
     }
     
+    /**
+     * Perhaps Geoserver was returning bounding boxes of this format way back in the day? I dunno but
+     * Mapbox expects [[long, lat], [long, lat]], and our front-end converts from this obscure format
+     * to what Mapbox needs. Without patching a bunch of data though we're stuck with this internal format
+     * on product.boundingBox.
+     */
     public JSONArray toJSON()
     {
       JSONArray ja = new JSONArray();
-      ja.put(this.minx);
-      ja.put(this.maxx);
-      ja.put(this.miny);
-      ja.put(this.maxy);
+      ja.put(this.minLong);
+      ja.put(this.maxLong);
+      ja.put(this.minLat);
+      ja.put(this.maxLat);
       return ja;
     }
   }
@@ -94,9 +103,12 @@ public class CloudOptimizedGeoTiff
         bboxStream = authenticatedInvokeURL(new URI(AppProperties.getTitilerPrivateUrl()), "/cog/bounds", parameters);
       }
       
-      JSONArray jaBbox = new JSONArray(IOUtils.toString(bboxStream, "UTF-8"));
+      String sBbox = IOUtils.toString(bboxStream, "UTF-8");
       
-      return new BBoxView(jaBbox.getString(0), jaBbox.getString(1), jaBbox.getString(2), jaBbox.getString(3));
+      // {"bounds":[-111.12441929215683,39.32065294027042,-111.12343879151011,39.32106566894064]}
+      JSONArray jaBbox = new JSONObject(sBbox).getJSONArray("bounds");
+      
+      return new BBoxView(jaBbox.getDouble(0), jaBbox.getDouble(1), jaBbox.getDouble(2), jaBbox.getDouble(3));
     }
     catch(IOException | URISyntaxException e)
     {

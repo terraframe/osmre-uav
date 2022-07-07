@@ -10,18 +10,20 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
-abstract public class SystemProcessProcessor extends ManagedDocument
+public class SystemProcessExecutor
 {
 
-  private static final Logger logger = LoggerFactory.getLogger(SystemProcessProcessor.class);
+  private static final Logger logger = LoggerFactory.getLogger(SystemProcessExecutor.class);
+  
+  private StatusMonitorIF monitor;
   
   private StringBuilder stdOut = null;
   
   private StringBuilder stdErr = null;
   
-  public SystemProcessProcessor(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
+  public SystemProcessExecutor(StatusMonitorIF monitor)
   {
-    super(s3Path, product, collection, monitor, searchable);
+    this.monitor = monitor;
   }
   
   public String getStdOut()
@@ -34,7 +36,7 @@ abstract public class SystemProcessProcessor extends ManagedDocument
     return stdErr.toString().trim();
   }
   
-  protected boolean executeProcess(String[] commands)
+  public boolean execute(String[] commands)
   {
     final Runtime rt = Runtime.getRuntime();
 
@@ -81,7 +83,10 @@ abstract public class SystemProcessProcessor extends ManagedDocument
     }
     catch (InterruptedException e)
     {
-      this.monitor.addError("Interrupted when invoking system process.");
+      if (this.monitor != null)
+      {
+        this.monitor.addError("Interrupted when invoking system process.");
+      }
       logger.info("Interrupted when invoking system process", e);
       return false;
     }
@@ -93,7 +98,12 @@ abstract public class SystemProcessProcessor extends ManagedDocument
 
     if (this.getStdErr().length() > 0)
     {
-      this.monitor.addError("Unexpected error invoking system process [" + this.getStdErr() + "].");
+      String msg = "Unexpected error invoking system process [" + this.getStdErr() + "].";
+      if (this.monitor != null)
+      {
+        this.monitor.addError(msg);
+      }
+      logger.info(msg);
       return false;
     }
     

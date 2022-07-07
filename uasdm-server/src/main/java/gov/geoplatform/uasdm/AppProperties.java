@@ -56,6 +56,11 @@ public class AppProperties
       return getInstance().props;
     }
   }
+  
+  public static String getCogValidatorCommand()
+  {
+    return Singleton.getProps().getString("cog.validator.cmd", "python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py {cog_file}");
+  }
 
   public static String getTitilerPrivateUrl()
   {

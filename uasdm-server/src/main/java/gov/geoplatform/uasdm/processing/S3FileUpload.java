@@ -47,11 +47,12 @@ public class S3FileUpload implements Processor
   }
   
   @Override
-  public void process(File file)
+  public boolean process(File file)
   {
     if (!file.exists())
     {
       this.monitor.addError("S3 uploader expected file [" + file.getAbsolutePath() + "] to exist.");
+      return false;
     }
     
     String key = this.getS3Key(file);
@@ -66,6 +67,8 @@ public class S3FileUpload implements Processor
     }
 
     CollectionReport.updateSize((CollectionIF) this.collection);
+    
+    return true;
   }
   
   protected String getS3Key(File file)

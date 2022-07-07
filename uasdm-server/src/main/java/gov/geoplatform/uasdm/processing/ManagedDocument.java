@@ -31,17 +31,24 @@ public class ManagedDocument extends S3FileUpload
     this.searchable = searchable;
     this.product = product;
   }
+  
+  protected ManagedDocumentTool getTool()
+  {
+    return ManagedDocumentTool.ODM;
+  }
 
   @Override
-  public void process(File file)
+  public boolean process(File file)
   {
-    super.process(file);
+    boolean success = super.process(file);
     
     if (!file.isDirectory())
     {
       String key = this.getS3Key(file);
       
-      DocumentIF document = this.collection.createDocumentIfNotExist(key, file.getName(), null, "ODM");
+      String documentName = key.substring(key.lastIndexOf("/") + 1);
+      
+      DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, null, this.getTool().name());
       
       final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);
 
@@ -49,8 +56,10 @@ public class ManagedDocument extends S3FileUpload
 
       if (searchable)
       {
-        SolrService.updateOrCreateDocument(this.collection.getAncestors(), this.collection, key, file.getName());
+        SolrService.updateOrCreateDocument(this.collection.getAncestors(), this.collection, key, documentName);
       }
     }
+    
+    return success;
   }
 }
