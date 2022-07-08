@@ -44,7 +44,7 @@ public class ManagedDocument extends S3FileUpload
     
     if (!file.isDirectory())
     {
-      String key = this.getS3Key(file);
+      String key = this.getS3Key();
       
       String documentName = key.substring(key.lastIndexOf("/") + 1);
       

@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.graph;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONObject;
 
@@ -31,8 +32,11 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -69,19 +73,29 @@ public class Document extends DocumentBase implements DocumentIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
-    Product product = this.getProductHasDocumentParentProducts().get(0);
-
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getBucketName(), this.getComponent()).doIt();
       
-      if (product.getPublished())
+      if (this.isMappable())
       {
-        new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
+        Optional<Product> product = this.getProductHasDocumentParentProducts().stream().findFirst();
+        
+        if (product.isPresent() && product.get().getPublished())
+        {
+          new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
+        }
       }
     }
 
     super.delete();
+  }
+  
+  @Override
+  public boolean isMappable()
+  {
+    return this.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
+        || this.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION);
   }
   
   public RemoteFileObject download()

@@ -53,5 +53,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
   public String getTool();
   
   public RemoteFileObject download();
+  
+  public boolean isMappable();
 
 }

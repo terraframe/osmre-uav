@@ -524,12 +524,9 @@ public class Product extends ProductBase implements ProductIF
     
     for (DocumentIF document : documents)
     {
-      Document gdoc = (Document) document;
-
-      if (gdoc.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
-          || gdoc.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION))
+      if (document.isMappable())
       {
-        mappableDocs.add(gdoc);
+        mappableDocs.add(document);
       }
     }
 

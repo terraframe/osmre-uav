@@ -55,7 +55,7 @@ public class S3FileUpload implements Processor
       return false;
     }
     
-    String key = this.getS3Key(file);
+    String key = this.getS3Key();
     
     if (file.isDirectory())
     {
@@ -71,7 +71,7 @@ public class S3FileUpload implements Processor
     return true;
   }
   
-  protected String getS3Key(File file)
+  protected String getS3Key()
   {
     String key = this.collection.getS3location() + this.s3Path;
     

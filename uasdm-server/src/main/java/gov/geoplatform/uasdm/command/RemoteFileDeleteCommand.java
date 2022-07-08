@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.Command;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -39,6 +40,7 @@ public class RemoteFileDeleteCommand implements Command
   {
     this.key = key;
     this.component = component;
+    this.bucket = AppProperties.getBucketName();
   }
 
   public RemoteFileDeleteCommand(String key, String bucket, UasComponentIF component)
