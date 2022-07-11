@@ -46,6 +46,8 @@ public class ProductView
   
   private boolean        hasPointcloud;
   
+  private boolean        hasAllZip;
+  
   private List<DocumentIF> mappables;
   
   public String getId()
@@ -96,6 +98,16 @@ public class ProductView
   public void setHasPointcloud(boolean hasPointcloud)
   {
     this.hasPointcloud = hasPointcloud;
+  }
+  
+  public boolean isHasAllZip()
+  {
+    return hasAllZip;
+  }
+
+  public void setHasAllZip(boolean hasAllZip)
+  {
+    this.hasAllZip = hasAllZip;
   }
 
   public String getBoundingBox()
@@ -193,6 +205,8 @@ public class ProductView
     }
     
     object.put("hasPointcloud", this.hasPointcloud);
+    
+    object.put("hasAllZip", this.hasAllZip);
     
     return object;
   }
