@@ -372,4 +372,10 @@ public class Product extends ProductBase implements ProductIF
       return new LinkedList<ProductIF>(it.getAll());
     }
   }
+
+  @Override
+  public List<DocumentIF> getDocuments()
+  {
+    throw new UnsupportedOperationException();
+  }
 }

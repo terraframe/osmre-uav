@@ -137,9 +137,6 @@ public class ODMZipPostProcessor
       processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
           "dsm.tif", "dtm.tif"
       }));
-      processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
-          "dsm.tif", "dtm.tif"
-      }));
 
       processingConfigs.add(new DemGdalProcessor("odm_dem", DEM_GDAL, new String[] {
           "dsm.tif"

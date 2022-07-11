@@ -59,4 +59,6 @@ public interface ProductIF extends ComponentIF
 
   public void togglePublished();
 
+  public List<DocumentIF> getDocuments();
+
 }
