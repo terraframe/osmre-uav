@@ -234,4 +234,10 @@ public class Product extends ProductBase implements ProductIF
   {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public List<DocumentIF> getDocuments()
+  {
+    throw new UnsupportedOperationException();
+  }
 }

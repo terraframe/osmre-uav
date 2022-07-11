@@ -23,6 +23,7 @@
 
 .map-service-col {
     width: 300px;
+    word-break: break-word;
 }
 
 td,
