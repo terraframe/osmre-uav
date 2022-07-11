@@ -15,8 +15,14 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NewResponse extends ODMResponse
 {
+  
+  private Logger logger = LoggerFactory.getLogger(NewResponse.class);
 
   private String uuid;
   
@@ -39,6 +45,13 @@ public class NewResponse extends ODMResponse
     }
     else
     {
+      JSONObject jo = http.getJSONObject();
+      
+      if (jo == null || !jo.has("uuid"))
+      {
+        throw new UnexpectedODMResponseException(jo == null ? null : jo.toString());
+      }
+      
       return http.getJSONObject().getString("uuid");
     }
   }

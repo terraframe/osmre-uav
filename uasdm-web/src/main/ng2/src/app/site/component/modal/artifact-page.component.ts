@@ -7,6 +7,7 @@ import { ManagementService } from '@site/service/management.service';
 
 import { UploadModalComponent } from './upload-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { BasicConfirmModalComponent } from '@shared/component';
 
 declare var acp: string;
 
@@ -29,6 +30,8 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	};
 
 	@Output() onError = new EventEmitter<HttpErrorResponse>();
+
+	loading = false;
 
 	artifacts: CollectionArtifacts;
 
@@ -75,7 +78,11 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	}
 
 	loadArtifacts(): void {
+		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(artifacts => {
+
+			this.loading = false;
+
 			this.artifacts = artifacts;
 
 			this.config.processDem = (this.artifacts.dem == null);
@@ -176,13 +183,26 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		// });
 	}
 
-	handleRemove(folderName: string): void {
+	handleRemove(section: { label: string, folder: string }): void {
 
-		this.service.removeArtifacts(this.entity.id, folderName).then(artifacts => {
-			this.artifacts = artifacts;
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
+		const modal = this.modalService.show(BasicConfirmModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
 		});
+		modal.content.message = 'Do you want to delete the [' + section.label + '] products? This action cannot be undone.';
+		modal.content.type = 'DANGER';
+		modal.content.submitText = 'Delete';
+
+		modal.content.onConfirm.subscribe(() => {
+			this.service.removeArtifacts(this.entity.id, section.folder).then(artifacts => {
+				this.artifacts = artifacts;
+			}).catch((err: HttpErrorResponse) => {
+				this.error(err);
+			});
+		});
+
+
 
 		// const modal = this.modalService.show(UploadModalComponent, {
 		// 	animated: true,
