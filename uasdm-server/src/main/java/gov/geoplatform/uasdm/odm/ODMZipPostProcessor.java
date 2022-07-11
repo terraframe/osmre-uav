@@ -133,7 +133,7 @@ public class ODMZipPostProcessor
     if (this.uploadTask.getProcessDem())
     {
       this.collection.removeArtifacts(ImageryComponent.DEM);
-      
+
       processingConfigs.add(new ManagedDocument("odm_dem", ImageryComponent.DEM, new String[] {
           "dsm.tif", "dtm.tif"
       }));
@@ -181,7 +181,7 @@ public class ODMZipPostProcessor
     final String folderName = "odm-" + FilenameUtils.getName(s3Location) + "-" + new Random().nextInt();
 
     this.product = (Product) this.collection.createProductIfNotExist();
-//    product.clear();
+    // product.clear();
 
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
     {
@@ -227,6 +227,8 @@ public class ODMZipPostProcessor
     product.createImageService(true);
 
     product.updateBoundingBox();
+
+    IndexService.createStacItems(product);
 
     return this.product;
   }

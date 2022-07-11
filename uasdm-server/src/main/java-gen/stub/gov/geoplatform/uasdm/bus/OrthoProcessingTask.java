@@ -17,6 +17,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.GdalProcessor;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
 {
@@ -62,6 +63,8 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       product.createImageService(true);
 
       product.updateBoundingBox();
+
+      IndexService.createStacItems(product);
 
       this.appLock();
       this.setStatus(ODMStatus.COMPLETED.getLabel());

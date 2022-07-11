@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
@@ -47,6 +48,9 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -54,14 +58,19 @@ import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
 import gov.geoplatform.uasdm.geoserver.GeoserverLayer.LayerClassification;
 import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.geoserver.ImageMosaicPublisher;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.model.StacItem.Properties;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.gis.geoserver.GeoserverFacade;
 
@@ -117,6 +126,8 @@ public class Product extends ProductBase implements ProductIF
     }
 
     CollectionReport.handleDelete(this);
+
+    IndexService.removeStacItems(this);
 
     super.delete();
   }
@@ -372,6 +383,20 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
+  public Envelope getEnvelope()
+  {
+    String bbox = this.getBoundingBox();
+
+    if (bbox != null && bbox.length() > 0)
+    {
+      JSONArray array = new JSONArray(bbox);
+
+      return new Envelope(array.getDouble(0), array.getDouble(1), array.getDouble(2), array.getDouble(3));
+    }
+
+    return null;
+  }
+
   public String getImageKey()
   {
     return this.imageKey;
@@ -619,6 +644,76 @@ public class Product extends ProductBase implements ProductIF
     }
 
     return layers;
+  }
+
+  @Override
+  public StacItem toStacItem()
+  {
+    List<DocumentIF> documents = this.getDocuments();
+
+    UasComponent component = this.getComponent();
+
+    if (component instanceof CollectionIF)
+    {
+
+      List<UasComponentIF> ancestors = component.getAncestors();
+
+      Envelope envelope = this.getEnvelope();
+
+      StacItem item = new StacItem();
+      item.setId(this.getOid());
+      if (envelope != null)
+      {
+        item.setBbox(envelope);
+        item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
+      }
+
+      Properties properties = new Properties();
+      properties.setTitle(component.getName());
+      properties.setCollection(component.getName());
+      properties.setDescription(component.getDescription());
+      properties.setDatetime( ( (Collection) component ).getCollectionDate());
+
+      item.setProperties(properties);
+
+      for (UasComponentIF ancestor : ancestors)
+      {
+        properties.set(ancestor.getSolrNameField(), ancestor.getName());
+      }
+
+      for (DocumentIF document : documents)
+      {
+        String location = document.getS3location();
+        if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
+        {
+          // TODO Handle assetName buckets
+          String assetName = FilenameUtils.getBaseName(document.getName());
+          String ext = FilenameUtils.getExtension(document.getName());
+
+          String type = "image/tiff; application=geotiff;";
+
+          if (ext.toUpperCase().equals("PNG"))
+          {
+            type = "image/png";
+            assetName = "thumbnail";
+          }
+          else if (ext.toUpperCase().equals("COG.TIF"))
+          {
+            type = "image/tiff; application=geotiff; profile=cloud-optimized";
+            assetName = "cog";
+          }
+
+          String title = ext.toUpperCase().equals("PNG") ? "Thumbnail" : "Visual";
+          String role = "visual";
+
+          item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
+        }
+      }
+
+      return item;
+    }
+
+    return null;
   }
 
   public static List<ProductIF> getProducts()

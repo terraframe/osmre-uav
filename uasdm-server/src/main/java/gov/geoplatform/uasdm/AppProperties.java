@@ -104,12 +104,12 @@ public class AppProperties
 
   public static String getElasticsearchSchema()
   {
-    return Singleton.getProps().getString("elasticsearch.host", "https");
+    return Singleton.getProps().getString("elasticsearch.schema", "https");
   }
 
   public static int getElasticsearchPort()
   {
-    return Singleton.getProps().getInteger("elasticsearch.host", 9200);
+    return Singleton.getProps().getInteger("elasticsearch.port", 9200);
   }
 
   public static String getElasticsearchUsername()

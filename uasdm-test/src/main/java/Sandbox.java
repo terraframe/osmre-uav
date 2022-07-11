@@ -17,8 +17,10 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -26,6 +28,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
@@ -40,6 +43,9 @@ import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
+import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
@@ -49,7 +55,6 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
-import gov.geoplatform.uasdm.index.elastic.ElasticDocument;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
 import gov.geoplatform.uasdm.model.StacItem;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -64,9 +69,11 @@ public class Sandbox
   {
     ObjectMapper mapper = new ObjectMapper();
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
-    StacItem result = mapper.readValue(new File("/home/jsmethie/git/osmre-uav/uasdm-test/src/test/resources/stac_item.json"), StacItem.class);
-    // mapper.writeValue(System.out, result);
-    System.out.println(mapper.writeValueAsString(result));
+    // StacItem result = mapper.readValue(new
+    // File("/home/jsmethie/git/osmre-uav/uasdm-test/src/test/resources/stac_item.json"),
+    // StacItem.class);
+    // // mapper.writeValue(System.out, result);
+    // System.out.println(mapper.writeValueAsString(result));
 
     final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
     credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "JzhlvgF9NTA5JSoM7N7E"));
@@ -89,13 +96,46 @@ public class Sandbox
       // And create the API client
       ElasticsearchClient client = new ElasticsearchClient(transport);
 
-//      client.index(i -> i.index("stac").document(result));
+      // client.indices().delete(i ->
+      // i.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      // client.indices().create(i ->
+      // i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m ->
+      // m.properties("geometry", p -> p.geoShape(v ->
+      // v)).properties("properties.datetime", p -> p.date(v -> v))));
+      // GetIndexResponse response = client.indices().get(g ->
+      // g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      //
+      // System.out.println(response);
 
-      SearchResponse<StacItem> search = client.search(s -> s.index("stac").query(q -> q.queryString(m -> m.fields("properties.title").query("Core*"))), StacItem.class);
+      // client.index(i -> i.index("stac").ma);
 
+      // client.index(i -> i.index("stac").document(result));
+      final String text = "DDD";
+
+      SearchResponse<StacItem> search = client.search(s -> s.index(ElasticSearchIndex.STAC_INDEX_NAME).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
+        HashMap<String, Query> map = new HashMap<String, Query>();
+//        map.put("error",  new Query.Builder().match(m -> m.field("site").query(text)).build());
+        map.put("site_count",  new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("mission_count",  new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        
+        return b.keyed(map);
+      })))
+//      .query(q -> q.queryString(m -> m.fields("properties.site", "project", "mission", "collection").query("text")))
+      , StacItem.class);
+      
+      Map<String, Aggregate> aggregations = search.aggregations();
+      
+      Aggregate totals = aggregations.get("totals");
+      
+      Map<String, FiltersBucket> child = totals.filters().buckets().keyed();
+      FiltersBucket temp = child.get("site_count");
+      System.out.println(totals);
+      System.out.println(temp);
+      
+      
       HitsMetadata<StacItem> metadata = search.hits();
 
-      System.out.println(metadata.total());
+      System.out.println(metadata.total());      
 
       List<Hit<StacItem>> hits = metadata.hits();
 
@@ -103,9 +143,7 @@ public class Sandbox
       {
         StacItem source = hit.source();
 
-        System.out.println(hit.id());
-        System.out.println(source.getId());
-        System.out.println(source.getGeometry());
+        System.out.println(mapper.writeValueAsString(source));
       }
     }
 

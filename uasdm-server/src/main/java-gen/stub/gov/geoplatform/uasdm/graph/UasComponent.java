@@ -468,6 +468,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         product.delete();
       });
     }
+    else
+    {
+      // Re-index the products
+      this.getProducts().forEach(product -> {
+        IndexService.createStacItems(product);
+      });
+    }
   }
 
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
@@ -661,14 +668,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       }
     }
 
-
     final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString(), parameters);
     final List<Site> sites = query.getResults();
 
     StringWriter sWriter = new StringWriter();
     JSONWriter writer = new JSONWriter(sWriter);
 
-   
     writer.object();
 
     writer.key("type");
@@ -840,12 +845,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
 
     statement.append(")");
-    
+
     if (sortField.equals(Product.LASTUPDATEDATE))
     {
       statement.append("  ORDER BY " + sortField + " " + sortOrder);
     }
-
 
     final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());

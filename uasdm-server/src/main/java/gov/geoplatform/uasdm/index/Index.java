@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.index;
 import java.io.File;
 import java.util.List;
 
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -25,4 +26,8 @@ public interface Index
   public List<QueryResult> query(String text);
 
   public void shutdown();
+
+  public void createStacItems(ProductIF product);
+
+  public void removeStacItems(ProductIF product);
 }

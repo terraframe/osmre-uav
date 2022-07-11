@@ -176,4 +176,9 @@ public class Document extends DocumentBase implements DocumentIF
     return object;
   }
 
+  @Override
+  public String toString()
+  {
+    return this.getS3location();
+  }
 }

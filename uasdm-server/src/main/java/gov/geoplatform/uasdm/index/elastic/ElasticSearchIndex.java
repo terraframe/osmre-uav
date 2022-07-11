@@ -16,10 +16,13 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -28,14 +31,20 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.QueryResult;
 
 public class ElasticSearchIndex implements Index
 {
-  public static String INDEX_NAME = "components";
+  private static Logger logger = LoggerFactory.getLogger(ElasticSearchIndex.class);
+
+  public static String COMPONENT_INDEX_NAME = "components";
+
+  public static String STAC_INDEX_NAME = "stac";
 
   private RestClient restClient;
 
@@ -89,7 +98,7 @@ public class ElasticSearchIndex implements Index
     try
     {
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(INDEX_NAME).query(q -> q.term(t -> t.field(fieldId).value(v -> v.stringValue(oid)))).build());
+      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> q.term(t -> t.field(fieldId).value(v -> v.stringValue(oid)))).build());
     }
     catch (IOException e)
     {
@@ -102,7 +111,7 @@ public class ElasticSearchIndex implements Index
     try
     {
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))).build());
+      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))).build());
     }
     catch (IOException e)
     {
@@ -129,7 +138,7 @@ public class ElasticSearchIndex implements Index
         document.populate(ancestor.getSolrNameField(), ancestor.getName());
       }
 
-      client.index(i -> i.index(INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
+      client.index(i -> i.index(COMPONENT_INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
 
     }
     catch (IOException e)
@@ -161,7 +170,7 @@ public class ElasticSearchIndex implements Index
         document.populate(ancestor.getSolrNameField(), ancestor.getName());
       }
 
-      client.index(i -> i.index(INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
+      client.index(i -> i.index(COMPONENT_INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
 
     }
     catch (IOException e)
@@ -176,7 +185,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      SearchResponse<ElasticDocument> search = client.search(s -> s.index(INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))), ElasticDocument.class);
+      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))), ElasticDocument.class);
 
       for (Hit<ElasticDocument> hit : search.hits().hits())
       {
@@ -197,7 +206,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
     }
     catch (IOException e)
     {
@@ -211,7 +220,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source.description='" + component.getDescription() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source.description='" + component.getDescription() + "'"))));
     }
     catch (IOException e)
     {
@@ -242,7 +251,7 @@ public class ElasticSearchIndex implements Index
         document.populate(ancestor.getSolrNameField(), ancestor.getName());
       }
 
-      client.index(i -> i.index(INDEX_NAME).id(UUID.randomUUID().toString()).document(document));
+      client.index(i -> i.index(COMPONENT_INDEX_NAME).id(UUID.randomUUID().toString()).document(document));
     }
     catch (IOException e)
     {
@@ -260,7 +269,7 @@ public class ElasticSearchIndex implements Index
       {
         ElasticsearchClient client = createClient();
 
-        SearchResponse<ElasticDocument> search = client.search(s -> s.index(INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
+        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
 
         for (Hit<ElasticDocument> hit : search.hits().hits())
         {
@@ -289,5 +298,43 @@ public class ElasticSearchIndex implements Index
     result.addItem(document.getCollectionId(), document.getCollectionName());
 
     return result;
+  }
+
+  @Override
+  public void createStacItems(ProductIF product)
+  {
+    StacItem item = product.toStacItem();
+
+    if (item != null)
+    {
+      try
+      {
+        ElasticsearchClient client = createClient();
+
+        client.index(i -> i.index(STAC_INDEX_NAME).id(product.getOid()).document(item));
+      }
+      catch (IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+  }
+
+  @Override
+  public void removeStacItems(ProductIF product)
+  {
+    try
+    {
+      ElasticsearchClient client = createClient();
+      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(STAC_INDEX_NAME).query(q -> q.match(m -> m.field("id").query(product.getOid()))).build());
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
   }
 }

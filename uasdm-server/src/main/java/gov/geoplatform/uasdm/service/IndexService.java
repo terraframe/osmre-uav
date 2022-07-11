@@ -18,23 +18,9 @@ package gov.geoplatform.uasdm.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CursorMarkParams;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -44,12 +30,9 @@ import org.xml.sax.SAXException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.Site;
-import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
-import gov.geoplatform.uasdm.index.solr.SolrIndex;
-import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -122,7 +105,7 @@ public class IndexService
 
     return new LinkedList<QueryResult>();
   }
-  
+
   public static void shutdown()
   {
     if (AppProperties.isSolrEnabled())
@@ -130,9 +113,25 @@ public class IndexService
       index.shutdown();
     }
   }
+
+  public static void createStacItems(ProductIF product)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      index.createStacItems(product);
+    }
+  }
+  
+  public static void removeStacItems(ProductIF product)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      index.removeStacItems(product);
+    }    
+  }
+  
   
 
-  
   public static String getContent(File metadata)
   {
     try

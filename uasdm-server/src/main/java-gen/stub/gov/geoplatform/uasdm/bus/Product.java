@@ -29,6 +29,7 @@ import com.runwaysdk.query.QueryFactory;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class Product extends ProductBase implements ProductIF
@@ -361,6 +362,12 @@ public class Product extends ProductBase implements ProductIF
 //        }
 //      }
 //    }
+  }
+  
+  @Override
+  public StacItem toStacItem()
+  {
+    return null;
   }
 
   public static List<ProductIF> getProduct()

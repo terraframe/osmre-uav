@@ -26,6 +26,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.index.Index;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -415,5 +416,15 @@ public class SolrIndex implements Index
     }
 
     return results;
+  }
+  
+  @Override
+  public void createStacItems(ProductIF product)
+  {
+  }
+  
+  @Override
+  public void removeStacItems(ProductIF product)
+  {
   }
 }
