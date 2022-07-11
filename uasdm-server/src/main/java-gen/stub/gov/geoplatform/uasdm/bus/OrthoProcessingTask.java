@@ -74,13 +74,6 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
         if (!new CogTifValidator().isValidCog(file))
         {
           new CogTifProcessor(ImageryComponent.ORTHO + "/" + basename + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(file);
-          
-//          if (!new CogTifProcessor(ImageryComponent.ORTHO + "/" + basename + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(file))
-//          {
-//            // Fallback! If the cog tif processing fails, we're going to just upload the regular tiff to the cog tif location. That way they can at least view a basic ortho.
-//            // This usecase can happen if for example the cog validator is not installed.
-//            new S3FileUpload(ImageryComponent.ORTHO + "/" + basename + CogTifProcessor.COG_EXTENSION, collection, monitor, false).process(file);
-//          }
         }
         
         new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + basename + ".png", product, collection, monitor).process(file);
@@ -88,7 +81,16 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
       if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
       {
-        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm.tif", product, collection, new WorkflowTaskMonitor(this)).process(file);
+        if (!new CogTifValidator().isValidCog(file))
+        {
+          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
+            .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
+            .process(file);
+        }
+        else
+        {
+          new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)).process(file);
+        }
       }
 
       if (product.getPublished())

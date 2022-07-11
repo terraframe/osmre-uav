@@ -67,6 +67,10 @@ public class Product extends ProductBase implements ProductIF
 
   public static final String ODM_ALL_DIR = "odm_all";
 
+  public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
+  
+  public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
+
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
 
   private static final long serialVersionUID = -1476643617;
@@ -240,10 +244,8 @@ public class Product extends ProductBase implements ProductIF
   {
     DocumentIF mappable = null;
     
-    List<DocumentIF> mappables = this.getMappableDocuments();
-    
-    Optional<DocumentIF> ortho = mappables.stream().filter(doc -> doc.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)).findFirst();
-    Optional<DocumentIF> hillshade = mappables.stream().filter(doc -> doc.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION)).findFirst();
+    Optional<DocumentIF> ortho = this.getMappableOrtho();
+    Optional<DocumentIF> hillshade = this.getMappableDEM();
     
     if (ortho.isPresent())
     {
@@ -515,6 +517,16 @@ public class Product extends ProductBase implements ProductIF
         this.imageKey = document.getS3location();
       }
     }
+  }
+  
+  public Optional<DocumentIF> getMappableOrtho()
+  {
+    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
+  }
+  
+  public Optional<DocumentIF> getMappableDEM()
+  {
+    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_DEM_REGEX)).findAny();
   }
 
   public List<DocumentIF> getMappableDocuments()

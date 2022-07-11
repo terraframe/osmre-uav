@@ -15,10 +15,13 @@
  */
 package gov.geoplatform.uasdm.remote;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.openide.util.io.NullInputStream;
+
+import com.runwaysdk.resource.CloseableFile;
 
 public class MockRemoteFileObject implements RemoteFileObject
 {
@@ -36,14 +39,62 @@ public class MockRemoteFileObject implements RemoteFileObject
   }
 
   @Override
-  public void close() throws IOException
+  public void close()
   {
   }
-  
+
   @Override
-  public String getFilename()
+  public InputStream openNewStream()
   {
-    return "";
+    return null;
+  }
+
+  @Override
+  public CloseableFile openNewFile()
+  {
+    return null;
+  }
+
+  @Override
+  public File getUnderlyingFile()
+  {
+    return null;
+  }
+
+  @Override
+  public String getName()
+  {
+    return null;
+  }
+
+  @Override
+  public String getBaseName()
+  {
+    return null;
+  }
+
+  @Override
+  public String getNameExtension()
+  {
+    return null;
+  }
+
+  @Override
+  public boolean isRemote()
+  {
+    return false;
+  }
+
+  @Override
+  public void delete()
+  {
+    
+  }
+
+  @Override
+  public String getAbsolutePath()
+  {
+    return null;
   }
 
 }

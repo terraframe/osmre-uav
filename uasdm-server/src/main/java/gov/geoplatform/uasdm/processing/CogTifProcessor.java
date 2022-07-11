@@ -20,6 +20,8 @@ public class CogTifProcessor extends ManagedDocument
   
   private Logger logger = LoggerFactory.getLogger(CogTifProcessor.class);
   
+  private Processor downstream = null;
+  
   public CogTifProcessor(String s3path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
     super(s3path, product, collection, monitor, false);
@@ -29,6 +31,12 @@ public class CogTifProcessor extends ManagedDocument
   protected ManagedDocumentTool getTool()
   {
     return ManagedDocumentTool.GDAL;
+  }
+  
+  public CogTifProcessor addDownstream(Processor downstreamProcessor)
+  {
+    this.downstream = downstreamProcessor;
+    return this;
   }
 
   @Override
@@ -51,9 +59,7 @@ public class CogTifProcessor extends ManagedDocument
 
     try
     {
-      final SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
-      
-      if (!exec.execute(new String[] {
+      if (!new SystemProcessExecutor(this.monitor).execute(new String[] {
           "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16"
         }))
       {
@@ -67,8 +73,12 @@ public class CogTifProcessor extends ManagedDocument
       
       try
       {
-        if (!exec.execute(new String[] {
-            "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
+        // https://www.cogeo.org/developers-guide.html
+        if (!new SystemProcessExecutor(this.monitor).execute(new String[] {
+            // for GDAL versions below 3.1
+            //"gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
+            
+            "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW"
           }))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
@@ -81,7 +91,17 @@ public class CogTifProcessor extends ManagedDocument
         {
           if (new CogTifValidator(this.monitor).isValidCog(cog))
           {
-            return super.process(cog);
+            if (this.downstream == null)
+            {
+              return super.process(cog);
+            }
+            else
+            {
+              if (super.process(cog))
+              {
+                return this.downstream.process(cog);
+              }
+            }
           }
           else
           {

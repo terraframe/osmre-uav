@@ -18,8 +18,11 @@ package gov.geoplatform.uasdm.bus;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -29,13 +32,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -43,6 +50,8 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -83,9 +92,57 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     List<String> uploadedFiles = new LinkedList<String>();
 
-    if (DevProperties.uploadRaw())
+    try
     {
-      uploadedFiles = component.uploadArchive(task, infile, uploadTarget);
+      if (DevProperties.uploadRaw())
+      {
+        if (processUpload
+            && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) )
+            && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") )
+            )
+        {
+          boolean isCog = new CogTifValidator().isValidCog(infile.getUnderlyingFile());
+          
+          if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION.substring(1)))
+          {
+            File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
+            temp.mkdir();
+            
+            File newfile = new File(temp, infile.getBaseName() + CogTifProcessor.COG_EXTENSION);
+            
+            FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
+            
+            infile = new FileResource(newfile);
+          }
+          else if (!isCog && infile.getName().endsWith(CogTifProcessor.COG_EXTENSION.substring(1)))
+          {
+            task.lock();
+            task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
+            task.apply();
+            
+            File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
+            temp.mkdir();
+            
+            File newfile = new File(temp, infile.getBaseName() + ".tif");
+            
+            FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
+            
+            infile = new FileResource(newfile);
+          }
+        }
+        
+        uploadedFiles = component.uploadArchive(task, infile, uploadTarget);
+      }
+    }
+    catch (IOException ex)
+    {
+      logger.error("Error while uploading file", ex);
+      
+      task.lock();
+      task.createAction("Error while uploading file " + RunwayException.localizeThrowable(ex, Locale.US), TaskActionType.ERROR.getType());
+      task.apply();
+      
+      return;
     }
 
     task.lock();

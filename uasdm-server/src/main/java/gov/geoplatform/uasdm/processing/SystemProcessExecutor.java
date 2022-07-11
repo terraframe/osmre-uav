@@ -1,14 +1,14 @@
 package gov.geoplatform.uasdm.processing;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
+import com.runwaysdk.RunwayException;
 
 public class SystemProcessExecutor
 {
@@ -17,9 +17,9 @@ public class SystemProcessExecutor
   
   private StatusMonitorIF monitor;
   
-  private StringBuilder stdOut = null;
+  private StringBuffer stdOut = null;
   
-  private StringBuilder stdErr = null;
+  private StringBuffer stdErr = null;
   
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
@@ -36,58 +36,70 @@ public class SystemProcessExecutor
     return stdErr.toString().trim();
   }
   
-  public boolean execute(String[] commands)
+  public boolean execute(String... commands)
   {
     final Runtime rt = Runtime.getRuntime();
 
-    this.stdOut = new StringBuilder();
-    this.stdErr = new StringBuilder();
+    this.stdOut = new StringBuffer();
+    this.stdErr = new StringBuffer();
     
-    Thread t = new Thread()
-    {
-      public void run()
-      {
-        try
-        {
-          Process proc = rt.exec(commands);
-
-          BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-          BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-          // read the output from the command
-          String s = null;
-          while ( ( s = stdInput.readLine() ) != null)
-          {
-            stdOut.append(s + "\n");
-          }
-
-          // read any errors from the attempted command
-          while ( ( s = stdError.readLine() ) != null)
-          {
-            stdErr.append(s + "\n");
-          }
-          
-        }
-        catch (Throwable t)
-        {
-          logger.error("Error occured while invoking system process.", t);
-        }
-      }
-    };
-    t.start();
-
     try
     {
-      t.join(10000);
+      Process process = rt.exec(commands);
+      
+      BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+      BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+      
+      Thread stdOutReader = new Thread("SystemProcessExecutor sdOut reader")
+      {
+        public void run()
+        {
+          String s = null;
+          try
+          {
+            while ( ( s = stdInput.readLine() ) != null)
+            {
+              stdOut.append(s + "\n");
+            }
+          }
+          catch (IOException e)
+          {
+            logger.error("stdOut thread encountered an error while reading output", e);
+          }
+        }
+      };
+      stdOutReader.start();
+      
+      Thread stdErrReader = new Thread("SystemProcessExecutor sdError reader")
+      {
+        public void run()
+        {
+          String s = null;
+          try
+          {
+            while ( ( s = stdError.readLine() ) != null)
+            {
+              stdErr.append(s + "\n");
+            }
+          }
+          catch (IOException e)
+          {
+            logger.error("stdError thread encountered an error while reading output", e);
+          }
+        }
+      };
+      stdErrReader.start();
+      
+      process.waitFor();
     }
-    catch (InterruptedException e)
+    catch (Throwable t)
     {
       if (this.monitor != null)
       {
-        this.monitor.addError("Interrupted when invoking system process.");
+        this.monitor.addError("Interrupted when invoking system process. " + RunwayException.localizeThrowable(t, Locale.US));
       }
-      logger.info("Interrupted when invoking system process", e);
+      logger.info("Interrupted when invoking system process", t);
       return false;
     }
 

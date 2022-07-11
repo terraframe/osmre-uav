@@ -15,17 +15,13 @@
  */
 package gov.geoplatform.uasdm.graph;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.UserInfo;
-import gov.geoplatform.uasdm.view.SiteObject;
 import junit.framework.Assert;
 
 public class UserInfoTest
@@ -34,7 +30,10 @@ public class UserInfoTest
   @Request
   public void testPage()
   {
-    JSONObject page = UserInfo.page(10, 1);
+    JSONObject criteria = new JSONObject();
+    criteria.put("first", 0);
+    criteria.put("rows", 10);
+    JSONObject page = UserInfo.page(criteria);
 
     Assert.assertNotNull(page);
 

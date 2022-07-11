@@ -94,8 +94,9 @@ public class Document extends DocumentBase implements DocumentIF
   @Override
   public boolean isMappable()
   {
-    return this.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
-        || this.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION);
+    final String s3 = this.getS3location();
+    
+    return s3.matches(Product.MAPPABLE_ORTHO_REGEX) || s3.matches(Product.MAPPABLE_DEM_REGEX);
   }
   
   public RemoteFileObject download()

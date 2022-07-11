@@ -30,7 +30,16 @@ public class CogTifValidator
       
       final String cmd = template.replace("{cog_file}", file.getAbsolutePath());
       
-      return new SystemProcessExecutor(this.monitor).execute(cmd.split(" "));
+      SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
+      
+      if (exec.execute(cmd.split(" ")))
+      {
+        return !exec.getStdOut().contains("it is recommended to include internal overviews");
+      }
+      else
+      {
+        return false;
+      }
     }
     catch(Throwable t)
     {
