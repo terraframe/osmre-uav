@@ -99,6 +99,8 @@ public class ODMZipPostProcessor
         this.product = (Product) this.collection.createProductIfNotExist();
         
         this.processProduct(product, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask), unzippedParentFolder);
+        
+        this.uploadAllZip(allZip);
       }
     }
 
@@ -223,16 +225,18 @@ public class ODMZipPostProcessor
   {
     if (DevProperties.uploadAllZip())
     {
-      String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
-
-      Util.uploadFileToS3(allZip, allKey, null);
-
-      this.collection.createDocumentIfNotExist(allKey, allZip.getName(), null, "ODM");
-
-      if (this.collection instanceof CollectionIF)
-      {
-        CollectionReport.updateSize((CollectionIF) this.collection);
-      }
+//      String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
+//
+//      Util.uploadFileToS3(allZip, allKey, null);
+//
+//      this.collection.createDocumentIfNotExist(allKey, allZip.getName(), null, "ODM");
+//
+//      if (this.collection instanceof CollectionIF)
+//      {
+//        CollectionReport.updateSize((CollectionIF) this.collection);
+//      }
+      
+      new ManagedDocument(Product.ODM_ALL_DIR + "/" + allZip.getName(), this.product, this.collection, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask)).process(allZip);
     }
   }
 
@@ -260,8 +264,6 @@ public class ODMZipPostProcessor
       {
         allZip = DevProperties.orthoResults();
       }
-
-      uploadAllZip(allZip);
 
       return allZip;
     }

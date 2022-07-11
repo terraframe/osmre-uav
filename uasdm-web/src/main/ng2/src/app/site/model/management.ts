@@ -188,6 +188,7 @@ export class Product {
 	orthoMapped?: boolean;
 	demMapped?: boolean;
 	hasPointcloud?: boolean;
+  hasAllZip?: boolean;
 }
 
 export class MapLayer {
