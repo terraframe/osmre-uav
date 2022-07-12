@@ -5,14 +5,12 @@ import java.io.File;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.service.SolrService;
 
 public class ManagedDocument extends S3FileUpload
 {

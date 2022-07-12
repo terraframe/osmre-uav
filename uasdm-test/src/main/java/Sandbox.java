@@ -14,8 +14,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,10 +27,10 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.json.JSONArray;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -43,15 +41,10 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
-import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
-import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
-import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
-import net.geoprism.gis.geoserver.GeoserverProperties;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class Sandbox
 {
@@ -162,11 +155,11 @@ public class Sandbox
 //      }
     }
 //
-//    JSONArray results = IndexService.getTotals("DD", new JSONArray());
-//
-//    System.out.println(results);
-//
-//    IndexService.shutdown();
+    JSONArray results = IndexService.getTotals("ABC", new JSONArray());
+
+    System.out.println(results);
+
+    IndexService.shutdown();
 
     // BodyContentHandler handler = new BodyContentHandler();
     // Metadata metadata = new Metadata();
@@ -214,46 +207,5 @@ public class Sandbox
       }
     }
 
-  }
-
-  public static void testGeoserver() throws FileNotFoundException
-  {
-    String geoserverData = System.getProperty("GEOSERVER_DATA_DIR");
-
-    if (geoserverData == null)
-    {
-      throw new ProgrammingErrorException("Unable to find geoserver data directory: Please set the JVM arg GEOSERVER_DATA_DIR");
-    }
-
-    final File baseDir = new File(geoserverData + "/data/" + AppProperties.getPublicWorkspace());
-
-    final GeoServerRESTPublisher publisher = GeoserverProperties.getPublisher();
-    final String workspace = AppProperties.getPublicWorkspace();
-    final String layerName = "image-public";
-
-    final GSLayerEncoder layerEnc = new GSLayerEncoder();
-    layerEnc.setDefaultStyle("raster");
-
-    // coverage encoder
-    final GSImageMosaicEncoder coverageEnc = new GSImageMosaicEncoder();
-    coverageEnc.setName(layerName);
-    coverageEnc.setTitle(layerName);
-    // coverageEnc.setEnabled(true);
-    // coverageEnc.setNativeCRS("EPSG:4326");
-    // coverageEnc.setSRS("EPSG:4326");
-    coverageEnc.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
-
-    // ... many other options are supported
-
-    // create a new ImageMosaic layer...
-    // publisher.publishExternalMosaic(workspace, layerName, baseDir,
-    // coverageEnc, layerEnc);
-    final boolean published = publisher.publishExternalMosaic(workspace, layerName, baseDir, coverageEnc, layerEnc);
-
-    // check the results
-    if (!published)
-    {
-      System.out.println("Bad");
-    }
   }
 }
