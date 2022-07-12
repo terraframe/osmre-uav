@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.cog;
 
-import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,11 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.mvc.Controller;
 import com.runwaysdk.mvc.Endpoint;
 import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.InputStreamResponse;
 import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
@@ -91,15 +88,15 @@ public class CloudOptimizedGeoTiffController
       
       if (x == null)
       {
-        throw new RuntimeException("Missing required parameter: x.");
+        throw new CogTileException("Missing required parameter: x.");
       }
       if (y == null)
       {
-        throw new RuntimeException("Missing required parameter: y.");
+        throw new CogTileException("Missing required parameter: y.");
       }
       if (z == null)
       {
-        throw new RuntimeException("Missing required parameter: z.");
+        throw new CogTileException("Missing required parameter: z.");
       }
       if (format == null)
       {
@@ -118,13 +115,11 @@ public class CloudOptimizedGeoTiffController
         scale = scale.substring(0, scale.length() - 1);
       }
       
-      InputStream isTile = this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format);
-      
-      return new InputStreamResponse(isTile, "image/" + format);
+      return this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format);
     }
     else
     {
-      throw new ProgrammingErrorException("The provided url is invalid.");
+      throw new CogTileException("The provided url is invalid.");
     }
   }
 }

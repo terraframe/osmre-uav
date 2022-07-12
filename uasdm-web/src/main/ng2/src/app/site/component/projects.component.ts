@@ -1,45 +1,45 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from '@angular/core';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { TabsetComponent } from 'ngx-bootstrap';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from 'mapbox-gl';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { BsModalService } from "ngx-bootstrap/modal";
+import { TabsetComponent } from "ngx-bootstrap";
+import { BsModalRef } from "ngx-bootstrap/modal";
+import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from "mapbox-gl";
 
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
-import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { NotificationModalComponent } from '@shared/component/modal/notification-modal.component';
-import { AuthService } from '@shared/service/auth.service';
+import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confirm-modal.component";
+import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
+import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer } from '../model/management';
+import { SiteEntity, Product, Task, MapLayer } from "../model/management";
 
-import { EntityModalComponent } from './modal/entity-modal.component';
-import { CollectionModalComponent } from './modal/collection-modal.component';
-import { AccessibleSupportModalComponent } from './modal/accessible-support-modal.component';
+import { EntityModalComponent } from "./modal/entity-modal.component";
+import { CollectionModalComponent } from "./modal/collection-modal.component";
+import { AccessibleSupportModalComponent } from "./modal/accessible-support-modal.component";
 
-import { ManagementService } from '../service/management.service';
-import { MapService } from '../service/map.service';
-import { MetadataService } from '../service/metadata.service';
-import { CookieService } from 'ngx-cookie-service';
+import { ManagementService } from "../service/management.service";
+import { MapService } from "../service/map.service";
+import { MetadataService } from "../service/metadata.service";
+import { CookieService } from "ngx-cookie-service";
 
 import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
-} from 'angular-animations';
-import { ActivatedRoute } from '@angular/router';
-import { CreateCollectionModalComponent } from './modal/create-collection-modal.component';
-import { UIOptions } from 'fine-uploader';
-import { FineUploaderBasic } from 'fine-uploader/lib/core';
-import { UploadModalComponent } from './modal/upload-modal.component';
+} from "angular-animations";
+import { ActivatedRoute } from "@angular/router";
+import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
+import { UIOptions } from "fine-uploader";
+import { FineUploaderBasic } from "fine-uploader/lib/core";
+import { UploadModalComponent } from "./modal/upload-modal.component";
 
 
 declare var acp: any;
 
 @Component({
-  selector: 'projects',
-  templateUrl: './projects.component.html',
-  styles: ['./projects.css'],
+  selector: "projects",
+  templateUrl: "./projects.component.html",
+  styles: ["./projects.css"],
   animations: [
     fadeInOnEnterAnimation(),
     fadeOutOnLeaveAnimation()
@@ -47,7 +47,7 @@ declare var acp: any;
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('staticTabs') staticTabs: TabsetComponent;
+  @ViewChild("staticTabs") staticTabs: TabsetComponent;
 
   // imageToShow: any;
   userName: string = "";
@@ -55,7 +55,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /*
    * Template for the delete confirmation
    */
-  @ViewChild('confirmTemplate') public confirmTemplate: TemplateRef<any>;
+  @ViewChild("confirmTemplate") public confirmTemplate: TemplateRef<any>;
 
   /* 
    * Datasource to get search responses
@@ -115,15 +115,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    * List of base layers
    */
   baseLayers: any[] = [{
-    label: 'Outdoors',
-    id: 'outdoors-v11',
+    label: "Outdoors",
+    id: "outdoors-v11",
     selected: true
   }, {
-    label: 'Satellite',
-    id: 'satellite-v9'
+    label: "Satellite",
+    id: "satellite-v9"
   }, {
-    label: 'Streets',
-    id: 'streets-v11'
+    label: "Streets",
+    id: "streets-v11"
   }];
 
   layers: MapLayer[] = [];
@@ -154,7 +154,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
    * Filter by bureau
    */
-  filter = { field: 'bureau', value: '' };
+  filter = { field: "bureau", value: "" };
   bureaus: { value: string, label: string }[] = [];
   bounds: LngLatBounds = null;
   sort: string = "name";
@@ -202,20 +202,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
 
-    let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
+    let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + acp;
 
-    this.notifier = webSocket(baseUrl + '/websocket/notify');
+    this.notifier = webSocket(baseUrl + "/websocket/notify");
     this.notifier.subscribe(message => {
       console.log(message);
-      if (message.type === 'UPLOAD_JOB_CHANGE') {
+      if (message.type === "UPLOAD_JOB_CHANGE") {
         this.tasks.push(message.content);
       }
     });
 
-    const oid = this.route.snapshot.params['oid'];
-    const action = this.route.snapshot.params['action'];
+    const oid = this.route.snapshot.params["oid"];
+    const action = this.route.snapshot.params["action"];
 
-    if (oid != null && action != null && action === 'collection') {
+    if (oid != null && action != null && action === "collection") {
       this.handleViewSite(oid);
     }
 
@@ -241,10 +241,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         defaultResponseError: "Upload failed"
       },
       failedUploadTextDisplay: {
-        mode: 'none'
+        mode: "none"
       },
       validation: {
-        allowedExtensions: ['zip', 'tar.gz']
+        allowedExtensions: ["zip", "tar.gz"]
       },
       showMessage: function (message: string) {
         // 
@@ -300,14 +300,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
 
     this.map = new Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/outdoors-v11',
+      container: "map",
+      style: "mapbox://styles/mapbox/outdoors-v11",
       zoom: 2,
       attributionControl: false,
       center: [-78.880453, 42.897852]
     });
 
-    this.map.on('load', () => {
+    this.map.on("load", () => {
       this.initMap();
     });
 
@@ -315,7 +315,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   initMap(): void {
 
-    this.map.on('style.load', () => {
+    this.map.on("style.load", () => {
       this.addLayers();
       this.refreshMapPoints(false);
     });
@@ -327,9 +327,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Add zoom and rotation controls to the map.
     this.map.addControl(new NavigationControl());
-    this.map.addControl(new AttributionControl({ compact: true }), 'bottom-left');
+    this.map.addControl(new AttributionControl({ compact: true }), "bottom-left");
 
-    this.map.on('mousemove', e => {
+    this.map.on("mousemove", e => {
       // e.point is the x, y coordinates of the mousemove event relative
       // to the top-left corner of the map.
       // e.lngLat is the longitude, latitude geographical position of the event
@@ -337,7 +337,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // EPSG:3857 = WGS 84 / Pseudo-Mercator
       // EPSG:4326 = WGS 84 
-      // let coord4326 = window.proj4(window.proj4.defs('EPSG:3857'), window.proj4.defs('EPSG:4326'), [coord.lng, coord.lat]);
+      // let coord4326 = window.proj4(window.proj4.defs("EPSG:3857"), window.proj4.defs("EPSG:4326"), [coord.lng, coord.lat]);
       // let text = "Long: " + coord4326[0] + " Lat: " + coord4326[1];
 
       let text = "Lat: " + coord.lat + " Long: " + coord.lng;
@@ -345,20 +345,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       mousemovePanel.textContent = text;
 
 
-      let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
+      let features = this.map.queryRenderedFeatures(e.point, { layers: ["points"] });
 
       if (this.current == null) {
         if (features.length > 0) {
           let focusFeatureId = features[0].properties.oid; // just the first
-          this.map.setFilter('hover-points', ['all',
-            ['==', 'oid', focusFeatureId]
+          this.map.setFilter("hover-points", ["all",
+            ["==", "oid", focusFeatureId]
           ])
 
           this.highlightListItem(focusFeatureId)
         }
         else {
-          this.map.setFilter('hover-points', ['all',
-            ['==', 'oid', "NONE"]
+          this.map.setFilter("hover-points", ["all",
+            ["==", "oid", "NONE"]
           ])
 
           this.clearHighlightListItem();
@@ -366,17 +366,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.map.on('zoomend', (e) => {
+    this.map.on("zoomend", (e) => {
       this.subject.next(e);
     });
 
-    this.map.on('moveend', (e) => {
+    this.map.on("moveend", (e) => {
       this.subject.next(e);
     });
 
     // Sit selection from map
-    this.map.on('dblclick', (e) => {
-      let features = this.map.queryRenderedFeatures(e.point, { layers: ['points'] });
+    this.map.on("dblclick", (e) => {
+      let features = this.map.queryRenderedFeatures(e.point, { layers: ["points"] });
 
       if (features.length > 0) {
         let focusFeatureId = features[0].properties.oid; // just the first
@@ -385,7 +385,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // MapboxGL doesn't have a good way to detect when moving off the map
+    // MapboxGL doesn"t have a good way to detect when moving off the map
     let sidebar = document.getElementById("navigator-left-sidebar");
     sidebar.addEventListener("mouseenter", function () {
       let mousemovePanel = document.getElementById("mousemove-panel");
@@ -403,10 +403,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.bsModalRef.content.messageTitle = "Disclaimer";
       this.bsModalRef.content.message = (window as any).uasAppDisclaimer;
-      this.bsModalRef.content.submitText = 'I Accept';
+      this.bsModalRef.content.submitText = "I Accept";
 
       (<NotificationModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
-        this.cookieService.set('acceptedDisclaimer', "true");
+        this.cookieService.set("acceptedDisclaimer", "true");
       });
     }
 
@@ -414,8 +414,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addLayers(): void {
 
-    this.map.addSource('sites', {
-      type: 'geojson',
+    this.map.addSource("sites", {
+      type: "geojson",
       data: {
         "type": "FeatureCollection",
         "features": []
@@ -427,12 +427,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.addLayer({
       "id": "points",
       "type": "circle",
-      "source": 'sites',
+      "source": "sites",
       "paint": {
         "circle-radius": 10,
-        "circle-color": '#800000',
+        "circle-color": "#800000",
         "circle-stroke-width": 2,
-        "circle-stroke-color": '#FFFFFF'
+        "circle-stroke-color": "#FFFFFF"
       }
     });
 
@@ -440,15 +440,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.addLayer({
       "id": "hover-points",
       "type": "circle",
-      "source": 'sites',
+      "source": "sites",
       "paint": {
         "circle-radius": 13,
-        "circle-color": '#cf0000',
+        "circle-color": "#cf0000",
         "circle-stroke-width": 2,
-        "circle-stroke-color": '#FFFFFF'
+        "circle-stroke-color": "#FFFFFF"
       },
-      filter: ['all',
-        ['==', 'id', 'NONE'] // start with a filter that doesn't select anything
+      filter: ["all",
+        ["==", "id", "NONE"] // start with a filter that doesn"t select anything
       ]
     });
 
@@ -456,7 +456,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     // Label layer
     this.map.addLayer({
       "id": "points-label",
-      "source": 'sites',
+      "source": "sites",
       "type": "symbol",
       "paint": {
         "text-color": "black",
@@ -483,7 +483,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.current == null) {
       const bounds = this.map.getBounds();
 
-      // Sometimes bounds aren't valid for 4326, so validate it before sending to server
+      // Sometimes bounds aren"t valid for 4326, so validate it before sending to server
       if (this.isValidBounds(bounds)) {
         this.bounds = bounds;
 
@@ -500,7 +500,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.bounds != null) {
       conditions.push({
-        field: 'bounds',
+        field: "bounds",
         value: this.bounds
       });
     }
@@ -545,7 +545,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.bounds != null) {
       conditions.push({
-        field: 'bounds',
+        field: "bounds",
         value: this.bounds
       });
     }
@@ -556,7 +556,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.mapService.features(conditions).then(data => {
-      (<any>this.map.getSource('sites')).setData(data.features);
+      (<any>this.map.getSource("sites")).setData(data.features);
 
       if (zoom) {
         this.allPointsBounds = new LngLatBounds([data.bbox[0], data.bbox[1]], [data.bbox[2], data.bbox[3]]);
@@ -602,7 +602,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
-      'class': 'upload-modal'
+      "class": "upload-modal"
     });
     this.bsModalRef.content.init(this.breadcrumbs);
 
@@ -621,7 +621,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'upload-modal'
+        "class": "upload-modal"
       });
       this.bsModalRef.content.init(true, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -661,7 +661,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'upload-modal'
+        "class": "upload-modal"
       });
       modal.content.init(resp.item, this.existingTask.task.uploadTarget);
       modal.content.onUploadCancel.subscribe(() => {
@@ -683,7 +683,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'edit-modal'
+        "class": "edit-modal"
       });
       this.bsModalRef.content.init(false, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -719,7 +719,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleDownloadAll(node: SiteEntity): void {
 
-    window.location.href = acp + '/project/download-all?id=' + node.component + "&key=" + node.name;
+    window.location.href = acp + "/project/download-all?id=" + node.component + "&key=" + node.name;
 
     //      this.service.downloadAll( data.id ).then( data => {
     //        
@@ -732,24 +732,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     event.stopPropagation();
 
-    let sText = '<b>IMPORTANT:</b> [' + node.name + '] will be deleted along with all underlying data including all files in Collections and Accessible Support';
+    let sText = "<b>IMPORTANT:</b> [" + node.name + "] will be deleted along with all underlying data including all files in Collections and Accessible Support";
 
-    if (node.type === 'Collection') {
-      sText = '<b>IMPORTANT:</b> [' + node.name + '] will be deleted along with all underlying data including all files.';
+    if (node.type === "Collection") {
+      sText = "<b>IMPORTANT:</b> [" + node.name + "] will be deleted along with all underlying data including all files.";
     }
 
-    sText += ' This can <b>NOT</b> be undone';
+    sText += " This can <b>NOT</b> be undone";
 
     this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
     });
-    this.bsModalRef.content.message = 'Are you sure you want to delete [' + node.name + ']?';
+    this.bsModalRef.content.message = "Are you sure you want to delete [" + node.name + "]?";
     this.bsModalRef.content.subText = sText;
     this.bsModalRef.content.data = node;
-    this.bsModalRef.content.type = 'DANGER';
-    this.bsModalRef.content.submitText = 'Delete';
+    this.bsModalRef.content.type = "DANGER";
+    this.bsModalRef.content.submitText = "Delete";
 
     (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
       this.remove(data);
@@ -768,7 +768,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
 
-      if (node.type === 'Site') {
+      if (node.type === "Site") {
         this.refreshMapPoints(false);
       }
     });
@@ -776,7 +776,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   handleDownload(node: SiteEntity): void {
-    window.location.href = acp + '/project/download?id=' + node.component + "&key=" + node.key;
+    window.location.href = acp + "/project/download?id=" + node.component + "&key=" + node.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -784,7 +784,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleImageDownload(image: any): void {
-    window.location.href = acp + '/project/download?id=' + image.component + "&key=" + image.key;
+    window.location.href = acp + "/project/download?id=" + image.component + "&key=" + image.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -799,21 +799,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     layer.selected = true;
 
-    this.map.setStyle('mapbox://styles/mapbox/' + layer.id);
+    this.map.setStyle("mapbox://styles/mapbox/" + layer.id);
   }
 
   highlightMapFeature(id: string): void {
 
-    this.map.setFilter('hover-points', ['all',
-      ['==', 'oid', id]
+    this.map.setFilter("hover-points", ["all",
+      ["==", "oid", id]
     ])
 
   }
 
   clearHighlightMapFeature(): void {
 
-    this.map.setFilter('hover-points', ['all',
-      ['==', 'oid', "NONE"]
+    this.map.setFilter("hover-points", ["all",
+      ["==", "oid", "NONE"]
     ])
 
   }
@@ -962,19 +962,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 /*
   addImageLayer(layer: GeoserverLayer) {
     const workspace = encodeURI(layer.workspace);
-    const layerName = encodeURI(layer.workspace + ':' + layer.key);
+    const layerName = encodeURI(layer.workspace + ":" + layer.key);
 
     this.map.addLayer({
-      'id': layer.key,
-      'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'tiles': [
-          '/geoserver/' + workspace + '/wms?layers=' + layerName + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256'
+      "id": layer.key,
+      "type": "raster",
+      "source": {
+        "type": "raster",
+        "tiles": [
+          "/geoserver/" + workspace + "/wms?layers=" + layerName + "&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256"
         ],
-        'tileSize': 256
+        "tileSize": 256
       },
-      'paint': {}
+      "paint": {}
     }, "points");
   }
   */
@@ -991,16 +991,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       url = acp + "/" + layer.url;
     }
     
-    this.map.addLayer({
-      'id': layer.key,
-      'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'url': url
-      },
-      'paint': {}
-    }, "points");
-    
     // let bounds = new LngLatBounds([-63.05584626551064, 18.021979555663453, -63.043209989152636, 18.02893107643876]);
     // this.map.fitBounds(bounds);
     
@@ -1008,6 +998,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     // insufficient, because it might be more zoomed out then the ortho will display at.
     this.mapService.tilejson(url).then(data => {
       this.map.flyTo({center: data.center, zoom: data.minzoom});
+      
+      this.map.addLayer({
+        "id": layer.key,
+        "type": "raster",
+        "source": {
+          "type": "raster",
+          "tiles": data.tiles
+        },
+        "paint": {}
+      }, "points");
     });
   }
 
@@ -1169,7 +1169,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.supportingData = [];
 
     nodes.forEach(node => {
-      if (node.type === 'folder') {
+      if (node.type === "folder") {
         this.supportingData.push(node);
       }
       else {
@@ -1180,12 +1180,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
 
-    if (collection.type === 'Mission') {
+    if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: 'leaf-modal modal-lg'
+        class: "leaf-modal modal-lg"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
@@ -1194,7 +1194,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: 'leaf-modal modal-lg'
+        class: "leaf-modal modal-lg"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
