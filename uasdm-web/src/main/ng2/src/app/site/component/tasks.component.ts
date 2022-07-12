@@ -168,7 +168,7 @@ export class TasksComponent implements OnInit {
           collection.groups[taskGroupTypeIndex].tasks.push(task);
         }
       }
-      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask') {
+      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask' || task.type === 'gov.geoplatform.uasdm.bus.OrthoProcessingTask') {
 
         let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'PROCESS' });
 

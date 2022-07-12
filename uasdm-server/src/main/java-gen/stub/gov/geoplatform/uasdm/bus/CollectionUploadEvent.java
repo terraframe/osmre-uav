@@ -268,7 +268,6 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  @Transaction
   public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationResource infile)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
@@ -283,11 +282,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setProcessPtcloud(uploadTask.getProcessPtcloud());
     task.setUploadTarget(uploadTask.getUploadTarget());
     task.setTaskLabel("Ortho processesing task for collection [" + component.getName() + "]");
-    task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is submitted processing. Check back later for updates.");
+    task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is being processed. Check back later for updates.");
     task.apply();
-
+    
     task.initiate(infile);
-
   }
 
 }

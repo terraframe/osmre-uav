@@ -8,9 +8,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -23,7 +23,6 @@ import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
-import gov.geoplatform.uasdm.processing.S3FileUpload;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -52,6 +51,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     return obj;
   }
 
+  @Transaction
   public void initiate(ApplicationResource infile)
   {
     Collection collection = Collection.get(this.getComponent());
