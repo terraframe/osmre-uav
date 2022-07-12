@@ -14,8 +14,7 @@ public class IndexContextListener implements ServerContextListener
   @Override
   public void startup()
   {
-    // TODO Auto-generated method stub
-    
+    IndexService.startup();
   }
 
   @Override

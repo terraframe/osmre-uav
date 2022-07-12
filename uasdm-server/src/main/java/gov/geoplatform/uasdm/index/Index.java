@@ -27,11 +27,13 @@ public interface Index
 
   public List<QueryResult> query(String text);
 
-  public void shutdown();
-
   public void createStacItems(ProductIF product);
 
   public void removeStacItems(ProductIF product);
 
   public JSONArray getTotals(String text, JSONArray filters);
+
+  public void shutdown();
+
+  public void startup();
 }

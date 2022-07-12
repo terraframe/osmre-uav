@@ -19,6 +19,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
+import org.json.JSONArray;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
@@ -34,6 +35,11 @@ import gov.geoplatform.uasdm.view.QueryResult;
 
 public class SolrIndex implements Index
 {
+  
+  @Override
+  public void startup()
+  {
+  }
 
   @Override
   public void shutdown()
@@ -426,5 +432,11 @@ public class SolrIndex implements Index
   @Override
   public void removeStacItems(ProductIF product)
   {
+  }
+  
+  @Override
+  public JSONArray getTotals(String text, JSONArray filters)
+  {
+    return new JSONArray();
   }
 }

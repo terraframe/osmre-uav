@@ -30,6 +30,7 @@
   <server-context-listener class="gov.geoplatform.uasdm.geoserver.GeoserverInitializer" /> 
   <server-context-listener class="gov.geoplatform.uasdm.chunk.ChunkManagerContextListener" />
   <server-context-listener class="gov.geoplatform.uasdm.odm.ODMContextListener" /> 
+  <server-context-listener class="gov.geoplatform.uasdm.index.IndexContextListener" /> 
 <!-- 
   <server-context-listener class="com.runwaysdk.patcher.domain.CollectionDocumentListener" /> 
  -->  

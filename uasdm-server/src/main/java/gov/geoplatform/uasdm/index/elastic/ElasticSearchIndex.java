@@ -81,6 +81,38 @@ public class ElasticSearchIndex implements Index
   }
 
   @Override
+  public void startup()
+  {
+    System.out.println("TEST");
+    
+    try
+    {
+      ElasticsearchClient client = this.createClient();
+
+      try
+      {
+        client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      }
+      catch (ElasticsearchException e)
+      {
+        // Index doesn't exist, create it
+        client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m
+            .properties("geometry", p -> p.geoShape(v -> v))
+            .properties("properties.datetime", p -> p.date(v -> v))
+            .properties("properties.start_datetime", p -> p.date(v -> v))
+            .properties("properties.end_datetime", p -> p.date(v -> v))
+            .properties("properties.updated", p -> p.date(v -> v))
+            .properties("properties.created", p -> p.date(v -> v))
+            ));
+      }
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Override
   public void shutdown()
   {
     try

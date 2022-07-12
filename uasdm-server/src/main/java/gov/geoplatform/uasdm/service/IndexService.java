@@ -41,6 +41,22 @@ public class IndexService
 {
   private static Index index = new ElasticSearchIndex();
 
+  public static void startup()
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      index.startup();
+    }
+  }
+  
+  public static void shutdown()
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      index.shutdown();
+    }
+  }
+
   public static void deleteDocuments(String fieldId, String oid)
   {
     if (AppProperties.isSolrEnabled())
@@ -105,14 +121,6 @@ public class IndexService
     }
 
     return new LinkedList<QueryResult>();
-  }
-
-  public static void shutdown()
-  {
-    if (AppProperties.isSolrEnabled())
-    {
-      index.shutdown();
-    }
   }
 
   public static void createStacItems(ProductIF product)

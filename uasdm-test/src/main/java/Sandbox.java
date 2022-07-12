@@ -105,85 +105,87 @@ public class Sandbox
       // And create the API client
       ElasticsearchClient client = new ElasticsearchClient(transport);
 
-      // client.indices().delete(i ->
-      // i.index(ElasticSearchIndex.STAC_INDEX_NAME));
-      // client.indices().create(i ->
-      // i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m ->
-      // m.properties("geometry", p -> p.geoShape(v ->
-      // v)).properties("properties.datetime", p -> p.date(v -> v))));
-      // GetIndexResponse response = client.indices().get(g ->
-      // g.index(ElasticSearchIndex.STAC_INDEX_NAME));
-      //
-      // System.out.println(response);
-
-      // client.index(i -> i.index("stac").ma);
-
-      // client.index(i -> i.index("stac").document(result));
-      final String text = "DDD";
+//      client.indices().delete(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME));
       
-      SearchRequest.Builder s = new SearchRequest.Builder();
-      s.index(ElasticSearchIndex.STAC_INDEX_NAME).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
-        HashMap<String, Query> map = new HashMap<String, Query>();
-        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+      client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
 
-        return b.keyed(map);
-      })));
       
-      
-      s.query(q -> {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.clear();
-        calendar.set(2022, Calendar.JULY, 10);
-        JsonData startDate = JsonData.of(sdf.format(calendar.getTime()));
-
-        calendar.set(2022, Calendar.JULY, 12);
-        JsonData endDate = JsonData.of(sdf.format(calendar.getTime()));
-        
-        q.bool(b -> b.must(m -> m.range(r -> r.field("properties.datetime").gte(startDate).lte(endDate))));
-
-        return q;
-      });
-      
-      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
-
-      Map<String, Aggregate> aggregations = search.aggregations();
-
-      Aggregate totals = aggregations.get("totals");
-
-      Map<String, FiltersBucket> child = totals.filters().buckets().keyed();
-      FiltersBucket temp = child.get("site_count");
-      System.out.println(totals);
-      System.out.println("Site: " + temp.docCount());
-
-      HitsMetadata<StacItem> metadata = search.hits();
-
-      System.out.println(metadata.total());
-
-      List<Hit<StacItem>> hits = metadata.hits();
-
-      for (Hit<StacItem> hit : hits)
-      {
-        StacItem source = hit.source();
-
-        System.out.println(mapper.writeValueAsString(source));
-      }
+//      // client.indices().create(i ->
+//      // i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m ->
+//      // m.properties("geometry", p -> p.geoShape(v ->
+//      // v)).properties("properties.datetime", p -> p.date(v -> v))));
+//      // GetIndexResponse response = client.indices().get(g ->
+//      // g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+//      //
+//      // System.out.println(response);
+//
+//      // client.index(i -> i.index("stac").ma);
+//
+//      // client.index(i -> i.index("stac").document(result));
+//      final String text = "DDD";
+//
+//      SearchRequest.Builder s = new SearchRequest.Builder();
+//      s.index(ElasticSearchIndex.STAC_INDEX_NAME).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
+//        HashMap<String, Query> map = new HashMap<String, Query>();
+//        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+//
+//        return b.keyed(map);
+//      })));
+//
+//      s.query(q -> {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
+//        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//        calendar.clear();
+//        calendar.set(2022, Calendar.JULY, 10);
+//        JsonData startDate = JsonData.of(sdf.format(calendar.getTime()));
+//
+//        calendar.set(2022, Calendar.JULY, 12);
+//        JsonData endDate = JsonData.of(sdf.format(calendar.getTime()));
+//
+//        q.bool(b -> b.must(m -> m.range(r -> r.field("properties.datetime").gte(startDate).lte(endDate))));
+//
+//        return q;
+//      });
+//
+//      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+//
+//      Map<String, Aggregate> aggregations = search.aggregations();
+//
+//      Aggregate totals = aggregations.get("totals");
+//
+//      Map<String, FiltersBucket> child = totals.filters().buckets().keyed();
+//      FiltersBucket temp = child.get("site_count");
+//      System.out.println(totals);
+//      System.out.println("Site: " + temp.docCount());
+//
+//      HitsMetadata<StacItem> metadata = search.hits();
+//
+//      System.out.println(metadata.total());
+//
+//      List<Hit<StacItem>> hits = metadata.hits();
+//
+//      for (Hit<StacItem> hit : hits)
+//      {
+//        StacItem source = hit.source();
+//
+//        System.out.println(mapper.writeValueAsString(source));
+//      }
     }
-    
-    JSONArray results = IndexService.getTotals("DD", new JSONArray());
-    
-    System.out.println(results);
-    
-    IndexService.shutdown();
+//
+//    JSONArray results = IndexService.getTotals("DD", new JSONArray());
+//
+//    System.out.println(results);
+//
+//    IndexService.shutdown();
 
     // BodyContentHandler handler = new BodyContentHandler();
     // Metadata metadata = new Metadata();
