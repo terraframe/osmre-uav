@@ -1003,6 +1003,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // let bounds = new LngLatBounds([-63.05584626551064, 18.021979555663453, -63.043209989152636, 18.02893107643876]);
     // this.map.fitBounds(bounds);
+    
+    // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
+    // insufficient, because it might be more zoomed out then the ortho will display at.
+    this.mapService.tilejson(url).then(data => {
+      this.map.flyTo({center: data.center, zoom: data.minzoom});
+    });
   }
 
 

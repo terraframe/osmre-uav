@@ -16,6 +16,17 @@ const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnej
 
 declare var acp: any;
 
+export interface TileJson {
+    bounds: [number, number, number, number],
+    center: [number, number],
+    maxzoom: number,
+    minzoom: number,
+    scheme: string,
+    tilejson: string,
+    tiles: any,
+    version: string
+}
+
 @Injectable()
 export class MapService {
 
@@ -41,6 +52,14 @@ export class MapService {
 
         return this.http
             .get(url, { params: params })
+            .toPromise()
+    }
+    
+    tilejson(url: string): Promise<TileJson> {
+        let params: HttpParams = new HttpParams();
+
+        return this.http
+            .get<TileJson>(url)
             .toPromise()
     }
 

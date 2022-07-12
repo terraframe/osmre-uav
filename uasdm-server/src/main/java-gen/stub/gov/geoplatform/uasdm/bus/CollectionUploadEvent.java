@@ -103,7 +103,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
         {
           boolean isCog = new CogTifValidator().isValidCog(infile.getUnderlyingFile());
           
-          if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION.substring(1)))
+          if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
             File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
             temp.mkdir();
@@ -114,7 +114,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             
             infile = new FileResource(newfile);
           }
-          else if (!isCog && infile.getName().endsWith(CogTifProcessor.COG_EXTENSION.substring(1)))
+          else if (!isCog && infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
             task.lock();
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());

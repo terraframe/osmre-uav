@@ -59,6 +59,4 @@ public interface ProductIF extends ComponentIF
   
   public List<DocumentIF> getDocuments();
 
-  public List<DocumentIF> getDocuments();
-
 }
