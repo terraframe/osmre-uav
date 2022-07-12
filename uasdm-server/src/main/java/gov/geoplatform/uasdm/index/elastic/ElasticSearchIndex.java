@@ -83,8 +83,6 @@ public class ElasticSearchIndex implements Index
   @Override
   public void startup()
   {
-    System.out.println("TEST");
-    
     try
     {
       ElasticsearchClient client = this.createClient();
@@ -172,6 +170,7 @@ public class ElasticSearchIndex implements Index
       document.setKey(key);
       document.setFilename(name);
       document.populate(component.getSolrIdField(), component.getOid());
+      document.populate(component.getSolrNameField(), component.getName());
 
       for (UasComponentIF ancestor : ancestors)
       {
@@ -310,7 +309,7 @@ public class ElasticSearchIndex implements Index
       {
         ElasticsearchClient client = createClient();
 
-        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
+        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
 
         for (Hit<ElasticDocument> hit : search.hits().hits())
         {

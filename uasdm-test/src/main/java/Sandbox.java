@@ -79,9 +79,10 @@ public class Sandbox
       // And create the API client
       ElasticsearchClient client = new ElasticsearchClient(transport);
 
-//      client.indices().delete(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      client.indices().delete(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      client.indices().delete(i -> i.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
       
-      client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+//      client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
 
       
 //      // client.indices().create(i ->
@@ -154,12 +155,12 @@ public class Sandbox
 //        System.out.println(mapper.writeValueAsString(source));
 //      }
     }
+
+//    JSONArray results = IndexService.getTotals("ABC", new JSONArray());
 //
-    JSONArray results = IndexService.getTotals("ABC", new JSONArray());
-
-    System.out.println(results);
-
-    IndexService.shutdown();
+//    System.out.println(results);
+//
+//    IndexService.shutdown();
 
     // BodyContentHandler handler = new BodyContentHandler();
     // Metadata metadata = new Metadata();
