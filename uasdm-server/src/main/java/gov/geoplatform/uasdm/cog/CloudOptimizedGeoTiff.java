@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -103,7 +104,7 @@ public class CloudOptimizedGeoTiff
         bboxStream = authenticatedInvokeURL(new URI(AppProperties.getTitilerPrivateUrl()), "/cog/bounds", parameters);
       }
       
-      String sBbox = IOUtils.toString(bboxStream, "UTF-8");
+      String sBbox = IOUtils.toString(bboxStream, StandardCharsets.UTF_8.name());
       
       // {"bounds":[-111.12441929215683,39.32065294027042,-111.12343879151011,39.32106566894064]}
       JSONArray jaBbox = new JSONObject(sBbox).getJSONArray("bounds");
@@ -145,7 +146,7 @@ public class CloudOptimizedGeoTiff
     try
     {
       // We have to get the tilejson file from titiler and replace their urls with our urls, since it can only be accessed through us by proxy.
-      String sTileJson = IOUtils.toString(authenticatedInvokeURL(new URI(AppProperties.getTitilerPrivateUrl()), "/cog/tilejson.json", parameters), "UTF-8");
+      String sTileJson = IOUtils.toString(authenticatedInvokeURL(new URI(AppProperties.getTitilerPrivateUrl()), "/cog/tilejson.json", parameters), StandardCharsets.UTF_8.name());
       
       JSONObject joTileJson = new JSONObject(sTileJson);
       
@@ -156,7 +157,7 @@ public class CloudOptimizedGeoTiff
         
         String replacedPath = sTile.replace(AppProperties.getTitilerPrivateUrl(), contextPath);
         
-        String pathEncoded = URLEncoder.encode(this.document.getS3location(), "UTF-8");
+        String pathEncoded = URLEncoder.encode(this.document.getS3location(), StandardCharsets.UTF_8.name());
         
         if (replacedPath.contains("?"))
         {

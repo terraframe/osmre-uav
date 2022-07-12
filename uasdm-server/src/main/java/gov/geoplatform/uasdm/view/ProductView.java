@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.view;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -167,11 +168,11 @@ public class ProductView
         {
           final String layerS3Uri = "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
           
-          url = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, "UTF-8");
+          url = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, StandardCharsets.UTF_8.name());
         }
         else
         {
-          url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), "UTF-8");
+          url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
         }
       }
       catch (UnsupportedEncodingException e)
