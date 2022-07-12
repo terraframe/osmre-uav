@@ -36,16 +36,15 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
-import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -655,7 +654,7 @@ public class ODMStatusServer
 
         ODMStatusServer.sendEmail(uploadTask);
 
-        CollectionReport.update(uploadTask.getImageryComponentOid(), ODMStatus.COMPLETED.getLabel());
+        CollectionReport.update(uploadTask.getImageryComponent().getOid(), ODMStatus.COMPLETED.getLabel());
       }
       catch (Throwable t)
       {
@@ -670,7 +669,7 @@ public class ODMStatusServer
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        CollectionReport.update(uploadTask.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReport.update(uploadTask.getImageryComponent().getOid(), ODMStatus.FAILED.getLabel());
       }
     }
 
@@ -678,7 +677,7 @@ public class ODMStatusServer
     public ProductIF runInTrans() throws ZipException, InterruptedException
     {
       ImageryComponent ic = uploadTask.getImageryComponent();
-      UasComponentIF collection = ic.getUasComponent();
+      CollectionIF collection = (CollectionIF) ic.getUasComponent();
 
       ODMZipPostProcessor processor = new ODMZipPostProcessor(collection, uploadTask, null);
 

@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.remote;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.openide.util.io.NullInputStream;

@@ -26,7 +26,7 @@ import net.geoprism.GeoprismProperties;
 public class AppProperties
 {
   /**
-   * The server.properties configuration file
+   * The app.properties configuration file
    */
   private ConfigurationReaderIF props;
 
@@ -56,20 +56,29 @@ public class AppProperties
       return getInstance().props;
     }
   }
+  
+  public static String getCogValidatorCommand()
+  {
+    return Singleton.getProps().getString("cog.validator.cmd", "python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py {cog_file}");
+  }
 
+  public static String getTitilerPrivateUrl()
+  {
+    return Singleton.getProps().getString("titiler.private.url");
+  }
+  
+  public static String getTitilerPublicUrl()
+  {
+    return Singleton.getProps().getString("titiler.public.url");
+  }
+  
   public static String getBucketName()
   {
     return Singleton.getProps().getString("bucket.name");
   }
-
-  public static String getPublicWorkspace()
+  public static String getPublicBucketName()
   {
-    return Singleton.getProps().getString("public.workspace", "image-public");
-  }
-
-  public static String getPublicHillshadeWorkspace()
-  {
-    return Singleton.getProps().getString("geoserver.workspace.public.hillshade", "public-hillshade");
+    return Singleton.getProps().getString("bucket.public.name");
   }
 
   public static String getBucketRegion()

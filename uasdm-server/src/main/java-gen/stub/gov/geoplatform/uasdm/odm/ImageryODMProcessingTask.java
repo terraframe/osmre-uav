@@ -38,6 +38,7 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
@@ -184,7 +185,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
       String geoRefLocation = imagery.buildGeoRefKey();
 
-      Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", this);
+      Util.uploadFileToS3(file, geoRefLocation + imagery.getName() + ".txt", new WorkflowTaskMonitor(this));
 
       ImageryComponent component = this.getImageryComponent();
 

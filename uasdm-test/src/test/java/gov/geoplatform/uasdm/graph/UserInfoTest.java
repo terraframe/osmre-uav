@@ -30,7 +30,10 @@ public class UserInfoTest
   @Request
   public void testPage()
   {
-    JSONObject page = UserInfo.page(new JSONObject());
+    JSONObject criteria = new JSONObject();
+    criteria.put("first", 0);
+    criteria.put("rows", 10);
+    JSONObject page = UserInfo.page(criteria);
 
     Assert.assertNotNull(page);
 

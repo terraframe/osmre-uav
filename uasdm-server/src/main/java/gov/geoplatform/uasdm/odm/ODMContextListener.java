@@ -15,6 +15,9 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import net.geoprism.context.ServerContextListener;
 
 

@@ -24,6 +24,7 @@ import java.util.List;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -37,18 +38,24 @@ public interface RemoteFileService
   public RemoteFileObject download(String key, List<Range> ranges);
 
   public void createFolder(String key);
+  
+  public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket);
 
   public void deleteObject(String key);
+  
+  public void deleteObject(String key, String bucket);
 
   public void deleteObjects(String key);
+  
+  public void deleteObjects(String key, String bucket);
 
   public int getItemCount(String key);
 
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize);
 
-  public void uploadFile(File file, String key, AbstractWorkflowTaskIF task);
+  public void uploadFile(File file, String key, StatusMonitorIF monitor);
 
-  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories);
+  public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories);
 
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream);
 

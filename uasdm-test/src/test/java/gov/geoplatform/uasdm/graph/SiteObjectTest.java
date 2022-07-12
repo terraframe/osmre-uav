@@ -41,7 +41,7 @@ public class SiteObjectTest
     {
       Collection collection = collections.get(0);
 
-      SiteObjectsResultSet result = collection.getSiteObjects(null, Long.valueOf(1), Long.valueOf(100));
+      SiteObjectsResultSet result = collection.getSiteObjects(null, 1L, 100L);
       final List<SiteObject> objects = result.getObjects();
 
       System.out.println();
@@ -60,7 +60,7 @@ public class SiteObjectTest
     {
       Collection collection = collections.get(0);
 
-      SiteObjectsResultSet result = collection.getSiteObjects(Collection.RAW, Long.valueOf(1), Long.valueOf(100));
+      SiteObjectsResultSet result = collection.getSiteObjects(Collection.RAW, 1L, 100L);
       final List<SiteObject> objects = result.getObjects();
 
       System.out.println();
@@ -79,7 +79,7 @@ public class SiteObjectTest
     {
       Mission mission = missions.get(0);
 
-      SiteObjectsResultSet result = mission.getSiteObjects(null, Long.valueOf(1), Long.valueOf(100));
+      SiteObjectsResultSet result = mission.getSiteObjects(null, 1L, 100L);
       final List<SiteObject> objects = result.getObjects();
 
       System.out.println();

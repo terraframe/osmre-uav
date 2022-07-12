@@ -223,21 +223,25 @@ public class ODMFacade
     
     JSONArray arr = new JSONArray();
     
+    // Use this tag to build a DSM (Digital Surface Model, ground + objects) using a progressive morphological filter. Check the --dem* parameters for finer tuning.
     JSONObject dsm = new JSONObject();
     dsm.put("name", "dsm");
     dsm.put("value", "true");
     arr.put(dsm);
     
+    // Set this parameter if you want to generate a PNG rendering of the orthophoto.
     JSONObject orthoPng = new JSONObject();
     orthoPng.put("name", "orthophoto-png");
     orthoPng.put("value", "true");
     arr.put(orthoPng);
 
+    // Use this tag to build a DTM (Digital Terrain Model, ground only) using a simple morphological filter. Check the --dem* and --smrf* parameters for finer tuning.
     JSONObject dtm = new JSONObject();
     dtm.put("name", "dtm");
     dtm.put("value", "true");
     arr.put(dtm);
 
+    // Our custom Micasense multispectral parameter, which only works on our custom build of ODM.
     if (isMultispectral)
     {
       JSONObject multispectral = new JSONObject();
@@ -246,6 +250,13 @@ public class ODMFacade
       arr.put(multispectral);
     }
     
+    // Create Cloud-Optimized GeoTIFFs instead of normal GeoTIFFs
+    JSONObject cog = new JSONObject();
+    cog.put("name", "cog");
+    cog.put("value", "true");
+    arr.put(cog);
+    
+    // Another one of our custom parameters, which only exists on our custom build of NodeODM.
     JSONObject joImagesCount = new JSONObject();
     joImagesCount.put("name", "imagesCount");
     joImagesCount.put("value", imagesCount);

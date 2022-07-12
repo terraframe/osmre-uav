@@ -184,17 +184,20 @@ export class Product {
 	published: boolean;
 	imageKey?: string;
 	boundingBox?: number[];
-	layers: GeoserverLayer[];
+	layers: MapLayer[];
 	orthoMapped?: boolean;
 	demMapped?: boolean;
 	hasPointcloud?: boolean;
+  hasAllZip?: boolean;
 }
 
-export class GeoserverLayer {
+export class MapLayer {
 	workspace: string;
 	classification: string;
 	key: string;
 	isMapped?: boolean;
+  public: boolean;
+  url: string;
 }
 
 //export class ProductDetail extends Product {

@@ -75,7 +75,7 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -417,20 +417,29 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
 
     JSONObject response = new JSONObject();
+    
+    JSONArray dem = new JSONArray();
+    response.put(ImageryComponent.DEM, dem);
+    
+    JSONArray ortho = new JSONArray();
+    response.put(ImageryComponent.ORTHO, ortho);
+    
+    JSONArray ptcloud = new JSONArray();
+    response.put(ImageryComponent.PTCLOUD, ptcloud);
 
     for (SiteObject object : objects)
     {
       if (object.getKey().contains("/" + ImageryComponent.DEM + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
       {
-        response.put(ImageryComponent.DEM, object.toJSON());
+        dem.put(object.toJSON());
       }
       else if (object.getKey().contains("/" + ImageryComponent.ORTHO + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
       {
-        response.put(ImageryComponent.ORTHO, object.toJSON());
+        ortho.put(object.toJSON());
       }
       else if (object.getKey().contains("/" + ImageryComponent.PTCLOUD + "/") && object.getKey().toUpperCase().endsWith(".LAZ"))
       {
-        response.put(ImageryComponent.PTCLOUD, object.toJSON());
+        ptcloud.put(object.toJSON());
       }
     }
 
@@ -459,7 +468,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     for (Document document : documents)
     {
-      document.delete(true, true);
+      document.delete(true);
     }
 
     if (new ArtifactQuery(this).getDocuments().size() == 0)

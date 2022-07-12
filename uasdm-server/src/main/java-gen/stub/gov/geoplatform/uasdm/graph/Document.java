@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.graph;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONObject;
 
@@ -27,13 +28,17 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
-import gov.geoplatform.uasdm.geoserver.GeoserverLayer;
-import gov.geoplatform.uasdm.geoserver.GeoserverPublisher;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class Document extends DocumentBase implements DocumentIF
 {
@@ -62,39 +67,41 @@ public class Document extends DocumentBase implements DocumentIF
   @Override
   public void delete()
   {
-    this.delete(true, true);
+    this.delete(true);
   }
 
   @Transaction
-  public void delete(boolean removeFromS3, boolean deleteLayers)
+  public void delete(boolean removeFromS3)
   {
-    List<GeoserverLayer> layers = this.getLayers();
-
-    if (deleteLayers)
-    {
-      for (GeoserverLayer layer : layers)
-      {
-        layer.delete(false);
-      }
-    }
-
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
-      this.deleteS3File(this.getS3location());
-    }
-
-    super.delete();
-
-    if (deleteLayers)
-    {
-      if (deleteLayers)
+      new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getBucketName(), this.getComponent()).doIt();
+      
+      if (this.isMappable())
       {
-        for (GeoserverLayer layer : layers)
+        Optional<Product> product = this.getProductHasDocumentParentProducts().stream().findFirst();
+        
+        if (product.isPresent() && product.get().getPublished())
         {
-          new GeoserverPublisher().unpublishLayer(layer, true);
+          new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
         }
       }
     }
+
+    super.delete();
+  }
+  
+  @Override
+  public boolean isMappable()
+  {
+    final String s3 = this.getS3location();
+    
+    return s3.matches(Product.MAPPABLE_ORTHO_REGEX) || s3.matches(Product.MAPPABLE_DEM_REGEX);
+  }
+  
+  public RemoteFileObject download()
+  {
+    return RemoteFileFacade.download(this.getS3location());
   }
 
   public UasComponent getComponent()
@@ -103,12 +110,6 @@ public class Document extends DocumentBase implements DocumentIF
     final List<UasComponent> parents = this.getParents(mdEdge, UasComponent.class);
 
     return parents.get(0);
-  }
-
-  protected void deleteS3File(String key)
-  {
-    final RemoteFileDeleteCommand command = new RemoteFileDeleteCommand(key, this.getComponent());
-    command.doIt();
   }
 
   @Override
@@ -155,14 +156,6 @@ public class Document extends DocumentBase implements DocumentIF
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_GENERATED_PRODUCT);
 
     this.addChild((Product) product, mdEdge).apply();
-  }
-
-  public List<GeoserverLayer> getLayers()
-  {
-    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.DOCUMENT_HAS_LAYER);
-    final List<GeoserverLayer> children = this.getChildren(mdEdge, GeoserverLayer.class);
-
-    return children;
   }
 
   public JSONObject toJSON()

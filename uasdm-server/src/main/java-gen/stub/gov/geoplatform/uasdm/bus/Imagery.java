@@ -200,8 +200,6 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
 
     SiteObjectsResultSet rs = super.getSiteObjects(folder, objects, pageNumber, pageSize);
 
-    Util.getSiteObjects(folder, objects, this);
-
     return rs;
   }
 

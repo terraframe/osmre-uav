@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -85,9 +85,15 @@ public class MockRemoteFileService implements RemoteFileService
   {
     return 0;
   }
-  
+
   @Override
-  public void uploadFile(File file, String key, AbstractWorkflowTaskIF task)
+  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
+  {
+    return new SiteObjectsResultSet(0, 1L, 10L, new LinkedList<SiteObject>(), folder);
+  }
+
+  @Override
+  public void uploadFile(File file, String key, StatusMonitorIF monitor)
   {
     this.uploads.add(key);
   }
@@ -119,30 +125,38 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   @Override
-  public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
+  public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-    // TODO Auto-generated method stub
-    return null;
+    
   }
 
   @Override
-  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  public void deleteObject(String key, String bucket)
   {
-    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void deleteObjects(String key, String bucket)
+  {
+    
+  }
+
+  @Override
+  public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
+  {
     
   }
 
   @Override
   public boolean objectExists(String key)
   {
-    // TODO Auto-generated method stub
     return false;
   }
 
   @Override
   public Long calculateSize(UasComponentIF component)
   {
-    // TODO Auto-generated method stub
     return null;
   }
 }

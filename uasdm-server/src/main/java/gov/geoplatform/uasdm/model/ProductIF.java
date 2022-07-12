@@ -48,16 +48,16 @@ public interface ProductIF extends ComponentIF
   public Page<DocumentIF> getGeneratedFromDocuments(Integer pageNumber, Integer pageSize);
 
   public void calculateKeys(List<UasComponentIF> components);
-
+  
   public void delete();
-
-  public void createImageService(boolean refreshMosaic);
 
 //  public String getWorkspace();
 
   public boolean isPublished();
 
   public void togglePublished();
+  
+  public List<DocumentIF> getDocuments();
 
   public StacItem toStacItem();
 

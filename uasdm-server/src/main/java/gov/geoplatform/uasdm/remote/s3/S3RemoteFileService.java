@@ -35,6 +35,7 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -59,6 +60,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.RemoteFileService;
@@ -164,14 +166,29 @@ public class S3RemoteFileService implements RemoteFileService
     // send request to S3 to create folder
     client.putObject(putObjectRequest);
   }
+  
+  @Override
+  public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
+  {
+    AmazonS3 client = S3ClientFactory.createClient();
+
+    CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
+
+    client.copyObject(request);
+  }
 
   @Override
   public void deleteObject(String key)
   {
+    this.deleteObject(key, AppProperties.getBucketName());
+  }
+  
+  @Override
+  public void deleteObject(String key, String bucket)
+  {
     AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
 
-    DeleteObjectRequest request = new DeleteObjectRequest(bucketName, key);
+    DeleteObjectRequest request = new DeleteObjectRequest(bucket, key);
 
     client.deleteObject(request);
   }
@@ -179,11 +196,15 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void deleteObjects(String key)
   {
+    this.deleteObjects(key, AppProperties.getBucketName());
+  }
+  
+  @Override
+  public void deleteObjects(String key, String bucket)
+  {
     AmazonS3 client = S3ClientFactory.createClient();
 
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
+    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucket).withPrefix(key);
 
     ObjectListing objectListing = client.listObjects(listObjectsRequest);
 
@@ -195,7 +216,7 @@ public class S3RemoteFileService implements RemoteFileService
       {
         String objectKey = objIter.next().getKey();
 
-        client.deleteObject(bucketName, objectKey);
+        client.deleteObject(bucket, objectKey);
       }
 
       // If the bucket contains many objects, the listObjects() call
@@ -213,14 +234,14 @@ public class S3RemoteFileService implements RemoteFileService
     }
 
     // Delete all object versions (required for versioned buckets).
-    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucketName).withPrefix(key));
+    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucket).withPrefix(key));
     while (true)
     {
       Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
       while (versionIter.hasNext())
       {
         S3VersionSummary vs = versionIter.next();
-        client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());
+        client.deleteVersion(bucket, vs.getKey(), vs.getVersionId());
       }
 
       if (versionList.isTruncated())
@@ -233,7 +254,7 @@ public class S3RemoteFileService implements RemoteFileService
       }
     }
 
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(key).withQuiet(false);
+    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucket).withKeys(key).withQuiet(false);
 
     client.deleteObjects(multiObjectDeleteRequest);
   }
@@ -444,7 +465,7 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadFile(File file, String key, AbstractWorkflowTaskIF task)
+  public void uploadFile(File file, String key, StatusMonitorIF monitor)
   {
     try
     {
@@ -459,11 +480,9 @@ public class S3RemoteFileService implements RemoteFileService
           logger.info("Source: " + file.getAbsolutePath());
           logger.info("Destination: " + myUpload.getDescription());
 
-          if (task != null)
+          if (monitor != null)
           {
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
+            monitor.setMessage(myUpload.getDescription());
           }
         }
 
@@ -497,9 +516,9 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (Exception e)
     {
-      if (task != null)
+      if (monitor != null)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        monitor.addError(RunwayException.localizeThrowable(e, Session.getCurrentLocale()));
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);
@@ -507,7 +526,7 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadDirectory(File directory, String key, AbstractWorkflowTaskIF task, boolean includeSubDirectories)
+  public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
     try
     {
@@ -522,11 +541,9 @@ public class S3RemoteFileService implements RemoteFileService
           logger.info("Source: " + directory.getAbsolutePath());
           logger.info("Destination: " + myUpload.getDescription());
 
-          if (task != null)
+          if (monitor != null)
           {
-            task.lock();
-            task.setMessage(myUpload.getDescription());
-            task.apply();
+            monitor.setMessage(myUpload.getDescription());
           }
         }
 
@@ -560,9 +577,9 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (Exception e)
     {
-      if (task != null)
+      if (monitor != null)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        monitor.addError(RunwayException.localizeThrowable(e, Session.getCurrentLocale()));
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);

@@ -21,6 +21,8 @@ import org.json.JSONObject;
 
 import com.runwaysdk.ComponentIF;
 
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+
 public interface DocumentIF extends ComponentIF, JSONSerializable
 {
 
@@ -32,7 +34,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
 
   public void delete();
 
-  public void delete(boolean removeFromS3, boolean deleteLayers);
+  public void delete(boolean removeFromS3);
 
   public JSONObject toJSON();
 
@@ -49,5 +51,9 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
   public String getDescription();
 
   public String getTool();
+  
+  public RemoteFileObject download();
+  
+  public boolean isMappable();
 
 }

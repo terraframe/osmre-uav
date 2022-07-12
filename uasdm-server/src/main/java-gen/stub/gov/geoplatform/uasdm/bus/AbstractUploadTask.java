@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.bus;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.model.ImageryComponent;
+
 public abstract class AbstractUploadTask extends AbstractUploadTaskBase
 {
   private static final long serialVersionUID = 1447500757;
@@ -44,4 +46,6 @@ public abstract class AbstractUploadTask extends AbstractUploadTaskBase
 
     return null;
   }
+
+  public abstract ImageryComponent getImageryComponent();
 }

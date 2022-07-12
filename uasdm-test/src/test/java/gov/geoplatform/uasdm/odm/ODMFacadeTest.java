@@ -16,11 +16,8 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
@@ -79,5 +76,4 @@ public class ODMFacadeTest
       }
     }
   }
-
 }

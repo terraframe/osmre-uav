@@ -25,8 +25,12 @@ import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class Document extends DocumentBase implements DocumentIF
 {
@@ -35,6 +39,13 @@ public class Document extends DocumentBase implements DocumentIF
   public Document()
   {
     super();
+  }
+  
+  @Override
+  public boolean isMappable()
+  {
+    return this.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
+        || this.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION);
   }
 
   @Override
@@ -46,11 +57,11 @@ public class Document extends DocumentBase implements DocumentIF
   @Override
   public void delete()
   {
-    this.delete(true, true);
+    this.delete(true);
   }
 
   @Transaction
-  public void delete(boolean removeFromS3, boolean deleteLayer)
+  public void delete(boolean removeFromS3)
   {
     super.delete();
 
@@ -168,6 +179,12 @@ public class Document extends DocumentBase implements DocumentIF
     document.apply();
 
     return document;
+  }
+
+  @Override
+  public RemoteFileObject download()
+  {
+    throw new UnsupportedOperationException();
   }
 
 }

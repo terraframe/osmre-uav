@@ -12,7 +12,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { NotificationModalComponent } from '@shared/component/modal/notification-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 
-import { SiteEntity, Product, Task, GeoserverLayer } from '../model/management';
+import { SiteEntity, Product, Task, MapLayer } from '../model/management';
 
 import { EntityModalComponent } from './modal/entity-modal.component';
 import { CollectionModalComponent } from './modal/collection-modal.component';
@@ -126,7 +126,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     id: 'streets-v11'
   }];
 
-  layers: GeoserverLayer[] = [];
+  layers: MapLayer[] = [];
 
   baselayerIconHover = false;
 
@@ -916,11 +916,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  getLayerByClassification(classification: string, product: Product): GeoserverLayer {
+  getLayerByClassification(classification: string, product: Product): MapLayer {
     let len = product.layers.length;
 
     for (let i = 0; i < len; ++i) {
-      let layer: GeoserverLayer = product.layers[i];
+      let layer: MapLayer = product.layers[i];
 
       if (layer.classification === classification) {
         return layer;
@@ -959,6 +959,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+/*
   addImageLayer(layer: GeoserverLayer) {
     const workspace = encodeURI(layer.workspace);
     const layerName = encodeURI(layer.workspace + ':' + layer.key);
@@ -976,6 +977,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       'paint': {}
     }, "points");
   }
+  */
+  
+  addImageLayer(layer: MapLayer) {
+    // let cogurl = "https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif";
+    // cogurl = encodeURIComponent(cogurl);
+    
+    // let url = "https://gtfsce6ygg.execute-api.us-west-2.amazonaws.com/cog/tilejson.json?url=" + cogurl;
+    
+    let url = layer.url;
+    
+    if (!layer.public) {
+      url = acp + "/" + layer.url;
+    }
+    
+    this.map.addLayer({
+      'id': layer.key,
+      'type': 'raster',
+      'source': {
+        'type': 'raster',
+        'url': url
+      },
+      'paint': {}
+    }, "points");
+    
+    // let bounds = new LngLatBounds([-63.05584626551064, 18.021979555663453, -63.043209989152636, 18.02893107643876]);
+    // this.map.fitBounds(bounds);
+    
+    // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
+    // insufficient, because it might be more zoomed out then the ortho will display at.
+    this.mapService.tilejson(url).then(data => {
+      this.map.flyTo({center: data.center, zoom: data.minzoom});
+    });
+  }
+
 
   handleGoto(): void {
 
