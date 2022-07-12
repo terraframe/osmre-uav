@@ -655,6 +655,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (component instanceof CollectionIF)
     {
+      CollectionIF collection = (CollectionIF) component;
 
       List<UasComponentIF> ancestors = component.getAncestors();
 
@@ -667,12 +668,21 @@ public class Product extends ProductBase implements ProductIF
         item.setBbox(envelope);
         item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
       }
+      
+      UAV uav = collection.getUav();
+      Sensor sensor = collection.getSensor();
+      Platform platform = uav.getPlatform();           
 
       Properties properties = new Properties();
       properties.setTitle(component.getName());
       properties.setCollection(component.getName());
       properties.setDescription(component.getDescription());
       properties.setDatetime( ( (Collection) component ).getCollectionDate());
+      properties.setUpdated(this.getLastUpdateDate());
+      properties.setSensor(sensor.getName());
+      properties.setPlatform(platform.getName());
+      properties.setFaaNumber(uav.getFaaNumber());
+      properties.setSerialNumber(uav.getSerialNumber());
 
       item.setProperties(properties);
 

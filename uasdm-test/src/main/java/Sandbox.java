@@ -17,10 +17,15 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -32,6 +37,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.json.JSONArray;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -46,9 +52,11 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -57,6 +65,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
 import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.service.IndexService;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
@@ -111,31 +120,54 @@ public class Sandbox
 
       // client.index(i -> i.index("stac").document(result));
       final String text = "DDD";
-
-      SearchResponse<StacItem> search = client.search(s -> s.index(ElasticSearchIndex.STAC_INDEX_NAME).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
+      
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
         HashMap<String, Query> map = new HashMap<String, Query>();
-//        map.put("error",  new Query.Builder().match(m -> m.field("site").query(text)).build());
-        map.put("site_count",  new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("mission_count",  new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        
+        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+
         return b.keyed(map);
-      })))
-//      .query(q -> q.queryString(m -> m.fields("properties.site", "project", "mission", "collection").query("text")))
-      , StacItem.class);
+      })));
       
+      
+      s.query(q -> {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.clear();
+        calendar.set(2022, Calendar.JULY, 10);
+        JsonData startDate = JsonData.of(sdf.format(calendar.getTime()));
+
+        calendar.set(2022, Calendar.JULY, 12);
+        JsonData endDate = JsonData.of(sdf.format(calendar.getTime()));
+        
+        q.bool(b -> b.must(m -> m.range(r -> r.field("properties.datetime").gte(startDate).lte(endDate))));
+
+        return q;
+      });
+      
+      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+
       Map<String, Aggregate> aggregations = search.aggregations();
-      
+
       Aggregate totals = aggregations.get("totals");
-      
+
       Map<String, FiltersBucket> child = totals.filters().buckets().keyed();
       FiltersBucket temp = child.get("site_count");
       System.out.println(totals);
-      System.out.println(temp);
-      
-      
+      System.out.println("Site: " + temp.docCount());
+
       HitsMetadata<StacItem> metadata = search.hits();
 
-      System.out.println(metadata.total());      
+      System.out.println(metadata.total());
 
       List<Hit<StacItem>> hits = metadata.hits();
 
@@ -146,6 +178,12 @@ public class Sandbox
         System.out.println(mapper.writeValueAsString(source));
       }
     }
+    
+    JSONArray results = IndexService.getTotals("DD", new JSONArray());
+    
+    System.out.println(results);
+    
+    IndexService.shutdown();
 
     // BodyContentHandler handler = new BodyContentHandler();
     // Metadata metadata = new Metadata();

@@ -2,8 +2,10 @@ package gov.geoplatform.uasdm.index.elastic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.http.HttpHost;
@@ -16,6 +18,8 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +27,14 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
+import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -336,5 +345,139 @@ public class ElasticSearchIndex implements Index
     {
       throw new ProgrammingErrorException(e);
     }
+  }
+
+  public JSONArray getTotals(String text, JSONArray filters)
+  {
+    JSONArray results = new JSONArray();
+
+    try
+    {
+      ElasticsearchClient client = createClient();
+
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME).size(0).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
+        HashMap<String, Query> map = new HashMap<String, Query>();
+        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+
+        return b.keyed(map);
+      })));
+
+      if (filters != null && filters.length() > 0)
+      {
+        s.query(q -> q.bool(b -> b.must(m -> {
+          for (int i = 0; i < filters.length(); i++)
+          {
+            JSONObject filter = filters.getJSONObject(i);
+            String field = filter.getString("field");
+
+            if (field.equals("datetime"))
+            {
+              if (filter.has("startDate") || filter.has("endDate"))
+              {
+                m.range(r -> {
+                  r.field("properties.datetime");
+
+                  if (filter.has("startDate"))
+                  {
+                    r.gte(JsonData.of(filter.getString("startDate")));
+                  }
+
+                  if (filter.has("endDate"))
+                  {
+                    r.lte(JsonData.of(filter.getString("endDate")));
+                  }
+
+                  return r;
+                });
+              }
+
+            }
+            else
+            {
+              String value = filter.getString("value");
+              m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
+            }
+          }
+
+          return m;
+        })));
+
+      }
+
+      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+
+      Map<String, Aggregate> aggregations = search.aggregations();
+
+      Aggregate totals = aggregations.get("totals");
+
+      Map<String, FiltersBucket> buckets = totals.filters().buckets().keyed();
+
+      if (buckets.get("site_count").docCount() > 0)
+      {
+        results.put(buildTotal("site", buckets.get("site_count").docCount()));
+      }
+
+      if (buckets.get("project_count").docCount() > 0)
+      {
+        results.put(buildTotal("project", buckets.get("project_count").docCount()));
+      }
+
+      if (buckets.get("mission_count").docCount() > 0)
+      {
+        results.put(buildTotal("mission", buckets.get("mission_count").docCount()));
+      }
+
+      if (buckets.get("collection_count").docCount() > 0)
+      {
+        results.put(buildTotal("collection", buckets.get("collection_count").docCount()));
+      }
+
+      if (buckets.get("sensor_count").docCount() > 0)
+      {
+        results.put(buildTotal("sensor", buckets.get("sensor_count").docCount()));
+      }
+
+      if (buckets.get("platform_count").docCount() > 0)
+      {
+        results.put(buildTotal("platform", buckets.get("platform_count").docCount()));
+      }
+
+      if (buckets.get("faa_number_count").docCount() > 0)
+      {
+        results.put(buildTotal("faaNumber", buckets.get("faa_number_count").docCount()));
+      }
+
+      if (buckets.get("serial_number_count").docCount() > 0)
+      {
+        results.put(buildTotal("serialNumber", buckets.get("serial_number_count").docCount()));
+      }
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+    return results;
+  }
+
+  private static JSONObject buildTotal(String key, long total)
+  {
+    JSONObject object = new JSONObject();
+    object.put("key", key);
+    object.put("total", total);
+
+    return object;
   }
 }

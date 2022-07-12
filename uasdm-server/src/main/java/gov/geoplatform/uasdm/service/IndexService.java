@@ -25,6 +25,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.json.JSONArray;
 import org.xml.sax.SAXException;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -121,16 +122,24 @@ public class IndexService
       index.createStacItems(product);
     }
   }
-  
+
   public static void removeStacItems(ProductIF product)
   {
     if (AppProperties.isSolrEnabled())
     {
       index.removeStacItems(product);
-    }    
+    }
   }
-  
-  
+
+  public static JSONArray getTotals(String text, JSONArray filters)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      return index.getTotals(text, filters);
+    }
+
+    return new JSONArray();
+  }
 
   public static String getContent(File metadata)
   {

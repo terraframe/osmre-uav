@@ -192,6 +192,12 @@ public class StacItem
     @JsonInclude(Include.NON_NULL)
     private String site;
 
+    @JsonInclude(Include.NON_NULL)
+    private String faaNumber;
+    
+    @JsonInclude(Include.NON_NULL)
+    private String serialNumber;
+    
     public Date getDatetime()
     {
       return datetime;
@@ -320,6 +326,26 @@ public class StacItem
     public void setSite(String site)
     {
       this.site = site;
+    }
+    
+    public String getFaaNumber()
+    {
+      return faaNumber;
+    }
+    
+    public void setFaaNumber(String faaNumber)
+    {
+      this.faaNumber = faaNumber;
+    }
+    
+    public String getSerialNumber()
+    {
+      return serialNumber;
+    }
+    
+    public void setSerialNumber(String serialNumber)
+    {
+      this.serialNumber = serialNumber;
     }
 
     public void set(String fieldName, String value)

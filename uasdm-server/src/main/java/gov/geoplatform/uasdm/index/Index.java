@@ -3,6 +3,8 @@ package gov.geoplatform.uasdm.index;
 import java.io.File;
 import java.util.List;
 
+import org.json.JSONArray;
+
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -30,4 +32,6 @@ public interface Index
   public void createStacItems(ProductIF product);
 
   public void removeStacItems(ProductIF product);
+
+  public JSONArray getTotals(String text, JSONArray filters);
 }
