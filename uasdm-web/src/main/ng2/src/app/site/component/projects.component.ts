@@ -997,7 +997,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
     // insufficient, because it might be more zoomed out then the ortho will display at.
     this.mapService.tilejson(url).then(data => {
-      this.map.flyTo({center: data.center, zoom: data.minzoom});
+      // this.map.flyTo({center: data.center, zoom: data.minzoom});
       
       this.map.addLayer({
         "id": layer.key,
