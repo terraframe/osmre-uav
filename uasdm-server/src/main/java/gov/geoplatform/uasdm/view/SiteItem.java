@@ -101,6 +101,8 @@ public class SiteItem implements TreeComponent
   private Platform platform;
 
   private Sensor sensor;
+  
+  private boolean hasAllZip = false;
 
   private List<TreeComponent> children;
 
@@ -113,6 +115,16 @@ public class SiteItem implements TreeComponent
     this.children = new LinkedList<TreeComponent>();
     this.values = new HashMap<String, Object>();
     this.metadataUploaded = false;
+  }
+
+  public boolean isHasAllZip()
+  {
+    return hasAllZip;
+  }
+
+  public void setHasAllZip(boolean hasAllZip)
+  {
+    this.hasAllZip = hasAllZip;
   }
 
   @Override
@@ -267,6 +279,7 @@ public class SiteItem implements TreeComponent
       obj.put(OWNER_EMAIL, this.getOwnerEmail());
       obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
       obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+      obj.put("hasAllZip", this.hasAllZip);
 
       if (this.getType().equals("Collection"))
       {

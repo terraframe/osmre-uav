@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,6 +62,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -219,6 +222,46 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       this.createS3Folder(this.buildDemKey());
 
       this.createS3Folder(this.buildOrthoKey());
+    }
+  }
+  
+  public SiteObject getAllZip()
+  {
+    // We unfortunately have to go to S3 for this operation since the relationship between the AllZip document and the product is corrupt / does not exist for all products.
+    
+    List<SiteObject> items = RemoteFileFacade.getSiteObjects(this, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+
+    SiteObject last = null;
+
+    String path = this.getS3location().replaceAll("\\/", "\\\\/");
+
+    if (!path.endsWith("/"))
+    {
+      path = path + "\\\\/";
+    }
+
+    Pattern pattern = Pattern.compile("^" + path + "odm_all\\/all.+\\.zip$", Pattern.CASE_INSENSITIVE);
+
+    for (SiteObject item : items)
+    {
+      if (last == null || item.getLastModified().after(last.getLastModified()))
+      {
+        Matcher matcher = pattern.matcher(item.getKey());
+
+        if (matcher.find())
+        {
+          last = item;
+        }
+      }
+    }
+
+    if (last != null)
+    {
+      return last;
+    }
+    else
+    {
+      return null;
     }
   }
 

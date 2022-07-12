@@ -20,6 +20,7 @@ import java.util.List;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -77,6 +78,9 @@ public class CollectionConverter extends Converter
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
+      
+      SiteObject allZip = ((Collection) collection).getAllZip();
+      siteItem.setHasAllZip(allZip != null);
 
       if (collection.getCollectionDate() != null)
       {

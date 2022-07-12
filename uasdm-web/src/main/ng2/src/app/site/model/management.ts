@@ -54,6 +54,7 @@ export class SiteEntity {
 	collectionDate?: string;
 	description?: string;
 	tool?: string;
+  hasAllZip?: boolean;
 }
 
 export class CollectionArtifacts {
