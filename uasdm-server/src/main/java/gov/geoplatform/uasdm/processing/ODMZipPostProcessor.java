@@ -176,15 +176,15 @@ public class ODMZipPostProcessor
     
     if (this.progressTask.getProcessPtcloud())
     {
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
 
       this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources"), this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy"), this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data"), this.collection, monitor));
     }
   }
   

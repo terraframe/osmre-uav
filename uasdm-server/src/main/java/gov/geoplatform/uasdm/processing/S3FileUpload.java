@@ -10,8 +10,6 @@ public class S3FileUpload implements Processor
 {
   protected String s3Path;
   
-  protected boolean isDirectory;
-  
   protected StatusMonitorIF monitor;
   
   protected CollectionIF collection;
@@ -23,17 +21,11 @@ public class S3FileUpload implements Processor
    * @param isDirectory
    * @param monitor
    */
-  public S3FileUpload(String s3Path, CollectionIF collection, StatusMonitorIF monitor, boolean isDirectory)
+  public S3FileUpload(String s3Path, CollectionIF collection, StatusMonitorIF monitor)
   {
     this.s3Path = s3Path;
     this.monitor = monitor;
     this.collection = collection;
-    this.isDirectory = isDirectory;
-  }
-
-  public boolean isDirectory()
-  {
-    return this.isDirectory;
   }
 
   public String getS3Path()

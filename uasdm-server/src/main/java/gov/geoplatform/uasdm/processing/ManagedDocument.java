@@ -26,7 +26,7 @@ public class ManagedDocument extends S3FileUpload
 
   public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
   {
-    super(s3Path, collection, monitor, false);
+    super(s3Path, collection, monitor);
 
     this.searchable = searchable;
     this.product = product;
