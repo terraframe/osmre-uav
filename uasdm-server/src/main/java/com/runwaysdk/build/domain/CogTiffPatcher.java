@@ -54,6 +54,8 @@ public class CogTiffPatcher
   
   public void refreshAllProducts() throws Throwable
   {
+    Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+    
     final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
 
     StringBuilder sb = new StringBuilder();
@@ -81,6 +83,8 @@ public class CogTiffPatcher
       
       for (DocumentIF document : documents)
       {
+        Thread.yield();
+        
         if (document.getName().endsWith(".tif") && !document.getName().endsWith(CogTifProcessor.COG_EXTENSION))
         {
           boolean alreadyExists = documents.stream().filter(doc -> doc.getName().equals(FilenameUtils.getBaseName(document.getName()) + CogTifProcessor.COG_EXTENSION)).collect(Collectors.toList()).size() > 0;

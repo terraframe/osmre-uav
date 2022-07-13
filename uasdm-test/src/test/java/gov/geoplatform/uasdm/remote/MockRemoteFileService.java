@@ -19,12 +19,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
@@ -33,24 +33,75 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class MockRemoteFileService implements RemoteFileService
 {
-  private Set<String> downloads = new TreeSet<String>();
+  public static enum RemoteFileActionType
+  {
+    CREATE_FOLDER,
+    COPY,
+    DELETE,
+    DELETE_FOLDER,
+    DOWNLOAD,
+    UPLOAD,
+    UPLOAD_FOLDER
+  }
+  
+  public static class RemoteFileAction
+  {
+    private String key;
+    
+    private String bucket;
+    
+    private RemoteFileActionType type;
+    
+    public RemoteFileAction(RemoteFileActionType type, String key, String bucket)
+    {
+      this.key = key;
+      this.bucket = bucket;
+      this.type = type;
+    }
 
-  private Set<String> deletes   = new TreeSet<String>();
+    public String getKey()
+    {
+      return key;
+    }
 
-  private Set<String> uploads   = new TreeSet<String>();
+    public void setKey(String key)
+    {
+      this.key = key;
+    }
 
-  private Set<String> creates   = new TreeSet<String>();
+    public String getBucket()
+    {
+      return bucket;
+    }
+
+    public void setBucket(String bucket)
+    {
+      this.bucket = bucket;
+    }
+
+    public RemoteFileActionType getType()
+    {
+      return type;
+    }
+
+    public void setType(RemoteFileActionType type)
+    {
+      this.type = type;
+    }
+  }
+  
+  private Collection<RemoteFileAction> actions = new LinkedList<RemoteFileAction>();
 
   @Override
   public void download(String key, File destination) throws IOException, FileNotFoundException
   {
-    this.downloads.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
   }
 
   @Override
   public RemoteFileObject download(String key)
   {
-    this.downloads.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
 
     return new MockRemoteFileObject();
   }
@@ -58,7 +109,7 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {
-    this.downloads.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
 
     return new MockRemoteFileObject();
   }
@@ -66,19 +117,19 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void createFolder(String key)
   {
-    this.creates.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.CREATE_FOLDER, key, AppProperties.getBucketName()));
   }
 
   @Override
   public void deleteObject(String key)
   {
-    this.deletes.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DELETE, key, AppProperties.getBucketName()));
   }
 
   @Override
   public void deleteObjects(String key)
   {
-    this.deletes.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DELETE_FOLDER, key, AppProperties.getBucketName()));
   }
 
   @Override
@@ -96,57 +147,42 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void uploadFile(File file, String key, StatusMonitorIF monitor)
   {
-    this.uploads.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD, key, AppProperties.getBucketName()));
   }
 
   @Override
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
   {
-    this.uploads.add(key);
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD, key, AppProperties.getBucketName()));
   }
 
-  public Set<String> getDownloads()
+  public Collection<RemoteFileAction> getActions()
   {
-    return downloads;
-  }
-
-  public Set<String> getDeletes()
-  {
-    return deletes;
-  }
-
-  public Set<String> getUploads()
-  {
-    return uploads;
-  }
-
-  public Set<String> getCreates()
-  {
-    return creates;
+    return actions;
   }
 
   @Override
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-    
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.COPY, sourceKey, AppProperties.getBucketName()));
   }
 
   @Override
   public void deleteObject(String key, String bucket)
   {
-    
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DELETE, key, AppProperties.getBucketName()));
   }
 
   @Override
   public void deleteObjects(String key, String bucket)
   {
-    
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DELETE_FOLDER, key, AppProperties.getBucketName()));
   }
 
   @Override
   public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
-    
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD_FOLDER, key, AppProperties.getBucketName()));
   }
 
   @Override

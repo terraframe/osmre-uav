@@ -15,6 +15,9 @@
  */
 package gov.geoplatform.uasdm.remote;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,8 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.MockRemoteFileService.RemoteFileAction;
+import gov.geoplatform.uasdm.remote.MockRemoteFileService.RemoteFileActionType;
 
 public class RemoteFileServiceTest
 {
@@ -54,8 +58,13 @@ public class RemoteFileServiceTest
 
     final String location = site.getS3location();
 
-    Assert.assertTrue(fService.getCreates().contains(location));
-    Assert.assertTrue(fService.getDeletes().contains(location));
+    List<RemoteFileAction> creates = fService.getActions().stream().filter(action -> action.getType().equals(RemoteFileActionType.CREATE_FOLDER)).collect(Collectors.toList());
+    Assert.assertEquals(1, creates.size());
+    Assert.assertTrue(creates.get(0).getKey().equals(location));
+    
+    List<RemoteFileAction> deletes = fService.getActions().stream().filter(action -> action.getType().equals(RemoteFileActionType.CREATE_FOLDER)).collect(Collectors.toList());
+    Assert.assertEquals(1, deletes.size());
+    Assert.assertTrue(deletes.get(0).getKey().equals(location));
   }
 
 }

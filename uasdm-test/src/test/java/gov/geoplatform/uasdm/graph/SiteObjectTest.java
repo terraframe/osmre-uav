@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -28,6 +29,7 @@ import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import junit.framework.Assert;
 
+@Ignore
 public class SiteObjectTest
 {
 
