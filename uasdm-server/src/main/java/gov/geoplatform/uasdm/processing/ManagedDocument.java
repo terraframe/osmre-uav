@@ -5,7 +5,6 @@ import java.io.File;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -17,8 +16,6 @@ public class ManagedDocument extends S3FileUpload
 {
   private boolean searchable;
   
-  private Product product;
-  
   public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
     this(s3Path, product, collection, monitor, true);
@@ -26,10 +23,9 @@ public class ManagedDocument extends S3FileUpload
 
   public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
   {
-    super(s3Path, collection, monitor);
+    super(s3Path, product, collection, monitor);
 
     this.searchable = searchable;
-    this.product = product;
   }
   
   protected ManagedDocumentTool getTool()

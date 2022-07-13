@@ -1,8 +1,10 @@
 package com.runwaysdk.build.domain;
 
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -20,10 +22,8 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.InMemoryMonitor;
-import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import net.geoprism.GeoprismProperties;
 
@@ -35,6 +35,8 @@ import net.geoprism.GeoprismProperties;
 public class CogTiffPatcher
 {
   private static final Logger logger = LoggerFactory.getLogger(CogTiffPatcher.class);
+  
+  protected Set<String> deleted = new HashSet<String>();
   
   public static void main(String[] args) throws Throwable
   {
@@ -72,7 +74,9 @@ public class CogTiffPatcher
 
     for (Product product : results)
     {
-      logger.info("Refreshing tifs for product [" + product.getName() + " : " + product.getOid() + "].");
+      this.deleteAllExistingCogTiff(product);
+      
+      logger.info("Generating cog tifs for product [" + product.getName() + " : " + product.getOid() + "].");
       
       final CollectionIF collection = (CollectionIF) product.getComponent();
 
@@ -87,12 +91,12 @@ public class CogTiffPatcher
         
         if (document.getName().endsWith(".tif") && !document.getName().endsWith(CogTifProcessor.COG_EXTENSION))
         {
-          boolean alreadyExists = documents.stream().filter(doc -> doc.getName().equals(FilenameUtils.getBaseName(document.getName()) + CogTifProcessor.COG_EXTENSION)).collect(Collectors.toList()).size() > 0;
-          if (alreadyExists)
-          {
-            logger.info("Skipping [" + document.getS3location() + "].");
-            continue;
-          }
+//          boolean alreadyExists = documents.stream().filter(doc -> doc.getName().equals(FilenameUtils.getBaseName(document.getName()) + CogTifProcessor.COG_EXTENSION)).collect(Collectors.toList()).size() > 0;
+//          if (alreadyExists)
+//          {
+//            logger.info("Skipping [" + document.getS3location() + "].");
+//            continue;
+//          }
           
           logger.info("Converting [" + document.getS3location() + "] to a cog tif.");
           
@@ -132,6 +136,22 @@ public class CogTiffPatcher
     else
     {
       logger.info("Patching completed. " + num + " documents were converted.");
+    }
+  }
+  
+  private void deleteAllExistingCogTiff(Product product)
+  {
+    List<DocumentIF> documents = product.getDocuments().stream().filter(doc -> doc.getName().endsWith(CogTifProcessor.COG_EXTENSION)).collect(Collectors.toList());
+    
+    logger.info("Deleting " + documents.size() + " existing cog tifs");
+    
+    for (DocumentIF document: documents)
+    {
+      if (!deleted.contains(document.getOid()))
+      {
+        deleted.add(document.getOid());
+        document.delete(true);
+      }
     }
   }
 }

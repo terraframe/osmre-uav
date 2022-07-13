@@ -488,19 +488,19 @@ public class Product extends ProductBase implements ProductIF
     this.setPublished(!this.isPublished());
     this.apply();
 
-    List<DocumentIF> mappables = this.getMappableDocuments();
+    List<DocumentIF> documents = this.getDocuments();
 
-    for (DocumentIF mappable : mappables)
+    for (DocumentIF document : documents)
     {
       if (this.isPublished())
       {
         // Add to public S3 bucket
-        RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
+        RemoteFileFacade.copyObject(document.getS3location(), AppProperties.getBucketName(), document.getS3location(), AppProperties.getPublicBucketName());
       }
       else
       {
         // Remove from public S3 bucket
-        RemoteFileFacade.deleteObject(mappable.getS3location(), AppProperties.getPublicBucketName());
+        RemoteFileFacade.deleteObject(document.getS3location(), AppProperties.getPublicBucketName());
       }
     }
   }

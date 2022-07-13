@@ -56,6 +56,8 @@ public interface RemoteFileService
   public void uploadFile(File file, String key, StatusMonitorIF monitor);
 
   public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories);
+  
+  public void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories);
 
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream);
 
