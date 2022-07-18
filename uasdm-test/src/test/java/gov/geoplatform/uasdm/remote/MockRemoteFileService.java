@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote;
 
@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -34,11 +36,11 @@ public class MockRemoteFileService implements RemoteFileService
 {
   private Set<String> downloads = new TreeSet<String>();
 
-  private Set<String> deletes   = new TreeSet<String>();
+  private Set<String> deletes = new TreeSet<String>();
 
-  private Set<String> uploads   = new TreeSet<String>();
+  private Set<String> uploads = new TreeSet<String>();
 
-  private Set<String> creates   = new TreeSet<String>();
+  private Set<String> creates = new TreeSet<String>();
 
   @Override
   public void download(String key, File destination) throws IOException, FileNotFoundException
@@ -104,6 +106,23 @@ public class MockRemoteFileService implements RemoteFileService
     this.uploads.add(key);
   }
 
+  @Override
+  public RemoteFileObject getStacItem(ProductIF product)
+  {
+    return null;
+  }
+
+  @Override
+  public void putStacItem(StacItem item)
+  {
+
+  }
+
+  @Override
+  public void removeStacItem(ProductIF product)
+  {
+  }
+
   public Set<String> getDownloads()
   {
     return downloads;
@@ -127,25 +146,25 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-    
+
   }
 
   @Override
   public void deleteObject(String key, String bucket)
   {
-    
+
   }
 
   @Override
   public void deleteObjects(String key, String bucket)
   {
-    
+
   }
 
   @Override
   public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
-    
+
   }
 
   @Override

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
@@ -52,13 +52,16 @@ import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
@@ -166,7 +169,7 @@ public class S3RemoteFileService implements RemoteFileService
     // send request to S3 to create folder
     client.putObject(putObjectRequest);
   }
-  
+
   @Override
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
@@ -182,7 +185,7 @@ public class S3RemoteFileService implements RemoteFileService
   {
     this.deleteObject(key, AppProperties.getBucketName());
   }
-  
+
   @Override
   public void deleteObject(String key, String bucket)
   {
@@ -198,7 +201,7 @@ public class S3RemoteFileService implements RemoteFileService
   {
     this.deleteObjects(key, AppProperties.getBucketName());
   }
-  
+
   @Override
   public void deleteObjects(String key, String bucket)
   {
@@ -586,4 +589,78 @@ public class S3RemoteFileService implements RemoteFileService
     }
   }
 
+  @Override
+  public void putStacItem(StacItem item)
+  {
+    try
+    {
+      String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+      String key = "_stac_/" + item.getId() + ".json";
+
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.enable(SerializationFeature.INDENT_OUTPUT);
+      byte[] bytes = mapper.writeValueAsBytes(item);
+
+      ObjectMetadata oMetadata = new ObjectMetadata();
+      oMetadata.setContentType("application/geo+json");
+      oMetadata.setContentLength(bytes.length);
+
+      try (ByteArrayInputStream istream = new ByteArrayInputStream(bytes))
+      {
+        PutObjectRequest request = new PutObjectRequest(bucket, key, istream, oMetadata);
+        AmazonS3 client = S3ClientFactory.createClient();
+        client.putObject(request);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+    catch (AmazonServiceException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Override
+  public void removeStacItem(ProductIF product)
+  {
+    String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+    String key = "_stac_/" + product.getOid() + ".json";
+
+    AmazonS3 client = S3ClientFactory.createClient();
+
+    DeleteObjectRequest request = new DeleteObjectRequest(bucket, key);
+
+    client.deleteObject(request);
+  }
+
+  @Override
+  public RemoteFileObject getStacItem(ProductIF product)
+  {
+    String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+    String key = "_stac_/" + product.getOid() + ".json";
+
+    try
+    {
+      System.out.println(bucket);
+      System.out.println(key);
+      
+      AmazonS3 client = S3ClientFactory.createClient();
+
+      GetObjectRequest request = new GetObjectRequest(bucket, key);
+
+      return new S3ObjectWrapper(client.getObject(request));
+    }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to find s3 object [" + key + "]", e);
+
+      throw e;
+    }
+  }
 }

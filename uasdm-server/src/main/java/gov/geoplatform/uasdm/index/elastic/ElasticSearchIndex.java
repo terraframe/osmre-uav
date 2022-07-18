@@ -44,6 +44,7 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -57,7 +58,8 @@ public class ElasticSearchIndex implements Index
 
   private RestClient restClient;
 
-  public ElasticSearchIndex()
+  @Override
+  public void startup()
   {
     String username = AppProperties.getElasticsearchUsername();
     String host = AppProperties.getElasticsearchHost();
@@ -78,11 +80,7 @@ public class ElasticSearchIndex implements Index
     });
 
     this.restClient = builder.build();
-  }
 
-  @Override
-  public void startup()
-  {
     try
     {
       ElasticsearchClient client = this.createClient();
@@ -94,14 +92,7 @@ public class ElasticSearchIndex implements Index
       catch (ElasticsearchException e)
       {
         // Index doesn't exist, create it
-        client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m
-            .properties("geometry", p -> p.geoShape(v -> v))
-            .properties("properties.datetime", p -> p.date(v -> v))
-            .properties("properties.start_datetime", p -> p.date(v -> v))
-            .properties("properties.end_datetime", p -> p.date(v -> v))
-            .properties("properties.updated", p -> p.date(v -> v))
-            .properties("properties.created", p -> p.date(v -> v))
-            ));
+        client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
       }
     }
     catch (IOException e)
@@ -358,6 +349,8 @@ public class ElasticSearchIndex implements Index
         throw new ProgrammingErrorException(e);
       }
     }
+
+    RemoteFileFacade.putStacItem(item);
   }
 
   @Override
@@ -376,6 +369,8 @@ public class ElasticSearchIndex implements Index
     {
       throw new ProgrammingErrorException(e);
     }
+
+    RemoteFileFacade.removeStacItem(product);
   }
 
   public JSONArray getTotals(String text, JSONArray filters)
@@ -453,42 +448,42 @@ public class ElasticSearchIndex implements Index
 
       if (buckets.get("site_count").docCount() > 0)
       {
-        results.put(buildTotal("site", buckets.get("site_count").docCount()));
+        results.put(buildTotal("Site", "site", buckets.get("site_count").docCount()));
       }
 
       if (buckets.get("project_count").docCount() > 0)
       {
-        results.put(buildTotal("project", buckets.get("project_count").docCount()));
+        results.put(buildTotal("Project", "project", buckets.get("project_count").docCount()));
       }
 
       if (buckets.get("mission_count").docCount() > 0)
       {
-        results.put(buildTotal("mission", buckets.get("mission_count").docCount()));
+        results.put(buildTotal("Mission", "mission", buckets.get("mission_count").docCount()));
       }
 
       if (buckets.get("collection_count").docCount() > 0)
       {
-        results.put(buildTotal("collection", buckets.get("collection_count").docCount()));
+        results.put(buildTotal("Collection", "collection", buckets.get("collection_count").docCount()));
       }
 
       if (buckets.get("sensor_count").docCount() > 0)
       {
-        results.put(buildTotal("sensor", buckets.get("sensor_count").docCount()));
+        results.put(buildTotal("Sensor", "sensor", buckets.get("sensor_count").docCount()));
       }
 
       if (buckets.get("platform_count").docCount() > 0)
       {
-        results.put(buildTotal("platform", buckets.get("platform_count").docCount()));
+        results.put(buildTotal("Platform", "platform", buckets.get("platform_count").docCount()));
       }
 
       if (buckets.get("faa_number_count").docCount() > 0)
       {
-        results.put(buildTotal("faaNumber", buckets.get("faa_number_count").docCount()));
+        results.put(buildTotal("FAA Number", "faaNumber", buckets.get("faa_number_count").docCount()));
       }
 
       if (buckets.get("serial_number_count").docCount() > 0)
       {
-        results.put(buildTotal("serialNumber", buckets.get("serial_number_count").docCount()));
+        results.put(buildTotal("Serial Number", "serialNumber", buckets.get("serial_number_count").docCount()));
       }
     }
     catch (ElasticsearchException e)
@@ -503,10 +498,83 @@ public class ElasticSearchIndex implements Index
     return results;
   }
 
-  private static JSONObject buildTotal(String key, long total)
+  public List<StacItem> getItems(JSONArray filters)
+  {
+    List<StacItem> items = new LinkedList<StacItem>();
+
+    try
+    {
+      ElasticsearchClient client = createClient();
+
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+
+      if (filters != null && filters.length() > 0)
+      {
+        s.query(q -> q.bool(b -> b.must(m -> {
+          for (int i = 0; i < filters.length(); i++)
+          {
+            JSONObject filter = filters.getJSONObject(i);
+            String field = filter.getString("field");
+
+            if (field.equals("datetime"))
+            {
+              if (filter.has("startDate") || filter.has("endDate"))
+              {
+                m.range(r -> {
+                  r.field("properties.datetime");
+
+                  if (filter.has("startDate"))
+                  {
+                    r.gte(JsonData.of(filter.getString("startDate")));
+                  }
+
+                  if (filter.has("endDate"))
+                  {
+                    r.lte(JsonData.of(filter.getString("endDate")));
+                  }
+
+                  return r;
+                });
+              }
+
+            }
+            else
+            {
+              String value = filter.getString("value");
+              m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
+            }
+          }
+
+          return m;
+        })));
+
+      }
+
+      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+
+      for (Hit<StacItem> hit : search.hits().hits())
+      {
+        items.add(hit.source());
+      }
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+    return items;
+  }
+
+  private static JSONObject buildTotal(String label, String key, long total)
   {
     JSONObject object = new JSONObject();
     object.put("key", key);
+    object.put("label", label);
     object.put("total", total);
 
     return object;

@@ -1,0 +1,71 @@
+<ng-template #bsItemTemplate let-match="match" let-query="query">
+    <b>{{ match.item.label}} - {{ match.item.total}}</b>
+</ng-template>
+
+<div>
+    <form #form="ngForm">
+        <h3>Layer</h3>
+        <div class="modal-body" tabindex="-1" role="dialog">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="date" [(ngModel)]="layer.startDate" name="startDate" />
+                </div>
+                <div class="col-md-2">
+                    <input type="date" [(ngModel)]="layer.endDate" name="endDate" />
+                </div>
+                <div class="col-md-4">
+                    <input class="form-control search-input" type="text" name="search" placeholder="Search..."
+                        [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
+                        (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2"
+                        [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="text"
+                        (keydown.enter)="$event.preventDefault()" />
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Filters</label>
+                </div>
+            </div>
+            <ng-container *ngFor="let filter of layer.filters">
+                <div *ngIf="filter.field !== 'datetime'" class="row">
+                    <div class="col-md-10">
+                        {{filter.label}} contains {{filter.value}}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-warning" (click)="handleRemove(filter)">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+
+
+        </div>
+        <div class="modal-footer">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-holder" style="text-align: right;">
+                        <button type="button" (click)="close()" class="btn btn-default" role="button"
+                            aria-disabled="false" style="padding: 4px 18px;">
+                            <span class="ui-button-text">Close</span>
+                        </button>
+
+                        <button type="button btn btn-primary" [disabled]="form.invalid" class="btn btn-primary"
+                            (click)="handleSubmit()">
+                            <i class="icon-upload icon-white"></i>
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

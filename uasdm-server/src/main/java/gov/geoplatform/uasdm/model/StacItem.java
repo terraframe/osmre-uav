@@ -7,15 +7,19 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+import gov.geoplatform.uasdm.serialization.DateDeserializer;
+import gov.geoplatform.uasdm.serialization.DateSerializer;
 import gov.geoplatform.uasdm.serialization.EnvelopeDeserializer;
 import gov.geoplatform.uasdm.serialization.EnvelopeSerializer;
 import gov.geoplatform.uasdm.serialization.GeoJsonDeserializer;
@@ -31,8 +35,10 @@ import gov.geoplatform.uasdm.serialization.GeoJsonSerializer;
  * data, DEMs). Version 1.0.0.
  */
 // @JsonSerialize(using = StacItemSerializer.class)
+@JsonPropertyOrder({ "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets" })
 public class StacItem
 {
+  @JsonPropertyOrder({ "href", "type", "title", "description", "roles" })
   public static class Asset
   {
     // string REQUIRED. URI to the asset object. Relative and absolute URI are
@@ -147,7 +153,8 @@ public class StacItem
   @JsonIgnoreProperties(ignoreUnknown = true)
   public static class Properties
   {
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = DateSerializer.class)
     private Date datetime;
 
     @JsonInclude(Include.NON_NULL)
@@ -158,12 +165,12 @@ public class StacItem
 
     @JsonInclude(Include.NON_NULL)
     @JsonProperty("start_datetime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)    
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date startDateTime;
 
     @JsonInclude(Include.NON_NULL)
     @JsonProperty("end_datetime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)    
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date endDateTime;
 
     @JsonInclude(Include.NON_NULL)
@@ -194,10 +201,10 @@ public class StacItem
 
     @JsonInclude(Include.NON_NULL)
     private String faaNumber;
-    
+
     @JsonInclude(Include.NON_NULL)
     private String serialNumber;
-    
+
     public Date getDatetime()
     {
       return datetime;
@@ -327,22 +334,22 @@ public class StacItem
     {
       this.site = site;
     }
-    
+
     public String getFaaNumber()
     {
       return faaNumber;
     }
-    
+
     public void setFaaNumber(String faaNumber)
     {
       this.faaNumber = faaNumber;
     }
-    
+
     public String getSerialNumber()
     {
       return serialNumber;
     }
-    
+
     public void setSerialNumber(String serialNumber)
     {
       this.serialNumber = serialNumber;
@@ -424,8 +431,12 @@ public class StacItem
   @JsonInclude(Include.NON_NULL)
   private String collection;
 
+  @JsonIgnore
+  private boolean published;
+
   public StacItem()
   {
+    this.published = false;
     this.type = "feature";
     this.stacVersion = "1.0.0";
     this.stacExtensions = new LinkedList<String>();
@@ -542,6 +553,16 @@ public class StacItem
   public void setCollection(String collection)
   {
     this.collection = collection;
+  }
+
+  public boolean isPublished()
+  {
+    return published;
+  }
+
+  public void setPublished(boolean published)
+  {
+    this.published = published;
   }
 
   public static Asset buildAsset(String type, String title, String href, String... roles)

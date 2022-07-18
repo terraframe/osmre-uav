@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote;
 
@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -38,15 +40,15 @@ public interface RemoteFileService
   public RemoteFileObject download(String key, List<Range> ranges);
 
   public void createFolder(String key);
-  
+
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket);
 
   public void deleteObject(String key);
-  
+
   public void deleteObject(String key, String bucket);
 
   public void deleteObjects(String key);
-  
+
   public void deleteObjects(String key, String bucket);
 
   public int getItemCount(String key);
@@ -62,5 +64,11 @@ public interface RemoteFileService
   public boolean objectExists(String key);
 
   public Long calculateSize(UasComponentIF component);
+
+  public void putStacItem(StacItem item);
+
+  public void removeStacItem(ProductIF product);
+
+  public RemoteFileObject getStacItem(ProductIF product);
 
 }

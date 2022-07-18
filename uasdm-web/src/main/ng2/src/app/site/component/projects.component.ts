@@ -32,6 +32,8 @@ import { CreateCollectionModalComponent } from './modal/create-collection-modal.
 import { UIOptions } from 'fine-uploader';
 import { FineUploaderBasic } from 'fine-uploader/lib/core';
 import { UploadModalComponent } from './modal/upload-modal.component';
+import { LayerModalComponent } from './modal/layer-modal.component';
+import { StacLayer } from '@site/model/layer';
 
 
 declare var acp: any;
@@ -158,6 +160,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   bureaus: { value: string, label: string }[] = [];
   bounds: LngLatBounds = null;
   sort: string = "name";
+
+  stacLayers: StacLayer[] = [];
 
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
     private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
@@ -326,7 +330,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshMapPoints(true);
 
     // Add zoom and rotation controls to the map.
-    this.map.addControl(new NavigationControl());
+    this.map.addControl(new NavigationControl(), 'bottom-right');
     this.map.addControl(new AttributionControl({ compact: true }), 'bottom-left');
 
     this.map.on('mousemove', e => {
@@ -477,6 +481,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addImageLayer(layer);
       }
     });
+
+    // https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/cog/tiles/WebMercatorQuad/19/100308/199769@1x?url=s3%3A%2F%2Fosmre-uas-dev-public%2Fabcsite%2Fabcproject%2Fabcmission%2Fabccollection%2Fortho%2Fodm_orthophoto.cog.tif
+    // Test STAC layer
+    // s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json
+
+    /*
+    {
+  "public": true,
+  "classification": "ORTHO",
+  "key": "abcsite/abcproject/abcmission/abccollection/ortho/odm_orthophoto.cog.tif",
+  "url": "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/cog/tilejson.json?url=s3%3A%2F%2Fosmre-uas-dev-public%2Fabcsite%2Fabcproject%2Fabcmission%2Fabccollection%2Fortho%2Fodm_orthophoto.cog.tif",
+  "isMapped": false
+}
+    */
+    this.addImageLayer({
+      workspace: "",
+      classification: "ORTHO",
+      key: "s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json",
+      isMapped: false,
+      public: true,
+      url: "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/stac/tilejson.json"
+         +"?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json")
+         +"&assets=" + encodeURIComponent("odm_orthophoto.cog")
+    });
   }
 
   handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
@@ -510,7 +538,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.refreshMapPoints(false);
-    
+
     this.loadingSites = true;
 
     return this.service.roots(null, conditions, this.sort).then(nodes => {
@@ -959,38 +987,38 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-/*
-  addImageLayer(layer: GeoserverLayer) {
-    const workspace = encodeURI(layer.workspace);
-    const layerName = encodeURI(layer.workspace + ':' + layer.key);
-
-    this.map.addLayer({
-      'id': layer.key,
-      'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'tiles': [
-          '/geoserver/' + workspace + '/wms?layers=' + layerName + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256'
-        ],
-        'tileSize': 256
-      },
-      'paint': {}
-    }, "points");
-  }
-  */
+  /*
+    addImageLayer(layer: GeoserverLayer) {
+      const workspace = encodeURI(layer.workspace);
+      const layerName = encodeURI(layer.workspace + ':' + layer.key);
   
+      this.map.addLayer({
+        'id': layer.key,
+        'type': 'raster',
+        'source': {
+          'type': 'raster',
+          'tiles': [
+            '/geoserver/' + workspace + '/wms?layers=' + layerName + '&bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256'
+          ],
+          'tileSize': 256
+        },
+        'paint': {}
+      }, "points");
+    }
+    */
+
   addImageLayer(layer: MapLayer) {
     // let cogurl = "https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif";
     // cogurl = encodeURIComponent(cogurl);
-    
+
     // let url = "https://gtfsce6ygg.execute-api.us-west-2.amazonaws.com/cog/tilejson.json?url=" + cogurl;
-    
+
     let url = layer.url;
-    
+
     if (!layer.public) {
       url = acp + "/" + layer.url;
     }
-    
+
     this.map.addLayer({
       'id': layer.key,
       'type': 'raster',
@@ -1000,14 +1028,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       'paint': {}
     }, "points");
-    
+
     // let bounds = new LngLatBounds([-63.05584626551064, 18.021979555663453, -63.043209989152636, 18.02893107643876]);
     // this.map.fitBounds(bounds);
-    
+
     // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
     // insufficient, because it might be more zoomed out then the ortho will display at.
     this.mapService.tilejson(url).then(data => {
-      this.map.flyTo({center: data.center, zoom: data.minzoom});
+      this.map.flyTo({ center: data.center, zoom: data.minzoom });
     });
   }
 
@@ -1199,4 +1227,31 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
   }
+
+  handleStacLayer(layer?: StacLayer): void {
+
+    this.bsModalRef = this.modalService.show(LayerModalComponent, {
+      animated: true,
+      backdrop: true,
+      ignoreBackdropClick: true,
+      class: 'leaf-modal modal-lg'
+    });
+    this.bsModalRef.content.init(layer);
+    this.bsModalRef.content.onConfirm.subscribe(stacLayer => {
+      const index = this.stacLayers.findIndex(l => l.id === stacLayer.id);
+
+      if (index !== -1) {
+        this.stacLayers[index] = stacLayer;
+      }
+      else {
+        this.stacLayers.push(stacLayer);
+      }
+    });
+
+  }
+
+  handleRemoveStacLayer(layer: StacLayer): void {
+    this.stacLayers = this.stacLayers.filter(f => f.id !== layer.id);
+  }
+
 }

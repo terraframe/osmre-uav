@@ -573,5 +573,15 @@ export class ManagementService {
 			.toPromise()
 	}
 
+	getTotals(text: string, filters: any[]): Promise<any> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('text', text);
+		params = params.set('filters', JSON.stringify(filters));
+
+		return this.http
+			.get(acp + '/project/get-totals', { params: params })
+			.toPromise()
+	}
 
 }

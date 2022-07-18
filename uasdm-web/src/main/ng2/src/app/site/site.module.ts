@@ -58,6 +58,7 @@ import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
+import { LayerModalComponent } from './component/modal/layer-modal.component';
 
 @NgModule({
 	imports: [
@@ -108,7 +109,8 @@ import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.compon
 		UAVComponent,
 		MetadataPageComponent,
 		ReportsComponent,
-        EquipmentComponent
+        EquipmentComponent,
+		LayerModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -130,7 +132,8 @@ import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.compon
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
 		CollectionModalComponent,
-		ProductModalComponent
+		ProductModalComponent,
+		LayerModalComponent
 	]
 })
 export class SiteModule { }

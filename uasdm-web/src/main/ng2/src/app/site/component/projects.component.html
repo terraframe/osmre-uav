@@ -283,15 +283,34 @@
               </div>
             </div>
           </div>
-          <!-- <accordion> 
-                      <accordion-group heading="Base Maps" style="border:none;">
-                        <div class="row-form" *ngFor="let baseLayer of baseLayers">
-                          <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id' [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
-                          <label class="layer-toggle-label">{{baseLayer.label}}</label>
-                        </div>
-                      </accordion-group>
-                    </accordion> -->
         </article>
+
+        <article class="stac-layer-panel">
+          <div style="background-color: #fff; width: 200 px;">
+            <div class="row">
+              <div class="col-md-12">
+                <label>
+                  Layers
+                </label>
+                <span class="float-right">
+                  <button (click)="handleStacLayer()" class="btn btn-primary">+</button>
+                </span>
+              </div>
+            </div>
+            <hr>
+            <div *ngFor="let layer of stacLayers" class="row">
+              <div class="col-md-12">
+                {{layer.layerName}}
+                <span class="float-right">
+                  <button (click)="handleStacLayer(layer)" class="btn btn-primary">Edit</button>
+                  <button (click)="handleRemoveStacLayer(layer)" class="btn btn-warning">Remove</button>
+                </span>
+
+              </div>
+            </div>
+          </div>
+        </article>
+
 
         <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right"
           style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 0px;"></div>

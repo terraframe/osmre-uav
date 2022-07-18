@@ -342,6 +342,14 @@ public class ProjectManagementController
     return new RestBodyResponse(QueryResult.serialize(list));
   }
 
+  @Endpoint(url = "get-totals", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getTotals(ClientRequestIF request, @RequestParamter(name = "text") String text, @RequestParamter(name = "filters") String filters)
+  {
+    JSONArray result = this.service.getTotals(request.getSessionId(), text, filters);
+
+    return new RestBodyResponse(result);
+  }
+
   @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {

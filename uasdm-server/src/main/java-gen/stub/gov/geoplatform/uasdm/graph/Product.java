@@ -75,7 +75,7 @@ public class Product extends ProductBase implements ProductIF
   public static final String ODM_ALL_DIR = "odm_all";
 
   public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
-  
+
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
@@ -246,16 +246,17 @@ public class Product extends ProductBase implements ProductIF
 
   /**
    * This method calculates a 4326 CRS bounding box for a given raster layer
-   * with the specified mapKey. The Cog must exist on S3 before calling this method.
-   * If the bounding box cannot be calculated, for whatever reason, this method will return null.
+   * with the specified mapKey. The Cog must exist on S3 before calling this
+   * method. If the bounding box cannot be calculated, for whatever reason, this
+   * method will return null.
    */
   public BBoxView calculateBoundingBox()
   {
     DocumentIF mappable = null;
-    
+
     Optional<DocumentIF> ortho = this.getMappableOrtho();
     Optional<DocumentIF> hillshade = this.getMappableDEM();
-    
+
     if (ortho.isPresent())
     {
       mappable = ortho.get();
@@ -271,40 +272,43 @@ public class Product extends ProductBase implements ProductIF
 
     try
     {
-//      Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
-//
-//      for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
-//      {
-//        String code = entry.getKey();
-//        CRSEnvelope envelope = entry.getValue();
-//
-//        try
-//        {
-//          // Mapbox's docs say that it's in 3857 but it's bounding box method
-//          // expects 4326.
-//          CoordinateReferenceSystem sourceCRS = CRS.decode(code);
-//          CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-//          MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-//
-//          com.vividsolutions.jts.geom.Envelope jtsEnvelope = new com.vividsolutions.jts.geom.Envelope();
-//          jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY());
-//
-//          com.vividsolutions.jts.geom.Envelope env3857 = JTS.transform(jtsEnvelope, transform);
-//
-//          JSONArray json = new JSONArray();
-//          json.put(env3857.getMinX());
-//          json.put(env3857.getMaxX());
-//          json.put(env3857.getMinY());
-//          json.put(env3857.getMaxY());
-//
-//          return json.toString();
-//        }
-//        catch (Throwable t)
-//        {
-//          // Perhaps there is another bounding box we can try?
-//        }
-//      }
-      
+      // Map<String, CRSEnvelope> bboxes = layer.getBoundingBoxes();
+      //
+      // for (Entry<String, CRSEnvelope> entry : bboxes.entrySet())
+      // {
+      // String code = entry.getKey();
+      // CRSEnvelope envelope = entry.getValue();
+      //
+      // try
+      // {
+      // // Mapbox's docs say that it's in 3857 but it's bounding box method
+      // // expects 4326.
+      // CoordinateReferenceSystem sourceCRS = CRS.decode(code);
+      // CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+      // MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+      //
+      // com.vividsolutions.jts.geom.Envelope jtsEnvelope = new
+      // com.vividsolutions.jts.geom.Envelope();
+      // jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(),
+      // envelope.getMinY(), envelope.getMaxY());
+      //
+      // com.vividsolutions.jts.geom.Envelope env3857 =
+      // JTS.transform(jtsEnvelope, transform);
+      //
+      // JSONArray json = new JSONArray();
+      // json.put(env3857.getMinX());
+      // json.put(env3857.getMaxX());
+      // json.put(env3857.getMinY());
+      // json.put(env3857.getMaxY());
+      //
+      // return json.toString();
+      // }
+      // catch (Throwable t)
+      // {
+      // // Perhaps there is another bounding box we can try?
+      // }
+      // }
+
       return new CloudOptimizedGeoTiff(this, mappable).getBoundingBox();
     }
     catch (Throwable t)
@@ -508,6 +512,8 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void togglePublished()
   {
+    IndexService.removeStacItems(this);
+
     this.setPublished(!this.isPublished());
     this.apply();
 
@@ -526,6 +532,8 @@ public class Product extends ProductBase implements ProductIF
         RemoteFileFacade.deleteObject(mappable.getS3location(), AppProperties.getPublicBucketName());
       }
     }
+    
+    IndexService.createStacItems(this);
   }
 
   @Override
@@ -541,12 +549,12 @@ public class Product extends ProductBase implements ProductIF
       }
     }
   }
-  
+
   public Optional<DocumentIF> getMappableOrtho()
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
   }
-  
+
   public Optional<DocumentIF> getMappableDEM()
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_DEM_REGEX)).findAny();
@@ -556,7 +564,7 @@ public class Product extends ProductBase implements ProductIF
   {
     List<DocumentIF> mappableDocs = new ArrayList<DocumentIF>();
     List<DocumentIF> documents = this.getDocuments();
-    
+
     for (DocumentIF document : documents)
     {
       if (document.isMappable())
@@ -585,15 +593,16 @@ public class Product extends ProductBase implements ProductIF
 
       StacItem item = new StacItem();
       item.setId(this.getOid());
+      item.setPublished(this.isPublished());
       if (envelope != null)
       {
         item.setBbox(envelope);
         item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
       }
-      
+
       UAV uav = collection.getUav();
       Sensor sensor = collection.getSensor();
-      Platform platform = uav.getPlatform();           
+      Platform platform = uav.getPlatform();
 
       Properties properties = new Properties();
       properties.setTitle(component.getName());
@@ -615,7 +624,9 @@ public class Product extends ProductBase implements ProductIF
 
       for (DocumentIF document : documents)
       {
-        String location = document.getS3location();
+        String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+        final String location = "s3://" + bucketName + "/" + document.getS3location();
+
         if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
         {
           // TODO Handle assetName buckets
@@ -629,10 +640,9 @@ public class Product extends ProductBase implements ProductIF
             type = "image/png";
             assetName = "thumbnail";
           }
-          else if (ext.toUpperCase().equals("COG.TIF"))
+          else if (location.toUpperCase().endsWith("COG.TIF"))
           {
             type = "image/tiff; application=geotiff; profile=cloud-optimized";
-            assetName = "cog";
           }
 
           String title = ext.toUpperCase().equals("PNG") ? "Thumbnail" : "Visual";

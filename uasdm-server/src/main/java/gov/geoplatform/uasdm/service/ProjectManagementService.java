@@ -731,6 +731,14 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
+  public JSONArray getTotals(String sessionId, String text, String filtersStr)
+  {
+    JSONArray filters = (filtersStr != null) ? new JSONArray(filtersStr) : new JSONArray();
+    
+    return IndexService.getTotals(text, filters);
+  }
+  
+  @Request(RequestType.SESSION)
   public JSONObject features(String sessionId, String conditions) throws IOException
   {
     return ComponentFacade.features(conditions);
