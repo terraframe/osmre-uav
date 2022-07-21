@@ -54,7 +54,7 @@ public class S3FileUpload implements Processor
     
     this.uploadFile(file);
 
-    CollectionReport.updateSize((CollectionIF) this.collection);
+    CollectionReport.updateSize(this.collection);
     
     return true;
   }

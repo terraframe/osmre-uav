@@ -18,16 +18,31 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.GraphQuery;
+
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class PlatformType extends PlatformTypeBase implements Classification
 {
   private static final long serialVersionUID = -1918394479;
+  
+  public static final String FIXED_WING = "Fixed Wing";
 
   public PlatformType()
   {
     super();
+  }
+  
+  public static PlatformType getByName(String name)
+  {
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM platform_type WHERE name=:name");
+
+    final GraphQuery<PlatformType> query = new GraphQuery<PlatformType>(statement.toString());
+    query.setParameter("name", name);
+    
+    return query.getSingleResult();
   }
 
   @Override

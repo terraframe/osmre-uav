@@ -184,6 +184,12 @@ public class MockRemoteFileService implements RemoteFileService
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD_FOLDER, key, AppProperties.getBucketName()));
   }
+  
+  @Override
+  public void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
+  {
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD_FOLDER, key, bucket));
+  }
 
   @Override
   public boolean objectExists(String key)
