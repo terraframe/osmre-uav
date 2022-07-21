@@ -164,16 +164,7 @@ public class ProductView
       
       try
       {
-        if (published)
-        {
-          final String layerS3Uri = "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
-          
-          url = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, StandardCharsets.UTF_8.name());
-        }
-        else
-        {
-          url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
-        }
+        url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
       }
       catch (UnsupportedEncodingException e)
       {

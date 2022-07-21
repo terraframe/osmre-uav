@@ -44,7 +44,7 @@ public class WaveLength extends WaveLengthBase implements Classification
   public static WaveLength getByName(String name)
   {
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM sensor_type WHERE name=:name");
+    statement.append("SELECT FROM wave_length WHERE name=:name");
 
     final GraphQuery<WaveLength> query = new GraphQuery<WaveLength>(statement.toString());
     query.setParameter("name", name);

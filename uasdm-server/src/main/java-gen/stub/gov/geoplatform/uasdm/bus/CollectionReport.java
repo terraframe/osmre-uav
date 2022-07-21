@@ -118,16 +118,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
             
             try
             {
-              if (product.isPublished())
-              {
-                final String layerS3Uri = "s3://" + AppProperties.getPublicBucketName() + "/" + mappable.getS3location();
-                
-                sUrl = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + URLEncoder.encode(layerS3Uri, StandardCharsets.UTF_8.name());
-              }
-              else
-              {
-                sUrl = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
-              }
+              sUrl = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
             }
             catch (UnsupportedEncodingException e)
             {

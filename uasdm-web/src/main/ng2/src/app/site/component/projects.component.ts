@@ -980,19 +980,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   */
   
   addImageLayer(layer: MapLayer) {
-    // let cogurl = "https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif";
-    // cogurl = encodeURIComponent(cogurl);
-    
-    // let url = "https://gtfsce6ygg.execute-api.us-west-2.amazonaws.com/cog/tilejson.json?url=" + cogurl;
-    
-    let url = layer.url;
-    
-    if (!layer.public) {
-      url = acp + "/" + layer.url;
-    }
-    
-    // let bounds = new LngLatBounds([-63.05584626551064, 18.021979555663453, -63.043209989152636, 18.02893107643876]);
-    // this.map.fitBounds(bounds);
+    let url = acp + "/" + layer.url;
     
     // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
     // insufficient, because it might be more zoomed out then the ortho will display at.
