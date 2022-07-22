@@ -330,7 +330,10 @@ abstract public class TestDataSet
     // }
 
     deleteAllWorkflowTasks();
-    deleteAllSites();
+    deleteAllVertex("site0");
+    deleteAllVertex("project0");
+    deleteAllVertex("mission0");
+    deleteAllVertex("collection0");
     deleteAllSensors();
     deleteAllUavs();
     deleteAllPlatforms();
@@ -412,10 +415,10 @@ abstract public class TestDataSet
   }
   
   @Request
-  private void deleteAllSites()
+  private void deleteAllVertex(String classname)
   {
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM site0");
+    statement.append("SELECT FROM " + classname);
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
 
@@ -490,7 +493,7 @@ abstract public class TestDataSet
   public static UAV getUav(String serialNumber)
   {
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM uav0 WHERE serialNumber=:serialNumber");
+    statement.append("SELECT FROM uav WHERE serialNumber=:serialNumber");
 
     final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
     query.setParameter("serialNumber", serialNumber);

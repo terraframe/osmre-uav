@@ -4,8 +4,6 @@ import java.util.Date;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class TestCollectionInfo extends TestUasComponentInfo
@@ -35,6 +33,20 @@ public class TestCollectionInfo extends TestUasComponentInfo
   public void populate(UasComponent component)
   {
     super.populate(component);
+    
+    Collection col = (Collection) component;
+    
+    col.setCollectionDate(this.getCollectionDate());
+    col.setSensor(this.getSensor().getServerObject());
+    col.setImageHeight(this.getImageHeight());
+    col.setImageWidth(this.getImageWidth());
+    col.setMetadataUploaded(this.getMetadataUploaded());
+    col.setPocEmail(this.getPocEmail());
+    col.setPocName(this.getPocName());
+    col.setUav(this.getUav().getServerObject());
+    
+    col.clearPrivilegeType();
+    col.addPrivilegeType(this.getPrivilegeType());
   }
   
   @Override
@@ -60,13 +72,13 @@ public class TestCollectionInfo extends TestUasComponentInfo
   {
     this.collectionDate = collectionDate;
   }
-  public TestSensorInfo getCollectionSensor()
+  public TestSensorInfo getSensor()
   {
     return sensor;
   }
-  public void setCollectionSensor(TestSensorInfo collectionSensor)
+  public void setSensor(TestSensorInfo sensor)
   {
-    this.sensor = collectionSensor;
+    this.sensor = sensor;
   }
   public Integer getImageHeight()
   {

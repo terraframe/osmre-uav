@@ -21,6 +21,19 @@ public class TestSiteInfo extends TestUasComponentInfo
   {
     return new Site();
   }
+  
+  /**
+   * Populates the component with the values contained within this wrapper
+   */
+  @Override
+  public void populate(UasComponent component)
+  {
+    super.populate(component);
+    
+    ((Site)component).setBureau(this.getBureau().getBureau());
+    
+    component.setGeoPoint(this.getGeoPoint());
+  }
 
   public Bureau getBureau()
   {

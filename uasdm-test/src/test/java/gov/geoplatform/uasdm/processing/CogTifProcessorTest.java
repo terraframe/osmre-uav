@@ -55,5 +55,7 @@ public class CogTifProcessorTest
     Product product = null;
     
     CogTifProcessor processor = new CogTifProcessor(s3Path, product, Area51DataSet.COLLECTION_FISHBED.getServerObject(), monitor);
+    
+    throw new UnsupportedOperationException();
   }
 }

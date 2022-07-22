@@ -97,4 +97,10 @@ public class MockRemoteFileObject implements RemoteFileObject
     return null;
   }
 
+  @Override
+  public boolean exists()
+  {
+    return true;
+  }
+
 }

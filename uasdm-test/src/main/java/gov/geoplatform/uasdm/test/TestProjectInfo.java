@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.test;
 
-import gov.geoplatform.uasdm.graph.Site;
+import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class TestProjectInfo extends TestUasComponentInfo
@@ -25,6 +25,6 @@ public class TestProjectInfo extends TestUasComponentInfo
   @Override
   public UasComponent instantiate()
   {
-    return new Site();
+    return new Project();
   }
 }

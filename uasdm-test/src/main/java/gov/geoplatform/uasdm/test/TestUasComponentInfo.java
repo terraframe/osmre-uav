@@ -133,6 +133,8 @@ abstract public class TestUasComponentInfo
   {
     UasComponent component = this.instantiate();
     
+    this.populate(component);
+    
     if (parent != null)
     {
       component.applyWithParent(parent.getServerObject());
@@ -158,8 +160,6 @@ abstract public class TestUasComponentInfo
     component.setName(this.getName());
     
     component.setFolderName(this.getFolderName());
-    
-    component.setGeoPoint(this.getGeoPoint());
     
     component.setS3location(this.getS3Location());
     
