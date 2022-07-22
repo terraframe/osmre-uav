@@ -18,16 +18,35 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.GraphQuery;
+
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class PlatformManufacturer extends PlatformManufacturerBase implements Classification
 {
   private static final long serialVersionUID = 1353153000;
+  
+  public static final String PARROT_ANAFI_USA = "Parrot Anafi USA";
+  
+  public static final String DJI = "DJI";
+  
+  public static final String TRIMBLE = "Trimble";
 
   public PlatformManufacturer()
   {
     super();
+  }
+  
+  public static PlatformManufacturer getByName(String name)
+  {
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM platform_manufacturer WHERE name=:name");
+
+    final GraphQuery<PlatformManufacturer> query = new GraphQuery<PlatformManufacturer>(statement.toString());
+    query.setParameter("name", name);
+    
+    return query.getSingleResult();
   }
 
   @Override

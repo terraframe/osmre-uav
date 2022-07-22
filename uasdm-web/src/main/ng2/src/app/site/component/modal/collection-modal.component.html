@@ -238,7 +238,7 @@
                   Download All
                 </button>
                 
-                <button *ngIf="processable" type="button" class="btn btn-secondary" [disabled]="processRunning"
+                <button *ngIf="processable && entity.hasAllZip" type="button" class="btn btn-secondary" [disabled]="processRunning"
                   (click)="handleDownloadOdmAll()" title="Downloads the all.zip file generated from ODM."
                   style="margin-left: 5px;">
                   Download All Generated Data

@@ -77,14 +77,11 @@ public class Document extends DocumentBase implements DocumentIF
     {
       new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getBucketName(), this.getComponent()).doIt();
       
-      if (this.isMappable())
+      Optional<Product> product = this.getProductHasDocumentParentProducts().stream().findFirst();
+      
+      if (product.isPresent() && product.get().getPublished())
       {
-        Optional<Product> product = this.getProductHasDocumentParentProducts().stream().findFirst();
-        
-        if (product.isPresent() && product.get().getPublished())
-        {
-          new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
-        }
+        new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
       }
     }
 

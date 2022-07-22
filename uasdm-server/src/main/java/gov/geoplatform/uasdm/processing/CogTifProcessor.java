@@ -8,9 +8,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.resource.FileResource;
-
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 

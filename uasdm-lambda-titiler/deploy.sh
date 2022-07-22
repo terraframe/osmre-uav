@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Run as sudo
+# Not yet fully automated! Commands in this file must be run manually.
+
 # https://devseed.com/titiler/deployment/aws/lambda/
 
 #### Only necessary once on an account ####
@@ -33,10 +36,12 @@ DeployStage () {
   # TODO : Cannot be automated! Make sure that the system's IAM user has access to this route, ala:
   # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
 
-  export TITILER_STACK_NAME="titiler-public"
-  export TITILER_STACK_BUCKETS="[\"osmre-uas-${TITILER_STACK_STAGE}-public\"]"
+
+  # Public Titiler instances were destroyed. This code is their only legacy. Delete at some point if it becomes obvious we no longer need
+  #export TITILER_STACK_NAME="titiler-public"
+  #export TITILER_STACK_BUCKETS="[\"osmre-uas-${TITILER_STACK_STAGE}-public\"]"
   # TODO : This command cannot be automated yet because it requires user input.
-  npm run cdk deploy "${TITILER_STACK_NAME}-lambda-${TITILER_STACK_STAGE}"
+  #npm run cdk deploy "${TITILER_STACK_NAME}-lambda-${TITILER_STACK_STAGE}"
 }
 
 export TITILER_STACK_STAGE="dev"

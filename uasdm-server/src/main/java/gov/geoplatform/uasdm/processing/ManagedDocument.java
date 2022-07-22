@@ -16,8 +16,6 @@ public class ManagedDocument extends S3FileUpload
 {
   private boolean searchable;
   
-  private Product product;
-  
   public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
     this(s3Path, product, collection, monitor, true);
@@ -25,10 +23,9 @@ public class ManagedDocument extends S3FileUpload
 
   public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
   {
-    super(s3Path, collection, monitor, false);
+    super(s3Path, product, collection, monitor);
 
     this.searchable = searchable;
-    this.product = product;
   }
   
   protected ManagedDocumentTool getTool()
