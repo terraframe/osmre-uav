@@ -108,7 +108,7 @@ public class AppProperties
 
   public static String getElasticsearchSchema()
   {
-    return Singleton.getProps().getString("elasticsearch.schema", "https");
+    return Singleton.getProps().getString("elasticsearch.schema", "http");
   }
 
   public static int getElasticsearchPort()
@@ -118,12 +118,12 @@ public class AppProperties
 
   public static String getElasticsearchUsername()
   {
-    return Singleton.getProps().getString("elasticsearch.username", "username");
+    return Singleton.getProps().getString("elasticsearch.username", "elastic");
   }
 
   public static String getElasticsearchPassword()
   {
-    return Singleton.getProps().getString("elasticsearch.password", "password");
+    return Singleton.getProps().getString("elasticsearch.password", "elastic");
   }
 
   public static Boolean isSolrEnabled()
