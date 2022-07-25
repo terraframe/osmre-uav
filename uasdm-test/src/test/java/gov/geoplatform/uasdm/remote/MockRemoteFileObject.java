@@ -101,10 +101,15 @@ public class MockRemoteFileObject implements RemoteFileObject
   }
 
   @Override
+  public boolean exists()
+  {
+    return true;
+  }
+
+  @Override
   public void close()
   {
     // TODO Auto-generated method stub
-    
   }
 
 }

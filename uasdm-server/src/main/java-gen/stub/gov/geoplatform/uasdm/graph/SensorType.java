@@ -18,16 +18,37 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.session.Request;
+
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 
 public class SensorType extends SensorTypeBase implements Classification
 {
   private static final long serialVersionUID = 826086552;
+  
+  public static final String CMOS = "CMOS";
+  
+  public static final String LASER = "Laser";
+  
+  public static final String MULTISPECTRAL = "Multispectral";
 
   public SensorType()
   {
     super();
+  }
+  
+  @Request
+  public static SensorType getByName(String name)
+  {
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM sensor_type WHERE name=:name");
+
+    final GraphQuery<SensorType> query = new GraphQuery<SensorType>(statement.toString());
+    query.setParameter("name", name);
+    
+    return query.getSingleResult();
   }
 
   @Override

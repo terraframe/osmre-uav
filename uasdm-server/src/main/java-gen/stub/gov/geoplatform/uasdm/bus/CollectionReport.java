@@ -20,8 +20,11 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -37,10 +40,10 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OrderBy.SortOrder;
-import com.runwaysdk.session.Request;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
+import com.runwaysdk.session.Request;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -111,17 +114,15 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
           JSONArray availableServices = new JSONArray();
           for (DocumentIF mappable : mappables)
           {
-            final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + mappable.getS3location();
-            
             String sUrl;
             
-            if (product.isPublished())
+            try
             {
-              sUrl = AppProperties.getTitilerPublicUrl() + "/cog/tilejson.json?url=" + layerS3Uri;
+              sUrl = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
             }
-            else
+            catch (UnsupportedEncodingException e)
             {
-              sUrl = "cog/tilejson.json?path=" + mappable.getS3location();
+              throw new ProgrammingErrorException(e);
             }
             
             availableServices.put(sUrl);

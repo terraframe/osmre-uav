@@ -124,15 +124,6 @@ public class ODMZipPostProcessor
       }
     }
 
-    // If the product is published, copy tifs from the private bucket to the public bucket
-    if (product.getPublished())
-    {
-      for (DocumentIF mappable : product.getMappableDocuments())
-      {
-        RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
-      }
-    }
-
     product.updateBoundingBox();
     
     IndexService.createStacItems(product);
@@ -175,19 +166,22 @@ public class ODMZipPostProcessor
     {
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto.png"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+      
+      if (this.collection.isMultiSpectral())
+      {
+        this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
+      }
     }
     
     if (this.progressTask.getProcessPtcloud())
     {
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
-
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy.json"), this.collection, monitor, false));
-      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data.json"), this.collection, monitor, false));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data"), this.product, this.collection, monitor));
     }
   }
   
@@ -228,17 +222,6 @@ public class ODMZipPostProcessor
   {
     if (DevProperties.uploadAllZip())
     {
-//      String allKey = this.collection.getS3location() + "odm_all" + "/" + allZip.getName();
-//
-//      Util.uploadFileToS3(allZip, allKey, null);
-//
-//      this.collection.createDocumentIfNotExist(allKey, allZip.getName(), null, "ODM");
-//
-//      if (this.collection instanceof CollectionIF)
-//      {
-//        CollectionReport.updateSize((CollectionIF) this.collection);
-//      }
-      
       new ManagedDocument(Product.ODM_ALL_DIR + "/" + allZip.getName(), this.product, this.collection, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask)).process(allZip);
     }
   }

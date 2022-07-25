@@ -531,13 +531,19 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void uploadDirectory(File directory, String key, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
+    this.uploadDirectory(directory, key, AppProperties.getBucketName(), monitor, includeSubDirectories);
+  }
+  
+  @Override
+  public void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
+  {
     try
     {
       TransferManager tx = S3ClientFactory.createTransferManager();
 
       try
       {
-        MultipleFileUpload myUpload = tx.uploadDirectory(AppProperties.getBucketName(), key, directory, includeSubDirectories);
+        MultipleFileUpload myUpload = tx.uploadDirectory(bucket, key, directory, includeSubDirectories);
 
         if (myUpload.isDone() == false)
         {

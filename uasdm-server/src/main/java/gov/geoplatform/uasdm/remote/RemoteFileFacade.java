@@ -119,6 +119,11 @@ public class RemoteFileFacade
   {
     service.uploadDirectory(directory, key, monitor, includeSubDirectories);
   }
+  
+  public static void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
+  {
+    service.uploadDirectory(directory, key, bucket, monitor, includeSubDirectories);
+  }
 
   public static boolean objectExists(String key)
   {

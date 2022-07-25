@@ -57,6 +57,22 @@ public class Bureau extends BureauBase
       bureau.apply();
     }
   }
+  
+  public static Bureau getByName(String name)
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Bureau.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(NAME);
+    final String className = mdVertex.getDBClassName();
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("SELECT FROM " + className);
+    builder.append(" WHERE " + mdAttribute.getColumnName() + " = :name");
+
+    final GraphQuery<Bureau> query = new GraphQuery<Bureau>(builder.toString());
+    query.setParameter("name", name);
+
+    return query.getSingleResult();
+  }
 
   public static Bureau getBySource(gov.geoplatform.uasdm.bus.Bureau source)
   {

@@ -18,15 +18,38 @@ package gov.geoplatform.uasdm.graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.GraphQuery;
+
 import gov.geoplatform.uasdm.model.Page;
 
 public class WaveLength extends WaveLengthBase implements Classification
 {
   private static final long serialVersionUID = 920922499;
+  
+  public static final String LiDAR = "LiDAR";
+  
+  public static final String NATURAL_COLOR_RGB = "Natural Color RGB";
+  
+  public static final String NEAR_INFRARED = "Near InfraRed";
+  
+  public static final String RED_EDGE = "Red Edge";
+  
+  public static final String THERMAL = "Thermal";
 
   public WaveLength()
   {
     super();
+  }
+  
+  public static WaveLength getByName(String name)
+  {
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM wave_length WHERE name=:name");
+
+    final GraphQuery<WaveLength> query = new GraphQuery<WaveLength>(statement.toString());
+    query.setParameter("name", name);
+    
+    return query.getSingleResult();
   }
 
   public static Long getCount()

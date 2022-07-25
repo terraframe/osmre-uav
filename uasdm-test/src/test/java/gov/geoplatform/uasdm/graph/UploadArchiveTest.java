@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -37,6 +38,7 @@ import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import net.geoprism.GeoprismUser;
 
+@Ignore
 public class UploadArchiveTest
 {
 //  private static ProjectManagementService service;

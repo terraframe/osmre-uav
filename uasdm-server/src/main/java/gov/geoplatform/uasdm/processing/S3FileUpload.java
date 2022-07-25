@@ -2,7 +2,9 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
@@ -10,11 +12,11 @@ public class S3FileUpload implements Processor
 {
   protected String s3Path;
   
-  protected boolean isDirectory;
-  
   protected StatusMonitorIF monitor;
   
   protected CollectionIF collection;
+  
+  protected Product product;
   
   /**
    * 
@@ -23,17 +25,12 @@ public class S3FileUpload implements Processor
    * @param isDirectory
    * @param monitor
    */
-  public S3FileUpload(String s3Path, CollectionIF collection, StatusMonitorIF monitor, boolean isDirectory)
+  public S3FileUpload(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
     this.s3Path = s3Path;
     this.monitor = monitor;
+    this.product = product;
     this.collection = collection;
-    this.isDirectory = isDirectory;
-  }
-
-  public boolean isDirectory()
-  {
-    return this.isDirectory;
   }
 
   public String getS3Path()
@@ -55,26 +52,47 @@ public class S3FileUpload implements Processor
       return false;
     }
     
-    String key = this.getS3Key();
-    
-    if (file.isDirectory())
-    {
-      RemoteFileFacade.uploadDirectory(file, key, this.monitor, true);
-    }
-    else
-    {
-      RemoteFileFacade.uploadFile(file, key, this.monitor);
-    }
+    this.uploadFile(file);
 
-    CollectionReport.updateSize((CollectionIF) this.collection);
+    CollectionReport.updateSize(this.collection);
     
     return true;
   }
   
   protected String getS3Key()
   {
+    if (this.s3Path.contains(this.collection.getS3location()))
+    {
+      return this.s3Path;
+    }
+    
     String key = this.collection.getS3location() + this.s3Path;
     
     return key;
+  }
+  
+  protected void uploadFile(File file)
+  {
+    String key = this.getS3Key();
+    
+    if (file.isDirectory())
+    {
+      RemoteFileFacade.uploadDirectory(file, key, this.monitor, true);
+      
+      if (this.product.isPublished())
+      {
+        // TODO : copyObject is more efficient but doesn't work on directories
+        RemoteFileFacade.uploadDirectory(file, key, AppProperties.getPublicBucketName(), this.monitor, true);
+      }
+    }
+    else
+    {
+      RemoteFileFacade.uploadFile(file, key, this.monitor);
+      
+      if (this.product.isPublished())
+      {
+        RemoteFileFacade.copyObject(key, AppProperties.getBucketName(), key, AppProperties.getPublicBucketName());
+      }
+    }
   }
 }
