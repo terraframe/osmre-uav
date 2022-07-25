@@ -437,7 +437,7 @@ public class StacItem
   public StacItem()
   {
     this.published = false;
-    this.type = "feature";
+    this.type = "Feature";
     this.stacVersion = "1.0.0";
     this.stacExtensions = new LinkedList<String>();
     this.properties = new Properties();
