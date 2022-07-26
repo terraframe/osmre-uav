@@ -66,7 +66,7 @@ if [ "$build_artifact" == "true" ]; then
   : ----------------------------------
   :
   cd $WORKSPACE/uasdm
-  mvn clean deploy -B
+  mvn clean install -B
 else
   if [ "$tag" == "latest" ]; then
     # As far as I can tell Cloudsmith doesn't support fetching the latest version of an artifact from their REST API. So we're using Maven dependency:copy plugin.
