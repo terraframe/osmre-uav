@@ -1234,6 +1234,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     const index = this.stacLayers.findIndex(l => l.id === layer.id);
 
     if (index !== -1) {
+      this.stacLayers[index].items.forEach(item => {
+        this.removeImageLayer(item.id);
+      });
+      
       this.stacLayers[index] = layer;
     }
     else {
@@ -1250,12 +1254,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.fitBounds(bounds);
 
     // Create / recreate the image layer
-    if (index !== -1) {
-      layer.items.forEach(item => {
-        this.removeImageLayer(item.id);
-      });
-    }
-
     layer.items.forEach(item => {
       let url = "/stac/tilejson.json";
 

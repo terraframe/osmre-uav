@@ -59,7 +59,7 @@
 
             </ng-container>
             <ng-container *ngIf="page != null">
-                <div class="row" *ngFor="let result of page.resultSet">
+                <div class="row" *ngFor="let result of page.resultSet | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }">
                     <div class="col-md-12">
                         <label>{{result.properties.title}} - {{result.properties.datetime}}</label>
                         <div class="row">
@@ -82,9 +82,10 @@
                                     label="Enabled"></boolean-field>
                             </div>
                         </div>
-
                     </div>
                 </div>
+                <pagination-controls (pageChange)="onPageChange($event)" maxSize="10"></pagination-controls>
+
             </ng-container>
         </div>
         <div class="modal-footer">

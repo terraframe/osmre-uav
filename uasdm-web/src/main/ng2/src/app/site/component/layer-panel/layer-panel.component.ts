@@ -109,23 +109,38 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 		this.layer.filters = this.layer.filters.filter(f => f.id !== filter.id);
 	}
 
-	handlePageChange(pageNumber: number): void {
+	onPageChange(pageNumber: number): void {
 		const filters = this.getFilters();
 
 		this.service.getStacItems(filters, 20, pageNumber).then(page => {
 			this.page = page;
-			this.page.resultSet.forEach(item => {
-				if (item.assets['odm_orthophoto.cog'] != null) {
-					item.asset = 'odm_orthophoto.cog';
-				}
-				else {
-					const keys = Object.keys(item.assets);
 
-					keys.forEach(key => {
-						if (item.assets[key].type === "image/tiff; application=geotiff; profile=cloud-optimized") {
-							item.asset = key;
-						}
-					});
+			// Replace any incoming stac item with the existing definition
+			// if that stac item has already been selected
+			this.layer.items.forEach(item => {
+				const index = this.page.resultSet.findIndex(i => item.id === i.id);
+
+				if (index !== -1) {
+					this.page.resultSet[index] = item;
+				}
+			});
+
+
+			// Assign the default asset for all stac items
+			this.page.resultSet.forEach(item => {
+				if (item.asset == null) {
+					if (item.assets['odm_orthophoto.cog'] != null) {
+						item.asset = 'odm_orthophoto.cog';
+					}
+					else {
+						const keys = Object.keys(item.assets);
+
+						keys.forEach(key => {
+							if (item.assets[key].type === "image/tiff; application=geotiff; profile=cloud-optimized") {
+								item.asset = key;
+							}
+						});
+					}
 				}
 			});
 		});
@@ -146,7 +161,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 
 	handleSubmit(): void {
 		if (this.viewMode === VIEW_MODE.FORM) {
-			this.handlePageChange(1);
+			this.onPageChange(1);
 
 			this.viewMode = VIEW_MODE.RESULTS;
 		}
