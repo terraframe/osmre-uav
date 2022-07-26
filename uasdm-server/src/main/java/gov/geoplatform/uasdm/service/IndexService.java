@@ -45,7 +45,7 @@ public class IndexService
 
   public static void startup()
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.startup();
     }
@@ -53,7 +53,7 @@ public class IndexService
   
   public static void shutdown()
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.shutdown();
     }
@@ -61,7 +61,7 @@ public class IndexService
 
   public static void deleteDocuments(String fieldId, String oid)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.deleteDocuments(fieldId, oid);
     }
@@ -69,7 +69,7 @@ public class IndexService
 
   public static void deleteDocument(UasComponentIF component, String key)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.deleteDocument(component, key);
     }
@@ -77,7 +77,7 @@ public class IndexService
 
   public static void updateOrCreateDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.updateOrCreateDocument(ancestors, component, key, name);
     }
@@ -85,7 +85,7 @@ public class IndexService
 
   public static void updateOrCreateMetadataDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name, File metadata)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.updateOrCreateMetadataDocument(ancestors, component, key, name, metadata);
     }
@@ -93,7 +93,7 @@ public class IndexService
 
   public static void updateName(UasComponentIF component)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.updateName(component);
     }
@@ -101,7 +101,7 @@ public class IndexService
 
   public static void updateComponent(UasComponentIF component)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.updateComponent(component);
     }
@@ -109,7 +109,7 @@ public class IndexService
 
   public static void createDocument(List<UasComponentIF> ancestors, UasComponentIF component)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.createDocument(ancestors, component);
     }
@@ -117,7 +117,7 @@ public class IndexService
 
   public static List<QueryResult> query(String text)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       return index.query(text);
     }
@@ -127,7 +127,7 @@ public class IndexService
 
   public static void createStacItems(ProductIF product)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.createStacItems(product);
     }
@@ -135,7 +135,7 @@ public class IndexService
 
   public static void removeStacItems(ProductIF product)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       index.removeStacItems(product);
     }
@@ -143,7 +143,7 @@ public class IndexService
 
   public static JSONArray getTotals(String text, JSONArray filters)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       return index.getTotals(text, filters);
     }
@@ -153,7 +153,7 @@ public class IndexService
 
   public static Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
   {
-    if (AppProperties.isSolrEnabled())
+    if (AppProperties.isSearchEnabled())
     {
       return index.getItems(filters, pageSize, pageNumber);
     }
