@@ -66,7 +66,7 @@ if [ "$build_artifact" == "true" ]; then
   : ----------------------------------
   :
   cd $WORKSPACE/uasdm
-  mvn clean deploy -B
+  mvn clean install -B
 else
   if [ "$tag" == "latest" ]; then
     # As far as I can tell Cloudsmith doesn't support fetching the latest version of an artifact from their REST API. So we're using Maven dependency:copy plugin.
@@ -102,5 +102,5 @@ if [ "$deploy" == "true" ]; then
   [ -h ../permissions ] && unlink ../permissions
   ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
 
-  ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch.clean=$elasticsearch.clean webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
+  ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch_clean=$elasticsearch_clean webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
 fi
