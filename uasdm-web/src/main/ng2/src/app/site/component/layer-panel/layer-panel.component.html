@@ -9,18 +9,28 @@
 
                 <div class="row">
                     <div class="col-md-12">
+                        <label>Layer Name</label>
                         <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName"
                             required />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2">
-                        <input type="date" [(ngModel)]="layer.startDate" name="startDate" />
+                    <div class="col-md-12">
+                        <label>Start Date</label>
+                        <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;" />
                     </div>
-                    <div class="col-md-2">
-                        <input type="date" [(ngModel)]="layer.endDate" name="endDate" />
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>End Date</label>
+                        <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate"
+                            style="width: 100%;" />
                     </div>
-                    <div class="col-md-4">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Filter</label>
                         <input class="form-control search-input" type="text" name="search" placeholder="Search..."
                             [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
                             (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10"
@@ -54,13 +64,25 @@
                         <label>{{result.properties.title}} - {{result.properties.datetime}}</label>
                         <div class="row">
                             <div class="col-md-12">
-                                <label>Assets</label>
-                                <div *ngFor="let asset of result.assets | keyvalue">
-                                    <boolean-field [value]="asset.value.selected" (valueChange)="handleToggleAsset(result, asset.key)" [label]="asset.key">
-                                    </boolean-field>
-                                </div>
+                                <label>Asset</label>
+                                <select [(ngModel)]="result.asset" [name]="result.id + '-asset'">
+                                    <ng-container *ngFor="let asset of result.assets | keyvalue">
+                                        <option
+                                            *ngIf="asset.value.type === 'image/tiff; application=geotiff; profile=cloud-optimized'"
+                                            [value]="asset.key">
+                                            {{asset.key}}
+                                        </option>
+                                    </ng-container>
+                                </select>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <boolean-field [value]="result.enabled" (valueChange)="handleToggleItem(result)"
+                                    label="Enabled"></boolean-field>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </ng-container>
@@ -75,10 +97,16 @@
                             <span class="ui-button-text">Cancel</span>
                         </button>
 
-                        <button type="button btn btn-primary" [disabled]="form.invalid" class="btn btn-primary"
+                        <button *ngIf="viewMode === 0" type="button btn btn-primary" [disabled]="form.invalid"
+                            class="btn btn-primary" (click)="handleSubmit()">
+                            <i class="icon-upload icon-white"></i>
+                            Search
+                        </button>
+
+                        <button *ngIf="viewMode !== 0" type="button btn btn-primary" [disabled]="form.invalid || layer.items.length === 0" class="btn btn-primary"
                             (click)="handleSubmit()">
                             <i class="icon-upload icon-white"></i>
-                            {{ viewMode === 0 ? 'Search' : 'Submit'}}
+                            Submit
                         </button>
                     </div>
                 </div>

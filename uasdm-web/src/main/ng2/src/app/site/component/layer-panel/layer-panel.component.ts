@@ -114,22 +114,34 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 
 		this.service.getStacItems(filters, 20, pageNumber).then(page => {
 			this.page = page;
+			this.page.resultSet.forEach(item => {
+				if (item.assets['odm_orthophoto.cog'] != null) {
+					item.asset = 'odm_orthophoto.cog';
+				}
+				else {
+					const keys = Object.keys(item.assets);
+
+					keys.forEach(key => {
+						if (item.assets[key].type === "image/tiff; application=geotiff; profile=cloud-optimized") {
+							item.asset = key;
+						}
+					});
+				}
+			});
 		});
 	}
 
-	handleToggleAsset(item: StacItem, key: string): void {
-		item.assets[key].selected = !item.assets[key].selected;
+	handleToggleItem(item: StacItem): void {
+		item.enabled = !item.enabled;
 
 		const index = this.layer.items.findIndex(i => i.id === item.id);
 
-		if (index === -1 && item.assets[key].selected) {
+		if (index === -1 && item.enabled) {
 			this.layer.items.push(item);
 		}
-		else if (index !== -1 && !item.assets[key].selected) {
+		else if (index !== -1 && !item.enabled) {
 			this.layer.items = this.layer.items.filter(f => f.id !== item.id);
 		}
-
-		console.log(item);
 	}
 
 	handleSubmit(): void {

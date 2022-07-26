@@ -13,7 +13,6 @@ export class StacAsset {
     title: string;
     type: string;
     roles?: string[];
-    selected?: boolean;
 }
 
 export class StacItem {
@@ -25,6 +24,8 @@ export class StacItem {
     geometry: any;
     properties: any;
     collection?: string;
+    asset?: string;
+    enabled?: boolean;
     links: {
         rel: string;
         href: string;
