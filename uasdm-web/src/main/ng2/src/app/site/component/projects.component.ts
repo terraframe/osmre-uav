@@ -1223,6 +1223,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleRemoveStacLayer(layer: StacLayer): void {
+    layer.items.forEach(item => {
+      this.removeImageLayer(item.id);
+    });
+
     this.stacLayers = this.stacLayers.filter(f => f.id !== layer.id);
   }
 
@@ -1257,19 +1261,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // To do figure out the endpoint
       url += "?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/" + item.id + ".json");
-
-      const keys = Object.keys(item.assets);
-
-
-      keys.forEach(key => {
-        if (item.assets[key].selected) {
-          url += "&assets=" + encodeURIComponent(key);
-        }
-      });
+      url += "&assets=" + encodeURIComponent(item.asset);
 
       this.addImageLayer({
         classification: "ORTHO",
-        key: layer.id,
+        key: item.id,
         isMapped: false,
         public: true,
         url: url
