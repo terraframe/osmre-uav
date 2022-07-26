@@ -31,6 +31,24 @@ services:
     restart: always
     ports:
      - "5432:5432"
+  elasticsearch:
+    container_name: uasdm-es
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.3.2'
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: elastic
+      xpack.security.enabled: false
+      discovery.type: single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/elasticsearch:/usr/share/elasticsearch/data
+    restart: always
+    ports:
+     - "9200:9200"
+     - "9300:9300"
   web:
     container_name: uasdm
     image: uasdm
