@@ -102,5 +102,5 @@ if [ "$deploy" == "true" ]; then
   [ -h ../permissions ] && unlink ../permissions
   ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
 
-  ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch.clean=$elasticsearch.clean webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
+  ansible-playbook -v -i ./inventory/uasdm/$environment.ini ./uasdm.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch_clean=$elasticsearch_clean webserver_docker_image_tag=$tag docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
 fi
