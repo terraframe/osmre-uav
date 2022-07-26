@@ -38,6 +38,7 @@ public class Page<T extends JSONSerializable>
 
   public Page()
   {
+    this.params = new HashMap<String, Object>();
   }
 
   public Page(Integer count, Integer pageNumber, Integer pageSize, List<T> results)

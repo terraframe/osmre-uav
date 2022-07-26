@@ -14,6 +14,7 @@ import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultS
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
+import { StacItem } from '@site/model/layer';
 
 declare var acp: any;
 
@@ -584,4 +585,15 @@ export class ManagementService {
 			.toPromise()
 	}
 
+	getStacItems(filters: any[], pageSize: number, pageNumber: number): Promise<PageResult<StacItem>> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('filters', JSON.stringify(filters));
+		params = params.set('pageSize', pageSize.toString());
+		params = params.set('pageNumber', pageNumber.toString());
+
+		return this.http
+			.get<PageResult<StacItem>>(acp + '/project/get-stac-items', { params: params })
+			.toPromise()
+	}
 }

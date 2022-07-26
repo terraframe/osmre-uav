@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,8 +15,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -35,10 +40,14 @@ import gov.geoplatform.uasdm.serialization.GeoJsonSerializer;
  * data, DEMs). Version 1.0.0.
  */
 // @JsonSerialize(using = StacItemSerializer.class)
-@JsonPropertyOrder({ "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets" })
-public class StacItem
+@JsonPropertyOrder({
+    "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets"
+})
+public class StacItem implements JSONSerializable
 {
-  @JsonPropertyOrder({ "href", "type", "title", "description", "roles" })
+  @JsonPropertyOrder({
+      "href", "type", "title", "description", "roles"
+  })
   public static class Asset
   {
     // string REQUIRED. URI to the asset object. Relative and absolute URI are
@@ -578,5 +587,21 @@ public class StacItem
     }
 
     return asset;
+  }
+
+  @Override
+  public Object toJSON()
+  {
+    try
+    {
+      ObjectMapper mapper = new ObjectMapper();
+      String str = mapper.writeValueAsString(this);
+
+      return new JSONObject(str);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
   }
 }

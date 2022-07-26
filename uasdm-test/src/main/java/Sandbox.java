@@ -16,13 +16,14 @@
  */
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,6 +37,7 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -51,8 +53,8 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.cog.StacTiTillerProxy;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -61,21 +63,38 @@ public class Sandbox
 {
   public static void main(String[] args) throws Exception
   {
-//    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
-//    format.setTimeZone(TimeZone.getTimeZone("UTC"));
-//    
-//    String dateStr = format.format(new Date());
-//    System.out.println(dateStr);
-//    
-//    System.out.println(format.parse(dateStr));
-    
+    // SimpleDateFormat format = new
+    // SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+    // format.setTimeZone(TimeZone.getTimeZone("UTC"));
+    //
+    // String dateStr = format.format(new Date());
+    // System.out.println(dateStr);
+    //
+    // System.out.println(format.parse(dateStr));
+
     request();
   }
 
   @Request
   public static void request() throws Exception
   {
-    testRemoteStacItem();
+    List<ProductIF> products = Product.getProducts().stream().filter(p -> p.isPublished()).collect(Collectors.toList());
+    ProductIF product = products.get(0);
+
+    String url = "s3://osmre-uas-dev-public/_stac_/" + product.getOid() + ".json";
+    String asset = "odm_orthophoto.cog";
+
+    StacTiTillerProxy proxy = new StacTiTillerProxy(url, asset);
+    JSONObject response = proxy.tilejson("/uasdm/stac");
+
+    System.out.println(response);
+
+    // 20/200617/399539@1x
+
+    try (InputStream istream = proxy.tiles("WebMercatorQuad", 20, 200617, 399539, 1, "PNG"))
+    {
+      IOUtils.copy(istream, NullOutputStream.NULL_OUTPUT_STREAM);
+    }
   }
 
   public static void testTika() throws Exception
@@ -146,8 +165,10 @@ public class Sandbox
       // And create the API client
       ElasticsearchClient client = new ElasticsearchClient(transport);
 
-      client.indices().delete(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME));
-      client.indices().delete(i -> i.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
+      // client.indices().delete(i ->
+      // i.index(ElasticSearchIndex.STAC_INDEX_NAME));
+      // client.indices().delete(i ->
+      // i.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
 
       // client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
 

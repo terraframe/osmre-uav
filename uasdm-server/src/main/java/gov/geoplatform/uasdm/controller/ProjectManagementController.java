@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -45,7 +45,9 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
@@ -348,6 +350,14 @@ public class ProjectManagementController
     JSONArray result = this.service.getTotals(request.getSessionId(), text, filters);
 
     return new RestBodyResponse(result);
+  }
+
+  @Endpoint(url = "get-stac-items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getStacItems(ClientRequestIF request, @RequestParamter(name = "filters") String filters, @RequestParamter(name = "pageSize", required = true) Integer pageSize, @RequestParamter(name = "pageNumber", required = true) Integer pageNumber)
+  {
+    Page<StacItem> page = this.service.getItems(request.getSessionId(), filters, pageSize, pageNumber);
+
+    return new RestBodyResponse(page.toJSON());
   }
 
   @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)

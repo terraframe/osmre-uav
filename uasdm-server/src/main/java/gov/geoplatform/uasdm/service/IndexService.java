@@ -33,7 +33,9 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -149,6 +151,16 @@ public class IndexService
     return new JSONArray();
   }
 
+  public static Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  {
+    if (AppProperties.isSolrEnabled())
+    {
+      return index.getItems(filters, pageSize, pageNumber);
+    }
+    
+    return new Page<StacItem>();
+  }
+  
   public static String getContent(File metadata)
   {
     try

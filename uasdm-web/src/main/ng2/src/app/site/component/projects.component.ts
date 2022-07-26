@@ -32,8 +32,15 @@ import { CreateCollectionModalComponent } from "./modal/create-collection-modal.
 import { UIOptions } from "fine-uploader";
 import { FineUploaderBasic } from "fine-uploader/lib/core";
 import { UploadModalComponent } from "./modal/upload-modal.component";
-import { LayerModalComponent } from "./modal/layer-modal.component";
 import { StacLayer } from "@site/model/layer";
+
+import { bbox, bboxPolygon, envelope, featureCollection } from "@turf/turf";
+
+
+const enum VIEW_MODE {
+  SITE = 0,
+  STAC = 1
+}
 
 
 declare var acp: any;
@@ -162,6 +169,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   sort: string = "name";
 
   stacLayers: StacLayer[] = [];
+
+  stacLayer: StacLayer = null;
+
+  viewMode: number = VIEW_MODE.SITE;
 
   constructor(private service: ManagementService, private authService: AuthService, private mapService: MapService,
     private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
@@ -494,7 +505,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   "url": "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/cog/tilejson.json?url=s3%3A%2F%2Fosmre-uas-dev-public%2Fabcsite%2Fabcproject%2Fabcmission%2Fabccollection%2Fortho%2Fodm_orthophoto.cog.tif",
   "isMapped": false
 }
-    */
     this.addImageLayer({
       workspace: "",
       classification: "ORTHO",
@@ -502,9 +512,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       isMapped: false,
       public: true,
       url: "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/stac/tilejson.json"
-         +"?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json")
-         +"&assets=" + encodeURIComponent("odm_orthophoto.cog")
+        + "?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json")
+        + "&assets=" + encodeURIComponent("odm_orthophoto.cog")
     });
+    */
   }
 
   handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
@@ -994,7 +1005,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     // insufficient, because it might be more zoomed out then the ortho will display at.
     this.mapService.tilejson(url).then(data => {
       // this.map.flyTo({center: data.center, zoom: data.minzoom});
-      
+
       this.map.addLayer({
         "id": layer.key,
         "type": "raster",
@@ -1007,6 +1018,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  removeImageLayer(id: string) {
+    this.map.removeLayer(id);
+  }
 
   handleGoto(): void {
 
@@ -1198,28 +1212,77 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleStacLayer(layer?: StacLayer): void {
 
-    this.bsModalRef = this.modalService.show(LayerModalComponent, {
-      animated: true,
-      backdrop: true,
-      ignoreBackdropClick: true,
-      class: "leaf-modal modal-lg"
-    });
-    this.bsModalRef.content.init(layer);
-    this.bsModalRef.content.onConfirm.subscribe(stacLayer => {
-      const index = this.stacLayers.findIndex(l => l.id === stacLayer.id);
+    this.viewMode = VIEW_MODE.STAC;
 
-      if (index !== -1) {
-        this.stacLayers[index] = stacLayer;
-      }
-      else {
-        this.stacLayers.push(stacLayer);
-      }
-    });
-
+    if (layer != null) {
+      this.stacLayer = { ...layer };
+    }
+    else {
+      this.stacLayer = null;
+    }
   }
 
   handleRemoveStacLayer(layer: StacLayer): void {
     this.stacLayers = this.stacLayers.filter(f => f.id !== layer.id);
+  }
+
+  handleStacConfirm(layer: StacLayer): void {
+    const index = this.stacLayers.findIndex(l => l.id === layer.id);
+
+    if (index !== -1) {
+      this.stacLayers[index] = layer;
+    }
+    else {
+      this.stacLayers.push(layer);
+    }
+
+    const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
+
+    // Determine the bounding box of the layer
+    const features = featureCollection(polygons);
+    const env = envelope(features);
+    const bounds = bbox(env) as [number, number, number, number];
+
+    this.map.fitBounds(bounds);
+
+    // Create / recreate the image layer
+    if (index !== -1) {
+      layer.items.forEach(item => {
+        this.removeImageLayer(item.id);
+      });
+    }
+
+    layer.items.forEach(item => {
+      let url = "/stac/tilejson.json";
+
+      // To do figure out the endpoint
+      url += "?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/" + item.id + ".json");
+
+      const keys = Object.keys(item.assets);
+
+
+      keys.forEach(key => {
+        if (item.assets[key].selected) {
+          url += "&assets=" + encodeURIComponent(key);
+        }
+      });
+
+      this.addImageLayer({
+        classification: "ORTHO",
+        key: layer.id,
+        isMapped: false,
+        public: true,
+        url: url
+      });
+    });
+
+    this.viewMode = VIEW_MODE.SITE;
+    this.stacLayer = null;
+  }
+
+  handleStacCancel(): void {
+    this.viewMode = VIEW_MODE.SITE;
+    this.stacLayer = null;
   }
 
 }

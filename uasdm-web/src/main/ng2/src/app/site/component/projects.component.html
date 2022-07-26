@@ -6,28 +6,29 @@
 
   <div class="row">
     <div id="navigator-left-sidebar" class="col-md-3 lw-inner-col">
-      <div class="row">
-        <div class="col-md-12">
+      <ng-container *ngIf="viewMode === 0">
+        <div class="row">
+          <div class="col-md-12">
 
-          <!-- IF at Site level -->
-          <ng-container *ngIf="!current">
-            <div class="row">
-              <div class="col-md-6" style="height: 64px;">
-                <h3 style="font-weight:bold;">IDM Sites</h3>
+            <!-- IF at Site level -->
+            <ng-container *ngIf="!current">
+              <div class="row">
+                <div class="col-md-6" style="height: 64px;">
+                  <h3 style="font-weight:bold;">IDM Sites</h3>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-12">
-                <label>Bureau</label>
-                <select [(ngModel)]="filter.value" name="filter" (change)="refreshSites()">
-                  <option></option>
-                  <option *ngFor="let bureau of bureaus" [value]="bureau.value">
-                    {{bureau.label}}
-                  </option>
-                </select>
+              <div class="row">
+                <div class="col-sm-12">
+                  <label>Bureau</label>
+                  <select [(ngModel)]="filter.value" name="filter" (change)="refreshSites()">
+                    <option></option>
+                    <option *ngFor="let bureau of bureaus" [value]="bureau.value">
+                      {{bureau.label}}
+                    </option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <!--            
+              <!--            
             <div class="row">
               <div class="col-sm-12">
                 <label>Sort</label>
@@ -39,159 +40,161 @@
               </div>
             </div>
           -->
-          </ng-container>
+            </ng-container>
 
 
-          <!-- IF lower than Site -->
-          <div class="row" *ngIf="current">
-            <div class="col-md-12" style="height: 65px; overflow: auto;">
-              <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
-                <li>
-                  <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
-                  <a (click)="back(null)" style="color: #007276;">IDM Sites</a>
-                </li>
-                <li *ngFor="let entity of breadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
-                  <a *ngIf="!isLast" (click)="back(entity)" style="color: #007276;"> {{entity.name}}</a>
-                  <span *ngIf="isLast"> <b>{{entity.name}}</b> </span>
-                </li>
-              </ul>
+            <!-- IF lower than Site -->
+            <div class="row" *ngIf="current">
+              <div class="col-md-12" style="height: 65px; overflow: auto;">
+                <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
+                  <li>
+                    <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
+                    <a (click)="back(null)" style="color: #007276;">IDM Sites</a>
+                  </li>
+                  <li *ngFor="let entity of breadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
+                    <a *ngIf="!isLast" (click)="back(entity)" style="color: #007276;"> {{entity.name}}</a>
+                    <span *ngIf="isLast"> <b>{{entity.name}}</b> </span>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <!-- Search bar -->
-          <div class="row">
-            <div class="col-md-12">
-              <div class="location-management-widget-section">
-                <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
-                  [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
-                  [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
-                  [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault()" />
+            <!-- Search bar -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="location-management-widget-section">
+                  <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
+                    [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
+                    [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
+                    [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault()" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- <hr> -->
+        <!-- <hr> -->
 
-      <div class="row">
-        <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
+        <div class="row">
+          <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
 
-          <tabset #staticTabs class="nav-full-width">
-            <tab heading="Data">
-              <div id="hierarchy-tree-container"
-                class="location-management-widget-section location-management-list-container"
-                [style]="current != null ? 'height: calc(100vh - 296px);overflow-y: auto;' : 'height: calc(100vh - 360px);overflow-y: auto;'">
-                <div class="list-group">
+            <tabset #staticTabs class="nav-full-width">
+              <tab heading="Data">
+                <div id="hierarchy-tree-container"
+                  class="location-management-widget-section location-management-list-container"
+                  [style]="current != null ? 'height: calc(100vh - 296px);overflow-y: auto;' : 'height: calc(100vh - 360px);overflow-y: auto;'">
+                  <div class="list-group">
 
-                  <!-- If -->
-                  <div *ngIf="nodes.length < 1 && breadcrumbs.length === 0" [@fadeInOnEnter]
-                    style="padding: 20px;text-align: center;color: grey;">
-                    <span *ngIf="loadingSites">
-                      <h4>
-                        <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-                        Loading Sites
-                      </h4>
-                    </span>
+                    <!-- If -->
+                    <div *ngIf="nodes.length < 1 && breadcrumbs.length === 0" [@fadeInOnEnter]
+                      style="padding: 20px;text-align: center;color: grey;">
+                      <span *ngIf="loadingSites">
+                        <h4>
+                          <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                          Loading Sites
+                        </h4>
+                      </span>
 
-                    <span *ngIf="!loadingSites">
-                      <h4>No Sites in this area.</h4>
+                      <span *ngIf="!loadingSites">
+                        <h4>No Sites in this area.</h4>
+                        <p>
+                          Zoom out to find sites in other areas of the map.
+                        </p>
+                      </span>
+                    </div>
+
+                    <!-- Else -->
+                    <div *ngIf="nodes.length < 1 && breadcrumbs.length > 0" [@fadeInOnEnter]
+                      style="padding: 20px;text-align: center;color: grey;">
+                      <h4>No data at this level.</h4>
                       <p>
-                        Zoom out to find sites in other areas of the map.
+                        Create data containers as part of the upload process.
                       </p>
-                    </span>
-                  </div>
-
-                  <!-- Else -->
-                  <div *ngIf="nodes.length < 1 && breadcrumbs.length > 0" [@fadeInOnEnter]
-                    style="padding: 20px;text-align: center;color: grey;">
-                    <h4>No data at this level.</h4>
-                    <p>
-                      Create data containers as part of the upload process.
-                    </p>
-                  </div>
-
-                  <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
-
-                    <!-- Two column layout -->
-                    <div [@fadeInOnEnter] style="border-left: solid 15px;" class="card card-default clickable"
-                      *ngIf="getMetadata(node).root" [ngClass]="{'active': hoverFeatureId === node.id}"
-                      (click)="select(node, null, $event)" (mouseenter)="onListEntityHover($event, node)"
-                      (mouseleave)="onListEntityHoverOff()">
-
-                      <!-- <div class="card-header">Header</div> -->
-                      <div class="card-body card-5-7">
-                        <div>
-                          <!-- <i class="fas fa-map-marker-alt" style="font-size: 50px;"></i> -->
-                          <h4
-                            style="word-break: break-all; border-bottom-color:rgba(195, 195, 195, 0.3); border-bottom-style:inset; border-bottom-width: 2px; margin-bottom:10px; padding-bottom:10px;">
-                            <!-- <a (click)="select(node, $event)"> -->
-                            {{node.name}}
-                            <!-- </a> -->
-                          </h4>
-                          <span>
-                            <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
-                            <span *ngIf="node.type !== 'folder'" class="pull-right">
-                              <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
-                              <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)"
-                                title="Delete"></a>
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <!-- <div class="card-footer">Footer</div> -->
                     </div>
 
+                    <div *ngFor="let node of nodes; let i = index" [@fadeInOnEnter] class="list-group-item">
 
-                    <!-- Single column card -->
-                    <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="!getMetadata(node).root"
-                      (click)="select(node, null, $event)">
-                      <div class="card-body">
-                        <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
-                          [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
-                          aria-hidden="true"></i>
+                      <!-- Two column layout -->
+                      <div [@fadeInOnEnter] style="border-left: solid 15px;" class="card card-default clickable"
+                        *ngIf="getMetadata(node).root" [ngClass]="{'active': hoverFeatureId === node.id}"
+                        (click)="select(node, null, $event)" (mouseenter)="onListEntityHover($event, node)"
+                        (mouseleave)="onListEntityHoverOff()">
 
-                        <h4 style="word-break: break-all;">{{node.name}}</h4>
-                        <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
-
-                        <div [collapse]="!node.active" class="list-group" style="margin-bottom: 0;">
-                          <div *ngFor="let child of node.children" (click)="select(child, node, $event)"
-                            class="list-group-item"
-                            style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
-                            <!-- <a (click)="select(child, $event)"> -->
-                            {{child.name}}
-                            <!-- </a> -->
-                            <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
-                              <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(child, $event)" title="Edit"></a>
-                              <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(child, $event)"
-                                title="Delete"></a>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div *ngFor="let node of supportingData" class="list-group-item">
-                    <div [@fadeInOnEnter] class="card card-default">
-                      <div class="card-body">
-                        <h4 style="word-break: break-all;">Supporting Data</h4>
-                        <div class="list-group">
-                          <div class="list-group-item"
-                            style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
-                            <a (click)="select(node, null, $event)">
+                        <!-- <div class="card-header">Header</div> -->
+                        <div class="card-body card-5-7">
+                          <div>
+                            <!-- <i class="fas fa-map-marker-alt" style="font-size: 50px;"></i> -->
+                            <h4
+                              style="word-break: break-all; border-bottom-color:rgba(195, 195, 195, 0.3); border-bottom-style:inset; border-bottom-width: 2px; margin-bottom:10px; padding-bottom:10px;">
+                              <!-- <a (click)="select(node, $event)"> -->
                               {{node.name}}
-                            </a>
+                              <!-- </a> -->
+                            </h4>
+                            <span>
+                              <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
+                              <span *ngIf="node.type !== 'folder'" class="pull-right">
+                                <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)"
+                                  title="Edit"></a>
+                                <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)"
+                                  title="Delete"></a>
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                        <!-- <div class="card-footer">Footer</div> -->
+                      </div>
+
+
+                      <!-- Single column card -->
+                      <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="!getMetadata(node).root"
+                        (click)="select(node, null, $event)">
+                        <div class="card-body">
+                          <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
+                            [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
+                            aria-hidden="true"></i>
+
+                          <h4 style="word-break: break-all;">{{node.name}}</h4>
+                          <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
+
+                          <div [collapse]="!node.active" class="list-group" style="margin-bottom: 0;">
+                            <div *ngFor="let child of node.children" (click)="select(child, node, $event)"
+                              class="list-group-item"
+                              style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
+                              <!-- <a (click)="select(child, $event)"> -->
+                              {{child.name}}
+                              <!-- </a> -->
+                              <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
+                                <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(child, $event)"
+                                  title="Edit"></a>
+                                <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(child, $event)"
+                                  title="Delete"></a>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div *ngFor="let node of supportingData" class="list-group-item">
+                      <div [@fadeInOnEnter] class="card card-default">
+                        <div class="card-body">
+                          <h4 style="word-break: break-all;">Supporting Data</h4>
+                          <div class="list-group">
+                            <div class="list-group-item"
+                              style="background-color: #ececec;border: solid 1px lightgrey;border-radius: 0;">
+                              <a (click)="select(node, null, $event)">
+                                {{node.name}}
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
+                  </div>
                 </div>
-              </div>
-              <!-- <div *ngIf="supportingData.length > 0" class="location-management-widget-section location-management-list-container">
+                <!-- <div *ngIf="supportingData.length > 0" class="location-management-widget-section location-management-list-container">
                         
                             <div class="card card-default">
                               <div class="card-body">
@@ -207,34 +210,37 @@
                             </div>
                       </div> -->
 
-            </tab>
-            <tab *ngIf="current != null" heading="Products">
-              <div id="hierarchy-tree-container"
-                class="location-management-widget-section location-management-list-container"
-                style="height: calc(100vh - 296px);overflow-y: auto;">
-                <product-panel [id]="current.id" (toggleMapOrtho)="handleMapOrtho($event)"
-                  (toggleMapDem)="handleMapDem($event)"></product-panel>
-              </div>
-            </tab>
-          </tabset>
+              </tab>
+              <tab *ngIf="current != null" heading="Products">
+                <div id="hierarchy-tree-container"
+                  class="location-management-widget-section location-management-list-container"
+                  style="height: calc(100vh - 296px);overflow-y: auto;">
+                  <product-panel [id]="current.id" (toggleMapOrtho)="handleMapOrtho($event)"
+                    (toggleMapDem)="handleMapDem($event)"></product-panel>
+                </div>
+              </tab>
+            </tabset>
 
-        </div>
-      </div>
-
-
-      <footer class="sidebar-footer">
-        <div class="row" *ngIf="current != null" style="background:white;">
-          <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-            <button (click)="handleCreateCollection()" class="btn btn-primary">Create Collection</button>
           </div>
         </div>
-        <div class="row" *ngIf="current == null" style="background:white;">
-          <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-            <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
-          </div>
-        </div>
-      </footer>
 
+
+        <footer class="sidebar-footer">
+          <div class="row" *ngIf="current != null" style="background:white;">
+            <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
+              <button (click)="handleCreateCollection()" class="btn btn-primary">Create Collection</button>
+            </div>
+          </div>
+          <div class="row" *ngIf="current == null" style="background:white;">
+            <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
+              <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
+            </div>
+          </div>
+        </footer>
+      </ng-container>
+      <ng-container *ngIf="viewMode === 1">
+        <layer-panel [layer]="stacLayer" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()"></layer-panel>
+      </ng-container>
     </div>
     <div class="col-md-9" id="site-explorer-map">
       <div class="row">
@@ -281,36 +287,19 @@
                   [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
                 <label class="layer-toggle-label">{{baseLayer.label}}</label>
               </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="stac-layer-panel">
-          <div style="background-color: #fff; width: 200 px;">
-            <div class="row">
-              <div class="col-md-12">
-                <label>
-                  Layers
-                </label>
-                <span class="float-right">
-                  <button (click)="handleStacLayer()" class="btn btn-primary">+</button>
-                </span>
-              </div>
-            </div>
-            <hr>
-            <div *ngFor="let layer of stacLayers" class="row">
-              <div class="col-md-12">
+              <span class="float-right">
+                <button (click)="handleStacLayer()" class="btn btn-primary">+</button>
+              </span>
+              <div class="row-form" *ngFor="let layer of stacLayers">
                 {{layer.layerName}}
                 <span class="float-right">
                   <button (click)="handleStacLayer(layer)" class="btn btn-primary">Edit</button>
                   <button (click)="handleRemoveStacLayer(layer)" class="btn btn-warning">Remove</button>
                 </span>
-
               </div>
             </div>
           </div>
         </article>
-
 
         <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right"
           style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 0px;"></div>

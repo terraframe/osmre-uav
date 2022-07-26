@@ -27,8 +27,10 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.index.Index;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -438,5 +440,11 @@ public class SolrIndex implements Index
   public JSONArray getTotals(String text, JSONArray filters)
   {
     return new JSONArray();
+  }
+  
+  @Override
+  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  {
+    return new Page<StacItem>();
   }
 }

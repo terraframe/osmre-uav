@@ -193,7 +193,7 @@ export class Product {
 }
 
 export class MapLayer {
-	workspace: string;
+	workspace?: string;
 	classification: string;
 	key: string;
 	isMapped?: boolean;

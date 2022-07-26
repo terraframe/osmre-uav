@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 
@@ -36,4 +38,6 @@ public interface Index
   public void shutdown();
 
   public void startup();
+
+  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber);
 }

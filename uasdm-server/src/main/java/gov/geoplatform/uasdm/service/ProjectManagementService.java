@@ -37,7 +37,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
@@ -53,7 +52,6 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
@@ -66,9 +64,10 @@ import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
-import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -736,6 +735,14 @@ public class ProjectManagementService
     JSONArray filters = (filtersStr != null) ? new JSONArray(filtersStr) : new JSONArray();
     
     return IndexService.getTotals(text, filters);
+  }
+  
+  @Request(RequestType.SESSION)
+  public Page<StacItem> getItems(String sessionId, String filtersStr, Integer pageSize, Integer pageNumber)
+  {
+    JSONArray filters = (filtersStr != null) ? new JSONArray(filtersStr) : new JSONArray();
+    
+    return IndexService.getItems(filters, pageSize, pageNumber);
   }
   
   @Request(RequestType.SESSION)

@@ -34,12 +34,14 @@ import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -106,7 +108,10 @@ public class ElasticSearchIndex implements Index
   {
     try
     {
-      this.restClient.close();
+      if (this.restClient != null)
+      {
+        this.restClient.close();
+      }
     }
     catch (IOException e)
     {
@@ -498,8 +503,12 @@ public class ElasticSearchIndex implements Index
     return results;
   }
 
-  public List<StacItem> getItems(JSONArray filters)
+  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
   {
+    Page<StacItem> page = new Page<StacItem>();
+    page.setPageNumber(pageNumber);
+    page.setPageSize(pageSize);
+
     List<StacItem> items = new LinkedList<StacItem>();
 
     try
@@ -508,6 +517,8 @@ public class ElasticSearchIndex implements Index
 
       SearchRequest.Builder s = new SearchRequest.Builder();
       s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.size(pageSize);
+      s.from(pageSize * ( pageNumber - 1 ));
 
       if (filters != null && filters.length() > 0)
       {
@@ -552,8 +563,11 @@ public class ElasticSearchIndex implements Index
       }
 
       SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+      HitsMetadata<StacItem> hits = search.hits();
 
-      for (Hit<StacItem> hit : search.hits().hits())
+      page.setCount(hits.total().value());
+
+      for (Hit<StacItem> hit : hits.hits())
       {
         items.add(hit.source());
       }
@@ -567,7 +581,9 @@ public class ElasticSearchIndex implements Index
       throw new ProgrammingErrorException(e);
     }
 
-    return items;
+    page.setResults(items);
+
+    return page;
   }
 
   private static JSONObject buildTotal(String label, String key, long total)
