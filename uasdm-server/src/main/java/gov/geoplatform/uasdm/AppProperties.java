@@ -126,9 +126,9 @@ public class AppProperties
     return Singleton.getProps().getString("elasticsearch.password", "elastic");
   }
 
-  public static Boolean isSolrEnabled()
+  public static Boolean isSearchEnabled()
   {
-    return Singleton.getProps().getBoolean("solr.enabled", true);
+    return Singleton.getProps().getBoolean("search.enabled", true);
   }
 
   public static Boolean isKeycloakEnabled()
