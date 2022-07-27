@@ -72,6 +72,8 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class S3RemoteFileService implements RemoteFileService
 {
+  public static final String STAC_BUCKET = "_stac_";
+
   private Logger logger = LoggerFactory.getLogger(S3RemoteFileService.class);
 
   @Override
@@ -533,7 +535,7 @@ public class S3RemoteFileService implements RemoteFileService
   {
     this.uploadDirectory(directory, key, AppProperties.getBucketName(), monitor, includeSubDirectories);
   }
-  
+
   @Override
   public void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
@@ -601,7 +603,7 @@ public class S3RemoteFileService implements RemoteFileService
     try
     {
       String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-      String key = "_stac_/" + item.getId() + ".json";
+      String key = STAC_BUCKET + "/" + item.getId() + ".json";
 
       ObjectMapper mapper = new ObjectMapper();
       mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -636,7 +638,7 @@ public class S3RemoteFileService implements RemoteFileService
   public void removeStacItem(ProductIF product)
   {
     String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-    String key = "_stac_/" + product.getOid() + ".json";
+    String key = STAC_BUCKET + "/" + product.getOid() + ".json";
 
     AmazonS3 client = S3ClientFactory.createClient();
 
@@ -649,13 +651,13 @@ public class S3RemoteFileService implements RemoteFileService
   public RemoteFileObject getStacItem(ProductIF product)
   {
     String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-    String key = "_stac_/" + product.getOid() + ".json";
+    String key = STAC_BUCKET + "/" + product.getOid() + ".json";
 
     try
     {
       System.out.println(bucket);
       System.out.println(key);
-      
+
       AmazonS3 client = S3ClientFactory.createClient();
 
       GetObjectRequest request = new GetObjectRequest(bucket, key);

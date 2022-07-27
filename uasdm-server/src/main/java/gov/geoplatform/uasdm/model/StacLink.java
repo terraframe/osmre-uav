@@ -1,5 +1,8 @@
 package gov.geoplatform.uasdm.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class StacLink
 {
   // string REQUIRED. The actual link in the format of an URL. Relative and
@@ -42,6 +45,7 @@ public class StacLink
 
   // string A human readable title to be used in rendered displays of the
   // link.
+  @JsonInclude(Include.NON_NULL)
   private String title;
 
   public String getHref()
@@ -84,4 +88,13 @@ public class StacLink
     this.title = title;
   }
 
+  public static StacLink build(String href, String rel, String type)
+  {
+    StacLink link = new StacLink();
+    link.setHref(href);
+    link.setRel(rel);
+    link.setType(type);
+
+    return link;
+  }
 }

@@ -1234,10 +1234,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     const index = this.stacLayers.findIndex(l => l.id === layer.id);
 
     if (index !== -1) {
+      // Remove existing image layers
       this.stacLayers[index].items.forEach(item => {
         this.removeImageLayer(item.id);
       });
-      
+
       this.stacLayers[index] = layer;
     }
     else {
@@ -1255,10 +1256,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Create / recreate the image layer
     layer.items.forEach(item => {
+      
+      const index = item.links.findIndex(link => link.rel === 'self');
+      const link = item.links[index];
+      
       let url = "/stac/tilejson.json";
-
-      // To do figure out the endpoint
-      url += "?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/" + item.id + ".json");
+      url += "?url=" + encodeURIComponent(link.href);
       url += "&assets=" + encodeURIComponent(item.asset);
 
       this.addImageLayer({
