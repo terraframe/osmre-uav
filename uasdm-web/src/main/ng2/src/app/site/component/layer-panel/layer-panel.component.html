@@ -69,17 +69,23 @@
                                     {{result.properties.title}}
                                 </h5>
                                 
-                                <div>{{result.properties.datetime}}</div>
+                                <div>Date: <label>{{result.properties.datetime}}</label></div>
 
-                                <div class="card-left" style="width:calc(100% - 12em); padding:0px;">
-                                    <img style="max-height: 150px"
+                                <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
+                                    <img style="max-height: 110px"
                                         [src]="thumbnails[result.id] != null ? (thumbnails[result.id] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
                                         alt="Image">
                                 </div>
-                                <div class="card-right" style="padding:0px; width: 12em;">
+                                <div class="card-right" style="padding:0px; width: 13em;">
                                     <ul style="list-style: none;padding: 0;">
                                         <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                            <label>Asset</label>
+                                            Platform: <label>{{result.properties.platform}}</label>
+                                        </li>
+                                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                                            Sensor: <label>{{result.properties.sensor}}</label>
+                                        </li>
+                                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                                            Asset
                                             <select [(ngModel)]="result.asset" [name]="result.id + '-asset'">
                                                 <ng-container *ngFor="let asset of result.assets | keyvalue">
                                                     <option
