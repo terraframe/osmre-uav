@@ -97,6 +97,11 @@ public class ElasticSearchIndex implements Index
         client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
       }
     }
+    catch (java.net.ConnectException cex)
+    {
+      String msg = "Could not connect to ElasticSearch with [" + username + ":" + password + "@" + host + ":" + port + "/" + schema + "]";
+      throw new ProgrammingErrorException(msg, cex);
+    }
     catch (IOException e)
     {
       throw new ProgrammingErrorException(e);
