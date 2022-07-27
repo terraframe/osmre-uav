@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -98,6 +97,14 @@ public class MockRemoteFileService implements RemoteFileService
   public void download(String key, File destination) throws IOException, FileNotFoundException
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
+  }
+  
+  @Override
+  public RemoteFileObject proxy(String url)
+  {
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, url, AppProperties.getBucketName()));
+
+    return new MockRemoteFileObject();
   }
 
   @Override

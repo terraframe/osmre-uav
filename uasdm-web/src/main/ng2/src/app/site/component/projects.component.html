@@ -239,7 +239,12 @@
         </footer>
       </ng-container>
       <ng-container *ngIf="viewMode === 1">
-        <layer-panel [layer]="stacLayer" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()"></layer-panel>
+        <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
+          style="height: calc(100vh - 5px);overflow-y: auto;">
+
+          <layer-panel [layer]="stacLayer" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()">
+          </layer-panel>
+        </div>
       </ng-container>
     </div>
     <div class="col-md-9" id="site-explorer-map">

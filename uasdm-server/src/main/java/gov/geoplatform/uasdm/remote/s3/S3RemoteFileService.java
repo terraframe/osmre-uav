@@ -34,6 +34,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -106,6 +107,19 @@ public class S3RemoteFileService implements RemoteFileService
     }
   }
 
+  @Override
+  public RemoteFileObject proxy(String url)
+  {
+    AmazonS3 client = S3ClientFactory.createClient();
+    AmazonS3URI uri = new AmazonS3URI(url);
+    
+    GetObjectRequest request = new GetObjectRequest(uri.getBucket(), uri.getKey());
+    
+    S3Object object = client.getObject(request);
+    
+    return new S3ObjectWrapper(object);
+  }
+  
   @Override
   public RemoteFileObject download(String key)
   {

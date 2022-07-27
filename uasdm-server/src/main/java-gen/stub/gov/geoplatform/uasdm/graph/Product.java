@@ -631,26 +631,39 @@ public class Product extends ProductBase implements ProductIF
 
         if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
         {
-          // TODO Handle assetName buckets
-          String assetName = FilenameUtils.getBaseName(document.getName());
           String ext = FilenameUtils.getExtension(document.getName());
-
-          String type = "image/tiff; application=geotiff;";
 
           if (ext.toUpperCase().equals("PNG"))
           {
-            type = "image/png";
-            assetName = "thumbnail";
+            String title = "Thumbnail";
+            String role = "visual";
+
+            item.addAsset("thumbnail-hd", StacItem.buildAsset("image/png", title, location, role));
+            
+            // Private thumbnail
+            String rootPath = FilenameUtils.getPath(document.getS3location());
+            String baseName = FilenameUtils.getBaseName(document.getName());                  
+            String thumbnail = "s3://" + AppProperties.getBucketName() + "/" + rootPath + "thumbnails/" + baseName + ".png";
+
+            item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
           }
-          else if (location.toUpperCase().endsWith("COG.TIF"))
+          else
           {
-            type = "image/tiff; application=geotiff; profile=cloud-optimized";
+            // TODO Handle assetName
+            String assetName = FilenameUtils.getBaseName(document.getName());
+
+            String type = "image/tiff; application=geotiff;";
+
+            if (location.toUpperCase().endsWith("COG.TIF"))
+            {
+              type = "image/tiff; application=geotiff; profile=cloud-optimized";
+            }
+
+            String title = "Visual";
+            String role = "visual";
+
+            item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
           }
-
-          String title = ext.toUpperCase().equals("PNG") ? "Thumbnail" : "Visual";
-          String role = "visual";
-
-          item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
         }
       }
 

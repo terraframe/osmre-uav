@@ -421,6 +421,24 @@ export class ManagementService {
 			}))
 	}
 
+	downloadFile(url: string, useSpinner: boolean): Promise<Blob> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('url', url);
+
+		if (useSpinner) {
+			this.eventService.start();
+		}
+
+		return this.noErrorHttpClient.get<Blob>(acp + '/project/download-file', { params: params, responseType: 'blob' as 'json' })
+			.pipe(finalize(() => {
+				if (useSpinner) {
+					this.eventService.complete();
+				}
+			})).toPromise();
+	}
+
+
 	downloadAll(id: string, key: string, useSpinner: boolean): Observable<Blob> {
 
 		let params: HttpParams = new HttpParams();

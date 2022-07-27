@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -71,6 +71,7 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
@@ -681,6 +682,12 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
+  public RemoteFileObject proxyRemoteFile(String sessionId, String url)
+  {
+    return RemoteFileFacade.proxy(url);
+  }
+
+  @Request(RequestType.SESSION)
   public RemoteFileObject downloadInReq(String sessionId, String id, String key)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
@@ -732,19 +739,19 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public JSONArray getTotals(String sessionId, String text, String filtersStr)
   {
-    JSONArray filters = (filtersStr != null) ? new JSONArray(filtersStr) : new JSONArray();
-    
+    JSONArray filters = ( filtersStr != null ) ? new JSONArray(filtersStr) : new JSONArray();
+
     return IndexService.getTotals(text, filters);
   }
-  
+
   @Request(RequestType.SESSION)
   public Page<StacItem> getItems(String sessionId, String filtersStr, Integer pageSize, Integer pageNumber)
   {
-    JSONArray filters = (filtersStr != null) ? new JSONArray(filtersStr) : new JSONArray();
-    
+    JSONArray filters = ( filtersStr != null ) ? new JSONArray(filtersStr) : new JSONArray();
+
     return IndexService.getItems(filters, pageSize, pageNumber);
   }
-  
+
   @Request(RequestType.SESSION)
   public JSONObject features(String sessionId, String conditions) throws IOException
   {

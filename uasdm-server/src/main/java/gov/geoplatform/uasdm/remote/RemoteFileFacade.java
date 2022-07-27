@@ -50,6 +50,11 @@ public class RemoteFileFacade
     service.download(key, destination);
   }
 
+  public static RemoteFileObject proxy(String url)
+  {
+    return service.proxy(url);
+  }
+
   public static RemoteFileObject download(String key)
   {
     return service.download(key);
@@ -119,7 +124,7 @@ public class RemoteFileFacade
   {
     service.uploadDirectory(directory, key, monitor, includeSubDirectories);
   }
-  
+
   public static void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
     service.uploadDirectory(directory, key, bucket, monitor, includeSubDirectories);
@@ -149,9 +154,9 @@ public class RemoteFileFacade
       try (InputStream stream = object.getObjectContent())
       {
         ByteArrayOutputStream ous = new ByteArrayOutputStream();
-        
+
         IOUtils.copy(stream, ous);
-        
+
         String str = new String(ous.toByteArray());
         System.out.println();
         System.out.println();
@@ -162,7 +167,7 @@ public class RemoteFileFacade
         System.out.println();
         System.out.println();
         System.out.println();
-        
+
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(str, StacItem.class);
       }

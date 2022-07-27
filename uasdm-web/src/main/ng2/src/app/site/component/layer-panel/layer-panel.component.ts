@@ -3,13 +3,15 @@ import { Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ManagementService } from '@site/service/management.service';
-import { Filter, StacAsset, StacItem, StacLayer } from '@site/model/layer';
+import { Filter, StacItem, StacLayer } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
 
 const enum VIEW_MODE {
 	FORM = 0,
 	RESULTS = 1
 }
+
+declare var acp: string;
 
 @Component({
 	selector: 'layer-panel',
@@ -28,9 +30,6 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	 */
 	search: string = "";
 
-	/*
-	 * Called on confirm
-	 */
 	@Output() confirm: EventEmitter<StacLayer> = new EventEmitter<StacLayer>();
 
 	@Output() cancel: EventEmitter<void> = new EventEmitter<void>();
@@ -41,7 +40,12 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 
 	viewMode: number = VIEW_MODE.FORM;
 
+	thumbnails: any = {};
+	context: string;
+
 	constructor(private service: ManagementService) {
+		this.context = acp;
+
 		this.dataSource = new Observable((observer: any) => {
 
 			const filters = this.getFilters();
@@ -68,6 +72,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
+		this.thumbnails = {};
 	}
 
 	getFilters(): Filter[] {
@@ -113,6 +118,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 		const filters = this.getFilters();
 
 		this.service.getStacItems(filters, 20, pageNumber).then(page => {
+			this.thumbnails = {};
 			this.page = page;
 
 			// Replace any incoming stac item with the existing definition
@@ -125,6 +131,10 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 				}
 			});
 
+			// Get the thumbnail of each item
+			this.page.resultSet.forEach(item => {
+				this.getThumbnail(item);
+			});
 
 			// Assign the default asset for all stac items
 			this.page.resultSet.forEach(item => {
@@ -173,4 +183,29 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	close(): void {
 		this.cancel.emit();
 	}
+
+	getThumbnail(item: StacItem): void {
+		if (item.assets["thumbnail"] != null) {
+			const key = item.assets["thumbnail"].href;
+
+			this.service.downloadFile(key, false).then(blob => {
+				this.createImageFromBlob(blob, item);
+			}, error => {
+				console.log(error);
+			});
+		}
+	}
+
+	createImageFromBlob(image: Blob, item: StacItem) {
+		let reader = new FileReader();
+		reader.addEventListener("load", () => {
+			// this.imageToShow = reader.result;
+			this.thumbnails[item.id] = reader.result;
+		}, false);
+
+		if (image) {
+			reader.readAsDataURL(image);
+		}
+	}
+
 }

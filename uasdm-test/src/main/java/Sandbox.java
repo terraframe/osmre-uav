@@ -57,6 +57,7 @@ import gov.geoplatform.uasdm.cog.StacTiTillerProxy;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class Sandbox
@@ -79,12 +80,12 @@ public class Sandbox
   public static void request() throws Exception
   {
     List<ProductIF> products = Product.getProducts().stream().filter(p -> p.isPublished()).collect(Collectors.toList());
+
     ProductIF product = products.get(0);
+    StacItem item = product.toStacItem();
+    StacLink link = item.getLinks().get(0);
 
-    String url = "s3://osmre-uas-dev-public/_stac_/" + product.getOid() + ".json";
-    String asset = "odm_orthophoto.cog";
-
-    StacTiTillerProxy proxy = new StacTiTillerProxy(url, asset);
+    StacTiTillerProxy proxy = new StacTiTillerProxy(link.getHref(), "odm_orthophoto.cog");
     JSONObject response = proxy.tilejson("/uasdm/stac");
 
     System.out.println(response);

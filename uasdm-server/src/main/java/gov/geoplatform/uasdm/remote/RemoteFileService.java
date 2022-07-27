@@ -73,4 +73,6 @@ public interface RemoteFileService
 
   public RemoteFileObject getStacItem(ProductIF product);
 
+  public RemoteFileObject proxy(String url);
+
 }
