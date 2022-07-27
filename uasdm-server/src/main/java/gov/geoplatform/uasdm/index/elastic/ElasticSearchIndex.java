@@ -99,7 +99,7 @@ public class ElasticSearchIndex implements Index
     }
     catch (java.net.ConnectException cex)
     {
-      String msg = "Could not connect to ElasticSearch with [" + username + ":" + password + "@" + host + ":" + port + "/" + schema + "]";
+      String msg = "Could not connect to ElasticSearch with [" + schema + "://" + username + ":" + password + "@" + host + ":" + port + "]";
       throw new ProgrammingErrorException(msg, cex);
     }
     catch (IOException e)
