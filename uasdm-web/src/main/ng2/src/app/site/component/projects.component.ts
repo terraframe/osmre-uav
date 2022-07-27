@@ -1020,6 +1020,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   removeImageLayer(id: string) {
     this.map.removeLayer(id);
+    this.map.removeSource(id);
   }
 
   handleGoto(): void {
@@ -1223,9 +1224,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleRemoveStacLayer(layer: StacLayer): void {
-    layer.items.forEach(item => {
-      this.removeImageLayer(item.id);
-    });
+
+    if (layer.active) {
+      this.hideStacLayer(layer);
+    }
 
     this.stacLayers = this.stacLayers.filter(f => f.id !== layer.id);
   }
@@ -1235,9 +1237,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (index !== -1) {
       // Remove existing image layers
-      this.stacLayers[index].items.forEach(item => {
-        this.removeImageLayer(item.id);
-      });
+      if (this.stacLayers[index].active) {
+        this.stacLayers[index].items.forEach(item => {
+          this.removeImageLayer(item.id);
+        });
+      }
 
       this.stacLayers[index] = layer;
     }
@@ -1245,21 +1249,47 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stacLayers.push(layer);
     }
 
-    const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
+    if (layer.active) {
 
-    // Determine the bounding box of the layer
-    const features = featureCollection(polygons);
-    const env = envelope(features);
-    const bounds = bbox(env) as [number, number, number, number];
+      const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
 
-    this.map.fitBounds(bounds);
+      // Determine the bounding box of the layer
+      const features = featureCollection(polygons);
+      const env = envelope(features);
+      const bounds = bbox(env) as [number, number, number, number];
 
-    // Create / recreate the image layer
+      this.map.fitBounds(bounds);
+
+      this.showStacLayer(layer);
+    }
+
+    this.viewMode = VIEW_MODE.SITE;
+    this.stacLayer = null;
+  }
+
+
+  handleStacCancel(): void {
+    this.viewMode = VIEW_MODE.SITE;
+    this.stacLayer = null;
+  }
+
+  handleToggleStacLayer(layer: StacLayer): void {
+    layer.active = !layer.active;
+
+    if (layer.active) {
+      this.showStacLayer(layer);
+    }
+    else {
+      this.hideStacLayer(layer);
+    }
+  }
+
+  showStacLayer(layer: StacLayer): void {
     layer.items.forEach(item => {
-      
+
       const index = item.links.findIndex(link => link.rel === 'self');
       const link = item.links[index];
-      
+
       let url = "/stac/tilejson.json";
       url += "?url=" + encodeURIComponent(link.href);
       url += "&assets=" + encodeURIComponent(item.asset);
@@ -1272,14 +1302,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url: url
       });
     });
-
-    this.viewMode = VIEW_MODE.SITE;
-    this.stacLayer = null;
   }
 
-  handleStacCancel(): void {
-    this.viewMode = VIEW_MODE.SITE;
-    this.stacLayer = null;
+  hideStacLayer(layer: StacLayer): void {
+    layer.items.forEach(item => {
+      this.removeImageLayer(item.id);
+    });
   }
 
 }

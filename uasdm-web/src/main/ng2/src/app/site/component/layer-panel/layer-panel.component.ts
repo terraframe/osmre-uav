@@ -41,7 +41,10 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	viewMode: number = VIEW_MODE.FORM;
 
 	thumbnails: any = {};
+
 	context: string;
+
+	readonly: boolean;
 
 	constructor(private service: ManagementService) {
 		this.context = acp;
@@ -59,6 +62,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
+		this.readonly = (this.layer != null);
 		if (this.layer == null) {
 			this.layer = {
 				id: uuidv4(),
@@ -66,7 +70,8 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 				startDate: "",
 				endDate: "",
 				filters: [],
-				items: []
+				items: [],
+				active: true
 			}
 		}
 	}

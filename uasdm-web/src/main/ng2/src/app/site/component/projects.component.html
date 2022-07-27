@@ -292,16 +292,21 @@
                   [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
                 <label class="layer-toggle-label">{{baseLayer.label}}</label>
               </div>
+              <div class="row-form" *ngFor="let layer of stacLayers">
+                <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label="">
+                </boolean-field>
+
+                {{layer.layerName}}
+                <span class="float-right">
+                  <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
+                    [title]="'Edit ' + layer.layerName"></a>
+                  <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
+                    [title]="'Remove ' + layer.layerName"></a>
+                </span>
+              </div>
               <span class="float-right">
                 <button (click)="handleStacLayer()" class="btn btn-primary">+</button>
               </span>
-              <div class="row-form" *ngFor="let layer of stacLayers">
-                {{layer.layerName}}
-                <span class="float-right">
-                  <button (click)="handleStacLayer(layer)" class="btn btn-primary">Edit</button>
-                  <button (click)="handleRemoveStacLayer(layer)" class="btn btn-warning">Remove</button>
-                </span>
-              </div>
             </div>
           </div>
         </article>

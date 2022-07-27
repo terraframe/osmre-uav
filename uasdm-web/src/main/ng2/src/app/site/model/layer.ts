@@ -53,4 +53,5 @@ export class StacLayer {
      */
     filters: Filter[] = [];
     items?: StacItem[] = [];
+    active?: boolean;
 }

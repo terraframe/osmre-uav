@@ -8,21 +8,22 @@
         <div class="row">
             <div class="col-md-12">
                 <label>Layer Name</label>
-                <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName"
-                    required />
+                <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName" required
+                    [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <label>Start Date</label>
-                <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;" />
+                <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;"
+                    [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <label>End Date</label>
-                <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate"
-                    style="width: 100%;" />
+                <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate" style="width: 100%;"
+                    [disabled]="readonly" />
             </div>
         </div>
 
@@ -30,10 +31,10 @@
             <div class="col-md-12">
                 <label>Filter</label>
                 <input class="form-control search-input" type="text" name="search" placeholder="Search..."
-                    [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
+                    autocomplete="off" [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
                     (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2"
                     [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="text"
-                    (keydown.enter)="$event.preventDefault()" />
+                    (keydown.enter)="$event.preventDefault()" [disabled]="readonly" />
             </div>
         </div>
         <hr>
@@ -44,13 +45,11 @@
         </div>
         <ng-container *ngFor="let filter of layer.filters">
             <div *ngIf="filter.field !== 'datetime'" class="row">
-                <div class="col-md-10">
+                <div class="col-md-12">
                     {{filter.label}} contains {{filter.value}}
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-warning" (click)="handleRemove(filter)">
-                        Remove
-                    </button>
+                    <span class="float-right" *ngIf="!readonly">
+                        <a class="fa fa-trash-alt ico-remove" (click)="handleRemove(filter)" title="Remove filter"></a>
+                    </span>
                 </div>
             </div>
         </ng-container>
@@ -68,7 +67,7 @@
                                 <h5 class="card-title" style="color:#a0a0a0">
                                     {{result.properties.title}}
                                 </h5>
-                                
+
                                 <div>Date: <label>{{result.properties.datetime}}</label></div>
 
                                 <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
