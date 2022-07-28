@@ -63,49 +63,58 @@ public class ElasticSearchIndex implements Index
   @Override
   public void startup()
   {
-    String username = AppProperties.getElasticsearchUsername();
-    String host = AppProperties.getElasticsearchHost();
-    String password = AppProperties.getElasticsearchPassword();
-    int port = AppProperties.getElasticsearchPort();
-    String schema = AppProperties.getElasticsearchSchema();
+  }
 
-    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
-    RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, schema)).setHttpClientConfigCallback(new HttpClientConfigCallback()
+  private synchronized RestClient getRestClient()
+  {
+    if (this.restClient == null)
     {
-      @Override
-      public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder)
+      String username = AppProperties.getElasticsearchUsername();
+      String host = AppProperties.getElasticsearchHost();
+      String password = AppProperties.getElasticsearchPassword();
+      int port = AppProperties.getElasticsearchPort();
+      String schema = AppProperties.getElasticsearchSchema();
+
+      final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
+      RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, schema)).setHttpClientConfigCallback(new HttpClientConfigCallback()
       {
-        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-      }
-    });
+        @Override
+        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder)
+        {
+          return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+        }
+      });
 
-    this.restClient = builder.build();
-
-    try
-    {
-      ElasticsearchClient client = this.createClient();
+      this.restClient = builder.build();
 
       try
       {
-        client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+        ElasticsearchClient client = this.createClient();
+
+        try
+        {
+          client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+        }
+        catch (ElasticsearchException e)
+        {
+          // Index doesn't exist, create it
+          client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+        }
       }
-      catch (ElasticsearchException e)
+      catch (java.net.ConnectException cex)
       {
-        // Index doesn't exist, create it
-        client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+        String msg = "Could not connect to ElasticSearch with [" + schema + "://" + username + ":" + password + "@" + host + ":" + port + "]";
+        throw new ProgrammingErrorException(msg, cex);
+      }
+      catch (IOException e)
+      {
+        throw new ProgrammingErrorException(e);
       }
     }
-    catch (java.net.ConnectException cex)
-    {
-      String msg = "Could not connect to ElasticSearch with [" + schema + "://" + username + ":" + password + "@" + host + ":" + port + "]";
-      throw new ProgrammingErrorException(msg, cex);
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
+
+    return this.restClient;
   }
 
   @Override
@@ -127,7 +136,7 @@ public class ElasticSearchIndex implements Index
   private ElasticsearchClient createClient()
   {
     // Create the transport with a Jackson mapper
-    ElasticsearchTransport transport = new RestClientTransport(this.restClient, new JacksonJsonpMapper());
+    ElasticsearchTransport transport = new RestClientTransport(this.getRestClient(), new JacksonJsonpMapper());
 
     // And create the API client
     return new ElasticsearchClient(transport);
