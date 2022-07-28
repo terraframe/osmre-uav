@@ -42,17 +42,26 @@ public class CogTifValidator
   {
     try
     {
-      final String[] cmds = getCogValidatorCommand(AppProperties.getCogValidatorCommand(), file.getAbsolutePath());
+      final String template = AppProperties.getCogValidatorCommand();
       
-      SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
-      
-      if (exec.execute(cmds))
+      if (template == null || template.length() == 0)
       {
-        return !exec.getStdOut().contains("it is recommended to include internal overviews");
+        return file.getAbsolutePath().endsWith(".cog.tif") || file.getAbsolutePath().endsWith(".cog.tiff");
       }
       else
       {
-        return false;
+        final String[] cmds = getCogValidatorCommand(template, file.getAbsolutePath());
+        
+        SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
+        
+        if (exec.execute(cmds))
+        {
+          return !exec.getStdOut().contains("it is recommended to include internal overviews");
+        }
+        else
+        {
+          return false;
+        }
       }
     }
     catch(Throwable t)
