@@ -11,6 +11,7 @@ export class BooleanFieldComponent {
 	@Input() disabled: boolean = false;
 	@Input() localizeLabelKey: string = ""; // localization key used to localize in the component template
 	@Input() label: string = ""; // raw string input
+	@Input() inline: boolean = false; // raw string input
 
 	@Output() public valueChange = new EventEmitter<boolean>();
 

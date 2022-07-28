@@ -286,27 +286,35 @@
             (mouseenter)="baselayerIconHover = true" (mouseleave)="baselayerIconHover = false">
             <i class="fas fa-layer-group" *ngIf="!baselayerIconHover"
               style="vertical-align:middle; font-size: 18px;"></i>
-            <div *ngIf="baselayerIconHover">
+            <div *ngIf="baselayerIconHover" style="width: 200px;">
               <div class="row-form" *ngFor="let baseLayer of baseLayers">
                 <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id'
                   [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
                 <label class="layer-toggle-label">{{baseLayer.label}}</label>
               </div>
-              <div class="row-form" *ngFor="let layer of stacLayers">
-                <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label="">
-                </boolean-field>
+              <div class="row-form">
+                <div class="list-group">
 
-                {{layer.layerName}}
-                <span class="float-right">
-                  <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
-                    [title]="'Edit ' + layer.layerName"></a>
-                  <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
-                    [title]="'Remove ' + layer.layerName"></a>
-                </span>
+                  <div *ngFor="let layer of stacLayers" class="list-group-item">
+                    <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label=""
+                      [inline]="true">
+                    </boolean-field>
+                    <span style="padding-top: 2px;">
+                      <label>{{layer.layerName}}</label>
+                      <span class="pull-right">
+                        <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
+                          [title]="'Edit ' + layer.layerName"></a>
+                        <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
+                          [title]="'Remove ' + layer.layerName"></a>
+                      </span>
+                    </span>
+
+                  </div>
+                </div>
               </div>
-              <span class="float-right">
-                <button (click)="handleStacLayer()" class="btn btn-primary">+</button>
-              </span>
+              <div class="row-form">
+                <a class="fa fa-plus" (click)="handleStacLayer()" title="Add layer"></a>
+              </div>
             </div>
           </div>
         </article>
