@@ -60,7 +60,7 @@ public class IndexServiceMigration implements Runnable
 
   public IndexServiceMigration()
   {
-    this.standalone = false;
+    this.standalone = true;
   }
 
   public IndexServiceMigration(boolean standalone)

@@ -118,13 +118,15 @@ public class ElasticSearchIndex implements Index
   }
 
   @Override
-  public void shutdown()
+  public synchronized void shutdown()
   {
     try
     {
       if (this.restClient != null)
       {
         this.restClient.close();
+        
+        this.restClient = null;
       }
     }
     catch (IOException e)
