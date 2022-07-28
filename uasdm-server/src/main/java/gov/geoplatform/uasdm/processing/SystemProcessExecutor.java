@@ -21,6 +21,8 @@ public class SystemProcessExecutor
   
   private StringBuffer stdErr = null;
   
+  private int exitCode;
+  
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
     this.monitor = monitor;
@@ -36,12 +38,19 @@ public class SystemProcessExecutor
     return stdErr.toString().trim();
   }
   
+  public int getExitCode()
+  {
+    return this.exitCode;
+  }
+  
   public boolean execute(String... commands)
   {
     final Runtime rt = Runtime.getRuntime();
 
     this.stdOut = new StringBuffer();
     this.stdErr = new StringBuffer();
+    
+    this.exitCode = -1;
     
     try
     {
@@ -92,6 +101,8 @@ public class SystemProcessExecutor
       stdErrReader.start();
       
       process.waitFor();
+      
+      exitCode = process.exitValue();
     }
     catch (Throwable t)
     {
@@ -119,7 +130,7 @@ public class SystemProcessExecutor
       return false;
     }
     
-    return true;
+    return exitCode == 0;
   }
   
 }

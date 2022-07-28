@@ -1,47 +1,72 @@
 package gov.geoplatform.uasdm.processing;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import java.io.File;
+
+import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 
 public class CogTifProcessorTest
 {
   
-  private static Area51DataSet testData;
-
-  @BeforeClass
-  public static void setUpClass()
+//  private static Area51DataSet testData;
+//
+//  @BeforeClass
+//  public static void setUpClass()
+//  {
+//    testData = new Area51DataSet();
+//    testData.setUpMetadata();
+//  }
+//
+//  @AfterClass
+//  public static void cleanUpClass()
+//  {
+//    if (testData != null)
+//    {
+//      testData.tearDownMetadata();
+//    }
+//  }
+//  
+//  @Before
+//  public void setUp()
+//  {
+//    testData.setUpInstanceData();
+//  }
+//
+//  @After
+//  public void tearDown()
+//  {
+//    testData.tearDownInstanceData();
+//  }
+  
+  @Test
+  @Request
+  public void testValidateCogDev()
   {
-    testData = new Area51DataSet();
-    testData.setUpMetadata();
-  }
-
-  @AfterClass
-  public static void cleanUpClass()
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
+    StatusMonitorIF monitor = new InMemoryMonitor();
+    
+    CogTifValidator validator = new CogTifValidator(monitor);
+    
+    Assert.assertTrue(validator.isValidCog(new File("/tmp/odm_orthophoto.cog.tif")));
+    
+    Assert.assertFalse(validator.isValidCog(new File("/tmp/odm_orthophoto.tif")));
   }
   
-  @Before
-  public void setUp()
+  @Test
+  @Request
+  public void testValidateCogProd()
   {
-    testData.setUpInstanceData();
-  }
-
-  @After
-  public void tearDown()
-  {
-    testData.tearDownInstanceData();
+    String[] cmds = CogTifValidator.getCogValidatorCommand(AppProperties.PROD_VALIDATOR_CMD, "test123");
+    
+    Assert.assertEquals("python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py test123", StringUtils.join(cmds, " "));
   }
   
   @Test

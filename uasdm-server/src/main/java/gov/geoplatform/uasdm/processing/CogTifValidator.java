@@ -5,6 +5,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+
 import gov.geoplatform.uasdm.AppProperties;
 
 public class CogTifValidator
@@ -22,17 +25,28 @@ public class CogTifValidator
     this.monitor = monitor;
   }
   
+  public static String[] getCogValidatorCommand(String template, String cogFile)
+  {
+    JsonArray jaCmds = JsonParser.parseString(template).getAsJsonArray();
+    String[] cmds = new String[jaCmds.size()];
+    
+    for (int i = 0; i < jaCmds.size(); ++i)
+    {
+      cmds[i] = jaCmds.get(i).getAsString().replace("{cog_file}", cogFile);
+    }
+    
+    return cmds;
+  }
+  
   public boolean isValidCog(File file)
   {
     try
     {
-      final String template = AppProperties.getCogValidatorCommand();
-      
-      final String cmd = template.replace("{cog_file}", file.getAbsolutePath());
+      final String[] cmds = getCogValidatorCommand(AppProperties.getCogValidatorCommand(), file.getAbsolutePath());
       
       SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
       
-      if (exec.execute(cmd.split(" ")))
+      if (exec.execute(cmds))
       {
         return !exec.getStdOut().contains("it is recommended to include internal overviews");
       }

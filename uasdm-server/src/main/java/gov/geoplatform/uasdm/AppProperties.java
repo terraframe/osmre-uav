@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm;
 import java.io.File;
 import java.io.InputStream;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 
@@ -57,9 +59,11 @@ public class AppProperties
     }
   }
   
+  public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
+  
   public static String getCogValidatorCommand()
   {
-    return Singleton.getProps().getString("cog.validator.cmd", "python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py {cog_file}");
+    return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
   }
 
   public static String getTitilerUrl()
