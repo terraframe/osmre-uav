@@ -26,6 +26,7 @@
 # Prerequisite software must be installed:
 #  git, nvm, docker, mvn, java
 # Additionally, your envcfg.properties must be created first before running this.
+# All required docker containers must already be created, this script just boots them.
 
 # Required environment variables must be set before running:
 # UASDM = /path/to/uasdm-git-checkout/../
@@ -44,7 +45,7 @@ git pull
 # Run Docker containers
 sudo docker start orientdb
 sudo docker start postgres
-sudo docker start solr
+sudo docker start uasdm-es
 sudo docker start uasdm-nodeodm
 
 # Kill any running tomcat

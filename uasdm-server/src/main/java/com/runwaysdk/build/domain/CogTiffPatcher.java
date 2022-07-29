@@ -29,6 +29,9 @@ import net.geoprism.GeoprismProperties;
 /**
  * Pulls all tifs from S3 and reuploads them as cog tiffs.
  * 
+ * !Important! If this is run outside of a transaction then the deletes will happen at the end, after we've
+ *   created the new cogs, resulting in this patcher just deleting all existing cogs.
+ * 
  * @author rrowlands
  */
 public class CogTiffPatcher

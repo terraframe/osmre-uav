@@ -62,7 +62,7 @@ mvn clean install -U
 sudo -E $UASDM/uasdm/src/dev/shell/postgres.sh
 sudo -E $UASDM/uasdm/src/dev/shell/odm.sh
 sudo -E $UASDM/uasdm/src/dev/shell/orientdb.sh
-sudo -E $UASDM/uasdm/src/dev/shell/solr.sh
+sudo -E $UASDM/uasdm/src/dev/shell/elasticsearch.sh
 sudo -E $UASDM/uasdm/uasdm-clusterodm/build/local_cluster.sh
 
 # Build database
