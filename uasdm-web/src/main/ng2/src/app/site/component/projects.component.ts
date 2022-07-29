@@ -999,7 +999,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addImageLayer(layer: MapLayer) {
-    let url = acp + "/" + layer.url;
+    let url = layer.url;
+    if (acp !== "" && acp != null) {
+        url = acp + "/" + url;
+    }
+    if (!url.startsWith("/")) {
+        url = "/" + url;
+    }
 
     // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
     // insufficient, because it might be more zoomed out then the ortho will display at.
