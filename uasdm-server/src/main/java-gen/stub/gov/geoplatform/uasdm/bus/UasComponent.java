@@ -46,8 +46,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
-import gov.geoplatform.uasdm.command.SolrDeleteDocumentCommand;
-import gov.geoplatform.uasdm.command.SolrDeleteDocumentsCommand;
+import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
+import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
@@ -241,7 +241,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       this.deleteS3Folder(this.getS3location(), null);
     }
 
-    final SolrDeleteDocumentsCommand command = new SolrDeleteDocumentsCommand(this.getSolrIdField(), this.getOid());
+    final IndexDeleteDocumentsCommand command = new IndexDeleteDocumentsCommand(this.getSolrIdField(), this.getOid());
     command.doIt();
   }
 
@@ -332,7 +332,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final Document document = Document.find(key);
     document.delete();
 
-    new SolrDeleteDocumentCommand(this, key).doIt();
+    new IndexDeleteDocumentCommand(this, key).doIt();
   }
 
   public RemoteFileObject download(String key)

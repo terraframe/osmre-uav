@@ -49,6 +49,7 @@ import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff;
 import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
+import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -123,8 +124,8 @@ public class Product extends ProductBase implements ProductIF
     }
 
     CollectionReport.handleDelete(this);
-
-    IndexService.removeStacItems(this);
+    
+    new IndexDeleteStacCommand(this).doIt();
 
     super.delete();
   }

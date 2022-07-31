@@ -61,8 +61,9 @@ public class ElasticSearchIndex implements Index
   private RestClient restClient;
 
   @Override
-  public void startup()
+  public boolean startup()
   {
+    return true;
   }
 
   private synchronized RestClient getRestClient()
@@ -125,7 +126,7 @@ public class ElasticSearchIndex implements Index
       if (this.restClient != null)
       {
         this.restClient.close();
-        
+
         this.restClient = null;
       }
     }
@@ -370,6 +371,14 @@ public class ElasticSearchIndex implements Index
         throw new ProgrammingErrorException(e);
       }
     }
+
+    // Due to the fact that the thumbnail endpoints are in the private s3 bucket
+    // we must remove the thumbnail asset from the STAC json uploaded to the
+    // buckets because we do not want public STAC items to contain urls to
+    // private files. However, the front-end uses the thumbnail information on
+    // the search results panel. As such, we still need the thumbnail asset in
+    // the index.
+    item.removeAsset("thumbnail");
 
     RemoteFileFacade.putStacItem(item);
   }

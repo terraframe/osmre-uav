@@ -37,10 +37,11 @@ import gov.geoplatform.uasdm.view.QueryResult;
 
 public class SolrIndex implements Index
 {
-  
+
   @Override
-  public void startup()
+  public boolean startup()
   {
+    return true;
   }
 
   @Override
@@ -425,23 +426,23 @@ public class SolrIndex implements Index
 
     return results;
   }
-  
+
   @Override
   public void createStacItems(ProductIF product)
   {
   }
-  
+
   @Override
   public void removeStacItems(ProductIF product)
   {
   }
-  
+
   @Override
   public JSONArray getTotals(String text, JSONArray filters)
   {
     return new JSONArray();
   }
-  
+
   @Override
   public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
   {

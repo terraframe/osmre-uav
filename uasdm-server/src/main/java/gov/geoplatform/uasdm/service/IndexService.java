@@ -43,12 +43,14 @@ public class IndexService
 {
   private static Index index = new ElasticSearchIndex();
 
-  public static void startup()
+  public static boolean startup()
   {
     if (AppProperties.isSearchEnabled())
     {
-      index.startup();
+      return index.startup();
     }
+    
+    return true;
   }
   
   public static void shutdown()

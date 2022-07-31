@@ -13,6 +13,10 @@ import gov.geoplatform.uasdm.view.QueryResult;
 
 public interface Index
 {
+  public boolean startup();
+
+  public void shutdown();
+
   public void deleteDocuments(String fieldId, String oid);
 
   public void deleteDocument(UasComponentIF component, String key);
@@ -34,10 +38,6 @@ public interface Index
   public void removeStacItems(ProductIF product);
 
   public JSONArray getTotals(String text, JSONArray filters);
-
-  public void shutdown();
-
-  public void startup();
 
   public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber);
 }

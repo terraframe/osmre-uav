@@ -14,7 +14,7 @@ public class IndexContextListener implements ServerContextListener
   @Override
   public void startup()
   {
-    IndexService.startup();
+    IndexInitializer.startup();
   }
 
   @Override

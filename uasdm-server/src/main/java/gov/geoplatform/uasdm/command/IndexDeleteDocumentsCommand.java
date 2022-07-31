@@ -22,15 +22,15 @@ import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.service.IndexService;
 
-public class SolrDeleteDocumentsCommand implements Command
+public class IndexDeleteDocumentsCommand implements Command
 {
-  private Logger log = LoggerFactory.getLogger(SolrDeleteDocumentsCommand.class);
+  private Logger log = LoggerFactory.getLogger(IndexDeleteDocumentsCommand.class);
 
   private String fieldId;
 
   private String oid;
 
-  public SolrDeleteDocumentsCommand(String fieldId, String oid)
+  public IndexDeleteDocumentsCommand(String fieldId, String oid)
   {
     this.fieldId = fieldId;
     this.oid = oid;

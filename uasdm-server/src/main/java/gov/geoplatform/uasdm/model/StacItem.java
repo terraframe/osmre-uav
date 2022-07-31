@@ -554,6 +554,11 @@ public class StacItem implements JSONSerializable
     this.assets.put(name, asset);
   }
 
+  public void removeAsset(String name)
+  {
+    this.assets.remove(name);
+  }
+
   public String getCollection()
   {
     return collection;
@@ -574,21 +579,6 @@ public class StacItem implements JSONSerializable
     this.published = published;
   }
 
-  public static Asset buildAsset(String type, String title, String href, String... roles)
-  {
-    Asset asset = new Asset();
-    asset.setType(type);
-    asset.setTitle(title);
-    asset.setHref(href);
-
-    for (String role : roles)
-    {
-      asset.addRole(role);
-    }
-
-    return asset;
-  }
-
   @Override
   public Object toJSON()
   {
@@ -603,5 +593,20 @@ public class StacItem implements JSONSerializable
     {
       throw new ProgrammingErrorException(e);
     }
+  }
+
+  public static Asset buildAsset(String type, String title, String href, String... roles)
+  {
+    Asset asset = new Asset();
+    asset.setType(type);
+    asset.setTitle(title);
+    asset.setHref(href);
+
+    for (String role : roles)
+    {
+      asset.addRole(role);
+    }
+
+    return asset;
   }
 }

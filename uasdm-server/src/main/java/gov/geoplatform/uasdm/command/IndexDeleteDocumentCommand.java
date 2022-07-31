@@ -20,18 +20,19 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.Command;
 
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 
-public class SolrDeleteDocumentCommand implements Command
+public class IndexDeleteDocumentCommand implements Command
 {
-  private Logger         log = LoggerFactory.getLogger(SolrDeleteDocumentCommand.class);
+  private Logger         log = LoggerFactory.getLogger(IndexDeleteDocumentCommand.class);
 
   private UasComponentIF component;
 
   private String         key;
 
-  public SolrDeleteDocumentCommand(UasComponentIF component, String key)
+  public IndexDeleteDocumentCommand(UasComponentIF component, String key)
   {
     this.component = component;
     this.key = key;
