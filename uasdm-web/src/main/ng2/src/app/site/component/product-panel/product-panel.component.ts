@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -29,7 +29,7 @@ declare var acp: string;
         bounceOutOnLeaveAnimation()
     ]
 })
-export class ProductPanelComponent {
+export class ProductPanelComponent implements OnDestroy {
 
     @Input() id: string;
 
@@ -65,6 +65,17 @@ export class ProductPanelComponent {
 
 
     constructor(private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
+    
+    ngOnDestroy(): void {
+        this.products.forEach(product => {
+            if (product.orthoMapped) {
+                this.handleMapIt(product);
+            }
+            if (product.demMapped) {
+                this.handleMapDem(product);
+            }
+        });
+    }
 
     ngOnChanges(changes: SimpleChanges) {
 
