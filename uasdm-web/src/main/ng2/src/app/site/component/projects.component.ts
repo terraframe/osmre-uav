@@ -1001,10 +1001,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   addImageLayer(layer: MapLayer) {
     let url = layer.url;
     if (acp !== "" && acp != null) {
-        url = acp + "/" + url;
+      url = acp + "/" + url;
     }
     if (!url.startsWith("/")) {
-        url = "/" + url;
+      url = "/" + url;
     }
 
     // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
@@ -1302,7 +1302,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addImageLayer({
         classification: "ORTHO",
-        key: item.id,
+        key: layer.id + '-' + item.id + '-' + item.asset,
         isMapped: false,
         public: true,
         url: url
@@ -1312,7 +1312,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   hideStacLayer(layer: StacLayer): void {
     layer.items.forEach(item => {
-      this.removeImageLayer(item.id);
+      this.removeImageLayer(layer.id + '-' + item.id + '-' + item.asset);
     });
   }
 
