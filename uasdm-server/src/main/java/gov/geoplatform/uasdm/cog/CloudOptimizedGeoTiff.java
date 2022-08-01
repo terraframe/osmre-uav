@@ -145,6 +145,9 @@ public class CloudOptimizedGeoTiff
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(layerS3Uri));
     
+    parameters.put("minzoom", Arrays.asList("0"));
+    parameters.put("maxzoom", Arrays.asList("24"));
+    
     try
     {
       // We have to get the tilejson file from titiler and replace their urls with our urls, since it can only be accessed through us by proxy.

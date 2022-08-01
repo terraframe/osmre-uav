@@ -1006,22 +1006,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!url.startsWith("/")) {
       url = "/" + url;
     }
-
-    // This code was added because the ortho might have a minzoom property, which makes a simple bounding box
-    // insufficient, because it might be more zoomed out then the ortho will display at.
-    this.mapService.tilejson(url).then(data => {
-      // this.map.flyTo({center: data.center, zoom: data.minzoom});
-
-      this.map.addLayer({
-        "id": layer.key,
-        "type": "raster",
-        "source": {
-          "type": "raster",
-          "tiles": data.tiles
-        },
-        "paint": {}
-      }, "points");
-    });
+    
+    this.map.addLayer({
+      'id': layer.key,
+      'type': 'raster',
+      'source': {
+        'type': 'raster',
+        'url': url
+      },
+      'paint': {}
+    }, "points");
   }
 
   removeImageLayer(id: string) {
