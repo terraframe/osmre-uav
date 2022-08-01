@@ -70,52 +70,75 @@ public class ElasticSearchIndex implements Index
   {
     if (this.restClient == null)
     {
-      String username = AppProperties.getElasticsearchUsername();
-      String host = AppProperties.getElasticsearchHost();
-      String password = AppProperties.getElasticsearchPassword();
-      int port = AppProperties.getElasticsearchPort();
-      String schema = AppProperties.getElasticsearchSchema();
+      final int MAX_TRIES = 5;
 
-      final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-      credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+      int count = 1;
 
-      RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, schema)).setHttpClientConfigCallback(new HttpClientConfigCallback()
+      while (this.restClient == null && count < MAX_TRIES)
       {
-        @Override
-        public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder)
-        {
-          return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-        }
-      });
-
-      this.restClient = builder.build();
-
-      try
-      {
-        ElasticsearchClient client = this.createClient();
-
         try
         {
-          client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+          logger.debug("Attempting to check existence of elasticsearch");
+
+          String username = AppProperties.getElasticsearchUsername();
+          String host = AppProperties.getElasticsearchHost();
+          String password = AppProperties.getElasticsearchPassword();
+          int port = AppProperties.getElasticsearchPort();
+          String schema = AppProperties.getElasticsearchSchema();
+
+          final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+          credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
+          RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, schema)).setHttpClientConfigCallback(new HttpClientConfigCallback()
+          {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder)
+            {
+              return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
+          });
+
+          this.restClient = builder.build();
+
+          ElasticsearchClient client = this.createClient();
+
+          try
+          {
+            client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+          }
+          catch (ElasticsearchException e)
+          {
+            // Index doesn't exist, create it
+            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+          }
         }
-        catch (ElasticsearchException e)
+        catch (Exception e)
         {
-          // Index doesn't exist, create it
-          client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+          this.restClient = null;
+
+          try
+          {
+            logger.debug("Waiting for Index to start. Attempt [" + count + "]");
+            Thread.sleep(1000);
+          }
+          catch (InterruptedException ex)
+          {
+            // Ignore
+          }
+
         }
-      }
-      catch (java.net.ConnectException cex)
-      {
-        String msg = "Could not connect to ElasticSearch with [" + schema + "://" + username + ":" + password + "@" + host + ":" + port + "]";
-        throw new ProgrammingErrorException(msg, cex);
-      }
-      catch (IOException e)
-      {
-        throw new ProgrammingErrorException(e);
+
+        count++;
       }
     }
 
+    if (this.restClient == null)
+    {
+      throw new ProgrammingErrorException("Unable to connect to elastic search");
+    }
+
     return this.restClient;
+
   }
 
   @Override
