@@ -124,7 +124,7 @@ public class Product extends ProductBase implements ProductIF
     }
 
     CollectionReport.handleDelete(this);
-    
+
     new IndexDeleteStacCommand(this).doIt();
 
     super.delete();
@@ -607,11 +607,23 @@ public class Product extends ProductBase implements ProductIF
       Sensor sensor = collection.getSensor();
       Platform platform = uav.getPlatform();
 
+      Date dateTime = ( (Collection) component ).getCollectionDate();
+
+      if (dateTime == null)
+      {
+        dateTime = this.getLastUpdateDate();
+      }
+
+      if (dateTime == null)
+      {
+        dateTime = new Date();
+      }
+
       Properties properties = new Properties();
       properties.setTitle(component.getName());
       properties.setCollection(component.getName());
       properties.setDescription(component.getDescription());
-      properties.setDatetime( ( (Collection) component ).getCollectionDate());
+      properties.setDatetime(dateTime);
       properties.setUpdated(this.getLastUpdateDate());
       properties.setSensor(sensor.getName());
       properties.setPlatform(platform.getName());
@@ -640,10 +652,10 @@ public class Product extends ProductBase implements ProductIF
             String role = "visual";
 
             item.addAsset("thumbnail-hd", StacItem.buildAsset("image/png", title, location, role));
-            
+
             // Private thumbnail
             String rootPath = FilenameUtils.getPath(document.getS3location());
-            String baseName = FilenameUtils.getBaseName(document.getName());                  
+            String baseName = FilenameUtils.getBaseName(document.getName());
             String thumbnail = "s3://" + AppProperties.getBucketName() + "/" + rootPath + "thumbnails/" + baseName + ".png";
 
             item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
