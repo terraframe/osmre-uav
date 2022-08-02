@@ -55,6 +55,10 @@ public class StacTiTillerProxy extends TiTillerProxy
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
+    
+    // These are the min and max zooms which Mapbox will allow
+    parameters.put("minzoom", Arrays.asList("0"));
+    parameters.put("maxzoom", Arrays.asList("24"));
 
     try
     {
