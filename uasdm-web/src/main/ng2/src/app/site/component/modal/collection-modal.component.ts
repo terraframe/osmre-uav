@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
@@ -20,6 +20,7 @@ import {
 import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunOrthoModalComponent } from './run-ortho-modal.component';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 declare var acp: string;
 
@@ -35,7 +36,7 @@ declare var acp: string;
 		slideInRightOnEnterAnimation(),
 	]
 })
-export class CollectionModalComponent implements OnInit {
+export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;
 
 	@Input()
@@ -69,6 +70,8 @@ export class CollectionModalComponent implements OnInit {
 	video: { src: string, name: string } = { src: null, name: null };
 	context: string;
 
+	notifier: WebSocketSubject<any>;
+
 	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
 		this.context = acp;
 	}
@@ -80,7 +83,22 @@ export class CollectionModalComponent implements OnInit {
 		this.page.pageNumber = 1;
 		this.page.pageSize = this.constPageSize;
 		this.page.results = [];
+
+		let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + acp;
+
+		this.notifier = webSocket(baseUrl + '/websocket/notify');
+		this.notifier.subscribe(message => {
+			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
+				this.onPageChange(this.page.pageNumber);
+			}
+		});
+
 	}
+
+	ngOnDestroy(): void {
+		this.notifier.unsubscribe();
+	}
+
 
 	init(entity: SiteEntity, folders: SiteEntity[], previous: SiteEntity[]): void {
 		this.entity = entity;
