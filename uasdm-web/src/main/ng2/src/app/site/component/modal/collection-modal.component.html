@@ -214,7 +214,7 @@
           <div *ngIf="showOrthoRerunMessage" style="text-align:right;padding-right:20px;">
             <p>{{statusMessage}}</p>
             <p>See this process on
-              <a routerLink="/site/tasks">your tasks page</a>
+              <a (click)="bsModalRef.hide()" routerLink="/site/tasks">your tasks page</a>
             </p>
           </div>
 
