@@ -1250,14 +1250,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (layer.active) {
 
-      const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
-
-      // Determine the bounding box of the layer
-      const features = featureCollection(polygons);
-      const env = envelope(features);
-      const bounds = bbox(env) as [number, number, number, number];
-
-      this.map.fitBounds(bounds);
+      this.handleStacZoom(layer);
 
       this.showStacLayer(layer);
     }
@@ -1266,6 +1259,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stacLayer = null;
   }
 
+  handleStacZoom(layer: StacLayer): void {
+    const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
+
+    // Determine the bounding box of the layer
+    const features = featureCollection(polygons);
+    const env = envelope(features);
+    const bounds = bbox(env) as [number, number, number, number];
+
+    this.map.fitBounds(bounds);    
+  }
 
   handleStacCancel(): void {
     this.viewMode = VIEW_MODE.SITE;
