@@ -1005,7 +1005,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!url.startsWith("/")) {
       url = "/" + url;
     }
-    
+
     this.map.addLayer({
       'id': layer.key,
       'type': 'raster',
@@ -1215,7 +1215,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewMode = VIEW_MODE.STAC;
 
     if (layer != null) {
-      this.stacLayer = { ...layer };
+      this.stacLayer = JSON.parse(JSON.stringify(layer));
     }
     else {
       this.stacLayer = null;
@@ -1237,9 +1237,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (index !== -1) {
       // Remove existing image layers
       if (this.stacLayers[index].active) {
-        this.stacLayers[index].items.forEach(item => {
-          this.removeImageLayer(item.id);
-        });
+        this.hideStacLayer(this.stacLayers[index]);
       }
 
       this.stacLayers[index] = layer;
@@ -1267,7 +1265,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     const env = envelope(features);
     const bounds = bbox(env) as [number, number, number, number];
 
-    this.map.fitBounds(bounds);    
+    this.map.fitBounds(bounds);
   }
 
   handleStacCancel(): void {
