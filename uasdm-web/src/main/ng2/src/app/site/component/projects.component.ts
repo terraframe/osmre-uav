@@ -998,6 +998,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addImageLayer(layer: MapLayer) {
+
     let url = layer.url;
     if (acp !== "" && acp != null) {
       url = acp + "/" + url;
@@ -1015,11 +1016,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       'paint': {}
     }, "points");
+
+    // Add the layer to the list of layers to be recreated on style change
+    this.layers.push(layer);
   }
 
   removeImageLayer(id: string) {
     this.map.removeLayer(id);
     this.map.removeSource(id);
+
+    this.layers = this.layers.filter(l => l.key !== id);
   }
 
   handleGoto(): void {
@@ -1297,7 +1303,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addImageLayer({
         classification: "ORTHO",
         key: layer.id + '-' + item.id + '-' + item.asset,
-        isMapped: false,
+        isMapped: layer.active,
         public: true,
         url: url
       });
