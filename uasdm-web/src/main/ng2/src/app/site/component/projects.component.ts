@@ -1005,7 +1005,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!url.startsWith("/")) {
       url = "/" + url;
     }
-    
+
     this.map.addLayer({
       'id': layer.key,
       'type': 'raster',
@@ -1215,7 +1215,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewMode = VIEW_MODE.STAC;
 
     if (layer != null) {
-      this.stacLayer = { ...layer };
+      this.stacLayer = JSON.parse(JSON.stringify(layer));
     }
     else {
       this.stacLayer = null;
@@ -1237,9 +1237,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (index !== -1) {
       // Remove existing image layers
       if (this.stacLayers[index].active) {
-        this.stacLayers[index].items.forEach(item => {
-          this.removeImageLayer(item.id);
-        });
+        this.hideStacLayer(this.stacLayers[index]);
       }
 
       this.stacLayers[index] = layer;
@@ -1250,14 +1248,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (layer.active) {
 
-      const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
-
-      // Determine the bounding box of the layer
-      const features = featureCollection(polygons);
-      const env = envelope(features);
-      const bounds = bbox(env) as [number, number, number, number];
-
-      this.map.fitBounds(bounds);
+      this.handleStacZoom(layer);
 
       this.showStacLayer(layer);
     }
@@ -1266,6 +1257,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stacLayer = null;
   }
 
+  handleStacZoom(layer: StacLayer): void {
+    const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
+
+    // Determine the bounding box of the layer
+    const features = featureCollection(polygons);
+    const env = envelope(features);
+    const bounds = bbox(env) as [number, number, number, number];
+
+    this.map.fitBounds(bounds);
+  }
 
   handleStacCancel(): void {
     this.viewMode = VIEW_MODE.SITE;
