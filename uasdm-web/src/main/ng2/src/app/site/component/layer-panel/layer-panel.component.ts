@@ -182,6 +182,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 		}
 		else if (this.viewMode === VIEW_MODE.RESULTS) {
 			this.confirm.emit(this.layer);
+			this.close();
 		}
 	}
 

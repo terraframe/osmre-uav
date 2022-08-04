@@ -6,21 +6,21 @@
     <ng-container *ngIf="viewMode === 0">
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" style="padding-top: 10px;">
                 <label>Layer Name</label>
                 <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName" required
                     [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" style="padding-top: 10px;">
                 <label>Start Date</label>
                 <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;"
                     [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" style="padding-top: 10px;">
                 <label>End Date</label>
                 <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate" style="width: 100%;"
                     [disabled]="readonly" />
@@ -28,7 +28,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" style="padding-top: 10px;">
                 <label>Filter</label>
                 <input class="form-control search-input" type="text" name="search" placeholder="Search..."
                     autocomplete="off" [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
@@ -71,11 +71,13 @@
                                 <div>Date: <label>{{result.properties.datetime}}</label></div>
 
                                 <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
-                                    <img style="max-height: 110px"
-                                        [src]="thumbnails[result.id] != null ? (thumbnails[result.id] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
-                                        alt="Image">
+                                    <span class="thumbnail">
+	                                    <img style="max-height: 110px"
+	                                        [src]="thumbnails[result.id] != null ? (thumbnails[result.id] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
+	                                        alt="Image">
+                                    </span>
                                 </div>
-                                <div class="card-right" style="padding:0px; width: 13em;">
+                                <div class="card-right" style="width: 13em;">
                                     <ul style="list-style: none;padding: 0;">
                                         <li style="padding: 3px 0 3px 0; min-width:6em;">
                                             Platform: <label>{{result.properties.platform}}</label>
@@ -107,16 +109,20 @@
                     </div>
                 </div>
             </div>
-            <pagination-controls (pageChange)="onPageChange($event)" maxSize="10"></pagination-controls>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <pagination-controls (pageChange)="onPageChange($event)" maxSize="10"></pagination-controls>
+            </div>
         </div>
     </ng-container>
 
     <div class="row">
         <div class="col-md-12">
-            <div class="btn-holder" style="text-align: right;">
+            <div class="btn-holder" style="text-align: right;padding: 0 10px 10px 0;">
                 <button type="button" (click)="close()" class="btn btn-default" role="button" aria-disabled="false"
                     style="padding: 4px 18px;">
-                    <span class="ui-button-text">Cancel</span>
+                    <span class="ui-button-text">Close</span>
                 </button>
 
                 <button *ngIf="viewMode === 0" type="button btn btn-primary" [disabled]="form.invalid"
