@@ -184,6 +184,8 @@ export class Product {
 	entities: SiteEntity[];
 	published: boolean;
 	imageKey?: string;
+  orthoKey?: string;
+  demKey?: string;
 	boundingBox?: number[];
 	layers: MapLayer[];
 	orthoMapped?: boolean;

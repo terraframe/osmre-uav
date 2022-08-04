@@ -15,6 +15,8 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 
 public class CloudOptimizedGeoTiffService
 {
+  private TiTillerProxy proxy = new TiTillerProxy();
+  
   @Request(RequestType.SESSION)
   public ResponseIF tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format)
   {
@@ -22,9 +24,7 @@ public class CloudOptimizedGeoTiffService
     {
       DocumentIF document = Document.find(path);
       
-      Product product = ((Document) document).getProductHasDocumentParentProducts().get(0);
-      
-      return new InputStreamResponse(new CloudOptimizedGeoTiff(product, document).tiles(matrixSetId, x, y, z, scale, format), "image/" + format);
+      return new InputStreamResponse(proxy.tiles(document, matrixSetId, x, y, z, scale, format), "image/" + format);
     }
     catch (Throwable t)
     {
@@ -41,8 +41,6 @@ public class CloudOptimizedGeoTiffService
   {
     DocumentIF document = Document.find(path);
     
-    Product product = ((Document) document).getProductHasDocumentParentProducts().get(0);
-    
-    return new CloudOptimizedGeoTiff(product, document).tilejson(contextPath);
+    return proxy.tilejson(document, contextPath);
   }
 }
