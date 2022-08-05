@@ -60,7 +60,7 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
-public class Sandbox
+public class SmethiesRandomDisorganizedTestCode
 {
   public static void main(String[] args) throws Exception
   {

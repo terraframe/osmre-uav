@@ -44,7 +44,10 @@ export class ImagePreviewModalComponent {
 
         this.loading = true;
 
-        this.service.download( component, key, false ).subscribe( blob => {
+        // 0 here is the entire image. Larger number retrieves a smaller image from the cog.
+        let imageSize = 2;
+        
+        this.service.downloadImageAtIndex( component, key, false, imageSize ).subscribe( blob => {
             this.createImageFromBlob( blob );
             this.loading = false;
         }, error => {

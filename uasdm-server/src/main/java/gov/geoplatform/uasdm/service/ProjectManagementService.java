@@ -48,11 +48,13 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
+import gov.geoplatform.uasdm.cog.CogTiffS3PreviewReader;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
@@ -680,6 +682,25 @@ public class ProjectManagementService
       return component.download(key);
     }
   }
+  
+  @Request(RequestType.SESSION)
+  public InputStream downloadImageAtIndex(String sessionId, String id, String key, int imageIndex)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    String s3url = "s3://" + AppProperties.getBucketName() + "/";
+    
+    if (!key.startsWith(component.getS3location()))
+    {
+      s3url += component.getS3location() + key;
+    }
+    else
+    {
+      s3url += key;
+    }
+    
+    return CogTiffS3PreviewReader.read(s3url, imageIndex);
+  } 
 
   @Request(RequestType.SESSION)
   public RemoteFileObject proxyRemoteFile(String sessionId, String url)
