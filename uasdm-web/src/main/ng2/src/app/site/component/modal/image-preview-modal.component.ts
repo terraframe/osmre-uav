@@ -17,16 +17,14 @@ export class ImagePreviewModalComponent {
     open: boolean = true;
     loading: boolean = true;
     imageToShow: any;
-    component: string;
-    key: string;
+    productId: string;
 
     constructor( private service: ManagementService, public bsModalRef: BsModalRef ) { }
 
-    init( component: string, key: string ) {
-        this.component = component;
-        this.key = key;
+    init( productId: string ) {
+        this.productId = productId;
 
-        this.getImage( this.component, this.key );
+        this.getImage( this.productId );
     }
 
     createImageFromBlob( image: Blob ) {
@@ -40,14 +38,14 @@ export class ImagePreviewModalComponent {
         }
     }
 
-    getImage( component: string, key: string ): void {
+    getImage( productId: string ): void {
 
         this.loading = true;
 
         // 0 here is the entire image. Larger number retrieves a smaller image from the cog.
         let imageSize = 2;
         
-        this.service.downloadImageAtIndex( component, key, false, imageSize ).subscribe( blob => {
+        this.service.downloadProductPreview( productId, false ).subscribe( blob => {
             this.createImageFromBlob( blob );
             this.loading = false;
         }, error => {

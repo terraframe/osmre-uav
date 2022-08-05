@@ -421,18 +421,17 @@ export class ManagementService {
 			}))
 	}
   
-  downloadImageAtIndex(id: string, key: string, useSpinner: boolean, imageIndex: number): Observable<Blob> {
+  downloadProductPreview(productId: string, useSpinner: boolean): Observable<Blob> {
 
     let params: HttpParams = new HttpParams();
-    params = params.set('id', id);
-    params = params.set('key', key);
-    params = params.set('imageIndex', String(imageIndex));
+    params = params.set('productId', productId);
+    params = params.set('artifactName', "ortho");
 
     if (useSpinner) {
       this.eventService.start();
     }
 
-    return this.noErrorHttpClient.get<Blob>(acp + '/project/downloadImageAtIndex', { params: params, responseType: 'blob' as 'json' })
+    return this.noErrorHttpClient.get<Blob>(acp + '/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
       .pipe(finalize(() => {
         if (useSpinner) {
           this.eventService.complete();

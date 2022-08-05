@@ -116,7 +116,7 @@ export class ProductModalComponent implements OnInit {
 			ignoreBackdropClick: false,
 			'class': 'image-preview-modal'
 		});
-		this.rawImagePreviewModal.content.init(image.component, image.key);
+		this.rawImagePreviewModal.content.init(this.product.id);
 	}
 
     handleDownload(): void {

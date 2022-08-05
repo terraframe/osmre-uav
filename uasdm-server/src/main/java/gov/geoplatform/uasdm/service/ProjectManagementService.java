@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -56,6 +57,7 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.cog.CogTiffS3PreviewReader;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -684,23 +686,38 @@ public class ProjectManagementService
   }
   
   @Request(RequestType.SESSION)
-  public InputStream downloadImageAtIndex(String sessionId, String id, String key, int imageIndex)
+  public InputStream downloadProductPreview(String sessionId, String productId, String artifactName)
   {
-    UasComponentIF component = ComponentFacade.getComponent(id);
-
-    String s3url = "s3://" + AppProperties.getBucketName() + "/";
-    
-    if (!key.startsWith(component.getS3location()))
+    if (artifactName.equals("ortho"))
     {
-      s3url += component.getS3location() + key;
-    }
-    else
-    {
-      s3url += key;
+      Product product = Product.get(productId);
+      
+      Optional<DocumentIF> op = product.getMappableOrtho();
+      
+      if (op.isPresent())
+      {
+        Document document = (Document) op.get();
+    
+        String s3url = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
+        
+        InputStream cogImage = CogTiffS3PreviewReader.read(s3url, 2);
+        
+        if (cogImage != null)
+        {
+          return cogImage;
+        }
+      }
+      
+      Optional<DocumentIF> orthoPng = product.getOrthoPng();
+      
+      if (orthoPng.isPresent())
+      {
+        return orthoPng.get().download().getObjectContent();
+      }
     }
     
-    return CogTiffS3PreviewReader.read(s3url, imageIndex);
-  } 
+    throw new UnsupportedOperationException();
+  }
 
   @Request(RequestType.SESSION)
   public RemoteFileObject proxyRemoteFile(String sessionId, String url)

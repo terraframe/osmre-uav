@@ -79,6 +79,8 @@ public class Product extends ProductBase implements ProductIF
 
   public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
+  public static final String ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + ".png".replaceAll("\\.", "\\\\.");
+  
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
@@ -554,6 +556,11 @@ public class Product extends ProductBase implements ProductIF
   }
 
   public Optional<DocumentIF> getMappableOrtho()
+  {
+    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
+  }
+  
+  public Optional<DocumentIF> getOrthoPng()
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
   }

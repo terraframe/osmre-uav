@@ -417,10 +417,10 @@ public class ProjectManagementController
     return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key));
   }
   
-  @Endpoint(url = "downloadImageAtIndex", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadImageAtIndex(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "imageIndex") Integer imageIndex)
+  @Endpoint(url = "downloadProductPreview", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadProductPreview(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "productId") String productId, @RequestParamter(name = "artifactName") String artifactName)
   {
-    return new InputStreamResponse(this.service.downloadImageAtIndex(request.getSessionId(), id, key, imageIndex), "image/png", key.substring(key.lastIndexOf("/") + 1));
+    return new InputStreamResponse(this.service.downloadProductPreview(request.getSessionId(), productId, artifactName), "image/png", artifactName + "_preview.png");
   }
 
   @Endpoint(url = "download-last", method = ServletMethod.GET, error = ErrorSerialization.JSON)

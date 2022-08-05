@@ -78,16 +78,12 @@ public class CogTiffS3PreviewReader
 
         return istream;
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
-        throw new ProgrammingErrorException("Unable to fetch an image from url " + s3url, ex);
-      }
-      catch (IndexOutOfBoundsException ex)
-      {
-        // Might happen if the requested overview number doesn't exist in the file.
+        // There are a few "legitimate" errors that can happen here. Just ignore them.
       }
     }
     
-    throw new ProgrammingErrorException("Unable to fetch an image from url " + s3url);
+    return null;
   }
 }
