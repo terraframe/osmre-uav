@@ -1,19 +1,9 @@
 package gov.geoplatform.uasdm.cog;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
@@ -27,151 +17,11 @@ import com.amazonaws.http.ExecutionContext;
 import com.amazonaws.http.HttpMethodName;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ProductIF;
 
 public class TiTillerProxy
 {
-  
-  /**
-   * -90 to 90 for latitude and -180 to 180 for longitude
-   */
-  public static class BBoxView
-  {
-    double minLat;
-    double maxLat;
-    double minLong;
-    double maxLong;
-    
-    public BBoxView(double minLong, double minLat, double maxLong, double maxLat)
-    {
-      this.minLat = minLat;
-      this.maxLat = maxLat;
-      this.minLong = minLong;
-      this.maxLong = maxLong;
-    }
-    
-    /**
-     * Perhaps Geoserver was returning bounding boxes of this format way back in the day? I dunno but
-     * Mapbox expects [[long, lat], [long, lat]], and our front-end converts from this obscure format
-     * to what Mapbox needs. Without patching a bunch of data though we're stuck with this internal format
-     * on product.boundingBox.
-     */
-    public JSONArray toJSON()
-    {
-      JSONArray ja = new JSONArray();
-      ja.put(this.minLong);
-      ja.put(this.maxLong);
-      ja.put(this.minLat);
-      ja.put(this.maxLat);
-      return ja;
-    }
-  }
-  
-  public BBoxView getBoundingBox(ProductIF product, DocumentIF document)
-  {
-    try
-    {
-      InputStream bboxStream = null;
-      
-      String tifUrl;
-      
-      if (product.isPublished())
-      {
-        tifUrl = "s3://" + AppProperties.getPublicBucketName() + "/" + document.getS3location();
-      }
-      else
-      {
-        tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-      }
-      
-      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-      parameters.put("url", Arrays.asList(tifUrl));
-      
-      bboxStream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/bounds", parameters);
-      
-      String sBbox = IOUtils.toString(bboxStream, StandardCharsets.UTF_8.name());
-      
-      // {"bounds":[-111.12441929215683,39.32065294027042,-111.12343879151011,39.32106566894064]}
-      JSONArray jaBbox = new JSONObject(sBbox).getJSONArray("bounds");
-      
-      return new BBoxView(jaBbox.getDouble(0), jaBbox.getDouble(1), jaBbox.getDouble(2), jaBbox.getDouble(3));
-    }
-    catch(IOException | URISyntaxException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-  }
-  
-  public InputStream tiles(DocumentIF document, String matrixSetId, String x, String y, String z, String scale, String format)
-  {
-    final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-    
-    Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-    parameters.put("url", Arrays.asList(layerS3Uri));
-    
-    try
-    {
-      InputStream isTile = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tiles/" + matrixSetId + "/" + z + "/" + x + "/" + y + "@" + scale + "x", parameters);
-      
-      return isTile;
-    }
-    catch (URISyntaxException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-  }
-  
-  public JSONObject tilejson(DocumentIF document, String contextPath)
-  {
-    final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-    
-    Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-    parameters.put("url", Arrays.asList(layerS3Uri));
-    
-    // These are the min and max zooms which Mapbox will allow
-    parameters.put("minzoom", Arrays.asList("0"));
-    parameters.put("maxzoom", Arrays.asList("24"));
-    
-    try
-    {
-      // We have to get the tilejson file from titiler and replace their urls with our urls, since it can only be accessed through us by proxy.
-      String sTileJson = IOUtils.toString(authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tilejson.json", parameters), StandardCharsets.UTF_8.name());
-      
-      JSONObject joTileJson = new JSONObject(sTileJson);
-      
-      JSONArray jaTiles = joTileJson.getJSONArray("tiles");
-      for (int i = 0; i < jaTiles.length(); ++i)
-      {
-        String sTile = jaTiles.getString(i);
-        
-        String replacedPath = sTile.replace(AppProperties.getTitilerUrl(), contextPath);
-        
-        String pathEncoded = URLEncoder.encode(document.getS3location(), StandardCharsets.UTF_8.name());
-        
-        if (replacedPath.contains("?"))
-        {
-          replacedPath = replacedPath + "&path=" + pathEncoded;
-        }
-        else
-        {
-          replacedPath = replacedPath + "?path=" + pathEncoded;
-        }
-        
-        jaTiles.put(i, replacedPath);
-      }
-      
-      return joTileJson;
-    }
-    catch (IOException | URISyntaxException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-  }
-  
   /**
    * Invokes a HTTPS endpoint hosted by AWS API Gateway with authentication provided by AWS IAM access key credentials.
    * 

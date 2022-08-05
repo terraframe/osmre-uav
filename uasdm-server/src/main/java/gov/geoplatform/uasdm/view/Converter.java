@@ -17,7 +17,6 @@ package gov.geoplatform.uasdm.view;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.business.rbac.Operation;
@@ -28,7 +27,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.controller.PointcloudController;
-import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
@@ -259,18 +257,6 @@ public abstract class Converter
     if (product.getImageKey() != null && product.getImageKey().length() > 0)
     {
       view.setImageKey(product.getImageKey());
-    }
-    
-    Optional<DocumentIF> ortho = ((Product)product).getMappableOrtho();
-    if (ortho.isPresent())
-    {
-      view.setOrthoKey(( (Document) ortho.get() ).getS3location());
-    }
-    
-    Optional<DocumentIF> dem = ((Product)product).getMappableDEM();
-    if (dem.isPresent())
-    {
-      view.setDemKey(( (Document) dem.get() ).getS3location());
     }
 
     if (mappables.size() > 0)

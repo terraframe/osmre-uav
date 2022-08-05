@@ -420,25 +420,6 @@ export class ManagementService {
 				}
 			}))
 	}
-  
-  downloadImageAtIndex(id: string, key: string, useSpinner: boolean, imageIndex: number): Observable<Blob> {
-
-    let params: HttpParams = new HttpParams();
-    params = params.set('id', id);
-    params = params.set('key', key);
-    params = params.set('imageIndex', String(imageIndex));
-
-    if (useSpinner) {
-      this.eventService.start();
-    }
-
-    return this.noErrorHttpClient.get<Blob>(acp + '/project/downloadImageAtIndex', { params: params, responseType: 'blob' as 'json' })
-      .pipe(finalize(() => {
-        if (useSpinner) {
-          this.eventService.complete();
-        }
-      }))
-  }
 
 	downloadFile(url: string, useSpinner: boolean): Promise<Blob> {
 

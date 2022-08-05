@@ -47,8 +47,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.cog.TiTillerProxy;
-import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff;
+import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -312,7 +312,7 @@ public class Product extends ProductBase implements ProductIF
       // }
       // }
 
-      return new TiTillerProxy().getBoundingBox(this, mappable);
+      return new CloudOptimizedGeoTiff(this, mappable).getBoundingBox();
     }
     catch (Throwable t)
     {
