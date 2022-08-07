@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -40,6 +40,8 @@ import gov.geoplatform.uasdm.model.Page;
 public class Sensor extends SensorBase implements JSONSerializable
 {
   private static final long serialVersionUID = 1045467848;
+
+  public static final String SENSOR_TYPE_OID = "sensorTypeOid";
 
   public Sensor()
   {
@@ -106,6 +108,7 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     if (sensorType != null)
     {
+      object.put(Sensor.SENSOR_TYPE_OID, sensorType.getOid());
       object.put(Sensor.SENSORTYPE, sensorType.toJSON());
     }
 
@@ -188,9 +191,9 @@ public class Sensor extends SensorBase implements JSONSerializable
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
     sensor.setModel(json.has(Sensor.MODEL) ? json.getString(Sensor.MODEL) : null);
 
-    if (json.has(Sensor.SENSORTYPE))
+    if (json.has(Sensor.SENSOR_TYPE_OID))
     {
-      String oid = json.getString(Sensor.SENSORTYPE);
+      String oid = json.getString(Sensor.SENSOR_TYPE_OID);
 
       sensor.setSensorType(SensorType.get(oid));
     }
