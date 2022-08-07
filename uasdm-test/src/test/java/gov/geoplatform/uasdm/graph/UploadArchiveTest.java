@@ -1,26 +1,27 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -31,25 +32,27 @@ import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.remote.MockRemoteFileService;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import net.geoprism.GeoprismUser;
 
-@Ignore
 public class UploadArchiveTest
 {
-//  private static ProjectManagementService service;
-//
-//  private static String                   siteId;
-//
-//  private static String                   projectId1;
-//
-//  private static String                   missionId1;
+  // private static ProjectManagementService service;
+  //
+  // private static String siteId;
+  //
+  // private static String projectId1;
+  //
+  // private static String missionId1;
 
-  private static String       collectionId1;
+  private static String collectionId1;
 
   /**
    * The test user object
@@ -59,22 +62,22 @@ public class UploadArchiveTest
   /**
    * The username for the user
    */
-  private final static String USERNAME     = "btables";
+  private final static String USERNAME = "btables";
 
   /**
    * The password for the user
    */
-  private final static String PASSWORD     = "1234";
+  private final static String PASSWORD = "1234";
 
-  private final static int    sessionLimit = 2;
+  private final static int sessionLimit = 2;
 
   @BeforeClass
   @Request
   public static void classSetUp()
   {
-    createSiteHierarchyTransaction();
+    RemoteFileFacade.setService(new MockRemoteFileService());
 
-//    service = new ProjectManagementService();
+    createSiteHierarchyTransaction();
   }
 
   @Transaction
@@ -110,14 +113,14 @@ public class UploadArchiveTest
     site.setBureau(bureau);
     site.applyWithParent(null);
     // System.out.println("S3: "+site.getS3location());
-//    siteId = site.getOid();
+    // siteId = site.getOid();
 
     Project project1 = new Project();
     project1.setName("Project1");
     project1.setFolderName("Project1");
     project1.applyWithParent(site);
     // System.out.println("S3: "+project1.getS3location());
-//    projectId1 = project1.getOid();
+    // projectId1 = project1.getOid();
 
     Project project2 = new Project();
     project2.setName("Project2");
@@ -129,7 +132,7 @@ public class UploadArchiveTest
     mission1.setFolderName("Mission1");
     mission1.applyWithParent(project1);
     // System.out.println("S3: "+mission1.getS3location());
-//    missionId1 = mission1.getOid();
+    // missionId1 = mission1.getOid();
 
     Collection collection1 = new Collection();
     collection1.setName("Collection1");
@@ -153,8 +156,10 @@ public class UploadArchiveTest
 
     final StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE name = :name");
 
     final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString());
+    query.setParameter("name", "Site_Unit_Test");
     final List<Site> sites = query.getResults();
 
     for (Site site : sites)
@@ -169,22 +174,55 @@ public class UploadArchiveTest
     }
   }
 
-  // @Test
-  // @Request
-  // public void testZipArchive()
-  // {
-  // System.out.println("Starting");
-  //
-  // Collection collection = Collection.get(collectionId1);
-  // collection.uploadArchive(new
-  // File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.zip"));
-  //
-  // System.out.println("Finished");
-  // }
+  @Test
+  @Request
+  public void testZipArchive() throws URISyntaxException
+  {
+    Collection collection = Collection.get(collectionId1);
+
+    WorkflowTask task = new WorkflowTask();
+    task.setGeoprismUser(newUser);
+    task.setComponent(collection.getOid());
+    task.setUploadId("testID2");
+    task.setStatus("Test Status");
+    task.apply();
+
+    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    List<String> results = collection.uploadArchive(task, resource, "raw");
+
+    Assert.assertEquals(6, results.size());
+
+    List<WorkflowAction> actions = task.getActions();
+
+    Assert.assertEquals(0, actions.size());
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  @Request
+  public void testUploadUnknownUploadTarget() throws URISyntaxException
+  {
+    Collection collection = Collection.get(collectionId1);
+
+    WorkflowTask task = new WorkflowTask();
+    task.setGeoprismUser(newUser);
+    task.setComponent(collection.getOid());
+    task.setUploadId("testID2");
+    task.setStatus("Test Status");
+    task.apply();
+
+    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    collection.uploadArchive(task, resource, "RAW");
+  }
 
   @Test
   @Request
-  public void testTarGzArchive()
+  public void testTarGzArchive() throws URISyntaxException
   {
     Collection collection = Collection.get(collectionId1);
 
@@ -195,32 +233,94 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-//    collection.uploadArchive(task, new File("C:/Users/admin/Documents/TerraFrame/OSMRE/OSMRE.tar.gz"));
+    File file = new File(this.getClass().getResource("/small-fix-with-video.tar.gz").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    List<String> results = collection.uploadArchive(task, resource, "raw");
+
+    Assert.assertEquals(5, results.size());
 
     List<WorkflowAction> actions = task.getActions();
 
     Assert.assertEquals(0, actions.size());
   }
 
-//  @Test
-//  @Request
-//  public void testUploadMetadata() throws FileNotFoundException, IOException
-//  {
-//    Mission mission = Mission.get(missionId1);
-//
-//    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
-//    {
-//      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
-//    }
-//
-//    try (FileInputStream istream = new FileInputStream("C:/Users/admin/Documents/TerraFrame/OSMRE/mission_1_uasmeta.xml"))
-//    {
-//      mission.uploadMetadata("mission_1_uasmeta.xml", istream);
-//    }
-//
-//    List<QueryResult> results = SolrService.query(mission.getName());
-//
-//    Assert.assertEquals(3, results.size());
-//  }
-//
+  @Test
+  @Request
+  public void testUploadOrtho() throws URISyntaxException
+  {
+    Collection collection = Collection.get(collectionId1);
+
+    WorkflowTask task = new WorkflowTask();
+    task.setGeoprismUser(newUser);
+    task.setComponent(collection.getOid());
+    task.setUploadId("testID2");
+    task.setStatus("Test Status");
+    task.apply();
+
+    File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    List<String> results = collection.uploadArchive(task, resource, "ortho");
+
+    Assert.assertEquals(1, results.size());
+
+    List<WorkflowAction> actions = task.getActions();
+
+    Assert.assertEquals(0, actions.size());
+  }
+
+  @Test
+  @Request
+  public void testUploadDem() throws URISyntaxException
+  {
+    Collection collection = Collection.get(collectionId1);
+
+    WorkflowTask task = new WorkflowTask();
+    task.setGeoprismUser(newUser);
+    task.setComponent(collection.getOid());
+    task.setUploadId("testID2");
+    task.setStatus("Test Status");
+    task.apply();
+
+    File file = new File(this.getClass().getResource("/dsm.tif").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    List<String> results = collection.uploadArchive(task, resource, "dem");
+
+    Assert.assertEquals(1, results.size());
+
+    List<WorkflowAction> actions = task.getActions();
+
+    Assert.assertEquals(0, actions.size());
+  }
+
+  @Test
+  @Request
+  public void testUploadPtcloud() throws URISyntaxException
+  {
+    Collection collection = Collection.get(collectionId1);
+
+    WorkflowTask task = new WorkflowTask();
+    task.setGeoprismUser(newUser);
+    task.setComponent(collection.getOid());
+    task.setUploadId("testID2");
+    task.setStatus("Test Status");
+    task.apply();
+
+    File file = new File(this.getClass().getResource("/odm_georeferenced_model.laz").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    List<String> results = collection.uploadArchive(task, resource, "ptcloud");
+
+    Assert.assertEquals(1, results.size());
+
+    List<WorkflowAction> actions = task.getActions();
+
+    Assert.assertEquals(0, actions.size());
+  }
 }
