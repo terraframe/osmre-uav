@@ -57,6 +57,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	enableSelectableImages: boolean = false;
 	tabName: string;
 	showOrthoRerunMessage: boolean = false;
+	canReprocessImagery: boolean = false;
 
 	constPageSize: number = 50;
 
@@ -183,6 +184,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
 		this.service.getObjects(component, folder, pageNumber, pageSize).then(resultSet => {
 			this.page = resultSet;
+			
+			this.canReprocessImagery = this.page.results.length > 1 ? true : false;
 
 			for (let i = 0; i < this.page.results.length; ++i) {
 				let item = this.page.results[i];

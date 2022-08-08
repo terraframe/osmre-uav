@@ -243,7 +243,7 @@
                   style="margin-left: 5px;">
                   Download All Generated Data
                 </button>
-                <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning"
+                <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning || !canReprocessImagery"
                   (click)="handleRunOrtho()" class="btn btn-primary"
                   title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
                   Reprocess Imagery
