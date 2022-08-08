@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.math.BigDecimal;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -16,28 +18,53 @@ public class PlatformTest
 {
   private static PlatformManufacturer manufacturer;
 
-  private static PlatformType type;
+  private static PlatformType platformType;
 
   private static Platform platform;
+
+  private static SensorType sensorType;
+
+  private static Sensor sensor;
 
   @BeforeClass
   @Request
   public static void classSetup()
   {
+    WaveLength waveLength = (WaveLength) WaveLength.getPage(new JSONObject()).getResults().get(0);
+
+    sensorType = new SensorType();
+    sensorType.setIsMultispectral(false);
+    sensorType.setName("TEST");
+    sensorType.apply();
+
+    sensor = new Sensor();
+    sensor.setName("TEST");
+    sensor.setDescription("DESC");
+    sensor.setSensorType(sensorType);
+    sensor.setRealPixelSizeHeight(new BigDecimal(10));
+    sensor.setRealPixelSizeWidth(new BigDecimal(15));
+    sensor.setRealSensorHeight(new BigDecimal(1));
+    sensor.setRealSensorWidth(new BigDecimal(5));
+    sensor.apply();
+
+    sensor.addSensorHasWaveLengthChild(waveLength).apply();
+
     manufacturer = new PlatformManufacturer();
     manufacturer.setName("TEST");
     manufacturer.apply();
 
-    type = new PlatformType();
-    type.setName("TEST");
-    type.apply();
+    platformType = new PlatformType();
+    platformType.setName("TEST");
+    platformType.apply();
 
     platform = new Platform();
     platform.setName("TEST");
     platform.setDescription("DESC");
     platform.setManufacturer(manufacturer);
-    platform.setPlatformType(type);
+    platform.setPlatformType(platformType);
     platform.apply();
+
+    platform.addPlatformHasSensorChild(sensor).apply();
   }
 
   @AfterClass
@@ -49,14 +76,24 @@ public class PlatformTest
       platform.delete();
     }
 
-    if (type != null)
+    if (platformType != null)
     {
-      type.delete();
+      platformType.delete();
     }
 
     if (manufacturer != null)
     {
       manufacturer.delete();
+    }
+
+    if (sensor != null)
+    {
+      sensor.delete();
+    }
+
+    if (sensorType != null)
+    {
+      sensorType.delete();
     }
   }
 
@@ -213,7 +250,7 @@ public class PlatformTest
     Assert.assertEquals(platform.getDescription(), object.getString(Platform.DESCRIPTION));
     Assert.assertNotNull(object.getString(Platform.DATECREATED));
     Assert.assertNotNull(object.getString(Platform.DATEUPDATED));
-    Assert.assertEquals(type.getOid(), object.getString(Platform.PLATFORM_TYPE_OID));
+    Assert.assertEquals(platformType.getOid(), object.getString(Platform.PLATFORM_TYPE_OID));
     Assert.assertNotNull(object.getJSONObject(Platform.PLATFORMTYPE));
     Assert.assertEquals(manufacturer.getOid(), object.getString(Platform.MANUFACTURER));
     Assert.assertEquals(platform.getSeq(), new Long(object.getLong(Platform.SEQ)));
@@ -241,7 +278,7 @@ public class PlatformTest
   @Request
   public void testIsPlatformTypeReferenced()
   {
-    Assert.assertTrue(Platform.isPlatformTypeReferenced(type));
+    Assert.assertTrue(Platform.isPlatformTypeReferenced(platformType));
   }
 
   @Test
@@ -255,7 +292,22 @@ public class PlatformTest
   @Request
   public void testGetPlatformType()
   {
-    Assert.assertEquals(type.getOid(), platform.getPlatformType().getOid());
+    Assert.assertEquals(platformType.getOid(), platform.getPlatformType().getOid());
+  }
+
+  @Test
+  @Request
+  public void testApply()
+  {
+    JSONObject object = platform.toJSON();
+    object.remove(Platform.OID);
+    object.put(Platform.NAME, "UPDATE");
+
+    Platform result = Platform.apply(object);
+
+    Assert.assertNotNull(result);
+
+    result.delete();
   }
 
   @Test(expected = GenericException.class)
@@ -263,24 +315,38 @@ public class PlatformTest
   public void testApplyNoSesnor()
   {
     JSONObject object = platform.toJSON();
+    object.remove(Platform.OID);
+    object.put("sensors", new JSONArray());
 
-    Platform result = Platform.apply(object);
-
-    Assert.assertNotNull(result);
+    Platform.apply(object);
   }
 
   @Test(expected = GenericException.class)
   @Request
   public void testDeletePlatformTypeInUse()
   {
-    PlatformType.get(type.getOid()).delete();
+    PlatformType.get(platformType.getOid()).delete();
   }
-  
+
   @Test(expected = GenericException.class)
   @Request
   public void testDeletePlatformManufacturerInUse()
   {
     PlatformManufacturer.get(manufacturer.getOid()).delete();
+  }
+
+  @Test
+  @Request
+  public void testSensorReference()
+  {
+    JSONObject object = sensor.toJSON();
+    JSONArray platforms = object.getJSONArray("platforms");
+
+    Assert.assertEquals(1, platforms.length());
+
+    JSONObject result = platforms.getJSONObject(0);
+
+    Assert.assertEquals(platform.getName(), result.getString(Platform.NAME));
   }
 
 }
