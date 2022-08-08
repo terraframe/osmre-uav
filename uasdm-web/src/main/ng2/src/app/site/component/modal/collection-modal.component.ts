@@ -89,7 +89,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.notifier = webSocket(baseUrl + '/websocket/notify');
 		this.notifier.subscribe(message => {
 			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
-				this.onPageChange(this.page.pageNumber);
+				if (this.tabName === 'raw') {
+					this.onPageChange(this.page.pageNumber);
+				}
+				else if (this.tabName === 'video') {
+					this.getData(this.entity.id, this.tabName, null, null);
+				}
 			}
 		});
 
