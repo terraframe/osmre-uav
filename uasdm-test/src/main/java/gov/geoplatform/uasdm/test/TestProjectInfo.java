@@ -5,11 +5,20 @@ import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class TestProjectInfo extends TestUasComponentInfo
 {
-  public TestProjectInfo(String name)
+  private TestSiteInfo site;
+
+  public TestProjectInfo(String name, TestSiteInfo site)
   {
     super(name, name, name, null);
+
+    this.site = site;
   }
-  
+
+  public TestSiteInfo getSite()
+  {
+    return site;
+  }
+
   /**
    * Populates the component with the values contained within this wrapper
    */
@@ -18,7 +27,13 @@ public class TestProjectInfo extends TestUasComponentInfo
   {
     super.populate(component);
   }
-  
+
+  @Override
+  public void apply()
+  {
+    super.apply(this.site);
+  }
+
   /**
    * Creates a new instance of the server object type.
    */

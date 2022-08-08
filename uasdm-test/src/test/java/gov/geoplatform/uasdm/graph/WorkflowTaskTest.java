@@ -32,9 +32,11 @@ import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.remote.MockRemoteFileService;
@@ -137,6 +139,8 @@ public class WorkflowTaskTest
   @Transaction
   public static void classTearDownTransaction()
   {
+    new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
+   
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
     final StringBuilder statement = new StringBuilder();

@@ -106,7 +106,7 @@ abstract public class TestUasComponentInfo
   
   public UasComponent getServerObject()
   {
-    return TestDataSet.getComponent(this.getFolderName());
+    return TestDataSet.getComponent(this.getName());
   }
 
   public void apply()
