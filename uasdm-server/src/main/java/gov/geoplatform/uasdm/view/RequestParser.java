@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -29,7 +29,7 @@ import org.json.JSONArray;
 
 import gov.geoplatform.uasdm.model.ImageryComponent;
 
-public class RequestParser
+public class RequestParser implements RequestParserIF
 {
   private static String FILENAME_PARAM = "qqfile";
 
@@ -112,7 +112,7 @@ public class RequestParser
   }
 
   // 2nd param is null unless a MPFR
-  public static RequestParser getInstance(HttpServletRequest request, MultipartUploadParser multipartUploadParser) throws Exception
+  public static RequestParserIF getInstance(HttpServletRequest request, MultipartUploadParser multipartUploadParser) throws Exception
   {
     RequestParser requestParser = new RequestParser();
 
@@ -144,107 +144,128 @@ public class RequestParser
     return requestParser;
   }
 
+  @Override
   public String getFilename()
   {
     return originalFilename != null ? originalFilename : filename;
   }
 
   // only non-null for MPFRs
+  @Override
   public FileItem getUploadItem()
   {
     return uploadItem;
   }
 
+  @Override
   public boolean generateError()
   {
     return generateError;
   }
 
+  @Override
   public int getPartIndex()
   {
     return partIndex;
   }
 
+  @Override
   public long getTotalFileSize()
   {
     return totalFileSize;
   }
 
+  @Override
   public int getTotalParts()
   {
     return totalParts;
   }
 
+  @Override
   public String getUuid()
   {
     return uuid;
   }
 
+  @Override
   public String getUasComponentOid()
   {
     return uasComponentOid;
   }
 
+  @Override
   public Boolean getProcessUpload()
   {
     return processUpload;
   }
 
+  @Override
   public Boolean getProcessDem()
   {
     return processDem;
   }
 
+  @Override
   public Boolean getProcessOrtho()
   {
     return processOrtho;
   }
 
+  @Override
   public Boolean getProcessPtcloud()
   {
     return processPtcloud;
   }
 
+  @Override
   public JSONArray getSelections()
   {
     return selections;
   }
 
+  @Override
   public String getUploadTarget()
   {
     return ( uploadTarget != null ) ? uploadTarget : ImageryComponent.RAW;
   }
 
+  @Override
   public String getDescription()
   {
     return description;
   }
 
+  @Override
   public String getTool()
   {
     return tool;
   }
 
+  @Override
   public String getOriginalFilename()
   {
     return originalFilename;
   }
 
+  @Override
   public String getMethod()
   {
     return method;
   }
 
+  @Override
   public boolean isResume()
   {
     return resume;
   }
 
+  @Override
   public boolean isFirst()
   {
     return ( this.partIndex == 0 || this.partIndex < 0 );
   }
 
+  @Override
   public Map<String, String> getCustomParams()
   {
     return customParams;
@@ -338,6 +359,7 @@ public class RequestParser
     }
   }
 
+  @Override
   public int getPercent()
   {
     return ( (int) ( (double) this.getPartIndex() / this.getTotalParts() * 100 ) );

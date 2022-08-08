@@ -57,6 +57,7 @@ import com.runwaysdk.system.scheduler.ExecutableJob;
 import com.runwaysdk.system.scheduler.ExecutableJobQuery;
 import com.runwaysdk.system.scheduler.JobHistory;
 import com.runwaysdk.system.scheduler.JobHistoryQuery;
+import com.runwaysdk.system.scheduler.SchedulerManager;
 
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInfoQuery;
@@ -67,8 +68,8 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.index.MockIndex;
-import gov.geoplatform.uasdm.remote.MockRemoteFileService;
+import gov.geoplatform.uasdm.mock.MockIndex;
+import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.geoprism.GeoprismUser;
@@ -189,8 +190,19 @@ abstract public class TestDataSet
   }
 
   @Request
-  public void setUpMetadata()
+  public void setUpSuiteData()
   {
+    // Setup mock services
+    RemoteFileFacade.setService(new MockRemoteFileService());
+    IndexService.setIndex(new MockIndex());
+
+    TestDataSet.deleteAllSchedulerData();
+
+    if (!SchedulerManager.initialized())
+    {
+      SchedulerManager.start();
+    }
+
     tearDownMetadata();
 
     setUpMetadataInTrans();
@@ -214,11 +226,7 @@ abstract public class TestDataSet
 
   @Request
   public void setUpInstanceData()
-  {
-    // Setup mock services
-    RemoteFileFacade.setService(new MockRemoteFileService());
-    IndexService.setIndex(new MockIndex());
-
+  {    
     tearDownInstanceData();
 
     setUpTestInTrans();
@@ -226,6 +234,10 @@ abstract public class TestDataSet
     setUpRelationships();
 
     setUpAfterApply();
+    
+    // Reset mock services
+    RemoteFileFacade.setService(new MockRemoteFileService());
+    IndexService.setIndex(new MockIndex());
   }
 
   // @Transaction
@@ -302,7 +314,7 @@ abstract public class TestDataSet
     {
       obj.delete();
     }
-    
+
     for (TestMissionInfo obj : managedMissions)
     {
       obj.delete();
@@ -361,7 +373,7 @@ abstract public class TestDataSet
     deleteAllSensors();
     deleteAllUavs();
     deleteAllPlatforms();
-    
+
     new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
 
     managedSitesExtras = new ArrayList<TestSiteInfo>();
@@ -545,7 +557,14 @@ abstract public class TestDataSet
     {
       while (jobit.hasNext())
       {
-        jobit.next().delete();
+        try
+        {
+          jobit.next().delete();
+        }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+        }
       }
     }
   }

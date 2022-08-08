@@ -51,6 +51,7 @@ import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.MultipartUploadParser;
 import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.RequestParserIF;
 
 @Controller(url = "file")
 public class FileUploadController
@@ -107,7 +108,7 @@ public class FileUploadController
     try
     {
       MultipartUploadParser multipartUploadParser = new MultipartUploadParser(values, AppProperties.getTempDirectory(), context);
-      RequestParser requestParser = RequestParser.getInstance(req, multipartUploadParser);
+      RequestParserIF requestParser = RequestParser.getInstance(req, multipartUploadParser);
       JSONObject taskMessage = null;
       
       try
@@ -159,7 +160,7 @@ public class FileUploadController
     }
   }
 
-  private void writeFileForMultipartRequest(ClientRequestIF clientRequest, RequestParser requestParser) throws Exception
+  private void writeFileForMultipartRequest(ClientRequestIF clientRequest, RequestParserIF requestParser) throws Exception
   {
     File dir = new File(AppProperties.getUploadDirectory(), requestParser.getUuid());
     dir.mkdirs();

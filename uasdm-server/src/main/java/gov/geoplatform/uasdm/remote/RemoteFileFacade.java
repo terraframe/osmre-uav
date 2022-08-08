@@ -45,6 +45,11 @@ public class RemoteFileFacade
     RemoteFileFacade.service = service;
   }
 
+  public static synchronized RemoteFileService getService()
+  {
+    return service;
+  }
+
   public static void download(String key, File destination) throws FileNotFoundException, IOException
   {
     service.download(key, destination);

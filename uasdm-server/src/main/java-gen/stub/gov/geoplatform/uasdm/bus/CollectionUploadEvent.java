@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -33,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
-import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
@@ -96,22 +97,19 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       if (DevProperties.uploadRaw())
       {
-        if (processUpload
-            && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) )
-            && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") )
-            )
+        if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
         {
           boolean isCog = new CogTifValidator().isValidCog(infile.getUnderlyingFile());
-          
+
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
             File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
             temp.mkdir();
-            
+
             File newfile = new File(temp, infile.getBaseName() + CogTifProcessor.COG_EXTENSION);
-            
+
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
-            
+
             infile = new FileResource(newfile);
           }
           else if (!isCog && infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
@@ -119,29 +117,29 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             task.lock();
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
             task.apply();
-            
+
             File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
             temp.mkdir();
-            
+
             File newfile = new File(temp, infile.getBaseName() + ".tif");
-            
+
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
-            
+
             infile = new FileResource(newfile);
           }
         }
-        
+
         uploadedFiles = component.uploadArchive(task, infile, uploadTarget);
       }
     }
     catch (IOException ex)
     {
       logger.error("Error while uploading file", ex);
-      
+
       task.lock();
       task.createAction("Error while uploading file " + RunwayException.localizeThrowable(ex, Locale.US), TaskActionType.ERROR.getType());
       task.apply();
-      
+
       return;
     }
 
@@ -284,8 +282,23 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setTaskLabel("Ortho processesing task for collection [" + component.getName() + "]");
     task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is being processed. Check back later for updates.");
     task.apply();
-    
+
     task.initiate(infile);
   }
 
+  public static CollectionUploadEvent getByUploadId(String uploadId)
+  {
+    CollectionUploadEventQuery query = new CollectionUploadEventQuery(new QueryFactory());
+    query.WHERE(query.getUploadId().EQ(uploadId));
+
+    try (OIterator<? extends CollectionUploadEvent> iterator = query.getIterator())
+    {
+      if (iterator.hasNext())
+      {
+        return iterator.next();
+      }
+    }
+
+    return null;
+  }
 }

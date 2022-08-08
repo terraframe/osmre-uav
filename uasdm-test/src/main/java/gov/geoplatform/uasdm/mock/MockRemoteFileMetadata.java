@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.remote;
+package gov.geoplatform.uasdm.mock;
 
 import java.util.Date;
+
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 
 public class MockRemoteFileMetadata implements RemoteFileMetadata
 {

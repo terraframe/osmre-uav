@@ -1,10 +1,11 @@
-package gov.geoplatform.uasdm.index;
+package gov.geoplatform.uasdm.mock;
 
 import java.io.File;
 import java.util.List;
 
 import org.json.JSONArray;
 
+import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;

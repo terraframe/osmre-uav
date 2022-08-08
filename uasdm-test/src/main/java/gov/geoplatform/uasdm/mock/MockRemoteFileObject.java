@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.remote;
+package gov.geoplatform.uasdm.mock;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,6 +21,9 @@ import java.io.InputStream;
 import org.openide.util.io.NullInputStream;
 
 import com.runwaysdk.resource.CloseableFile;
+
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class MockRemoteFileObject implements RemoteFileObject
 {

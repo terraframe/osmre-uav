@@ -29,7 +29,7 @@ public class CollectionReportTest
   public static void setUpClass()
   {
     testData = new Area51DataSet();
-    testData.setUpMetadata();
+    testData.setUpSuiteData();
   }
 
   @AfterClass

@@ -35,20 +35,20 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.RequestParserIF;
 
 public class WorkflowService
 {
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
 
   @Request(RequestType.SESSION)
-  public JSONObject createUploadTask(String sessionId, RequestParser parser)
+  public JSONObject createUploadTask(String sessionId, RequestParserIF parser)
   {
-    return this.createUploadTaskInTransaction(sessionId, parser);
+    return this.createUploadTaskInTransaction(parser);
   }
 
   @Transaction
-  public JSONObject createUploadTaskInTransaction(String sessionId, RequestParser parser)
+  private JSONObject createUploadTaskInTransaction(RequestParserIF parser)
   {
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
@@ -87,13 +87,13 @@ public class WorkflowService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject updateUploadTask(String sessionId, RequestParser parser)
+  public JSONObject updateUploadTask(String sessionId, RequestParserIF parser)
   {
     return this.updateUploadTaskInTransaction(sessionId, parser);
   }
 
   @Transaction
-  public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParser parser)
+  public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParserIF parser)
   {
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 
@@ -114,13 +114,13 @@ public class WorkflowService
   }
 
   @Request(RequestType.SESSION)
-  public void errorUploadTask(String sessionId, RequestParser parser, String message)
+  public void errorUploadTask(String sessionId, RequestParserIF parser, String message)
   {
     this.errorUploadTaskInTransaction(sessionId, parser, message);
   }
 
   @Transaction
-  public void errorUploadTaskInTransaction(String sessionId, RequestParser parser, String message)
+  public void errorUploadTaskInTransaction(String sessionId, RequestParserIF parser, String message)
   {
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
 

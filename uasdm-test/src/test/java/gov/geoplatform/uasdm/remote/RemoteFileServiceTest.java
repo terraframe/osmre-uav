@@ -27,8 +27,9 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.remote.MockRemoteFileService.RemoteFileAction;
-import gov.geoplatform.uasdm.remote.MockRemoteFileService.RemoteFileActionType;
+import gov.geoplatform.uasdm.mock.MockRemoteFileService;
+import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
+import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileActionType;
 
 public class RemoteFileServiceTest
 {

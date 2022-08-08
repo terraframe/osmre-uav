@@ -81,7 +81,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.QueryResult;
-import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -558,7 +558,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void handleUploadFinish(String sessionId, RequestParser parser, File infile)
+  public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
   {
     try
     {
@@ -575,7 +575,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void validate(String sessionId, RequestParser parser)
+  public void validate(String sessionId, RequestParserIF parser)
   {
     // Map<String, String> params = parser.getCustomParams();
     // Boolean createCollection = new Boolean(params.get("create"));

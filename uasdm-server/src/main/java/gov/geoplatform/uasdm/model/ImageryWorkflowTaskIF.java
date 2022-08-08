@@ -34,6 +34,7 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.view.RequestParser;
+import gov.geoplatform.uasdm.view.RequestParserIF;
 import net.geoprism.GeoprismUser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
@@ -70,7 +71,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
    *         then return the component or return null.
    */
-  public static UasComponentIF getOrCreateUasComponentFromRequestParser(RequestParser parser)
+  public static UasComponentIF getOrCreateUasComponentFromRequestParser(RequestParserIF parser)
   {
     if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
     {
@@ -188,7 +189,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * 
    * @return
    */
-  public static AbstractWorkflowTask getWorkflowTaskForUpload(RequestParser parser)
+  public static AbstractWorkflowTask getWorkflowTaskForUpload(RequestParserIF parser)
   {
     return AbstractUploadTask.getTaskByUploadId(parser.getUuid());
   }
