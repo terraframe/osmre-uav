@@ -80,7 +80,7 @@ public class Product extends ProductBase implements ProductIF
   public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   public static final String ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + ".png".replaceAll("\\.", "\\\\.");
-  
+
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
@@ -559,7 +559,7 @@ public class Product extends ProductBase implements ProductIF
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
   }
-  
+
   public Optional<DocumentIF> getOrthoPng()
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
@@ -610,10 +610,6 @@ public class Product extends ProductBase implements ProductIF
         item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
       }
 
-      UAV uav = collection.getUav();
-      Sensor sensor = collection.getSensor();
-      Platform platform = uav.getPlatform();
-
       Date dateTime = ( (Collection) component ).getCollectionDate();
 
       if (dateTime == null)
@@ -632,10 +628,28 @@ public class Product extends ProductBase implements ProductIF
       properties.setDescription(component.getDescription());
       properties.setDatetime(dateTime);
       properties.setUpdated(this.getLastUpdateDate());
-      properties.setSensor(sensor.getName());
-      properties.setPlatform(platform.getName());
-      properties.setFaaNumber(uav.getFaaNumber());
-      properties.setSerialNumber(uav.getSerialNumber());
+
+      Sensor sensor = collection.getSensor();
+
+      if (sensor != null)
+      {
+        properties.setSensor(sensor.getName());
+      }
+
+      UAV uav = collection.getUav();
+
+      if (uav != null)
+      {
+        properties.setFaaNumber(uav.getFaaNumber());
+        properties.setSerialNumber(uav.getSerialNumber());
+
+        Platform platform = uav.getPlatform();
+
+        if (platform != null)
+        {
+          properties.setPlatform(platform.getName());
+        }
+      }
 
       item.setProperties(properties);
 
