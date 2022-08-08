@@ -38,6 +38,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
@@ -173,8 +174,6 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       MissingUploadMessage.remove(component);
     }
-
-    // handleMetadataWorkflow(task);
   }
 
   public static boolean isMultispectral(UasComponentIF uasc)
@@ -270,10 +269,17 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
+    SingleActor user = GeoprismUser.getCurrentUser();
+
+    if (user == null)
+    {
+      user = this.getGeoprismUser();
+    }
+
     OrthoProcessingTask task = new OrthoProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setComponent(component.getOid());
-    task.setGeoprismUser(GeoprismUser.getCurrentUser());
+    task.setGeoprismUser(user);
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setProcessDem(uploadTask.getProcessDem());
     task.setProcessOrtho(uploadTask.getProcessOrtho());
