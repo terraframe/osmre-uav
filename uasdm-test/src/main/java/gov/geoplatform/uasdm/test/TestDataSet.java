@@ -62,6 +62,7 @@ import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInfoQuery;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -297,7 +298,12 @@ abstract public class TestDataSet
   @Transaction
   protected void cleanUpClassInTrans()
   {
-    for (TestSiteInfo obj : managedSites)
+    for (TestCollectionInfo obj : managedCollections)
+    {
+      obj.delete();
+    }
+    
+    for (TestMissionInfo obj : managedMissions)
     {
       obj.delete();
     }
@@ -307,12 +313,7 @@ abstract public class TestDataSet
       obj.delete();
     }
 
-    for (TestMissionInfo obj : managedMissions)
-    {
-      obj.delete();
-    }
-
-    for (TestCollectionInfo obj : managedCollections)
+    for (TestSiteInfo obj : managedSites)
     {
       obj.delete();
     }
@@ -360,6 +361,8 @@ abstract public class TestDataSet
     deleteAllSensors();
     deleteAllUavs();
     deleteAllPlatforms();
+    
+    new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
 
     managedSitesExtras = new ArrayList<TestSiteInfo>();
     managedProjectsExtras = new ArrayList<TestProjectInfo>();
@@ -477,13 +480,13 @@ abstract public class TestDataSet
   // }
 
   @Request
-  public static UasComponent getComponent(String folderName)
+  public static UasComponent getComponent(String name)
   {
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM uas_component0 WHERE folderName=:folderName");
+    statement.append("SELECT FROM uas_component0 WHERE name = :name");
 
     final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
-    query.setParameter("folderName", folderName);
+    query.setParameter("name", name);
 
     return query.getSingleResult();
   }

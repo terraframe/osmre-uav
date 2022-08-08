@@ -34,11 +34,13 @@ import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.SessionFacade;
 
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -171,6 +173,8 @@ public class TestSiteHierarchy
   @Transaction
   public static void classTearDownTransaction()
   {
+    new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
+    
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
     final StringBuilder statement = new StringBuilder();

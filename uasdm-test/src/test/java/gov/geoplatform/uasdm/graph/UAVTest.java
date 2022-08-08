@@ -207,9 +207,9 @@ public class UAVTest
     Platform platform = Area51DataSet.PLATFORM.getServerObject();
     PlatformType platformType = platform.getPlatformType();
     PlatformManufacturer manufacturer = platform.getManufacturer();
-    
+
     JSONObject object = uav.toView();
-    
+
     Assert.assertNotNull(object);
     Assert.assertEquals(uav.getOid(), object.getString(UAV.OID));
     Assert.assertEquals(uav.getFaaNumber(), object.getString(UAV.FAANUMBER));
@@ -217,7 +217,7 @@ public class UAVTest
     Assert.assertEquals(platform.getName(), object.getString(Platform.NAME));
     Assert.assertEquals(platformType.getName(), object.getString(Platform.PLATFORMTYPE));
     Assert.assertEquals(manufacturer.getName(), object.getString(Platform.MANUFACTURER));
-    Assert.assertEquals(uav.getBureau().getName(), object.getString(UAV.BUREAU));    
+    Assert.assertEquals(uav.getBureau().getName(), object.getString(UAV.BUREAU));
   }
 
   @Test
@@ -331,4 +331,10 @@ public class UAVTest
     Area51DataSet.PLATFORM.getServerObject().delete();
   }
 
+  @Test(expected = GenericException.class)
+  @Request
+  public void testDeleteUAVInUse()
+  {
+    Area51DataSet.UAV.getServerObject().delete();
+  }
 }
