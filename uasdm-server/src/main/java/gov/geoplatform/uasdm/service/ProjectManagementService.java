@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,12 +49,15 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
+import gov.geoplatform.uasdm.cog.CogTiffS3PreviewReader;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -679,6 +683,40 @@ public class ProjectManagementService
 
       return component.download(key);
     }
+  }
+  
+  @Request(RequestType.SESSION)
+  public InputStream downloadProductPreview(String sessionId, String productId, String artifactName)
+  {
+    if (artifactName.equals("ortho"))
+    {
+      Product product = Product.get(productId);
+      
+      Optional<DocumentIF> op = product.getMappableOrtho();
+      
+      if (op.isPresent())
+      {
+        Document document = (Document) op.get();
+    
+        String s3url = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
+        
+        InputStream cogImage = CogTiffS3PreviewReader.read(s3url, 2);
+        
+        if (cogImage != null)
+        {
+          return cogImage;
+        }
+      }
+      
+      Optional<DocumentIF> orthoPng = product.getOrthoPng();
+      
+      if (orthoPng.isPresent())
+      {
+        return orthoPng.get().download().getObjectContent();
+      }
+    }
+    
+    throw new UnsupportedOperationException();
   }
 
   @Request(RequestType.SESSION)

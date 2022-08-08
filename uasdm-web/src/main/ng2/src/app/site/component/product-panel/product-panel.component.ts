@@ -226,7 +226,7 @@ export class ProductPanelComponent implements OnDestroy {
                 ignoreBackdropClick: false,
                 'class': 'image-preview-modal'
             });
-            this.bsModalRef.content.init(component, product.imageKey);
+            this.bsModalRef.content.init(product.id);
         }
     }
 

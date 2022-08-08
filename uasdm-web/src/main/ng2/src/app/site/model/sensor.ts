@@ -6,6 +6,7 @@ export class Sensor {
     model?: string;
     dateCreated?: string;
     dateUpdate?: string;
+    sensorTypeOid: string;
     sensorType: SensorType;
     wavelengths: string[];
     pixelSizeWidth: number;

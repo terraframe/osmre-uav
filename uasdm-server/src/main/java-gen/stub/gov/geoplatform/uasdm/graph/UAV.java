@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -30,6 +30,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -182,7 +183,6 @@ public class UAV extends UAVBase implements JSONSerializable
 
   public JSONObject getMetadataOptions()
   {
-    SingleActorDAOIF user = Session.getCurrentSession().getUser();
     String platformOid = this.getObjectValue(UAV.PLATFORM);
 
     Platform platform = Platform.get(platformOid);
@@ -200,10 +200,6 @@ public class UAV extends UAVBase implements JSONSerializable
       return obj;
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
-    JSONObject pointOfContact = new JSONObject();
-    pointOfContact.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
-    pointOfContact.put("email", user.getValue(GeoprismUser.EMAIL));
-
     JSONObject obj = new JSONObject();
     obj.put(UAV.OID, this.getOid());
     obj.put(UAV.SERIALNUMBER, this.getSerialNumber());
@@ -212,7 +208,20 @@ public class UAV extends UAVBase implements JSONSerializable
     obj.put(Platform.PLATFORMTYPE, platformType.getName());
     obj.put(UAV.BUREAU, bureau.getDisplayLabel());
     obj.put("sensors", array);
-    obj.put("pointOfContact", pointOfContact);
+
+    SessionIF session = Session.getCurrentSession();
+
+    // This will happen under testing contexts
+    if (session != null)
+    {
+      SingleActorDAOIF user = session.getUser();
+
+      JSONObject pointOfContact = new JSONObject();
+      pointOfContact.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
+      pointOfContact.put("email", user.getValue(GeoprismUser.EMAIL));
+
+      obj.put("pointOfContact", pointOfContact);
+    }
 
     return obj;
   }
@@ -254,18 +263,23 @@ public class UAV extends UAVBase implements JSONSerializable
     {
       final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
       MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(field);
-//      MdAttributeDAOIF faaAttribute = mdVertex.definesAttribute(UAV.FAANUMBER);
 
-      StringBuilder statement = new StringBuilder();
-      statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
-      statement.append(" WHERE " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :text");
-//      statement.append(" OR " + faaAttribute.getColumnName() + ".toUpperCase() LIKE :text");
-      statement.append(" ORDER BY " + mdAttribute.getColumnName());
+      if (mdAttribute != null)
+      {
+        StringBuilder statement = new StringBuilder();
+        statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+        statement.append(" WHERE " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+        statement.append(" ORDER BY " + mdAttribute.getColumnName());
 
-      final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
-      query.setParameter("text", "%" + text.toUpperCase() + "%");
+        final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
+        query.setParameter("text", "%" + text.toUpperCase() + "%");
 
-      return query.getResults();
+        return query.getResults();
+      }
+      else
+      {
+        throw new GenericException("Unable to search on field [" + field + "]");
+      }
     }
 
     return new LinkedList<UAV>();

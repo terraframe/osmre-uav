@@ -420,6 +420,24 @@ export class ManagementService {
 				}
 			}))
 	}
+  
+  downloadProductPreview(productId: string, useSpinner: boolean): Observable<Blob> {
+
+    let params: HttpParams = new HttpParams();
+    params = params.set('productId', productId);
+    params = params.set('artifactName', "ortho");
+
+    if (useSpinner) {
+      this.eventService.start();
+    }
+
+    return this.noErrorHttpClient.get<Blob>(acp + '/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
+      .pipe(finalize(() => {
+        if (useSpinner) {
+          this.eventService.complete();
+        }
+      }))
+  }
 
 	downloadFile(url: string, useSpinner: boolean): Promise<Blob> {
 

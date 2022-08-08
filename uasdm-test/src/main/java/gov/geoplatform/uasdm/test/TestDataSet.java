@@ -4,17 +4,17 @@
  * This file is part of Geoprism Registry(tm).
  *
  * Geoprism Registry(tm) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
  * Geoprism Registry(tm) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with Geoprism Registry(tm).  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Geoprism Registry(tm). If not, see <http://www.gnu.org/licenses/>.
  */
 
 package gov.geoplatform.uasdm.test;
@@ -36,7 +36,6 @@ import com.runwaysdk.business.rbac.UserDAOIF;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.constants.LocalProperties;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
@@ -67,6 +66,10 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.index.MockIndex;
+import gov.geoplatform.uasdm.remote.MockRemoteFileService;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.service.IndexService;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
 import net.geoprism.gis.geoserver.GeoserverFacade;
@@ -81,49 +84,49 @@ abstract public class TestDataSet
     public void execute(ClientRequestIF request) throws Exception;
   }
 
-  public static final String                 ADMIN_USER_NAME                 = "admin";
+  public static final String ADMIN_USER_NAME = "admin";
 
-  public static final String                 ADMIN_PASSWORD                  = "_nm8P4gfdWxGqNRQ#8";
+  public static final String ADMIN_PASSWORD = "_nm8P4gfdWxGqNRQ#8";
 
-  public static final TestUserInfo           USER_ADMIN                      = new TestUserInfo(ADMIN_USER_NAME, ADMIN_PASSWORD, null, null);
+  public static final TestUserInfo USER_ADMIN = new TestUserInfo(ADMIN_USER_NAME, ADMIN_PASSWORD, null, null);
 
-  public static final String                 WKT_DEFAULT_POLYGON             = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+  public static final String WKT_DEFAULT_POLYGON = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
 
-  public static final String                 DEFAULT_SITE_POINT              = "Point(-104.06395534307124, 39.79736514172822)";
+  public static final String DEFAULT_SITE_POINT = "Point(-104.06395534307124, 39.79736514172822)";
 
-  public static final String                 WKT_DEFAULT_MULTIPOLYGON        = "MULTIPOLYGON (((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)))";
+  public static final String WKT_DEFAULT_MULTIPOLYGON = "MULTIPOLYGON (((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)))";
 
-  public static final String                 WKT_POLYGON_2                   = "MULTIPOLYGON(((1 1,10 1,10 10,1 10,1 1),(2 2, 3 2, 3 3, 2 3,2 2)))";
+  public static final String WKT_POLYGON_2 = "MULTIPOLYGON(((1 1,10 1,10 10,1 10,1 1),(2 2, 3 2, 3 3, 2 3,2 2)))";
 
-  protected int                              debugMode                       = 0;
-  
-  protected ArrayList<TestSensorInfo>        managedSensors                  = new ArrayList<TestSensorInfo>();
+  protected int debugMode = 0;
 
-  protected ArrayList<TestPlatformInfo>      managedPlatforms                = new ArrayList<TestPlatformInfo>();
+  protected ArrayList<TestSensorInfo> managedSensors = new ArrayList<TestSensorInfo>();
 
-  protected ArrayList<TestUavInfo>           managedUavs                     = new ArrayList<TestUavInfo>();
+  protected ArrayList<TestPlatformInfo> managedPlatforms = new ArrayList<TestPlatformInfo>();
 
-  protected ArrayList<TestSiteInfo>          managedSites                    = new ArrayList<TestSiteInfo>();
-  
-  protected ArrayList<TestSiteInfo>          managedSitesExtras              = new ArrayList<TestSiteInfo>();
-  
-  protected ArrayList<TestProjectInfo>       managedProjects                 = new ArrayList<TestProjectInfo>();
-  
-  protected ArrayList<TestProjectInfo>       managedProjectsExtras           = new ArrayList<TestProjectInfo>();
- 
-  protected ArrayList<TestMissionInfo>       managedMissions                 = new ArrayList<TestMissionInfo>();
-  
-  protected ArrayList<TestMissionInfo>       managedMissionsExtras           = new ArrayList<TestMissionInfo>();
-  
-  protected ArrayList<TestCollectionInfo>    managedCollections              = new ArrayList<TestCollectionInfo>();
-  
-  protected ArrayList<TestCollectionInfo>    managedCollectionsExtras        = new ArrayList<TestCollectionInfo>();
+  protected ArrayList<TestUavInfo> managedUavs = new ArrayList<TestUavInfo>();
 
-  protected ArrayList<TestUserInfo>          managedUsers                    = new ArrayList<TestUserInfo>();
+  protected ArrayList<TestSiteInfo> managedSites = new ArrayList<TestSiteInfo>();
 
-  public ClientSession                       clientSession                   = null;
+  protected ArrayList<TestSiteInfo> managedSitesExtras = new ArrayList<TestSiteInfo>();
 
-  public ClientRequestIF                     clientRequest                   = null;
+  protected ArrayList<TestProjectInfo> managedProjects = new ArrayList<TestProjectInfo>();
+
+  protected ArrayList<TestProjectInfo> managedProjectsExtras = new ArrayList<TestProjectInfo>();
+
+  protected ArrayList<TestMissionInfo> managedMissions = new ArrayList<TestMissionInfo>();
+
+  protected ArrayList<TestMissionInfo> managedMissionsExtras = new ArrayList<TestMissionInfo>();
+
+  protected ArrayList<TestCollectionInfo> managedCollections = new ArrayList<TestCollectionInfo>();
+
+  protected ArrayList<TestCollectionInfo> managedCollectionsExtras = new ArrayList<TestCollectionInfo>();
+
+  protected ArrayList<TestUserInfo> managedUsers = new ArrayList<TestUserInfo>();
+
+  public ClientSession clientSession = null;
+
+  public ClientRequestIF clientRequest = null;
 
   abstract public String getTestDataKey();
 
@@ -162,12 +165,16 @@ abstract public class TestDataSet
   {
     if (user == null)
     {
-      this.clientSession = ClientSession.createUserSession(ADMIN_USER_NAME, ADMIN_PASSWORD, new Locale[] { CommonProperties.getDefaultLocale() });
+      this.clientSession = ClientSession.createUserSession(ADMIN_USER_NAME, ADMIN_PASSWORD, new Locale[] {
+          CommonProperties.getDefaultLocale()
+      });
       this.clientRequest = clientSession.getRequest();
     }
     else
     {
-      this.clientSession = ClientSession.createUserSession(user.getUsername(), user.getPassword(), new Locale[] { CommonProperties.getDefaultLocale() });
+      this.clientSession = ClientSession.createUserSession(user.getUsername(), user.getPassword(), new Locale[] {
+          CommonProperties.getDefaultLocale()
+      });
       this.clientRequest = clientSession.getRequest();
     }
   }
@@ -207,6 +214,10 @@ abstract public class TestDataSet
   @Request
   public void setUpInstanceData()
   {
+    // Setup mock services
+    RemoteFileFacade.setService(new MockRemoteFileService());
+    IndexService.setIndex(new MockIndex());
+
     tearDownInstanceData();
 
     setUpTestInTrans();
@@ -216,39 +227,39 @@ abstract public class TestDataSet
     setUpAfterApply();
   }
 
-//  @Transaction
+  // @Transaction
   protected void setUpTestInTrans()
   {
     for (TestSensorInfo obj : managedSensors)
     {
       obj.apply();
     }
-    
+
     for (TestPlatformInfo obj : managedPlatforms)
     {
       obj.apply();
     }
-    
+
     for (TestUavInfo obj : managedUavs)
     {
       obj.apply();
     }
-    
+
     for (TestSiteInfo obj : managedSites)
     {
       obj.apply();
     }
-    
+
     for (TestProjectInfo obj : managedProjects)
     {
       obj.apply();
     }
-    
+
     for (TestMissionInfo obj : managedMissions)
     {
       obj.apply();
     }
-    
+
     for (TestCollectionInfo obj : managedCollections)
     {
       obj.apply();
@@ -257,6 +268,18 @@ abstract public class TestDataSet
 
   protected void setUpRelationships()
   {
+    for (TestPlatformInfo tPlatform : managedPlatforms)
+    {
+      Platform platform = tPlatform.getServerObject();
+
+      for (TestSensorInfo tSensor : managedSensors)
+      {
+        Sensor sensor = tSensor.getServerObject();
+
+        platform.addPlatformHasSensorChild(sensor).apply();
+      }
+
+    }
 
   }
 
@@ -278,22 +301,22 @@ abstract public class TestDataSet
     {
       obj.delete();
     }
-    
+
     for (TestProjectInfo obj : managedProjects)
     {
       obj.delete();
     }
-    
+
     for (TestMissionInfo obj : managedMissions)
     {
       obj.delete();
     }
-    
+
     for (TestCollectionInfo obj : managedCollections)
     {
       obj.delete();
     }
-    
+
     for (TestUserInfo user : this.getManagedUsers())
     {
       user.delete();
@@ -343,7 +366,7 @@ abstract public class TestDataSet
     managedMissionsExtras = new ArrayList<TestMissionInfo>();
     managedCollectionsExtras = new ArrayList<TestCollectionInfo>();
   }
-  
+
   @Request
   private void deleteAllUavs()
   {
@@ -359,7 +382,7 @@ abstract public class TestDataSet
       vObject.delete();
     }
   }
-  
+
   @Request
   private void deleteAllPlatforms()
   {
@@ -391,20 +414,20 @@ abstract public class TestDataSet
       vObject.delete();
     }
   }
-  
+
   @Request
   private void deleteAllWorkflowTasks()
   {
     AbstractWorkflowTaskQuery query = new AbstractWorkflowTaskQuery(new QueryFactory());
-    
+
     OIterator<? extends AbstractWorkflowTask> it = query.getIterator();
-    
+
     try
     {
       while (it.hasNext())
       {
         AbstractWorkflowTask task = it.next();
-        
+
         task.delete();
       }
     }
@@ -413,7 +436,7 @@ abstract public class TestDataSet
       it.close();
     }
   }
-  
+
   @Request
   private void deleteAllVertex(String classname)
   {
@@ -461,10 +484,10 @@ abstract public class TestDataSet
 
     final GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
     query.setParameter("folderName", folderName);
-    
+
     return query.getSingleResult();
   }
-  
+
   @Request
   public static Sensor getSensor(String name)
   {
@@ -473,10 +496,10 @@ abstract public class TestDataSet
 
     final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
     query.setParameter("name", name);
-    
+
     return query.getSingleResult();
   }
-  
+
   @Request
   public static Platform getPlatform(String name)
   {
@@ -485,10 +508,10 @@ abstract public class TestDataSet
 
     final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
     query.setParameter("name", name);
-    
+
     return query.getSingleResult();
   }
-  
+
   @Request
   public static UAV getUav(String serialNumber)
   {
@@ -497,10 +520,10 @@ abstract public class TestDataSet
 
     final GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
     query.setParameter("serialNumber", serialNumber);
-    
+
     return query.getSingleResult();
   }
-  
+
   @Request
   public static void deleteAllSchedulerData()
   {
@@ -512,9 +535,9 @@ abstract public class TestDataSet
     {
       it.next().delete();
     }
-    
+
     ExecutableJobQuery ejq = new ExecutableJobQuery(new QueryFactory());
-    
+
     try (OIterator<? extends ExecutableJob> jobit = ejq.getIterator())
     {
       while (jobit.hasNext())
@@ -523,7 +546,7 @@ abstract public class TestDataSet
       }
     }
   }
-  
+
   @Request
   public static void deleteAllVaultFiles()
   {
@@ -604,24 +627,25 @@ abstract public class TestDataSet
 
       UserDAOIF user = UserDAO.get(geoprismUser.getOid());
 
-//      Set<String> organizationSet = new HashSet<String>();
+      // Set<String> organizationSet = new HashSet<String>();
       for (Roles role : newRoles)
       {
         RoleDAO roleDAO = (RoleDAO) BusinessFacade.getEntityDAO(role);
         roleDAO.assignMember(user);
 
-//        RegistryRole registryRole = new RegistryRoleConverter().build(role);
-//        if (registryRole != null)
-//        {
-//          String organizationCode = registryRole.getOrganizationCode();
-//
-//          if (organizationCode != null && !organizationCode.equals("") && !organizationSet.contains(organizationCode))
-//          {
-//            Organization organization = Organization.getByCode(organizationCode);
-//            organization.addUsers(geoprismUser).apply();
-//            organizationSet.add(organizationCode);
-//          }
-//        }
+        // RegistryRole registryRole = new RegistryRoleConverter().build(role);
+        // if (registryRole != null)
+        // {
+        // String organizationCode = registryRole.getOrganizationCode();
+        //
+        // if (organizationCode != null && !organizationCode.equals("") &&
+        // !organizationSet.contains(organizationCode))
+        // {
+        // Organization organization = Organization.getByCode(organizationCode);
+        // organization.addUsers(geoprismUser).apply();
+        // organizationSet.add(organizationCode);
+        // }
+        // }
       }
     }
 
@@ -799,7 +823,9 @@ abstract public class TestDataSet
 
     try
     {
-      session = ClientSession.createUserSession(user.getUsername(), user.getPassword(), new Locale[] { CommonProperties.getDefaultLocale() });
+      session = ClientSession.createUserSession(user.getUsername(), user.getPassword(), new Locale[] {
+          CommonProperties.getDefaultLocale()
+      });
 
       ClientRequestIF request = session.getRequest();
 

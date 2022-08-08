@@ -36,7 +36,41 @@
   <name>UASDM Server</name>
   <description>The back-end database server for the uasdm project</description>
 
+  <repositories>
+    <repository>
+      <id>GeoSolutions</id>
+      <name>GeoSolutions</name>
+      <url>https://maven.geo-solutions.it/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-cog-rangereader-http</artifactId>
+      <version>1.4.6</version>
+    </dependency>
+    <dependency>
+      <artifactId>imageio-ext-cog-rangereader-s3</artifactId>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <version>1.4.6</version>
+    </dependency>
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-cog-commons</artifactId>
+      <version>1.4.6</version>
+    </dependency>
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-cog-reader</artifactId>
+      <version>1.4.6</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-servlet-filter-adapter</artifactId>

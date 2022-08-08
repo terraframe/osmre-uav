@@ -47,8 +47,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff;
-import gov.geoplatform.uasdm.cog.CloudOptimizedGeoTiff.BBoxView;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
+import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -79,6 +79,8 @@ public class Product extends ProductBase implements ProductIF
 
   public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
+  public static final String ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + ".png".replaceAll("\\.", "\\\\.");
+  
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
@@ -312,7 +314,7 @@ public class Product extends ProductBase implements ProductIF
       // }
       // }
 
-      return new CloudOptimizedGeoTiff(this, mappable).getBoundingBox();
+      return new TiTillerProxy().getBoundingBox(this, mappable);
     }
     catch (Throwable t)
     {
@@ -554,6 +556,11 @@ public class Product extends ProductBase implements ProductIF
   }
 
   public Optional<DocumentIF> getMappableOrtho()
+  {
+    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
+  }
+  
+  public Optional<DocumentIF> getOrthoPng()
   {
     return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(MAPPABLE_ORTHO_REGEX)).findAny();
   }

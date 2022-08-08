@@ -43,16 +43,21 @@ public class IndexService
 {
   private static Index index = new ElasticSearchIndex();
 
+  public synchronized static void setIndex(Index i)
+  {
+    index = i;
+  }
+
   public static boolean startup()
   {
     if (AppProperties.isSearchEnabled())
     {
       return index.startup();
     }
-    
+
     return true;
   }
-  
+
   public static void shutdown()
   {
     if (AppProperties.isSearchEnabled())
@@ -159,10 +164,10 @@ public class IndexService
     {
       return index.getItems(filters, pageSize, pageNumber);
     }
-    
+
     return new Page<StacItem>();
   }
-  
+
   public static String getContent(File metadata)
   {
     try

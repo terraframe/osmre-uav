@@ -49,6 +49,10 @@ public class ProductView
   
   private boolean        hasAllZip;
   
+  private String         orthoKey;
+  
+  private String         demKey;
+  
   private List<DocumentIF> mappables;
   
   public String getId()
@@ -120,6 +124,26 @@ public class ProductView
   {
     this.boundingBox = boundingBox;
   }
+  
+  public String getOrthoKey()
+  {
+    return orthoKey;
+  }
+
+  public void setOrthoKey(String orthoKey)
+  {
+    this.orthoKey = orthoKey;
+  }
+
+  public String getDemKey()
+  {
+    return demKey;
+  }
+
+  public void setDemKey(String demKey)
+  {
+    this.demKey = demKey;
+  }
 
   public boolean isPublished()
   {
@@ -188,6 +212,10 @@ public class ProductView
       
       jaLayers.put(layer);
     }
+    
+    object.put("orthoKey", this.orthoKey);
+    
+    object.put("demKey", this.demKey);
     
     object.put("layers", jaLayers);
     

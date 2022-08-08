@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -22,7 +22,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.runwaysdk.business.BusinessFacade;
@@ -48,36 +47,35 @@ import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
 import net.geoprism.GeoprismUser;
 
-@Ignore
 public class TestSiteHierarchy
 {
 
   private static ProjectManagementService service;
 
-  private static String                   siteId;
+  private static String siteId;
 
-  private static String                   projectId1;
+  private static String projectId1;
 
-  private static String                   missionId1;
+  private static String missionId1;
 
   /**
    * The test user object
    */
-  private static GeoprismUser             newUser;
+  private static GeoprismUser newUser;
 
   /**
    * The username for the user
    */
-  private final static String             USERNAME     = "btables";
+  private final static String USERNAME = "btables";
 
   /**
    * The password for the user
    */
-  private final static String             PASSWORD     = "1234";
+  private final static String PASSWORD = "1234";
 
-  private final static int                sessionLimit = 2;
+  private final static int sessionLimit = 2;
 
-  private MockRemoteFileService           fService;
+  private MockRemoteFileService fService;
 
   @BeforeClass
   @Request
@@ -155,12 +153,12 @@ public class TestSiteHierarchy
     collection1.applyWithParent(mission1);
     // System.out.println("S3: "+collection1.getS3location());
 
-//    Imagery imagery1 = new Imagery();
-//    imagery1.setValue(UasComponent.NAME, "Imagery1");
-//    imagery1.setValue(UasComponent.FOLDERNAME, "Imagery1");
-//    imagery1.applyWithParent(project1);
-//    // System.out.println("S3: "+imageryId1.getS3location());
-//    imageryId1 = imagery1.getOid();
+    // Imagery imagery1 = new Imagery();
+    // imagery1.setValue(UasComponent.NAME, "Imagery1");
+    // imagery1.setValue(UasComponent.FOLDERNAME, "Imagery1");
+    // imagery1.applyWithParent(project1);
+    // // System.out.println("S3: "+imageryId1.getS3location());
+    // imageryId1 = imagery1.getOid();
   }
 
   @AfterClass
@@ -177,8 +175,10 @@ public class TestSiteHierarchy
 
     final StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE name = :name");
 
     final GraphQuery<Site> query = new GraphQuery<Site>(statement.toString());
+    query.setParameter("name", "Site_Unit_Test");
     final List<Site> sites = query.getResults();
 
     for (Site site : sites)
@@ -339,7 +339,8 @@ public class TestSiteHierarchy
       int siteChildren = service.getChildren(sessionId, siteId).size();
       SiteItem newProject = service.newDefaultChild(sessionId, siteId);
 
-//      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
+      // Assert.assertFalse("HasChildren property on SiteItem should be false
+      // but returned true.", newProject.getHasChildren());
 
       newProject.setValue(UasComponent.NAME, "ProjectX");
       newProject.setValue(UasComponent.FOLDERNAME, "ProjectX");
@@ -352,7 +353,8 @@ public class TestSiteHierarchy
 
       SiteItem newMission = service.newDefaultChild(sessionId, projectId1);
 
-//      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newMission.getHasChildren());
+      // Assert.assertTrue("HasChildren property on SiteItem should be true but
+      // returned false.", newMission.getHasChildren());
 
       newMission.setValue(UasComponent.NAME, "MissionX");
       newMission.setValue(UasComponent.FOLDERNAME, "MissionX");
@@ -365,7 +367,8 @@ public class TestSiteHierarchy
 
       SiteItem newCollection = service.newDefaultChild(sessionId, missionId1);
 
-//      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newCollection.getHasChildren());
+      // Assert.assertTrue("HasChildren property on SiteItem should be true but
+      // returned false.", newCollection.getHasChildren());
 
       newCollection.setValue(UasComponent.NAME, "CollectionX");
       newCollection.setValue(UasComponent.FOLDERNAME, "CollectionX");
@@ -375,7 +378,8 @@ public class TestSiteHierarchy
       Assert.assertTrue(1 == service.getChildren(sessionId, missionId).size());
 
       newProject = service.edit(sessionId, projectId);
-//      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
+      // Assert.assertTrue("HasChildren property on SiteItem should be true but
+      // returned false.", newProject.getHasChildren());
 
     }
     catch (RuntimeException re)
@@ -404,67 +408,72 @@ public class TestSiteHierarchy
     }
   }
 
-//  @Test
-//  public void testServiceNewImagery()
-//  {
-//    String sessionId = this.logInAdmin();
-//
-//    String projectId = null;
-//
-//    String imageryId = null;
-//
-//    try
-//    {
-//      int siteChildren = service.getChildren(sessionId, siteId).size();
-//      SiteItem newProject = service.newDefaultChild(sessionId, siteId);
-//
-////      Assert.assertFalse("HasChildren property on SiteItem should be false but returned true.", newProject.getHasChildren());
-//
-//      newProject.setValue(UasComponent.NAME, "ProjectX1");
-//      newProject.setValue(UasComponent.FOLDERNAME, "ProjectX1");
-//      projectId = newProject.getId();
-//      newProject = service.applyWithParent(sessionId, newProject, siteId);
-//
-//      Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId, siteId).size());
-//
-//      Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
-//
-//      SiteItem newImagery = service.newChild(sessionId, projectId1, IMAGERY_CLASS_NAME);
-//
-////      Assert.assertTrue("HasChildren property on Imagery should be true but returned false.", newImagery.getHasChildren());
-//
-//      newImagery.setValue(UasComponent.NAME, "ImageryX");
-//      newImagery.setValue(UasComponent.FOLDERNAME, "MissionX");
-//      imageryId = newImagery.getId();
-//      service.applyWithParent(sessionId, newImagery, projectId);
-//
-//      Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
-//
-//      Assert.assertTrue(0 == service.getChildren(sessionId, imageryId).size());
-//
-//      newProject = service.edit(sessionId, projectId);
-////      Assert.assertTrue("HasChildren property on SiteItem should be true but returned false.", newProject.getHasChildren());
-//
-//    }
-//    catch (RuntimeException re)
-//    {
-//      re.printStackTrace();
-//    }
-//    finally
-//    {
-//      if (imageryId != null)
-//      {
-//        service.remove(sessionId, imageryId);
-//      }
-//
-//      if (projectId != null)
-//      {
-//        service.remove(sessionId, projectId);
-//      }
-//
-//      logOutAdmin(sessionId);
-//    }
-//  }
+  // @Test
+  // public void testServiceNewImagery()
+  // {
+  // String sessionId = this.logInAdmin();
+  //
+  // String projectId = null;
+  //
+  // String imageryId = null;
+  //
+  // try
+  // {
+  // int siteChildren = service.getChildren(sessionId, siteId).size();
+  // SiteItem newProject = service.newDefaultChild(sessionId, siteId);
+  //
+  //// Assert.assertFalse("HasChildren property on SiteItem should be false but
+  // returned true.", newProject.getHasChildren());
+  //
+  // newProject.setValue(UasComponent.NAME, "ProjectX1");
+  // newProject.setValue(UasComponent.FOLDERNAME, "ProjectX1");
+  // projectId = newProject.getId();
+  // newProject = service.applyWithParent(sessionId, newProject, siteId);
+  //
+  // Assert.assertTrue(siteChildren + 1 == service.getChildren(sessionId,
+  // siteId).size());
+  //
+  // Assert.assertTrue(0 == service.getChildren(sessionId, projectId).size());
+  //
+  // SiteItem newImagery = service.newChild(sessionId, projectId1,
+  // IMAGERY_CLASS_NAME);
+  //
+  //// Assert.assertTrue("HasChildren property on Imagery should be true but
+  // returned false.", newImagery.getHasChildren());
+  //
+  // newImagery.setValue(UasComponent.NAME, "ImageryX");
+  // newImagery.setValue(UasComponent.FOLDERNAME, "MissionX");
+  // imageryId = newImagery.getId();
+  // service.applyWithParent(sessionId, newImagery, projectId);
+  //
+  // Assert.assertTrue(1 == service.getChildren(sessionId, projectId).size());
+  //
+  // Assert.assertTrue(0 == service.getChildren(sessionId, imageryId).size());
+  //
+  // newProject = service.edit(sessionId, projectId);
+  //// Assert.assertTrue("HasChildren property on SiteItem should be true but
+  // returned false.", newProject.getHasChildren());
+  //
+  // }
+  // catch (RuntimeException re)
+  // {
+  // re.printStackTrace();
+  // }
+  // finally
+  // {
+  // if (imageryId != null)
+  // {
+  // service.remove(sessionId, imageryId);
+  // }
+  //
+  // if (projectId != null)
+  // {
+  // service.remove(sessionId, projectId);
+  // }
+  //
+  // logOutAdmin(sessionId);
+  // }
+  // }
 
   @Test
   public void testUploadMetadataCheck()
@@ -504,39 +513,41 @@ public class TestSiteHierarchy
   @Request(RequestType.SESSION)
   private void checkMetadata(String sessionId, String collectionId)
   {
-//
-//    SingleActor singleActor = GeoprismUser.getCurrentUser();
-//
-//    WorkflowTask workflowTask = new WorkflowTask();
-//    workflowTask.setGeoprismUserId(singleActor.getOid());
-//    workflowTask.setStatus("Test Status");
-//    workflowTask.setTaskLabel("Test Task");
-//    workflowTask.setUploadId("123");
-//    workflowTask.setCollectionId(collectionId);
-//    workflowTask.apply();
-//
-//    try
-//    {
-//      List<Mission> missionList = Mission.getMissingMetadata();
-//
-//      // System.out.println("Missions that need metadata.");
-//      // System.out.println("----------------------------");
-//
-//      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() > 0);
-//      for (Mission mission : missionList)
-//      {
-//        mission.lock();
-//        mission.setMetadataUploaded(true);
-//        mission.apply();
-//      }
-//
-//      missionList = Mission.getMissingMetadata();
-//      Assert.assertTrue("Check for the Metadata XML file has failed.", missionList.size() == 0);
-//    }
-//    finally
-//    {
-//      workflowTask.delete();
-//    }
+    //
+    // SingleActor singleActor = GeoprismUser.getCurrentUser();
+    //
+    // WorkflowTask workflowTask = new WorkflowTask();
+    // workflowTask.setGeoprismUserId(singleActor.getOid());
+    // workflowTask.setStatus("Test Status");
+    // workflowTask.setTaskLabel("Test Task");
+    // workflowTask.setUploadId("123");
+    // workflowTask.setCollectionId(collectionId);
+    // workflowTask.apply();
+    //
+    // try
+    // {
+    // List<Mission> missionList = Mission.getMissingMetadata();
+    //
+    // // System.out.println("Missions that need metadata.");
+    // // System.out.println("----------------------------");
+    //
+    // Assert.assertTrue("Check for the Metadata XML file has failed.",
+    // missionList.size() > 0);
+    // for (Mission mission : missionList)
+    // {
+    // mission.lock();
+    // mission.setMetadataUploaded(true);
+    // mission.apply();
+    // }
+    //
+    // missionList = Mission.getMissingMetadata();
+    // Assert.assertTrue("Check for the Metadata XML file has failed.",
+    // missionList.size() == 0);
+    // }
+    // finally
+    // {
+    // workflowTask.delete();
+    // }
   }
 
   // @Test
@@ -605,7 +616,9 @@ public class TestSiteHierarchy
   @Request
   private String logInAdmin()
   {
-    return SessionFacade.logIn(USERNAME, PASSWORD, new Locale[] { CommonProperties.getDefaultLocale() });
+    return SessionFacade.logIn(USERNAME, PASSWORD, new Locale[] {
+        CommonProperties.getDefaultLocale()
+    });
   }
 
   /**

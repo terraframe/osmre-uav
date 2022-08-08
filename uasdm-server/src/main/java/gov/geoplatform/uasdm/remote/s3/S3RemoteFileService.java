@@ -73,7 +73,7 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class S3RemoteFileService implements RemoteFileService
 {
-  public static final String STAC_BUCKET = "_stac_";
+  public static final String STAC_BUCKET = "-stac-";
 
   private Logger logger = LoggerFactory.getLogger(S3RemoteFileService.class);
 
