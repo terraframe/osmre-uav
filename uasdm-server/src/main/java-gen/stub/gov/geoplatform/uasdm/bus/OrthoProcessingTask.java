@@ -18,14 +18,12 @@ package gov.geoplatform.uasdm.bus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.resource.ApplicationResource;
-import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -68,7 +66,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
   }
 
   @Transaction
-  public void initiate(ApplicationResource infile)
+  public void initiate(ApplicationFileResource infile)
   {
     Collection collection = Collection.get(this.getComponent());
 
@@ -80,51 +78,47 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     product.addDocuments(documents);
 
-    try (CloseableFile file = infile.openNewFile())
+    final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
+    
+    if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
     {
-      final String basename = FilenameUtils.getBaseName(file.getName());
-      final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
+      if (!new CogTifValidator().isValidCog(infile))
+      {
+        new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(infile);
+      }
       
-      if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
-      {
-        if (!new CogTifValidator().isValidCog(file))
-        {
-          new CogTifProcessor(ImageryComponent.ORTHO + "/" + basename + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(file);
-        }
-        
-        new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + basename + ".png", product, collection, monitor).process(file);
-      }
-
-      if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
-      {
-        if (!new CogTifValidator().isValidCog(file))
-        {
-          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
-            .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
-            .process(file);
-        }
-        else
-        {
-          new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)).process(file);
-        }
-      }
-
-      if (product.getPublished())
-      {
-        for (DocumentIF mappable : product.getMappableDocuments())
-        {
-          RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
-        }
-      }
-
-      product.updateBoundingBox();
-
-      IndexService.createStacItems(product);
-
-      this.appLock();
-      this.setStatus(ODMStatus.COMPLETED.getLabel());
-      this.setMessage("Ortho has been processed");
-      this.apply();
+      new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
     }
+
+    if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
+    {
+      if (!new CogTifValidator().isValidCog(infile))
+      {
+        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
+          .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
+          .process(infile);
+      }
+      else
+      {
+        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)).process(infile);
+      }
+    }
+
+    if (product.getPublished())
+    {
+      for (DocumentIF mappable : product.getMappableDocuments())
+      {
+        RemoteFileFacade.copyObject(mappable.getS3location(), AppProperties.getBucketName(), mappable.getS3location(), AppProperties.getPublicBucketName());
+      }
+    }
+
+    product.updateBoundingBox();
+
+    IndexService.createStacItems(product);
+
+    this.appLock();
+    this.setStatus(ODMStatus.COMPLETED.getLabel());
+    this.setMessage("Ortho has been processed");
+    this.apply();
   }
 }

@@ -1,12 +1,11 @@
 package gov.geoplatform.uasdm.processing;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 
@@ -38,7 +37,7 @@ public class CogTifValidator
     return cmds;
   }
   
-  public boolean isValidCog(File file)
+  public boolean isValidCog(ApplicationFileResource res)
   {
     try
     {
@@ -46,11 +45,11 @@ public class CogTifValidator
       
       if (template == null || template.length() == 0)
       {
-        return file.getAbsolutePath().endsWith(".cog.tif") || file.getAbsolutePath().endsWith(".cog.tiff");
+        return res.getName().endsWith(".cog.tif") || res.getName().endsWith(".cog.tiff");
       }
       else
       {
-        final String[] cmds = getCogValidatorCommand(template, file.getAbsolutePath());
+        final String[] cmds = getCogValidatorCommand(template, res.getUnderlyingFile().getAbsolutePath());
         
         SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
         

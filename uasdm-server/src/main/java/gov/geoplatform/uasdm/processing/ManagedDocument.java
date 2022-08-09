@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
@@ -34,9 +35,11 @@ public class ManagedDocument extends S3FileUpload
   }
 
   @Override
-  public boolean process(File file)
+  public boolean process(ApplicationFileResource res)
   {
-    boolean success = super.process(file);
+    boolean success = super.process(res);
+    
+    File file = res.getUnderlyingFile();
     
     if (!file.isDirectory())
     {

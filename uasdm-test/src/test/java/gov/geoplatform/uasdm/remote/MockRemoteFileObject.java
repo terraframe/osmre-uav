@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.remote;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.openide.util.io.NullInputStream;
@@ -46,13 +45,6 @@ public class MockRemoteFileObject implements RemoteFileObject
 
   @Override
   public CloseableFile openNewFile()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public File getUnderlyingFile()
   {
     // TODO Auto-generated method stub
     return null;

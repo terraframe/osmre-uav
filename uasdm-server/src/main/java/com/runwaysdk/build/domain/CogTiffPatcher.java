@@ -15,6 +15,7 @@ import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
@@ -117,7 +118,7 @@ public class CogTiffPatcher
             s3Path = s3Path.substring(0, s3Path.lastIndexOf(".")) + CogTifProcessor.COG_EXTENSION;
             
             CogTifProcessor processor = new CogTifProcessor(s3Path, product, collection, monitor);
-            processor.process(tif);
+            processor.process(new FileResource(tif));
             
             if (monitor.getErrors().size() > 0 || WorkflowTaskStatus.ERROR.equals(monitor.getStatus()))
             {

@@ -6,7 +6,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.FileResource;
+
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
@@ -25,9 +27,12 @@ public class GdalTransformProcessor extends ManagedDocument
     return ManagedDocumentTool.GDAL;
   }
   
+  @SuppressWarnings("resource")
   @Override
-  public boolean process(File file)
+  public boolean process(ApplicationFileResource res)
   {
+    File file = res.getUnderlyingFile();
+    
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File png = new File(file.getParent(), basename + ".png");
@@ -40,7 +45,7 @@ public class GdalTransformProcessor extends ManagedDocument
 
     if (success && png.exists())
     {
-      return super.process(png);
+      return super.process(new FileResource(png));
     }
     else
     {

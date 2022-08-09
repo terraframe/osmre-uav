@@ -1,10 +1,10 @@
 package gov.geoplatform.uasdm.processing;
 
-import java.io.File;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 public interface Processor
 {
 
-  public boolean process(File file);
+  public boolean process(ApplicationFileResource res);
 
 }

@@ -29,7 +29,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
@@ -60,7 +60,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationResource appRes, String outFileNamePrefix, Boolean processUpload)
+  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationFileResource appRes, String outFileNamePrefix, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -98,7 +98,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     }
   }
 
-  private void startODMProcessing(ApplicationResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
+  private void startODMProcessing(ApplicationFileResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
   {
     final ImageryIF imagery = uploadTask.getImageryInstance();
 
@@ -117,7 +117,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.initiate(appRes);
   }
 
-  private void calculateImageSize(ApplicationResource zip, ImageryIF imagery)
+  private void calculateImageSize(ApplicationFileResource zip, ImageryIF imagery)
   {
     try
     {
