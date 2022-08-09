@@ -30,8 +30,11 @@ import com.amazonaws.http.HttpResponseHandler;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class TiTillerProxy
 {
@@ -127,6 +130,12 @@ public class TiTillerProxy
   
   public JSONObject tilejson(DocumentIF document, String contextPath)
   {
+    UasComponentIF component = document.getComponent();
+    if (component instanceof CollectionIF)
+    {
+      CollectionReport.updateDownloadCount((CollectionIF) component);
+    }
+    
     final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
     
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();

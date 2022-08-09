@@ -14,9 +14,16 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
@@ -52,6 +59,20 @@ public class StacTiTillerProxy extends TiTillerProxy
 
   public JSONObject tilejson(String contextPath)
   {
+    // Update the download count
+    // We know that the filename of the stac json is the product id. So parse out that id, fetch the product, and increment the count
+    String key = new AmazonS3URI(this.url).getKey();
+    String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length() + 1, key.length() - 5);
+    Product product = Product.get(productId);
+    if (product != null)
+    {
+      UasComponent component = product.getComponent();
+      if (component instanceof Collection)
+      {
+        CollectionReport.updateDownloadCount((CollectionIF) component);
+      }
+    }
+    
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
