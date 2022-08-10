@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.mock;
 
@@ -19,11 +19,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.runwaysdk.resource.CloseableFile;
+
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -37,25 +43,18 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class MockRemoteFileService implements RemoteFileService
 {
-  public static enum RemoteFileActionType
-  {
-    CREATE_FOLDER,
-    COPY,
-    DELETE,
-    DELETE_FOLDER,
-    DOWNLOAD,
-    UPLOAD,
-    UPLOAD_FOLDER
+  public static enum RemoteFileActionType {
+    CREATE_FOLDER, COPY, DELETE, DELETE_FOLDER, DOWNLOAD, UPLOAD, UPLOAD_FOLDER
   }
-  
+
   public static class RemoteFileAction
   {
     private String key;
-    
+
     private String bucket;
-    
+
     private RemoteFileActionType type;
-    
+
     public RemoteFileAction(RemoteFileActionType type, String key, String bucket)
     {
       this.key = key;
@@ -93,7 +92,7 @@ public class MockRemoteFileService implements RemoteFileService
       this.type = type;
     }
   }
-  
+
   private Collection<RemoteFileAction> actions = new LinkedList<RemoteFileAction>();
 
   @Override
@@ -101,7 +100,7 @@ public class MockRemoteFileService implements RemoteFileService
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
   }
-  
+
   @Override
   public RemoteFileObject proxy(String url)
   {
@@ -114,6 +113,18 @@ public class MockRemoteFileService implements RemoteFileService
   public RemoteFileObject download(String key)
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
+
+    if (key.endsWith("metadata.xml"))
+    {
+      try
+      {
+        return new MockRemoteFileObject(new File(this.getClass().getResource("/metadata.xml").toURI()));
+      }
+      catch (URISyntaxException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
 
     return new MockRemoteFileObject();
   }
@@ -196,7 +207,7 @@ public class MockRemoteFileService implements RemoteFileService
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD_FOLDER, key, AppProperties.getBucketName()));
   }
-  
+
   @Override
   public void uploadDirectory(File directory, String key, String bucket, StatusMonitorIF monitor, boolean includeSubDirectories)
   {
@@ -218,18 +229,24 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void putStacItem(StacItem item)
   {
-    
+
   }
 
   @Override
   public void removeStacItem(ProductIF product)
   {
-    
+
   }
 
   @Override
   public RemoteFileObject getStacItem(ProductIF product)
   {
     return null;
+  }
+
+  @Override
+  public BBoxView getBoundingBox(Product product, DocumentIF mappable)
+  {
+    return new BBoxView(-180, -90, 180, 90);
   }
 }

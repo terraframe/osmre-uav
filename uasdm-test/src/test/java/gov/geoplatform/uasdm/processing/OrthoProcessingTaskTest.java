@@ -1,7 +1,5 @@
 package gov.geoplatform.uasdm.processing;
 
-import java.io.File;
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.After;
@@ -11,20 +9,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.runwaysdk.Pair;
-import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.mock.MockRemoteFileService;
-import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
-import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.test.Area51DataSet;
-import junit.framework.Assert;
 import net.geoprism.GeoprismUser;
 
 public class OrthoProcessingTaskTest
@@ -98,110 +89,5 @@ public class OrthoProcessingTaskTest
   @Request
   public void testHandleUploadFinishRaw() throws Exception
   {
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
-
-    final FileResource resource = new FileResource(file);
-
-    String uploadTarget = ImageryComponent.RAW;
-
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
-
-    try
-    {
-      CollectionUploadEvent event = pair.getSecond();
-
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", false);
-
-      // Validate the files were uploaded
-      MockRemoteFileService service = (MockRemoteFileService) RemoteFileFacade.getService();
-
-      java.util.Collection<RemoteFileAction> actions = service.getActions();
-
-      Assert.assertEquals(6, actions.size());
-
-      List<DocumentIF> documents = collection.getDocuments();
-
-      Assert.assertEquals(6, documents.size());
-    }
-    finally
-    {
-      pair.getSecond().delete();
-    }
-  }
-
-  @Test
-  @Request
-  public void testHandleUploadFinishOrtho() throws Exception
-  {
-    collection.createDocumentIfNotExist(collection.getS3location() + Collection.ORTHO + "/test.tif", "test.tif", "", "");
-
-    Assert.assertEquals(1, collection.getDocuments().size());
-
-    File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
-
-    final FileResource resource = new FileResource(file);
-
-    String uploadTarget = ImageryComponent.ORTHO;
-
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
-
-    try
-    {
-      CollectionUploadEvent event = pair.getSecond();
-
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", false);
-
-      // Validate the files were removed and upldated
-      MockRemoteFileService service = (MockRemoteFileService) RemoteFileFacade.getService();
-
-      java.util.Collection<RemoteFileAction> actions = service.getActions();
-
-      Assert.assertEquals(2, actions.size());
-
-      List<DocumentIF> documents = collection.getDocuments();
-
-      Assert.assertEquals(1, documents.size());
-
-      DocumentIF document = documents.get(0);
-
-      Assert.assertEquals("odm_orthophoto_test.tif", document.getName());
-    }
-    finally
-    {
-      pair.getSecond().delete();
-    }
-
-  }
-
-  @Test
-  @Request
-  public void testHandleUploadFinishOrthoWithProcessing() throws Exception
-  {
-    File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
-
-    final FileResource resource = new FileResource(file);
-
-    String uploadTarget = ImageryComponent.ORTHO;
-
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
-
-    try
-    {
-      CollectionUploadEvent event = pair.getSecond();
-
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
-
-      List<DocumentIF> documents = collection.getDocuments();
-
-      Assert.assertEquals(2, documents.size());
-
-      Assert.assertEquals("odm_orthophoto_test.tif", documents.get(0).getName());
-      Assert.assertEquals("odm_orthophoto_test.png", documents.get(1).getName());
-    }
-    finally
-    {
-      pair.getSecond().delete();
-    }
-
   }
 }

@@ -60,6 +60,10 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
+import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -669,9 +673,6 @@ public class S3RemoteFileService implements RemoteFileService
 
     try
     {
-      System.out.println(bucket);
-      System.out.println(key);
-
       AmazonS3 client = S3ClientFactory.createClient();
 
       GetObjectRequest request = new GetObjectRequest(bucket, key);
@@ -684,5 +685,11 @@ public class S3RemoteFileService implements RemoteFileService
 
       throw e;
     }
+  }
+
+  @Override
+  public BBoxView getBoundingBox(Product product, DocumentIF mappable)
+  {
+    return new TiTillerProxy().getBoundingBox(product, mappable);
   }
 }

@@ -313,8 +313,7 @@ public class Product extends ProductBase implements ProductIF
       // // Perhaps there is another bounding box we can try?
       // }
       // }
-
-      return new TiTillerProxy().getBoundingBox(this, mappable);
+      return RemoteFileFacade.getBoundingBox(this, mappable);
     }
     catch (Throwable t)
     {

@@ -27,6 +27,9 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
+import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -158,23 +161,8 @@ public class RemoteFileFacade
     {
       try (InputStream stream = object.getObjectContent())
       {
-        ByteArrayOutputStream ous = new ByteArrayOutputStream();
-
-        IOUtils.copy(stream, ous);
-
-        String str = new String(ous.toByteArray());
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(str);
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(str, StacItem.class);
+        return mapper.readValue(stream, StacItem.class);
       }
       catch (IOException e)
       {
@@ -183,6 +171,11 @@ public class RemoteFileFacade
     }
 
     return null;
+  }
+
+  public static BBoxView getBoundingBox(Product product, DocumentIF mappable)
+  {
+    return service.getBoundingBox(product, mappable);
   }
 
 }

@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -74,5 +76,7 @@ public interface RemoteFileService
   public RemoteFileObject getStacItem(ProductIF product);
 
   public RemoteFileObject proxy(String url);
+
+  public BBoxView getBoundingBox(Product product, DocumentIF mappable);
 
 }

@@ -20,6 +20,7 @@ import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -206,6 +207,10 @@ public class CollectionUploadEventTest
       OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
 
       Assert.assertNotNull(task);
+      
+      List<Product> products = collection.getProducts();
+
+      Assert.assertEquals(1, products.size());      
     }
     finally
     {
@@ -235,18 +240,27 @@ public class CollectionUploadEventTest
 
       Assert.assertNotNull(task);
 
-      List<DocumentIF> documents = collection.getDocuments();
+      Collection result = Collection.get(collection.getOid());
+      
+      Assert.assertNotNull(result.getImageHeight());
+      Assert.assertNotNull(result.getImageWidth());
+      
+      List<DocumentIF> documents = result.getDocuments();
 
-      Assert.assertEquals(6, documents.size());
+      Assert.assertEquals(14, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
-      
+
       Assert.assertTrue(names.contains("DJI_0583.jpeg"));
       Assert.assertTrue(names.contains("DJI_0593.jpeg"));
       Assert.assertTrue(names.contains("DJI_0603.jpeg"));
       Assert.assertTrue(names.contains("DJI_0605.jpeg"));
       Assert.assertTrue(names.contains("sewer_pull_from_city_tap.mp4"));
       Assert.assertTrue(names.contains("sewer_push_to_city_tap.mp4"));
+
+      List<Product> products = result.getProducts();
+
+      Assert.assertEquals(1, products.size());      
     }
     finally
     {

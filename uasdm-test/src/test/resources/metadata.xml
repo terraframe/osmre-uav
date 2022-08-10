@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><rootEl>
+  <Agency fieldCenter="" name="Department of Interior" shortName=""/>
+  <PointOfContact email="admin@noreply.com" name="admin"/>
+  <Project description="" name="Test" shortName="Test"/>
+  <Mission description="" name="Test"/>
+  <Collect description="" name="Test"/>
+  <Platform class="Test" faaIdNumber="342342" name="Test" serialNumber="23452" type="Hybrid"/>
+  <Sensor imageHeight="2250" imageWidth="4000" model="Test" name="Test" pixelSizeHeight="53" pixelSizeWidth="34" sensorHeight="34" sensorWidth="34" type="Test" wavelength="[&quot;Natural Color RGB&quot;,&quot;Red Edge&quot;,&quot;LiDAR&quot;]"/>
+  <Upload dataType="raw"/>
+</rootEl>

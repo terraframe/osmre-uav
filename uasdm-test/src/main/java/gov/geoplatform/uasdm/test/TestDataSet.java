@@ -232,7 +232,7 @@ abstract public class TestDataSet
 
   @Request
   public void setUpInstanceData()
-  {    
+  {
     tearDownInstanceData();
 
     setUpTestInTrans();
@@ -240,7 +240,7 @@ abstract public class TestDataSet
     setUpRelationships();
 
     setUpAfterApply();
-    
+
     // Reset mock services
     RemoteFileFacade.setService(new MockRemoteFileService());
     IndexService.setIndex(new MockIndex());
@@ -449,7 +449,15 @@ abstract public class TestDataSet
       {
         AbstractWorkflowTask task = it.next();
 
-        task.delete();
+        try
+        {
+          task.delete();
+        }
+        catch (Exception e)
+        {
+          // Ignore: An upstream task might delete a downstream task in it's
+          // delete logic
+        }
       }
     }
     finally
