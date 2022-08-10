@@ -577,7 +577,7 @@ abstract public class TestDataSet
         }
         catch (Exception e)
         {
-          e.printStackTrace();
+          // Ignore
         }
       }
     }

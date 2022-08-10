@@ -20,11 +20,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
@@ -114,16 +114,20 @@ public class MockRemoteFileService implements RemoteFileService
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
 
-    if (key.endsWith("metadata.xml"))
+    try
     {
-      try
+      if (key.endsWith("metadata.xml"))
       {
         return new MockRemoteFileObject(new File(this.getClass().getResource("/metadata.xml").toURI()));
       }
-      catch (URISyntaxException e)
+      else if (key.contains("odm_all"))
       {
-        throw new RuntimeException(e);
+        return new MockRemoteFileObject(new File(this.getClass().getResource("/all.zip.test").toURI()));
       }
+    }
+    catch (URISyntaxException e)
+    {
+      throw new RuntimeException(e);
     }
 
     return new MockRemoteFileObject();
@@ -132,9 +136,7 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {
-    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, AppProperties.getBucketName()));
-
-    return new MockRemoteFileObject();
+    return this.download(key);
   }
 
   @Override
@@ -164,6 +166,16 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
+    if (folder.contains("odm_all"))
+    {
+      SiteObject object = new SiteObject();
+      object.setComponentId(component.getOid());
+      object.setKey(component.getS3location() + "odm_all/all123.zip");
+      object.setLastModified(new Date());
+
+      return new SiteObjectsResultSet(1, 1L, 10L, Arrays.asList(object), folder);
+    }
+
     return new SiteObjectsResultSet(0, 1L, 10L, new LinkedList<SiteObject>(), folder);
   }
 

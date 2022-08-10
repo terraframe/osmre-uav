@@ -47,7 +47,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
-import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -371,33 +370,6 @@ public class Product extends ProductBase implements ProductIF
   }
 
   /**
-   * Refreshes S3 and the database with contents from the all zip for all
-   * products in the system.
-   * 
-   * @param sessionId
-   * @param productId
-   * @throws InterruptedException
-   */
-  public static void refreshAllDocuments() throws InterruptedException
-  {
-    final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
-
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("SELECT FROM " + mdProduct.getDBClassName());
-
-    GraphQuery<Product> gq = new GraphQuery<Product>(sb.toString());
-
-    List<Product> results = gq.getResults();
-
-    for (Product product : results)
-    {
-      logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
-      product.refreshDocuments();
-    }
-  }
-
-  /**
    * Downloads the product's ODM all.zip and refreshes S3 and database documents
    * with the data contained.
    * 
@@ -668,7 +640,6 @@ public class Product extends ProductBase implements ProductIF
           }
           else
           {
-            // TODO Handle assetName
             String assetName = FilenameUtils.getBaseName(document.getName());
 
             String type = "image/tiff; application=geotiff;";
@@ -709,4 +680,31 @@ public class Product extends ProductBase implements ProductIF
 
     return query.getResults();
   }
+  
+  /**
+   * Refreshes S3 and the database with contents from the all zip for all
+   * products in the system.
+   * 
+   * @param sessionId
+   * @param productId
+   * @throws InterruptedException
+   */
+  public static void refreshAllDocuments() throws InterruptedException
+  {
+    final MdVertexDAOIF mdProduct = MdVertexDAO.getMdVertexDAO(Product.CLASS);
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("SELECT FROM " + mdProduct.getDBClassName());
+
+    GraphQuery<Product> gq = new GraphQuery<Product>(sb.toString());
+
+    List<Product> results = gq.getResults();
+
+    for (Product product : results)
+    {
+      logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
+      product.refreshDocuments();
+    }
+  }  
 }
