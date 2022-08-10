@@ -179,7 +179,7 @@ public class CollectionUploadEventTest
 
   @Test
   @Request
-  public void testHandleUploadFinishOrthoWithProcessing() throws Exception
+  public void testHandleUploadFinishOrthoWithPngProcessing() throws Exception
   {
     File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
 
@@ -197,11 +197,12 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(2, documents.size());
+      Assert.assertEquals(3, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
       Assert.assertTrue(names.contains("odm_orthophoto_test.tif"));
+      Assert.assertTrue(names.contains("odm_orthophoto_test.cog.tif"));
       Assert.assertTrue(names.contains("odm_orthophoto_test.png"));
 
       OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
@@ -218,6 +219,48 @@ public class CollectionUploadEventTest
     }
   }
 
+  @Test
+  @Request
+  public void testHandleUploadFinishOrthoWithHillshadeProcessing() throws Exception
+  {
+    File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
+    
+    final FileResource resource = new FileResource(file);
+    
+    String uploadTarget = ImageryComponent.DEM;
+    
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    
+    try
+    {
+      CollectionUploadEvent event = pair.getSecond();
+      
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+      
+      List<DocumentIF> documents = collection.getDocuments();
+      
+      Assert.assertEquals(3, documents.size());
+      
+      List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
+      
+      Assert.assertTrue(names.contains("odm_orthophoto_test.tif"));
+      Assert.assertTrue(names.contains("dsm.cog.tif"));
+      
+      OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
+      
+      Assert.assertNotNull(task);
+      
+      List<Product> products = collection.getProducts();
+      
+      Assert.assertEquals(1, products.size());      
+    }
+    finally
+    {
+      pair.getSecond().delete();
+    }
+  }
+  
+  
   @Test
   @Request
   public void testHandleUploadFinishRawWithProcessing() throws Exception
