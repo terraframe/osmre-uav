@@ -108,7 +108,7 @@ public class HTTPConnector
     return client != null;
   }
   
-  public HTTPResponse httpGet(String url, NameValuePair[] params)
+  public Response httpGet(String url, NameValuePair[] params)
   {
     if (!isInitialized())
     {
@@ -121,7 +121,7 @@ public class HTTPConnector
     
     get.setQueryString(params);
     
-    HTTPResponse response = this.httpRequest(this.client, get);
+    Response response = this.httpRequest(this.client, get);
     
     if (response.getStatusCode() == 401)
     {
@@ -131,7 +131,7 @@ public class HTTPConnector
     return response;
   }
   
-  public HTTPResponse postAsMultipart(String url, Part[] parts)
+  public Response postAsMultipart(String url, Part[] parts)
   {
 //    try {
       if (!isInitialized())
@@ -147,7 +147,7 @@ public class HTTPConnector
       
       post.setRequestEntity(multipartRequestEntity);
       
-      HTTPResponse response = this.httpRequest(this.client, post);
+      Response response = this.httpRequest(this.client, post);
       
       if (response.getStatusCode() == 401)
       {
@@ -160,7 +160,7 @@ public class HTTPConnector
 //    }
   }
   
-  public HTTPResponse httpPost(String url, NameValuePair[] body)
+  public Response httpPost(String url, NameValuePair[] body)
   {
     if (!isInitialized())
     {
@@ -176,7 +176,7 @@ public class HTTPConnector
       String sBody = org.apache.commons.httpclient.util.EncodingUtil.formUrlEncode(body, "UTF-8");
       post.setRequestEntity(new StringRequestEntity(sBody, null, null));
       
-      HTTPResponse response = this.httpRequest(this.client, post);
+      Response response = this.httpRequest(this.client, post);
       
       if (response.getStatusCode() == 401)
       {
@@ -191,7 +191,7 @@ public class HTTPConnector
     }
   }
   
-  public HTTPResponse httpRequest(HttpClient client, HttpMethod method)
+  public Response httpRequest(HttpClient client, HttpMethod method)
   {
     String sResponse = null;
     try
@@ -230,7 +230,7 @@ public class HTTPConnector
         this.logger.debug("Receieved a very large response.");
       }
       
-      return new HTTPResponse(sResponse, statusCode);
+      return new HttpResponse(sResponse, statusCode);
     }
     catch (ConnectException e)
     {

@@ -69,7 +69,11 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.mock.MockIndex;
+import gov.geoplatform.uasdm.mock.MockODMService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
+import gov.geoplatform.uasdm.odm.OnceTaskService;
+import gov.geoplatform.uasdm.odm.ODMFacade;
+import gov.geoplatform.uasdm.odm.ODMStatusServer;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.geoprism.GeoprismUser;
@@ -195,6 +199,8 @@ abstract public class TestDataSet
     // Setup mock services
     RemoteFileFacade.setService(new MockRemoteFileService());
     IndexService.setIndex(new MockIndex());
+    ODMFacade.setService(new MockODMService());
+    ODMStatusServer.setService(new OnceTaskService());
 
     TestDataSet.deleteAllSchedulerData();
 

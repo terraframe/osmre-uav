@@ -193,7 +193,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setComponent(component.getOid());
-    task.setGeoprismUser(GeoprismUser.getCurrentUser());
+    task.setGeoprismUser(this.getEventUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setProcessDem(uploadTask.getProcessDem());
     task.setProcessOrtho(uploadTask.getProcessOrtho());
@@ -269,17 +269,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
-    SingleActor user = GeoprismUser.getCurrentUser();
-
-    if (user == null)
-    {
-      user = this.getGeoprismUser();
-    }
-
     OrthoProcessingTask task = new OrthoProcessingTask();
     task.setUploadId(uploadTask.getUploadId());
     task.setComponent(component.getOid());
-    task.setGeoprismUser(user);
+    task.setGeoprismUser(this.getEventUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setProcessDem(uploadTask.getProcessDem());
     task.setProcessOrtho(uploadTask.getProcessOrtho());
@@ -290,6 +283,17 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.apply();
 
     task.initiate(infile);
+  }
+
+  private SingleActor getEventUser()
+  {
+    SingleActor user = GeoprismUser.getCurrentUser();
+
+    if (user == null)
+    {
+      user = this.getGeoprismUser();
+    }
+    return user;
   }
 
   public static CollectionUploadEvent getByUploadId(String uploadId)

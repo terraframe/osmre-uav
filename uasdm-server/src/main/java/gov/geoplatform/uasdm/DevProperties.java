@@ -22,8 +22,8 @@ import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 import com.runwaysdk.resource.CloseableFile;
 
-import gov.geoplatform.uasdm.odm.HTTPResponse;
-import gov.geoplatform.uasdm.odm.InfoResponse;
+import gov.geoplatform.uasdm.odm.HttpResponse;
+import gov.geoplatform.uasdm.odm.HttpInfoResponse;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 
 /**
@@ -90,7 +90,7 @@ public class DevProperties
   }
   
   @SuppressWarnings("unchecked")
-  public static InfoResponse getMockOdmTaskInfo()
+  public static HttpInfoResponse getMockOdmTaskInfo()
   {
     JSONObject mock = new JSONObject();
     
@@ -102,6 +102,6 @@ public class DevProperties
     
     mock.put("imagesCount", 99);
     
-    return new InfoResponse(new HTTPResponse(mock.toString(), 200));
+    return new HttpInfoResponse(new HttpResponse(mock.toString(), 200));
   }
 }

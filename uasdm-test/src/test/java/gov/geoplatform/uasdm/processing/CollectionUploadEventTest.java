@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.processing;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,12 +17,14 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
+import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import junit.framework.Assert;
@@ -195,13 +198,60 @@ public class CollectionUploadEventTest
 
       Assert.assertEquals(2, documents.size());
 
-      Assert.assertEquals("odm_orthophoto_test.tif", documents.get(0).getName());
-      Assert.assertEquals("odm_orthophoto_test.png", documents.get(1).getName());
+      List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
+
+      Assert.assertTrue(names.contains("odm_orthophoto_test.tif"));
+      Assert.assertTrue(names.contains("odm_orthophoto_test.png"));
+
+      OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
+
+      Assert.assertNotNull(task);
     }
     finally
     {
       pair.getSecond().delete();
     }
-
   }
+
+  @Test
+  @Request
+  public void testHandleUploadFinishRawWithProcessing() throws Exception
+  {
+    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    String uploadTarget = ImageryComponent.RAW;
+
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+
+    try
+    {
+      CollectionUploadEvent event = pair.getSecond();
+
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+
+      ODMProcessingTask task = ODMProcessingTask.getByUploadId(event.getUploadId());
+
+      Assert.assertNotNull(task);
+
+      List<DocumentIF> documents = collection.getDocuments();
+
+      Assert.assertEquals(6, documents.size());
+
+      List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
+      
+      Assert.assertTrue(names.contains("DJI_0583.jpeg"));
+      Assert.assertTrue(names.contains("DJI_0593.jpeg"));
+      Assert.assertTrue(names.contains("DJI_0603.jpeg"));
+      Assert.assertTrue(names.contains("DJI_0605.jpeg"));
+      Assert.assertTrue(names.contains("sewer_pull_from_city_tap.mp4"));
+      Assert.assertTrue(names.contains("sewer_push_to_city_tap.mp4"));
+    }
+    finally
+    {
+      pair.getSecond().delete();
+    }
+  }
+
 }

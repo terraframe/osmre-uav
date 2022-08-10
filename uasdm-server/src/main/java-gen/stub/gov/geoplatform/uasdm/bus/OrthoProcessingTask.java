@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 
@@ -84,14 +86,14 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       final String basename = FilenameUtils.getBaseName(file.getName());
       final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
-      
+
       if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
       {
         if (!new CogTifValidator().isValidCog(file))
         {
           new CogTifProcessor(ImageryComponent.ORTHO + "/" + basename + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(file);
         }
-        
+
         new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + basename + ".png", product, collection, monitor).process(file);
       }
 
@@ -99,9 +101,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       {
         if (!new CogTifValidator().isValidCog(file))
         {
-          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
-            .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
-            .process(file);
+          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this))).process(file);
         }
         else
         {
@@ -126,5 +126,23 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       this.setMessage("Ortho has been processed");
       this.apply();
     }
+
   }
+
+  public static OrthoProcessingTask getByUploadId(String uploadId)
+  {
+    OrthoProcessingTaskQuery query = new OrthoProcessingTaskQuery(new QueryFactory());
+    query.WHERE(query.getUploadId().EQ(uploadId));
+
+    try (OIterator<? extends OrthoProcessingTask> iterator = query.getIterator())
+    {
+      if (iterator.hasNext())
+      {
+        return iterator.next();
+      }
+    }
+
+    return null;
+  }
+
 }

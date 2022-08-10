@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 
@@ -34,7 +36,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 {
   private static final long serialVersionUID = -90821820;
 
-  private static Logger     logger           = LoggerFactory.getLogger(ODMStatusServer.class);
+  private static Logger logger = LoggerFactory.getLogger(ODMStatusServer.class);
 
   public ODMProcessingTask()
   {
@@ -86,7 +88,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       }
       else
       {
-        resp = new NewResponse(new HTTPResponse("{\"uuid\":\"TEST\"}", 200));
+        resp = new HttpNewResponse(new HttpResponse("{\"uuid\":\"TEST\"}", 200));
       }
 
       if (resp.getHTTPResponse().isUnreachableHost())
@@ -138,8 +140,8 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
-      
-      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());              
+
+      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
     }
     finally
     {
@@ -155,4 +157,21 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
   {
     // do nothing, as this does not pertain to Collections
   }
+
+  public static ODMProcessingTask getByUploadId(String uploadId)
+  {
+    ODMProcessingTaskQuery query = new ODMProcessingTaskQuery(new QueryFactory());
+    query.WHERE(query.getUploadId().EQ(uploadId));
+
+    try (OIterator<? extends ODMProcessingTask> iterator = query.getIterator())
+    {
+      if (iterator.hasNext())
+      {
+        return iterator.next();
+      }
+    }
+
+    return null;
+  }
+
 }

@@ -112,14 +112,14 @@ public class S3RemoteFileService implements RemoteFileService
   {
     AmazonS3 client = S3ClientFactory.createClient();
     AmazonS3URI uri = new AmazonS3URI(url);
-    
+
     GetObjectRequest request = new GetObjectRequest(uri.getBucket(), uri.getKey());
-    
+
     S3Object object = client.getObject(request);
-    
+
     return new S3ObjectWrapper(object);
   }
-  
+
   @Override
   public RemoteFileObject download(String key)
   {
