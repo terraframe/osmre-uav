@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.session.RequestType;
 import com.vividsolutions.jts.geom.Point;
 
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -79,12 +80,16 @@ public class UasComponentTest
 
     product.addDocumentGeneratedProductParent(source).apply();
     product.addDocuments(Arrays.asList(target, image));
+    
+    testData.logIn();
   }
 
   @After
   @Request
   public void tearDown()
   {
+    testData.logOut();
+    
     if (product != null)
     {
       product.delete();
@@ -154,6 +159,26 @@ public class UasComponentTest
     SiteObject object = objects.get(0);
 
     Assert.assertEquals(object.getKey(), source.getS3location());
+  }
+
+  @Test
+  @Request
+  public void testGetSiteObjects_Collection()
+  {
+    SiteObjectsResultSet results = collection.getSiteObjects(null, 1L, 20L);
+
+    Assert.assertNull(results.getFolder());
+    Assert.assertEquals(Long.valueOf(1L), results.getPageNumber());
+    Assert.assertEquals(Long.valueOf(20L), results.getPageSize());
+    Assert.assertEquals(Long.valueOf(5L), results.getTotalObjects());
+
+    List<SiteObject> objects = results.getObjects();
+
+    Assert.assertEquals(5, objects.size());
+
+    SiteObject object = objects.get(0);
+
+    Assert.assertEquals(object.getKey(), collection.buildRawKey());
   }
 
   @Test(expected = ProgrammingErrorException.class)
@@ -308,11 +333,52 @@ public class UasComponentTest
   {
     Assert.assertFalse(site.isDuplicateFolderName(null, site.getFolderName()));
   }
-  
+
   @Test
   @Request
   public void testIsDuplicateFolderName_Child() throws IOException
   {
     Assert.assertFalse(project.isDuplicateFolderName(site, project.getFolderName()));
+  }
+
+  @Test
+  @Request
+  public void testGetExcludes() throws IOException
+  {
+    Assert.assertEquals(0, collection.getExcludes().size());
+
+    image.setExclude(true);
+    image.apply();
+
+    Assert.assertEquals(1, collection.getExcludes().size());
+  }
+
+  @Test
+  @Request
+  public void testToMetadataMessage() throws IOException
+  {
+    JSONArray messages = Collection.toMetadataMessage(Arrays.asList(collection));
+    
+    Assert.assertEquals(1, messages.length());
+    
+    JSONObject message = messages.getJSONObject(0);
+    
+    Assert.assertEquals("Metadata missing for collection [Fishbed_E]", message.getString("message"));
+    Assert.assertEquals(collection.getOid(), message.getString("collectionId"));
+    Assert.assertEquals(collection.getName(), message.getString("collectionName"));
+    Assert.assertEquals(3, message.getJSONArray("ancestors").length());
+  }
+  
+  @Test
+  public void testGetMissingMetadata()
+  {
+    getMissingMetadata(testData.clientRequest.getSessionId());
+  }
+
+  @Request(RequestType.SESSION)
+  public void getMissingMetadata(String sessionId)
+  {
+    Assert.assertEquals(0, Collection.getMissingMetadata(1, 10).size());
+    Assert.assertEquals(0, Collection.getMissingMetadataCount());
   }
 }
