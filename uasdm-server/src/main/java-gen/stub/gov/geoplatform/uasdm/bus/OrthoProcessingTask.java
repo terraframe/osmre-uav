@@ -28,6 +28,8 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -87,7 +89,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       {
         new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(infile);
       }
-
+      
       new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
     }
 
@@ -95,7 +97,9 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (!new CogTifValidator().isValidCog(infile))
       {
-        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this))).process(infile);
+        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
+          .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
+          .process(infile);
       }
       else
       {
