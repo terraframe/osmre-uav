@@ -28,6 +28,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.test.Area51DataSet;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 import junit.framework.Assert;
 import net.geoprism.GeoprismUser;
 
@@ -102,7 +103,7 @@ public class CollectionUploadEventTest
   @Request
   public void testHandleUploadFinishRaw() throws Exception
   {
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -265,7 +266,7 @@ public class CollectionUploadEventTest
   @Request
   public void testHandleUploadFinishRawWithProcessing() throws Exception
   {
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
 
     final FileResource resource = new FileResource(file);
 

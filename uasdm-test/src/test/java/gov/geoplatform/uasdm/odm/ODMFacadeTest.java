@@ -27,6 +27,7 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.odm.ODMFacade.CloseablePair;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 
 public class ODMFacadeTest
 {
@@ -34,7 +35,7 @@ public class ODMFacadeTest
   @Test
   public void testFilterZip() throws IOException, URISyntaxException
   {
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -57,7 +58,7 @@ public class ODMFacadeTest
   @Test
   public void testFilterTarGz() throws IOException, URISyntaxException
   {
-    File file = new File(this.getClass().getResource("/small-fix-with-video.tar.gz").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.tar.gz.test").toURI());
 
     final FileResource resource = new FileResource(file);
 

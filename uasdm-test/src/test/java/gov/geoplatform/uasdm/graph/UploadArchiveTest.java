@@ -40,6 +40,7 @@ import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 import net.geoprism.GeoprismUser;
 
 public class UploadArchiveTest
@@ -187,7 +188,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -213,7 +214,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -233,7 +234,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = new File(this.getClass().getResource("/small-fix-with-video.tar.gz").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.tar.gz.test").toURI());
 
     final FileResource resource = new FileResource(file);
 

@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.test.TestDataSet;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 import gov.geoplatform.uasdm.util.SchedulerTestUtils;
 import junit.framework.Assert;
 import net.geoprism.GeoprismUser;
@@ -106,7 +107,7 @@ public class ImageryProcessingJobTest
     String admin = GeoprismUser.getByUsername(TestDataSet.ADMIN_USER_NAME).getOid();
 
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    File file = new File(this.getClass().getResource("/small-fix-with-video.zip").toURI());
+    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
     File archive = File.createTempFile("archive", ".zip");
     try
     {
