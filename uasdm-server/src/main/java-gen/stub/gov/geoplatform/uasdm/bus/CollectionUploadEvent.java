@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
@@ -72,7 +73,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationResource infile, String outFileNamePrefix, Boolean processUpload)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, String outFileNamePrefix, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -100,8 +101,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       {
         if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
         {
-          boolean isCog = new CogTifValidator().isValidCog(infile.getUnderlyingFile());
-
+          boolean isCog = new CogTifValidator().isValidCog(infile);
+          
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
             File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
@@ -206,7 +207,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile, isMultispectral);
   }
 
-  private void calculateImageSize(ApplicationResource zip, CollectionIF collection)
+  private void calculateImageSize(ApplicationFileResource zip, CollectionIF collection)
   {
     try
     {
@@ -265,7 +266,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationResource infile)
+  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 

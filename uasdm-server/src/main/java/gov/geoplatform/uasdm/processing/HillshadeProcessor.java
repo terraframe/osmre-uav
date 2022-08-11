@@ -6,6 +6,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.FileResource;
+
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
@@ -25,8 +28,10 @@ public class HillshadeProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(File file)
+  public boolean process(ApplicationFileResource res)
   {
+    File file = res.getUnderlyingFile();
+    
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File hillshade = new File(file.getParent(), basename + "-gdal" + CogTifProcessor.COG_EXTENSION);
@@ -37,7 +42,7 @@ public class HillshadeProcessor extends ManagedDocument
 
     if (success && hillshade.exists())
     {
-      super.process(hillshade);
+      super.process(new FileResource(hillshade));
     }
     else
     {

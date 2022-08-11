@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.processing;
 
-import java.io.File;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -44,15 +45,15 @@ public class S3FileUpload implements Processor
   }
   
   @Override
-  public boolean process(File file)
+  public boolean process(ApplicationFileResource res)
   {
-    if (!file.exists())
+    if (!res.exists())
     {
-      this.monitor.addError("S3 uploader expected file [" + file.getAbsolutePath() + "] to exist.");
+      this.monitor.addError("S3 uploader expected file [" + res.getAbsolutePath() + "] to exist.");
       return false;
     }
     
-    this.uploadFile(file);
+    this.uploadFile(res);
 
     CollectionReport.updateSize(this.collection);
     
@@ -71,23 +72,23 @@ public class S3FileUpload implements Processor
     return key;
   }
   
-  protected void uploadFile(File file)
+  protected void uploadFile(ApplicationFileResource res)
   {
     String key = this.getS3Key();
     
-    if (file.isDirectory())
+    if (res.getUnderlyingFile().isDirectory())
     {
-      RemoteFileFacade.uploadDirectory(file, key, this.monitor, true);
+      RemoteFileFacade.uploadDirectory(res.getUnderlyingFile(), key, this.monitor, true);
       
       if (this.product.isPublished())
       {
         // TODO : copyObject is more efficient but doesn't work on directories
-        RemoteFileFacade.uploadDirectory(file, key, AppProperties.getPublicBucketName(), this.monitor, true);
+        RemoteFileFacade.uploadDirectory(res.getUnderlyingFile(), key, AppProperties.getPublicBucketName(), this.monitor, true);
       }
     }
     else
     {
-      RemoteFileFacade.uploadFile(file, key, this.monitor);
+      RemoteFileFacade.uploadFile(res.getUnderlyingFile(), key, this.monitor);
       
       if (this.product.isPublished())
       {

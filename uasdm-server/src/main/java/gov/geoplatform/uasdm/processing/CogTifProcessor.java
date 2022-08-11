@@ -8,6 +8,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.resource.ApplicationFileResource;
+
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
@@ -37,8 +39,10 @@ public class CogTifProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(File file)
+  public boolean process(ApplicationFileResource res)
   {
+    File file = res.getUnderlyingFile();
+    
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File overview = new File(file.getParent(), basename + "-overview.tif");
@@ -49,7 +53,7 @@ public class CogTifProcessor extends ManagedDocument
     catch (IOException e)
     {
       String msg = "Error copying file. Cog generation failed for [" + this.getS3Path() + "].";
-      logger.info(msg, e);
+      logger.error(msg, e);
       monitor.addError(msg);
       return false;
     }
@@ -61,7 +65,7 @@ public class CogTifProcessor extends ManagedDocument
         }))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
-        logger.info(msg);
+        logger.error(msg);
         monitor.addError(msg);
         return false;
       }
@@ -79,35 +83,35 @@ public class CogTifProcessor extends ManagedDocument
           }))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
-          logger.info(msg);
+          logger.error(msg);
           monitor.addError(msg);
           return false;
         }
         
         if (cog.exists())
         {
-          if (new CogTifValidator(this.monitor).isValidCog(cog))
+          if (new CogTifValidator(this.monitor).isValidCog(res))
           {
             if (this.downstream == null)
             {
-              return super.process(cog);
+              return super.process(res);
             }
             else
             {
-              if (super.process(cog))
+              if (super.process(res))
               {
-                return this.downstream.process(cog);
+                return this.downstream.process(res);
               }
             }
           }
           else
           {
-            logger.info("Problem occurred validating cog file for [" + this.getS3Path() + "].");
+            logger.warn("Problem occurred validating cog file for [" + this.getS3Path() + "].");
           }
         }
         else
         {
-          logger.info("Problem occurred generating cog file for [" + this.getS3Path() + "]. Overview file did not exist at [" + overview.getAbsolutePath() + "].");
+          logger.error("Problem occurred generating cog file for [" + this.getS3Path() + "]. Overview file did not exist at [" + overview.getAbsolutePath() + "].");
           monitor.addError("Problem occurred generating cog file for [" + this.getS3Path() + "]. Overview file did not exist.");
         }
       }

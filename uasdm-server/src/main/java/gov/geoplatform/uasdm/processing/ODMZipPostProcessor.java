@@ -27,13 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -42,7 +40,6 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -218,7 +215,7 @@ public class ODMZipPostProcessor
     }
     else
     {
-      processor.process(odmFile);
+      processor.process(new FileResource(odmFile));
     }
   }
 
@@ -226,7 +223,7 @@ public class ODMZipPostProcessor
   {
     if (DevProperties.uploadAllZip())
     {
-      new ManagedDocument(Product.ODM_ALL_DIR + "/" + allZip.getName(), this.product, this.collection, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask)).process(allZip);
+      new ManagedDocument(Product.ODM_ALL_DIR + "/" + allZip.getName(), this.product, this.collection, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask)).process(new FileResource(allZip));
     }
   }
 

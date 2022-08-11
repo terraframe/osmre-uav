@@ -6,8 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -55,9 +54,9 @@ public class CogTifProcessorTest
 
     CogTifValidator validator = new CogTifValidator(monitor);
 
-    Assert.assertTrue(validator.isValidCog(new File("/tmp/odm_orthophoto.cog.tif")));
+    Assert.assertTrue(validator.isValidCog(new FileResource(new File("/tmp/odm_orthophoto.cog.tif"))));
 
-    Assert.assertFalse(validator.isValidCog(new File("/tmp/odm_orthophoto.tif")));
+    Assert.assertFalse(validator.isValidCog(new FileResource(new File("/tmp/odm_orthophoto.tif"))));
   }
 
   @Test
