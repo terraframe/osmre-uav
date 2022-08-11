@@ -167,4 +167,14 @@ public class TestSensorInfo
     return TestDataSet.getSensor(name);
   }
   
+  public void delete()
+  {
+    Sensor sensor = this.getServerObject();
+    
+    if (sensor != null)
+    {
+      sensor.delete();
+    }
+  }
+  
 }

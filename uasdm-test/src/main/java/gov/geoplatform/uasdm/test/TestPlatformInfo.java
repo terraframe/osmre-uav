@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.test;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.PlatformManufacturer;
 import gov.geoplatform.uasdm.graph.PlatformType;
+import gov.geoplatform.uasdm.graph.UAV;
 
 public class TestPlatformInfo
 {
@@ -97,6 +98,16 @@ public class TestPlatformInfo
   public Platform getServerObject()
   {
     return TestDataSet.getPlatform(name);
+  }
+  
+  public void delete()
+  {
+    Platform server = this.getServerObject();
+    
+    if (server != null)
+    {
+      server.delete();
+    }
   }
   
 }

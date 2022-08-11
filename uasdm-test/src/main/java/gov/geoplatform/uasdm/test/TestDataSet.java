@@ -316,6 +316,31 @@ abstract public class TestDataSet
   @Transaction
   protected void cleanUpClassInTrans()
   {
+    cleanUpTestInTrans();
+  }
+
+  @Request
+  public void reloadPermissions()
+  {
+    SessionFacade.getSessionForRequest(this.clientRequest.getSessionId()).reloadPermissions();
+  }
+
+  public void tearDownInstanceData()
+  {
+    tearDownInstanceDataInRequest();
+  }
+
+  @Request
+  public void tearDownInstanceDataInRequest()
+  {
+    cleanUpTestInTrans();
+  }
+
+  @Transaction
+  protected void cleanUpTestInTrans()
+  {
+    deleteAllWorkflowTasks();
+    
     for (TestCollectionInfo obj : managedCollections)
     {
       obj.delete();
@@ -340,45 +365,21 @@ abstract public class TestDataSet
     {
       user.delete();
     }
-  }
-
-  @Request
-  public void reloadPermissions()
-  {
-    SessionFacade.getSessionForRequest(this.clientRequest.getSessionId()).reloadPermissions();
-  }
-
-  public void tearDownInstanceData()
-  {
-    tearDownInstanceDataInRequest();
-  }
-
-  @Request
-  public void tearDownInstanceDataInRequest()
-  {
-    cleanUpTestInTrans();
-  }
-
-  @Transaction
-  protected void cleanUpTestInTrans()
-  {
-    // for (TestGeoObjectInfo go : managedGeoObjectInfos)
-    // {
-    // go.delete();
-    // }
-    // for (TestGeoObjectInfo go : managedGeoObjectInfosExtras)
-    // {
-    // go.delete();
-    // }
-
-    deleteAllWorkflowTasks();
-    deleteAllVertex("site0");
-    deleteAllVertex("project0");
-    deleteAllVertex("mission0");
-    deleteAllVertex("collection0");
-    deleteAllSensors();
-    deleteAllUavs();
-    deleteAllPlatforms();
+    
+    for (TestSensorInfo obj : managedSensors)
+    {
+      obj.delete();
+    }
+    
+    for (TestUavInfo obj : managedUavs)
+    {
+      obj.delete();
+    }
+    
+    for (TestPlatformInfo obj : managedPlatforms)
+    {
+      obj.delete();
+    }
 
     new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
 
