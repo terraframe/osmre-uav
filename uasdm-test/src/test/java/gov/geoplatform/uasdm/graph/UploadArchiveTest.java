@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -177,7 +178,7 @@ public class UploadArchiveTest
 
   @Test
   @Request
-  public void testZipArchive() throws URISyntaxException
+  public void testZipArchive() throws URISyntaxException, IOException
   {
     Collection collection = Collection.get(collectionId1);
 
@@ -188,13 +189,13 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 
     List<String> results = collection.uploadArchive(task, resource, "raw");
 
-    Assert.assertEquals(6, results.size());
+    Assert.assertEquals(5, results.size());
 
     List<WorkflowAction> actions = task.getActions();
 
@@ -203,7 +204,7 @@ public class UploadArchiveTest
 
   @Test(expected = UnsupportedOperationException.class)
   @Request
-  public void testUploadUnknownUploadTarget() throws URISyntaxException
+  public void testUploadUnknownUploadTarget() throws URISyntaxException, IOException
   {
     Collection collection = Collection.get(collectionId1);
 
@@ -214,7 +215,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -223,7 +224,7 @@ public class UploadArchiveTest
 
   @Test
   @Request
-  public void testTarGzArchive() throws URISyntaxException
+  public void testTarGzArchive() throws URISyntaxException, IOException
   {
     Collection collection = Collection.get(collectionId1);
 
@@ -234,7 +235,7 @@ public class UploadArchiveTest
     task.setStatus("Test Status");
     task.apply();
 
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.tar.gz.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 

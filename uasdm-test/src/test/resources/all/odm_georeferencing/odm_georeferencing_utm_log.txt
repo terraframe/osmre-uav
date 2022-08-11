@@ -1,0 +1,4 @@
+imagesPath was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/images/
+imageListFile was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/img_list.txt
+outputCoordFile was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/coords.txt
+logFile_ was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_utm_log.txt

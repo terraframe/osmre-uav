@@ -1,5 +1,6 @@
 package gov.geoplatform.uasdm.mock;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.runwaysdk.resource.ApplicationResource;
@@ -11,6 +12,7 @@ import gov.geoplatform.uasdm.odm.ODMResponse;
 import gov.geoplatform.uasdm.odm.ODMServiceIF;
 import gov.geoplatform.uasdm.odm.TaskOutputResponse;
 import gov.geoplatform.uasdm.odm.TaskRemoveResponse;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 
 public class MockODMService implements ODMServiceIF
 {
@@ -32,9 +34,9 @@ public class MockODMService implements ODMServiceIF
   {
     try
     {
-      return new CloseableFile(this.getClass().getResource("/all.zip.test").toURI(), false);
+      return new CloseableFile(FileTestUtils.createZip(this.getClass().getResource("/all").toURI(), "all.zip"), false);
     }
-    catch (URISyntaxException e)
+    catch (URISyntaxException | IOException e)
     {
       throw new RuntimeException(e);
     }

@@ -1,0 +1,52 @@
+/code/build/bin/odm_georef_log.txt
+Arguments given
+-bundleFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/opensfm/bundle_r000.out
+-inputTransformFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/opensfm/geocoords_transformation.txt
+-inputCoordFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/coords.txt
+-inputFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model.obj
+-outputFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model_geo.obj
+-inputPointCloudFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/opensfm/depthmaps/merged.ply
+-outputPointCloudFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferenced_model.ply
+-logFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_log.txt
+-outputTransformFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_transform.txt
+-georefFileOutputPath
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_model_geo.txt
+
+Reading cameras from: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/opensfm/bundle_r000.out
+Reading transform file from: 
+Reading cameras gps exif positions from: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/coords.txt
+Reading textured mesh from: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model.obj
+Writing output to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model_geo.obj
+Reading point cloud from: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/opensfm/depthmaps/merged.ply
+Writing output to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferenced_model.ply
+Log file path was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_log.txt
+Transform file path was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_transform.txt
+Georef file output path is set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_model_geo.txt
+
+Missing input in order to use GCP for georeferencing. Using EXIF data instead.
+
+Reading mesh file...
+.. mesh file read.
+
+Applying transform to mesh...
+.. mesh transformed.
+
+Successfully saved model.
+
+Saving final transform file to '/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_transform.txt'...
+... final transform saved.
+Successfully loaded 119975 points with corresponding normals from file.
+Writing transformed point cloud to /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferenced_model.ply...
+Point cloud file saved.
+
+Saving georeference system file to '/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_georeferencing/odm_georeferencing_model_geo.txt'...
+... georeference system saved.

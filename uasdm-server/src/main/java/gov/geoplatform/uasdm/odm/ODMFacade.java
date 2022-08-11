@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.google.common.io.Files;
@@ -145,8 +146,6 @@ public class ODMFacade
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
-    byte data[] = new byte[Util.BUFFER_SIZE];
-
     try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
     {
       try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
@@ -163,16 +162,11 @@ public class ODMFacade
           }
           else if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
           {
-            int count;
-
             File file = new File(parent, entry.getName());
 
             try (FileOutputStream fos = new FileOutputStream(file))
             {
-              while ( ( count = tarIn.read(data, 0, Util.BUFFER_SIZE) ) != -1)
-              {
-                fos.write(data, 0, count);
-              }
+              IOUtils.copy(tarIn, fos);
             }
 
             itemCount++;
