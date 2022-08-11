@@ -83,12 +83,6 @@ public class MockRemoteFileObject implements RemoteFileObject
   }
 
   @Override
-  public File getUnderlyingFile()
-  {
-    return this.file;
-  }
-
-  @Override
   public String getName()
   {
 
