@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -90,17 +91,19 @@ public class CogTifProcessor extends ManagedDocument
         
         if (cog.exists())
         {
-          if (new CogTifValidator(this.monitor).isValidCog(res))
+          FileResource cogRes = new FileResource(cog);
+          
+          if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
             if (this.downstream == null)
             {
-              return super.process(res);
+              return super.process(cogRes);
             }
             else
             {
-              if (super.process(res))
+              if (super.process(cogRes))
               {
-                return this.downstream.process(res);
+                return this.downstream.process(cogRes);
               }
             }
           }
