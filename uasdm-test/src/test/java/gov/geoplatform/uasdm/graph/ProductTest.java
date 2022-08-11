@@ -311,6 +311,13 @@ public class ProductTest
 
   @Test
   @Request
+  public void testGetProducts()
+  {
+    Assert.assertEquals(1, Product.getProducts().size());
+  }
+  
+  @Test
+  @Request
   public void testToStacItem()
   {
     UAV uav = collection.getUav();

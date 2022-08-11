@@ -1,0 +1,318 @@
+package gov.geoplatform.uasdm.graph;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONWriter;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.session.Request;
+import com.vividsolutions.jts.geom.Point;
+
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.test.Area51DataSet;
+import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
+
+public class UasComponentTest
+{
+  private static Area51DataSet testData;
+
+  private Product product;
+
+  private Site site;
+
+  private Project project;
+
+  private Mission mission;
+
+  private Collection collection;
+
+  private Document target;
+
+  private Document source;
+
+  private Document image;
+
+  @BeforeClass
+  public static void setUpClass()
+  {
+    testData = new Area51DataSet();
+    testData.setUpSuiteData();
+  }
+
+  @AfterClass
+  public static void cleanUpClass()
+  {
+    if (testData != null)
+    {
+      testData.tearDownMetadata();
+    }
+  }
+
+  @Before
+  @Request
+  public void setUp()
+  {
+    testData.setUpInstanceData();
+
+    site = (Site) Area51DataSet.SITE_AREA_51.getServerObject();
+    project = (Project) Area51DataSet.PROJECT_DREAMLAND.getServerObject();
+    mission = (Mission) Area51DataSet.MISSION_HAVE_DOUGHNUT.getServerObject();
+    collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
+    product = Product.createIfNotExist(collection);
+    target = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif", "", "");
+    image = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.png", "test.png", "", "");
+    source = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.RAW + "/test.jpg", "test.jpg", "", "");
+
+    product.addDocumentGeneratedProductParent(source).apply();
+    product.addDocuments(Arrays.asList(target, image));
+  }
+
+  @After
+  @Request
+  public void tearDown()
+  {
+    if (product != null)
+    {
+      product.delete();
+    }
+
+    testData.tearDownInstanceData();
+  }
+
+  @Test
+  @Request
+  public void testGenerateFolderName()
+  {
+    String folderName = collection.generateFolderName(mission);
+
+    Assert.assertEquals("fishbed_e", folderName);
+  }
+
+  @Test
+  @Request
+  public void testGetArtifacts()
+  {
+    JSONObject artifacts = collection.getArtifacts();
+
+    Assert.assertTrue(artifacts.has(ImageryComponent.DEM));
+    Assert.assertTrue(artifacts.has(ImageryComponent.ORTHO));
+    Assert.assertTrue(artifacts.has(ImageryComponent.PTCLOUD));
+
+    Assert.assertEquals(0, artifacts.getJSONArray(ImageryComponent.DEM).length());
+    Assert.assertEquals(0, artifacts.getJSONArray(ImageryComponent.PTCLOUD).length());
+
+    JSONArray result = artifacts.getJSONArray(ImageryComponent.ORTHO);
+    Assert.assertEquals(1, result.length());
+
+    JSONObject artifact = result.getJSONObject(0);
+
+    Assert.assertEquals(target.getOid(), artifact.getString("id"));
+  }
+
+  @Test
+  @Request
+  public void testRemoveArtifacts()
+  {
+    collection.removeArtifacts(ImageryComponent.ORTHO);
+
+    Assert.assertNull(Document.get(target.getOid()));
+    Assert.assertNull(Document.get(image.getOid()));
+    Assert.assertNull(Product.get(product.getOid()));
+
+    product = null;
+  }
+
+  @Test
+  @Request
+  public void testGetSiteObjects_Raw()
+  {
+    SiteObjectsResultSet results = collection.getSiteObjects(ImageryComponent.RAW, 1L, 20L);
+
+    Assert.assertEquals(ImageryComponent.RAW, results.getFolder());
+    Assert.assertEquals(Long.valueOf(1L), results.getPageNumber());
+    Assert.assertEquals(Long.valueOf(20L), results.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), results.getTotalObjects());
+
+    List<SiteObject> objects = results.getObjects();
+
+    Assert.assertEquals(1, objects.size());
+
+    SiteObject object = objects.get(0);
+
+    Assert.assertEquals(object.getKey(), source.getS3location());
+  }
+
+  @Test(expected = ProgrammingErrorException.class)
+  @Request
+  public void testGetSiteObjects_Ortho()
+  {
+    collection.getSiteObjects(ImageryComponent.ORTHO, 1L, 20L);
+  }
+
+  @Test
+  @Request
+  public void testGetProperties()
+  {
+    JSONObject properties = collection.getProperties();
+
+    Assert.assertEquals(collection.getName(), properties.getString("name"));
+    Assert.assertEquals(collection.getOid(), properties.getString("oid"));
+  }
+
+  @Test
+  @Request
+  public void testWriteFeature() throws IOException
+  {
+    StringWriter writer = new StringWriter();
+
+    collection.writeFeature(new JSONWriter(writer));
+
+    String result = writer.toString();
+
+    Assert.assertNotNull(result);
+  }
+
+  @Test
+  @Request
+  public void testFeature() throws IOException
+  {
+    Point geoPoint = site.getGeoPoint();
+
+    Assert.assertNotNull(geoPoint);
+
+    // Create the bounds condition
+    JSONObject sw = new JSONObject();
+    sw.put("lng", "0");
+    sw.put("lat", "0");
+
+    JSONObject ne = new JSONObject();
+    ne.put("lng", "170");
+    ne.put("lat", "80");
+
+    JSONObject bbox = new JSONObject();
+    bbox.put("_sw", sw);
+    bbox.put("_ne", ne);
+
+    JSONObject bounds = new JSONObject();
+    bounds.put("field", "bounds");
+    bounds.put("value", bbox);
+
+    // Create the bureau condition
+    JSONObject bureau = new JSONObject();
+    bureau.put("field", "bureau");
+    bureau.put("value", site.getBureauOid());
+
+    // Create the bureau condition
+    JSONObject name = new JSONObject();
+    name.put("field", "name");
+    name.put("value", site.getName());
+
+    JSONArray conditions = new JSONArray();
+    conditions.put(bounds);
+    conditions.put(bureau);
+    conditions.put(name);
+
+    JSONObject results = UasComponent.features(conditions.toString());
+
+    Assert.assertNotNull(results);
+
+    JSONArray features = results.getJSONArray("features");
+
+    Assert.assertEquals(1, features.length());
+
+    JSONObject feature = features.getJSONObject(0);
+
+    Assert.assertTrue(feature.has("geometry"));
+    Assert.assertEquals("Feature", feature.getString("type"));
+    Assert.assertEquals(site.getOid(), feature.getString("id"));
+
+    JSONObject properties = feature.getJSONObject("properties");
+    Assert.assertEquals(site.getName(), properties.getString("name"));
+    Assert.assertEquals(site.getOid(), properties.getString("oid"));
+  }
+
+  @Test
+  @Request
+  public void testBbox() throws IOException
+  {
+    JSONArray result = UasComponent.bbox();
+
+    Assert.assertNotNull(result);
+  }
+
+  @Test
+  @Request
+  public void testGetDerivedProducts_Mission() throws IOException
+  {
+    List<ProductIF> results = mission.getDerivedProducts(null, null);
+
+    Assert.assertEquals(1, results.size());
+
+    ProductIF result = results.get(0);
+
+    Assert.assertEquals(product.getOid(), result.getOid());
+  }
+
+  @Test
+  @Request
+  public void testGetDerivedProducts_Project() throws IOException
+  {
+    List<ProductIF> results = project.getDerivedProducts(null, null);
+
+    Assert.assertEquals(1, results.size());
+
+    ProductIF result = results.get(0);
+
+    Assert.assertEquals(product.getOid(), result.getOid());
+  }
+
+  @Test
+  @Request
+  public void testGetDerivedProducts_Site() throws IOException
+  {
+    List<ProductIF> results = site.getDerivedProducts(null, null);
+
+    Assert.assertEquals(1, results.size());
+
+    ProductIF result = results.get(0);
+
+    Assert.assertEquals(product.getOid(), result.getOid());
+  }
+
+  @Test
+  @Request
+  public void testGetChild() throws IOException
+  {
+    UasComponentIF child = site.getChild(project.getName());
+
+    Assert.assertEquals(project.getOid(), child.getOid());
+  }
+
+  @Test
+  @Request
+  public void testIsDuplicateFolderName_Root() throws IOException
+  {
+    Assert.assertFalse(site.isDuplicateFolderName(null, site.getFolderName()));
+  }
+  
+  @Test
+  @Request
+  public void testIsDuplicateFolderName_Child() throws IOException
+  {
+    Assert.assertFalse(project.isDuplicateFolderName(site, project.getFolderName()));
+  }
+}

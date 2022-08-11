@@ -94,13 +94,13 @@ public class ODMZipPostProcessor
         {
           throw new RuntimeException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }
-        
+
         this.cleanExistingProduct();
 
         this.product = (Product) this.collection.createProductIfNotExist();
-        
+
         this.processProduct(product, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask), unzippedParentFolder);
-        
+
         this.uploadAllZip(allZip);
       }
     }
@@ -125,36 +125,40 @@ public class ODMZipPostProcessor
     }
 
     product.updateBoundingBox();
-    
+
     IndexService.createStacItems(product);
 
     return this.product;
   }
-  
+
   /**
-   * This must be done before creating the product because the 'removeArtifact' method will delete any existing products
+   * This must be done before creating the product because the 'removeArtifact'
+   * method will delete any existing products
    */
   protected void cleanExistingProduct()
   {
-    if (this.progressTask.getProcessDem())
+    if (this.progressTask != null)
     {
-      this.collection.removeArtifacts(ImageryComponent.DEM);
-    }
+      if (this.progressTask.getProcessDem())
+      {
+        this.collection.removeArtifacts(ImageryComponent.DEM);
+      }
 
-    if (this.progressTask.getProcessOrtho())
-    {
-      this.collection.removeArtifacts(ImageryComponent.ORTHO);
-    }
-    
-    if (this.progressTask.getProcessPtcloud())
-    {
-      this.collection.removeArtifacts(ImageryComponent.PTCLOUD);
+      if (this.progressTask.getProcessOrtho())
+      {
+        this.collection.removeArtifacts(ImageryComponent.ORTHO);
+      }
+
+      if (this.progressTask.getProcessPtcloud())
+      {
+        this.collection.removeArtifacts(ImageryComponent.PTCLOUD);
+      }
     }
   }
-  
+
   protected void processProduct(Product product, StatusMonitorIF monitor, CloseableFile unzippedParentFolder) throws InterruptedException
   {
-    if (this.progressTask.getProcessDem())
+    if (this.progressTask != null && this.progressTask.getProcessDem())
     {
       this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dtm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
@@ -162,18 +166,18 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new HillshadeProcessor(buildS3Path(DEM_GDAL, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
     }
 
-    if (this.progressTask.getProcessOrtho())
+    if (this.progressTask != null && this.progressTask.getProcessOrtho())
     {
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto.png"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
-      
+
       if (this.collection.isMultiSpectral())
       {
         this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
       }
     }
-    
-    if (this.progressTask.getProcessPtcloud())
+
+    if (this.progressTask != null && this.progressTask.getProcessPtcloud())
     {
       this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
 
@@ -184,18 +188,18 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data"), this.product, this.collection, monitor));
     }
   }
-  
+
   public static String buildS3Path(String folder, String prefix, String filename)
   {
     String path = folder + "/";
-    
+
     if (prefix != null && prefix.length() > 0)
     {
       path = path + prefix + "_";
     }
-    
+
     path = path + filename;
-    
+
     return path;
   }
 
@@ -207,7 +211,7 @@ public class ODMZipPostProcessor
     }
 
     File odmFile = new File(unzippedParentFolder, odmFilePath);
-    
+
     if (!odmFile.exists())
     {
       this.progressTask.createAction("ODM did not produce an expected file [" + odmFilePath + "].", TaskActionType.ERROR.getType());
