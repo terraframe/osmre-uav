@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.test;
 
 import gov.geoplatform.uasdm.graph.Bureau;
+import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 
 public class TestUavInfo
@@ -96,6 +97,16 @@ public class TestUavInfo
   public UAV getServerObject()
   {
     return TestDataSet.getUav(this.getSerialNumber());
+  }
+  
+  public void delete()
+  {
+    UAV server = this.getServerObject();
+    
+    if (server != null)
+    {
+      server.delete();
+    }
   }
   
 }
