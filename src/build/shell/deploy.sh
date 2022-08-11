@@ -50,18 +50,6 @@ if [ "$build_artifact" == "true" ]; then
 
   :
   : ----------------------------------
-  :  TEST  
-  : ----------------------------------
-  :
-  if [ "$run_tests" == "true" ]; then
-  cd $WORKSPACE/uasdm
-  #mvn clean install -B -P patch -Dgeoprism.basedir=$WORKSPACE/geoprism -Droot.clean=true -Ddatabase.port=5432
-  #cd uasdm-test && mvn test -Dgeoprism.basedir=$WORKSPACE/geoprism -Ddatabase.port=5432
-  fi
-
-
-  :
-  : ----------------------------------
   : DEPLOY ARTIFACT
   : ----------------------------------
   :
