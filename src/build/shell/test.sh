@@ -38,10 +38,10 @@ node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config co
 cd $WORKSPACE/uasdm
 mvn install -B
 cd $WORKSPACE/uasdm/uasdm-server
-mvn install -B -P database -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
+mvn install -B -P database -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
 cd $WORKSPACE/uasdm/uasdm-test
 set +e
-mvn test -Dappcfg=$WORKSPACE/uasdm/envcfg/dev -Ddatabase.port=5432 -Dproject.basedir=$WORKSPACE/uasdm
+mvn test -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Ddatabase.port=5432 -Dproject.basedir=$WORKSPACE/uasdm
 ecode=$?
 mkdir -p $TEST_OUTPUT/uasdm-test/surefire-reports && cp $WORKSPACE/uasdm/uasdm-test/target/surefire-reports/* $TEST_OUTPUT/uasdm-test/surefire-reports/ && chmod 777 -R $TEST_OUTPUT
 set -e
