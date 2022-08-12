@@ -103,7 +103,7 @@ public class CollectionUploadEventTest
   @Request
   public void testHandleUploadFinishRaw() throws Exception
   {
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -122,11 +122,11 @@ public class CollectionUploadEventTest
 
       java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-      Assert.assertEquals(6, actions.size());
+      Assert.assertEquals(5, actions.size());
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(6, documents.size());
+      Assert.assertEquals(5, documents.size());
     }
     finally
     {
@@ -209,10 +209,10 @@ public class CollectionUploadEventTest
       OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
 
       Assert.assertNotNull(task);
-      
+
       List<Product> products = collection.getProducts();
 
-      Assert.assertEquals(1, products.size());      
+      Assert.assertEquals(1, products.size());
     }
     finally
     {
@@ -225,48 +225,47 @@ public class CollectionUploadEventTest
   public void testHandleUploadFinishOrthoWithHillshadeProcessing() throws Exception
   {
     File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
-    
+
     final FileResource resource = new FileResource(file);
-    
+
     String uploadTarget = ImageryComponent.DEM;
-    
+
     Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
-    
+
     try
     {
       CollectionUploadEvent event = pair.getSecond();
-      
+
       event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
-      
+
       List<DocumentIF> documents = collection.getDocuments();
-      
+
       Assert.assertEquals(3, documents.size());
-      
+
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
-      
+
       Assert.assertTrue(names.contains("odm_orthophoto_test.tif"));
       Assert.assertTrue(names.contains("dsm.cog.tif"));
-      
+
       OrthoProcessingTask task = OrthoProcessingTask.getByUploadId(event.getUploadId());
-      
+
       Assert.assertNotNull(task);
-      
+
       List<Product> products = collection.getProducts();
-      
-      Assert.assertEquals(1, products.size());      
+
+      Assert.assertEquals(1, products.size());
     }
     finally
     {
       pair.getSecond().delete();
     }
   }
-  
-  
+
   @Test
   @Request
   public void testHandleUploadFinishRawWithProcessing() throws Exception
   {
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -285,13 +284,13 @@ public class CollectionUploadEventTest
       Assert.assertNotNull(task);
 
       Collection result = Collection.get(collection.getOid());
-      
+
       Assert.assertNotNull(result.getImageHeight());
       Assert.assertNotNull(result.getImageWidth());
-      
+
       List<DocumentIF> documents = result.getDocuments();
 
-      Assert.assertEquals(14, documents.size());
+      Assert.assertEquals(13, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -299,12 +298,11 @@ public class CollectionUploadEventTest
       Assert.assertTrue(names.contains("DJI_0593.jpeg"));
       Assert.assertTrue(names.contains("DJI_0603.jpeg"));
       Assert.assertTrue(names.contains("DJI_0605.jpeg"));
-      Assert.assertTrue(names.contains("sewer_pull_from_city_tap.mp4"));
-      Assert.assertTrue(names.contains("sewer_push_to_city_tap.mp4"));
+      Assert.assertTrue(names.contains("SampleVideo_1280x720_5mb.mp4"));
 
       List<Product> products = result.getProducts();
 
-      Assert.assertEquals(1, products.size());      
+      Assert.assertEquals(1, products.size());
     }
     finally
     {

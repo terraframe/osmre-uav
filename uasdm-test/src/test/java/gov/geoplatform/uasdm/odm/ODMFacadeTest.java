@@ -35,7 +35,7 @@ public class ODMFacadeTest
   @Test
   public void testFilterZip() throws IOException, URISyntaxException
   {
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 
@@ -58,7 +58,7 @@ public class ODMFacadeTest
   @Test
   public void testFilterTarGz() throws IOException, URISyntaxException
   {
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.tar.gz.test").toURI());
+    File file = FileTestUtils.createTarGz(this.getClass().getResource("/raw").toURI());
 
     final FileResource resource = new FileResource(file);
 

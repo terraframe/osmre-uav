@@ -38,6 +38,7 @@ import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.RemoteFileService;
+import gov.geoplatform.uasdm.util.FileTestUtils;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -122,10 +123,10 @@ public class MockRemoteFileService implements RemoteFileService
       }
       else if (key.contains("odm_all"))
       {
-        return new MockRemoteFileObject(new File(this.getClass().getResource("/all.zip.test").toURI()));
+        return new MockRemoteFileObject(FileTestUtils.createZip(this.getClass().getResource("/all").toURI(), "all.zip"));
       }
     }
-    catch (URISyntaxException e)
+    catch (URISyntaxException | IOException e)
     {
       throw new RuntimeException(e);
     }

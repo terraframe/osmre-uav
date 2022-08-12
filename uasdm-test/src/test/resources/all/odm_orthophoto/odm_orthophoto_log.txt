@@ -1,0 +1,50 @@
+/code/build/bin/odm_orthophoto_log.txt
+
+Arguments given
+-inputFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model_geo.obj
+-logFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto_log.txt
+-outputFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto.png
+-resolution
+20.0
+-outputCornerFile
+/var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto_corners.txt
+
+Reading textured mesh from: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_texturing/odm_textured_model_geo.obj
+Log file path was set to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto_log.txt
+Writing output to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto.png
+Resolution count was set to: 20pixels/meter
+Writing corners to: /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto_corners.txt
+
+Reading mesh file...
+.. mesh file read.
+
+Set boundary to contain entire model.
+Local boundary points:
+Point 1: -35.9922 -41.2618
+Point 2: -35.9922 47.2365
+Point 3: 65.1063 47.2365
+Point 4: 65.1063 -41.2618
+
+Ortho photo bounds x : -35.9922 -> 65.1063
+Ortho photo bounds y : -41.2618 -> 47.2365
+Ortho photo area : 8947.05m2
+Ortho photo resolution, width x height : 2022x1770
+Translating and scaling mesh...
+.. mesh translated and scaled.
+
+Rendering the ortho photo...
+Warning: Sliver polygon found at face index 199049
+Warning: Sliver polygon found at face index 199050
+Warning: Sliver polygon found at face index 199134
+Warning: Sliver polygon found at face index 199135
+Warning: Sliver polygon found at face index 199136
+Warning: Sliver polygon found at face index 199137
+Material 0 rendered.
+...ortho photo rendered
+
+Writing ortho photo to /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto.png
+Writing corner coordinates to /var/www/data/3e858406-61b3-482e-a050-9e00279cce1d/odm_orthophoto/odm_orthophoto_corners.txt
+Orthophoto generation done.

@@ -107,7 +107,7 @@ public class ImageryProcessingJobTest
     String admin = GeoprismUser.getByUsername(TestDataSet.ADMIN_USER_NAME).getOid();
 
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    File file = FileTestUtils.getTestResourceFile(this.getClass().getResource("/small-fix-with-video.zip.test").toURI());
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
     File archive = File.createTempFile("archive", ".zip");
     try
     {
@@ -144,7 +144,7 @@ public class ImageryProcessingJobTest
 
       java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-      Assert.assertEquals(6, actions.size());
+      Assert.assertEquals(5, actions.size());
 
       System.out.println();
     }
