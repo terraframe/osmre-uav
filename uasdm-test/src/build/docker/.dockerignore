@@ -1,0 +1,4 @@
+**/target/**
+**/.git/**
+**/volume/**
+uasdm-test/src/build/docker
