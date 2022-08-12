@@ -16,23 +16,16 @@
 # limitations under the License.
 #
 
-# This tells the build which version of npm to use:
-. $NVM_DIR/nvm.sh && nvm install lts/erbium
+sudo rm -rf /docker-tmp || true
+sudo rm -rf $WORKSPACE/test-results || true
+sudo mkdir -p /docker-tmp/workspace && sudo mkdir -p /docker-tmp/perms && sudo cp -r $WORKSPACE/* /docker-tmp/workspace
+sudo mkdir -p /docker-tmp/test-results && sudo chmod -R 777 /docker-tmp/test-results
 
-export ANSIBLE_HOST_KEY_CHECKING=false
-
-:
-: ----------------------------------
-:  Build and test
-: ----------------------------------
-:
-
-## Build angular source ##
-npm version
-cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
-npm install
-node -v && npm -v
-node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
+sudo docker rm -f $(docker ps -a -q --filter="name=postgres") || true
+sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 mdillon/postgis:9.5
+  
+sudo docker rm -f $(docker ps -a -q --filter="name=orientdb") || true
+sudo docker run -d --name orientdb -p 2424:2424 -p 2480:2480  -e ORIENTDB_ROOT_PASSWORD=root orientdb:3.0.25
 
 ## Docker Setup ##
 cd $WORKSPACE/uasdm
@@ -46,12 +39,19 @@ sudo docker build -t uasdm-test .
 
 ## Docker Run ##
 set +e
-sudo docker run --network=host uasdm-test
+sudo -E docker run --name uasdm-test --rm --network=host \
+-v /docker-tmp/test-results:/workspace/uasdm-test/target/surefire-reports \
+-e MAVEN_OPTS="-Xmx3500M -Xms256M -XX:+HeapDumpOnOutOfMemoryError" \
+uasdm-test
 ecode=$?
+mkdir -p "$WORKSPACE/test-results"
+sudo cp -r /docker-tmp/test-results/. "$WORKSPACE/test-results/"
+sudo chmod 777 -R $WORKSPACE/test-results
+sudo chown ec2-user:ec2-user -R "$WORKSPACE/test-results"
 
-## Copy test reports ##
-mkdir -p $TEST_OUTPUT/uasdm-test/surefire-reports && cp $WORKSPACE/uasdm/uasdm-test/target/surefire-reports/* $TEST_OUTPUT/uasdm-test/surefire-reports/ && chmod 777 -R $TEST_OUTPUT
+sudo ls -al /docker-tmp/test-results
+ls -al "$WORKSPACE/test-results"
+
 set -e
 [ "$ecode" != 0 ] && exit $ecode;
-
 exit 0;

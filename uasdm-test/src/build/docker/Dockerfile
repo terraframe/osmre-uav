@@ -63,5 +63,5 @@ RUN wget -nv -O $WORKSPACE/bin/wait-for-it.sh https://raw.githubusercontent.com/
 RUN chmod +x $WORKSPACE/bin/wait-for-it.sh
 
 CMD $WORKSPACE/bin/wait-for-it.sh -t 60 $POSTGRES_HOST:$POSTGRES_PORT -- \
-  && cd uasdm-test && mvn process-resources -P database -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Dorientdb.db.url=$ORIENTDB_HOST -Ddatabase.hostURL=$POSTGRES_HOST -Ddatabase.port=$POSTGRES_PORT -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres -Droot.clean=true -Dpatch=false \
-  && mvn test -Dorientdb.db.url=$ORIENTDB_HOST -Ddatabase.hostURL=$POSTGRES_HOST -Ddatabase.port=$POSTGRES_PORT -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Dproject.basedir=$WORKSPACE
+  && cd $WORKSPACE/uasdm-server && mvn process-resources -P database -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Dorientdb.db.url=$ORIENTDB_HOST -Ddatabase.hostURL=$POSTGRES_HOST -Ddatabase.port=$POSTGRES_PORT -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres -Droot.clean=true -Dpatch=false \
+  && cd $WORKSPACE/uasdm-test && mvn test -Dorientdb.db.url=$ORIENTDB_HOST -Ddatabase.hostURL=$POSTGRES_HOST -Ddatabase.port=$POSTGRES_PORT -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Dproject.basedir=$WORKSPACE
