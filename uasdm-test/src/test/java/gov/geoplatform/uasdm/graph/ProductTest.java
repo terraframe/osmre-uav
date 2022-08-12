@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -262,12 +263,16 @@ public class ProductTest
     MockRemoteFileService service = (MockRemoteFileService) RemoteFileFacade.getService();
     java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-    Assert.assertEquals(2, actions.size());
+    Assert.assertEquals(4, actions.size());
 
-    for (RemoteFileAction action : actions)
-    {
-      Assert.assertEquals(RemoteFileActionType.COPY, action.getType());
-    }
+    List<RemoteFileActionType> types = actions.stream().map(a -> a.getType()).collect(Collectors.toList());
+
+    // On publish the data should be copied over to the public bucket
+    // The stac items needs to be removed from the private bucket and 
+    // put into the public bucket as well as updating the asset urls
+    Assert.assertTrue(types.contains(RemoteFileActionType.COPY));
+    Assert.assertTrue(types.contains(RemoteFileActionType.REMOVE_STAC_ITEM));
+    Assert.assertTrue(types.contains(RemoteFileActionType.PUT_STAC_ITEM));
   }
 
   @Test
@@ -315,7 +320,7 @@ public class ProductTest
   {
     Assert.assertEquals(1, Product.getProducts().size());
   }
-  
+
   @Test
   @Request
   public void testToStacItem()

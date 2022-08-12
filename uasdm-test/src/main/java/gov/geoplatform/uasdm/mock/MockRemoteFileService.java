@@ -45,7 +45,7 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 public class MockRemoteFileService implements RemoteFileService
 {
   public static enum RemoteFileActionType {
-    CREATE_FOLDER, COPY, DELETE, DELETE_FOLDER, DOWNLOAD, UPLOAD, UPLOAD_FOLDER
+    CREATE_FOLDER, COPY, DELETE, DELETE_FOLDER, DOWNLOAD, UPLOAD, UPLOAD_FOLDER, PUT_STAC_ITEM, REMOVE_STAC_ITEM, GET_STAC_ITEM
   }
 
   public static class RemoteFileAction
@@ -236,25 +236,34 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public Long calculateSize(UasComponentIF component)
   {
-    return null;
+    return 1L;
   }
 
   @Override
   public void putStacItem(StacItem item)
   {
-
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.PUT_STAC_ITEM, item.getId(), AppProperties.getBucketName()));
   }
 
   @Override
   public void removeStacItem(ProductIF product)
   {
-
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.REMOVE_STAC_ITEM, product.getOid(), AppProperties.getBucketName()));
   }
 
   @Override
   public RemoteFileObject getStacItem(ProductIF product)
   {
-    return null;
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.GET_STAC_ITEM, product.getOid(), AppProperties.getBucketName()));
+
+    try
+    {
+      return new MockRemoteFileObject(new File(this.getClass().getResource("/stac_item.json").toURI()));
+    }
+    catch (URISyntaxException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
