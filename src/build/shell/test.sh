@@ -34,15 +34,22 @@ npm install
 node -v && npm -v
 node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
 
-## Run the tests ##
+## Docker Setup ##
 cd $WORKSPACE/uasdm
-mvn install -B
-cd $WORKSPACE/uasdm/uasdm-server
-mvn install -B -P database -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
-cd $WORKSPACE/uasdm/uasdm-test
+[ -h ./Dockerfile ] && unlink ./Dockerfile
+ln -s uasdm-test/src/build/docker/Dockerfile Dockerfile
+[ -h ./.dockerignore ] && unlink ./.dockerignore
+ln -s uasdm-test/src/build/docker/.dockerignore .dockerignore
+
+## Docker Build ##
+sudo docker build -t uasdm-test .
+
+## Docker Run ##
 set +e
-mvn test -Dappcfg=$WORKSPACE/uasdm/envcfg/osmre-dev -Ddatabase.port=5432 -Dproject.basedir=$WORKSPACE/uasdm
+sudo docker run --network=host uasdm-test
 ecode=$?
+
+## Copy test reports ##
 mkdir -p $TEST_OUTPUT/uasdm-test/surefire-reports && cp $WORKSPACE/uasdm/uasdm-test/target/surefire-reports/* $TEST_OUTPUT/uasdm-test/surefire-reports/ && chmod 777 -R $TEST_OUTPUT
 set -e
 [ "$ecode" != 0 ] && exit $ecode;
