@@ -169,16 +169,11 @@
 	  <version>1.12.257</version>
 	</dependency>
 	<!-- SOLR Dependencies -->
+	
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
-      <version>6.6.6</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.zookeeper</groupId>
-          <artifactId>zookeeper</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>8.7.0</version>
     </dependency>
     <!-- Elastic search dependencies-->
     <dependency>
