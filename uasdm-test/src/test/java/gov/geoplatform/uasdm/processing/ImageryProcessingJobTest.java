@@ -144,9 +144,7 @@ public class ImageryProcessingJobTest
 
       java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-      Assert.assertEquals(5, actions.size());
-
-      System.out.println();
+      Assert.assertTrue(actions.size() > 5);
     }
     finally
     {

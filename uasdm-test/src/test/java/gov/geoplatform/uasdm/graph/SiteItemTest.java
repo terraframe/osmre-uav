@@ -113,11 +113,22 @@ public class SiteItemTest
     Map<String, Asset> assets = item.getAssets();
 
     Assert.assertEquals(8, assets.size());
+    
+    Asset asset = assets.get("thumbnail");
+        
+    Assert.assertEquals("s3://osmre-uas-dev-deploy/marble/testing/testmiission/collection2/ortho/thumbnails/odm_orthophoto.png", asset.getHref());
+    Assert.assertEquals("image/png", asset.getType());
+    Assert.assertEquals("Thumbnail", asset.getTitle());
+    Assert.assertEquals(1, asset.getRoles().size());
 
     List<StacLink> links = item.getLinks();
 
     Assert.assertEquals(1, links.size());
-
+    
+    StacLink link = links.get(0);
+    Assert.assertEquals("s3://osmre-uas-dev-deploy/_stac_/c65434ee-5f2f-44cf-97c6-10d4dca08cf5.json", link.getHref());
+    Assert.assertEquals("application/json", link.getType());
+    Assert.assertEquals("self", link.getRel());
   }
 
   @Test
