@@ -9,6 +9,7 @@ import gov.geoplatform.uasdm.graph.PlatformManufacturer;
 import gov.geoplatform.uasdm.graph.PlatformType;
 import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.WaveLength;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 
 public class Area51DataSet extends TestDataSet
 {
@@ -35,6 +36,12 @@ public class Area51DataSet extends TestDataSet
 
   public static final TestCollectionInfo COLLECTION_FISHBED = new TestCollectionInfo("Fishbed_E", new Date(), UAV, SENSOR, MISSION_HAVE_DOUGHNUT);
 
+  public static final TestDocumentInfo RAW_DOCUMENT = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.RAW + "/test.jpg", "test.jpg");
+
+  public static final TestDocumentInfo ORTHO_DOCUMENT = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif");
+
+  public static final TestDocumentInfo IMAGE_DOCUMENT = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.png", "test.png");
+
   {
     managedUsers.add(USER_ADMIN);
 
@@ -51,6 +58,10 @@ public class Area51DataSet extends TestDataSet
     managedMissions.add(MISSION_HAVE_DOUGHNUT);
 
     managedCollections.add(COLLECTION_FISHBED);
+    
+    managedDocuments.add(RAW_DOCUMENT);
+    managedDocuments.add(ORTHO_DOCUMENT);
+    managedDocuments.add(IMAGE_DOCUMENT);
   }
 
   @Override

@@ -126,7 +126,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(5, documents.size());
+      Assert.assertEquals(8, documents.size());
     }
     finally
     {
@@ -138,9 +138,7 @@ public class CollectionUploadEventTest
   @Request
   public void testHandleUploadFinishOrtho() throws Exception
   {
-    collection.createDocumentIfNotExist(collection.getS3location() + Collection.ORTHO + "/test.tif", "test.tif", "", "");
-
-    Assert.assertEquals(1, collection.getDocuments().size());
+    Assert.assertEquals(3, collection.getDocuments().size());
 
     File file = new File(this.getClass().getResource("/odm_orthophoto_test.tif").toURI());
 
@@ -165,9 +163,9 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(1, documents.size());
+      Assert.assertEquals(2, documents.size());
 
-      DocumentIF document = documents.get(0);
+      DocumentIF document = documents.get(1);
 
       Assert.assertEquals("odm_orthophoto_test.tif", document.getName());
     }
@@ -198,7 +196,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(3, documents.size());
+      Assert.assertEquals(4, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -240,7 +238,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(3, documents.size());
+      Assert.assertEquals(6, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -290,7 +288,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = result.getDocuments();
 
-      Assert.assertEquals(13, documents.size());
+      Assert.assertEquals(14, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 

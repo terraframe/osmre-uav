@@ -73,13 +73,10 @@ public class UasComponentTest
     project = (Project) Area51DataSet.PROJECT_DREAMLAND.getServerObject();
     mission = (Mission) Area51DataSet.MISSION_HAVE_DOUGHNUT.getServerObject();
     collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
-    product = Product.createIfNotExist(collection);
-    target = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif", "", "");
-    image = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.png", "test.png", "", "");
-    source = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.RAW + "/test.jpg", "test.jpg", "", "");
-
-    product.addDocumentGeneratedProductParent(source).apply();
-    product.addDocuments(Arrays.asList(target, image));
+    product = collection.getProducts().get(0);
+    target = Area51DataSet.ORTHO_DOCUMENT.getServerObject();
+    image = Area51DataSet.IMAGE_DOCUMENT.getServerObject();
+    source = Area51DataSet.RAW_DOCUMENT.getServerObject();
     
     testData.logIn();
   }

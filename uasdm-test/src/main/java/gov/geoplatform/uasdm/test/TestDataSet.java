@@ -20,6 +20,7 @@
 package gov.geoplatform.uasdm.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,13 +65,17 @@ import gov.geoplatform.uasdm.UserInfoQuery;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockODMService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.OnceTaskService;
 import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMStatusServer;
@@ -127,6 +132,8 @@ abstract public class TestDataSet
   protected ArrayList<TestCollectionInfo> managedCollections = new ArrayList<TestCollectionInfo>();
 
   protected ArrayList<TestCollectionInfo> managedCollectionsExtras = new ArrayList<TestCollectionInfo>();
+
+  protected ArrayList<TestDocumentInfo> managedDocuments = new ArrayList<TestDocumentInfo>();
 
   protected ArrayList<TestUserInfo> managedUsers = new ArrayList<TestUserInfo>();
 
@@ -283,6 +290,24 @@ abstract public class TestDataSet
     {
       obj.apply();
     }
+
+    for (TestDocumentInfo obj : managedDocuments)
+    {
+      Document document = obj.apply();
+
+      Collection collection = obj.getComponent().getServerObject();
+
+      Product product = Product.createIfNotExist(collection);
+
+      if (obj.getKey().startsWith(ImageryComponent.RAW))
+      {
+        product.addDocumentGeneratedProductParent(document).apply();
+      }
+      else
+      {
+        product.addDocuments(Arrays.asList(document));
+      }
+    }
   }
 
   protected void setUpRelationships()
@@ -340,7 +365,7 @@ abstract public class TestDataSet
   protected void cleanUpTestInTrans()
   {
     deleteAllWorkflowTasks();
-    
+
     for (TestCollectionInfo obj : managedCollections)
     {
       obj.delete();
@@ -365,17 +390,17 @@ abstract public class TestDataSet
     {
       user.delete();
     }
-    
+
     for (TestSensorInfo obj : managedSensors)
     {
       obj.delete();
     }
-    
+
     for (TestUavInfo obj : managedUavs)
     {
       obj.delete();
     }
-    
+
     for (TestPlatformInfo obj : managedPlatforms)
     {
       obj.delete();

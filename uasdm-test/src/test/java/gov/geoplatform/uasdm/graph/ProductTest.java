@@ -21,7 +21,6 @@ import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileActionType;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.StacItem.Asset;
@@ -36,9 +35,9 @@ public class ProductTest
 {
   private static Area51DataSet testData;
 
-  private Product product;
-
   private Collection collection;
+
+  private Product product;
 
   private Document target;
 
@@ -69,13 +68,10 @@ public class ProductTest
     testData.setUpInstanceData();
 
     collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
-    product = Product.createIfNotExist(collection);
-    target = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif", "", "");
-    image = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.ORTHO + "/test.png", "test.png", "", "");
-    source = Document.createIfNotExist(collection, collection.getS3location() + ImageryComponent.RAW + "/test.jpg", "test.jpg", "", "");
-
-    product.addDocumentGeneratedProductParent(source).apply();
-    product.addDocuments(Arrays.asList(target, image));
+    product = collection.getProducts().get(0);
+    target = Area51DataSet.ORTHO_DOCUMENT.getServerObject();
+    image = Area51DataSet.IMAGE_DOCUMENT.getServerObject();
+    source = Area51DataSet.RAW_DOCUMENT.getServerObject();
   }
 
   @After
@@ -268,7 +264,7 @@ public class ProductTest
     List<RemoteFileActionType> types = actions.stream().map(a -> a.getType()).collect(Collectors.toList());
 
     // On publish the data should be copied over to the public bucket
-    // The stac items needs to be removed from the private bucket and 
+    // The stac items needs to be removed from the private bucket and
     // put into the public bucket as well as updating the asset urls
     Assert.assertTrue(types.contains(RemoteFileActionType.COPY));
     Assert.assertTrue(types.contains(RemoteFileActionType.REMOVE_STAC_ITEM));
