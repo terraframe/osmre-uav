@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
-# Run this with sudo
+# Run with super user
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
 
 # Requires AWS CLI : pip3 install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html

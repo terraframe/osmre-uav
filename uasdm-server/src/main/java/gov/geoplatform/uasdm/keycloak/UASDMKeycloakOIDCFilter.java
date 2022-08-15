@@ -216,7 +216,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     tokenStore.checkCurrentToken();
 
     FilterRequestAuthenticator authenticator = new FilterRequestAuthenticator(deployment, tokenStore, facade, request, 8443);
-    ((DefaultHttpClient) deployment.getClient()).setParams(null);;
+//    ((DefaultHttpClient) deployment.getClient()).setParams(null);; // Was required for Keycloak v12.0.2
     AuthOutcome outcome = authenticator.authenticate();
     if (outcome == AuthOutcome.AUTHENTICATED)
     {

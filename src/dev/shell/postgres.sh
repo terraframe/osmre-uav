@@ -16,6 +16,10 @@
 #
 
 # Run with super user
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
 
 CONTAINER_NAME=postgres
 POSTGRES_PORT=5442

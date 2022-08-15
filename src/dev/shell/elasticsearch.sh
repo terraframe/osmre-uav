@@ -15,7 +15,12 @@
 # limitations under the License.
 #
 
-# Run this with sudo
+# Run with super user
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
 # Exit immediately if anything errors out
 set -e
 

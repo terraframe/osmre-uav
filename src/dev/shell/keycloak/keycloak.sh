@@ -15,13 +15,18 @@
 # limitations under the License.
 #
 
+# Run with super user
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root (with -E flag to include user variables)"
+  exit
+fi
 
 set -e
 
-WORKSPACE=/home/rich/dev/projects/uasdm/uasdm
+WORKSPACE=$UASDM/uasdm
 
 SSL=$WORKSPACE/uasdm-web/src/test/resources
-RESOURCES=$WORKSPACE/src/scripts/local/keycloak
+RESOURCES=$WORKSPACE/src/dev/shell/keycloak
 
 [ -d "$SSL/keycloak" ] && rm -r $SSL/keycloak
 mkdir $SSL/keycloak
@@ -46,7 +51,8 @@ docker run --user root --name keycloak -d -p 8021:8443 \
 
 #docker exec -u root keycloak /opt/keycloak/ssl/add-cert-to-java-truststore.sh
 
-docker exec -u root keycloak bash -c "echo '172.17.0.1 localhost' > /etc/hosts"
-echo "Backchannel set to ip 172.17.0.1. If backchanneling is not working, it might be because this ip is wrong. You can verify with 'sudo ip addr show docker0'"
+# TODO : This wrote into the host's file instead of the containers file
+#docker exec -u root keycloak bash -c "echo '172.17.0.1 localhost' > /etc/hosts"
+#echo "Backchannel set to ip 172.17.0.1. If backchanneling is not working, it might be because this ip is wrong. You can verify with 'sudo ip addr show docker0'"
 
-echo "Keycloak is now running at https://localhost:8021/. You will need to create a user (and password) in the ream 'myrealm'."
+echo "Keycloak is now running at https://localhost:8021/. Default admin credentials are admin/admin. A default user has been created as cgrkc/cgrkc, but you might need to log into keycloak and set a password.

@@ -15,7 +15,12 @@
 #
 
 # This script will start a local docker instance that you can use for testing and development
-# Run it with sudo
+
+# Run with super user
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
 
 # docker rm -f $(docker ps -a -q --filter=name=solr)
 
