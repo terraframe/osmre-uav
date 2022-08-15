@@ -92,7 +92,7 @@ public class CogTifProcessor extends ManagedDocument
         if (cog.exists())
         {
           FileResource cogRes = new FileResource(cog);
-                    
+          
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
             if (this.downstream == null)
