@@ -57,8 +57,8 @@ export class MetadataModalComponent implements OnInit, OnDestroy {
 					isNew: false,
 					value: this.collectionId,
 					label: collectionName,
-					uav: options.uav.oid,
-					sensor: options.sensor.oid,
+					uav: options.uav != null ? options.uav.oid : null,
+					sensor: options.sensor != null ? options.sensor.oid : null,
 					pointOfContact: {
 						name: options.name,
 						email: options.email
