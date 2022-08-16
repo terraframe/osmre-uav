@@ -225,11 +225,13 @@
       <artifactId>tika-core</artifactId>
       <version>2.4.1</version>
     </dependency>
+    <!-- We think this was used for Tika but not exactly sure how. it was commented out because it was setting off security flags as it gets out of date and we're not even sure how to test it.
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-client</artifactId>
       <version>3.3.6</version>
     </dependency>
+    -->
     <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
