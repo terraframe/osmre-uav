@@ -156,14 +156,14 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 		this.tabName = tabName;
 
+		if (tabName === "raw") {
+			this.enableSelectableImages = true;
+		} else {
+			this.enableSelectableImages = false;
+		}
+
 		if (tabName === "raw" || tabName === "video") {
 			this.page.results = [];
-
-			if (tabName === "raw") {
-				this.enableSelectableImages = true;
-			} else {
-				this.enableSelectableImages = false;
-			}
 
 			let pn: number = null;
 			let ps: number = null;
@@ -189,7 +189,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
 		this.service.getObjects(component, folder, pageNumber, pageSize).then(resultSet => {
 			this.page = resultSet;
-			
+
 			this.canReprocessImagery = this.page.results.length > 1 ? true : false;
 
 			for (let i = 0; i < this.page.results.length; ++i) {
