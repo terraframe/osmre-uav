@@ -47,6 +47,11 @@ public class IndexService
   {
     index = i;
   }
+  
+  public synchronized static Index getIndex()
+  {
+    return index;
+  }
 
   public static boolean startup()
   {

@@ -46,9 +46,9 @@ public class MockIndex implements Index
 
   }
 
-  private Collection<IndexAction> actions = new LinkedList<IndexAction>();
+  private List<IndexAction> actions = new LinkedList<IndexAction>();
 
-  public Collection<IndexAction> getActions()
+  public List<IndexAction> getActions()
   {
     return actions;
   }
@@ -81,13 +81,13 @@ public class MockIndex implements Index
   @Override
   public void updateOrCreateDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name)
   {
-    this.actions.add(new IndexAction(IndexActionType.UPDATE_DOCUMENT, component.getOid(), key, name));
+    this.actions.add(new IndexAction(IndexActionType.UPDATE_DOCUMENT, ancestors, component.getOid(), key, name));
   }
 
   @Override
   public void updateOrCreateMetadataDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name, File metadata)
   {
-    this.actions.add(new IndexAction(IndexActionType.UPDATE_METADATA, component.getOid(), key, name));
+    this.actions.add(new IndexAction(IndexActionType.UPDATE_METADATA, ancestors, component.getOid(), key, name, metadata));
   }
 
   @Override
