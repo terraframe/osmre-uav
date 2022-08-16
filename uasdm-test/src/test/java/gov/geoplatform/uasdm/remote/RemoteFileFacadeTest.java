@@ -56,10 +56,6 @@ public class RemoteFileFacadeTest
 
   private Document target;
 
-  private Document source;
-
-  private Document image;
-
   private MockRemoteFileService service;
 
   @BeforeClass
@@ -87,8 +83,6 @@ public class RemoteFileFacadeTest
     collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
     product = collection.getProducts().get(0);
     target = Area51DataSet.ORTHO_DOCUMENT.getServerObject();
-    image = Area51DataSet.IMAGE_DOCUMENT.getServerObject();
-    source = Area51DataSet.RAW_DOCUMENT.getServerObject();
 
     service = (MockRemoteFileService) RemoteFileFacade.getService();
   }
