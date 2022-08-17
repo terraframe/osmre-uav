@@ -41,7 +41,10 @@ import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ValueObject;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
@@ -54,13 +57,15 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.StacTiTillerProxy;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
-public class SmethiesRandomDisorganizedTestCode
+public class Sandbox
 {
   public static void main(String[] args) throws Exception
   {
@@ -79,23 +84,23 @@ public class SmethiesRandomDisorganizedTestCode
   @Request
   public static void request() throws Exception
   {
-    List<ProductIF> products = Product.getProducts().stream().filter(p -> p.isPublished()).collect(Collectors.toList());
+    final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
 
-    ProductIF product = products.get(0);
-    StacItem item = product.toStacItem();
-    StacLink link = item.getLinks().get(0);
+    StringBuilder builder = new StringBuilder();
+    builder.append("SELECT FROM " + mdCollection.getDBClassName());
+    builder.append(" ORDER BY name");
 
-    StacTiTillerProxy proxy = new StacTiTillerProxy(link.getHref(), "odm_orthophoto.cog");
-    JSONObject response = proxy.tilejson("/uasdm/stac");
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(builder.toString());
 
-    System.out.println(response);
-
-    // 20/200617/399539@1x
-
-    try (InputStream istream = proxy.tiles("WebMercatorQuad", 20, 200617, 399539, 1, "PNG"))
-    {
-      IOUtils.copy(istream, NullOutputStream.NULL_OUTPUT_STREAM);
-    }
+    query.getResults().forEach(collection -> {
+      collection.appLock();
+      collection.setMetadataUploaded(false);
+      collection.setUav(null);
+      collection.setSensor(null);
+      collection.apply();
+    });
+    
+    
   }
 
   public static void testTika() throws Exception
