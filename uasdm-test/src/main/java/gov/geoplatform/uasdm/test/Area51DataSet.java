@@ -14,7 +14,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 public class Area51DataSet extends TestDataSet
 {
 
-  public static final String TEST_DATA_KEY = "A51";
+  public static final String TEST_DATA_KEY = "BDS";
 
   public static final String POINT_AREA_51 = "Point(115.7930 37.2431)";
 

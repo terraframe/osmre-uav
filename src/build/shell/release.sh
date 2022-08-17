@@ -37,7 +37,7 @@ if [ "$release_uasdm" == "true" ]; then
   node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
   cd $WORKSPACE/uasdm
   git add -A
-  git diff-index --quiet HEAD || git commit -m "chore(release): Preparing for release $IDM_VERSION."
+  git diff-index --quiet HEAD || git commit -m 'Preparing for release'
   if [ "$dry_run" == "false" ]; then
     git push
   else
@@ -50,7 +50,7 @@ if [ "$release_uasdm" == "true" ]; then
   git checkout $release_branch
   mvn license:format -B
   git add -A
-  git diff-index --quiet HEAD || git commit -m "chore(release): License headers for $IDM_VERSION."
+  git diff-index --quiet HEAD || git commit -m 'License headers'
   if [ "$dry_run" == "false" ]; then
     git push
   else
@@ -66,21 +66,6 @@ if [ "$release_uasdm" == "true" ]; then
                    -DdevelopmentVersion=$IDM_NEXT
                    
   mvn release:perform -B -DdryRun=$dry_run -Darguments="-Dmaven.javadoc.skip=true -Dmaven.site.skip=true"
-  
-  # Generate Changelog
-  cd $WORKSPACE/uasdm
-  [ -f ./CHANGELOG.md ] && mv CHANGELOG.md CHANGELOG2.md
-  mvn changelog:conventional
-  [ -f ./CHANGELOG2.md ] && cat CHANGELOG2.md > CHANGELOG.md && rm -f CHANGELOG2.md
-  git add CHANGELOG.md
-  git commit -m "chore(release): Update changelog for $IDM_VERSION."
-  if [ "$dry_run" == "false" ]; then
-    git push
-  else
-    echo "Changelog would have committed as " && cat CHANGELOG.md
-    git reset --hard
-    git clean -fdx
-  fi
 fi
 
 if [ "$release_docker" == "true" ]; then
