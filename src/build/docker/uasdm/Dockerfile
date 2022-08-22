@@ -29,8 +29,8 @@ RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" 
 RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
 
 # Embedded Geoserver
-RUN wget -nv -O $CATALINA_HOME/wars/geoserver.war "https://dl.cloudsmith.io/public/terraframe/public/maven/org/geoserver/geoserver/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION.war"
-RUN mkdir -p $CATALINA_HOME/webapps/geoserver && cd $CATALINA_HOME/webapps/geoserver && $JAVA_HOME/bin/jar xf $CATALINA_HOME/wars/geoserver.war
+#RUN wget -nv -O $CATALINA_HOME/wars/geoserver.war "https://dl.cloudsmith.io/public/terraframe/public/maven/org/geoserver/geoserver/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION.war"
+#RUN mkdir -p $CATALINA_HOME/webapps/geoserver && cd $CATALINA_HOME/webapps/geoserver && $JAVA_HOME/bin/jar xf $CATALINA_HOME/wars/geoserver.war
 
 # Copy CGR WAR
 COPY target/uasdm.war $CATALINA_HOME/wars/geoprism.war
