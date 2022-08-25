@@ -17,7 +17,6 @@
 FROM tomcat:8.5-jdk8-openjdk
 
 ENV CGR_VERSION=LATEST
-ENV GEOSERVER_VERSION=2.14.2
 ENV LOG_LEVEL=error
 ENV POSTGRES_PORT=5432
 
@@ -27,10 +26,6 @@ RUN mkdir -p $CATALINA_HOME/wars
 RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
 RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"
 RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
-
-# Embedded Geoserver
-#RUN wget -nv -O $CATALINA_HOME/wars/geoserver.war "https://dl.cloudsmith.io/public/terraframe/public/maven/org/geoserver/geoserver/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION.war"
-#RUN mkdir -p $CATALINA_HOME/webapps/geoserver && cd $CATALINA_HOME/webapps/geoserver && $JAVA_HOME/bin/jar xf $CATALINA_HOME/wars/geoserver.war
 
 # Copy CGR WAR
 COPY target/uasdm.war $CATALINA_HOME/wars/geoprism.war
