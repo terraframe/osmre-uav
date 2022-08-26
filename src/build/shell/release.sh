@@ -66,6 +66,17 @@ if [ "$release_uasdm" == "true" ]; then
                    -DdevelopmentVersion=$IDM_NEXT
                    
   mvn release:perform -B -DdryRun=$dry_run -Darguments="-Dmaven.javadoc.skip=true -Dmaven.site.skip=true"
+  
+  # Generate Changelog
+  cd $WORKSPACE/uasdm
+  mvn git-changelog-maven-plugin:git-changelog --non-recursive
+  git add CHANGELOG.md
+  git commit -m "chore(release): Update changelog for $CGR_RELEASE_VERSION."
+  if [ "$dry_run" == "false" ]; then
+    git push
+  else
+    git reset --hard
+  fi
 fi
 
 if [ "$release_docker" == "true" ]; then
