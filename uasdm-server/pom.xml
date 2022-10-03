@@ -166,7 +166,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.300</version>
+	  <version>1.12.314</version>
 	</dependency>
 	<!-- SOLR Dependencies -->
 	
@@ -205,7 +205,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.12.6.1</version>
+      <version>2.13.4</version>
     </dependency>    
     <!-- TIKA dependencies-->
     <dependency>
