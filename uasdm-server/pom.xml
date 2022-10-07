@@ -166,7 +166,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.300</version>
+	  <version>1.12.318</version>
 	</dependency>
 	<!-- SOLR Dependencies -->
 	
