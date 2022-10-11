@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.mock;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.model.Page;
@@ -139,11 +139,11 @@ public class MockIndex implements Index
 
     return new JSONArray();
   }
-
+  
   @Override
-  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
-    this.actions.add(new IndexAction(IndexActionType.GET_STAC, filters, pageSize, pageNumber));
+    this.actions.add(new IndexAction(IndexActionType.GET_STAC, criteria, pageSize, pageNumber));
 
     return new Page<StacItem>(0, 1, 10, new LinkedList<StacItem>());
   }

@@ -518,18 +518,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
+    const bounds = this.map.getBounds();
+
+    if (this.isValidBounds(bounds)) {
+      this.bounds = bounds;
+    }
+
     if (this.current == null) {
-      const bounds = this.map.getBounds();
-
-      // Sometimes bounds aren"t valid for 4326, so validate it before sending to server
-      if (this.isValidBounds(bounds)) {
-        this.bounds = bounds;
-
-        this.refreshSites();
-      }
-      else {
-        // console.log("Invalid bounds", bounds);
-      }
+      this.refreshSites();
     }
   }
 

@@ -26,6 +26,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -163,11 +164,11 @@ public class IndexService
     return new JSONArray();
   }
 
-  public static Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  public static Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
     if (AppProperties.isSearchEnabled())
     {
-      return index.getItems(filters, pageSize, pageNumber);
+      return index.getItems(criteria, pageSize, pageNumber);
     }
 
     return new Page<StacItem>();

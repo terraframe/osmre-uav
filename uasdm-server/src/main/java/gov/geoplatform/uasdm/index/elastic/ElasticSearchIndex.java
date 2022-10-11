@@ -24,9 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKTWriter;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
@@ -52,13 +57,13 @@ import gov.geoplatform.uasdm.view.QueryResult;
 
 public class ElasticSearchIndex implements Index
 {
-  private static Logger logger = LoggerFactory.getLogger(ElasticSearchIndex.class);
+  private static Logger logger               = LoggerFactory.getLogger(ElasticSearchIndex.class);
 
-  public static String COMPONENT_INDEX_NAME = "components";
+  public static String  COMPONENT_INDEX_NAME = "components";
 
-  public static String STAC_INDEX_NAME = "stac";
+  public static String  STAC_INDEX_NAME      = "stac";
 
-  private RestClient restClient;
+  private RestClient    restClient;
 
   @Override
   public boolean startup()
@@ -551,7 +556,7 @@ public class ElasticSearchIndex implements Index
     return results;
   }
 
-  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
     Page<StacItem> page = new Page<StacItem>();
     page.setPageNumber(pageNumber);
@@ -568,49 +573,114 @@ public class ElasticSearchIndex implements Index
       s.size(pageSize);
       s.from(pageSize * ( pageNumber - 1 ));
 
-      if (filters != null && filters.length() > 0)
+      if (criteria.has("must") || criteria.has("should"))
       {
-        s.query(q -> q.bool(b -> b.must(m -> {
-          for (int i = 0; i < filters.length(); i++)
+        s.query(q -> q.bool(b -> {
+          if (criteria.has("must"))
           {
-            JSONObject filter = filters.getJSONObject(i);
-            String field = filter.getString("field");
+            JSONArray filters = criteria.getJSONArray("must");
 
-            if (field.equals("datetime"))
+            if (filters != null && filters.length() > 0)
             {
-              if (filter.has("startDate") || filter.has("endDate"))
-              {
-                m.range(r -> {
-                  r.field("properties.datetime");
+              b.filter(m -> {
 
-                  if (filter.has("startDate"))
+                for (int i = 0; i < filters.length(); i++)
+                {
+                  JSONObject filter = filters.getJSONObject(i);
+                  String field = filter.getString("field");
+
+                  if (field.equals("datetime"))
                   {
-                    r.gte(JsonData.of(filter.getString("startDate")));
-                  }
+                    if (filter.has("startDate") || filter.has("endDate"))
+                    {
+                      m.range(r -> {
+                        r.field("properties.datetime");
 
-                  if (filter.has("endDate"))
+                        if (filter.has("startDate"))
+                        {
+                          r.gte(JsonData.of(filter.getString("startDate")));
+                        }
+
+                        if (filter.has("endDate"))
+                        {
+                          r.lte(JsonData.of(filter.getString("endDate")));
+                        }
+
+                        return r;
+                      });
+                    }
+
+                  }
+                  else
                   {
-                    r.lte(JsonData.of(filter.getString("endDate")));
+                    String value = filter.getString("value");
+                    m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
                   }
+                }
 
-                  return r;
-                });
-              }
-
+                return m;
+              });
             }
-            else
+          }
+          else
+          {
+            b.must(m -> m.matchAll(ma -> ma.boost(0F)));
+          }
+
+          if (criteria.has("should"))
+          {
+            JSONArray filters = criteria.getJSONArray("should");
+
+            if (filters != null && filters.length() > 0)
             {
-              String value = filter.getString("value");
-              m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
+              b.should(m -> {
+
+                for (int i = 0; i < filters.length(); i++)
+                {
+                  JSONObject filter = filters.getJSONObject(i);
+                  String field = filter.getString("field");
+
+                  if (field.equalsIgnoreCase("bounds"))
+                  {
+                    JSONObject object = filter.getJSONObject("value");
+
+                    JSONObject sw = object.getJSONObject("_sw");
+                    JSONObject ne = object.getJSONObject("_ne");
+
+                    double x1 = sw.getDouble("lng");
+                    double x2 = ne.getDouble("lng");
+                    double y1 = sw.getDouble("lat");
+                    double y2 = ne.getDouble("lat");
+
+                    Envelope envelope = new Envelope(x1, x2, y1, y2);
+                    GeometryFactory factory = new GeometryFactory();
+                    Geometry geometry = factory.toGeometry(envelope);
+                    WKTWriter writer = new WKTWriter();
+
+                    m.geoShape(qs -> qs.boost(10F).field("geometry").shape(bb -> bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry)))));
+                  }
+                  else
+                  {
+                    String value = filter.getString("value");
+                    m.queryString(qs -> qs.boost(1.2F).fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
+                  }
+                }
+
+                return m;
+              });
             }
           }
 
-          return m;
-        })));
+          return b;
+        }));
 
       }
 
-      SearchResponse<StacItem> search = client.search(s.build(), StacItem.class);
+      SearchRequest request = s.build();
+
+//      System.out.println(request.toString());
+
+      SearchResponse<StacItem> search = client.search(request, StacItem.class);
       HitsMetadata<StacItem> hits = search.hits();
 
       page.setCount(hits.total().value());

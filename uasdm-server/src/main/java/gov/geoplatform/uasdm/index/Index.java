@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -39,5 +40,5 @@ public interface Index
 
   public JSONArray getTotals(String text, JSONArray filters);
 
-  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber);
+  public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber);
 }

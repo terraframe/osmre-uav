@@ -3,9 +3,14 @@ export class Filter {
     id: string;
     label: string;
     field: string;
-    value?: string;
+    value?: any;
     startDate?: string;
     endDate?: string;
+};
+
+export class Criteria {
+    should?: Filter[];
+    must?: Filter[];
 };
 
 export class StacAsset {

@@ -783,11 +783,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public Page<StacItem> getItems(String sessionId, String filtersStr, Integer pageSize, Integer pageNumber)
+  public Page<StacItem> getItems(String sessionId, String criteriaStr, Integer pageSize, Integer pageNumber)
   {
-    JSONArray filters = ( filtersStr != null ) ? new JSONArray(filtersStr) : new JSONArray();
+    JSONObject criteria = ( criteriaStr != null ) ? new JSONObject(criteriaStr) : new JSONObject();
 
-    return IndexService.getItems(filters, pageSize, pageNumber);
+    return IndexService.getItems(criteria, pageSize, pageNumber);
   }
 
   @Request(RequestType.SESSION)

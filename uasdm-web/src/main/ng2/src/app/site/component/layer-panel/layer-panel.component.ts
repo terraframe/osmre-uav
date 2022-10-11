@@ -3,8 +3,10 @@ import { Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ManagementService } from '@site/service/management.service';
-import { Filter, StacItem, StacLayer } from '@site/model/layer';
+import { Criteria, Filter, StacItem, StacLayer } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
+import { LngLatBounds } from 'mapbox-gl';
+import { filter } from 'rxjs/operators';
 
 const enum VIEW_MODE {
 	FORM = 0,
@@ -35,6 +37,8 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	@Output() cancel: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() layer: StacLayer;
+
+	@Input() bounds: LngLatBounds = null;
 
 	page: PageResult<StacItem> = null;
 
@@ -122,7 +126,22 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	onPageChange(pageNumber: number): void {
 		const filters = this.getFilters();
 
-		this.service.getStacItems(filters, 20, pageNumber).then(page => {
+		const criteria: Criteria = {};
+
+		if (filters != null && filters.length > 0) {
+			criteria.must = filters;
+		}
+
+		if (this.bounds != null) {
+			criteria.should = [{
+				field: "bounds",
+				id: uuidv4(),
+				label: "Bounds",
+				value: this.bounds
+			}];
+		}
+
+		this.service.getStacItems(criteria, 20, pageNumber).then(page => {
 			this.thumbnails = {};
 			this.page = page;
 

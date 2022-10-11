@@ -242,7 +242,7 @@
         <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
           style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
-          <layer-panel [layer]="stacLayer" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()">
+          <layer-panel [layer]="stacLayer" [bounds]="bounds" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()">
           </layer-panel>
         </div>
       </ng-container>

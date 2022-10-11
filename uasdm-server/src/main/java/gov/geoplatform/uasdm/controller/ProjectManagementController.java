@@ -353,9 +353,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "get-stac-items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getStacItems(ClientRequestIF request, @RequestParamter(name = "filters") String filters, @RequestParamter(name = "pageSize", required = true) Integer pageSize, @RequestParamter(name = "pageNumber", required = true) Integer pageNumber)
+  public ResponseIF getStacItems(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria, @RequestParamter(name = "pageSize", required = true) Integer pageSize, @RequestParamter(name = "pageNumber", required = true) Integer pageNumber)
   {
-    Page<StacItem> page = this.service.getItems(request.getSessionId(), filters, pageSize, pageNumber);
+    Page<StacItem> page = this.service.getItems(request.getSessionId(), criteria, pageSize, pageNumber);
 
     return new RestBodyResponse(page.toJSON());
   }

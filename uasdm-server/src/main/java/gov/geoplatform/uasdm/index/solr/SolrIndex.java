@@ -20,6 +20,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
@@ -444,7 +445,7 @@ public class SolrIndex implements Index
   }
 
   @Override
-  public Page<StacItem> getItems(JSONArray filters, Integer pageSize, Integer pageNumber)
+  public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
     return new Page<StacItem>();
   }
