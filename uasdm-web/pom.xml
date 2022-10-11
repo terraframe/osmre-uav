@@ -21,7 +21,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>0.15.0-SNAPSHOT</version>
+    <version>0.15.1-SNAPSHOT</version>
   </parent>
   <artifactId>uasdm-web</artifactId>
   <packaging>war</packaging>
@@ -235,7 +235,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.3.0</version>
       </plugin>
       <!-- Weave Aspects -->
       <plugin>
@@ -275,7 +275,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.3.2</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
           <warSourceExcludes>**/prism.jsp,**/admin.jsp,**/index.jsp</warSourceExcludes>

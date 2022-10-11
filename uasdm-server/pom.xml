@@ -28,7 +28,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>0.15.0-SNAPSHOT</version>
+    <version>0.15.1-SNAPSHOT</version>
   </parent>
   <artifactId>uasdm-server</artifactId>
   <packaging>jar</packaging>
@@ -166,7 +166,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.281</version>
+	  <version>1.12.318</version>
 	</dependency>
 	<!-- SOLR Dependencies -->
 	
