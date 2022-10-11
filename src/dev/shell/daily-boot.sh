@@ -43,8 +43,8 @@ cd $UASDM_PROJECT
 git pull
 
 # Run Docker containers
-sudo docker start orientdb
-sudo docker start postgres
+sudo docker start idm-orientdb
+sudo docker start idm-postgres
 sudo docker start uasdm-es
 sudo docker start uasdm-nodeodm
 

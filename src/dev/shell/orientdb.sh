@@ -21,6 +21,9 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+export ORIENTDB_CONTAINER_NAME=idm-orientdb
+export ORIENTDB_ROOT_PASS=root
+
 # Requires AWS CLI : pip3 install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
@@ -28,7 +31,7 @@ fi
 set -e
 
 # Kill any running containers by name of what we're about to run
-docker rm -f $(docker ps -a -q --filter="name=orientdb") > /dev/null || true
+docker rm -f $(docker ps -a -q --filter="name=$ORIENTDB_CONTAINER_NAME") > /dev/null || true
 
 # Pull & Run the orientdb container
-docker run -d -p 2424:2424 -p 2480:2480 -e ORIENTDB_ROOT_PASSWORD=root --name orientdb orientdb:3.0
+docker run -d -p 2424:2424 -p 2480:2480 -e ORIENTDB_ROOT_PASSWORD=$ORIENTDB_ROOT_PASS -e ORIENTDB_OPTS_MEMORY="-Xms512M -Xmx2G" --name $ORIENTDB_CONTAINER_NAME orientdb:3.0

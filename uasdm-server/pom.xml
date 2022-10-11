@@ -66,22 +66,22 @@
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-rangereader-http</artifactId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
     </dependency>
     <dependency>
       <artifactId>imageio-ext-cog-rangereader-s3</artifactId>
       <groupId>it.geosolutions.imageio-ext</groupId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
     </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-commons</artifactId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
     </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-reader</artifactId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
       <exclusions>
         <exclusion>
           <artifactId>ehcache</artifactId>
@@ -167,7 +167,13 @@
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
 	  <version>1.12.318</version>
-	</dependency>
+	  <exclusions>
+	    <exclusion>
+	      <groupId>com.amazonaws</groupId>
+	      <artifactId>aws-java-sdk-kinesisvideo</artifactId>
+	    </exclusion>
+	  </exclusions>
+    </dependency>
 	<!-- SOLR Dependencies -->
 	
     <dependency>
@@ -182,6 +188,10 @@
       	<exclusion>
       		<groupId>org.apache.zookeeper</groupId>
       		<artifactId>zookeeper-jute</artifactId>
+      	</exclusion>
+      	<exclusion>
+      	  <groupId>io.netty</groupId>
+      	  <artifactId>netty-codec</artifactId>
       	</exclusion>
       </exclusions>
     </dependency>
