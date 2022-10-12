@@ -362,7 +362,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		// Otherwise the video tag does not register that the src has changed.
 		setTimeout(() => {
 			this.video.name = item.name;
-			this.video.src = acp + '/project/download?id=' + this.entity.component + "&key=" + item.key; // + "#" + Math.random();
+			this.video.src = acp + '/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
 		}, 200);
 	}
 
