@@ -188,6 +188,23 @@ public class ElasticSearchIndex implements Index
     return new ElasticsearchClient(transport);
   }
 
+  @Override
+  public void clear()
+  {
+    try
+    {
+      ElasticsearchClient client = createClient();
+      client.indices().delete(i -> i.index(STAC_INDEX_NAME));
+      client.indices().delete(i -> i.index(COMPONENT_INDEX_NAME));
+      
+      this.shutdown();
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
   public void deleteDocuments(String fieldId, String oid)
   {
     try
@@ -704,8 +721,6 @@ public class ElasticSearchIndex implements Index
       }
 
       SearchRequest request = s.build();
-
-//      System.out.println(request.toString());
 
       SearchResponse<StacItem> search = client.search(request, StacItem.class);
       HitsMetadata<StacItem> hits = search.hits();
