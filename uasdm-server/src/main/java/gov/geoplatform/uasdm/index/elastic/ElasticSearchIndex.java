@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -192,8 +192,12 @@ public class ElasticSearchIndex implements Index
   {
     try
     {
+      DeleteByQueryRequest request = new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> {
+        return q.bool(b -> b.must(m -> m.queryString(qs -> qs.fields(fieldId).query(oid))));
+      }).build();
+
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> q.term(t -> t.field(fieldId).value(v -> v.stringValue(oid)))).build());
+      client.deleteByQuery(request);
     }
     catch (IOException e)
     {
@@ -205,10 +209,18 @@ public class ElasticSearchIndex implements Index
   {
     try
     {
+      List<Query> conditions = new LinkedList<Query>();
+      conditions.add(new Query.Builder().queryString(m -> m.fields(component.getSolrIdField()).query(component.getOid())).build());
+      conditions.add(new Query.Builder().queryString(m -> m.fields("key").query(key)).build());
+
+      DeleteByQueryRequest request = new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> b.filter(conditions))).build();
+
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))).build());
+      client.deleteByQuery(request);
     }
-    catch (IOException e)
+    catch (
+
+    IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
@@ -590,6 +602,7 @@ public class ElasticSearchIndex implements Index
 
       if (criteria.has("must") || criteria.has("should"))
       {
+
         s.query(q -> q.bool(b -> {
           if (criteria.has("must"))
           {
@@ -597,44 +610,44 @@ public class ElasticSearchIndex implements Index
 
             if (filters != null && filters.length() > 0)
             {
-              b.filter(m -> {
+              List<Query> conditions = new LinkedList<Query>();
 
-                for (int i = 0; i < filters.length(); i++)
+              for (int i = 0; i < filters.length(); i++)
+              {
+                JSONObject filter = filters.getJSONObject(i);
+                String field = filter.getString("field");
+
+                if (field.equals("datetime"))
                 {
-                  JSONObject filter = filters.getJSONObject(i);
-                  String field = filter.getString("field");
-
-                  if (field.equals("datetime"))
+                  if (filter.has("startDate") || filter.has("endDate"))
                   {
-                    if (filter.has("startDate") || filter.has("endDate"))
-                    {
-                      m.range(r -> {
-                        r.field("properties.datetime");
+                    conditions.add(new Query.Builder().range(r -> {
+                      r.field("properties.datetime");
 
-                        if (filter.has("startDate"))
-                        {
-                          r.gte(JsonData.of(filter.getString("startDate")));
-                        }
+                      if (filter.has("startDate"))
+                      {
+                        r.gte(JsonData.of(filter.getString("startDate")));
+                      }
 
-                        if (filter.has("endDate"))
-                        {
-                          r.lte(JsonData.of(filter.getString("endDate")));
-                        }
+                      if (filter.has("endDate"))
+                      {
+                        r.lte(JsonData.of(filter.getString("endDate")));
+                      }
 
-                        return r;
-                      });
-                    }
-
+                      return r;
+                    }).build());
                   }
-                  else
-                  {
-                    String value = filter.getString("value");
-                    m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
-                  }
+
                 }
+                else
+                {
+                  String value = filter.getString("value");
 
-                return m;
-              });
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*")).build());
+                }
+              }
+
+              b.filter(conditions);
             }
           }
           else
@@ -648,41 +661,40 @@ public class ElasticSearchIndex implements Index
 
             if (filters != null && filters.length() > 0)
             {
-              b.should(m -> {
+              List<Query> conditions = new LinkedList<Query>();
 
-                for (int i = 0; i < filters.length(); i++)
+              for (int i = 0; i < filters.length(); i++)
+              {
+                JSONObject filter = filters.getJSONObject(i);
+                String field = filter.getString("field");
+
+                if (field.equalsIgnoreCase("bounds"))
                 {
-                  JSONObject filter = filters.getJSONObject(i);
-                  String field = filter.getString("field");
+                  JSONObject object = filter.getJSONObject("value");
 
-                  if (field.equalsIgnoreCase("bounds"))
-                  {
-                    JSONObject object = filter.getJSONObject("value");
+                  JSONObject sw = object.getJSONObject("_sw");
+                  JSONObject ne = object.getJSONObject("_ne");
 
-                    JSONObject sw = object.getJSONObject("_sw");
-                    JSONObject ne = object.getJSONObject("_ne");
+                  double x1 = sw.getDouble("lng");
+                  double x2 = ne.getDouble("lng");
+                  double y1 = sw.getDouble("lat");
+                  double y2 = ne.getDouble("lat");
 
-                    double x1 = sw.getDouble("lng");
-                    double x2 = ne.getDouble("lng");
-                    double y1 = sw.getDouble("lat");
-                    double y2 = ne.getDouble("lat");
+                  Envelope envelope = new Envelope(x1, x2, y1, y2);
+                  GeometryFactory factory = new GeometryFactory();
+                  Geometry geometry = factory.toGeometry(envelope);
+                  WKTWriter writer = new WKTWriter();
 
-                    Envelope envelope = new Envelope(x1, x2, y1, y2);
-                    GeometryFactory factory = new GeometryFactory();
-                    Geometry geometry = factory.toGeometry(envelope);
-                    WKTWriter writer = new WKTWriter();
-
-                    m.geoShape(qs -> qs.boost(10F).field("geometry").shape(bb -> bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry)))));
-                  }
-                  else
-                  {
-                    String value = filter.getString("value");
-                    m.queryString(qs -> qs.boost(1.2F).fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
-                  }
+                  conditions.add(new Query.Builder().geoShape(qs -> qs.boost(10F).field("geometry").shape(bb -> bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry))))).build());
                 }
+                else
+                {
+                  String value = filter.getString("value");
+                  conditions.add(new Query.Builder().queryString(qs -> qs.boost(1.2F).fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*")).build());
+                }
+              }
 
-                return m;
-              });
+              b.should(conditions);
             }
           }
 
