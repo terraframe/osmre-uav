@@ -1,8 +1,9 @@
 # Changelog
-## [0.15.1](https://github.com/terraframe/osmre-uav/releases/tag/0.15.1) (2022-10-11)
+## [0.15.2](https://github.com/terraframe/osmre-uav/releases/tag/0.15.2) (2022-10-13)
 
 ### Features
 
+ -  usfs and usda bureaus ([5ed8cab145213dd](https://github.com/terraframe/osmre-uav/commit/5ed8cab145213dd1193785134f5780dde6794629))
  -  support for boosting STAC results by the bounds of the view port ([2519e9f84f44691](https://github.com/terraframe/osmre-uav/commit/2519e9f84f446913a40fd5696d0c9f8bf44c2cbe))
  -  **test**  Unit test for tika parsing ([ebfb137cea64750](https://github.com/terraframe/osmre-uav/commit/ebfb137cea647503c43a2213866d897490b7c4e5))
  -  **test**  Added document generation as part of standard test setup ([4a5f913614ab0bb](https://github.com/terraframe/osmre-uav/commit/4a5f913614ab0bbc7c1694c297bfdcd8905fc0da))
@@ -12,6 +13,9 @@
 
 ### Bug Fixes
 
+ -  fix of bad patch for incomplete STAC asset data ([8b95271f1ee831e](https://github.com/terraframe/osmre-uav/commit/8b95271f1ee831ede4ea4f5708d397d59edc329a))
+ -  fixed issue with deletes not cleaning up the search index ([565e347e9c8a213](https://github.com/terraframe/osmre-uav/commit/565e347e9c8a213ec82e9c603c3a94e084e21d48))
+ -  fixed issue with playing/downloading videos ([9c85ae3b374ee44](https://github.com/terraframe/osmre-uav/commit/9c85ae3b374ee443d743d8dd747970a72f23d896))
  -  product image previews not rendering ([71c169ae3f93685](https://github.com/terraframe/osmre-uav/commit/71c169ae3f93685b51ca5b24cf671cf635b14bd4))
  -  uasdm-server/pom.xml to reduce vulnerabilities ([5e942c8205f4061](https://github.com/terraframe/osmre-uav/commit/5e942c8205f40615f39e560584fffe6ac19b5b6b))
  -  uasdm-server/pom.xml to reduce vulnerabilities ([2af820ba53b9beb](https://github.com/terraframe/osmre-uav/commit/2af820ba53b9beb20a9b7bbfc8c52fbb695014e5))
@@ -25,4 +29,8 @@
  -  Reprocess Imagery button to refresh correctly on tab change ([8b55949bbd10985](https://github.com/terraframe/osmre-uav/commit/8b55949bbd109859057d79ea68f9c067e95c6ed7))
  -  **keycloak**  Upgrade keycloak dependency. ([771ee0717289556](https://github.com/terraframe/osmre-uav/commit/771ee071728955679688c1a6f2c6ffb2d8e3f66d))
  -  uasdm-server/pom.xml to reduce vulnerabilities ([27b71e5234e960c](https://github.com/terraframe/osmre-uav/commit/27b71e5234e960cc5330d4ac8a7c95deaccbef8e))
+
+## [0.15.1](https://github.com/terraframe/osmre-uav/releases/tag/0.15.1) (2022-10-11)
+
+
 
