@@ -34,14 +34,14 @@ public class MockIndex implements Index
 {
 
   public static enum IndexActionType {
-    DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_NAME, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC
+    CLEAR, DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_NAME, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC
   }
 
   public static class IndexAction
   {
     private IndexActionType type;
 
-    private Object[] objects;
+    private Object[]        objects;
 
     public IndexAction(IndexActionType type, Object... objects)
     {
@@ -79,6 +79,12 @@ public class MockIndex implements Index
   public void shutdown()
   {
 
+  }
+
+  @Override
+  public void clear()
+  {
+    this.actions.add(new IndexAction(IndexActionType.CLEAR));
   }
 
   @Override
@@ -154,7 +160,7 @@ public class MockIndex implements Index
 
     return new JSONArray();
   }
-  
+
   @Override
   public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {

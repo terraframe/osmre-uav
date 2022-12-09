@@ -77,6 +77,8 @@ public class IndexServiceMigration implements Runnable
   @Transaction
   protected void transaction()
   {
+    IndexService.clear();
+
     this.migrateComponents();
     this.migrateProducts();
 

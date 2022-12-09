@@ -96,7 +96,7 @@ public class IndexServiceTest
   {
     File file = new File(this.getClass().getResource("/metadata.xml").toURI());
     String content = IndexService.getContent(file);
-    String expected = " \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "\n";
+    String expected = " \n" + "\n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "   \n" + "\n";
 
     Assert.assertEquals(expected, content);
   }

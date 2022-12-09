@@ -72,6 +72,14 @@ public class IndexService
     }
   }
 
+  public static void clear()
+  {
+    if (AppProperties.isSearchEnabled())
+    {
+      index.clear();
+    }
+  }
+  
   public static void deleteDocuments(String fieldId, String oid)
   {
     if (AppProperties.isSearchEnabled())

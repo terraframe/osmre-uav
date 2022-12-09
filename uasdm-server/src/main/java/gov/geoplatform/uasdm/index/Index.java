@@ -56,4 +56,6 @@ public interface Index
   public JSONArray getTotals(String text, JSONArray filters);
 
   public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber);
+
+  public void clear();
 }

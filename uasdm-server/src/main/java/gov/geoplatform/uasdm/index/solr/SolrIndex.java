@@ -65,6 +65,11 @@ public class SolrIndex implements Index
   {
   }
 
+  @Override
+  public void clear()
+  {
+  }
+
   public void deleteDocuments(String fieldId, String oid)
   {
     try

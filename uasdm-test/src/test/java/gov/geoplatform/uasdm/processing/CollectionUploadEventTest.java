@@ -51,7 +51,7 @@ public class CollectionUploadEventTest
 {
   private static Area51DataSet testData;
 
-  private Collection collection;
+  private Collection           collection;
 
   @BeforeClass
   public static void setUpClass()
@@ -81,7 +81,7 @@ public class CollectionUploadEventTest
     collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
   }
 
-  private Pair<WorkflowTask, CollectionUploadEvent> createEvent(String uploadTarget)
+  private Pair<WorkflowTask, CollectionUploadEvent> createEvent(String uploadTarget, boolean createProduct)
   {
     GeoprismUser user = GeoprismUser.getByUsername(Area51DataSet.ADMIN_USER_NAME);
 
@@ -89,9 +89,9 @@ public class CollectionUploadEventTest
 
     WorkflowTask task = (WorkflowTask) collection.createWorkflowTask(uploadId, uploadTarget);
     task.setGeoprismUser(user);
-    task.setProcessDem(true);
-    task.setProcessOrtho(true);
-    task.setProcessPtcloud(true);
+    task.setProcessDem(createProduct);
+    task.setProcessOrtho(createProduct);
+    task.setProcessPtcloud(createProduct);
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("100% complete");
     task.apply();
@@ -124,7 +124,7 @@ public class CollectionUploadEventTest
 
     String uploadTarget = ImageryComponent.RAW;
 
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, true);
 
     try
     {
@@ -161,7 +161,7 @@ public class CollectionUploadEventTest
 
     String uploadTarget = ImageryComponent.ORTHO;
 
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, true);
 
     try
     {
@@ -201,7 +201,7 @@ public class CollectionUploadEventTest
 
     String uploadTarget = ImageryComponent.ORTHO;
 
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, true);
 
     try
     {
@@ -243,7 +243,7 @@ public class CollectionUploadEventTest
 
     String uploadTarget = ImageryComponent.DEM;
 
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, true);
 
     try
     {
@@ -284,7 +284,7 @@ public class CollectionUploadEventTest
 
     String uploadTarget = ImageryComponent.RAW;
 
-    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget);
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, true);
 
     try
     {
@@ -316,6 +316,34 @@ public class CollectionUploadEventTest
       List<Product> products = result.getProducts();
 
       Assert.assertEquals(1, products.size());
+    }
+    finally
+    {
+      pair.getSecond().delete();
+    }
+  }
+
+  @Test
+  @Request
+  public void testHandleUploadFinishRawWithProcessing_NoProduct() throws Exception
+  {
+    File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
+
+    final FileResource resource = new FileResource(file);
+
+    String uploadTarget = ImageryComponent.RAW;
+
+    Pair<WorkflowTask, CollectionUploadEvent> pair = this.createEvent(uploadTarget, false);
+
+    try
+    {
+      CollectionUploadEvent event = pair.getSecond();
+
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+
+      ODMProcessingTask task = ODMProcessingTask.getByUploadId(event.getUploadId());
+
+      Assert.assertNull(task);
     }
     finally
     {
