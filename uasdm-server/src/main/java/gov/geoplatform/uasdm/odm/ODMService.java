@@ -16,15 +16,16 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -74,8 +75,8 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    Response resp = connector.httpGet("task/" + uuid + "/output", new NameValuePair[] {});
-
+    Response resp = connector.httpGet("task/" + uuid + "/output", new ArrayList<NameValuePair>());
+    
     return new HttpTaskOutputResponse(resp);
   }
 
@@ -84,8 +85,8 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    NameValuePair[] nvp = new NameValuePair[1];
-    nvp[0] = new NameValuePair("uuid", uuid);
+    List<NameValuePair> nvp = new ArrayList<NameValuePair>();
+    nvp.add(new BasicNameValuePair("uuid", uuid));
 
     Response resp = connector.httpPost("task/remove", nvp);
 
@@ -107,6 +108,7 @@ public class ODMService implements ODMServiceIF
 
       return zip;
     }
+    
     catch (Exception e)
     {
       throw new ProgrammingErrorException(e);
@@ -169,9 +171,7 @@ public class ODMService implements ODMServiceIF
   public HttpNewResponse taskNewInit(int imagesCount, boolean isMultispectral)
   {
     initialize();
-
-    Part[] parts = new Part[1];
-
+    
     JSONArray arr = new JSONArray();
 
     // Use this tag to build a DSM (Digital Surface Model, ground + objects)
@@ -220,9 +220,10 @@ public class ODMService implements ODMServiceIF
     joImagesCount.put("value", imagesCount);
     arr.put(joImagesCount);
 
-    parts[0] = new StringPart("options", arr.toString(), "UTF-8");
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+    builder.addTextBody("options", arr.toString());
 
-    Response resp = connector.postAsMultipart("task/new/init", parts);
+    Response resp = connector.postAsMultipart("task/new/init", builder.build());
 
     return new HttpNewResponse(resp);
   }
@@ -232,19 +233,15 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    Part[] parts = new Part[1];
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
     try (CloseableFile file = image.openNewFile())
     {
-      parts[0] = new FilePart("images", file, "application/octet-stream", "UTF-8");
+      builder.addBinaryBody("images", file, ContentType.APPLICATION_OCTET_STREAM, image.getName());
 
-      Response resp = connector.postAsMultipart("task/new/upload/" + uuid, parts);
+      Response resp = connector.postAsMultipart("task/new/upload/" + uuid, builder.build());
 
       return new HttpODMResponse(resp);
-    }
-    catch (FileNotFoundException e)
-    {
-      throw new ProgrammingErrorException(e);
     }
   }
 
@@ -253,9 +250,7 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    Part[] parts = new Part[0];
-
-    Response resp = connector.postAsMultipart("task/new/commit/" + uuid, parts);
+    Response resp = connector.postAsMultipart("task/new/commit/" + uuid, MultipartEntityBuilder.create().build());
 
     return new HttpODMResponse(resp);
   }
@@ -302,7 +297,7 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    Response resp = connector.httpGet("task/" + uuid + "/info", new NameValuePair[] {});
+    Response resp = connector.httpGet("task/" + uuid + "/info", new ArrayList<NameValuePair>());
 
     return new HttpInfoResponse(resp);
   }

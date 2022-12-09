@@ -155,30 +155,30 @@ public class PollingTaskService implements TaskService
       {
         try
         {
+          // We want to make sure that we are sleeping OUTSIDE of any request because we don't want to hold onto a DB connection
           Thread.sleep(ODM_STATUS_UPDATE_INTERVAL);
 
           runInRequest();
         }
+        catch (InterruptedException t)
+        {
+          return;
+        }
         catch (Throwable t)
         {
-          if (t instanceof InterruptedException)
-          {
-            return;
-          }
-
           logger.error("ODM status server encountered an error!", t);
         }
       }
     }
 
     @Request
-    public void runInRequest()
+    public void runInRequest() throws InterruptedException
     {
       runInTrans();
     }
 
     // @Transaction
-    public void runInTrans()
+    public void runInTrans() throws InterruptedException
     {
       synchronized (pendingTasks)
       {
@@ -193,7 +193,7 @@ public class PollingTaskService implements TaskService
         if (Thread.interrupted())
         {
           Thread.currentThread().interrupt();
-          return;
+          throw new InterruptedException();
         }
 
         ODMProcessingTaskIF task = it.next();
