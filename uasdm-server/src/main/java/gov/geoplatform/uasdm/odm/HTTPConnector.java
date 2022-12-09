@@ -34,33 +34,56 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
+import org.apache.http.impl.client.cache.CachingHttpClients;
+import org.apache.http.impl.client.cache.ExponentialBackOffSchedulingStrategy;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.InvalidLoginException;
 
 public class HTTPConnector
 {
-  HttpClient client;
+  CloseableHttpClient client;
   
   Logger logger = LoggerFactory.getLogger(HTTPConnector.class);
   
@@ -69,6 +92,8 @@ public class HTTPConnector
   String username;
   
   String password;
+  
+  protected HttpClientContext localContext;
   
   public void setCredentials(String username, String password)
   {
@@ -93,14 +118,49 @@ public class HTTPConnector
   
   synchronized public void initialize()
   {
-    this.client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    CachingHttpClientBuilder builder = CachingHttpClients.custom();
+    
+    HttpRequestRetryHandler backoffRetryHandler = new DefaultHttpRequestRetryHandler(5, true) {
+      @Override
+      public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
+        try
+        {
+          Thread.sleep((long) ( 1000 * Math.pow(2, executionCount) ));
+        }
+        catch (InterruptedException e)
+        {
+          throw new RuntimeException(e);
+        }
+        
+        return super.retryRequest(exception, executionCount, context);
+      }
+    };
+    
+    builder.setRetryHandler(backoffRetryHandler);
+    
+    // By default, only GET requests resulting in a redirect are automatically followed. We want to follow it on POST as well.
+    builder.setRedirectStrategy(new LaxRedirectStrategy());
     
     if (username != null && password != null)
     {
-      client.getParams().setAuthenticationPreemptive(true);
+      HttpHost target = HttpHost.create(serverurl);
+      
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
-      client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+      credentialsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), defaultcreds);
+      builder.setDefaultCredentialsProvider(credentialsProvider);
+
+      
+      // Adding an authCache to a localContext will make the authentication preemptive.
+      AuthCache authCache = new BasicAuthCache();
+      BasicScheme basicAuth = new BasicScheme();
+      authCache.put(target, basicAuth);
+
+      localContext = HttpClientContext.create();
+      localContext.setAuthCache(authCache);
     }
+    
+    this.client = builder.build();
   }
   
   public boolean isInitialized()
@@ -108,20 +168,30 @@ public class HTTPConnector
     return client != null;
   }
   
-  public Response httpGet(String url, NameValuePair[] params)
+  public Response httpGet(String url, List<NameValuePair> params)
   {
     if (!isInitialized())
     {
       initialize();
     }
     
-    GetMethod get = new GetMethod(this.getServerUrl() + url);
+    URI uri;
+    try
+    {
+      uri = new URIBuilder(this.getServerUrl() + url)
+          .addParameters(params)
+          .build();
+    }
+    catch (URISyntaxException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
     
-    get.setRequestHeader("Accept", "application/json");
+    HttpGet get = new HttpGet(uri);
     
-    get.setQueryString(params);
+    get.addHeader(new BasicHeader("Accept", ContentType.APPLICATION_JSON.getMimeType()));
     
-    Response response = this.httpRequest(this.client, get);
+    Response response = this.httpRequest(get);
     
     if (response.getStatusCode() == 401)
     {
@@ -131,7 +201,7 @@ public class HTTPConnector
     return response;
   }
   
-  public Response postAsMultipart(String url, Part[] parts)
+  public Response postAsMultipart(String url, HttpEntity entity)
   {
 //    try {
       if (!isInitialized())
@@ -139,15 +209,11 @@ public class HTTPConnector
         initialize();
       }
       
-      PostMethod post = new PostMethod(this.getServerUrl() + url);
+      HttpPost post = new HttpPost(this.getServerUrl() + url);
       
-//      post.setRequestHeader("Content-Type", "multipart/form-data");
+      post.setEntity(entity);
       
-      MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(parts, post.getParams());
-      
-      post.setRequestEntity(multipartRequestEntity);
-      
-      Response response = this.httpRequest(this.client, post);
+      Response response = this.httpRequest(post);
       
       if (response.getStatusCode() == 401)
       {
@@ -160,93 +226,59 @@ public class HTTPConnector
 //    }
   }
   
-  public Response httpPost(String url, NameValuePair[] body)
+  public Response httpPost(String url, List<NameValuePair> body)
   {
     if (!isInitialized())
     {
       initialize();
     }
     
-    try
+    HttpPost post = new HttpPost(this.getServerUrl() + url);
+    
+    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(body, Consts.UTF_8);
+    post.setEntity(entity);
+    
+    Response response = this.httpRequest(post);
+    
+    if (response.getStatusCode() == 401)
     {
-      PostMethod post = new PostMethod(this.getServerUrl() + url);
-      
-      post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      
-      String sBody = org.apache.commons.httpclient.util.EncodingUtil.formUrlEncode(body, "UTF-8");
-      post.setRequestEntity(new StringRequestEntity(sBody, null, null));
-      
-      Response response = this.httpRequest(this.client, post);
-      
-      if (response.getStatusCode() == 401)
-      {
-        throw new InvalidLoginException("Unable to log in to " + this.getServerUrl());
-      }
-      
-      return response;
+      throw new InvalidLoginException("Unable to log in to " + this.getServerUrl());
     }
-    catch (UnsupportedEncodingException e)
-    {
-      throw new RuntimeException(e);
-    }
+    
+    return response;
   }
   
-  public Response httpRequest(HttpClient client, HttpMethod method)
+  public Response httpRequest(HttpUriRequest request)
   {
+    this.logger.debug("Sending request to " + request.getURI());
+    
     String sResponse = null;
-    try
+    
+    try (CloseableHttpResponse response = client.execute(request, localContext))
     {
-      this.logger.debug("Sending request to " + method.getURI());
-
-      // Execute the method.
-      int statusCode = client.executeMethod(method);
+      int statusCode = response.getStatusLine().getStatusCode();
       
-      // Follow Redirects
-      if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY || statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_TEMPORARY_REDIRECT || statusCode == HttpStatus.SC_SEE_OTHER)
-      {
-        this.logger.debug("Redirected [" + statusCode + "] to [" + method.getResponseHeader("location").getValue() + "].");
-        method.setURI(new URI(method.getResponseHeader("location").getValue(), true, method.getParams().getUriCharset()));
-        method.releaseConnection();
-        return httpRequest(client, method);
-      }
+      HttpEntity responseEntity = response.getEntity();
       
-      // TODO : we might blow the memory stack here, read this as a stream somehow if possible.
-      Header contentTypeHeader = method.getResponseHeader("Content-Type");
-      if (contentTypeHeader == null)
+      if (responseEntity != null)
       {
-        sResponse = new String(method.getResponseBody(), "UTF-8");
-      }
-      else
-      {
-        sResponse = method.getResponseBodyAsString();
+        sResponse = EntityUtils.toString(responseEntity);
+        
+        if (sResponse.length() < 1000)
+        {
+          this.logger.debug("Response string = '" + sResponse + "'.");
+        }
+        else
+        {
+          this.logger.debug("Receieved a very large response.");
+        }
       }
       
-      if (sResponse.length() < 1000)
-      {
-        this.logger.debug("Response string = '" + sResponse + "'.");
-      }
-      else
-      {
-        this.logger.debug("Receieved a very large response.");
-      }
-      
-      return new HttpResponse(sResponse, statusCode);
-    }
-    catch (ConnectException e)
-    {
-      throw new UnreachableHostException(e);
-    }
-    catch (HttpException e)
-    {
-      throw new RuntimeException(e);
+      return new gov.geoplatform.uasdm.odm.HttpResponse(sResponse, statusCode);
     }
     catch (IOException e)
     {
-      throw new RuntimeException(e);
-    }
-    finally
-    {
-      method.releaseConnection();
+      throw new UnreachableHostException(e);
     }
   }
 }
