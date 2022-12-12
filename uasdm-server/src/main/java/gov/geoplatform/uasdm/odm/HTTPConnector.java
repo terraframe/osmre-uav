@@ -120,7 +120,7 @@ public class HTTPConnector
   {
     CachingHttpClientBuilder builder = CachingHttpClients.custom();
     
-    HttpRequestRetryHandler backoffRetryHandler = new DefaultHttpRequestRetryHandler(5, true) {
+    HttpRequestRetryHandler backoffRetryHandler = new DefaultHttpRequestRetryHandler(7, true) {
       @Override
       public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
         try
