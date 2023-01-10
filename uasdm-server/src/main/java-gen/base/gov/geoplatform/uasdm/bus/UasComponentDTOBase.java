@@ -244,12 +244,12 @@ public abstract class UasComponentDTOBase extends com.runwaysdk.business.Busines
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(FOLDERNAME).getAttributeMdDTO();
   }
   
-  public com.vividsolutions.jts.geom.Point getGeoPoint()
+  public org.locationtech.jts.geom.Point getGeoPoint()
   {
-    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOPOINT);
+    return (org.locationtech.jts.geom.Point)getObjectValue(GEOPOINT);
   }
   
-  public void setGeoPoint(com.vividsolutions.jts.geom.Point value)
+  public void setGeoPoint(org.locationtech.jts.geom.Point value)
   {
     if(value == null)
     {

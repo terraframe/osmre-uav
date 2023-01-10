@@ -670,12 +670,12 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(FAAIDNUMBER).getAttributeMdDTO();
   }
   
-  public com.vividsolutions.jts.geom.Point getGeometry()
+  public org.locationtech.jts.geom.Point getGeometry()
   {
-    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOMETRY);
+    return (org.locationtech.jts.geom.Point)getObjectValue(GEOMETRY);
   }
   
-  public void setGeometry(com.vividsolutions.jts.geom.Point value)
+  public void setGeometry(org.locationtech.jts.geom.Point value)
   {
     if(value == null)
     {

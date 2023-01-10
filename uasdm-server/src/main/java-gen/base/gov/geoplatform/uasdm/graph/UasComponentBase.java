@@ -73,9 +73,9 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
     this.setValue(FOLDERNAME, value);
   }
   
-  public com.vividsolutions.jts.geom.Point getGeoPoint()
+  public org.locationtech.jts.geom.Point getGeoPoint()
   {
-    return (com.vividsolutions.jts.geom.Point) this.getObjectValue(GEOPOINT);
+    return (org.locationtech.jts.geom.Point) this.getObjectValue(GEOPOINT);
   }
   
   public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getGeoPointMd()
@@ -84,7 +84,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
     return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(GEOPOINT);
   }
   
-  public void setGeoPoint(com.vividsolutions.jts.geom.Point value)
+  public void setGeoPoint(org.locationtech.jts.geom.Point value)
   {
     this.setValue(GEOPOINT, value);
   }

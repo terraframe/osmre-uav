@@ -590,9 +590,9 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     }
   }
   
-  public com.vividsolutions.jts.geom.Point getGeometry()
+  public org.locationtech.jts.geom.Point getGeometry()
   {
-    return (com.vividsolutions.jts.geom.Point)getObjectValue(GEOMETRY);
+    return (org.locationtech.jts.geom.Point)getObjectValue(GEOMETRY);
   }
   
   public void validateGeometry()
@@ -606,7 +606,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(GEOMETRY);
   }
   
-  public void setGeometry(com.vividsolutions.jts.geom.Point value)
+  public void setGeometry(org.locationtech.jts.geom.Point value)
   {
     if(value == null)
     {

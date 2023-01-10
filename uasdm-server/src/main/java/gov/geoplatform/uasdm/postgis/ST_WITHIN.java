@@ -24,7 +24,7 @@ import com.runwaysdk.query.Join;
 import com.runwaysdk.query.SelectableGeometry;
 import com.runwaysdk.query.StatementGeometry;
 import com.runwaysdk.query.Visitor;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 public class ST_WITHIN extends Condition
 {

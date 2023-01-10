@@ -64,6 +64,12 @@
 
   <dependencies>
     <dependency>
+        <groupId>org.locationtech.jts.io</groupId>
+        <artifactId>jts-io-common</artifactId>
+        <version>1.16.1</version>
+    </dependency>
+  
+    <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-rangereader-http</artifactId>
       <version>1.4.7</version>

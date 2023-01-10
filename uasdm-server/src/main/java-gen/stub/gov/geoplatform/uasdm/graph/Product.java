@@ -40,9 +40,9 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
@@ -291,12 +291,12 @@ public class Product extends ProductBase implements ProductIF
       // CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
       // MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
       //
-      // com.vividsolutions.jts.geom.Envelope jtsEnvelope = new
-      // com.vividsolutions.jts.geom.Envelope();
+      // org.locationtech.jts.geom.Envelope jtsEnvelope = new
+      // org.locationtech.jts.geom.Envelope();
       // jtsEnvelope.init(envelope.getMinX(), envelope.getMaxX(),
       // envelope.getMinY(), envelope.getMaxY());
       //
-      // com.vividsolutions.jts.geom.Envelope env3857 =
+      // org.locationtech.jts.geom.Envelope env3857 =
       // JTS.transform(jtsEnvelope, transform);
       //
       // JSONArray json = new JSONArray();

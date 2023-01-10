@@ -24,8 +24,8 @@ import com.runwaysdk.business.rbac.Operation;
 import com.runwaysdk.session.ReadPermissionException;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.graph.Document;

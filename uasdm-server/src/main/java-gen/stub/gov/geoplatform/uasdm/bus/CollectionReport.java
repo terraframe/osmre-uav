@@ -44,7 +44,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.session.Request;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;

@@ -24,8 +24,8 @@ import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.Actor;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;

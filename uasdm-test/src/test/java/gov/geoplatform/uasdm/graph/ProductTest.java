@@ -28,7 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.runwaysdk.session.Request;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
