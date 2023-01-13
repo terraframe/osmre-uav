@@ -177,7 +177,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.318</version>
+	  <version>1.12.384</version>
 	  <exclusions>
 	    <exclusion>
 	      <groupId>com.amazonaws</groupId>
@@ -348,7 +348,7 @@
                   <mainClass>com.runwaysdk.dataaccess.io.UndoAll</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
@@ -395,7 +395,7 @@
                   <mainClass>net.geoprism.ImportSchema</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
