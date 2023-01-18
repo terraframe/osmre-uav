@@ -194,7 +194,9 @@ public class IndexService
         parser.parse(istream, handler, new Metadata());
       }
 
-      return handler.toString();
+      String results = handler.toString();
+      
+      return results;
     }
     catch (SAXException | TikaException | IOException e)
     {

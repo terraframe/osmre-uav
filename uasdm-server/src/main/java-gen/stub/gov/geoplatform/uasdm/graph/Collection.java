@@ -454,7 +454,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return new SiteObjectsResultSet(new Long(objects.size()), pageNumber, pageSize, objects, folder);
+    return new SiteObjectsResultSet(Long.valueOf(objects.size()), pageNumber, pageSize, objects, folder);
   }
 
   @Override

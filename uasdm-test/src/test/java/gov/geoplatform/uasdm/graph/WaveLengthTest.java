@@ -59,7 +59,7 @@ public class WaveLengthTest
   @Request
   public void testGetCount()
   {
-    Assert.assertEquals(new Long(5L), WaveLength.getCount());
+    Assert.assertEquals(Long.valueOf(5L), WaveLength.getCount());
   }
 
   @Test
@@ -69,9 +69,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(5L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(5L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(5, page.getResults().size());
   }
 
@@ -86,9 +86,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(5L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(5L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(2, page.getResults().size());
   }
 
@@ -103,9 +103,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(5L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(5L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(5, page.getResults().size());
     Assert.assertEquals("Thermal", page.getResults().get(0).getName());
   }
@@ -132,9 +132,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(5L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(5L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(5, page.getResults().size());
     Assert.assertEquals("Thermal", page.getResults().get(0).getName());
   }
@@ -156,9 +156,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("LiDAR", page.getResults().get(0).getName());
   }
@@ -180,9 +180,9 @@ public class WaveLengthTest
     Page<Classification> page = WaveLength.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("LiDAR", page.getResults().get(0).getName());
   }
@@ -201,7 +201,7 @@ public class WaveLengthTest
     WaveLength waveLength = WaveLength.fromJSON(json);
 
     Assert.assertEquals(name, waveLength.getName());
-    Assert.assertEquals(new Long(seq), waveLength.getSeq());
+    Assert.assertEquals(Long.valueOf(seq), waveLength.getSeq());
   }
 
 }

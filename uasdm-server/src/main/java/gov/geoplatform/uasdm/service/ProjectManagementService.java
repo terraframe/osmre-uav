@@ -578,7 +578,7 @@ public class ProjectManagementService
   public void validate(String sessionId, RequestParserIF parser)
   {
     // Map<String, String> params = parser.getCustomParams();
-    // Boolean createCollection = new Boolean(params.get("create"));
+    // Boolean createCollection = Boolean.valueOf(params.get("create"));
     //
     // if (createCollection)
     // {

@@ -75,9 +75,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
   }
 
@@ -92,9 +92,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(0, page.getResults().size());
   }
 
@@ -109,9 +109,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.COLLECTION_FISHBED.getName(), page.getResults().get(0).getCollectionName());
   }
@@ -138,9 +138,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.COLLECTION_FISHBED.getName(), page.getResults().get(0).getCollectionName());
   }
@@ -162,9 +162,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.COLLECTION_FISHBED.getName(), page.getResults().get(0).getCollectionName());
   }
@@ -186,9 +186,9 @@ public class CollectionReportTest
     Page<CollectionReport> page = CollectionReport.page(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.COLLECTION_FISHBED.getName(), page.getResults().get(0).getCollectionName());
   }
@@ -351,16 +351,16 @@ public class CollectionReportTest
     Assert.assertEquals(report.getFaaIdNumber(), object.getString(CollectionReport.FAAIDNUMBER));
     Assert.assertEquals(report.getSerialNumber(), object.getString(CollectionReport.SERIALNUMBER));
     Assert.assertEquals(report.getOdmProcessing(), object.getString(CollectionReport.ODMPROCESSING));
-    Assert.assertEquals(report.getErosMetadataComplete(), new Boolean(object.getBoolean(CollectionReport.EROSMETADATACOMPLETE)));
-    Assert.assertEquals(report.getRawImagesCount(), new Integer(object.getInt(CollectionReport.RAWIMAGESCOUNT)));
-    Assert.assertEquals(report.getVideo(), new Boolean(object.getBoolean(CollectionReport.VIDEO)));
-    Assert.assertEquals(report.getOrthomosaic(), new Boolean(object.getBoolean(CollectionReport.ORTHOMOSAIC)));
-    Assert.assertEquals(report.getPointCloud(), new Boolean(object.getBoolean(CollectionReport.POINTCLOUD)));
-    Assert.assertEquals(report.getHillshade(), new Boolean(object.getBoolean(CollectionReport.HILLSHADE)));
-    Assert.assertEquals(report.getProductsShared(), new Boolean(object.getBoolean(CollectionReport.PRODUCTSSHARED)));
+    Assert.assertEquals(report.getErosMetadataComplete(), Boolean.valueOf(object.getBoolean(CollectionReport.EROSMETADATACOMPLETE)));
+    Assert.assertEquals(report.getRawImagesCount(), Integer.valueOf(object.getInt(CollectionReport.RAWIMAGESCOUNT)));
+    Assert.assertEquals(report.getVideo(), Boolean.valueOf(object.getBoolean(CollectionReport.VIDEO)));
+    Assert.assertEquals(report.getOrthomosaic(), Boolean.valueOf(object.getBoolean(CollectionReport.ORTHOMOSAIC)));
+    Assert.assertEquals(report.getPointCloud(), Boolean.valueOf(object.getBoolean(CollectionReport.POINTCLOUD)));
+    Assert.assertEquals(report.getHillshade(), Boolean.valueOf(object.getBoolean(CollectionReport.HILLSHADE)));
+    Assert.assertEquals(report.getProductsShared(), Boolean.valueOf(object.getBoolean(CollectionReport.PRODUCTSSHARED)));
     Assert.assertEquals(report.getValue(CollectionReport.PRODUCT), object.getString(CollectionReport.PRODUCT));
-    Assert.assertEquals(report.getExists(), new Boolean(object.getBoolean(CollectionReport.EXISTS)));
-    Assert.assertEquals(report.getDownloadCounts(), new Long(object.getLong(CollectionReport.DOWNLOADCOUNTS)));
+    Assert.assertEquals(report.getExists(), Boolean.valueOf(object.getBoolean(CollectionReport.EXISTS)));
+    Assert.assertEquals(report.getDownloadCounts(), Long.valueOf(object.getLong(CollectionReport.DOWNLOADCOUNTS)));
     Assert.assertFalse(object.has(CollectionReport.DELETEDATE));
     Assert.assertNotNull(object.getString(CollectionReport.CREATEDATE));
   }

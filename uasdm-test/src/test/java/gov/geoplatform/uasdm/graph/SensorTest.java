@@ -88,7 +88,7 @@ public class SensorTest
   @Request
   public void testGetCount()
   {
-    Assert.assertEquals(new Long(1L), Sensor.getCount());
+    Assert.assertEquals(Long.valueOf(1L), Sensor.getCount());
   }
 
   @Test
@@ -98,9 +98,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
   }
 
@@ -115,9 +115,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(0, page.getResults().size());
   }
 
@@ -132,9 +132,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getSensor().getName());
   }
@@ -161,9 +161,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getSensor().getName());
   }
@@ -185,9 +185,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getSensor().getName());
   }
@@ -209,9 +209,9 @@ public class SensorTest
     Page<SensorPageView> page = Sensor.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getSensor().getName());
   }
@@ -230,7 +230,7 @@ public class SensorTest
     Assert.assertNotNull(object.getString(Sensor.DATEUPDATED));
     Assert.assertEquals(type.getOid(), object.getString(Sensor.SENSOR_TYPE_OID));
     Assert.assertNotNull(object.getJSONObject(Sensor.SENSORTYPE));
-    Assert.assertEquals(sensor.getSeq(), new Long(object.getLong(Sensor.SEQ)));
+    Assert.assertEquals(sensor.getSeq(), Long.valueOf(object.getLong(Sensor.SEQ)));
 
     JSONArray wavelengths = object.getJSONArray("wavelengths");
 

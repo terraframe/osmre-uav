@@ -345,7 +345,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       return this.getSiteObjects(folder, objects, pageNumber, pageSize);
     }
 
-    return new SiteObjectsResultSet(new Long(objects.size()), pageNumber, pageSize, objects, folder);
+    return new SiteObjectsResultSet(Long.valueOf(objects.size()), pageNumber, pageSize, objects, folder);
   }
 
   @Override
@@ -373,7 +373,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     DocumentQuery query = new DocumentQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
 
-    return new Long(query.getCount()).intValue();
+    return Long.valueOf(query.getCount()).intValue();
   }
 
   public Collection getUasComponent()

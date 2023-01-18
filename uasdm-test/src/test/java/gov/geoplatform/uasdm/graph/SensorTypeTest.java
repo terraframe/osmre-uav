@@ -59,7 +59,7 @@ public class SensorTypeTest
   @Request
   public void testGetCount()
   {
-    Assert.assertEquals(new Long(3L), SensorType.getCount());
+    Assert.assertEquals(Long.valueOf(3L), SensorType.getCount());
   }
 
   @Test
@@ -69,9 +69,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(3L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(3L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(3, page.getResults().size());
   }
 
@@ -86,9 +86,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(3L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(3L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
   }
 
@@ -103,9 +103,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(3L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(3L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(3, page.getResults().size());
     Assert.assertEquals("Multispectral", page.getResults().get(0).getName());
   }
@@ -132,9 +132,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(3L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(3L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(3, page.getResults().size());
     Assert.assertEquals("Multispectral", page.getResults().get(0).getName());
   }
@@ -156,9 +156,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("CMOS", page.getResults().get(0).getName());
   }
@@ -180,9 +180,9 @@ public class SensorTypeTest
     Page<Classification> page = SensorType.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("CMOS", page.getResults().get(0).getName());
   }
@@ -201,7 +201,7 @@ public class SensorTypeTest
     SensorType sensorType = SensorType.fromJSON(json);
 
     Assert.assertEquals(name, sensorType.getName());
-    Assert.assertEquals(new Long(seq), sensorType.getSeq());
+    Assert.assertEquals(Long.valueOf(seq), sensorType.getSeq());
   }
 
 }

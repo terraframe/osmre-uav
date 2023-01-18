@@ -105,7 +105,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
-            File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
+            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
             temp.mkdir();
 
             File newfile = new File(temp, infile.getBaseName() + CogTifProcessor.COG_EXTENSION);
@@ -120,7 +120,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
             task.apply();
 
-            File temp = new File(AppProperties.getTempDirectory(), new Long(new Random().nextInt()).toString());
+            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
             temp.mkdir();
 
             File newfile = new File(temp, infile.getBaseName() + ".tif");

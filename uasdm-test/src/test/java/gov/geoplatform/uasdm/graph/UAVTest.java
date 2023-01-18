@@ -69,7 +69,7 @@ public class UAVTest
   @Request
   public void testGetCount()
   {
-    Assert.assertEquals(new Long(1L), UAV.getCount());
+    Assert.assertEquals(Long.valueOf(1L), UAV.getCount());
   }
 
   @Test
@@ -79,9 +79,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
   }
 
@@ -96,9 +96,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(0, page.getResults().size());
   }
 
@@ -113,9 +113,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.UAV.getFaaNumber(), page.getResults().get(0).getUav().getFaaNumber());
   }
@@ -142,9 +142,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.UAV.getFaaNumber(), page.getResults().get(0).getUav().getFaaNumber());
   }
@@ -166,9 +166,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.UAV.getFaaNumber(), page.getResults().get(0).getUav().getFaaNumber());
   }
@@ -190,9 +190,9 @@ public class UAVTest
     Page<UAVPageView> page = UAV.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals(Area51DataSet.UAV.getFaaNumber(), page.getResults().get(0).getUav().getFaaNumber());
   }
@@ -211,7 +211,7 @@ public class UAVTest
     Assert.assertEquals(uav.getDescription(), object.getString(UAV.DESCRIPTION));
     Assert.assertEquals(uav.getPlatform().getOid(), object.getString(UAV.PLATFORM));
     Assert.assertEquals(uav.getBureau().getOid(), object.getString(UAV.BUREAU));
-    Assert.assertEquals(uav.getSeq(), new Long(object.getLong(UAV.SEQ)));
+    Assert.assertEquals(uav.getSeq(), Long.valueOf(object.getLong(UAV.SEQ)));
   }
 
   @Test

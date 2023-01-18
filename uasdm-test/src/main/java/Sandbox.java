@@ -1,17 +1,18 @@
+
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 /**
@@ -31,14 +32,10 @@
  */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -53,32 +50,34 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.json.JSONObject;
+import org.json.simple.JSONArray;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.runwaysdk.business.graph.GraphQuery;
-import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ValueObject;
-import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
-import gov.geoplatform.uasdm.cog.StacTiTillerProxy;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
-import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class Sandbox
 {
@@ -99,23 +98,52 @@ public class Sandbox
   @Request
   public static void request() throws Exception
   {
-    final MdVertexDAOIF mdCollection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    // final MdVertexDAOIF mdCollection =
+    // MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    //
+    // StringBuilder builder = new StringBuilder();
+    // builder.append("SELECT FROM " + mdCollection.getDBClassName());
+    // builder.append(" ORDER BY name");
+    //
+    // final GraphQuery<CollectionIF> query = new
+    // GraphQuery<CollectionIF>(builder.toString());
+    //
+    // query.getResults().forEach(collection -> {
+    // collection.appLock();
+    // collection.setMetadataUploaded(false);
+    // collection.setUav(null);
+    // collection.setSensor(null);
+    // collection.apply();
+    // });
 
-    StringBuilder builder = new StringBuilder();
-    builder.append("SELECT FROM " + mdCollection.getDBClassName());
-    builder.append(" ORDER BY name");
+    // POST /components/_delete_by_query
+    // {"query":{"bool":{"must":[{"query_string":{"fields":["key"],"query":"abc/p1/m1/accessible_support/test.xml"}}]}}}
+    // POST /components/_delete_by_query
+    // {"query":{"bool":{"must":[{"query_string":{"fields":["key"],"query":"abc/p1/m1/accessible_support/test.xml"}}]}}}
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(builder.toString());
+    // IndexService.deleteDocuments("siteId",
+    // "aa4e3701-57d3-42b2-9728-2934989ee957");
+    //
 
-    query.getResults().forEach(collection -> {
-      collection.appLock();
-      collection.setMetadataUploaded(false);
-      collection.setUav(null);
-      collection.setSensor(null);
-      collection.apply();
-    });
-    
-    
+    // JSONObject condition = new JSONObject();
+    // condition.put("field", "faaNumber");
+    // condition.put("value", "rgb");
+    //
+    // JSONArray must = new JSONArray();
+    // must.add(condition);
+    //
+    // JSONObject criteria = new JSONObject();
+    // criteria.put("must", must);
+
+    JSONObject criteria = new JSONObject("{\"should\":[{\"field\":\"bounds\",\"id\":\"4642708e-ea82-4591-8a11-ff7039925118\",\"label\":\"Bounds\",\"value\":{\"_sw\":{\"lng\":-127.25881772939388,\"lat\":20.357148832341863},\"_ne\":{\"lng\":-64.67488227060727,\"lat\":52.711281241966475}}}],\"must\":[{\"field\":\"site\",\"id\":\"51956c50-c514-4694-97dd-e5723dbbb344\",\"label\":\"Site\",\"value\":\"abc\"}]}\n");
+
+    Page<StacItem> items = IndexService.getItems(criteria, 30, 1);
+
+    System.out.println(items.toJSON().toString());
+
+    // testElasticSearch();
+
+    IndexService.shutdown();
   }
 
   public static void testTika() throws Exception
@@ -270,18 +298,20 @@ public class Sandbox
       // System.out.println(totals);
       // System.out.println("Site: " + temp.docCount());
       //
-      // HitsMetadata<StacItem> metadata = search.hits();
-      //
-      // System.out.println(metadata.total());
-      //
-      // List<Hit<StacItem>> hits = metadata.hits();
-      //
-      // for (Hit<StacItem> hit : hits)
-      // {
-      // StacItem source = hit.source();
-      //
-      // System.out.println(mapper.writeValueAsString(source));
-      // }
+
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME, ElasticSearchIndex.COMPONENT_INDEX_NAME).size(1000);
+
+      SearchResponse<JsonNode> search = client.search(s.build(), JsonNode.class);
+
+      HitsMetadata<JsonNode> metadata = search.hits();
+
+      List<Hit<JsonNode>> hits = metadata.hits();
+
+      for (Hit<JsonNode> hit : hits)
+      {
+        System.out.println(hit.source().toPrettyString());
+      }
     }
 
     // JSONArray results = IndexService.getTotals("ABC", new JSONArray());

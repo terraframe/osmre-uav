@@ -125,7 +125,7 @@ public class PlatformTest
   @Request
   public void testGetCount()
   {
-    Assert.assertEquals(new Long(1L), Platform.getCount());
+    Assert.assertEquals(Long.valueOf(1L), Platform.getCount());
   }
 
   @Test
@@ -135,9 +135,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(new JSONObject());
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
   }
 
@@ -152,9 +152,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(2), page.getPageNumber());
-    Assert.assertEquals(new Integer(2), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(2), page.getPageSize());
     Assert.assertEquals(0, page.getResults().size());
   }
 
@@ -169,9 +169,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getName());
   }
@@ -198,9 +198,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getName());
   }
@@ -222,9 +222,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getName());
   }
@@ -246,9 +246,9 @@ public class PlatformTest
     Page<Platform> page = Platform.getPage(criteria);
 
     Assert.assertNotNull(page);
-    Assert.assertEquals(new Long(1L), page.getCount());
-    Assert.assertEquals(new Integer(1), page.getPageNumber());
-    Assert.assertEquals(new Integer(10), page.getPageSize());
+    Assert.assertEquals(Long.valueOf(1L), page.getCount());
+    Assert.assertEquals(Integer.valueOf(1), page.getPageNumber());
+    Assert.assertEquals(Integer.valueOf(10), page.getPageSize());
     Assert.assertEquals(1, page.getResults().size());
     Assert.assertEquals("TEST", page.getResults().get(0).getName());
   }
@@ -268,7 +268,7 @@ public class PlatformTest
     Assert.assertEquals(platformType.getOid(), object.getString(Platform.PLATFORM_TYPE_OID));
     Assert.assertNotNull(object.getJSONObject(Platform.PLATFORMTYPE));
     Assert.assertEquals(manufacturer.getOid(), object.getString(Platform.MANUFACTURER));
-    Assert.assertEquals(platform.getSeq(), new Long(object.getLong(Platform.SEQ)));
+    Assert.assertEquals(platform.getSeq(), Long.valueOf(object.getLong(Platform.SEQ)));
 
     // List<Sensor> sensors = this.getPlatformHasSensorChildSensors();
     //

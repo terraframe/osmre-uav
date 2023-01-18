@@ -34,7 +34,7 @@ public class SiteObjectsResultSet
 
   public SiteObjectsResultSet(Integer total, Long pageNumber, Long pageSize, List<SiteObject> objects, String folder)
   {
-    this(new Long(total.longValue()), pageNumber, pageSize, objects, folder);
+    this(Long.valueOf(total.longValue()), pageNumber, pageSize, objects, folder);
   }
 
   public SiteObjectsResultSet(Long total, Long pageNumber, Long pageSize, List<SiteObject> objects, String folder)

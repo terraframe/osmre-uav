@@ -399,7 +399,7 @@ public class S3RemoteFileService implements RemoteFileService
         }
       }
 
-      return new SiteObjectsResultSet(new Long(curIndex), pageNumber, pageSize, objects, folder);
+      return new SiteObjectsResultSet(Long.valueOf(curIndex), pageNumber, pageSize, objects, folder);
     }
     catch (AmazonS3Exception e)
     {
