@@ -19,6 +19,9 @@
 
 set -e
 
+# If tag is not set, then set it to 'latest' as a default value.
+tag=${tag:-'latest'}
+
 ([ -d target ] && rm -rf target) || true
 mkdir target
 cp ../../../../uasdm-web/target/uasdm.war target/uasdm.war
