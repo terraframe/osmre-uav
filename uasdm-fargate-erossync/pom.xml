@@ -63,13 +63,13 @@
 	<dependency>
 	    <groupId>com.amazonaws</groupId>
 	    <artifactId>aws-java-sdk-s3</artifactId>
-	    <version>1.12.223</version>
+	    <version>1.12.364</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
 	<dependency>
 	    <groupId>commons-net</groupId>
 	    <artifactId>commons-net</artifactId>
-	    <version>3.7.2</version>
+	    <version>3.9.0</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 	<dependency>
