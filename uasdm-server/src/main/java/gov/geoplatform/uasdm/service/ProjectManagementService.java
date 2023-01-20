@@ -917,6 +917,18 @@ public class ProjectManagementService
     return Collection.createCollection(selections);
   }
 
+  @Request(RequestType.SESSION)
+  public JSONObject configuration(String sessionId, String contextPath)
+  {
+    JSONObject config = new JSONObject();
+    config.put("contextPath", contextPath);
+    config.put("uasdmKeycloakEnabled", AppProperties.isKeycloakEnabled());
+    config.put("uasAppDisclaimer", AppProperties.getAppDisclaimer());
+    config.put("localization", new JSONObject(net.geoprism.localization.LocalizationFacade.getJSON()));
+
+    return config;
+  }
+
   // public void logLoginAttempt(String sessionId, String username)
   // {
   // if (sessionId != null)

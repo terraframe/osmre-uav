@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.constants.ClientConstants;
 import com.runwaysdk.web.WebClientSession;
 
-@ServerEndpoint(value = "/websocket/notify", configurator = GetHttpSessionConfigurator.class)
+@ServerEndpoint(value = "/websocket-notifier/notify", configurator = GetHttpSessionConfigurator.class)
 public class NotificationEndpoint
 {
   private static Set<NotificationEndpoint> endpoints = new CopyOnWriteArraySet<>();

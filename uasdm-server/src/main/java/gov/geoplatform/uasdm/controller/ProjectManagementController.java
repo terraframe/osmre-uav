@@ -80,9 +80,17 @@ public class ProjectManagementController
   @Endpoint(method = ServletMethod.GET)
   public ResponseIF management()
   {
-    return new ViewResponse(JSP_DIR + INDEX_JSP);
+    return new ViewResponse("/index.html");
   }
+  
+  @Endpoint(method = ServletMethod.GET, url = "configuration")
+  public ResponseIF configuration(ServletRequestIF request, ClientRequestIF cRequest, @RequestParamter(name = "id") String id)
+  { 
+    JSONObject configuration = this.service.configuration(cRequest.getSessionId(), request.getContextPath());
 
+    return new RestBodyResponse(configuration);
+  }
+  
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {

@@ -1,0 +1,45 @@
+<div>
+<!--     <uasdm-header></uasdm-header> -->
+
+<!--     <div id="app-container" class="container"> -->
+
+<!--         <h2> -->
+<!--             Session Event Log -->
+<!--         </h2> -->
+
+        <div class="row">
+            <div class="col-md-12">
+              <div class="list-table-wrapper">
+                  <table id="manage-accounts-table" class="list-table table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th class="label-column">
+                                  Username
+                              </th>
+                              <th class="label-column">
+                                  Bureau
+                              </th>
+                              <th class="label-column">
+                                  Event Date
+                              </th>
+                              <th class="label-column">
+                                  Event Type
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let event of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
+                              class="fade-ngRepeat-item">
+                              <td class="label-column username-col"> {{ event.username }} </td>
+                              <td class="label-column firstname-col"> {{ event.bureau }} </td>
+                              <td class="label-column lastname-col"> {{ event.eventDate | idmdate }} </td>
+                              <td class="label-column phone-col"> {{ event.eventType }} </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="10"></pagination-controls>
+              </div>
+            </div>
+        </div>
+<!--     </div> -->
+</div>
