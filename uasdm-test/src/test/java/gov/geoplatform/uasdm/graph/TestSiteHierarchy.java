@@ -41,9 +41,11 @@ import com.runwaysdk.session.SessionFacade;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
+import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
@@ -83,6 +85,8 @@ public class TestSiteHierarchy
   @Request
   public static void classSetUp()
   {
+    IndexService.setIndex(new MockIndex());
+    
     createSiteHierarchyTransaction();
 
     service = new ProjectManagementService();
