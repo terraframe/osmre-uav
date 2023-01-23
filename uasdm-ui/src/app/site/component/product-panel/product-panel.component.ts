@@ -18,6 +18,7 @@ import {
 } from 'angular-animations';
 import { environment } from 'src/environments/environment';
 import { ConfigurationService } from '@core/service/configuration.service';
+import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component({
     selector: 'product-panel',
@@ -63,8 +64,12 @@ export class ProductPanelComponent implements OnDestroy {
 
     requestId: number = 0;
 
+    context: string;
 
-    constructor(private configuration:ConfigurationService, private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { }
+
+    constructor(private configuration:ConfigurationService, private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { 
+        this.context = EnvironmentUtil.getApiUrl();
+    }
     
     ngOnDestroy(): void {
         this.products.forEach(product => {
@@ -156,17 +161,17 @@ export class ProductPanelComponent implements OnDestroy {
             }, error => {
                 console.log(error);
 
-                this.thumbnails[product.id] = environment.apiUrl + "/net/geoprism/images/thumbnail-default.png";
+                this.thumbnails[product.id] = this.context + 'assets/thumbnail-default.png';
 
             });
         }
         else {
-            this.thumbnails[product.id] = environment.apiUrl + "/net/geoprism/images/thumbnail-default.png";
+            this.thumbnails[product.id] = this.context + 'assets/thumbnail-default.png';
         }
     }
 
     getDefaultImgURL(event: any): void {
-        event.target.src = environment.apiUrl + "/net/geoprism/images/thumbnail-default.png";
+        event.target.src = this.context + 'assets/thumbnail-default.png';
     }
 
     handleMapIt(product: Product): void {

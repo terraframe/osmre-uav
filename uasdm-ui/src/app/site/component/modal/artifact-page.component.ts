@@ -10,6 +10,8 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BasicConfirmModalComponent } from '@shared/component';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
+import { WebSockets } from '@core/utility/web-sockets';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 @Component({
 	selector: 'artifact-page',
@@ -53,15 +55,13 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	notifier: WebSocketSubject<any>;
 
 
-	constructor(private service: ManagementService, private modalService: BsModalService) {
+	constructor(private configuration: ConfigurationService, private service: ManagementService, private modalService: BsModalService) {
 		this.context = EnvironmentUtil.getApiUrl();
 	}
 
 	ngOnInit(): void {
 
-		let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + EnvironmentUtil.getApiUrl();
-
-		this.notifier = webSocket(baseUrl + '/websocket-notifier/notify');
+		this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
 		this.notifier.subscribe(message => {
 			if (message.type === 'UPLOAD_JOB_CHANGE'
 				&& message.content.status === 'Complete'
@@ -88,6 +88,9 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 			this.config.processDem = (this.artifacts.dem == null);
 			this.config.processOrtho = (this.artifacts.ortho == null);
 			this.config.processPtcloud = (this.artifacts.ptcloud == null);
+
+			console.log(this.artifacts);
+
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});

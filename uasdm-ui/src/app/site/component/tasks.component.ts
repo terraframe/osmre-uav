@@ -12,6 +12,8 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { WebSockets } from '@core/utility/web-sockets';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 
 
@@ -60,7 +62,7 @@ export class TasksComponent implements OnInit {
 
   notifier: WebSocketSubject<{ type: string, content: any }>;
 
-  constructor(private managementService: ManagementService, private modalService: BsModalService) { }
+  constructor(private configuration: ConfigurationService, private managementService: ManagementService, private modalService: BsModalService) { }
 
   ngOnInit(): void {
     this.userName = this.managementService.getCurrentUser();
@@ -70,9 +72,7 @@ export class TasksComponent implements OnInit {
 
     this.getMessages();
 
-    let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + EnvironmentUtil.getApiUrl();
-
-    this.notifier = webSocket(baseUrl + '/websocket-notifier/notify');
+    this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
     this.notifier.subscribe(message => {
       if (message.type === 'JOB_CHANGE') {
         this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {

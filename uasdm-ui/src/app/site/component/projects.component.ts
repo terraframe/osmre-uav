@@ -38,6 +38,7 @@ import { bbox, bboxPolygon, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
+import { WebSockets } from "@core/utility/web-sockets";
 
 
 const enum VIEW_MODE {
@@ -220,10 +221,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bureaus = bureaus;
     });
 
+    this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
 
-    let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + EnvironmentUtil.getApiUrl();
+    console.log(this.notifier);
 
-    this.notifier = webSocket(baseUrl + "/websocket-notifier/notify");
     this.notifier.subscribe(message => {
       if (message.type === "UPLOAD_JOB_CHANGE") {
         this.tasks.push(message.content);

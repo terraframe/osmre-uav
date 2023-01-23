@@ -6,11 +6,10 @@ export default class EnvironmentUtil {
         let context = environment.apiUrl;
 
         if (context == '.') {
-            context = "";
+            return "";
         }
 
-        return context;
-
+        return context + "/";
     }
 
 }

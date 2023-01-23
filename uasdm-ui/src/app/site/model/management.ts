@@ -58,9 +58,9 @@ export class SiteEntity {
 }
 
 export class CollectionArtifacts {
-	dem?: SiteEntity
-	ortho?: SiteEntity
-	ptcloud?: SiteEntity
+	dem?: [SiteEntity];
+	ortho?: [SiteEntity];
+	ptcloud?: [SiteEntity];
 }
 
 

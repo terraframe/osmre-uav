@@ -210,28 +210,30 @@
     </resources>
 
     <plugins>
+      <!-- Copy over the compiled angular code   -->
       <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>maven-replacer-plugin</artifactId>
-        <version>1.4.1</version>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.0</version>
         <executions>
           <execution>
-            <id>replace-uasdm-index.jsp</id>
-            <phase>prepare-package</phase>
+            <id>copy-resources</id>
+            <!-- here the phase you need -->
+            <phase>validate</phase>
             <goals>
-              <goal>replace</goal>
+              <goal>copy-resources</goal>
             </goals>
-            <inherited>false</inherited>
             <configuration>
-              <file>src/main/webapp/WEB-INF/gov/osmre/uasdm/index.jsp</file>
-              <outputFile>target/uasdm/WEB-INF/gov/osmre/uasdm/index.jsp</outputFile>
-              <regex>false</regex>
-              <token>$local.host$</token>
-              <value>${local.host}</value>
+              <outputDirectory>${basedir}/target/uasdm</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/../uasdm-ui/dist</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -277,15 +279,13 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.3.2</version>
         <configuration>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
           <warSourceExcludes>**/prism.jsp,**/admin.jsp,**/index.jsp</warSourceExcludes>
           <packagingExcludes>
             <!-- Exclude all jars provided by tomcat -->
             **/catalina*.jar,
             **/servlet-api*.jar,
             **/annotations-api*.jar,
-            <!-- Exclude aspectjtools because it conflicts with our BIRT 
-              jar -->
+            <!-- Exclude aspectjtools because it conflicts with our BIRT jar -->
             **/aspectjtools*.jar
           </packagingExcludes>
           <overlays>
@@ -296,9 +296,8 @@
               <groupId>net.geoprism</groupId>
               <artifactId>geoprism-web</artifactId>
               <excludes>
+                <exclude>**.jsp</exclude>               
                 <exclude>WEB-INF/lib/*.jar</exclude>
-                <exclude>WEB-INF/net/geoprism/prism/admin.jsp</exclude>
-                <exclude>WEB-INF/net/geoprism/prism/prism.jsp</exclude>
               </excludes>
             </overlay>
           </overlays>

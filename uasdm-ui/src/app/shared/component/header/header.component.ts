@@ -7,15 +7,19 @@ import { ProfileComponent } from '../profile/profile.component';
 
 import { AuthService } from '../../service/auth.service';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { Configuration } from '@core/model/application';
+import { environment } from 'src/environments/environment';
+import { ConfigurationService } from '@core/service/configuration.service';
+import { Router } from '@angular/router';
 
 
 
-@Component( {
+@Component({
 
     selector: 'uasdm-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.css']
-} )
+})
 export class UasdmHeaderComponent {
     context: string;
     userName: string = "";
@@ -27,7 +31,12 @@ export class UasdmHeaderComponent {
     @Input() title: string;
 
 
-    constructor( private authService: AuthService, private modalService: BsModalService, private profileService: ProfileService ) {
+    constructor(
+        private configuration: ConfigurationService,
+        private router: Router,
+        private authService: AuthService,
+        private modalService: BsModalService,
+        private profileService: ProfileService) {
         this.context = EnvironmentUtil.getApiUrl();
     }
 
@@ -39,16 +48,30 @@ export class UasdmHeaderComponent {
 
         this.profileService.tasksCount().then(data => {
 
-			this.notificationCount = data.tasksCount
+            this.notificationCount = data.tasksCount
 
-		});
+        });
     }
 
     account(): void {
-        this.profileService.get().then( profile => {
-            this.bsModalRef = this.modalService.show( ProfileComponent, { backdrop: 'static', class: 'gray modal-lg' } );
+        this.profileService.get().then(profile => {
+            this.bsModalRef = this.modalService.show(ProfileComponent, { backdrop: 'static', class: 'gray modal-lg' });
             this.bsModalRef.content.profile = profile;
-        } );
+        });
+    }
+
+    logout(): void {
+        if (environment.production) {
+            window.location.href = environment.apiUrl + "/session/logout";
+        }
+        else {
+
+            this.configuration.logout().catch(err => {
+                this.router.navigate(['/login']);
+            }).then(() => {
+                this.router.navigate(['/login']);
+            });
+        }
     }
 
 }

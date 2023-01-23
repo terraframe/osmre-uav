@@ -37,6 +37,6 @@ export class ConfigurationService {
     }
 
     getContextPath(): string {
-        return this.getConfiguration().contextPath + "/";
+        return this.getConfiguration().contextPath;
     }
 }

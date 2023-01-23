@@ -4,7 +4,7 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="{{context}}/project/management#/menu" title="Home">
-          <img [src]="context + '/logo/view?id=logo'" />
+          <img [src]="context + 'logo/view?id=logo'" />
         </a>
         <!-- <p class="navbar-brand" style="margin: 0;" >{{title}}</p> -->
       </div>
@@ -99,7 +99,7 @@
 
             <hr>
             <li role="menuitem">
-              <a class="dropdown-item" href="{{context}}/session/logout">Log out</a>
+              <a class="dropdown-item" (click)="logout()">Log out</a>
             </li>
           </ul>
         </li>

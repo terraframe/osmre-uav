@@ -91,7 +91,7 @@ export class ProductModalComponent implements OnInit {
 	}
 
 	getDefaultImgURL(event: any): void {
-		event.target.src = environment.apiUrl + "/net/geoprism/images/thumbnail-default.png";
+		event.target.src = environment.apiUrl + "/assets/thumbnail-default.png";
 	}
 
 	handleGoto(): void {

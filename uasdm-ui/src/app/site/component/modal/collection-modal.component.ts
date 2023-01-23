@@ -23,6 +23,8 @@ import { RunOrthoModalComponent } from './run-ortho-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
+import { WebSockets } from '@core/utility/web-sockets';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 @Component({
 	selector: 'collection-modal',
@@ -73,7 +75,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	notifier: WebSocketSubject<any>;
 
-	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
+	constructor(private configuration: ConfigurationService, private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
 		this.context = EnvironmentUtil.getApiUrl();
 	}
 
@@ -85,9 +87,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.page.pageSize = this.constPageSize;
 		this.page.results = [];
 
-		let baseUrl = "wss://" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + EnvironmentUtil.getApiUrl();
-
-		this.notifier = webSocket(baseUrl + '/websocket-notifier/notify');
+		this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
 		this.notifier.subscribe(message => {
 			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
 				if (this.tabName === 'raw') {

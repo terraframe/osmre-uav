@@ -51,23 +51,23 @@
           </ng-container>
         </td>
         <td *ngIf="!edit" style="text-align:right;">
-          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].id.length > 0" type="button" class="btn btn-warning"
+          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].length > 0" type="button" class="btn btn-warning"
             [disabled]="processRunning" (click)="handleRemove(section)" style="margin: 5px 0;">
             Remove
           </button>
-          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].id.length == 0" type="button" class="btn btn-primary"
+          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].length == 0" type="button" class="btn btn-primary"
             [disabled]="processRunning" (click)="handleUpload(section.folder)" style="margin: 5px 0;">
             Upload
           </button>
         </td>
         <td *ngIf="edit">
           <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].id.length > 0) ? 'Overwirte' : 'Generate'">
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'">
           </boolean-field>
           <boolean-field *ngIf="section.folder === 'dem'" [(value)]="config.processDem"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].id.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
           <boolean-field *ngIf="section.folder === 'ortho'" [(value)]="config.processOrtho"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].id.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
         </td>
 
       </tr>

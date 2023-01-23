@@ -40,7 +40,10 @@
 
 		<ng-template pTemplate="body" let-rowData let-columns="columns">
 			<tr>
-				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column" [ngClass]="{'actions-col' : col.type === 'ACTIONS', 'map-service-col' : col.type === 'STRING-ARRAY'}">
+				<td *ngFor="let col of columns" [ngSwitch]="getColumnType(rowData, col)" class="ui-resizable-column"
+				 [ngClass]="{'actions-col' : col.type === 'ACTIONS', 'map-service-col' : col.type === 'STRING-ARRAY'}"
+				 [style]="col.type === 'ACTIONS' ? 'width: 100px; text-align: center;' : ''"
+				>
 					<ng-container *ngSwitchCase="'URL'">
 						<a [routerLink]="['/' + col.baseUrl + '/' + rowData[col.urlField]]">
 							{{rowData[col.field]}}

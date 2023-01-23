@@ -149,7 +149,7 @@
                       <img style="max-height: 150px"
                         (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
                         [ngClass]="{'img-disabled' : item.exclude}"
-                        [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/net/geoprism/images/thumbnail-default.png')"
+                        [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + 'assets/thumbnail-default.png')"
                         alt="Image">
                       <div class="caption">
                         <h4 class="media-heading">
@@ -191,7 +191,7 @@
                 <ul class="list-group row">
                   <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
                     <a class="thumbnail" (click)="showVideo(item)">
-                      <img [src]="context + '/net/geoprism/images/thumbnail-video.png'" alt="Video">
+                      <img [src]="context + 'assets/thumbnail-video.png'" alt="Video">
                       <div class="caption">
                         <h4 class="media-heading">{{item.name}}</h4>
                       </div>
