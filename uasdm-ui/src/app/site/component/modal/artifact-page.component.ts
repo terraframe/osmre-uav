@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
@@ -12,6 +12,7 @@ import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
 	selector: 'artifact-page',
@@ -55,13 +56,16 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	notifier: WebSocketSubject<any>;
 
 
-	constructor(private configuration: ConfigurationService, private service: ManagementService, private modalService: BsModalService) {
+	constructor(
+		private service: ManagementService,
+		private modalService: BsModalService
+	) {
 		this.context = EnvironmentUtil.getApiUrl();
 	}
 
 	ngOnInit(): void {
 
-		this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
+		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 		this.notifier.subscribe(message => {
 			if (message.type === 'UPLOAD_JOB_CHANGE'
 				&& message.content.status === 'Complete'

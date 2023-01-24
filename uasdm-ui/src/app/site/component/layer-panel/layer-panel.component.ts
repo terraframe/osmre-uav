@@ -7,6 +7,7 @@ import { Criteria, Filter, StacItem, StacLayer } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
 import { LngLatBounds } from 'mapbox-gl';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { environment } from 'src/environments/environment';
 
 const enum VIEW_MODE {
 	FORM = 0,
@@ -49,7 +50,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	readonly: boolean;
 
 	constructor(private service: ManagementService) {
-		this.context = EnvironmentUtil.getApiUrl();
+		this.context = environment.apiUrl;
 
 		this.dataSource = new Observable((observer: any) => {
 

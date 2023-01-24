@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { BsModalRef } from "ngx-bootstrap/modal";
@@ -39,6 +39,7 @@ import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
+import { APP_BASE_HREF } from "@angular/common";
 
 
 const enum VIEW_MODE {
@@ -178,10 +179,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   viewMode: number = VIEW_MODE.SITE;
 
-  constructor(private configuration: ConfigurationService, 
+  constructor(private configuration: ConfigurationService,
     private service: ManagementService, private authService: AuthService, private mapService: MapService,
     private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
-    private cookieService: CookieService) {
+    private cookieService: CookieService
+  ) {
 
     this.subject = new Subject();
     this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
@@ -221,9 +223,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bureaus = bureaus;
     });
 
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
-
-    console.log(this.notifier);
+    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 
     this.notifier.subscribe(message => {
       if (message.type === "UPLOAD_JOB_CHANGE") {

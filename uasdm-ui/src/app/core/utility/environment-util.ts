@@ -9,7 +9,7 @@ export default class EnvironmentUtil {
             return "";
         }
 
-        return context + "/";
+        return context;
     }
 
 }

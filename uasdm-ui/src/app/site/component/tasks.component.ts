@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -14,6 +14,7 @@ import { ManagementService } from '../service/management.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
+import { APP_BASE_HREF } from '@angular/common';
 
 
 
@@ -62,7 +63,10 @@ export class TasksComponent implements OnInit {
 
   notifier: WebSocketSubject<{ type: string, content: any }>;
 
-  constructor(private configuration: ConfigurationService, private managementService: ManagementService, private modalService: BsModalService) { }
+  constructor(
+    private managementService: ManagementService,
+    private modalService: BsModalService
+  ) { }
 
   ngOnInit(): void {
     this.userName = this.managementService.getCurrentUser();
@@ -72,7 +76,7 @@ export class TasksComponent implements OnInit {
 
     this.getMessages();
 
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "websocket-notifier/notify");
+    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
     this.notifier.subscribe(message => {
       if (message.type === 'JOB_CHANGE') {
         this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
