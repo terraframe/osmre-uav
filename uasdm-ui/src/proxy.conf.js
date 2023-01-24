@@ -4,7 +4,7 @@ const PROXY_CONFIG = [
             "/websocket-notifier"
         ],
         target: "wss://localhost:8443/uasdm/",
-        "changeOrigin": true,       // solves CORS Error in F12
+        "changeOrigin": true,       // solves CORS Error in F12, does not seem to work with ws connections
         "logLevel": "debug",        //"info": prints out in console
         "rejectUnauthorzied": true, // must be false if not specify here
         "secure": false,            // PROD must be "true", but DEV false else "UNABLE_TO_VERIFY_LEAF_SIGNATURE"
@@ -20,7 +20,7 @@ const PROXY_CONFIG = [
             "/net/geoprism/images/", "/glyphs", "/session", "/project",
             "/logo", "/uav", "/product", "/platform-manufacturer", "/platform",
             "/platform-type", "/sensor", "/wave-length", "/sensor-type",
-            "/file", "/cog", "/stac"
+            "/file", "/cog", "/stac", "/collection-report"
         ],
         target: "https://localhost:8443/uasdm/",
         "changeOrigin": true,       // solves CORS Error in F12
