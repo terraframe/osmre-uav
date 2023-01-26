@@ -1,0 +1,116 @@
+<!-- HEADER AND NAVBAR -->
+<header>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{{context}}/project/management#/menu" title="Home">
+          <img [src]="context + 'logo/view?id=logo'" />
+        </a>
+        <!-- <p class="navbar-brand" style="margin: 0;" >{{title}}</p> -->
+      </div>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li dropdown>
+          <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" dropdownToggle>
+            <span class="glyphicon glyphicon-menu-hamburger">
+              <span *ngIf="notificationCount > 0" class="task-badge" [ngClass]="{'double-digit': notificationCount > 9}">{{notificationCount}}</span>
+            </span>
+          </a>
+
+          <ul *dropdownMenu class="dropdown-menu">
+            <li role="menuitem">
+              <a id="account-btn" class="user-command-link link-active" (click)="account()">
+                <localize key="userDashboards.account"></localize>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" routerLink="/site/tasks" routerLinkActive="active">Workflow Tasks</a>
+            </li>
+            <!-- <li role="menuitem">
+              <a class="dropdown-item" routerLink="/site/upload" routerLinkActive="active">Collection Upload</a>
+            </li> -->
+            <li role="menuitem">
+              <a class="dropdown-item" routerLink="/site/viewer" routerLinkActive="active">Site Viewer</a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" routerLink="/site/report" routerLinkActive="active">Report</a>
+            </li>
+
+            <hr *ngIf="admin">
+
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/accounts" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="accounts.link"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/session-events" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 Session event log -->
+<!--               </a> -->
+<!--             </li>             -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/logos" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="Icons"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/admin/email" routerLinkActive="active"> -->
+<!--                 <i></i> -->
+<!--                 <localize key="email.link"></localize> -->
+<!--               </a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platforms" routerLinkActive="active">Platforms</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platform-manufacturers" routerLinkActive="active">Platform Manufacturers</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/platform-types" routerLinkActive="active">Platform Types</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/sensors" routerLinkActive="active">Sensors</a> -->
+<!--             </li> -->
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/sensor-types" routerLinkActive="active">Sensor Types</a> -->
+<!--             </li> -->
+            <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/site/uavs" routerLinkActive="active">UAV</a>
+            </li>
+<!--             <li *ngIf="admin" role="menuitem"> -->
+<!--               <a class="dropdown-item" routerLink="/site/wave-lengths" routerLinkActive="active">Wave Lengths</a> -->
+<!--             </li> -->
+            <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/site/equipment" routerLinkActive="active">Equipment</a>
+            </li>
+            <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/admin/system-configuration" routerLinkActive="active">
+                <i></i>System Configuration
+              </a>
+            </li>
+            <li *ngIf="admin" role="menuitem">
+              <a class="dropdown-item" routerLink="/admin/system-info" routerLinkActive="active">
+                <i></i>System Info
+              </a>
+            </li>
+
+            <hr>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="logout()">Log out</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="navbar-right user-indicator">
+        <p class="navbar-text">
+          Logged in as <b style="color: white;">{{userName}}</b>
+        </p>
+      </div>
+
+    </div>
+  </nav>
+</header>

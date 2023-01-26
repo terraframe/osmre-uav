@@ -22,7 +22,7 @@
 git config --global user.name "$GIT_TF_BUILDER_USERNAME"
 git config --global user.email builder@terraframe.com
 
-. $NVM_DIR/nvm.sh && nvm install lts/erbium
+. $NVM_DIR/nvm.sh && nvm install lts/hydrogen
 
 if [ "$release_uasdm" == "true" ]; then
   ## Update IDM Version in System Component and Commit Compiled NodeJS Source
@@ -31,10 +31,12 @@ if [ "$release_uasdm" == "true" ]; then
   git checkout $release_branch
   git pull
   sed -i -E "s_<span id=\"automated-version-replace\">.*</span>_<span id=\"automated-version-replace\">$IDM_VERSION</span>_g" uasdm-web/src/main/ng2/src/app/admin/component/system/system-info.component.html
-  cd uasdm-web/src/main/ng2
-  npm install
+  cd uasdm-ui
+  npm install --force
   node -v && npm -v
-  node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
+  #node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
+  npm run build
+  
   cd $WORKSPACE/uasdm
   git add -A
   git diff-index --quiet HEAD || git commit -m 'Preparing for release'

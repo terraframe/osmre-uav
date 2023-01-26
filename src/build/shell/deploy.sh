@@ -15,7 +15,7 @@
 #
 
 # This tells the build which version of npm to use:
-. $NVM_DIR/nvm.sh && nvm install lts/erbium
+. $NVM_DIR/nvm.sh && nvm install lts/hydrogen
 
 :
 : ----------------------------------
@@ -39,14 +39,15 @@ if [ "$build_artifact" == "true" ]; then
   :
   
   ## Build angular source ##
-  cd $WORKSPACE/uasdm/uasdm-web/src/main/ng2
+  cd $WORKSPACE/uasdm/uasdm-ui
   npm version
   [ -e ./node_modules ] && rm -r node_modules
-  npm install
-  npm install typings
+  npm install --force
+  npm install typings --force
   #typings install lodash
   node -v && npm -v
-  node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
+  #node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --config config/webpack.prod.js --profile
+  npm run build
 
   :
   : ----------------------------------

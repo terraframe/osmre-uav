@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.model;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,6 +40,10 @@ public class Page<T extends JSONSerializable>
   public Page()
   {
     this.params = new HashMap<String, Object>();
+    this.results = new LinkedList<>();
+    this.count = 0L;
+    this.pageSize = 20;
+    this.pageNumber = 1;
   }
 
   public Page(Integer count, Integer pageNumber, Integer pageSize, List<T> results)

@@ -57,7 +57,8 @@ public class ProjectClientConfiguration extends DefaultClientConfiguration imple
     endpoints.add("uasdm-account/inviteComplete");
     endpoints.add("uasdm-account/newInstance");
     endpoints.add("project/management");
-    endpoints.add("websocket/notify");
+    endpoints.add("project/configuration");    
+//    endpoints.add("websocket-notifier/notify");
     return endpoints;
   }
 

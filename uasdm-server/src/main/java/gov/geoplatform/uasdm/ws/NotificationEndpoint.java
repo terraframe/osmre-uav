@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.constants.ClientConstants;
 import com.runwaysdk.web.WebClientSession;
 
-@ServerEndpoint(value = "/websocket/notify", configurator = GetHttpSessionConfigurator.class)
+@ServerEndpoint(value = "/websocket-notifier/notify", configurator = GetHttpSessionConfigurator.class)
 public class NotificationEndpoint
 {
   private static Set<NotificationEndpoint> endpoints = new CopyOnWriteArraySet<>();
@@ -58,11 +58,11 @@ public class NotificationEndpoint
       this.userId = clientSession.getRequest().getSessionUser().getOid();
     }
 
-    if (this.userId != null)
+//    if (this.userId != null)
     {
       endpoints.add(this);
 
-      logger.debug("Connecting websocket for user [" + this.userId + "]");
+//      logger.debug("Connecting websocket for user [" + this.userId + "]");
     }
   }
 
@@ -75,11 +75,11 @@ public class NotificationEndpoint
   @OnClose
   public void onClose(Session session) throws IOException
   {
-    if (this.userId != null)
+//    if (this.userId != null)
     {
       endpoints.remove(this);
 
-      logger.debug("Closing websocket for user [" + this.userId + "]");
+//      logger.debug("Closing websocket for user [" + this.userId + "]");
     }
   }
 
