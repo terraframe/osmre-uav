@@ -28,6 +28,7 @@
 
   <modules>
     <module>uasdm-server</module>
+    <module>uasdm-ui</module>    
     <module>uasdm-web</module>
   </modules>
 
