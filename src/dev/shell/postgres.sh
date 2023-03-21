@@ -24,7 +24,7 @@ fi
 CONTAINER_NAME=idm-postgres
 POSTGRES_PORT=5442
 POSTGRES_ROOT_PASS=postgres
-CONTAINER_DATA_DIR=/data/postgres
+CONTAINER_DATA_DIR=/data/idm/postgres
 
 # Exit immediately if anything errors out
 set -e

@@ -20,7 +20,7 @@ import com.runwaysdk.business.Entity;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import net.geoprism.GeoprismActorIF;
+import net.geoprism.account.GeoprismActorIF;
 
 public interface AbstractWorkflowTaskIF
 {

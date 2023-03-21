@@ -15,27 +15,18 @@
  */
 package gov.geoplatform.uasdm.chunk;
 
-import net.geoprism.context.ServerContextListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-
-
-public class ChunkManagerContextListener implements ServerContextListener
+public class ChunkManagerContextListener implements ServletContextListener
 {
   @Override
-  public void initialize()
-  {
-  }
-
-  @Override
-  public void startup()
-  {
+  public void contextInitialized(ServletContextEvent sce) {
     ChunkManager.start();
-  }
-
+  } 
+  
   @Override
-  public void shutdown()
-  {
+  public void contextDestroyed(ServletContextEvent sce) { 
     ChunkManager.stop();
-  }
-
+  } 
 }

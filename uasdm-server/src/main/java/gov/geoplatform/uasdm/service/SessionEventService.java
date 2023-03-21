@@ -25,36 +25,27 @@ import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.SessionEventLog;
-import net.geoprism.SessionEvent;
 
 public class SessionEventService
 {
 
-  public void handleSessionEvent(SessionEvent event)
-  {
-    if (event.getType().equals(SessionEvent.EventType.LOGIN_SUCCESS))
-    {
-      this.logSuccessfulLogin(event.getRequest().getSessionId(), event.getUsername());
-    }
-    else if (event.getType().equals(SessionEvent.EventType.LOGIN_FAILURE))
-    {
-      this.logFailureLogin(event.getUsername());
-    }
+  public static enum EventType {
+    LOGIN_SUCCESS, LOGIN_FAILURE
   }
-
+  
   @Request(RequestType.SESSION)
-  private void logSuccessfulLogin(String sessionId, String username)
+  public void logSuccessfulLogin(String sessionId, String username)
   {
     final SessionIF session = Session.getCurrentSession();
     final SingleActor user = (SingleActor) BusinessFacade.get(session.getUser());
 
-    SessionEventLog.log(SessionEvent.EventType.LOGIN_SUCCESS.name(), username, user.getOid());
+    SessionEventLog.log(EventType.LOGIN_SUCCESS.name(), username, user.getOid());
   }
 
   @Request
-  private void logFailureLogin(String username)
+  public void logFailureLogin(String username)
   {
-    SessionEventLog.log(SessionEvent.EventType.LOGIN_FAILURE.name(), username, null);
+    SessionEventLog.log(EventType.LOGIN_FAILURE.name(), username, null);
   }
 
   @Request(RequestType.SESSION)

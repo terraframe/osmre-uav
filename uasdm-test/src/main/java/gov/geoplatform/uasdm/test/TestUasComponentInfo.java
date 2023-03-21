@@ -90,6 +90,8 @@ abstract public class TestUasComponentInfo
 
   public Point getGeoPoint()
   {
+    if (this.getWkt() == null) { return null; }
+    
     try
     {
       final WKTReader reader = new WKTReader(new GeometryFactory());
@@ -179,6 +181,8 @@ abstract public class TestUasComponentInfo
     component.setS3location(this.getS3Location());
     
     component.setDescription(this.getDescription());
+    
+    component.setGeoPoint(this.getGeoPoint());
   }
   
   /**

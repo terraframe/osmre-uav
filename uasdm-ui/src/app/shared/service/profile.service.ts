@@ -42,7 +42,7 @@ export class ProfileService {
         } );
 
         return this.http
-            .post<Profile>( environment.apiUrl + '/account/get', { headers: headers } )
+            .get<Profile>( environment.apiUrl + '/api/uasdm-account/get', { headers: headers } )
             .toPromise()
     }
 
@@ -56,7 +56,7 @@ export class ProfileService {
         this.eventService.start();
 
         return this.http
-            .post<Profile>( environment.apiUrl + '/account/apply', JSON.stringify( { account: profile } ), { headers: headers } )
+            .post<Profile>( environment.apiUrl + '/api/uasdm-account/apply', JSON.stringify( { account: profile } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -72,7 +72,7 @@ export class ProfileService {
         this.eventService.start();
 
         return this.http
-            .post<void>( environment.apiUrl + '/account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( environment.apiUrl + '/api/uasdm-account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

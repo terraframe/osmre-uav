@@ -70,7 +70,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     this.service.login(this.username, this.password).then(response => {
-      this.router.navigate(['/menu/true']);
+      this.router.navigate(["/menu"]);
     });
   }
 

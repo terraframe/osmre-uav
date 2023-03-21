@@ -62,10 +62,9 @@ export class UasdmHeaderComponent {
 
     logout(): void {
         if (environment.production) {
-            window.location.href = environment.apiUrl + "/session/logout";
+            window.location.href = environment.apiUrl + "/api/session/logout";
         }
         else {
-
             this.configuration.logout().catch(err => {
                 this.router.navigate(['/login']);
             }).then(() => {

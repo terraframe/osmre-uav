@@ -40,13 +40,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.geoprism</groupId>
-      <artifactId>geoprism-web</artifactId>
-      <version>${geoprism.version}</version>
-      <type>war</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>net.jawr</groupId>
       <artifactId>jawr-core</artifactId>
       <version>3.7</version>
@@ -234,11 +227,6 @@
           </execution>
         </executions>
       </plugin>      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.3.0</version>
-      </plugin>
       <!-- Weave Aspects -->
       <plugin>
         <groupId>dev.aspectj</groupId>
@@ -288,19 +276,6 @@
             <!-- Exclude aspectjtools because it conflicts with our BIRT jar -->
             **/aspectjtools*.jar
           </packagingExcludes>
-          <overlays>
-            <overlay>
-              <!-- empty groupId/artifactId represents the current build -->
-            </overlay>
-            <overlay>
-              <groupId>net.geoprism</groupId>
-              <artifactId>geoprism-web</artifactId>
-              <excludes>
-                <exclude>**.jsp</exclude>               
-                <exclude>WEB-INF/lib/*.jar</exclude>
-              </excludes>
-            </overlay>
-          </overlays>
         </configuration>
       </plugin>
     </plugins>

@@ -44,9 +44,9 @@ public class TestCollectionInfo extends TestUasComponentInfo
 
   private TestMissionInfo mission;
 
-  public TestCollectionInfo(String name, Date collectionDate, TestUavInfo uav, TestSensorInfo sensor, TestMissionInfo mission)
+  public TestCollectionInfo(String name, Date collectionDate, TestUavInfo uav, TestSensorInfo sensor, String geoPoint, TestMissionInfo mission)
   {
-    super(name, name, name, null);
+    super(name, name, name, geoPoint);
     this.collectionDate = collectionDate;
     this.uav = uav;
     this.sensor = sensor;

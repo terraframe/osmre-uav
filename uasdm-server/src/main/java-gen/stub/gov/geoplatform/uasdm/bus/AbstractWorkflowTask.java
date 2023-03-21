@@ -36,8 +36,8 @@ import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
-import net.geoprism.GeoprismActorIF;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.GeoprismActorIF;
 
 public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase implements AbstractWorkflowTaskIF, JSONSerializable
 {

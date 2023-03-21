@@ -28,23 +28,20 @@ import { EventService } from '@shared/service/event.service';
 import { Email } from '../model/email';
 import { environment } from 'src/environments/environment';
 
-
-
 @Injectable()
 export class EmailService {
 
-	constructor(private eventService: EventService, private http: HttpClient) { }
+	constructor(private http: HttpClient, private eventService: EventService) { }
 
 	getInstance(): Promise<Email> {
 
 		this.eventService.start();
 
-		return this.http
-			.get<Email>(environment.apiUrl + '/email/getInstance')
+		return this.http.get<Email>(environment.apiUrl + '/api/email/editDefault')
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise()
+			.toPromise();
 	}
 
 	apply(email: Email): Promise<Email> {
@@ -55,7 +52,7 @@ export class EmailService {
 		this.eventService.start();
 
 		return this.http
-			.post<Email>(environment.apiUrl + '/email/apply', JSON.stringify({ setting: email }), { headers: headers })
+			.post<Email>(environment.apiUrl + '/api/email/apply', JSON.stringify(email), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

@@ -81,8 +81,6 @@ import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
 import net.geoprism.gis.geoserver.GeoserverFacade;
 import net.geoprism.gis.geoserver.NullGeoserverService;
-import net.geoprism.ontology.Classifier;
-import net.geoprism.ontology.ClassifierQuery;
 
 abstract public class TestDataSet
 {
@@ -99,7 +97,7 @@ abstract public class TestDataSet
 
   public static final String WKT_DEFAULT_POLYGON = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
 
-  public static final String DEFAULT_SITE_POINT = "Point(-104.06395534307124, 39.79736514172822)";
+  public static final String DEFAULT_SITE_POINT = "POINT (-104.06395534307124 39.79736514172822)";
 
   public static final String WKT_DEFAULT_MULTIPOLYGON = "MULTIPOLYGON (((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)))";
 
@@ -639,26 +637,6 @@ abstract public class TestDataSet
     }
   }
 
-  public static Classifier getClassifierIfExist(String classifierId)
-  {
-    ClassifierQuery query = new ClassifierQuery(new QueryFactory());
-    query.WHERE(query.getClassifierId().EQ(classifierId));
-    OIterator<? extends Classifier> it = query.getIterator();
-    try
-    {
-      while (it.hasNext())
-      {
-        return it.next();
-      }
-    }
-    finally
-    {
-      it.close();
-    }
-
-    return null;
-  }
-
   @Request
   public static GeoprismUser createUser(String username, String password, String email, String[] roleNameArray)
   {
@@ -765,17 +743,6 @@ abstract public class TestDataSet
     finally
     {
       it.close();
-    }
-  }
-
-  @Request
-  public static void deleteClassifier(String classifierId)
-  {
-    Classifier clazz = getClassifierIfExist(classifierId);
-
-    if (clazz != null)
-    {
-      clazz.delete();
     }
   }
 

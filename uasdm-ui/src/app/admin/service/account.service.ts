@@ -42,7 +42,7 @@ export class AccountService implements GenericTableService {
         params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<User>>( environment.apiUrl + '/uasdm-account/page', { params: params } )
+            .get<PageResult<User>>( environment.apiUrl + '/api/uasdm-account/page', { params: params } )
             .toPromise()
     }
 
@@ -55,23 +55,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<Account>( environment.apiUrl + '/uasdm-account/edit', JSON.stringify( { oid: oid } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
-            .toPromise()
-    }
-
-    uasdmNewInstance(): Promise<User> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
-
-        this.eventService.start();
-
-        return this.http
-            .post<User>( environment.apiUrl + '/uasdm-account/newInstance', JSON.stringify( {} ), { headers: headers } )
+            .post<Account>( environment.apiUrl + '/api/uasdm-account/edit', oid, { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -87,7 +71,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<Account>( environment.apiUrl + '/uasdm-account/newInvite', JSON.stringify( {} ), { headers: headers } )
+            .post<Account>( environment.apiUrl + '/api/uasdm-account/newInvite', "", { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -103,7 +87,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>( environment.apiUrl + '/uasdm-account/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( environment.apiUrl + '/api/uasdm-account/remove', oid, { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -119,23 +103,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<User>( environment.apiUrl + '/uasdm-account/apply', JSON.stringify( { account: user, roleIds: roleIds } ), { headers: headers } )
-			.pipe(finalize(() => {
-				this.eventService.complete();
-			}))
-            .toPromise()
-    }
-
-    unlock( oid: string ): Promise<void> {
-
-        let headers = new HttpHeaders( {
-            'Content-Type': 'application/json'
-        } );
-
-        this.eventService.start();
-
-        return this.http
-            .post<void>( environment.apiUrl + '/uasdm-account/unlock', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<User>( environment.apiUrl + '/api/uasdm-account/apply', JSON.stringify( { account: user, roleIds: roleIds } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -152,7 +120,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>( environment.apiUrl + '/uasdm-account/inviteUser', JSON.stringify( { invite: invite, roleIds: roleIds } ), { headers: headers } )
+            .post<void>( environment.apiUrl + '/api/uasdm-account/inviteUser', JSON.stringify( { invite: invite, roleIds: roleIds } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -167,7 +135,7 @@ export class AccountService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>( environment.apiUrl + '/uasdm-account/inviteComplete', JSON.stringify( { user: user, token: token } ), { headers: headers } )
+            .post<void>( environment.apiUrl + '/api/uasdm-account/inviteComplete', JSON.stringify( { user: user, token: token } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

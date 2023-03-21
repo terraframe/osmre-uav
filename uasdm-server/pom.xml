@@ -63,10 +63,29 @@
   </repositories>
 
   <dependencies>
+	<!-- Spring! -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>5.3.24</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>5.4.3.Final</version>
+    </dependency>
+	  
     <dependency>
         <groupId>org.locationtech.jts.io</groupId>
         <artifactId>jts-io-common</artifactId>
         <version>1.17.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>5.7.1</version>
     </dependency>
   
     <dependency>
@@ -128,35 +147,60 @@
       <artifactId>zip4j</artifactId>
       <version>2.11.1</version>
     </dependency>
+    
+    <!-- Geoprism -->
+    <!--
     <dependency>
+		<groupId>net.geoprism</groupId>
+		<artifactId>geoprism-classifier</artifactId>
+		<version>${geoprism.version}</version>
+	</dependency>
+	-->
+	<dependency>
       <groupId>net.geoprism</groupId>
-      <artifactId>geoprism-server</artifactId>
-      <version>${geoprism.version}</version>
-      <exclusions>
-        <!-- Conflicts with our version of aws -->
-        <exclusion>
-          <groupId>com.amazonaws</groupId>
-	      <artifactId>aws-java-sdk-s3</artifactId>
-        </exclusion>
-      </exclusions>
-      
-    </dependency>
-    <dependency>
-      <groupId>net.geoprism</groupId>
-      <artifactId>geoprism-client</artifactId>
+      <artifactId>geoprism-external-profile</artifactId>
       <version>${geoprism.version}</version>
     </dependency>
     <dependency>
       <groupId>net.geoprism</groupId>
-      <artifactId>geoprism-common</artifactId>
+      <artifactId>geoprism-forgot-password</artifactId>
       <version>${geoprism.version}</version>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-user-invite</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-logos</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-email</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-geoserver</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-excel</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.0.1</version>
       <scope>provided</scope>
-    </dependency>
+	</dependency>
+    
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>javax.servlet.jsp-api</artifactId>

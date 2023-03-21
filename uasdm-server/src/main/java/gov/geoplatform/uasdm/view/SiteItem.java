@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.view;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,11 +24,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
@@ -265,76 +265,69 @@ public class SiteItem implements TreeComponent
 
   public JSONObject toJSON()
   {
-    try
+    Set<Entry<String, Object>> entries = this.values.entrySet();
+
+    JSONObject obj = new JSONObject();
+    obj.put(ID, this.id);
+    obj.put(TYPE, this.type);
+    obj.put(TYPE_LABEL, this.typeLabel);
+    obj.put(NUMBER_OF_CHILDREN, this.numberOfChildren);
+    obj.put(OWNER_NAME, this.getOwnerName());
+    obj.put(OWNER_PHONE, this.getOwnerPhone());
+    obj.put(OWNER_EMAIL, this.getOwnerEmail());
+    obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
+    obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+    obj.put("hasAllZip", this.hasAllZip);
+
+    if (this.getType().equals("Collection"))
     {
-      Set<Entry<String, Object>> entries = this.values.entrySet();
+      gov.geoplatform.uasdm.graph.UAV uav = this.getUav();
+      String pilotName = this.getPilotName();
+      Sensor sensor = this.getSensor();
+      Platform platform = this.getPlatform();
+      String collectionDate = this.getCollectionDate();
+      String dateTime = this.getDateTime();
 
-      JSONObject obj = new JSONObject();
-      obj.put(ID, this.id);
-      obj.put(TYPE, this.type);
-      obj.put(TYPE_LABEL, this.typeLabel);
-      obj.put(NUMBER_OF_CHILDREN, this.numberOfChildren);
-      obj.put(OWNER_NAME, this.getOwnerName());
-      obj.put(OWNER_PHONE, this.getOwnerPhone());
-      obj.put(OWNER_EMAIL, this.getOwnerEmail());
-      obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
-      obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
-      obj.put("hasAllZip", this.hasAllZip);
+      obj.put("pilotName", pilotName);
+      obj.put("collectionDate", collectionDate);
+      obj.put("dateTime", dateTime);
 
-      if (this.getType().equals("Collection"))
+      if (uav != null)
       {
-        gov.geoplatform.uasdm.graph.UAV uav = this.getUav();
-        String pilotName = this.getPilotName();
-        Sensor sensor = this.getSensor();
-        Platform platform = this.getPlatform();
-        String collectionDate = this.getCollectionDate();
-        String dateTime = this.getDateTime();
-
-        obj.put("pilotName", pilotName);
-        obj.put("collectionDate", collectionDate);
-        obj.put("dateTime", dateTime);
-
-        if (uav != null)
-        {
-          obj.put(UAV, uav.toJSON());
-        }
-
-        if (sensor != null)
-        {
-          obj.put("sensor", sensor.toJSON());
-        }
-
-        if (platform != null)
-        {
-          obj.put("platform", platform.toJSON());
-        }
-
+        obj.put(UAV, uav.toJSON());
       }
 
-      for (Entry<String, Object> entry : entries)
+      if (sensor != null)
       {
-        obj.put(entry.getKey(), entry.getValue());
+        obj.put("sensor", sensor.toJSON());
       }
 
-      if (this.children != null && this.children.size() > 0)
+      if (platform != null)
       {
-        obj.put(CHILDREN, SiteItem.serialize(this.children));
+        obj.put("platform", platform.toJSON());
       }
 
-      if (this.geometry != null)
-      {
-        StringWriter geomWriter = new StringWriter();
-        new GeometryJSON().write(this.getGeometry(), geomWriter);
-
-        obj.put(GEOMETRY, new JSONObject(geomWriter.toString()));
-      }
-
-      return obj;
     }
-    catch (IOException e)
+
+    for (Entry<String, Object> entry : entries)
     {
-      throw new RuntimeException(e);
+      obj.put(entry.getKey(), entry.getValue());
     }
+
+    if (this.children != null && this.children.size() > 0)
+    {
+      obj.put(CHILDREN, SiteItem.serialize(this.children));
+    }
+
+    if (this.geometry != null)
+    {
+      GeoJsonWriter gw = new GeoJsonWriter();
+      String json = gw.write(this.getGeometry());
+
+      obj.put(GEOMETRY, new JSONObject(json.toString()));
+    }
+
+    return obj;
   }
 
   public static JSONArray serialize(Iterable<TreeComponent> items)
@@ -394,15 +387,17 @@ public class SiteItem implements TreeComponent
 
     if (object.has(GEOMETRY))
     {
+      Object oGeom = object.get(GEOMETRY);
+
+      GeoJsonReader reader = new GeoJsonReader();
+      Geometry jtsGeom;
       try
       {
-        Object oGeom = object.get(GEOMETRY);
-
-        String sGeom = oGeom.toString();
-
-        item.setGeometry(new GeometryJSON().readPoint(sGeom));
+        jtsGeom = reader.read(oGeom.toString());
+        
+        item.setGeometry(jtsGeom);
       }
-      catch (IOException e)
+      catch (ParseException e)
       {
         throw new RuntimeException(e);
       }

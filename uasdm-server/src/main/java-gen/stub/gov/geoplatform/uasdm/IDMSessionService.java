@@ -38,11 +38,11 @@ import com.runwaysdk.session.SessionFacade;
 import com.runwaysdk.system.Roles;
 
 import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
-import net.geoprism.RoleConstants;
-import net.geoprism.RoleView;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.LocaleSerializer;
+import net.geoprism.rbac.RoleBusinessService;
+import net.geoprism.rbac.RoleConstants;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {
@@ -50,7 +50,7 @@ public class IDMSessionService extends IDMSessionServiceBase
   
   public static final String FIELD_WORKER_RENAME_ROLE = "gov.geoplatform.aim.FieldWorker";
   
-  public static final String[] VALID_IDM_ROLES = new String[] {RoleConstants.BUILDER_ROLE, RoleConstants.ADIM_ROLE, ADMIN_RENAME_ROLE, FIELD_WORKER_RENAME_ROLE};
+  public static final String[] VALID_IDM_ROLES = new String[] {RoleConstants.DASHBOARD_BUILDER, RoleConstants.ADMIN, ADMIN_RENAME_ROLE, FIELD_WORKER_RENAME_ROLE};
   
   public static final String KEYCLOAK_USERNAME_PREFIX = "keycloak-";
   
@@ -76,11 +76,11 @@ public class IDMSessionService extends IDMSessionServiceBase
       
       if (preRole.equals(ADMIN_RENAME_ROLE))
       {
-        postRole = RoleConstants.ADIM_ROLE;
+        postRole = RoleConstants.ADMIN;
       }
       else if (preRole.equals(FIELD_WORKER_RENAME_ROLE))
       {
-        postRole = RoleConstants.BUILDER_ROLE;
+        postRole = RoleConstants.DASHBOARD_BUILDER;
       } 
       
       if (postRole != null && ArrayUtils.contains(VALID_IDM_ROLES, postRole))
@@ -151,7 +151,7 @@ public class IDMSessionService extends IDMSessionServiceBase
           
           SingleActorDAOIF dao = (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
           
-          List<Roles> allRoles = RoleView.getGeoprismRoles();
+          List<Roles> allRoles = new RoleBusinessService().getAllAssignableRoles();
           for (Roles role : allRoles)
           {
             RoleDAO roleDAO = RoleDAO.get(role.getOid()).getBusinessDAO();

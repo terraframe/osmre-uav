@@ -23,14 +23,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.geoplatform.uasdm.AppProperties;
 
 public class ChunkManager implements Runnable
 {
-  private static final Log                      log           = LogFactory.getLog(ChunkManager.class);
+  private static final Logger                      logger           = LoggerFactory.getLogger(ChunkManager.class);
 
   /**
    * Executer responsible for running the cleanup thread
@@ -75,7 +75,7 @@ public class ChunkManager implements Runnable
     }
     catch (Exception e)
     {
-      log.error(e);
+      logger.error("Chunk manager error", e);
     }
   }
 

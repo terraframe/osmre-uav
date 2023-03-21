@@ -25,10 +25,15 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +55,6 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.WKTWriter;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
@@ -64,16 +64,15 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
-import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
-import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -84,9 +83,8 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
-import net.geoprism.DefaultConfiguration;
 import net.geoprism.GeoprismUser;
-import net.geoprism.JSONStringImpl;
+import net.geoprism.rbac.RoleConstants;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
@@ -300,7 +298,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     // the component
     final SessionIF session = Session.getCurrentSession();
 
-    if (session != null && ! ( session.userHasRole(DefaultConfiguration.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
+    if (session != null && ! ( session.userHasRole(RoleConstants.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
     {
       final UasComponentDeleteException ex = new UasComponentDeleteException();
       ex.setTypeLabel(this.getClassDisplayLabel());
@@ -568,12 +566,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public void writeFeature(JSONWriter writer) throws IOException
   {
-    GeometryJSON gjson = new GeometryJSON();
-
-    StringWriter geomWriter = new StringWriter();
-
-    gjson.write(this.getGeoPoint(), geomWriter);
-
     writer.object();
 
     writer.key("type");
@@ -586,7 +578,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     writer.value(this.getOid());
 
     writer.key("geometry");
-    writer.value(new JSONStringImpl(geomWriter.toString()));
+    writer.value(new GeoJsonWriter().write(this.getGeoPoint()));
 
     writer.endObject();
   }

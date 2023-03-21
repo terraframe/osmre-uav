@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: '',
+    apiUrl: '.',
     loginUrl: '/#login',
     enableBusinessData: true
 };

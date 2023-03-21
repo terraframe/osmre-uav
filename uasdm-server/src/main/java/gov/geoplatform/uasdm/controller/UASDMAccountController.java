@@ -16,107 +16,242 @@
 package gov.geoplatform.uasdm.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.runwaysdk.request.ServletRequestIF;
+import com.runwaysdk.system.SingleActorDTO;
 
 import gov.geoplatform.uasdm.UserInviteDTO;
 import gov.geoplatform.uasdm.service.AccountService;
 import net.geoprism.GeoprismUserDTO;
-import net.geoprism.RoleViewDTO;
+import net.geoprism.account.ExternalProfileDTO;
+import net.geoprism.account.GeoprismUserView;
+import net.geoprism.rbac.RoleServiceIF;
+import net.geoprism.rbac.RoleView;
+import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.spring.JsonArrayDeserializer;
+import net.geoprism.spring.JsonObjectDeserializer;
 
-@Controller(url = "uasdm-account")
-public class UASDMAccountController
+@RestController
+@Validated
+public class UASDMAccountController extends RunwaySpringController
 {
-  private AccountService service;
+  public static final String API_PATH = "uasdm-account";
+  
+  protected AccountService service;
+  
+  @Autowired
+  protected RoleServiceIF roleService;
+  
+  public static class InviteBody
+  {
+    @NotNull
+    @JsonDeserialize(using = JsonObjectDeserializer.class)
+    JsonObject invite;
+
+    @JsonDeserialize(using = JsonArrayDeserializer.class)
+    JsonArray  roleIds;
+    
+    public InviteBody()
+    {
+      
+    }
+
+    public JsonObject getInvite()
+    {
+      return invite;
+    }
+
+    public void setInvite(JsonObject invite)
+    {
+      this.invite = invite;
+    }
+
+    public JsonArray getRoleIds()
+    {
+      return roleIds;
+    }
+
+    public void setRoleIds(JsonArray roleIds)
+    {
+      this.roleIds = roleIds;
+    }
+  }
+  
+  public static class InviteCompleteBody
+  {
+    @NotNull
+    @JsonDeserialize(using = JsonObjectDeserializer.class)
+    JsonObject user;
+
+    @NotEmpty
+    String     token;
+    
+    public InviteCompleteBody()
+    {
+      
+    }
+
+    public JsonObject getUser()
+    {
+      return user;
+    }
+
+    public void setUser(JsonObject user)
+    {
+      this.user = user;
+    }
+
+    public String getToken()
+    {
+      return token;
+    }
+
+    public void setToken(String token)
+    {
+      this.token = token;
+    }
+  }
+  
+  public static class ApplyBody
+  {
+    @NotEmpty
+    @JsonDeserialize(using = JsonObjectDeserializer.class)
+    private JsonObject account;
+    
+    @Nullable
+    @JsonDeserialize(using = JsonArrayDeserializer.class)
+    private JsonArray roleIds;
+    
+    public ApplyBody()
+    {
+      
+    }
+
+    public JsonObject getAccount()
+    {
+      return account;
+    }
+
+    public void setAccount(JsonObject account)
+    {
+      this.account = account;
+    }
+
+    public JsonArray getRoleIds()
+    {
+      return roleIds;
+    }
+
+    public void setRoleIds(JsonArray roleIds)
+    {
+      this.roleIds = roleIds;
+    }
+  }
 
   public UASDMAccountController()
   {
     this.service = new AccountService();
   }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF inviteUser(ClientRequestIF request, ServletRequestIF sr, @RequestParamter(name = "invite") String sInvite, @RequestParamter(name = "roleIds") String roleIds) throws JSONException
+  
+  @GetMapping(API_PATH + "/get")
+  public GeoprismUserView get() throws JSONException
   {
-    UserInviteDTO.initiate(request, sInvite, roleIds, getBaseUrl(sr));
-
-    return new RestResponse();
+    SingleActorDTO user = GeoprismUserDTO.getCurrentUser(this.getClientRequest());
+    
+    if (!(user instanceof ExternalProfileDTO))
+    {
+      return GeoprismUserView.fromGeoprismUserDTO((GeoprismUserDTO) user);
+    }
+    else
+    {
+      ExternalProfileDTO ep = (ExternalProfileDTO) user;
+      
+      return new GeoprismUserView(ep.getDisplayName(), ep.getEmail(), ep.getFirstName(), ep.getLastName(), ep.getPhoneNumber(), ep.getOid());
+    }
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newInvite(ClientRequestIF request) throws JSONException
+  @PostMapping(API_PATH + "/inviteUser")
+  public void inviteUser(@RequestBody InviteBody body) throws JSONException
   {
-    RoleViewDTO[] roles = RoleViewDTO.getRoles(request, null);
+    UserInviteDTO.initiate(this.getClientRequest(), body.getInvite().toString(), body.getRoleIds().toString(), getBaseUrl());
+  }
+
+  @PostMapping(API_PATH + "/newInvite")
+  public ResponseEntity<String> newInvite() throws JSONException
+  {
+    List<RoleView> roles = this.roleService.getAllAssignableRoles(this.getSessionId());
+    
     JSONObject user = new JSONObject();
     user.put("newInstance", true);
 
     JSONArray groups = this.createRoleMap(roles);
 
-    RestResponse response = new RestResponse();
-    response.set("user", user);
-    response.set("groups", groups);
-    response.set("bureaus", this.service.getBureaus(request.getSessionId()));
+    JSONObject response = new JSONObject();
+    response.put("user", user);
+    response.put("groups", groups);
+    response.put("bureaus", this.service.getBureaus(this.getClientRequest().getSessionId()));
 
-    return response;
+    return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newInstance(ClientRequestIF request) throws JSONException
+  @PostMapping(API_PATH + "/inviteComplete")
+  public void inviteComplete(@RequestBody InviteCompleteBody body) throws JSONException
   {
-    GeoprismUserDTO user = UserInviteDTO.newUserInst(request);
-
-    return new RestBodyResponse(user);
+    this.service.inviteComplete(this.getClientRequest().getSessionId(), body.getToken(), body.getUser().toString());
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF inviteComplete(ClientRequestIF request, @RequestParamter(name = "user") String user, @RequestParamter(name = "token") String token) throws JSONException
+  public String getBaseUrl()
   {
-    this.service.inviteComplete(request.getSessionId(), token, user);
-
-    return new RestResponse();
-  }
-
-  public static String getBaseUrl(ServletRequestIF request)
-  {
-    String scheme = request.getScheme() + "://";
-    String serverName = request.getServerName();
-    String serverPort = ( request.getServerPort() == 80 ) ? "" : ":" + request.getServerPort();
-    String contextPath = request.getContextPath();
+    String scheme = this.getRequest().getScheme() + "://";
+    String serverName = this.getRequest().getServerName();
+    String serverPort = ( this.getRequest().getServerPort() == 80 ) ? "" : ":" + this.getRequest().getServerPort();
+    String contextPath = this.getRequest().getContextPath();
     return scheme + serverName + serverPort + contextPath;
   }
 
-  private JSONArray createRoleMap(RoleViewDTO[] roles) throws JSONException
+  private JSONArray createRoleMap(List<RoleView> roles) throws JSONException
   {
+    final String groupName = "adminRoles";
+    
     Map<String, JSONArray> map = new HashMap<String, JSONArray>();
 
-    for (RoleViewDTO role : roles)
+    for (RoleView role : roles)
     {
-      if (!map.containsKey(role.getGroupName()))
+      if (!map.containsKey(groupName))
       {
-        map.put(role.getGroupName(), new JSONArray());
+        map.put(groupName, new JSONArray());
       }
 
       JSONObject object = new JSONObject();
-      object.put(RoleViewDTO.ASSIGNED, role.getAssigned());
-      object.put(RoleViewDTO.DISPLAYLABEL, role.getDisplayLabel());
-      object.put(RoleViewDTO.ROLEID, role.getRoleId());
+      object.put("assigned", role.getAssigned());
+      object.put("displayLabel", role.getDisplayLabel());
+      object.put("roleId", role.getOid());
 
-      map.get(role.getGroupName()).put(object);
+      map.get(groupName).put(object);
     }
 
     JSONArray groups = new JSONArray();
@@ -134,52 +269,43 @@ public class UASDMAccountController
     return groups;
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping(API_PATH + "/page")
+  public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
   {
-    JSONObject response = this.service.page(request.getSessionId(), new JSONObject(criteria));
+    JSONObject response = this.service.page(this.getClientRequest().getSessionId(), new JSONObject(criteria));
 
-    return new RestBodyResponse(response);
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF edit(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @PostMapping(API_PATH + "/edit")
+  public ResponseEntity<String> edit(@RequestBody String oid) throws JSONException
   {
-    GeoprismUserDTO user = GeoprismUserDTO.get(request, oid);
-    RoleViewDTO[] roles = RoleViewDTO.getRoles(request, user);
+    List<RoleView> roles = this.roleService.getAllAssignableRoles(this.getSessionId(), oid);
 
     JSONArray groups = this.createRoleMap(roles);
 
-    RestResponse response = new RestResponse();
-    response.set("user", this.service.lock(request.getSessionId(), oid));
-    response.set("groups", groups);
-    response.set("bureaus", this.service.getBureaus(request.getSessionId()));
+    JSONObject response = new JSONObject();
+    response.put("user", this.service.get(this.getClientRequest().getSessionId(), oid));
+    response.put("groups", groups);
+    response.put("bureaus", this.service.getBureaus(this.getClientRequest().getSessionId()));
 
-    return response;
+    return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @PostMapping(API_PATH + "/remove")
+  public void remove(@RequestBody String oid) throws JSONException
   {
-    this.service.remove(request.getSessionId(), oid);
-
-    return new RestResponse();
+    this.service.remove(this.getClientRequest().getSessionId(), oid);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF unlock(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @PostMapping(API_PATH + "/apply")
+  public ResponseEntity<String> apply(@RequestBody ApplyBody body) throws JSONException
   {
-    this.service.unlock(request.getSessionId(), oid);
+    final String roleIds = body.getRoleIds() == null ? null : body.getRoleIds().toString();
+    
+    JSONObject response = this.service.apply(this.getClientRequest().getSessionId(), new JSONObject(body.getAccount().toString()), roleIds);
 
-    return new RestBodyResponse("");
-  }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "account") String account, @RequestParamter(name = "roleIds") String roleIds) throws JSONException
-  {
-    JSONObject response = this.service.apply(request.getSessionId(), new JSONObject(account), roleIds);
-
-    return new RestBodyResponse(response);
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
 }

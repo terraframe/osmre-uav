@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -195,7 +196,7 @@ public class CollectionReportTest
 
   @Test
   @Request
-  public void testExportCSVWithSort() throws IOException
+  public void testExportCSVWithSort() throws IOException, CsvException
   {
     CollectionReport report = this.get();
 
@@ -248,7 +249,7 @@ public class CollectionReportTest
 
   @Test
   @Request
-  public void testExportCSVWithMultiSort() throws IOException
+  public void testExportCSVWithMultiSort() throws IOException, CsvException
   {
     JSONObject sort1 = new JSONObject();
     sort1.put("field", CollectionReport.COLLECTIONNAME);
@@ -279,7 +280,7 @@ public class CollectionReportTest
 
   @Test
   @Request
-  public void testExportCSVWithContainsFilter() throws IOException
+  public void testExportCSVWithContainsFilter() throws IOException, CsvException
   {
     JSONObject filter = new JSONObject();
     filter.put("value", Area51DataSet.COLLECTION_FISHBED.getName());
@@ -305,7 +306,7 @@ public class CollectionReportTest
 
   @Test
   @Request
-  public void testExportCSVWithEqualsFilter() throws IOException
+  public void testExportCSVWithEqualsFilter() throws IOException, CsvException
   {
     JSONObject filter = new JSONObject();
     filter.put("value", Area51DataSet.COLLECTION_FISHBED.getName());

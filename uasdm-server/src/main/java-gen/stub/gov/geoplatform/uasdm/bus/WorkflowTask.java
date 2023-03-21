@@ -42,9 +42,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -52,7 +50,7 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.GeoprismUser;
-import net.geoprism.RoleConstants;
+import net.geoprism.rbac.RoleConstants;
 
 public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -279,7 +277,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public static boolean isShowUserOnly()
   {
-    return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole(RoleConstants.ADIM_ROLE);
+    return Session.getCurrentSession() == null || !Session.getCurrentSession().userHasRole(RoleConstants.ADMIN);
   }
 
   public static List<String> getUserWorkflowComponents(String statuses, Integer pageNumber, Integer pageSize)

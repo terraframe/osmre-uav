@@ -60,14 +60,6 @@
           </mdBusinessPermission>
         </grant>
       </role>    
-      <role roleName="geoprism.DecisionMaker">
-        <grant>
-          <mdBusinessPermission type="gov.geoplatform.uasdm.UserInfo">
-            <operation name="READ" />
-            <operation name="READ_ALL_ATTRIBUTES" />
-          </mdBusinessPermission>
-        </grant>
-      </role>    
       
       <method methodName="newUserInst" type="gov.geoplatform.uasdm.UserInvite">
         <grant>

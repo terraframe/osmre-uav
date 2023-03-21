@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import com.runwaysdk.session.Request;
+
 public class ODMStatusServer
 {
   private static TaskService service = new PollingTaskService();
@@ -24,11 +26,13 @@ public class ODMStatusServer
     ODMStatusServer.service = service;
   }
 
+  @Request
   public synchronized static void startup()
   {
     service.startup();
   }
 
+  @Request
   public synchronized static void shutdown()
   {
     service.shutdown();

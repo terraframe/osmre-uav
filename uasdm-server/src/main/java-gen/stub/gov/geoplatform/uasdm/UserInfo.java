@@ -15,9 +15,9 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.BasicLeftJoinEq;
-import com.runwaysdk.query.InnerJoinEq;
 import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OrderBy.SortOrder;
@@ -40,6 +39,7 @@ import gov.geoplatform.uasdm.bus.BureauQuery;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
+import net.geoprism.account.AccountBusinessService;
 
 public class UserInfo extends UserInfoBase
 {
@@ -188,32 +188,13 @@ public class UserInfo extends UserInfoBase
     }
   }
 
-  @Transaction
-  public static JSONObject lockByUser(String userId)
+  public static JSONObject getByUserId(String userId)
   {
-    GeoprismUser user = GeoprismUser.lock(userId);
+    GeoprismUser user = GeoprismUser.get(userId);
 
     UserInfo info = UserInfo.getByUser(user);
-
-    if (info != null)
-    {
-      info.lock();
-    }
 
     return UserInfo.serialize(user, info);
-  }
-
-  @Transaction
-  public static void unlockByUser(String userId)
-  {
-    GeoprismUser user = GeoprismUser.unlock(userId);
-
-    UserInfo info = UserInfo.getByUser(user);
-
-    if (info != null)
-    {
-      info.unlock();
-    }
   }
 
   @Transaction
@@ -241,14 +222,14 @@ public class UserInfo extends UserInfoBase
     if (roleIds != null)
     {
       JSONArray array = new JSONArray(roleIds);
-      List<String> list = new LinkedList<String>();
+      Set<String> setRoleIds = new HashSet<String>();
 
       for (int i = 0; i < array.length(); i++)
       {
-        list.add(array.getString(i));
+        setRoleIds.add(array.getString(i));
       }
 
-      user.applyWithRoles(list.toArray(new String[list.size()]));
+      new AccountBusinessService().applyUserWithRoles(user, setRoleIds);
     }
     else
     {
@@ -261,6 +242,10 @@ public class UserInfo extends UserInfoBase
     {
       info = new UserInfo();
       info.setGeoprismUser(user);
+    }
+    else
+    {
+      info.appLock();
     }
 
     if (account.has(UserInfo.INFORMATION))
@@ -323,7 +308,7 @@ public class UserInfo extends UserInfoBase
     {
       String userId = account.getString(GeoprismUser.OID);
 
-      user = GeoprismUser.get(userId);
+      user = GeoprismUser.lock(userId);
     }
     else
     {

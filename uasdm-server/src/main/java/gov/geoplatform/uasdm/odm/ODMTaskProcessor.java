@@ -41,7 +41,7 @@ import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
-import net.geoprism.EmailSetting;
+import net.geoprism.email.business.EmailBusinessService;
 import net.lingala.zip4j.exception.ZipException;
 
 public class ODMTaskProcessor
@@ -97,7 +97,7 @@ public class ODMTaskProcessor
 
         final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has failed. " + task.getMessage();
 
-        EmailSetting.sendEmail(subject, body, new String[] {
+        new EmailBusinessService().sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()
         });
       }
@@ -107,7 +107,7 @@ public class ODMTaskProcessor
 
         final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
 
-        EmailSetting.sendEmail(subject, body, new String[] {
+        new EmailBusinessService().sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()
         });
       }

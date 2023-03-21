@@ -53,9 +53,7 @@ export class AccountComponent implements OnInit {
 			this.bsModalRef.hide();
 		}
 		else {
-			this.service.unlock(this.account.user.oid).then(response => {
-				this.bsModalRef.hide();
-			});
+          this.bsModalRef.hide();
 		}
 	}
 

@@ -15,22 +15,22 @@
  */
 package com.runwaysdk.build.domain;
 
-import net.geoprism.context.ServerContextListener;
+//import net.geoprism.context.ServerContextListener;
 
-public class CollectionDocumentListener implements ServerContextListener
+public class CollectionDocumentListener // implements ServerContextListener
 {
-  @Override
+//  @Override
   public void initialize()
   {
   }
 
-  @Override
+//  @Override
   public void startup()
   {
     CollectionDocumentMigration.start();
   }
 
-  @Override
+//  @Override
   public void shutdown()
   {
   }

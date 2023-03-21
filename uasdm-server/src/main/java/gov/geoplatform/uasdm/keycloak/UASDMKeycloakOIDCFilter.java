@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.AuthenticatedActionsHandler;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -74,10 +73,9 @@ import com.runwaysdk.web.WebClientSession;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
-import net.geoprism.ClientConfigurationService;
-import net.geoprism.RoleViewDTO;
-import net.geoprism.SessionFilter;
+import gov.geoplatform.uasdm.service.IDMSessionService;
 import net.geoprism.account.LocaleSerializer;
+import net.geoprism.rbac.RoleBusinessService;
 
 /**
  * 
@@ -420,7 +418,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       req.getSession().setAttribute(ClientConstants.CLIENTSESSION, clientSession);
       req.getSession().setAttribute(ClientConstants.CLIENTREQUEST, clientRequest);
 
-      JsonArray roles = JsonParser.parseString( ( RoleViewDTO.getCurrentRoles(clientRequest) )).getAsJsonArray();
+      JsonArray roles = JsonParser.parseString( ( RoleBusinessService.getCurrentRoles(clientRequest.getSessionId()) )).getAsJsonArray();
 
       this.loggedInCookieResponse(req, resp, userJson, roles, clientRequest, enumLocales);
 
@@ -449,13 +447,13 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
       installedLocalesArr.add(locObj);
     }
 
-    JsonArray roleDisplayLabels = JsonParser.parseString( ( RoleViewDTO.getCurrentRoleDisplayLabels(clientRequest) )).getAsJsonArray();
+    JsonArray roleDisplayLabels = JsonParser.parseString( ( RoleBusinessService.getCurrentRoleDisplayLabels(clientRequest.getSessionId()) )).getAsJsonArray();
 
     jo.addProperty("loggedIn", clientRequest.isLoggedIn());
     jo.add("roles", roles);
     jo.add("roleDisplayLabels", roleDisplayLabels);
     jo.addProperty("userName", userJson.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
-    jo.addProperty("version", ClientConfigurationService.getServerVersion());
+    jo.addProperty("version", new IDMSessionService().getServerVersion());
     jo.add("installedLocales", installedLocalesArr);
     jo.addProperty("externalProfile", true);
 
@@ -518,7 +516,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     // return true;
     // }
 
-    return !keycloakEnabled || SessionFilter.isPublic(request) || SessionFilter.pathAllowed(request);
+    return !keycloakEnabled || new IDMSessionService().isPublic(request) || new IDMSessionService().pathAllowed(request);
   }
 
   private String stripSlashes(String uri)

@@ -53,12 +53,8 @@ export class AccountInviteCompleteComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.service.uasdmNewInstance().then((user: User) => {
-			this.user = user;
-			this.user.phoneNumber = '';
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
+		this.user = new User();
+		this.user.phoneNumber = '';
 
 		this.sub = this.route.params.subscribe(params => {
 			this.token = params['token'];

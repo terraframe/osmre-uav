@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Point;
 
 import com.opencsv.CSVWriter;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -44,9 +45,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.session.Request;
-import org.locationtech.jts.geom.Point;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;

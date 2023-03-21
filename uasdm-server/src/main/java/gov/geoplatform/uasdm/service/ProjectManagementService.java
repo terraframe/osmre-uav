@@ -90,6 +90,7 @@ import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.GeoprismUser;
+import net.geoprism.localization.LocalizationService;
 
 public class ProjectManagementService
 {
@@ -924,7 +925,7 @@ public class ProjectManagementService
     config.put("contextPath", contextPath);
     config.put("uasdmKeycloakEnabled", AppProperties.isKeycloakEnabled());
     config.put("uasAppDisclaimer", AppProperties.getAppDisclaimer());
-    config.put("localization", new JSONObject(net.geoprism.localization.LocalizationFacade.getJSON()));
+    config.put("localization", new JSONObject(new LocalizationService().getAllView()));
 
     return config;
   }

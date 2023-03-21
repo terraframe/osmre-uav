@@ -3,13 +3,17 @@ import { Injectable } from "@angular/core";
 import { Configuration } from "@core/model/application";
 import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
+import EnvironmentUtil from '@core/utility/environment-util';
 
 @Injectable()
 export class ConfigurationService {
 
     configuration: Configuration;
+    
+    context: string;
 
     constructor(private http: HttpClient) {
+		this.context = EnvironmentUtil.getApiUrl();
     }
 
     load(): Promise<Configuration> {
@@ -21,7 +25,7 @@ export class ConfigurationService {
     }
 
     logout(): Promise<void> {
-        return firstValueFrom(this.http.post<void>(environment.apiUrl + "/session/logout", {}));
+        return firstValueFrom(this.http.get<void>(environment.apiUrl + "/api/session/logout", {}));
     }
 
     getConfiguration(): Configuration {

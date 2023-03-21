@@ -49,7 +49,7 @@ public class Area51DataSet extends TestDataSet
 
   public static final TestMissionInfo MISSION_HAVE_DOUGHNUT = new TestMissionInfo("Have_Doughnut", PROJECT_DREAMLAND);
 
-  public static final TestCollectionInfo COLLECTION_FISHBED = new TestCollectionInfo("Fishbed_E", new Date(), UAV, SENSOR, MISSION_HAVE_DOUGHNUT);
+  public static final TestCollectionInfo COLLECTION_FISHBED = new TestCollectionInfo("Fishbed_E", new Date(), UAV, SENSOR, TestDataSet.DEFAULT_SITE_POINT, MISSION_HAVE_DOUGHNUT);
 
   public static final TestDocumentInfo RAW_DOCUMENT = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.RAW + "/test.jpg", "test.jpg");
 

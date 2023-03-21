@@ -15,27 +15,20 @@
  */
 package gov.geoplatform.uasdm.index;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 import gov.geoplatform.uasdm.service.IndexService;
-import net.geoprism.context.ServerContextListener;
 
-public class IndexContextListener implements ServerContextListener
+public class IndexContextListener implements ServletContextListener
 {
-
   @Override
-  public void initialize()
-  {
-  }
-
-  @Override
-  public void startup()
-  {
+  public void contextInitialized(ServletContextEvent sce) {
     IndexService.startup();
-  }
-
+  } 
+  
   @Override
-  public void shutdown()
-  {
+  public void contextDestroyed(ServletContextEvent sce) { 
     IndexService.shutdown();
-  }
-
+  } 
 }

@@ -26,7 +26,7 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import net.geoprism.GeoprismActorIF;
+import net.geoprism.account.GeoprismActorIF;
 
 public class CollectionConverter extends Converter
 {

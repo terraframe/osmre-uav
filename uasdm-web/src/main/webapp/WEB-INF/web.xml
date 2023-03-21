@@ -29,14 +29,49 @@
     <extension>xsd</extension>
     <mime-type>text/xml</mime-type>
   </mime-mapping>
+  
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
+  </context-param>
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+  </context-param>
+  <!-- Spring Servlet Dispatcher -->
+  <servlet>
+    <servlet-name>SpringDispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>contextClass</param-name>
+      <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </init-param>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SpringDispatcher</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
   <filter>
     <filter-name>EncodingFilter</filter-name>
-    <filter-class>net.geoprism.EncodingFilter</filter-class>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+	    <param-name>targetBeanName</param-name>
+	    <param-value>encodingFilter</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>EncodingFilter</filter-name>
     <url-pattern>*</url-pattern>
   </filter-mapping>
+  
   <filter>
     <filter-name>UASDM Keycloak Filter</filter-name>
     <filter-class>gov.geoplatform.uasdm.keycloak.UASDMKeycloakOIDCFilter</filter-class>
@@ -48,12 +83,17 @@
   </filter-mapping>
   <filter>
     <filter-name>SessionFilter</filter-name>
-    <filter-class>net.geoprism.SessionFilter</filter-class>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+      <param-name>targetBeanName</param-name>
+      <param-value>sessionFilter</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>SessionFilter</filter-name>
     <url-pattern>*</url-pattern>
   </filter-mapping>
+  
   <filter>
     <filter-name>UrlMapperFilter</filter-name>
     <filter-class>com.runwaysdk.web.filter.UrlMapperFilter</filter-class>
@@ -62,10 +102,6 @@
     <filter-name>UrlMapperFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <listener>
-    <listener-class>net.geoprism.GeoprismContextListener</listener-class>
-  </listener>
-  
   
   <filter>
 	  <filter-name>CorsFilter</filter-name>
@@ -80,6 +116,21 @@
 	  <url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
+  <listener>
+    <listener-class>net.geoprism.PatchingContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>net.geoprism.SchedulerContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>gov.geoplatform.uasdm.chunk.ChunkManagerContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>gov.geoplatform.uasdm.index.IndexContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>gov.geoplatform.uasdm.odm.ODMContextListener</listener-class>
+  </listener>
 	
   <security-constraint>
     <web-resource-collection>

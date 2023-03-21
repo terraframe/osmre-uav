@@ -44,7 +44,6 @@ export class ErrorHandler {
     }
     
     static showErrorAsDialog(err: any, modalService: BsModalService): BsModalRef {
-      
       if (err instanceof HttpErrorResponse && err.status == 401)
       {
         return null;

@@ -40,7 +40,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.InMemoryMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import net.geoprism.GeoprismProperties;
+import net.geoprism.configuration.GeoprismProperties;
 
 /**
  * Pulls all tifs from S3 and reuploads them as cog tiffs.

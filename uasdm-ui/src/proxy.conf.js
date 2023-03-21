@@ -17,7 +17,7 @@ const PROXY_CONFIG = [
     },
     {
         context: [
-            "/net/geoprism/images/", "/glyphs", "/session", "/project",
+            "/api", "/net/geoprism/images/", "/glyphs", "/session", "/project",
             "/logo", "/uav", "/product", "/platform-manufacturer", "/platform",
             "/platform-type", "/sensor", "/wave-length", "/sensor-type",
             "/file", "/cog", "/stac", "/collection-report"

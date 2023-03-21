@@ -18,12 +18,10 @@ package gov.geoplatform.uasdm;
 import java.io.File;
 import java.io.InputStream;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 
-import net.geoprism.GeoprismProperties;
+import net.geoprism.configuration.GeoprismProperties;
 
 public class AppProperties
 {

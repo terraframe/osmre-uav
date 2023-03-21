@@ -54,15 +54,9 @@ public class AccountService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject lock(String sessionId, String oid)
+  public JSONObject get(String sessionId, String oid)
   {
-    return UserInfo.lockByUser(oid);
-  }
-
-  @Request(RequestType.SESSION)
-  public void unlock(String sessionId, String oid)
-  {
-    UserInfo.unlockByUser(oid);
+    return UserInfo.getByUserId(oid);
   }
 
   @Request(RequestType.SESSION)

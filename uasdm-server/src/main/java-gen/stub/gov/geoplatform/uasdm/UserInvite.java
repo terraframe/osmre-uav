@@ -16,8 +16,8 @@
 package gov.geoplatform.uasdm;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.json.JSONArray;
@@ -31,8 +31,9 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.bus.Bureau;
-import net.geoprism.EmailSetting;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.AccountBusinessService;
+import net.geoprism.email.business.EmailBusinessService;
 
 public class UserInvite extends UserInviteBase
 {
@@ -141,14 +142,14 @@ public class UserInvite extends UserInviteBase
     if (invite.getRoleIds().length() > 0)
     {
       JSONArray array = new JSONArray(invite.getRoleIds());
-      List<String> list = new LinkedList<String>();
+      Set<String> roleIds = new HashSet<String>();
 
       for (int i = 0; i < array.length(); i++)
       {
-        list.add(array.getString(i));
+        roleIds.add(array.getString(i));
       }
 
-      user.applyWithRoles(list.toArray(new String[list.size()]));
+      new AccountBusinessService().applyUserWithRoles(user, roleIds);
     }
     else
     {
@@ -203,7 +204,7 @@ public class UserInvite extends UserInviteBase
     body = body.replace("${link}", link);
     body = body.replace("${expireTime}", String.valueOf(expireTime));
 
-    EmailSetting.sendEmail(subject, body, new String[] { address });
+    new EmailBusinessService().sendEmail(subject, body, new String[] { address });
   }
 
   private static String generateEncryptedToken(String email)

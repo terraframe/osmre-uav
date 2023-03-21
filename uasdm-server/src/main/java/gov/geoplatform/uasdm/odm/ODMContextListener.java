@@ -15,30 +15,18 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-import net.geoprism.context.ServerContextListener;
-
-
-
-public class ODMContextListener implements ServerContextListener
+public class ODMContextListener implements ServletContextListener
 {
   @Override
-  public void initialize()
-  {
-  }
-
-  @Override
-  public void startup()
-  {
+  public void contextInitialized(ServletContextEvent sce) {
     ODMStatusServer.startup();
-  }
-
+  } 
+  
   @Override
-  public void shutdown()
-  {
+  public void contextDestroyed(ServletContextEvent sce) { 
     ODMStatusServer.shutdown();
-  }
-
+  } 
 }

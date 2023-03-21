@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -44,6 +43,7 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdBusiness;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
@@ -60,7 +60,6 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
-import net.geoprism.JSONStringImpl;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
@@ -409,12 +408,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public void writeFeature(JSONWriter writer) throws IOException
   {
-    GeometryJSON gjson = new GeometryJSON();
-
-    StringWriter geomWriter = new StringWriter();
-
-    gjson.write(this.getGeoPoint(), geomWriter);
-
     writer.object();
 
     writer.key("type");
@@ -427,7 +420,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     writer.value(this.getOid());
 
     writer.key("geometry");
-    writer.value(new JSONStringImpl(geomWriter.toString()));
+    writer.value(new GeoJsonWriter().write(this.getGeoPoint()));
 
     writer.endObject();
   }

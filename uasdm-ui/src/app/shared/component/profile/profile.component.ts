@@ -62,15 +62,6 @@ export class ProfileComponent {
   }  
   
   cancel():void {
-    if (!this.externalProfile)
-    {
-      this.service.unlock(this.profile.oid).then(profile => {
-        this.bsModalRef.hide();
-      });
-    }
-    else
-    {
-      this.bsModalRef.hide();
-    }
+    this.bsModalRef.hide();
   }  
 }
