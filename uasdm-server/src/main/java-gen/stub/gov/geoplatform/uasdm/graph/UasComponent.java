@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -90,7 +90,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 {
   private static final long serialVersionUID = -1526604195;
 
-  private Logger log = LoggerFactory.getLogger(UasComponent.class);
+  private Logger            log              = LoggerFactory.getLogger(UasComponent.class);
 
   public UasComponent()
   {
@@ -415,13 +415,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
 
     JSONObject response = new JSONObject();
-    
+
     JSONArray dem = new JSONArray();
     response.put(ImageryComponent.DEM, dem);
-    
+
     JSONArray ortho = new JSONArray();
     response.put(ImageryComponent.ORTHO, ortho);
-    
+
     JSONArray ptcloud = new JSONArray();
     response.put(ImageryComponent.PTCLOUD, ptcloud);
 
@@ -578,7 +578,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     writer.value(this.getOid());
 
     writer.key("geometry");
-    writer.value(new GeoJsonWriter().write(this.getGeoPoint()));
+    writer.value(new JSONObject(new GeoJsonWriter().write(this.getGeoPoint())));
 
     writer.endObject();
   }
