@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.test.Area51DataSet;
-import junit.framework.Assert;
 
 public class CollectionReportTest
 {
