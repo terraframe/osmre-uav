@@ -1,6 +1,7 @@
 export class User {
-  userName:string;
-  loggedIn:boolean;
-  externalProfile:boolean;
-  roles:string[];  
+  userName: string;
+  loggedIn: boolean;
+  externalProfile: boolean;
+  roles: string[];
+  bureau?: string;
 }

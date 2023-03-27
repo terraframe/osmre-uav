@@ -219,6 +219,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
 
+    this.filter = { field: "bureau", value: this.authService.getBureau() };
+
     this.service.bureaus().then(bureaus => {
       this.bureaus = bureaus;
     });

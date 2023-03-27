@@ -41,6 +41,7 @@ export class AuthService {
 			this.user.roles = cookieDataJSON.roles;
 			this.user.externalProfile = cookieDataJSON.externalProfile;
 			this.user.loggedIn = true;
+			this.user.bureau = cookieDataJSON.bureau;
 		}
 	}
 
@@ -53,7 +54,8 @@ export class AuthService {
 			loggedIn: false,
 			userName: '',
 			externalProfile: false,
-			roles: []
+			roles: [],
+			bureau: null
 		};
 	}
 
@@ -76,4 +78,9 @@ export class AuthService {
 	isWorker(): boolean {
 		return this.isAdmin() || this.user.roles.indexOf("geoprism.admin.DashboardBuilder") !== -1;
 	}
+
+	getBureau(): string {
+        return this.user.bureau;
+    }
+
 }
