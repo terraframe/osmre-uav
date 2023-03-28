@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -36,8 +37,11 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class ODMFacade
@@ -143,6 +147,8 @@ public class ODMFacade
 
   private static CloseablePair filterTarGzArchive(ApplicationResource archive) throws IOException
   {
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
+
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
@@ -160,7 +166,7 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
+          else if (UasComponentIF.isValidName(filename) && extensions.contains(ext))
           {
             File file = new File(parent, entry.getName());
 
@@ -181,6 +187,7 @@ public class ODMFacade
 
   private static CloseablePair filterZipArchive(ApplicationResource archive) throws IOException
   {
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
@@ -196,9 +203,9 @@ public class ODMFacade
         {
           ZipArchiveEntry entry = entries.nextElement();
           final String filename = entry.getName();
-          final String ext = FilenameUtils.getExtension(filename);
+          final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if (!ext.equalsIgnoreCase("mp4") && UasComponentIF.isValidName(filename))
+          if (UasComponentIF.isValidName(filename) && extensions.contains(ext))
           {
             int len;
 
