@@ -18,6 +18,8 @@
 ///
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Subject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -43,6 +45,8 @@ export class SystemLogoComponent implements OnInit {
 
     @ViewChild( 'uploadEl' )
     private uploadElRef: ElementRef;
+    
+    public onSuccess: Subject<any>;
 
     file: any;
     context: string;
@@ -50,12 +54,14 @@ export class SystemLogoComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private location: Location,
+        public bsModalRef: BsModalRef,
         private eventService: EventService ) {
         this.context = EnvironmentUtil.getApiUrl();
     }
 
     ngOnInit(): void {
-        this.oid = this.route.snapshot.params['oid'];
+		
+		this.onSuccess = new Subject();
 
         let options: FileUploaderOptions = {
             autoUpload: false,
@@ -72,7 +78,8 @@ export class SystemLogoComponent implements OnInit {
             this.eventService.complete();
         };
         this.uploader.onSuccessItem = ( item: any, response: string, status: number, headers: any ) => {
-            this.location.back();
+            this.onSuccess.next(item);
+            this.bsModalRef.hide();
         };
         this.uploader.onErrorItem = ( item: any, response: string, status: number, headers: any ) => {
             this.error( response );
@@ -101,12 +108,13 @@ export class SystemLogoComponent implements OnInit {
     }
 
     cancel(): void {
-        this.location.back();
+        this.bsModalRef.hide();
     }
 
     onSubmit(): void {
         if ( this.file == null ) {
-            this.location.back();
+            //this.location.back();
+            window.location.reload();
         }
         else {
             this.uploader.uploadAll();
