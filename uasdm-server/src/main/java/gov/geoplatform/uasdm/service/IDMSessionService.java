@@ -107,7 +107,10 @@ public class IDMSessionService extends SessionService
         {
           Bureau bureau = userInfo.getBureau();
 
-          response.addProperty("bureau", bureau.getOid());
+          if (bureau != null)
+          {
+            response.addProperty("bureau", bureau.getOid());
+          }
         }
       }
     }

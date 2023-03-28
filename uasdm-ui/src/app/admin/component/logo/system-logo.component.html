@@ -1,24 +1,11 @@
-<div>
-    <uasdm-header></uasdm-header>
 
-<div>
-  <loading-bar></loading-bar>
-
-  <form #form="ngForm" class="modal-form" (ngSubmit)="form.valid && onSubmit()">    
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="heading">
-          <h1><localize key="system.image.editHeader"></localize></h1>
-        </div>      
+    <div>
+      <form #form="ngForm" class="modal-form" (ngSubmit)="form.valid && onSubmit()">
         
         <div *ngIf="message != null" class="alert alert-danger" role="alert">{{message}}</div>
         
         <fieldset>
-          <div class="row-holder">
-            <div class="label-holder">
-            </div>          
-            <div class="holder">
-              <span class="text">
+          <div>     
 
                 <div>
                   <!-- For display only when editing an icon-->
@@ -39,24 +26,17 @@
                   <input type="file" #uploadEl ng2FileSelect #fileInput [uploader]="uploader" id="uploader-input" style="display:none" />
                 </div>
                 
-              </span>
-            </div>
           </div>
           
-          <div class="row-holder">
-            <div class="label-holder">
-            </div>                    
-            <div class="holder">
-              <div class="button-holder">
+          <div class="row">             
+            <div class="col-md-12">
+              <div class="btn-holder text-right" style="margin-top: 20px;">
                 <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />              
                 <input type="submit" [value]="'category.icon.ok' | localize" class="btn btn-primary" (disabled)="form.invalid" />                
               </div>
             </div>
           </div>
-        </fieldset>  
-      </div>
+        </fieldset>
+      </form>
     </div>
-  </form>
-</div>
 
-</div>

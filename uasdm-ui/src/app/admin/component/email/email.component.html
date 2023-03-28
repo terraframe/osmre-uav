@@ -51,6 +51,7 @@
       <hr>
 
       <div class="btn-holder" style="text-align: right;">
+        <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />
         <input type="submit" [value]="'dataset.submit' | localize" class="btn btn-primary" [disabled]="!(form.valid)" />
       </div>
     </form>
