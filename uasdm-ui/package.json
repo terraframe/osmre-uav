@@ -35,7 +35,7 @@
 		"file-saver": "2.0.2",
 		"fine-uploader": "5.16.2",
 		"google-libphonenumber": "^3.2.8",
-		"mapbox-gl": "1.13.2",
+		"maplibre-gl": "^2.4.0",
 		"ng2-file-upload": "1.4.0",
 		"ngx-bootstrap": "5.6.1",
 		"ngx-cookie-service": "3.0.3",

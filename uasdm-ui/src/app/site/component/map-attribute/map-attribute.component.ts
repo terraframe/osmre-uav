@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
-import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
+import { Map, LngLat, NavigationControl, MapOptions } from 'maplibre-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Observable } from 'rxjs';
@@ -17,7 +17,7 @@ import { MapService } from '@site/service/map.service';
 export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /* 
-     * mapbox-gl map
+     * maplibre-gl map
      */
     map: Map;
 
@@ -98,9 +98,9 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         //     }
         // }, 1000 );
 
-        let config: MapboxOptions = {
+        let config: MapOptions = {
             container: 'map-attribute-div',
-            style: 'mapbox://styles/mapbox/outdoors-v11',
+            style: `http://localhost:8080/styles/basic-preview/style.json`,
             zoom: this.zoom,
             center: this.center
         };
@@ -138,7 +138,7 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.addControl( this.draw );
 
         // Add zoom and rotation controls to the map.
-        this.map.addControl( new NavigationControl() );
+        this.map.addControl( new NavigationControl({}) );
 
         this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
         this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );

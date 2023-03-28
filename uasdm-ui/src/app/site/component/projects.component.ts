@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, In
 import { BsModalService } from "ngx-bootstrap/modal";
 import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { BsModalRef } from "ngx-bootstrap/modal";
-import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from "mapbox-gl";
+import { Map, LngLatBounds, NavigationControl, MapLibreEvent, AttributionControl, RasterSourceSpecification } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -39,7 +39,6 @@ import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
-import { APP_BASE_HREF } from "@angular/common";
 
 
 const enum VIEW_MODE {
@@ -149,7 +148,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
      * debounced subject for map extent change events
      */
-  subject: Subject<MapboxEvent<MouseEvent | TouchEvent | WheelEvent>>;
+  subject: Subject<MapLibreEvent<MouseEvent | TouchEvent | WheelEvent>>;
 
   /*
    * Reference to the modal current showing
@@ -322,7 +321,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.map = new Map({
       container: "map",
-      style: "mapbox://styles/mapbox/outdoors-v11",
+      style: `http://localhost:8080/styles/basic-preview/style.json`,
       zoom: 2,
       attributionControl: false,
       center: [-78.880453, 42.897852]
@@ -347,7 +346,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshMapPoints(true);
 
     // Add zoom and rotation controls to the map.
-    this.map.addControl(new NavigationControl(), "bottom-right");
+    this.map.addControl(new NavigationControl({}), "bottom-right");
     this.map.addControl(new AttributionControl({ compact: true }), "bottom-left");
 
     this.map.on("mousemove", e => {
@@ -524,7 +523,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     */
   }
 
-  handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
+  handleExtentChange(e: MapLibreEvent<MouseEvent | TouchEvent | WheelEvent>): void {
     const bounds = this.map.getBounds();
 
     if (this.isValidBounds(bounds)) {
@@ -1011,14 +1010,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       url = "/" + url;
     }
 
+    const source: RasterSourceSpecification = {
+      'type': 'raster',
+      'url': url
+    }
+
+    this.map.addSource(layer.key, source)
+
     this.map.addLayer({
       'id': layer.key,
       'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'url': url
-      },
-      'paint': {}
+      'source': layer.key
     }, "points");
 
     // Add the layer to the list of layers to be recreated on style change

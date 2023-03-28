@@ -8,7 +8,7 @@ import { finalize } from 'rxjs/operators';
 
 import { GeoJSONSource } from 'mapbox-gl';
 
-import * as mapboxgl from 'mapbox-gl';
+// import * as mapboxgl from 'mapbox-gl';
 import { environment } from 'src/environments/environment';
 
 
@@ -32,7 +32,7 @@ export interface TileJson {
 export class MapService {
 
     constructor(private http: HttpClient) {
-        (mapboxgl as any).accessToken = mapboxKey;
+        // (mapboxgl as any).accessToken = mapboxKey;
     }
 
     features(conditions: { field: string, value: any }[]): Promise<{ features: GeoJSONSource, bbox: number[] }> {

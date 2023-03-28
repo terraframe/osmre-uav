@@ -5,8 +5,7 @@ import { v4 as uuid } from "uuid";
 import { ManagementService } from '@site/service/management.service';
 import { Criteria, Filter, StacItem, StacLayer } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
-import { LngLatBounds } from 'mapbox-gl';
-import EnvironmentUtil from '@core/utility/environment-util';
+import { LngLatBounds } from 'maplibre-gl';
 import { environment } from 'src/environments/environment';
 
 const enum VIEW_MODE {
