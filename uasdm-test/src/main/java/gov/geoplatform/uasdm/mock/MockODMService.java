@@ -23,6 +23,7 @@ import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.odm.InfoResponse;
 import gov.geoplatform.uasdm.odm.NewResponse;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMResponse;
 import gov.geoplatform.uasdm.odm.ODMServiceIF;
 import gov.geoplatform.uasdm.odm.TaskOutputResponse;
@@ -56,9 +57,9 @@ public class MockODMService implements ODMServiceIF
       throw new RuntimeException(e);
     }
   }
-
+  
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
+  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     return new MockNewResponse();
   }

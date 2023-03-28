@@ -160,7 +160,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	runOrtho(id: string, processPtcloud: boolean, processDem: boolean, processOrtho: boolean): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+	runOrtho(id: string, processPtcloud: boolean, processDem: boolean, processOrtho: boolean, configuration: any): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -172,7 +172,8 @@ export class ManagementService {
 			id: id,
 			processPtcloud: processPtcloud,
 			processDem: processDem,
-			processOrtho: processOrtho
+			processOrtho: processOrtho,
+			configuration: JSON.stringify(configuration)
 		};
 
 		return this.http

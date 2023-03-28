@@ -93,23 +93,24 @@ export class Selection {
 
 
 export class UploadForm {
-	create: boolean;
-	name: string;
-	outFileName: string;
-	uasComponentOid: string;
-	site: string;
-	project: string;
-	mission: string;
-	collection: any;
-	imagery: any;
-	uploadTarget: string;
-	selections: string;
-	processUpload: boolean;
-	processOrtho: boolean;
-	processDem: boolean;
-	processPtcloud: boolean;
+	create?: boolean;
+	name?: string;
+	outFileName?: string;
+	uasComponentOid?: string;
+	site?: string;
+	project?: string;
+	mission?: string;
+	collection?: any;
+	imagery?: any;
+	uploadTarget?: string;
+	selections?: string;
+	processUpload?: boolean;
+	processOrtho?: boolean;
+	processDem?: boolean;
+	processPtcloud?: boolean;
 	tool?: string;
 	description?: string;
+	includeGeoLocationFile?: boolean;
 }
 
 export class Action {

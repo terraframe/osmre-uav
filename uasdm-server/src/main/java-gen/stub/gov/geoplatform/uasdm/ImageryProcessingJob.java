@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -63,6 +63,7 @@ import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
@@ -72,9 +73,9 @@ import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
+  private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
 
-  private static final long serialVersionUID = -339555201;
+  private static final long   serialVersionUID = -339555201;
 
   // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
   // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
@@ -82,6 +83,23 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public ImageryProcessingJob()
   {
     super();
+  }
+
+  public ODMProcessConfiguration getConfiguration()
+  {
+    String json = this.getConfigurationJson();
+
+    if (!StringUtils.isEmpty(json))
+    {
+      return ODMProcessConfiguration.parse(json);
+    }
+
+    return new ODMProcessConfiguration();
+  }
+
+  public void setConfiguration(ODMProcessConfiguration configuration)
+  {
+    this.setConfigurationJson(configuration.toJson().toString());
   }
 
   public static JobHistory processFiles(RequestParserIF parser, File archive) throws FileNotFoundException
@@ -104,8 +122,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     try
     {
       String outFileNamePrefix = parser.getCustomParams().get("outFileName");
+      Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
+
       VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
       Boolean processUpload = parser.getProcessUpload();
+
+      ODMProcessConfiguration configuration = new ODMProcessConfiguration();
+      configuration.setOutFileNamePrefix(outFileNamePrefix);
+      configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
@@ -114,6 +138,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       job.setUploadTarget(task.getUploadTarget());
       job.setOutFileNamePrefix(outFileNamePrefix);
       job.setProcessUpload(processUpload);
+      job.setConfiguration(configuration);
       job.apply();
 
       JobHistory history = job.start();
@@ -149,7 +174,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-    this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
+    this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getConfiguration());
   }
 
   @Override
@@ -418,7 +443,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
   }
 
-  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
+  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ODMProcessConfiguration configuration)
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
@@ -436,7 +461,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
 
-        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
+        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, configuration, this.getProcessUpload());
       }
       else
       {
@@ -448,7 +473,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         event.setComponent(collectionWorkflowTask.getComponent());
         event.apply();
 
-        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
+        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, this.getProcessUpload(), configuration);
       }
     }
     catch (Throwable t)

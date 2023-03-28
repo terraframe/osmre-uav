@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 275777461)
+@com.runwaysdk.business.ClassSignature(hash = -1151049901)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -52,6 +37,23 @@ public  class ImageryODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Im
   public String getClassType()
   {
     return gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getFilePrefix()
   {
@@ -136,6 +138,9 @@ public  class ImageryODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Im
   public interface ImageryODMProcessingTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.ImageryWorkflowTaskQuery.ImageryWorkflowTaskQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getFilePrefix();
     public com.runwaysdk.query.SelectableChar getFilePrefix(String alias);
     public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel);
@@ -180,6 +185,23 @@ public  class ImageryODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Im
       return this.NE(imageryODMProcessingTask.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getFilePrefix()
   {
     return getFilePrefix(null);
@@ -240,6 +262,9 @@ public  class ImageryODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Im
   public interface ImageryODMProcessingTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.ImageryWorkflowTaskQuery.ImageryWorkflowTaskQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getFilePrefix();
     public com.runwaysdk.query.SelectableChar getFilePrefix(String alias);
     public com.runwaysdk.query.SelectableChar getFilePrefix(String alias, String displayLabel);
@@ -332,6 +357,23 @@ public  class ImageryODMProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Im
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.odm.ImageryODMProcessingTask.CONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getFilePrefix()
   {

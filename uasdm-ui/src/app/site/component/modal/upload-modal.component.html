@@ -57,11 +57,19 @@
           <artifact-page *ngIf="component != null" [edit]="true" [entity]="component" [config]="config"
             (onError)="error($event)"></artifact-page>
 
-          <div class="form-group" *ngIf="processUpload">
-            <label for="outFileName">Output Product Name Prefix</label>
-            <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
-              placeholder="Output product name prefix..." />
-          </div>
+          <ng-container *ngIf="processUpload">
+
+            <div class="form-group">
+              <label for="outFileName">Output Product Name Prefix</label>
+              <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
+                placeholder="Output product name prefix..." />
+            </div>
+
+            <div class="form-group">
+              <boolean-field [(value)]="values.includeGeoLocationFile"
+                label="Use geo location file when processing (if uploaded)"></boolean-field>
+            </div>
+          </ng-container>
         </div>
       </div>
       <ng-container *ngIf="uploadTarget !== 'raw'">
@@ -97,7 +105,8 @@
           <div class="col-md-8">
             <div class="form-group">
               <label for="description">Processing Software</label>
-              <input [(ngModel)]="values.tool" name="tool" type="input" class="form-control" placeholder="Software..." />
+              <input [(ngModel)]="values.tool" name="tool" type="input" class="form-control"
+                placeholder="Software..." />
             </div>
           </div>
         </div>
@@ -267,8 +276,8 @@
             Cancel Upload
           </button>
 
-          <button type="button" (click)="close()" [disabled]="disabled" class="btn btn-default"
-            role="button" aria-disabled="false" style="padding: 4px 18px;">
+          <button type="button" (click)="close()" [disabled]="disabled" class="btn btn-default" role="button"
+            aria-disabled="false" style="padding: 4px 18px;">
             <span class="ui-button-text">Close</span>
           </button>
 

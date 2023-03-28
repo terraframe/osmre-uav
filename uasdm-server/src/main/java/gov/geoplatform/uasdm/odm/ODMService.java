@@ -123,11 +123,11 @@ public class ODMService implements ODMServiceIF
    * tasknewinit
    */
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
+  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     initialize();
 
-    try (CloseablePair parent = ODMFacade.filterAndExtract(images))
+    try (CloseablePair parent = ODMFacade.filterAndExtract(images, configuration))
     {
       if (parent.getItemCount() > 0)
       {

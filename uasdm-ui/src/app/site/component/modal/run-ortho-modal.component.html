@@ -11,17 +11,31 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <label for="outFileName">Output Product Name Prefix</label>
+            <input [(ngModel)]="config.outFileName" name="outFileName" type="input" class="form-control"
+                placeholder="Output product name prefix..." />
+        </div>
+
+        <div class="form-group">
+            <boolean-field [(value)]="config.includeGeoLocationFile"
+                label="Use geo location file when processing (if uploaded)"></boolean-field>
+        </div>
+
+        <hr/>
+
         <h3>Run ortho to process the following products: </h3>
 
         <artifact-page *ngIf="entity != null" [edit]="true" [entity]="entity" [config]="config"
             (onError)="error($event)"></artifact-page>
+
     </div>
     <div class="modal-footer">
         <div class="btn-holder" style="text-align: right;">
             <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
                 aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
-            <button type="button" (click)="confirm()" class="btn btn-primary" role="button"
-                aria-disabled="false" style="padding: 4px 18px;">Submit</button>
+            <button type="button" (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
+                style="padding: 4px 18px;">Submit</button>
         </div>
     </div>
 </div>

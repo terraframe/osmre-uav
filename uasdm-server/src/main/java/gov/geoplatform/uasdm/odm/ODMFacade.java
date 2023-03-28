@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -50,7 +50,7 @@ public class ODMFacade
   {
     private CloseableFile file;
 
-    private int itemCount;
+    private int           itemCount;
 
     public CloseablePair(CloseableFile file, int itemCount)
     {
@@ -104,9 +104,9 @@ public class ODMFacade
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
+  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
-    return service.taskNew(images, isMultispectral);
+    return service.taskNew(images, isMultispectral, configuration);
   }
 
   public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral)
@@ -129,23 +129,23 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static CloseablePair filterAndExtract(ApplicationResource archive) throws IOException
+  public static CloseablePair filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
   {
     String extension = archive.getNameExtension();
 
     if (extension.equalsIgnoreCase("zip"))
     {
-      return filterZipArchive(archive);
+      return filterZipArchive(archive, configuration);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      return filterTarGzArchive(archive);
+      return filterTarGzArchive(archive, configuration);
     }
 
     throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
   }
 
-  private static CloseablePair filterTarGzArchive(ApplicationResource archive) throws IOException
+  private static CloseablePair filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
 
@@ -166,7 +166,8 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if (UasComponentIF.isValidName(filename) && extensions.contains(ext))
+          else if ((UasComponentIF.isValidName(filename) && extensions.contains(ext)) 
+              || (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile()))
           {
             File file = new File(parent, entry.getName());
 
@@ -185,7 +186,7 @@ public class ODMFacade
     return new CloseablePair(parent, itemCount);
   }
 
-  private static CloseablePair filterZipArchive(ApplicationResource archive) throws IOException
+  private static CloseablePair filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
@@ -205,7 +206,8 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if (UasComponentIF.isValidName(filename) && extensions.contains(ext))
+          if ((UasComponentIF.isValidName(filename) && extensions.contains(ext)) 
+              || (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile()))
           {
             int len;
 
