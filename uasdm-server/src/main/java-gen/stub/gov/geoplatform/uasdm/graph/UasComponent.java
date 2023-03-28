@@ -435,7 +435,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       {
         ortho.put(object.toJSON());
       }
-      else if (object.getKey().contains("/" + ImageryComponent.PTCLOUD + "/") && object.getKey().toUpperCase().endsWith(".LAZ"))
+      else if (object.getKey().contains("/" + ImageryComponent.PTCLOUD + "/") && 
+          (object.getKey().toUpperCase().endsWith(".LAZ") || object.getKey().toUpperCase().endsWith(".LAS")))
       {
         ptcloud.put(object.toJSON());
       }

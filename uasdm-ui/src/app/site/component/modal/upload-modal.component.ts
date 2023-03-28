@@ -154,6 +154,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 			}
 			else if (this.uploadTarget === 'ptcloud') {
 				extensions.push('laz')
+				extensions.push('las')
 			}
 			else {
 				extensions.push('zip');

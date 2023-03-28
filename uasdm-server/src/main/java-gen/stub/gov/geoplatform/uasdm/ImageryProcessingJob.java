@@ -394,7 +394,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     else if (uploadTarget.equals(ImageryComponent.PTCLOUD))
     {
-      return Arrays.asList("laz");
+      return Arrays.asList("laz", "las");
     }
     else if (uploadTarget.equals(ImageryComponent.VIDEO))
     {
