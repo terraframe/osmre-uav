@@ -69,6 +69,27 @@
               <boolean-field [(value)]="values.includeGeoLocationFile"
                 label="Use geo location file when processing (if uploaded)"></boolean-field>
             </div>
+
+            <div *ngIf="values.includeGeoLocationFile">
+              <p>Geo location file must be called <code>geo.txt</code></p>
+              <p>File format:</p>
+              <pre>
+                  <code>
+                  projection
+                  image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
+                  ...
+                  </code>
+              </pre>
+              <p>Example:</p>
+              <pre>
+                  <code>
+                  EPSG:4326
+                  DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
+                  DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
+                  </code>        
+              </pre>
+            </div>
+
           </ng-container>
         </div>
       </div>
