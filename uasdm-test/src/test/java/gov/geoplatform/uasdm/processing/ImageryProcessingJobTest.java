@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,7 +45,6 @@ import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.test.TestDataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 import gov.geoplatform.uasdm.util.SchedulerTestUtils;
-import junit.framework.Assert;
 import net.geoprism.GeoprismUser;
 
 public class ImageryProcessingJobTest

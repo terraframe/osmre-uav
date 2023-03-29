@@ -28,7 +28,7 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SensorTest
 {
