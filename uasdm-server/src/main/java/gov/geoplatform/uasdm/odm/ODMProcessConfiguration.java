@@ -1,7 +1,10 @@
 package gov.geoplatform.uasdm.odm;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import gov.geoplatform.uasdm.view.RequestParserIF;
 
 public class ODMProcessConfiguration
 {
@@ -55,8 +58,38 @@ public class ODMProcessConfiguration
     JsonObject object = JsonParser.parseString(jsonString).getAsJsonObject();
 
     ODMProcessConfiguration configuration = new ODMProcessConfiguration();
-    configuration.setIncludeGeoLocationFile(object.get("includeGeoLocationFile").getAsBoolean());
-    configuration.setOutFileNamePrefix(object.get("outFileNamePrefix").getAsString());
+
+    if (object.has("includeGeoLocationFile"))
+    {
+      JsonElement element = object.get("includeGeoLocationFile");
+
+      if (!element.isJsonNull())
+      {
+        configuration.setIncludeGeoLocationFile(object.get("includeGeoLocationFile").getAsBoolean());
+      }
+    }
+
+    if (object.has("outFileNamePrefix"))
+    {
+      JsonElement element = object.get("outFileNamePrefix");
+
+      if (!element.isJsonNull())
+      {
+        configuration.setOutFileNamePrefix(element.getAsString());
+      }
+    }
+
+    return configuration;
+  }
+
+  public static ODMProcessConfiguration parse(RequestParserIF parser)
+  {
+    String outFileNamePrefix = parser.getCustomParams().get("outFileName");
+    Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
+
+    ODMProcessConfiguration configuration = new ODMProcessConfiguration();
+    configuration.setOutFileNamePrefix(outFileNamePrefix);
+    configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
 
     return configuration;
   }
