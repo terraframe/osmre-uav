@@ -59,7 +59,8 @@
                 [placeholder]="page.selection.type + ' name...'" required />
             </div>
             <div class="col-md-2">
-              <button *ngIf="!hasField('collectionDate')" type="button btn btn-primary" class="btn btn-primary" (click)="setIsNew(false)">
+              <button *ngIf="!hasField('collectionDate')" type="button btn btn-primary" class="btn btn-primary"
+                (click)="setIsNew(false)">
                 Cancel
               </button>
             </div>
@@ -69,6 +70,41 @@
               <label for="platform" style="margin-top: 10px;">Collection Date:</label>
               <input [(ngModel)]="page.selection.collectionDate" name="collectionDate" type="date" class="form-control"
                 required />
+            </div>
+          </div>
+
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('shortName')">
+            <div class="col-md-8">
+              <label for="shortName" style="margin-top: 10px;">Short Name:</label>
+              <input [(ngModel)]="page.selection.shortName" name="shortName" type="text" class="form-control"
+                maxlength="8" required />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('restricted')">
+            <div class="col-md-8">
+              <boolean-field [(value)]="page.selection.restricted" label="Restricted">
+              </boolean-field>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('sunsetDate')">
+            <div class="col-md-8">
+              <label for="sunsetDate" style="margin-top: 10px;">Sunset Date:</label>
+              <input [(ngModel)]="page.selection.sunsetDate" name="sunsetDate" type="date" class="form-control" />
+            </div>
+          </div>
+
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('contractingOffice')">
+            <div class="col-md-8">
+              <label for="contractingOffice" style="margin-top: 10px;">Contracting Office:</label>
+              <input [(ngModel)]="page.selection.contractingOffice" name="contractingOffice" type="text"
+                class="form-control" maxlength="50" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('vendor')">
+            <div class="col-md-8">
+              <label for="vendor" style="margin-top: 10px;">Vendor:</label>
+              <input [(ngModel)]="page.selection.vendor" name="vendor" type="text" class="form-control"
+                maxlength="50" />
             </div>
           </div>
 
@@ -102,8 +138,8 @@
             <span class="ui-button-text">Close</span>
           </button>
 
-          <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled"
-            class="btn btn-secondary" (click)="handleBackPage()">
+          <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled" class="btn btn-secondary"
+            (click)="handleBackPage()">
             <i class="icon-upload icon-white"></i>
             Back
           </button>

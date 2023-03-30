@@ -8,6 +8,7 @@ import { ErrorHandler } from '@shared/component';
 
 import { SiteEntity, AttributeType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
+import { MetadataService } from '@site/service/metadata.service';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class EntityModalComponent implements OnInit {
      */
 	public onNodeChange: Subject<SiteEntity>;
 
-	constructor(private service: ManagementService, public bsModalRef: BsModalRef) { }
+	constructor(private service: ManagementService, public bsModalRef: BsModalRef, private metadataService: MetadataService) { }
 
 	ngOnInit(): void {
 		this.onNodeChange = new Subject();
@@ -100,5 +101,10 @@ export class EntityModalComponent implements OnInit {
 	error(err: HttpErrorResponse): void {
 	  this.message = ErrorHandler.getMessageFromError(err);
 	}
+
+	hasField(fieldName: string): boolean {
+		return this.metadataService.hasExtraField(this.entity.type, fieldName);
+	}	
+
 
 }

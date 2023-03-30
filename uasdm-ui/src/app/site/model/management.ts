@@ -55,6 +55,11 @@ export class SiteEntity {
 	description?: string;
 	tool?: string;
 	hasAllZip?: boolean;
+	shortName?: string;
+	restricted?: boolean;
+	sunsetDate?: string;
+	contractingOffice?: string;
+	vendor?: string;
 }
 
 export class CollectionArtifacts {
@@ -84,6 +89,11 @@ export class Selection {
 	label: string;
 	uav?: string;
 	sensor?: string;
+	shortName?: string;
+	restricted?: boolean;
+	sunsetDate?: string;
+	contractingOffice?: string;
+	vendor?: string;
 	collectionDate?: string;
 	pointOfContact?: {
 		name: string,
