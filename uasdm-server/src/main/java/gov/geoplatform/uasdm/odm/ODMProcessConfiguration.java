@@ -1,5 +1,9 @@
 package gov.geoplatform.uasdm.odm;
 
+import java.math.BigDecimal;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -8,20 +12,24 @@ import gov.geoplatform.uasdm.view.RequestParserIF;
 
 public class ODMProcessConfiguration
 {
-  private boolean includeGeoLocationFile;
+  private boolean    includeGeoLocationFile;
 
-  private String  outFileNamePrefix;
+  private String     outFileNamePrefix;
+
+  private BigDecimal resolution;
 
   public ODMProcessConfiguration()
   {
     this.includeGeoLocationFile = false;
-    this.outFileNamePrefix = null;
+    this.outFileNamePrefix = "";
+    this.resolution = new BigDecimal(5);
   }
 
   public ODMProcessConfiguration(String outFileNamePrefix)
   {
     this.includeGeoLocationFile = false;
     this.outFileNamePrefix = outFileNamePrefix;
+    this.resolution = new BigDecimal(5);
   }
 
   public boolean isIncludeGeoLocationFile()
@@ -44,11 +52,22 @@ public class ODMProcessConfiguration
     this.outFileNamePrefix = outFileNamePrefix;
   }
 
+  public BigDecimal getResolution()
+  {
+    return resolution;
+  }
+
+  public void setResolution(BigDecimal resolution)
+  {
+    this.resolution = resolution;
+  }
+
   public JsonObject toJson()
   {
     JsonObject object = new JsonObject();
     object.addProperty("includeGeoLocationFile", this.includeGeoLocationFile);
     object.addProperty("outFileNamePrefix", this.outFileNamePrefix);
+    object.addProperty("resolution", this.resolution.toString());
 
     return object;
   }
@@ -79,17 +98,40 @@ public class ODMProcessConfiguration
       }
     }
 
+    if (object.has("resolution"))
+    {
+      JsonElement element = object.get("resolution");
+
+      if (!element.isJsonNull())
+      {
+        configuration.setResolution(new BigDecimal(element.getAsString()));
+      }
+    }
+
     return configuration;
   }
 
   public static ODMProcessConfiguration parse(RequestParserIF parser)
   {
-    String outFileNamePrefix = parser.getCustomParams().get("outFileName");
-    Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
-
     ODMProcessConfiguration configuration = new ODMProcessConfiguration();
-    configuration.setOutFileNamePrefix(outFileNamePrefix);
-    configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get("outFileName")))
+    {
+      String outFileNamePrefix = parser.getCustomParams().get("outFileName");
+      configuration.setOutFileNamePrefix(outFileNamePrefix);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get("includeGeoLocationFile")))
+    {
+      Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
+      configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get("resolution")))
+    {
+      BigDecimal resolution = new BigDecimal(parser.getCustomParams().get("resolution"));
+      configuration.setResolution(resolution);
+    }
 
     return configuration;
   }

@@ -22,7 +22,8 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         processDem: false,
         processOrtho: false,
         includeGeoLocationFile: false,
-        outFileName: ''
+        outFileName: '',
+        resolution: 5
     };
 
     /*

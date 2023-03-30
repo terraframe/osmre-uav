@@ -36,7 +36,7 @@ public interface ODMServiceIF
    */
   NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration);
 
-  NewResponse taskNewInit(int imagesCount, boolean isMultispectral);
+  NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration);
 
   ODMResponse taskNewUpload(String uuid, ApplicationResource image);
 

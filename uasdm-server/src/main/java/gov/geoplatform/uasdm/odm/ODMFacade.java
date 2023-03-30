@@ -109,9 +109,9 @@ public class ODMFacade
     return service.taskNew(images, isMultispectral, configuration);
   }
 
-  public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral)
+  public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
-    return service.taskNewInit(imagesCount, isMultispectral);
+    return service.taskNewInit(imagesCount, isMultispectral, configuration);
   }
 
   public static ODMResponse taskNewUpload(String uuid, ApplicationResource image)
@@ -166,8 +166,7 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if ((UasComponentIF.isValidName(filename) && extensions.contains(ext)) 
-              || (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile()))
+          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ))
           {
             File file = new File(parent, entry.getName());
 
@@ -206,8 +205,7 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if ((UasComponentIF.isValidName(filename) && extensions.contains(ext)) 
-              || (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile()))
+          if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ))
           {
             int len;
 

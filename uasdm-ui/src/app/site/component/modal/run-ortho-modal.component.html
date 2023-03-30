@@ -18,6 +18,13 @@
         </div>
 
         <div class="form-group">
+            <label for="outFileName">Resolution (cm)</label>
+            <input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control"
+                placeholder="5" />
+        </div>
+
+
+        <div class="form-group">
             <boolean-field [(value)]="config.includeGeoLocationFile"
                 label="Use geo location file when processing (if uploaded)"></boolean-field>
         </div>
@@ -31,7 +38,7 @@
                 image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
                 ...
                 </code>
-            </pre>            
+            </pre>
             <p>Example:</p>
             <pre>
                 <code>
@@ -39,10 +46,10 @@
                 DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
                 DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
                 </code>        
-            </pre>            
+            </pre>
         </div>
 
-        <hr/>
+        <hr />
 
         <h3>Run ortho to process the following products: </h3>
 
