@@ -1,32 +1,37 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.business.rbac.Operation;
 import com.runwaysdk.session.ReadPermissionException;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
@@ -77,7 +82,16 @@ public abstract class Converter
 
     for (AttributeType attribute : attributes)
     {
-      siteItem.setValue(attribute.getName(), uasComponent.getObjectValue(attribute.getName()));
+      if (attribute instanceof AttributeDateType)
+      {
+        Date date = uasComponent.getObjectValue(attribute.getName());
+
+        siteItem.setValue(attribute.getName(), Util.formatIso8601(date, false));
+      }
+      else
+      {
+        siteItem.setValue(attribute.getName(), uasComponent.getObjectValue(attribute.getName()));
+      }
     }
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
@@ -88,7 +102,6 @@ public abstract class Converter
       siteItem.setAttributes(attributes);
     }
 
-
     return siteItem;
   }
 
@@ -98,7 +111,22 @@ public abstract class Converter
 
     for (AttributeType attribute : attributes)
     {
-      if (! ( attribute instanceof AttributePointType ))
+      if ( ( attribute instanceof AttributeDateType ))
+      {
+        String dateStr = (String) siteItem.getValue(attribute.getName());
+
+        try
+        {
+          uasComponent.setValue(attribute.getName(), Util.parseIso8601(dateStr, false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+      else if (! ( attribute instanceof AttributePointType ))
       {
         uasComponent.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
       }
@@ -238,9 +266,16 @@ public abstract class Converter
     final String s3Loc = components.size() > 0 ? components.get(components.size() - 1).getS3location() : "";
     boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
-    
-//    boolean hasAllZip = product.getDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
-    SiteObject allZip = ((Product) product).getAllZip(); // The ProductHasDocument relationship for the all zip is corrupt so we have to fetch it this way.
+
+    // boolean hasAllZip = product.getDocuments().stream().filter(doc ->
+    // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
+    SiteObject allZip = ( (Product) product ).getAllZip(); // The
+                                                           // ProductHasDocument
+                                                           // relationship for
+                                                           // the all zip is
+                                                           // corrupt so we have
+                                                           // to fetch it this
+                                                           // way.
     view.setHasAllZip(allZip != null);
 
     view.setComponents(list);
@@ -248,7 +283,7 @@ public abstract class Converter
     view.setName(product.getName());
     view.setPublished(product.isPublished());
 
-    List<DocumentIF> mappables = ((Product)product).getMappableDocuments();
+    List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
     view.setMappables(mappables);
 
     if (product.getImageKey() == null || product.getImageKey().length() == 0)
@@ -260,17 +295,17 @@ public abstract class Converter
     {
       view.setImageKey(product.getImageKey());
     }
-    
-    Optional<DocumentIF> ortho = ((Product)product).getMappableOrtho();
+
+    Optional<DocumentIF> ortho = ( (Product) product ).getMappableOrtho();
     if (ortho.isPresent())
     {
-      view.setOrthoKey(( (Document) ortho.get() ).getS3location());
+      view.setOrthoKey( ( (Document) ortho.get() ).getS3location());
     }
-    
-    Optional<DocumentIF> dem = ((Product)product).getMappableDEM();
+
+    Optional<DocumentIF> dem = ( (Product) product ).getMappableDEM();
     if (dem.isPresent())
     {
-      view.setDemKey(( (Document) dem.get() ).getS3location());
+      view.setDemKey( ( (Document) dem.get() ).getS3location());
     }
 
     if (mappables.size() > 0)

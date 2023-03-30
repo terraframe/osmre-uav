@@ -43,6 +43,12 @@ export class MetadataService {
         if ( type === 'Collection' ) {
             return ( fieldName === 'collectionDate' || fieldName === 'sensor' || fieldName === 'uav' );
         }
+        else if ( type === 'Project' ) {
+            return ( fieldName === 'shortName' || fieldName === 'restricted' || fieldName === 'sunsetDate' );
+        }
+        else if ( type === 'Mission' ) {
+            return ( fieldName === 'contractingOffice' || fieldName === 'vendor' );
+        }
 
         return false;
     }

@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 1315485387)
+@com.runwaysdk.business.ClassSignature(hash = -1457146611)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,11 +11,63 @@ package gov.geoplatform.uasdm.graph;
 public abstract class ProjectBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Project";
-  private static final long serialVersionUID = 1315485387;
+  public final static java.lang.String RESTRICTED = "restricted";
+  public final static java.lang.String SHORTNAME = "shortName";
+  public final static java.lang.String SUNSETDATE = "sunsetDate";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1457146611;
   
   public ProjectBase()
   {
     super();
+  }
+  
+  public Boolean getRestricted()
+  {
+    return (Boolean) this.getObjectValue(RESTRICTED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getRestrictedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Project.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(RESTRICTED);
+  }
+  
+  public void setRestricted(Boolean value)
+  {
+    this.setValue(RESTRICTED, value);
+  }
+  
+  public String getShortName()
+  {
+    return (String) this.getObjectValue(SHORTNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getShortNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Project.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(SHORTNAME);
+  }
+  
+  public void setShortName(String value)
+  {
+    this.setValue(SHORTNAME, value);
+  }
+  
+  public java.util.Date getSunsetDate()
+  {
+    return (java.util.Date) this.getObjectValue(SUNSETDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getSunsetDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Project.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(SUNSETDATE);
+  }
+  
+  public void setSunsetDate(java.util.Date value)
+  {
+    this.setValue(SUNSETDATE, value);
   }
   
   protected String getDeclaredType()
@@ -38,14 +75,30 @@ public abstract class ProjectBase extends gov.geoplatform.uasdm.graph.UasCompone
     return CLASS;
   }
   
-  public void addProjectHasMissionChild(gov.geoplatform.uasdm.graph.Mission mission)
+  public com.runwaysdk.business.graph.EdgeObject addProjectHasImageryChild(gov.geoplatform.uasdm.graph.Imagery imagery)
   {
-    super.addChild(mission, "gov.geoplatform.uasdm.graph.ProjectHasMission");
+    return super.addChild(imagery, "gov.geoplatform.uasdm.graph.ProjectHasImagery");
+  }
+  
+  public void removeProjectHasImageryChild(gov.geoplatform.uasdm.graph.Imagery imagery)
+  {
+    super.removeChild(imagery, "gov.geoplatform.uasdm.graph.ProjectHasImagery");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.Imagery> getProjectHasImageryChildImagerys()
+  {
+    return super.getChildren("gov.geoplatform.uasdm.graph.ProjectHasImagery",gov.geoplatform.uasdm.graph.Imagery.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addProjectHasMissionChild(gov.geoplatform.uasdm.graph.Mission mission)
+  {
+    return super.addChild(mission, "gov.geoplatform.uasdm.graph.ProjectHasMission");
   }
   
   public void removeProjectHasMissionChild(gov.geoplatform.uasdm.graph.Mission mission)
   {
-    super.addChild(mission, "gov.geoplatform.uasdm.graph.ProjectHasMission");
+    super.removeChild(mission, "gov.geoplatform.uasdm.graph.ProjectHasMission");
   }
   
   @SuppressWarnings("unchecked")
@@ -54,14 +107,14 @@ public abstract class ProjectBase extends gov.geoplatform.uasdm.graph.UasCompone
     return super.getChildren("gov.geoplatform.uasdm.graph.ProjectHasMission",gov.geoplatform.uasdm.graph.Mission.class);
   }
   
-  public void addSiteHasProjectParent(gov.geoplatform.uasdm.graph.Site site)
+  public com.runwaysdk.business.graph.EdgeObject addSiteHasProjectParent(gov.geoplatform.uasdm.graph.Site site)
   {
-    super.addParent(site, "gov.geoplatform.uasdm.graph.SiteHasProject");
+    return super.addParent(site, "gov.geoplatform.uasdm.graph.SiteHasProject");
   }
   
   public void removeSiteHasProjectParent(gov.geoplatform.uasdm.graph.Site site)
   {
-    super.addParent(site, "gov.geoplatform.uasdm.graph.SiteHasProject");
+    super.removeParent(site, "gov.geoplatform.uasdm.graph.SiteHasProject");
   }
   
   @SuppressWarnings("unchecked")

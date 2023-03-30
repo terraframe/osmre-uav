@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -73,6 +73,7 @@ import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
@@ -99,9 +100,9 @@ public class ProjectManagementService
   {
     private ODMProcessingTask task;
 
-    private CollectionIF collection;
+    private CollectionIF      collection;
 
-    private Set<String> excludes;
+    private Set<String>       excludes;
 
     public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
@@ -426,7 +427,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho)
+  public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho, String configuration)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
 
@@ -440,6 +441,7 @@ public class ProjectManagementService
     task.setProcessPtcloud(processOrtho);
     task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
     task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+    task.setConfiguration(ODMProcessConfiguration.parse(configuration));
     task.apply();
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
@@ -685,38 +687,38 @@ public class ProjectManagementService
       return component.download(key);
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public InputStream downloadProductPreview(String sessionId, String productId, String artifactName)
   {
     if (artifactName.equals("ortho"))
     {
       Product product = Product.get(productId);
-      
+
       Optional<DocumentIF> op = product.getMappableOrtho();
-      
+
       if (op.isPresent())
       {
         Document document = (Document) op.get();
-    
+
         String s3url = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-        
+
         InputStream cogImage = CogTiffS3PreviewReader.read(s3url, 2);
-        
+
         if (cogImage != null)
         {
           return cogImage;
         }
       }
-      
+
       Optional<DocumentIF> orthoPng = product.getOrthoPng();
-      
+
       if (orthoPng.isPresent())
       {
         return orthoPng.get().download().getObjectContent();
       }
     }
-    
+
     throw new UnsupportedOperationException();
   }
 

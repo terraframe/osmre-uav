@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -246354184)
+@com.runwaysdk.business.ClassSignature(hash = -1066215196)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,11 +11,46 @@ package gov.geoplatform.uasdm.graph;
 public abstract class MissionBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Mission";
-  private static final long serialVersionUID = -246354184;
+  public final static java.lang.String CONTRACTINGOFFICE = "contractingOffice";
+  public final static java.lang.String VENDOR = "vendor";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1066215196;
   
   public MissionBase()
   {
     super();
+  }
+  
+  public String getContractingOffice()
+  {
+    return (String) this.getObjectValue(CONTRACTINGOFFICE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getContractingOfficeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Mission.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(CONTRACTINGOFFICE);
+  }
+  
+  public void setContractingOffice(String value)
+  {
+    this.setValue(CONTRACTINGOFFICE, value);
+  }
+  
+  public String getVendor()
+  {
+    return (String) this.getObjectValue(VENDOR);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getVendorMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Mission.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(VENDOR);
+  }
+  
+  public void setVendor(String value)
+  {
+    this.setValue(VENDOR, value);
   }
   
   protected String getDeclaredType()
@@ -38,14 +58,14 @@ public abstract class MissionBase extends gov.geoplatform.uasdm.graph.UasCompone
     return CLASS;
   }
   
-  public void addMissionHasCollectionChild(gov.geoplatform.uasdm.graph.Collection collection)
+  public com.runwaysdk.business.graph.EdgeObject addMissionHasCollectionChild(gov.geoplatform.uasdm.graph.Collection collection)
   {
-    super.addChild(collection, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    return super.addChild(collection, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   public void removeMissionHasCollectionChild(gov.geoplatform.uasdm.graph.Collection collection)
   {
-    super.addChild(collection, "gov.geoplatform.uasdm.graph.MissionHasCollection");
+    super.removeChild(collection, "gov.geoplatform.uasdm.graph.MissionHasCollection");
   }
   
   @SuppressWarnings("unchecked")
@@ -54,14 +74,14 @@ public abstract class MissionBase extends gov.geoplatform.uasdm.graph.UasCompone
     return super.getChildren("gov.geoplatform.uasdm.graph.MissionHasCollection",gov.geoplatform.uasdm.graph.Collection.class);
   }
   
-  public void addProjectHasMissionParent(gov.geoplatform.uasdm.graph.Project project)
+  public com.runwaysdk.business.graph.EdgeObject addProjectHasMissionParent(gov.geoplatform.uasdm.graph.Project project)
   {
-    super.addParent(project, "gov.geoplatform.uasdm.graph.ProjectHasMission");
+    return super.addParent(project, "gov.geoplatform.uasdm.graph.ProjectHasMission");
   }
   
   public void removeProjectHasMissionParent(gov.geoplatform.uasdm.graph.Project project)
   {
-    super.addParent(project, "gov.geoplatform.uasdm.graph.ProjectHasMission");
+    super.removeParent(project, "gov.geoplatform.uasdm.graph.ProjectHasMission");
   }
   
   @SuppressWarnings("unchecked")

@@ -35,7 +35,7 @@ import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockIndex.IndexAction;
 import gov.geoplatform.uasdm.mock.MockIndex.IndexActionType;
 import gov.geoplatform.uasdm.test.Area51DataSet;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class IndexServiceTest
 {

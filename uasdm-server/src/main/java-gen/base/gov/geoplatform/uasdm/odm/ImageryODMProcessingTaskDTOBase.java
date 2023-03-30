@@ -1,25 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1044260684)
+@com.runwaysdk.business.ClassSignature(hash = 629255132)
 public abstract class ImageryODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus.ImageryWorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ImageryODMProcessingTask";
-  private static final long serialVersionUID = 1044260684;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 629255132;
   
   protected ImageryODMProcessingTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -42,9 +28,47 @@ public abstract class ImageryODMProcessingTaskDTOBase extends gov.geoplatform.ua
     return CLASS;
   }
   
+  public static java.lang.String CONFIGURATIONJSON = "configurationJson";
   public static java.lang.String FILEPREFIX = "filePrefix";
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
+  public String getConfigurationJson()
+  {
+    return getValue(CONFIGURATIONJSON);
+  }
+  
+  public void setConfigurationJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(CONFIGURATIONJSON, "");
+    }
+    else
+    {
+      setValue(CONFIGURATIONJSON, value);
+    }
+  }
+  
+  public boolean isConfigurationJsonWritable()
+  {
+    return isWritable(CONFIGURATIONJSON);
+  }
+  
+  public boolean isConfigurationJsonReadable()
+  {
+    return isReadable(CONFIGURATIONJSON);
+  }
+  
+  public boolean isConfigurationJsonModified()
+  {
+    return isModified(CONFIGURATIONJSON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getConfigurationJsonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(CONFIGURATIONJSON).getAttributeMdDTO();
+  }
+  
   public String getFilePrefix()
   {
     return getValue(FILEPREFIX);

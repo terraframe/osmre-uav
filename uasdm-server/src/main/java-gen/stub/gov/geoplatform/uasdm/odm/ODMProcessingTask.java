@@ -1,23 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -36,11 +37,28 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 {
   private static final long serialVersionUID = -90821820;
 
-  private static Logger logger = LoggerFactory.getLogger(ODMStatusServer.class);
+  private static Logger     logger           = LoggerFactory.getLogger(ODMStatusServer.class);
 
   public ODMProcessingTask()
   {
     super();
+  }
+
+  public ODMProcessConfiguration getConfiguration()
+  {
+    String json = this.getConfigurationJson();
+
+    if (!StringUtils.isEmpty(json))
+    {
+      return ODMProcessConfiguration.parse(json);
+    }
+
+    return new ODMProcessConfiguration();
+  }
+
+  public void setConfiguration(ODMProcessConfiguration configuration)
+  {
+    this.setConfigurationJson(configuration.toJson().toString());
   }
 
   public String getImageryComponentOid()
@@ -84,7 +102,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
       if (DevProperties.runOrtho())
       {
-        resp = ODMFacade.taskNew(images, isMultispectral);
+        resp = ODMFacade.taskNew(images, isMultispectral, this.getConfiguration());
       }
       else
       {

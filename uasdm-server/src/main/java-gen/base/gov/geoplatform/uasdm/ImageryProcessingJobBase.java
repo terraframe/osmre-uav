@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1988648387)
+@com.runwaysdk.business.ClassSignature(hash = -705802859)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,16 +11,46 @@ package gov.geoplatform.uasdm;
 public abstract class ImageryProcessingJobBase extends com.runwaysdk.system.scheduler.ExecutableJob
 {
   public final static String CLASS = "gov.geoplatform.uasdm.ImageryProcessingJob";
-  public static java.lang.String IMAGERYFILE = "imageryFile";
-  public static java.lang.String OUTFILENAMEPREFIX = "outFileNamePrefix";
-  public static java.lang.String PROCESSUPLOAD = "processUpload";
-  public static java.lang.String UPLOADTARGET = "uploadTarget";
-  public static java.lang.String WORKFLOWTASK = "workflowTask";
-  private static final long serialVersionUID = -1988648387;
+  public final static java.lang.String CONFIGURATIONJSON = "configurationJson";
+  public final static java.lang.String IMAGERYFILE = "imageryFile";
+  public final static java.lang.String OUTFILENAMEPREFIX = "outFileNamePrefix";
+  public final static java.lang.String PROCESSUPLOAD = "processUpload";
+  public final static java.lang.String UPLOADTARGET = "uploadTarget";
+  public final static java.lang.String WORKFLOWTASK = "workflowTask";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -705802859;
   
   public ImageryProcessingJobBase()
   {
     super();
+  }
+  
+  public String getConfigurationJson()
+  {
+    return getValue(CONFIGURATIONJSON);
+  }
+  
+  public void validateConfigurationJson()
+  {
+    this.validateAttribute(CONFIGURATIONJSON);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getConfigurationJsonMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.ImageryProcessingJob.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(CONFIGURATIONJSON);
+  }
+  
+  public void setConfigurationJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(CONFIGURATIONJSON, "");
+    }
+    else
+    {
+      setValue(CONFIGURATIONJSON, value);
+    }
   }
   
   public String getImageryFile()

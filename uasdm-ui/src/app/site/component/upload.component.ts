@@ -49,7 +49,10 @@ export class UploadComponent implements OnInit {
     /* 
      * Form values
      */
-    values = { create: false } as UploadForm;
+    values: UploadForm = {
+        create: false,
+        includeGeoLocationFile: false
+    };
 
     /*
      * FineUploader for uploading large files

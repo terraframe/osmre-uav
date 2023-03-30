@@ -228,9 +228,14 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "processPtcloud") Boolean processPtcloud, @RequestParamter(name = "processDem") Boolean processDem, @RequestParamter(name = "processOrtho") Boolean processOrtho)
+  public ResponseIF runOrtho(ClientRequestIF request, 
+      @RequestParamter(name = "id") String id, 
+      @RequestParamter(name = "processPtcloud") Boolean processPtcloud, 
+      @RequestParamter(name = "processDem") Boolean processDem, 
+      @RequestParamter(name = "processOrtho") Boolean processOrtho,
+      @RequestParamter(name = "configuration") String configuration)
   {
-    this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho);
+    this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho, configuration);
 
     return new RestResponse();
   }

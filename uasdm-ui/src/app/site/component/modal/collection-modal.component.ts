@@ -279,7 +279,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			this.processRunning = true;
 			this.showOrthoRerunMessage = true;
 
-			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho).then(() => {
+			const configuration = {
+				includeGeoLocationFile: data.includeGeoLocationFile,
+				outFileNamePrefix: data.outFileName
+			};
+
+			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {
 				this.processRunning = false;
 
 				setTimeout(() => {

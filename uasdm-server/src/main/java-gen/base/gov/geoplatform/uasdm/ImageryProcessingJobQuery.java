@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1253667750)
+@com.runwaysdk.business.ClassSignature(hash = 447475724)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -52,6 +37,23 @@ public  class ImageryProcessingJobQuery extends com.runwaysdk.system.scheduler.E
   public String getClassType()
   {
     return gov.geoplatform.uasdm.ImageryProcessingJob.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.system.VaultFileQuery.VaultFileQueryReferenceIF getImageryFile()
   {
@@ -200,6 +202,9 @@ public  class ImageryProcessingJobQuery extends com.runwaysdk.system.scheduler.E
   public interface ImageryProcessingJobQueryReferenceIF extends com.runwaysdk.system.scheduler.ExecutableJobQuery.ExecutableJobQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix();
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix(String alias);
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix(String alias, String displayLabel);
@@ -247,6 +252,23 @@ public  class ImageryProcessingJobQuery extends com.runwaysdk.system.scheduler.E
       return this.NE(imageryProcessingJob.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, displayLabel);
+
+  }
   public com.runwaysdk.system.VaultFileQuery.VaultFileQueryReferenceIF getImageryFile()
   {
     return getImageryFile(null);
@@ -359,6 +381,9 @@ public  class ImageryProcessingJobQuery extends com.runwaysdk.system.scheduler.E
   public interface ImageryProcessingJobQueryMultiReferenceIF extends com.runwaysdk.system.scheduler.ExecutableJobQuery.ExecutableJobQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix();
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix(String alias);
     public com.runwaysdk.query.SelectableChar getOutFileNamePrefix(String alias, String displayLabel);
@@ -454,6 +479,23 @@ public  class ImageryProcessingJobQuery extends com.runwaysdk.system.scheduler.E
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getConfigurationJson()
+  {
+    return getConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.ImageryProcessingJob.CONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.system.VaultFileQuery.VaultFileQueryReferenceIF getImageryFile()
   {

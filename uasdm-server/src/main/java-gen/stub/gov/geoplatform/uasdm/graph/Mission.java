@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -27,6 +27,8 @@ import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.view.AdminCondition;
+import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -64,6 +66,16 @@ public class Mission extends MissionBase implements MissionIF
   public String getSolrNameField()
   {
     return "missionName";
+  }
+
+  @Override
+  public List<AttributeType> attributes()
+  {
+    List<AttributeType> attributes = super.attributes();
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Mission.CONTRACTINGOFFICE)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Mission.VENDOR)));
+
+    return attributes;
   }
 
   @Override
@@ -153,7 +165,8 @@ public class Mission extends MissionBase implements MissionIF
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.MISSION_HAS_COLLECTION);
 
-//    return "OUT('" + mdEdge.getDBClassName() + "')." + Collection.expandClause();
+    // return "OUT('" + mdEdge.getDBClassName() + "')." +
+    // Collection.expandClause();
     return "OUT('" + mdEdge.getDBClassName() + "')";
   }
 }

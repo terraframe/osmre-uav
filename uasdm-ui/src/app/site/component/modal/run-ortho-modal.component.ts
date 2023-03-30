@@ -18,10 +18,12 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
     message: string = null;
     entity: SiteEntity = null;
     config = {
-		processPtcloud: false,
-		processDem: false,
-		processOrtho: false
-	};
+        processPtcloud: false,
+        processDem: false,
+        processOrtho: false,
+        includeGeoLocationFile: false,
+        outFileName: ''
+    };
 
     /*
      * Called on confirm

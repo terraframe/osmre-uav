@@ -90,7 +90,7 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private service: ManagementService, private modalService: BsModalService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
+	constructor(private service: ManagementService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
 	}
 
 

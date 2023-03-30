@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -39,6 +39,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
@@ -60,7 +61,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationFileResource appRes, String outFileNamePrefix, Boolean processUpload)
+  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationFileResource appRes, ODMProcessConfiguration configuration, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -93,12 +94,12 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       // folder.
       if (processUpload && ( uploadTarget != null && uploadTarget.equals(ImageryComponent.RAW) ))
       {
-        startODMProcessing(appRes, task, outFileNamePrefix);
+        startODMProcessing(appRes, task, configuration);
       }
     }
   }
 
-  private void startODMProcessing(ApplicationFileResource appRes, ImageryWorkflowTask uploadTask, String outFileNamePrefix)
+  private void startODMProcessing(ApplicationFileResource appRes, ImageryWorkflowTask uploadTask, ODMProcessConfiguration configuration)
   {
     final ImageryIF imagery = uploadTask.getImageryInstance();
 
@@ -109,7 +110,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     task.setStatus(ODMStatus.RUNNING.getLabel());
     task.setTaskLabel("UAV data orthorectification for imagery [" + imagery.getName() + "]");
     task.setMessage("The images uploaded to ['" + imagery.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilePrefix(outFileNamePrefix);
+    task.setConfiguration(configuration);
     task.apply();
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
@@ -123,9 +124,9 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     {
       File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
 
-      try
+      try (ZipFile zipFile = new ZipFile(zip.getUnderlyingFile()))
       {
-        new ZipFile(zip.getUnderlyingFile()).extractAll(parentFolder.getAbsolutePath());
+        zipFile.extractAll(parentFolder.getAbsolutePath());
 
         File[] files = parentFolder.listFiles(new FilenameFilter()
         {
