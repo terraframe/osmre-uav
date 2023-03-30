@@ -15,11 +15,14 @@
 # limitations under the License.
 #
 
+#### IMPORTANT ####
+# This file currently serves more as documentation as to how one would deploy. It cannot currently be run in it's entirety, you need to intelligently
+#   pick and choose which commands to run based on what it is that you're doing. At some point this script will probably be converted into ansible.
+###################
 
 # Before running, ensure uasdm-odm is setup and running currently (start with install_prod_odm.sh)
 
 # Assumes superuser
-# Don't run this script blindly! Intelligently pick out what you need.
 
 # Exit immediately if anything errors out
 set -e
@@ -80,6 +83,7 @@ docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 \
 # If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-dev 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4501
+# If patch, run telnet localhost 4501 and do a NODE LIST just to make sure the expected nodes are there, with a [L] on node 1 which denotes that it is locked
 
 
 ##### These commands are specific to the STAGING container!! ####
@@ -94,6 +98,7 @@ docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 \
 # If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-staging 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4502
+# If patch, run telnet localhost 4502 and do a NODE LIST just to make sure the expected nodes are there, with a [L] on node 1 which denotes that it is locked
 
 
 ##### These commands are specific to the PROD container!! ####
@@ -108,3 +113,4 @@ docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 \
 # If fresh install: (skip if patch)
 sleep 2;
 { sleep 1; echo "NODE ADD uasdm-nodeodm-prod 3000"; sleep 1; echo "NODE LOCK 1"; sleep 1; echo "QUIT"; } | telnet localhost 4500
+# If patch, run telnet localhost 4500 and do a NODE LIST just to make sure the expected nodes are there, with a [L] on node 1 which denotes that it is locked

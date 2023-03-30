@@ -91,7 +91,7 @@ public class S3FileUpload implements Processor
   {
     String key = this.getS3Key();
     
-    if (res.getUnderlyingFile().isDirectory())
+    if (res.isDirectory())
     {
       RemoteFileFacade.uploadDirectory(res.getUnderlyingFile(), key, this.monitor, true);
       
