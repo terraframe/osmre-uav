@@ -121,6 +121,7 @@ export class UploadForm {
 	tool?: string;
 	description?: string;
 	includeGeoLocationFile?: boolean;
+	resolution?: string;
 }
 
 export class Action {
