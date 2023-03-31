@@ -136,7 +136,7 @@
         <div class="col-sm-12">
           <tabset class="nav-full-width">
 
-            <tab heading="raw" (selectTab)="onSelect('raw')">
+            <tab heading="raw images" (selectTab)="onSelect('image')">
               <div class="image-list-container">
                 <ul class="list-group row">
                   <li
@@ -161,6 +161,28 @@
                 </ul>
               </div>
             </tab>
+
+            <tab heading="raw data" (selectTab)="onSelect('data')">
+              <table style="width: 100%;">
+                <thead>
+                  <th>Name</th>
+                  <th></th>
+                </thead>
+                <tr *ngFor="let item of page.results">
+                  <td>{{item.name}}</td>
+                  <td style="text-align:right;">
+                    <button type="button" class="btn btn-primary"
+                      (click)="handleDownloadFile(item)" style="margin: 5px 0;">
+                      Download
+                    </button>
+                  </td>
+
+                </tr>
+
+
+              </table>
+            </tab>
+
 
             <tab heading="video" (selectTab)="onSelect('video')">
               <div *ngIf="video.src !== null">
@@ -201,7 +223,8 @@
               </div>
             </tab>
             <tab heading="products" style="margin-top:10px;" (selectTab)="onSelect('artifacts')">
-              <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning" (onError)="error($event)"></artifact-page>
+              <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning"
+                (onError)="error($event)"></artifact-page>
             </tab>
           </tabset>
         </div>
@@ -209,7 +232,7 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <pagination-controls *ngIf="tabName === 'raw'" (pageChange)="onPageChange($event)"></pagination-controls>
+          <pagination-controls *ngIf="tabName === 'image'" (pageChange)="onPageChange($event)"></pagination-controls>
 
           <div *ngIf="showOrthoRerunMessage" style="text-align:right;padding-right:20px;">
             <p>{{statusMessage}}</p>
@@ -225,26 +248,26 @@
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
                 </button>
-                <button *ngIf="tabName === 'raw'" type="button" class="btn btn-primary" [disabled]="processRunning" (click)="handleUpload()">
+                <button *ngIf="tabName === 'image'" type="button" class="btn btn-primary" [disabled]="processRunning"
+                  (click)="handleUpload()">
                   Upload
                 </button>
               </div>
               <div class="col-md-8" style="text-align: right;">
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-                
-                <button *ngIf="processable" type="button" class="btn btn-secondary"
-                  title="Downloads all files" [disabled]="processRunning"
-                  (click)="handleDownload()" style="margin-left: 5px;">
+
+                <button *ngIf="processable" type="button" class="btn btn-secondary" title="Downloads all files"
+                  [disabled]="processRunning" (click)="handleDownload()" style="margin-left: 5px;">
                   Download All
                 </button>
-                
-                <button *ngIf="processable && entity.hasAllZip" type="button" class="btn btn-secondary" [disabled]="processRunning"
-                  (click)="handleDownloadOdmAll()" title="Downloads the all.zip file generated from ODM."
-                  style="margin-left: 5px;">
+
+                <button *ngIf="processable && entity.hasAllZip" type="button" class="btn btn-secondary"
+                  [disabled]="processRunning" (click)="handleDownloadOdmAll()"
+                  title="Downloads the all.zip file generated from ODM." style="margin-left: 5px;">
                   Download All Generated Data
                 </button>
-                <button *ngIf="processable && enableSelectableImages" [disabled]="processRunning || !canReprocessImagery"
-                  (click)="handleRunOrtho()" class="btn btn-primary"
+                <button *ngIf="processable && enableSelectableImages"
+                  [disabled]="processRunning || !canReprocessImagery" (click)="handleRunOrtho()" class="btn btn-primary"
                   title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
                   Reprocess Imagery
                   <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
