@@ -76,6 +76,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     {
       ql.append(" AND ( ");
       ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpeg");
+      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
       ql.append(" )");
@@ -84,6 +85,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     {
       ql.append(" AND NOT ( ");
       ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpeg");
+      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
       ql.append(" )");
@@ -112,6 +114,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     if (this.folder.equals("image") || this.folder.equals("data"))
     {
       query.setParameter("jpeg", "%.JPEG");
+      query.setParameter("jpg", "%.JPG");
       query.setParameter("png", "%.PNG");
       query.setParameter("tif", "%.TIF");
     }
