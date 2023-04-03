@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,11 +41,11 @@ import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
-import junit.framework.Assert;
 import net.geoprism.GeoprismUser;
 
 public class CollectionUploadEventTest
@@ -130,7 +131,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", false);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, false, new ODMProcessConfiguration("test"));
 
       // Validate the files were uploaded
       MockRemoteFileService service = (MockRemoteFileService) RemoteFileFacade.getService();
@@ -167,7 +168,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", false);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, false, new ODMProcessConfiguration("test"));
 
       // Validate the files were removed and upldated
       MockRemoteFileService service = (MockRemoteFileService) RemoteFileFacade.getService();
@@ -207,7 +208,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, true, new ODMProcessConfiguration("test"));
 
       List<DocumentIF> documents = collection.getDocuments();
 
@@ -249,7 +250,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, true, new ODMProcessConfiguration("test"));
 
       List<DocumentIF> documents = collection.getDocuments();
 
@@ -290,7 +291,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, true, new ODMProcessConfiguration("test"));
 
       ODMProcessingTask task = ODMProcessingTask.getByUploadId(event.getUploadId());
 
@@ -339,7 +340,7 @@ public class CollectionUploadEventTest
     {
       CollectionUploadEvent event = pair.getSecond();
 
-      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, "test", true);
+      event.handleUploadFinish(pair.getFirst(), uploadTarget, resource, true, new ODMProcessConfiguration("test"));
 
       ODMProcessingTask task = ODMProcessingTask.getByUploadId(event.getUploadId());
 

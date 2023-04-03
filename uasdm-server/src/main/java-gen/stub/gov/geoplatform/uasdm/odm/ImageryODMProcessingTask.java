@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -54,23 +55,40 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     super();
   }
 
+  public ODMProcessConfiguration getConfiguration()
+  {
+    String json = this.getConfigurationJson();
+
+    if (!StringUtils.isEmpty(json))
+    {
+      return ODMProcessConfiguration.parse(json);
+    }
+
+    return new ODMProcessConfiguration();
+  }
+
+  public void setConfiguration(ODMProcessConfiguration configuration)
+  {
+    this.setConfigurationJson(configuration.toJson().toString());
+  }
+
   public String getImageryComponentOid()
   {
     return this.getImagery();
   }
-  
+
   @Override
   public Boolean getProcessDem()
   {
     return false;
   }
-  
+
   @Override
   public Boolean getProcessOrtho()
   {
     return false;
   }
-  
+
   @Override
   public Boolean getProcessPtcloud()
   {
@@ -96,7 +114,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
   {
     try
     {
-      NewResponse resp = ODMFacade.taskNew(images, false);
+      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration());
 
       if (resp.getHTTPResponse().isUnreachableHost())
       {
@@ -109,8 +127,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage(resp.getError());
         this.apply();
-        
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
+
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -118,8 +136,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
-        
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
+
+        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
       }
       else
       {
@@ -142,8 +160,8 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
-      
-      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());        
+
+      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
     }
   }
 

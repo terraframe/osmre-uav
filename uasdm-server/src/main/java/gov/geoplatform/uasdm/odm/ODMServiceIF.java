@@ -34,9 +34,9 @@ public interface ODMServiceIF
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  NewResponse taskNew(ApplicationResource images, boolean isMultispectral);
+  NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration);
 
-  NewResponse taskNewInit(int imagesCount, boolean isMultispectral);
+  NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration);
 
   ODMResponse taskNewUpload(String uuid, ApplicationResource image);
 

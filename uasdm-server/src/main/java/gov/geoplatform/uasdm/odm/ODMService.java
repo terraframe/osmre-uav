@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -43,7 +43,7 @@ public class ODMService implements ODMServiceIF
 {
   private static HTTPConnector connector;
 
-  private static final Logger logger = LoggerFactory.getLogger(ODMService.class);
+  private static final Logger  logger = LoggerFactory.getLogger(ODMService.class);
 
   public synchronized void initialize()
   {
@@ -76,7 +76,7 @@ public class ODMService implements ODMServiceIF
     initialize();
 
     Response resp = connector.httpGet("task/" + uuid + "/output", new ArrayList<NameValuePair>());
-    
+
     return new HttpTaskOutputResponse(resp);
   }
 
@@ -108,7 +108,7 @@ public class ODMService implements ODMServiceIF
 
       return zip;
     }
-    
+
     catch (Exception e)
     {
       throw new ProgrammingErrorException(e);
@@ -123,15 +123,15 @@ public class ODMService implements ODMServiceIF
    * tasknewinit
    */
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral)
+  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     initialize();
 
-    try (CloseablePair parent = ODMFacade.filterAndExtract(images))
+    try (CloseablePair parent = ODMFacade.filterAndExtract(images, configuration))
     {
       if (parent.getItemCount() > 0)
       {
-        HttpNewResponse resp = this.taskNewInit(parent.getItemCount(), isMultispectral);
+        HttpNewResponse resp = this.taskNewInit(parent.getItemCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())
         {
@@ -168,10 +168,10 @@ public class ODMService implements ODMServiceIF
   }
 
   @Override
-  public HttpNewResponse taskNewInit(int imagesCount, boolean isMultispectral)
+  public HttpNewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     initialize();
-    
+
     JSONArray arr = new JSONArray();
 
     // Use this tag to build a DSM (Digital Surface Model, ground + objects)
@@ -219,6 +219,19 @@ public class ODMService implements ODMServiceIF
     joImagesCount.put("name", "imagesCount");
     joImagesCount.put("value", imagesCount);
     arr.put(joImagesCount);
+
+    if (configuration.getResolution() != null)
+    {
+      JSONObject demResolution = new JSONObject();
+      demResolution.put("name", "dem-resolution");
+      demResolution.put("value", configuration.getResolution().floatValue());
+      arr.put(demResolution);
+
+      JSONObject orthoResolution = new JSONObject();
+      orthoResolution.put("name", "orthophoto-resolution");
+      orthoResolution.put("value", configuration.getResolution().floatValue());
+      arr.put(orthoResolution);
+    }
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.addTextBody("options", arr.toString());

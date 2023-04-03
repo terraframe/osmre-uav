@@ -31,7 +31,7 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.test.Area51DataSet;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class UAVTest
 {

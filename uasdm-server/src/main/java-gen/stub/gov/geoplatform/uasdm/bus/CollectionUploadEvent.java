@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -51,6 +51,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
@@ -73,7 +74,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, String outFileNamePrefix, Boolean processUpload)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ODMProcessConfiguration configuration)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -161,7 +162,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
       {
-        startODMProcessing(infile, task, outFileNamePrefix, isMultispectral(component));
+        startODMProcessing(infile, task, isMultispectral(component), configuration);
 
         if (component instanceof CollectionIF)
         {
@@ -190,7 +191,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     return false;
   }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, String outFileNamePrefix, boolean isMultispectral)
+  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
@@ -204,7 +205,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setProcessPtcloud(uploadTask.getProcessPtcloud());
     task.setTaskLabel("UAV data orthorectification for collection [" + component.getName() + "]");
     task.setMessage("The images uploaded to ['" + component.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setFilePrefix(outFileNamePrefix);
+    task.setConfiguration(configuration);
     task.apply();
 
     task.initiate(infile, isMultispectral);
@@ -216,9 +217,9 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
 
-      try
+      try (ZipFile zipFile = new ZipFile(zip.getUnderlyingFile()))
       {
-        new ZipFile(zip.getUnderlyingFile()).extractAll(parentFolder.getAbsolutePath());
+        zipFile.extractAll(parentFolder.getAbsolutePath());
 
         File[] files = parentFolder.listFiles(new FilenameFilter()
         {

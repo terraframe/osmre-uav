@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -63,6 +63,7 @@ import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
@@ -72,9 +73,9 @@ import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
+  private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
 
-  private static final long serialVersionUID = -339555201;
+  private static final long   serialVersionUID = -339555201;
 
   // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
   // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
@@ -84,12 +85,30 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     super();
   }
 
+  public ODMProcessConfiguration getConfiguration()
+  {
+    String json = this.getConfigurationJson();
+
+    if (!StringUtils.isEmpty(json))
+    {
+      return ODMProcessConfiguration.parse(json);
+    }
+
+    return new ODMProcessConfiguration();
+  }
+
+  public void setConfiguration(ODMProcessConfiguration configuration)
+  {
+    this.setConfigurationJson(configuration.toJson().toString());
+  }
+
   public static JobHistory processFiles(RequestParserIF parser, File archive) throws FileNotFoundException
   {
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
+    ODMProcessConfiguration configuration = ODMProcessConfiguration.parse(parser);
 
-    File newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task) : validateFile(archive, task);
+    File newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration);
 
     if (newArchive == null)
     {
@@ -103,7 +122,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     try
     {
-      String outFileNamePrefix = parser.getCustomParams().get("outFileName");
+
       VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
       Boolean processUpload = parser.getProcessUpload();
 
@@ -112,8 +131,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       job.setWorkflowTask(task);
       job.setImageryFile(vfImageryZip.getOid());
       job.setUploadTarget(task.getUploadTarget());
-      job.setOutFileNamePrefix(outFileNamePrefix);
       job.setProcessUpload(processUpload);
+      job.setConfiguration(configuration);
+      job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
       job.apply();
 
       JobHistory history = job.start();
@@ -149,7 +169,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-    this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getOutFileNamePrefix());
+    this.uploadToS3(VaultFile.get(this.getImageryFile()), this.getUploadTarget(), this.getConfiguration());
   }
 
   @Override
@@ -160,12 +180,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
   }
 
-  private static CloseableFile validateFile(File archive, AbstractUploadTask task)
+  private static CloseableFile validateFile(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(archive.getName());
     String ext = FilenameUtils.getExtension(archive.getName());
 
-    boolean isValid = validateFile(filename, archive.isDirectory(), false, task);
+    boolean isValid = validateFile(filename, archive.isDirectory(), false, task, configuration);
 
     if (!isValid)
     {
@@ -201,7 +221,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   }
 
-  private static CloseableFile validateArchive(File archive, AbstractUploadTask task)
+  private static CloseableFile validateArchive(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
@@ -230,7 +250,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
               String filename = entry.getName();
 
-              boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+              boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
               if (!entry.isDirectory())
               {
@@ -270,7 +290,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               {
                 String filename = entry.getName();
 
-                boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task);
+                boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
                 if (!entry.isDirectory())
                 {
@@ -336,7 +356,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     return newZip;
   }
 
-  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task)
+  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ODMProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(path);
     boolean isVideo = Util.isVideoFile(filename);
@@ -363,7 +383,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (isMultispectral)
       {
-        if (!filename.endsWith(".tif"))
+        if (! ( filename.endsWith(".tif") || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ) ))
         {
           task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR.getType());
           return false;
@@ -371,7 +391,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else
       {
-        if (!extensions.contains(ext))
+        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ) ))
         {
           task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR.getType());
           return false;
@@ -418,7 +438,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
   }
 
-  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, String outFileNamePrefix)
+  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ODMProcessConfiguration configuration)
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
@@ -436,7 +456,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         event.setImagery(imageryWorkflowTask.getImagery());
         event.apply();
 
-        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
+        event.handleUploadFinish(imageryWorkflowTask, uploadTarget, vfImageryZip, configuration, this.getProcessUpload());
       }
       else
       {
@@ -448,7 +468,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         event.setComponent(collectionWorkflowTask.getComponent());
         event.apply();
 
-        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, outFileNamePrefix, this.getProcessUpload());
+        event.handleUploadFinish(collectionWorkflowTask, uploadTarget, vfImageryZip, this.getProcessUpload(), configuration);
       }
     }
     catch (Throwable t)

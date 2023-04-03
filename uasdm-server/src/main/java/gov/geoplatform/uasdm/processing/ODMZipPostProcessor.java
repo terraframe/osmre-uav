@@ -1,21 +1,22 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -42,7 +43,6 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 /**
  * Can be used to download an allzip from S3 for a collection and selectively
@@ -52,21 +52,21 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public class ODMZipPostProcessor
 {
-  private static final Logger logger = LoggerFactory.getLogger(ODMZipPostProcessor.class);
+  private static final Logger logger   = LoggerFactory.getLogger(ODMZipPostProcessor.class);
 
-  public static final String DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
+  public static final String  DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
 
-  public static final String POTREE = Product.ODM_ALL_DIR + "/entwine_pointcloud";
+  public static final String  POTREE   = Product.ODM_ALL_DIR + "/entwine_pointcloud";
 
-  protected ODMUploadTaskIF progressTask;
+  protected ODMUploadTaskIF   progressTask;
 
-  protected CollectionIF collection;
+  protected CollectionIF      collection;
 
-  protected String filePrefix;
+  protected String            filePrefix;
 
-  protected CloseableFile allZip;
+  protected CloseableFile     allZip;
 
-  protected Product product;
+  protected Product           product;
 
   public ODMZipPostProcessor(CollectionIF collection, ODMUploadTaskIF progressTask, Product product)
   {
@@ -83,11 +83,11 @@ public class ODMZipPostProcessor
     {
       try (CloseableFile allZip = getAllZip())
       {
-        try
+        try (ZipFile zipFile = new ZipFile(allZip))
         {
-          new ZipFile(allZip).extractAll(unzippedParentFolder.getAbsolutePath());
+          zipFile.extractAll(unzippedParentFolder.getAbsolutePath());
         }
-        catch (ZipException e)
+        catch (IOException e)
         {
           throw new RuntimeException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }

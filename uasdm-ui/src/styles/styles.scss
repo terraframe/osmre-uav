@@ -359,6 +359,11 @@ a.active {
 
 .nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4),
 .nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 4)~li {
+  width: 25%;
+}
+
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 5),
+.nav-full-width .nav-tabs>li:first-child:nth-last-child(n + 5)~li {
   width: 20%;
 }
 

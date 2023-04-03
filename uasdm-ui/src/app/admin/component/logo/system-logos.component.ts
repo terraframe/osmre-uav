@@ -30,6 +30,7 @@ import { LocalizationService } from '@shared/service/localization.service';
 
 import { SystemLogo } from '../../model/system-logo';
 import { SystemLogoService } from '../../service/system-logo.service';
+import { SystemLogoComponent } from './system-logo.component';
 import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component( {
@@ -82,12 +83,38 @@ export class SystemLogosComponent implements OnInit {
     }
 
     edit( icon: SystemLogo ): void {
-        this.router.navigate( ['/admin/logo', icon.oid] );
+        // this.router.navigate( ['/admin/logo', icon.oid] );
+        
+        let bsModalRef = this.modalService.show(SystemLogoComponent, {
+      animated: true,
+      backdrop: true,
+      ignoreBackdropClick: true,
+    });
+
+    bsModalRef.content.icon = icon;
+
+    bsModalRef.content.onSuccess.subscribe(data => {
+
+      /*
+      this.icons.forEach(ico => {
+
+        // Setting a random number at the end of the url is a hack to change 
+        // the image url to force Angular to rerender the image.
+        this.random = Math.random();
+
+        ico.oid = ico.oid
+      })
+
+      this.changeDetectorRef.detectChanges();
+      */
+     window.location.reload();
+    });
     }
 
     remove( icon: SystemLogo ): void {
         this.service.remove( icon.oid ).then( response => {
             icon.custom = false;
+            window.location.reload();
         } );
     }
 }

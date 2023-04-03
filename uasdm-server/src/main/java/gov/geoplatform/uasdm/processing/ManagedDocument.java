@@ -54,9 +54,7 @@ public class ManagedDocument extends S3FileUpload
   {
     boolean success = super.process(res);
     
-    File file = res.getUnderlyingFile();
-    
-    if (!file.isDirectory())
+    if (!res.isDirectory())
     {
       String key = this.getS3Key();
       

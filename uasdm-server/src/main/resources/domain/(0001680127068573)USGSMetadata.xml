@@ -1,0 +1,26 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.Project">
+        <create>
+          <attributes>
+            <char name="shortName" label="Short Name" size="8" />
+            <boolean name="restricted" label="Restricted" />
+            <date name="sunsetDate" label="Sunset Date" />
+          </attributes>      
+        </create>      
+      </mdVertex>    
+      <mdVertex name="gov.geoplatform.uasdm.graph.Mission">
+        <create>
+          <attributes>
+            <char name="contractingOffice" label="Contracting Office" size="50" />
+            <char name="vendor" label="Vendor" size="50" />
+          </attributes>      
+        </create>      
+      </mdVertex>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

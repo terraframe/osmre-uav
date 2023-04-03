@@ -5,8 +5,8 @@
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <h4 style="margin-top: 50px;">
-                There are no Sites added to the system. Add a Site, Project, Mission, and Collection using the 
-                <a routerlink="/viewer" routerlinkactive="active" href="#/viewer">Site Viewer</a> 
+                There are no Sites added to the system. Add a Site, Project, Mission, and Collection using the
+                <a routerlink="/viewer" routerlinkactive="active" href="#/viewer">Site Viewer</a>
                 before uploading data to.
             </h4>
         </div>
@@ -46,10 +46,13 @@
                 </div> <!-- End existing task panel -->
 
                 <!-- Task finished upload notification -->
-                <div *ngFor="let note of taskFinishedNotifications" class="panel panel-success" style="margin: 30px 0 30px 0;">
+                <div *ngFor="let note of taskFinishedNotifications" class="panel panel-success"
+                    style="margin: 30px 0 30px 0;">
                     <div class="panel-heading" style="font-size: 20px;">
                         Upload Details
-                        <i class="fa fa-times btn btn-close pull-right" style="min-width:20px;padding:0;line-height: 27px;" (click)="closeTaskFinishedNotification(note.id)"></i>
+                        <i class="fa fa-times btn btn-close pull-right"
+                            style="min-width:20px;padding:0;line-height: 27px;"
+                            (click)="closeTaskFinishedNotification(note.id)"></i>
                     </div>
                     <div class="panel-body">
                         <h4>
@@ -66,8 +69,7 @@
                 <div style="margin-top: 30px;" class="" *ngIf="!disabled && !existingTask">
                     <div class="form-group">
                         <label for="site">Site:</label>
-                        <select name="site" (change)="onSiteSelect($event.target)" [(ngModel)]="values.site"
-                            required>
+                        <select name="site" (change)="onSiteSelect($event.target)" [(ngModel)]="values.site" required>
                             <option></option>
                             <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
                         </select>
@@ -121,7 +123,12 @@
 
                     <div class="form-group">
                         <label for="outFileName">Output Product Name Prefix</label>
-                        <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control" placeholder="Output product name prefix..." />
+                        <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
+                            placeholder="Output product name prefix..." />
+                    </div>
+                    <div class="form-group">
+                        <boolean-field [(value)]="values.includeGeoLocationFile"
+                            label="Use geo location file when processing (if uploaded)"></boolean-field>
                     </div>
                 </div>
 
@@ -153,7 +160,8 @@
                         </div>
                     </div>
 
-                    <div *ngIf="showFileSelectPanel" class="uploader-container" style="margin-top: 20px;" #uploader></div>
+                    <div *ngIf="showFileSelectPanel" class="uploader-container" style="margin-top: 20px;" #uploader>
+                    </div>
 
                     <button type="button btn btn-primary" [disabled]="!ngForm.valid || disabled" class="btn btn-primary"
                         style="margin-top: 20px;" (click)="handleUpload()">

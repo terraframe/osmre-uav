@@ -11,7 +11,7 @@
   </div>
 
   <div *ngIf="newInstance" class="modal-title-container">
-      <h3 >Add new {{entity.type}}</h3>
+    <h3>Add new {{entity.type}}</h3>
   </div>
 
   <form #ngForm="ngForm">
@@ -19,35 +19,50 @@
       <div *ngIf="evaluate(attribute)" class="form-group">
         <div *ngIf="attribute.type === 'text'">
           <label>{{attribute.label}}</label>
-          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control" [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control"
+            [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
         <div *ngIf="attribute.type === 'list'">
           <label>{{attribute.label}}</label>
-          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" [disabled]="attribute.readonly" [required]="attribute.required">
+          <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input"
+            [disabled]="attribute.readonly" [required]="attribute.required">
             <option></option>
             <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
           </select>
         </div>
         <div *ngIf="attribute.type === 'text-area'">
           <label>{{attribute.label}}</label>
-          <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name"  [disabled]="attribute.readonly" class="form-control" [required]="attribute.required">
+          <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly"
+            class="form-control" [required]="attribute.required">
           </textarea>
         </div>
-        <div *ngIf="attribute.type === 'point'">          
-          <map-attribute [site]="entity" [center]="center" [zoom]="zoom" ></map-attribute>
+        <div *ngIf="attribute.type === 'point'">
+          <map-attribute [site]="entity" [center]="center" [zoom]="zoom"></map-attribute>
         </div>
+        <div *ngIf="attribute.type === 'boolean'">
+          <label>{{attribute.label}}</label>
+          <boolean-field [(value)]="entity[attribute.name]" label="" [disabled]="attribute.readonly" style="padding: 0px 10px;"
+            class="form-control">
+          </boolean-field>
+        </div>
+        <div *ngIf="attribute.type === 'date'">
+          <label>{{attribute.label}}</label>
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="date" class="form-control"
+            [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
+        </div>
+
       </div>
     </div>
 
     <div class="form-group" *ngIf="entity.type === 'Collection' && !newInstance">
-        <label>Privilege </label>
-        
-        <select style="padding:6px 10px;font-size:14px;" [(ngModel)]="entity.privilegeType" name="collection-privilege" type="input" [required]="true" 
-           [disabled]="admin === false || entity.ownerName !== userName">
-            <option value="OWNER">Owner</option>
-            <option value="AGENCY">Agency</option>
-            <option value="PUBLIC">Public</option>
-        </select>
+      <label>Privilege </label>
+
+      <select style="padding:6px 10px;font-size:14px;" [(ngModel)]="entity.privilegeType" name="collection-privilege"
+        type="input" [required]="true" [disabled]="admin === false || entity.ownerName !== userName">
+        <option value="OWNER">Owner</option>
+        <option value="AGENCY">Agency</option>
+        <option value="PUBLIC">Public</option>
+      </select>
 
     </div>
 

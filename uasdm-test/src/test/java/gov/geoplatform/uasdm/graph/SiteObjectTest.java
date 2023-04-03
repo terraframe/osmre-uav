@@ -27,7 +27,7 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @Ignore
 public class SiteObjectTest

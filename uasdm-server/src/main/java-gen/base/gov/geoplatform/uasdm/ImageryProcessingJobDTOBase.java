@@ -1,25 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1605054275)
+@com.runwaysdk.business.ClassSignature(hash = -1545220331)
 public abstract class ImageryProcessingJobDTOBase extends com.runwaysdk.system.scheduler.ExecutableJobDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.ImageryProcessingJob";
-  private static final long serialVersionUID = -1605054275;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1545220331;
   
   protected ImageryProcessingJobDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -42,11 +28,49 @@ public abstract class ImageryProcessingJobDTOBase extends com.runwaysdk.system.s
     return CLASS;
   }
   
+  public static java.lang.String CONFIGURATIONJSON = "configurationJson";
   public static java.lang.String IMAGERYFILE = "imageryFile";
   public static java.lang.String OUTFILENAMEPREFIX = "outFileNamePrefix";
   public static java.lang.String PROCESSUPLOAD = "processUpload";
   public static java.lang.String UPLOADTARGET = "uploadTarget";
   public static java.lang.String WORKFLOWTASK = "workflowTask";
+  public String getConfigurationJson()
+  {
+    return getValue(CONFIGURATIONJSON);
+  }
+  
+  public void setConfigurationJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(CONFIGURATIONJSON, "");
+    }
+    else
+    {
+      setValue(CONFIGURATIONJSON, value);
+    }
+  }
+  
+  public boolean isConfigurationJsonWritable()
+  {
+    return isWritable(CONFIGURATIONJSON);
+  }
+  
+  public boolean isConfigurationJsonReadable()
+  {
+    return isReadable(CONFIGURATIONJSON);
+  }
+  
+  public boolean isConfigurationJsonModified()
+  {
+    return isModified(CONFIGURATIONJSON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getConfigurationJsonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(CONFIGURATIONJSON).getAttributeMdDTO();
+  }
+  
   public String getImageryFile()
   {
     return getValue(IMAGERYFILE);

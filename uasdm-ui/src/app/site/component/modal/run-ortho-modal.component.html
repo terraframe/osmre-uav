@@ -11,17 +11,58 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <label for="outFileName">Output Product Name Prefix</label>
+            <input [(ngModel)]="config.outFileName" name="outFileName" type="input" class="form-control"
+                placeholder="Output product name prefix..." />
+        </div>
+
+        <div class="form-group">
+            <label for="outFileName">Resolution (cm)</label>
+            <input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control"
+                placeholder="5" />
+        </div>
+
+
+        <div class="form-group">
+            <boolean-field [(value)]="config.includeGeoLocationFile"
+                label="Use geo location file when processing (if uploaded)"></boolean-field>
+        </div>
+
+        <div *ngIf="config.includeGeoLocationFile">
+            <p>Geo location file must be called <code>geo.txt</code></p>
+            <p>File format:</p>
+            <pre>
+                <code>
+                projection
+                image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
+                ...
+                </code>
+            </pre>
+            <p>Example:</p>
+            <pre>
+                <code>
+                EPSG:4326
+                DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
+                DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
+                </code>        
+            </pre>
+        </div>
+
+        <hr />
+
         <h3>Run ortho to process the following products: </h3>
 
         <artifact-page *ngIf="entity != null" [edit]="true" [entity]="entity" [config]="config"
             (onError)="error($event)"></artifact-page>
+
     </div>
     <div class="modal-footer">
         <div class="btn-holder" style="text-align: right;">
             <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
                 aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
-            <button type="button" (click)="confirm()" class="btn btn-primary" role="button"
-                aria-disabled="false" style="padding: 4px 18px;">Submit</button>
+            <button type="button" (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
+                style="padding: 4px 18px;">Submit</button>
         </div>
     </div>
 </div>
