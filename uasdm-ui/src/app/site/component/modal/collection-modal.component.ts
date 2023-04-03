@@ -96,7 +96,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 		this.notifier.subscribe(message => {
 			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
-				if (this.tabName === 'raw') {
+				if (this.tabName === 'image') {
 					this.onPageChange(this.page.pageNumber);
 				}
 				else if (this.tabName === 'video') {
@@ -121,7 +121,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			this.previous.push(this.entity);
 		}
 
-		this.onSelect("raw");
+		this.onSelect("image");
 
 		this.processable = this.metadataService.isProcessable(entity.type);
 	}
@@ -162,19 +162,19 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 		this.tabName = tabName;
 
-		if (tabName === "raw") {
+		if (tabName === "image") {
 			this.enableSelectableImages = true;
 		} else {
 			this.enableSelectableImages = false;
 		}
 
-		if (tabName === "raw" || tabName === "video") {
+		if (tabName === "image" || tabName === "data" || tabName === "video") {
 			this.page.results = [];
 
 			let pn: number = null;
 			let ps: number = null;
 
-			if (tabName === "raw") {
+			if (tabName === "image") {
 				if (this.page.pageNumber == null) {
 					pn = 1;
 				}
@@ -281,7 +281,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 			const configuration = {
 				includeGeoLocationFile: data.includeGeoLocationFile,
-				outFileNamePrefix: data.outFileName
+				outFileNamePrefix: data.outFileName,
+				resolution: data.resolution
 			};
 
 			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {

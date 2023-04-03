@@ -460,7 +460,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    if (!folder.equals(RAW) && ( pageNumber != null || pageSize != null ))
+    if (!(folder.equals(RAW) || folder.equals("image")) && ( pageNumber != null || pageSize != null ))
     {
       throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
     }

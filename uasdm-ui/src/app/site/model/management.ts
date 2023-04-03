@@ -121,6 +121,7 @@ export class UploadForm {
 	tool?: string;
 	description?: string;
 	includeGeoLocationFile?: boolean;
+	resolution?: string;
 }
 
 export class Action {
@@ -148,6 +149,7 @@ export class Task {
 	showError?: boolean;
 	ancestors?: string[];
 	sensorName?: string;
+	showODMOutput?: boolean;
 }
 
 export class TaskGroup {
