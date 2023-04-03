@@ -319,13 +319,39 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
 
-    this.map = new Map({
+
+
+
+
+    const mapConfig: any = {
       container: "map",
-      style: `http://localhost:8080/styles/basic-preview/style.json`,
+      style: {
+        'version': 8,
+        'sources': {
+          'raster-tiles': {
+            'type': 'raster',
+            'tiles': [
+              'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ'
+            ],
+            'tileSize': 512,
+          }
+        },
+        'layers': [
+          {
+            'id': 'simple-tiles',
+            'type': 'raster',
+            'source': 'raster-tiles',
+            'minzoom': 0,
+            'maxzoom': 22
+          }
+        ]
+      },
       zoom: 2,
       attributionControl: false,
       center: [-78.880453, 42.897852]
-    });
+    };
+
+    this.map = new Map(mapConfig);
 
     this.map.on("load", () => {
       this.initMap();
