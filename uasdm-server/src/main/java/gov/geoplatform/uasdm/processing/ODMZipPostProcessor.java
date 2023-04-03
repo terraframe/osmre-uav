@@ -77,7 +77,9 @@ public class ODMZipPostProcessor
 
   public ProductIF processAllZip() throws InterruptedException
   {
-    final String folderName = "odm-" + FilenameUtils.getName(this.collection.getS3location()) + "-" + new Random().nextInt();
+    final String colName = FilenameUtils.getName(this.collection.getS3location().endsWith("/") ? this.collection.getS3location().substring(0, this.collection.getS3location().length()-1) : this.collection.getS3location());
+    
+    final String folderName = "odm-" + colName + "-" + new Random().nextInt();
 
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
     {
