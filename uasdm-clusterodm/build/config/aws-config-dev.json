@@ -11,7 +11,7 @@
     
     "securityGroup": "cluster-odm-node",
     
-    "vpcId" : "vpc-04624f4b9b033bc4c",
+    "vpc" : "vpc-04624f4b9b033bc4c",
     
     "log-level": "debug",
     "debug": true,
@@ -44,5 +44,5 @@
 
     "addSwap": 1,
     "dockerImage": "-v /data/odm/dev/micasense:/opt/micasense -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/dev/micasense --name uasdm-nodeodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest",
-    "additionalMachineSetupCmd": "sudo apt update && sudo apt install -y unzip && curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && unzip -o -q awscliv2.zip && sudo ./aws/install && aws configure set aws_access_key_id UASDM_CLUSTER_KEY && aws configure set aws_secret_access_key UASDM_CLUSTER_SECRET && sudo su -m -c 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com && docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest && docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest && docker tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest uasdm-micasense'"
+    "nodeSetupCmd": "sudo apt update && sudo apt install -y unzip && curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && unzip -o -q awscliv2.zip && sudo ./aws/install && aws configure set aws_access_key_id UASDM_CLUSTER_KEY && aws configure set aws_secret_access_key UASDM_CLUSTER_SECRET && sudo su -m -c 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com && docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest && docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest && docker tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest uasdm-micasense'"
 }

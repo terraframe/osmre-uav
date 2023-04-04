@@ -20,6 +20,39 @@
 #   pick and choose which commands to run based on what it is that you're doing. At some point this script will probably be converted into ansible.
 ###################
 
+
+
+
+
+
+
+
+########
+
+Config changes needed for next deploy:
+1. Make sure the dev-deploy bucket is updated since its currently on dev (not dev-deploy)
+2. Add `acl: none` to s3
+3. `vpcId` changed to `vpc`
+4. `additionalMachineSetupCmd` changed to `nodeSetupCmd`
+
+########
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Before running, ensure uasdm-odm is setup and running currently (start with install_prod_odm.sh)
 
 # Assumes superuser
@@ -78,6 +111,7 @@ docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 \
   -v /data/odm-cluster/dev/data:/var/www/data \
   --link uasdm-nodeodm-dev \
   --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --debug --log-level debug \
   --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4001/
 
 # If fresh install: (skip if patch)
@@ -93,6 +127,7 @@ docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 \
   -v /data/odm-cluster/staging/data:/var/www/data \
   --link uasdm-nodeodm-staging \
   --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --debug --log-level debug \
   --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4002/
 
 # If fresh install: (skip if patch)
