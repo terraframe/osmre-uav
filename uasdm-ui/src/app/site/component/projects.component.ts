@@ -319,11 +319,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
 
-
-
-
-
-    const mapConfig: any = {
+    this.map = new Map({
       container: "map",
       style: {
         'version': 8,
@@ -336,6 +332,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             'tileSize': 512,
           }
         },
+        "glyphs": window.location.protocol + "//" + window.location.host + EnvironmentUtil.getApiUrl() + "/glyphs/{fontstack}/{range}.pbf",
         'layers': [
           {
             'id': 'simple-tiles',
@@ -349,9 +346,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       zoom: 2,
       attributionControl: false,
       center: [-78.880453, 42.897852]
-    };
-
-    this.map = new Map(mapConfig);
+    });
 
     this.map.on("load", () => {
       this.initMap();
@@ -511,7 +506,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       "layout": {
         "text-field": "{name}",
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-font": ["NotoSansRegular"],
         "text-offset": [0, 0.6],
         "text-anchor": "top",
         "text-size": 12,
