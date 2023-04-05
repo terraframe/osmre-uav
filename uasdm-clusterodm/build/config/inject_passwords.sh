@@ -21,19 +21,22 @@ set -e
 [ -z "$UASDM_CLUSTER_KEY" ] && echo "UASDM_CLUSTER_KEY is null. Set this environment variable and then try running this script again." && exit 1;
 [ -z "$UASDM_CLUSTER_SECRET" ] && echo "UASDM_CLUSTER_SECRET is null. Set this environment variable and then try running this script again." && exit 1;
 
-rm -r target | true
-mkdir target
+rm -r $UASDM/uasdm/uasdm-clusterodm/build/config/target | true
+mkdir $UASDM/uasdm/uasdm-clusterodm/build/config/target
 
-cp ./aws-config-devdeploy.json target/aws-config-devdeploy.json
-cp ./aws-config-prod.json target/aws-config-prod.json
-cp ./aws-config-staging.json target/aws-config-staging.json
+cp $UASDM/uasdm/uasdm-clusterodm/build/config/aws-config-dev.json $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-dev.json
+cp $UASDM/uasdm/uasdm-clusterodm/build/config/aws-config-devdeploy.json $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-devdeploy.json
+cp $UASDM/uasdm/uasdm-clusterodm/build/config/aws-config-prod.json $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-prod.json
+cp $UASDM/uasdm/uasdm-clusterodm/build/config/aws-config-staging.json $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-staging.json
 
-sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-devdeploy.json
-sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-prod.json
-sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" ./target/aws-config-staging.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-dev.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-devdeploy.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-prod.json
+sed -i -e "s~UASDM_CLUSTER_KEY~$UASDM_CLUSTER_KEY~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-staging.json
 
-sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-devdeploy.json
-sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-prod.json
-sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" ./target/aws-config-staging.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-dev.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-devdeploy.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-prod.json
+sed -i -e "s~UASDM_CLUSTER_SECRET~$UASDM_CLUSTER_SECRET~g" $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-staging.json
 
 echo "Config files with variables replaced are now available in target."

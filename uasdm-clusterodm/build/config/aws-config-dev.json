@@ -5,15 +5,13 @@
     "secretKey": "UASDM_CLUSTER_SECRET",
     "s3":{
         "endpoint": "s3.us-east-1.amazonaws.com",
-        "bucket": "osmre-uas-dev-deploy",
+        "bucket": "osmre-uas-dev",
         "acl": "none"
     },
     
     "securityGroup": "cluster-odm-node",
     
     "vpc" : "vpc-04624f4b9b033bc4c",
-    
-    "usePrivateAddress": true,
     
     "log-level": "debug",
     "debug": true,

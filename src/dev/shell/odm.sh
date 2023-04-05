@@ -30,6 +30,12 @@ set -e
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 
+export S3_ENDPOINT=s3.us-east-1.amazonaws.com
+export S3_BUCKET=osmre-uas-dev
+export S3_ACCESSKEY=$UASDM_ECR_KEY
+export S3_SECRETKEY=$UASDM_ECR_SECRET
+export S3_ACL=none
+
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
 
 # Kill any running containers by name of what we're about to run
@@ -40,4 +46,4 @@ docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense:latest
 docker tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-micasense uasdm-micasense
 
 # Pull & Run the custom UASDM NodeODM container
-docker run -d -p 3000:3000 -v $(pwd)/micasense:/opt/micasense -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=$(pwd)/micasense --name uasdm-nodeodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm
+docker run -d -p 3000:3000 -v $(pwd)/micasense:/opt/micasense -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=$(pwd)/micasense --name uasdm-nodeodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:latest --s3_endpoint "$S3_ENDPOINT" --s3_bucket "$S3_BUCKET" --s3_access_key "$S3_ACCESSKEY" --s3_secret_key "$S3_SECRETKEY" --s3_acl "$S3_ACL"

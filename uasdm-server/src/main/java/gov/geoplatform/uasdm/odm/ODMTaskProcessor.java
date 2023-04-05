@@ -38,6 +38,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -185,6 +186,8 @@ public class ODMTaskProcessor
     try
     {
       TaskRemoveResponse resp = ODMFacade.taskRemove(uuid);
+      
+      removeOdmWorkerAllZip(uuid);
 
       if (!resp.isSuccess())
       {
@@ -198,6 +201,24 @@ public class ODMTaskProcessor
       logger.error("Error occurred while removing task [" + uuid + "] [" + task.getTaskLabel() + "] from ODM.", t);
 
       task.createAction("Problem occured while cleaning up data from ODM. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()), "error");
+    }
+  }
+  
+  /**
+   * When the ODM worker finishes, NodeODM automatically uploads the results to S3, and then kills the worker. This zip then gets proxy downloaded
+   * in ClusterODM when we do a taskDownload. After we have uploaded the all zip at the end of processing, we should delete ODM's duplicate upload
+   * 
+   * @param uuid
+   */
+  public static void removeOdmWorkerAllZip(String uuid)
+  {
+    S3RemoteFileService s3 = new S3RemoteFileService();
+    
+    String key = uuid + "/all.zip";
+    
+    if (s3.objectExists(key))
+    {
+      s3.deleteObject(key);
     }
   }
 
