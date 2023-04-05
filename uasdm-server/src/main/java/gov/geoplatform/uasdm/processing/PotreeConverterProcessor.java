@@ -47,27 +47,31 @@ public class PotreeConverterProcessor extends S3FileUpload
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File outputDirectory = new File(file.getParent(), basename + "-potree");
-    
+
     try
     {
       // Copy the underlying file to a filename with the proper
       File input = File.createTempFile("laz", "." + res.getNameExtension());
 
-      // File input = new File(file.getParentFile(), res.getName());
-
-      FileUtils.copyFile(file, input);
-
-      
-      boolean success = new SystemProcessExecutor(this.monitor).execute(new String[] { AppProperties.getPotreeConverterPath(), input.getAbsolutePath(), "-o", outputDirectory.getAbsolutePath() });
-
-      if (success && outputDirectory.exists())
+      try
       {
-        super.process(new FileResource(outputDirectory));
+        FileUtils.copyFile(file, input);
+
+        boolean success = new SystemProcessExecutor(this.monitor).execute(new String[] { AppProperties.getPotreeConverterPath(), input.getAbsolutePath(), "-o", outputDirectory.getAbsolutePath() });
+
+        if (success && outputDirectory.exists())
+        {
+          super.process(new FileResource(outputDirectory));
+        }
+        else
+        {
+          logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
+          monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
+        }
       }
-      else
+      finally
       {
-        logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
-        monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
+        FileUtils.deleteQuietly(input);
       }
 
     }
