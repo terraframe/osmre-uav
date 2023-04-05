@@ -267,4 +267,9 @@ public class AppProperties
   {
     return Singleton.getProps().getString("app.disclaimer");
   }
+
+  public static String getPotreeConverterPath()
+  {
+    return Singleton.getProps().getString("potree.converter.bin");
+  }
 }

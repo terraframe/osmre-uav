@@ -116,6 +116,15 @@
             </div>
           </div>
         </div>
+        <div [@fadeInOnEnter] *ngIf="uploadTarget === 'ptcloud'" class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <boolean-field [(value)]="config.processPtcloud" label="Enable Potree viewer for point cloud"></boolean-field>
+            </div>
+          </div>
+        </div>
+
         <div [@fadeInOnEnter] class="row">
           <div class="col-md-2"></div>
           <div class="col-md-8">

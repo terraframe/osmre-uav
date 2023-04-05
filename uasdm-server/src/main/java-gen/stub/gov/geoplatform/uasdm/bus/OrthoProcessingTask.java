@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package gov.geoplatform.uasdm.bus;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +40,17 @@ import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 
-
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
 {
   private static final long serialVersionUID = -90821820;
 
-  private static Logger logger = LoggerFactory.getLogger(OrthoProcessingTask.class);
+  private static Logger     logger           = LoggerFactory.getLogger(OrthoProcessingTask.class);
 
   public OrthoProcessingTask()
   {
@@ -89,7 +91,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       {
         new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(infile);
       }
-      
+
       new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
     }
 
@@ -97,14 +99,17 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (!new CogTifValidator().isValidCog(infile))
       {
-        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor)
-          .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)))
-          .process(infile);
+        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this))).process(infile);
       }
       else
       {
         new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)).process(infile);
       }
+    }
+
+    if (this.getUploadTarget().equals(ImageryComponent.PTCLOUD) && this.getProcessPtcloud() && !StringUtils.isEmpty(AppProperties.getPotreeConverterPath()))
+    {
+      new PotreeConverterProcessor(ODMZipPostProcessor.POTREE, product, collection, new WorkflowTaskMonitor(this)).process(infile);
     }
 
     if (product.getPublished())

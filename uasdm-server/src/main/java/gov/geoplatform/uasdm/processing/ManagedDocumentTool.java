@@ -18,5 +18,6 @@ package gov.geoplatform.uasdm.processing;
 public enum ManagedDocumentTool 
 {
   ODM,
-  GDAL;
+  GDAL,
+  POTREE_CONVERTER;
 }

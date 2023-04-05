@@ -27,6 +27,21 @@ RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
 RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"
 RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
 
+# INSTALL compilers and build toold
+RUN apt-get install -y wget git cmake build-essential gcc g++ 
+
+# INSTALL PotreeConverter
+WORKDIR /opt
+RUN git clone https://github.com/potree/PotreeConverter.git
+WORKDIR /opt/PotreeConverter
+RUN mkdir build
+WORKDIR /opt/PotreeConverter/build
+RUN apt-get install -y libboost-all-dev libtbb-dev
+RUN cmake -DCMAKE_BUILD_TYPE=Release ..
+RUN make
+
+WORKDIR /
+
 # Copy CGR WAR
 COPY target/uasdm.war $CATALINA_HOME/wars/geoprism.war
 

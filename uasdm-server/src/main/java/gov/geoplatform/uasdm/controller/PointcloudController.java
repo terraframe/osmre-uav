@@ -115,6 +115,10 @@ public class PointcloudController
       {
         resp.set("pointcloudLoadPath", "ept.json");
       }
+      else if (RemoteFileFacade.objectExists(component.getS3location() + ODMZipPostProcessor.POTREE + "/metadata.json"))
+      {
+        resp.set("pointcloudLoadPath", "metadata.json");
+      }
       else if (RemoteFileFacade.objectExists(component.getS3location() + LEGACY_POTREE_SUPPORT + "/cloud.js"))
       {
         resp.set("pointcloudLoadPath", "legacypotree/cloud.js");
