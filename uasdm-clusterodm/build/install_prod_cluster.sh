@@ -34,6 +34,7 @@ Config changes needed for next deploy:
 2. Add `acl: none` to s3
 3. `vpcId` changed to `vpc`
 4. `additionalMachineSetupCmd` changed to `nodeSetupCmd`
+5. Change nodeodm:latest tag to prod/staging/devdeploy
 
 ########
 
