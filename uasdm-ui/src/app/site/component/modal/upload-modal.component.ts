@@ -51,7 +51,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	/* 
 	 * Form values
 	 */
-	values = { create: false } as UploadForm;
+	values: UploadForm = {
+		create: false,
+		resolution: 5,
+		videoResolution: 4000,
+		matcherNeighbors: 0,
+		minNumFeatures: 10000,
+		pcQuality: "MEDIUM"
+	} as UploadForm;
 
 	/*
 	 * FineUploader for uploading large files

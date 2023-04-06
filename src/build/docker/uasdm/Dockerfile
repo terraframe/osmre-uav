@@ -40,7 +40,8 @@ RUN apt-get install -y libboost-all-dev libtbb-dev
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
 RUN make
 
-WORKDIR /
+#Revert the working directory
+WORKDIR /usr/local/tomcat
 
 # Copy CGR WAR
 COPY target/uasdm.war $CATALINA_HOME/wars/geoprism.war
