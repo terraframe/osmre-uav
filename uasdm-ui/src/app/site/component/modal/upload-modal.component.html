@@ -67,8 +67,39 @@
 
             <div class="form-group">
               <label for="outFileName">Resolution (cm)</label>
-              <input [(ngModel)]="values.resolution" name="resolution" type="number" class="form-control" placeholder="5" />
+              <input [(ngModel)]="values.resolution" name="resolution" type="number" class="form-control"
+                placeholder="5" />
             </div>
+
+            <div class="form-group">
+              <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label>
+              <input [(ngModel)]="values.videoResolution" name="videoResolution" type="number" class="form-control"
+                placeholder="4000" step="1" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="matcherNeighbors">Matcher Nieghbors</label>
+              <input [(ngModel)]="values.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
+                placeholder="0" step="1" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="minNumFeatures">Minimum number of features to extract per image</label>
+              <input [(ngModel)]="values.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
+                placeholder="10000" step="1" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="pcQuality">Generated point cloud quality</label>
+              <select [(ngModel)]="values.pcQuality" name="pcQuality" class="form-control">
+                <option value="ULTRA">ULTRA</option>
+                <option value="HIGH">HIGH</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="LOW">LOW</option>
+                <option value="LOWEST">LOWEST</option>
+              </select>
+            </div>
+
 
             <div class="form-group">
               <boolean-field [(value)]="values.includeGeoLocationFile"
@@ -120,7 +151,8 @@
           <div class="col-md-2"></div>
           <div class="col-md-8">
             <div class="form-group">
-              <boolean-field [(value)]="config.processPtcloud" label="Enable Potree viewer for point cloud"></boolean-field>
+              <boolean-field [(value)]="config.processPtcloud" label="Enable Potree viewer for point cloud">
+              </boolean-field>
             </div>
           </div>
         </div>

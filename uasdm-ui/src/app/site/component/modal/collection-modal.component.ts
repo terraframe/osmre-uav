@@ -282,7 +282,11 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			const configuration = {
 				includeGeoLocationFile: data.includeGeoLocationFile,
 				outFileNamePrefix: data.outFileName,
-				resolution: data.resolution
+				resolution: data.resolution,
+				videoResolution: data.videoResolution,
+				matcherNeighbors: data.matcherNeighbors,
+				minNumFeatures: data.minNumFeatures,
+				pcQuality: data.pcQuality
 			};
 
 			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {

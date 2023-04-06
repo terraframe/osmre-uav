@@ -121,7 +121,11 @@ export class UploadForm {
 	tool?: string;
 	description?: string;
 	includeGeoLocationFile?: boolean;
-	resolution?: string;
+	resolution?: number;
+	videoResolution?: number;
+	matcherNeighbors?: number;
+	minNumFeatures?: number;
+	pcQuality?: string;
 }
 
 export class Action {
