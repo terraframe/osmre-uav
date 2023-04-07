@@ -1,38 +1,34 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.model;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Date;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.dataaccess.DataAccessException;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Mission;
@@ -133,19 +129,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
               child.setValue(Project.RESTRICTED, selection.getBoolean(Project.RESTRICTED));
             }
 
-            if (selection.has(Project.SUNSETDATE))
-            {
-              try
-              {
-                child.setValue(Project.SUNSETDATE, Util.parseIso8601(selection.getString(Project.SUNSETDATE), false));
-              }
-              catch (ParseException e)
-              {
-                GenericException exception = new GenericException(e);
-                exception.setUserMessage(e.getMessage());
-                throw exception;
-              }
-            }
+            setDateValue(selection, child, Project.SUNSETDATE);
           }
           else if (child instanceof MissionIF)
           {
@@ -162,6 +146,19 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           }
           else if (child instanceof CollectionIF)
           {
+            if (selection.has(Collection.EXIFINCLUDED))
+            {
+              child.setValue(Collection.EXIFINCLUDED, selection.getBoolean(Collection.EXIFINCLUDED));
+            }
+
+            setDecimalValue(selection, child, Collection.NORTHBOUND);
+            setDecimalValue(selection, child, Collection.SOUTHBOUND);
+            setDecimalValue(selection, child, Collection.EASTBOUND);
+            setDecimalValue(selection, child, Collection.WESTBOUND);
+            setDateValue(selection, child, Collection.ACQUISITIONDATESTART);
+            setDateValue(selection, child, Collection.ACQUISITIONDATEEND);
+            setDateValue(selection, child, Collection.COLLECTIONDATE);
+
             if (selection.has(Collection.UAV))
             {
               child.setValue(Collection.UAV, selection.getString(Collection.UAV));
@@ -170,22 +167,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             if (selection.has(Collection.SENSOR))
             {
               child.setValue(Collection.COLLECTIONSENSOR, selection.getString(Collection.SENSOR));
-            }
-
-            if (selection.has(Collection.COLLECTIONDATE))
-            {
-              try
-              {
-                Date date = Util.parseIso8601(selection.getString(Collection.COLLECTIONDATE), false);
-
-                child.setValue(Collection.COLLECTIONDATE, date);
-              }
-              catch (ParseException e)
-              {
-                GenericException exception = new GenericException(e);
-                exception.setUserMessage(e.getMessage());
-                throw exception;
-              }
             }
 
             if (selection.has(Collection.POINT_OF_CONTACT))
@@ -228,6 +209,46 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
 
     return component;
+  }
+
+  public static void setDateValue(JSONObject selection, UasComponentIF child, String attributeName)
+  {
+    if (selection.has(attributeName))
+    {
+      if (!selection.isNull(attributeName))
+      {
+
+        try
+        {
+          child.setValue(attributeName, Util.parseIso8601(selection.getString(attributeName), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+      else
+      {
+        child.setValue(attributeName, null);
+      }
+    }
+  }
+
+  public static void setDecimalValue(JSONObject selection, UasComponentIF child, String attributeName)
+  {
+    if (selection.has(attributeName))
+    {
+      if (!selection.isNull(attributeName))
+      {
+        child.setValue(attributeName, new BigDecimal(selection.getDouble(attributeName)));
+      }
+      else
+      {
+        child.setValue(attributeName, null);
+      }
+    }
   }
 
   /**

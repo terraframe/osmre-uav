@@ -1,22 +1,25 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,7 +35,11 @@ import org.xml.sax.SAXException;
 import com.amazonaws.AmazonClientException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -117,8 +124,6 @@ public class FlightMetadata
   {
     private String name;
 
-    private String shortName;
-
     private String description;
 
     public String getName()
@@ -131,16 +136,6 @@ public class FlightMetadata
       this.name = name;
     }
 
-    public String getShortName()
-    {
-      return shortName;
-    }
-
-    public void setShortName(String shortName)
-    {
-      this.shortName = shortName;
-    }
-
     public String getDescription()
     {
       return description;
@@ -151,12 +146,347 @@ public class FlightMetadata
       this.description = description;
     }
 
-    public static LocationMetadata parse(Element item)
+    public void populate(UasComponentIF component)
     {
-      LocationMetadata metadata = new LocationMetadata();
+      this.setName(component.getName());
+      this.setDescription(component.getDescription());
+    }
+
+    public LocationMetadata create()
+    {
+      return new LocationMetadata();
+    }
+
+    public LocationMetadata parse(Element item)
+    {
+      LocationMetadata metadata = this.create();
       metadata.setName(item.getAttribute("name"));
-      metadata.setShortName(item.getAttribute("shortName"));
       metadata.setDescription(item.getAttribute("description"));
+
+      return metadata;
+    }
+
+  }
+
+  public static class ProjectMetadata extends LocationMetadata
+  {
+    private Boolean restricted;
+
+    private String  shortName;
+
+    private Date    sunsetDate;
+
+    public Boolean getRestricted()
+    {
+      return restricted;
+    }
+
+    public void setRestricted(Boolean restricted)
+    {
+      this.restricted = restricted;
+    }
+
+    public Date getSunsetDate()
+    {
+      return sunsetDate;
+    }
+
+    public void setSunsetDate(Date sunsetDate)
+    {
+      this.sunsetDate = sunsetDate;
+    }
+
+    public String getShortName()
+    {
+      return shortName;
+    }
+
+    public void setShortName(String shortName)
+    {
+      this.shortName = shortName;
+    }
+
+    @Override
+    public void populate(UasComponentIF component)
+    {
+      super.populate(component);
+
+      if (component instanceof ProjectIF)
+      {
+        ProjectIF project = (ProjectIF) component;
+
+        this.setShortName(project.getShortName());
+        this.setSunsetDate(project.getSunsetDate());
+        this.setRestricted(project.getRestricted());
+      }
+    }
+
+    @Override
+    public LocationMetadata create()
+    {
+      return new ProjectMetadata();
+    }
+
+    public LocationMetadata parse(Element item)
+    {
+      ProjectMetadata metadata = (ProjectMetadata) super.parse(item);
+      metadata.setShortName(item.getAttribute("shortName"));
+
+      if (item.hasAttribute("restricted"))
+      {
+        metadata.setRestricted(Boolean.valueOf(item.getAttribute("restricted")));
+      }
+
+      if (item.hasAttribute("sunsetDate"))
+      {
+        try
+        {
+          metadata.setSunsetDate(Util.parseIso8601(item.getAttribute("sunsetDate"), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+
+      return metadata;
+    }
+  }
+
+  public static class MissionMetadata extends LocationMetadata
+  {
+    private String contractingOffice;
+
+    private String vendor;
+
+    public String getContractingOffice()
+    {
+      return contractingOffice;
+    }
+
+    public void setContractingOffice(String contractingOffice)
+    {
+      this.contractingOffice = contractingOffice;
+    }
+
+    public String getVendor()
+    {
+      return vendor;
+    }
+
+    public void setVendor(String vendor)
+    {
+      this.vendor = vendor;
+    }
+
+    @Override
+    public LocationMetadata create()
+    {
+      return new MissionMetadata();
+    }
+
+    public LocationMetadata parse(Element item)
+    {
+      MissionMetadata metadata = (MissionMetadata) super.parse(item);
+
+      if (item.hasAttribute("contractingOffice"))
+      {
+        metadata.setContractingOffice(item.getAttribute("contractingOffice"));
+      }
+
+      if (item.hasAttribute("vendor"))
+      {
+        metadata.setVendor(item.getAttribute("vendor"));
+      }
+
+      return metadata;
+    }
+
+    @Override
+    public void populate(UasComponentIF component)
+    {
+      super.populate(component);
+
+      if (component instanceof MissionIF)
+      {
+        MissionIF mission = (MissionIF) component;
+
+        this.setContractingOffice(mission.getContractingOffice());
+        this.setVendor(mission.getVendor());
+      }
+    }
+
+  }
+
+  public static class CollectionMetadata extends LocationMetadata
+  {
+    private BigDecimal northBound;
+
+    private BigDecimal southBound;
+
+    private BigDecimal eastBound;
+
+    private BigDecimal westBound;
+
+    private Boolean    exifIncluded;
+
+    private Date       acquisitionDateStart;
+
+    private Date       acquisitionDateEnd;
+
+    public BigDecimal getNorthBound()
+    {
+      return northBound;
+    }
+
+    public void setNorthBound(BigDecimal northBound)
+    {
+      this.northBound = northBound;
+    }
+
+    public BigDecimal getSouthBound()
+    {
+      return southBound;
+    }
+
+    public void setSouthBound(BigDecimal southBound)
+    {
+      this.southBound = southBound;
+    }
+
+    public BigDecimal getEastBound()
+    {
+      return eastBound;
+    }
+
+    public void setEastBound(BigDecimal eastBound)
+    {
+      this.eastBound = eastBound;
+    }
+
+    public BigDecimal getWestBound()
+    {
+      return westBound;
+    }
+
+    public void setWestBound(BigDecimal westBound)
+    {
+      this.westBound = westBound;
+    }
+
+    public Boolean getExifIncluded()
+    {
+      return exifIncluded;
+    }
+
+    public void setExifIncluded(Boolean exifIncluded)
+    {
+      this.exifIncluded = exifIncluded;
+    }
+
+    public Date getAcquisitionDateStart()
+    {
+      return acquisitionDateStart;
+    }
+
+    public void setAcquisitionDateStart(Date acquisitionDateStart)
+    {
+      this.acquisitionDateStart = acquisitionDateStart;
+    }
+
+    public Date getAcquisitionDateEnd()
+    {
+      return acquisitionDateEnd;
+    }
+
+    public void setAcquisitionDateEnd(Date acquisitionDateEnd)
+    {
+      this.acquisitionDateEnd = acquisitionDateEnd;
+    }
+
+    @Override
+    public void populate(UasComponentIF component)
+    {
+      super.populate(component);
+
+      if (component instanceof CollectionIF)
+      {
+        CollectionIF collection = (CollectionIF) component;
+
+        this.setNorthBound(collection.getNorthBound());
+        this.setSouthBound(collection.getSouthBound());
+        this.setEastBound(collection.getEastBound());
+        this.setWestBound(collection.getWestBound());
+        this.setExifIncluded(collection.getExifIncluded());
+        this.setAcquisitionDateStart(collection.getAcquisitionDateStart());
+        this.setAcquisitionDateEnd(collection.getAcquisitionDateEnd());
+      }
+    }
+
+    @Override
+    public LocationMetadata create()
+    {
+      return new CollectionMetadata();
+    }
+
+    public LocationMetadata parse(Element item)
+    {
+      CollectionMetadata metadata = (CollectionMetadata) super.parse(item);
+
+      if (item.hasAttribute("northBound"))
+      {
+        metadata.setNorthBound(new BigDecimal(item.getAttribute("northBound")));
+      }
+
+      if (item.hasAttribute("southBound"))
+      {
+        metadata.setNorthBound(new BigDecimal(item.getAttribute("southBound")));
+      }
+
+      if (item.hasAttribute("eastBound"))
+      {
+        metadata.setNorthBound(new BigDecimal(item.getAttribute("eastBound")));
+      }
+
+      if (item.hasAttribute("westBound"))
+      {
+        metadata.setNorthBound(new BigDecimal(item.getAttribute("westBound")));
+      }
+
+      if (item.hasAttribute("exifIncluded"))
+      {
+        metadata.setExifIncluded(Boolean.valueOf(item.getAttribute("exifIncluded")));
+      }
+
+      if (item.hasAttribute("acquisitionDateStart"))
+      {
+        try
+        {
+          metadata.setAcquisitionDateStart(Util.parseIso8601(item.getAttribute("acquisitionDateStart"), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+
+      if (item.hasAttribute("acquisitionDateEnd"))
+      {
+        try
+        {
+          metadata.setAcquisitionDateEnd(Util.parseIso8601(item.getAttribute("acquisitionDateEnd"), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
 
       return metadata;
     }
@@ -303,27 +633,27 @@ public class FlightMetadata
 
   }
 
-  private String           name;
+  private String             name;
 
-  private String           email;
+  private String             email;
 
-  private LocationMetadata project;
+  private ProjectMetadata    project;
 
-  private LocationMetadata mission;
+  private MissionMetadata    mission;
 
-  private LocationMetadata collection;
+  private CollectionMetadata collection;
 
-  private PlatformMetadata platform;
+  private PlatformMetadata   platform;
 
-  private SensorMetadata   sensor;
+  private SensorMetadata     sensor;
 
   public FlightMetadata()
   {
     this.name = "";
     this.email = "";
-    this.project = new LocationMetadata();
-    this.mission = new LocationMetadata();
-    this.collection = new LocationMetadata();
+    this.project = new ProjectMetadata();
+    this.mission = new MissionMetadata();
+    this.collection = new CollectionMetadata();
     this.platform = new PlatformMetadata();
     this.sensor = new SensorMetadata();
   }
@@ -348,32 +678,32 @@ public class FlightMetadata
     this.email = email;
   }
 
-  public LocationMetadata getProject()
+  public ProjectMetadata getProject()
   {
     return project;
   }
 
-  public void setProject(LocationMetadata project)
+  public void setProject(ProjectMetadata project)
   {
     this.project = project;
   }
 
-  public LocationMetadata getMission()
+  public MissionMetadata getMission()
   {
     return mission;
   }
 
-  public void setMission(LocationMetadata mission)
+  public void setMission(MissionMetadata mission)
   {
     this.mission = mission;
   }
 
-  public LocationMetadata getCollection()
+  public CollectionMetadata getCollection()
   {
     return collection;
   }
 
-  public void setCollection(LocationMetadata collection)
+  public void setCollection(CollectionMetadata collection)
   {
     this.collection = collection;
   }
@@ -402,9 +732,9 @@ public class FlightMetadata
   {
     this.parsePointOfContact(document);
 
-    this.setProject(this.parseLocation(document, "Project"));
-    this.setMission(this.parseLocation(document, "Mission"));
-    this.setCollection(this.parseLocation(document, "Collect"));
+    this.setProject(this.parseLocation(document, "Project", new ProjectMetadata()));
+    this.setMission(this.parseLocation(document, "Mission", new MissionMetadata()));
+    this.setCollection(this.parseLocation(document, "Collect", new CollectionMetadata()));
 
     this.parsePlatform(document);
     this.parseSensor(document);
@@ -447,7 +777,7 @@ public class FlightMetadata
     }
   }
 
-  private LocationMetadata parseLocation(Document document, String tagName)
+  private <T extends LocationMetadata> T parseLocation(Document document, String tagName, T metadata)
   {
     NodeList nl = document.getElementsByTagName(tagName);
 
@@ -455,10 +785,10 @@ public class FlightMetadata
     {
       Element item = (Element) nl.item(0);
 
-      return LocationMetadata.parse(item);
+      metadata.parse(item);
     }
 
-    return new LocationMetadata();
+    return metadata;
   }
 
   public static FlightMetadata get(UasComponentIF component, String folderName, String filename)
@@ -505,14 +835,11 @@ public class FlightMetadata
 
     UasComponentIF proj = ancestors.get(1);
 
-    metadata.getProject().setName(proj.getName());
-    metadata.getProject().setShortName(proj.getName());
-    metadata.getProject().setDescription(proj.getDescription());
+    metadata.getProject().populate(proj);
 
     UasComponentIF mission = ancestors.get(0);
 
-    metadata.getMission().setName(mission.getName());
-    metadata.getMission().setDescription(mission.getDescription());
+    metadata.getMission().populate(mission);
 
     metadata.getCollection().setName(collection.getName());
     metadata.getCollection().setDescription(collection.getDescription());

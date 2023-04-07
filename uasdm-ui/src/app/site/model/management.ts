@@ -60,6 +60,13 @@ export class SiteEntity {
 	sunsetDate?: string;
 	contractingOffice?: string;
 	vendor?: string;
+	northBound?: number;
+	southBound?: number;
+	eastBound?: number;
+	westBound?: number;
+	exifIncluded?: boolean;
+	acquisitionDateStart?: string;
+	acquisitionDateEnd?: string;
 }
 
 export class CollectionArtifacts {
@@ -98,9 +105,15 @@ export class Selection {
 	pointOfContact?: {
 		name: string,
 		email: string
-	}
+	};
+	northBound?: number;
+	southBound?: number;
+	eastBound?: number;
+	westBound?: number;
+	exifIncluded?: boolean;
+	acquisitionDateStart?: string;
+	acquisitionDateEnd?: string;
 };
-
 
 export class UploadForm {
 	create?: boolean;

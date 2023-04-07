@@ -73,6 +73,51 @@
             </div>
           </div>
 
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('exifIncluded')">
+            <div class="col-md-8">
+              <boolean-field [(value)]="page.selection.exifIncluded" label="EXIF Included">
+              </boolean-field>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('northBound')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">North Bound:</label>
+              <input [(ngModel)]="page.selection.northBound" name="northBound" type="number" class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('southBound')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">South Bound:</label>
+              <input [(ngModel)]="page.selection.southBound" name="northBound" type="number" class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('eastBound')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">East Bound:</label>
+              <input [(ngModel)]="page.selection.eastBound" name="eastBound" type="number" class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('westBound')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">West Bound:</label>
+              <input [(ngModel)]="page.selection.westBound" name="westBound" type="number" class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('acquisitionDateStart')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">Acquisition Date Start:</label>
+              <input [(ngModel)]="page.selection.acquisitionDateStart" name="acquisitionDateStart" type="date"
+                class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('acquisitionDateEnd')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">Acquisition Date End:</label>
+              <input [(ngModel)]="page.selection.acquisitionDateEnd" name="acquisitionDateEnd" type="date"
+                class="form-control" />
+            </div>
+          </div>
+
           <div [@fadeInOnEnter] class="row" *ngIf="hasField('shortName')">
             <div class="col-md-8">
               <label for="shortName" style="margin-top: 10px;">Short Name:</label>

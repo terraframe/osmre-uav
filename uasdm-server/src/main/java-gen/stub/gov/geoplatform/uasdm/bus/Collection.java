@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.bus;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -390,6 +391,48 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Set<String> getExcludes()
   {
     return new TreeSet<String>();
+  }
+
+  @Override
+  public BigDecimal getNorthBound()
+  {
+    return null;
+  }
+
+  @Override
+  public BigDecimal getSouthBound()
+  {
+    return null;
+  }
+
+  @Override
+  public BigDecimal getEastBound()
+  {
+    return null;
+  }
+
+  @Override
+  public BigDecimal getWestBound()
+  {
+    return null;
+  }
+
+  @Override
+  public Boolean getExifIncluded()
+  {
+    return null;
+  }
+
+  @Override
+  public Date getAcquisitionDateStart()
+  {
+    return null;
+  }
+
+  @Override
+  public Date getAcquisitionDateEnd()
+  {
+    return null;
   }
 
   @Override

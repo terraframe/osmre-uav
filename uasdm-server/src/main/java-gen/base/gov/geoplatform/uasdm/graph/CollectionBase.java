@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1227296019)
+@com.runwaysdk.business.ClassSignature(hash = 451132453)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,20 +11,60 @@ package gov.geoplatform.uasdm.graph;
 public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Collection";
-  public static java.lang.String COLLECTIONDATE = "collectionDate";
-  public static java.lang.String COLLECTIONSENSOR = "collectionSensor";
-  public static java.lang.String IMAGEHEIGHT = "imageHeight";
-  public static java.lang.String IMAGEWIDTH = "imageWidth";
-  public static java.lang.String METADATAUPLOADED = "metadataUploaded";
-  public static java.lang.String POCEMAIL = "pocEmail";
-  public static java.lang.String POCNAME = "pocName";
-  public static java.lang.String PRIVILEGETYPE = "privilegeType";
-  public static java.lang.String UAV = "uav";
-  private static final long serialVersionUID = -1227296019;
+  public final static java.lang.String ACQUISITIONDATEEND = "acquisitionDateEnd";
+  public final static java.lang.String ACQUISITIONDATESTART = "acquisitionDateStart";
+  public final static java.lang.String COLLECTIONDATE = "collectionDate";
+  public final static java.lang.String COLLECTIONSENSOR = "collectionSensor";
+  public final static java.lang.String EASTBOUND = "eastBound";
+  public final static java.lang.String EXIFINCLUDED = "exifIncluded";
+  public final static java.lang.String IMAGEHEIGHT = "imageHeight";
+  public final static java.lang.String IMAGEWIDTH = "imageWidth";
+  public final static java.lang.String METADATAUPLOADED = "metadataUploaded";
+  public final static java.lang.String NORTHBOUND = "northBound";
+  public final static java.lang.String POCEMAIL = "pocEmail";
+  public final static java.lang.String POCNAME = "pocName";
+  public final static java.lang.String PRIVILEGETYPE = "privilegeType";
+  public final static java.lang.String SOUTHBOUND = "southBound";
+  public final static java.lang.String UAV = "uav";
+  public final static java.lang.String WESTBOUND = "westBound";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 451132453;
   
   public CollectionBase()
   {
     super();
+  }
+  
+  public java.util.Date getAcquisitionDateEnd()
+  {
+    return (java.util.Date) this.getObjectValue(ACQUISITIONDATEEND);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getAcquisitionDateEndMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(ACQUISITIONDATEEND);
+  }
+  
+  public void setAcquisitionDateEnd(java.util.Date value)
+  {
+    this.setValue(ACQUISITIONDATEEND, value);
+  }
+  
+  public java.util.Date getAcquisitionDateStart()
+  {
+    return (java.util.Date) this.getObjectValue(ACQUISITIONDATESTART);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateDAOIF getAcquisitionDateStartMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateDAOIF)mdClassIF.definesAttribute(ACQUISITIONDATESTART);
+  }
+  
+  public void setAcquisitionDateStart(java.util.Date value)
+  {
+    this.setValue(ACQUISITIONDATESTART, value);
   }
   
   public java.util.Date getCollectionDate()
@@ -72,6 +97,38 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setCollectionSensor(gov.geoplatform.uasdm.graph.Sensor value)
   {
     this.setValue(COLLECTIONSENSOR, value);
+  }
+  
+  public java.math.BigDecimal getEastBound()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(EASTBOUND);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getEastBoundMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(EASTBOUND);
+  }
+  
+  public void setEastBound(java.math.BigDecimal value)
+  {
+    this.setValue(EASTBOUND, value);
+  }
+  
+  public Boolean getExifIncluded()
+  {
+    return (Boolean) this.getObjectValue(EXIFINCLUDED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getExifIncludedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(EXIFINCLUDED);
+  }
+  
+  public void setExifIncluded(Boolean value)
+  {
+    this.setValue(EXIFINCLUDED, value);
   }
   
   public Integer getImageHeight()
@@ -120,6 +177,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setMetadataUploaded(Boolean value)
   {
     this.setValue(METADATAUPLOADED, value);
+  }
+  
+  public java.math.BigDecimal getNorthBound()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(NORTHBOUND);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getNorthBoundMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(NORTHBOUND);
+  }
+  
+  public void setNorthBound(java.math.BigDecimal value)
+  {
+    this.setValue(NORTHBOUND, value);
   }
   
   public String getPocEmail()
@@ -187,6 +260,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     return (com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF)mdClassIF.definesAttribute(PRIVILEGETYPE);
   }
   
+  public java.math.BigDecimal getSouthBound()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(SOUTHBOUND);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getSouthBoundMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(SOUTHBOUND);
+  }
+  
+  public void setSouthBound(java.math.BigDecimal value)
+  {
+    this.setValue(SOUTHBOUND, value);
+  }
+  
   public gov.geoplatform.uasdm.graph.UAV getUav()
   {
     return (gov.geoplatform.uasdm.graph.UAV) this.getObjectValue(UAV);
@@ -201,6 +290,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setUav(gov.geoplatform.uasdm.graph.UAV value)
   {
     this.setValue(UAV, value);
+  }
+  
+  public java.math.BigDecimal getWestBound()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(WESTBOUND);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getWestBoundMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(WESTBOUND);
+  }
+  
+  public void setWestBound(java.math.BigDecimal value)
+  {
+    this.setValue(WESTBOUND, value);
   }
   
   protected String getDeclaredType()

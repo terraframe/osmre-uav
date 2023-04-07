@@ -139,4 +139,16 @@ public class Mission extends MissionBase implements MissionIF
   {
     return new LinkedList<AbstractWorkflowTask>();
   }
+  
+  @Override
+  public String getContractingOffice()
+  {
+    return null;
+  }
+  
+  @Override
+  public String getVendor()
+  {
+    return null;
+  }
 }

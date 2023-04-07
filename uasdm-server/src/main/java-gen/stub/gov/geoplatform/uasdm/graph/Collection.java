@@ -105,7 +105,16 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public List<AttributeType> attributes()
   {
-    return super.attributes();
+    List<AttributeType> attributes = super.attributes();
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.EXIFINCLUDED)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.NORTHBOUND)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.SOUTHBOUND)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.EASTBOUND)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WESTBOUND)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATESTART)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATEEND)));
+
+    return attributes;
   }
 
   @Override

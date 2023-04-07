@@ -22,6 +22,11 @@
           <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control"
             [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
+        <div *ngIf="attribute.type === 'number'">
+          <label>{{attribute.label}}</label>
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="number" class="form-control"
+            [disabled]="attribute.readonly" [required]="attribute.required" />
+        </div>
         <div *ngIf="attribute.type === 'list'">
           <label>{{attribute.label}}</label>
           <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input"

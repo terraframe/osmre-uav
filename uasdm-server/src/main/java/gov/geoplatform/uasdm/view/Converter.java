@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -115,15 +116,35 @@ public abstract class Converter
       {
         String dateStr = (String) siteItem.getValue(attribute.getName());
 
-        try
+        if (dateStr != null)
         {
-          uasComponent.setValue(attribute.getName(), Util.parseIso8601(dateStr, false));
+          try
+          {
+            uasComponent.setValue(attribute.getName(), Util.parseIso8601(dateStr, false));
+          }
+          catch (ParseException e)
+          {
+            GenericException exception = new GenericException(e);
+            exception.setUserMessage(e.getMessage());
+            throw exception;
+          }
         }
-        catch (ParseException e)
+        else
         {
-          GenericException exception = new GenericException(e);
-          exception.setUserMessage(e.getMessage());
-          throw exception;
+          uasComponent.setValue(attribute.getName(), null);
+        }
+      }
+      else if ( ( attribute instanceof AttributeNumberType ))
+      {
+        Double decimal = (Double) siteItem.getValue(attribute.getName());
+
+        if (decimal != null)
+        {
+          uasComponent.setValue(attribute.getName(), new BigDecimal(decimal));
+        }
+        else
+        {
+          uasComponent.setValue(attribute.getName(), null);
         }
       }
       else if (! ( attribute instanceof AttributePointType ))
@@ -264,9 +285,7 @@ public abstract class Converter
     }
 
     final String s3Loc = components.size() > 0 ? components.get(components.size() - 1).getS3location() : "";
-    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") 
-        || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") 
-        || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
+    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
     // boolean hasAllZip = product.getDocuments().stream().filter(doc ->

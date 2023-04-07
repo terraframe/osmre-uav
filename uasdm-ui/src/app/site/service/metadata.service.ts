@@ -12,49 +12,59 @@ export class MetadataService {
 
     constructor() {
         // ( root, leaf, drillable, expandable, uploadable, processable )
-        this.cache['Site'] = new Metadata( true, false, true, false, false, false, 'Projects' );
-        this.cache['Project'] = new Metadata( false, false, true, false, false, false, 'Missions' );
-        this.cache['Mission'] = new Metadata( false, false, false, true, false, false, 'Collections' );
-        this.cache['Collection'] = new Metadata( false, true, false, false, false, true, 'Images' );
-        this.cache['folder'] = new Metadata( false, true, false, false, true, false, '' );
+        this.cache['Site'] = new Metadata(true, false, true, false, false, false, 'Projects');
+        this.cache['Project'] = new Metadata(false, false, true, false, false, false, 'Missions');
+        this.cache['Mission'] = new Metadata(false, false, false, true, false, false, 'Collections');
+        this.cache['Collection'] = new Metadata(false, true, false, false, false, true, 'Images');
+        this.cache['folder'] = new Metadata(false, true, false, false, true, false, '');
 
         // Metadata for specific folder types
-        this.cache['raw'] = new Metadata( false, false, false, false, true, false, '' );
-        this.cache['accessible'] = new Metadata( false, false, false, false, true, false, '' );
+        this.cache['raw'] = new Metadata(false, false, false, false, true, false, '');
+        this.cache['accessible'] = new Metadata(false, false, false, false, true, false, '');
     }
 
-    getMetadata( entity: SiteEntity ): Metadata {
+    getMetadata(entity: SiteEntity): Metadata {
         return this.cache[entity.type];
     }
 
-    getTypeContainsFolders( entity: SiteEntity ): boolean {
-        return ( entity.type === 'Collection' );
+    getTypeContainsFolders(entity: SiteEntity): boolean {
+        return (entity.type === 'Collection');
     }
 
-    isUploadable( type: string ): boolean {
-        if ( this.cache[type] != null ) {
+    isUploadable(type: string): boolean {
+        if (this.cache[type] != null) {
             return this.cache[type].uploadable;
         }
 
         return false;
     }
 
-    hasExtraField( type: string, fieldName: string ): boolean {
-        if ( type === 'Collection' ) {
-            return ( fieldName === 'collectionDate' || fieldName === 'sensor' || fieldName === 'uav' );
+    hasExtraField(type: string, fieldName: string): boolean {
+        if (type === 'Collection') {
+            return (fieldName === 'collectionDate'
+                || fieldName === 'northBound'
+                || fieldName === 'southBound'
+                || fieldName === 'eastBound'
+                || fieldName === 'westBound'
+                || fieldName === 'exifIncluded'
+                || fieldName === 'acquisitionDateStart'
+                || fieldName === 'acquisitionDateEnd'
+
+                || fieldName === 'sensor'
+                || fieldName === 'uav');
         }
-        else if ( type === 'Project' ) {
-            return ( fieldName === 'shortName' || fieldName === 'restricted' || fieldName === 'sunsetDate' );
+        else if (type === 'Project') {
+            return (fieldName === 'shortName' || fieldName === 'restricted' || fieldName === 'sunsetDate');
         }
-        else if ( type === 'Mission' ) {
-            return ( fieldName === 'contractingOffice' || fieldName === 'vendor' );
+        else if (type === 'Mission') {
+            return (fieldName === 'contractingOffice' || fieldName === 'vendor');
         }
 
         return false;
     }
 
-    isProcessable( type: string ): boolean {
-        if ( this.cache[type] != null ) {
+    isProcessable(type: string): boolean {
+        if (this.cache[type] != null) {
             return this.cache[type].processable;
         }
 

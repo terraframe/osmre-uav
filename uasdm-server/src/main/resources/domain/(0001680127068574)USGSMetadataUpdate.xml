@@ -1,0 +1,32 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+  <!-- 
+   -->
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.Collection">
+        <create>
+          <attributes>
+            <decimal name="northBound" label="North Bound" length="7" decimal="5" />
+            <decimal name="southBound" label="South Bound" length="7" decimal="5" />
+            <decimal name="eastBound" label="East Bound" length="7" decimal="5" />
+            <decimal name="westBound" label="West Bound" length="7" decimal="5" />
+            <boolean name="exifIncluded" label="EXIF Included" />
+            <date name="acquisitionDateStart" label="Acquisition Date Start" />
+            <date name="acquisitionDateEnd" label="Acquisition Date End" />
+          </attributes>      
+        </create>      
+      </mdVertex>    
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.Collection.northBound" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.southBound" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.eastBound" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.westBound" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.exifIncluded" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.acquisitionDateStart" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.acquisitionDateEnd" type="com.runwaysdk.system.metadata.MdAttribute"/>
+    </delete>
+  </undoIt>
+</version>

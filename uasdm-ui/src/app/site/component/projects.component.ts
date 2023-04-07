@@ -396,7 +396,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Sit selection from map
-    this.map.on("dblclick", (e) => {
+    this.map.on("click", (e) => {
       let features = this.map.queryRenderedFeatures(e.point, { layers: ["points"] });
 
       if (features.length > 0) {

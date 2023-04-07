@@ -1,23 +1,25 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collector;
 
@@ -56,6 +58,9 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.FlightMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.CollectionMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.MissionMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.ProjectMetadata;
 
 public class MetadataXMLGenerator
 {
@@ -94,17 +99,13 @@ public class MetadataXMLGenerator
 
     UasComponentIF proj = ancestors.get(1);
 
-    metadata.getProject().setName(proj.getName());
-    metadata.getProject().setShortName(proj.getName());
-    metadata.getProject().setDescription(proj.getDescription());
+    metadata.getProject().populate(proj);
 
     UasComponentIF mission = ancestors.get(0);
 
-    metadata.getMission().setName(mission.getName());
-    metadata.getMission().setDescription(mission.getDescription());
+    metadata.getMission().populate(mission);
 
-    metadata.getCollection().setName(collection.getName());
-    metadata.getCollection().setDescription(collection.getDescription());
+    metadata.getCollection().populate(collection);
 
     UAV uav = collection.getUav();
     Platform platform = uav.getPlatform();
@@ -166,37 +167,37 @@ public class MetadataXMLGenerator
     e.setAttribute("fieldCenter", "");
     root.appendChild(e);
 
-    e = dom.createElement("PointOfContact");
-    e.setAttribute("name", metadata.getName());
-    e.setAttribute("email", metadata.getEmail());
+    e = this.createPointOfContactElement(metadata, dom);
     root.appendChild(e);
 
-    e = dom.createElement("Project");
-    e.setAttribute("name", metadata.getProject().getName());
-    e.setAttribute("shortName", metadata.getProject().getShortName());
-    e.setAttribute("description", metadata.getProject().getDescription());
+    e = this.createProjectElement(metadata, dom);
+
     root.appendChild(e);
 
-    e = dom.createElement("Mission");
-    e.setAttribute("name", metadata.getMission().getName());
-    e.setAttribute("description", metadata.getMission().getDescription());
+    e = this.createMissionElement(metadata, dom);
+
     root.appendChild(e);
 
-    e = dom.createElement("Collect");
-    e.setAttribute("name", metadata.getCollection().getName());
-    e.setAttribute("description", metadata.getCollection().getDescription());
+    e = this.createCollectionElement(metadata, dom);
+
     root.appendChild(e);
 
-    String platformName = metadata.getPlatform().getName();
-    e = dom.createElement("Platform");
-    e.setAttribute("name", platformName);
-    // e.setAttribute("class", jPlatform.getString("class"));
-    e.setAttribute("type", metadata.getPlatform().getType());
-    e.setAttribute("serialNumber", metadata.getPlatform().getSerialNumber());
-    e.setAttribute("faaIdNumber", metadata.getPlatform().getFaaIdNumber());
+    e = this.createPlatformElement(metadata, dom);
     root.appendChild(e);
 
-    e = dom.createElement("Sensor");
+    e = this.createSensorElement(metadata, dom);
+    root.appendChild(e);
+
+    e = dom.createElement("Upload");
+    e.setAttribute("dataType", "raw");
+    root.appendChild(e);
+
+    return dom;
+  }
+
+  private Element createSensorElement(FlightMetadata metadata, Document dom)
+  {
+    Element e = dom.createElement("Sensor");
     e.setAttribute("name", metadata.getSensor().getName());
     e.setAttribute("type", metadata.getSensor().getType());
     e.setAttribute("model", metadata.getSensor().getModel());
@@ -228,13 +229,114 @@ public class MetadataXMLGenerator
     e.setAttribute("sensorHeightUnits", "mm");
     e.setAttribute("pixelSizeWidth", metadata.getSensor().getPixelSizeWidth());
     e.setAttribute("pixelSizeHeight", metadata.getSensor().getPixelSizeHeight());
-    root.appendChild(e);
+    return e;
+  }
 
-    e = dom.createElement("Upload");
-    e.setAttribute("dataType", "raw");
-    root.appendChild(e);
+  private Element createPlatformElement(FlightMetadata metadata, Document dom)
+  {
+    Element e = dom.createElement("Platform");
+    String platformName = metadata.getPlatform().getName();
+    e.setAttribute("name", platformName);
+    // e.setAttribute("class", jPlatform.getString("class"));
+    e.setAttribute("type", metadata.getPlatform().getType());
+    e.setAttribute("serialNumber", metadata.getPlatform().getSerialNumber());
+    e.setAttribute("faaIdNumber", metadata.getPlatform().getFaaIdNumber());
+    return e;
+  }
 
-    return dom;
+  private Element createPointOfContactElement(FlightMetadata metadata, Document dom)
+  {
+    Element e = dom.createElement("PointOfContact");
+    e.setAttribute("name", metadata.getName());
+    e.setAttribute("email", metadata.getEmail());
+    return e;
+  }
+
+  private Element createCollectionElement(FlightMetadata metadata, Document dom)
+  {
+    CollectionMetadata collection = metadata.getCollection();
+
+    Element e = dom.createElement("Collect");
+    e.setAttribute("name", collection.getName());
+    e.setAttribute("description", collection.getDescription());
+
+    if (collection.getExifIncluded() != null)
+    {
+      e.setAttribute("exifIncluded", collection.getExifIncluded().toString());
+    }
+
+    if (collection.getNorthBound() != null)
+    {
+      e.setAttribute("northBound", collection.getNorthBound().setScale(5, RoundingMode.DOWN).toPlainString());
+    }
+
+    if (collection.getSouthBound() != null)
+    {
+      e.setAttribute("southBound", collection.getSouthBound().setScale(5, RoundingMode.DOWN).toPlainString());
+    }
+
+    if (collection.getEastBound() != null)
+    {
+      e.setAttribute("eastBound", collection.getEastBound().setScale(5, RoundingMode.DOWN).toPlainString());
+    }
+
+    if (collection.getWestBound() != null)
+    {
+      e.setAttribute("westBound", collection.getWestBound().setScale(5, RoundingMode.DOWN).toPlainString());
+    }
+
+    if (collection.getAcquisitionDateStart() != null)
+    {
+      e.setAttribute("acquisitionDateStart", Util.formatMetadata(collection.getAcquisitionDateStart(), false));
+    }
+
+    if (collection.getAcquisitionDateEnd() != null)
+    {
+      e.setAttribute("acquisitionDateEnd", Util.formatMetadata(collection.getAcquisitionDateEnd(), false));
+    }
+
+    return e;
+  }
+
+  private Element createProjectElement(FlightMetadata metadata, Document dom)
+  {
+    ProjectMetadata project = metadata.getProject();
+
+    Element e = dom.createElement("Project");
+    e.setAttribute("name", project.getName());
+    e.setAttribute("shortName", project.getShortName());
+    e.setAttribute("description", project.getDescription());
+
+    if (project.getRestricted() != null)
+    {
+      e.setAttribute("restricted", project.getRestricted().toString());
+    }
+
+    if (project.getSunsetDate() != null)
+    {
+      e.setAttribute("sunsetDate", Util.formatMetadata(project.getSunsetDate(), false));
+    }
+    return e;
+  }
+
+  private Element createMissionElement(FlightMetadata metadata, Document dom)
+  {
+    MissionMetadata mission = metadata.getMission();
+
+    Element e = dom.createElement("Mission");
+    e.setAttribute("name", mission.getName());
+    e.setAttribute("description", mission.getDescription());
+
+    if (mission.getContractingOffice() != null)
+    {
+      e.setAttribute("contractingOffice", mission.getContractingOffice());
+    }
+
+    if (mission.getVendor() != null)
+    {
+      e.setAttribute("vendor", mission.getVendor());
+    }
+    return e;
   }
 
   @Transaction
@@ -273,7 +375,7 @@ public class MetadataXMLGenerator
       collection.appLock();
       collection.setMetadataUploaded(true);
       collection.apply();
-      
+
       // Remove any messages
       MissingMetadataMessage.remove(collection);
 

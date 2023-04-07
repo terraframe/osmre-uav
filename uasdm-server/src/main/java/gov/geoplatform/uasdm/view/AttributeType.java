@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDateDAOIF;
+import com.runwaysdk.dataaccess.MdAttributeNumberDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeTextDAOIF;
 import com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF;
@@ -153,6 +154,10 @@ public class AttributeType
     else if (mdAttribute instanceof MdAttributeDateDAOIF)
     {
       attributeType = new AttributeDateType();
+    }
+    else if (mdAttribute instanceof MdAttributeNumberDAOIF)
+    {
+      attributeType = new AttributeNumberType();
     }
 
     attributeType.setName(mdAttribute.definesAttribute());
