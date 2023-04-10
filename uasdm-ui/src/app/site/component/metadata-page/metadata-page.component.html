@@ -27,17 +27,79 @@
         <div class="col-md-12">
 
             <div class="panel panel-default">
+                <div class="panel-heading">Collection</div>
+                <div class="panel-body">
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <boolean-field [(value)]="page.selection.exifIncluded" label="EXIF Included">
+                            </boolean-field>
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">North Bound:</label>
+                            <input [(ngModel)]="page.selection.northBound" name="northBound" type="number"
+                                class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">South Bound:</label>
+                            <input [(ngModel)]="page.selection.southBound" name="northBound" type="number"
+                                class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">East Bound:</label>
+                            <input [(ngModel)]="page.selection.eastBound" name="eastBound" type="number"
+                                class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">West Bound:</label>
+                            <input [(ngModel)]="page.selection.westBound" name="westBound" type="number"
+                                class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Acquisition Date Start:</label>
+                            <input [(ngModel)]="page.selection.acquisitionDateStart" name="acquisitionDateStart"
+                                type="date" class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Acquisition Date End:</label>
+                            <input [(ngModel)]="page.selection.acquisitionDateEnd" name="acquisitionDateEnd" type="date"
+                                class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
                 <div class="panel-heading">Platform</div>
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="platform.name">UAV</label>
                         <div>
                             <span>
-                                <input id="serialNumber" style="height:auto;" type="radio" value="serialNumber" name="field" [checked]="field === 'serialNumber'" [(ngModel)]="field">
+                                <input id="serialNumber" style="height:auto;" type="radio" value="serialNumber"
+                                    name="field" [checked]="field === 'serialNumber'" [(ngModel)]="field">
                                 <label for="serialNumber" style="margin-left: 5px;">Serial Number</label>
                             </span>
                             <span style="margin-left: 15px;">
-                                <input id="faaNumber" style="height:auto;" type="radio" value="faaNumber" name="field" [checked]="field === 'faaNumber'" [(ngModel)]="field">
+                                <input id="faaNumber" style="height:auto;" type="radio" value="faaNumber" name="field"
+                                    [checked]="field === 'faaNumber'" [(ngModel)]="field">
                                 <label for="faaNumber" style="margin-left: 5px;">FAA Number</label>
                             </span>
                         </div>

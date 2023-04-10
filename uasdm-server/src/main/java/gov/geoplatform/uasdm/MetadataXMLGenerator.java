@@ -117,34 +117,39 @@ public class MetadataXMLGenerator
     metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
 
     Sensor sensor = collection.getSensor();
-    SensorType sensorType = sensor.getSensorType();
 
-    List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
-    JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
-
-    metadata.getSensor().setName(sensor.getName());
-    metadata.getSensor().setType(sensorType.getName());
-    metadata.getSensor().setModel(sensor.getModel());
-    metadata.getSensor().setWavelength(array.toString());
-
-    Integer width = collection.getImageWidth();
-
-    if (width != null && width != 0)
+    if (sensor != null)
     {
-      metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
+
+      SensorType sensorType = sensor.getSensorType();
+
+      List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
+      JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+
+      metadata.getSensor().setName(sensor.getName());
+      metadata.getSensor().setType(sensorType.getName());
+      metadata.getSensor().setModel(sensor.getModel());
+      metadata.getSensor().setWavelength(array.toString());
+
+      Integer width = collection.getImageWidth();
+
+      if (width != null && width != 0)
+      {
+        metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
+      }
+
+      Integer height = collection.getImageHeight();
+
+      if (height != null && height != 0)
+      {
+        metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
+      }
+
+      metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
+      metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
+      metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+      metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
     }
-
-    Integer height = collection.getImageHeight();
-
-    if (height != null && height != 0)
-    {
-      metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
-    }
-
-    metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
-    metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
-    metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
-    metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
 
     return metadata;
   }
@@ -267,22 +272,22 @@ public class MetadataXMLGenerator
 
     if (collection.getNorthBound() != null)
     {
-      e.setAttribute("northBound", collection.getNorthBound().setScale(5, RoundingMode.DOWN).toPlainString());
+      e.setAttribute("northBound", collection.getNorthBound().setScale(5, RoundingMode.HALF_UP).toPlainString());
     }
 
     if (collection.getSouthBound() != null)
     {
-      e.setAttribute("southBound", collection.getSouthBound().setScale(5, RoundingMode.DOWN).toPlainString());
+      e.setAttribute("southBound", collection.getSouthBound().setScale(5, RoundingMode.HALF_UP).toPlainString());
     }
 
     if (collection.getEastBound() != null)
     {
-      e.setAttribute("eastBound", collection.getEastBound().setScale(5, RoundingMode.DOWN).toPlainString());
+      e.setAttribute("eastBound", collection.getEastBound().setScale(5, RoundingMode.HALF_UP).toPlainString());
     }
 
     if (collection.getWestBound() != null)
     {
-      e.setAttribute("westBound", collection.getWestBound().setScale(5, RoundingMode.DOWN).toPlainString());
+      e.setAttribute("westBound", collection.getWestBound().setScale(5, RoundingMode.HALF_UP).toPlainString());
     }
 
     if (collection.getAcquisitionDateStart() != null)

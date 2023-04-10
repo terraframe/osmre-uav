@@ -43,10 +43,20 @@ export class MetadataPageComponent implements OnInit {
 
 		if (this.page.selection.pointOfContact == null) {
 			this.service.getMetadataOptions(null).then(metadataOption => {
+				this.page.selection.exifIncluded = metadataOption.exifIncluded;
+				this.page.selection.northBound = metadataOption.northBound;
+				this.page.selection.southBound = metadataOption.southBound;
+				this.page.selection.eastBound = metadataOption.eastBound;
+				this.page.selection.westBound = metadataOption.westBound;
+				this.page.selection.acquisitionDateStart = metadataOption.acquisitionDateStart;
+				this.page.selection.acquisitionDateEnd = metadataOption.acquisitionDateEnd;
+
 				this.page.selection.pointOfContact = {
 					name: metadataOption.name,
 					email: metadataOption.email
 				};
+
+
 			});
 		}
 

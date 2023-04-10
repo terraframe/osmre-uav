@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,6 +53,7 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
@@ -68,6 +70,7 @@ import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -509,11 +512,34 @@ public class ProjectManagementService
 
     uasComponent.apply();
 
+    this.updateMetadata(uasComponent);
+
     // uasComponent.unlock();
 
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
     return updatedSiteItem;
+  }
+
+  private void updateMetadata(UasComponentIF component)
+  {
+    if (component instanceof CollectionIF)
+    {
+      try
+      {
+
+        new MetadataXMLGenerator().generateAndUpload((CollectionIF) component);
+      }
+      catch (Exception e)
+      {
+        // Swallow error and print the stack
+        e.printStackTrace();
+      }
+    }
+    else
+    {
+      component.getChildren().forEach(child -> this.updateMetadata(child));
+    }
   }
 
   @Request(RequestType.SESSION)
@@ -627,6 +653,20 @@ public class ProjectManagementService
         collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
+    
+    if (selection.has(Collection.EXIFINCLUDED))
+    {
+      collection.setValue(Collection.EXIFINCLUDED, selection.getBoolean(Collection.EXIFINCLUDED));
+    }
+
+    ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.NORTHBOUND);
+    ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.SOUTHBOUND);
+    ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.EASTBOUND);
+    ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.WESTBOUND);
+    ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATESTART);
+    ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATEEND);
+    ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONDATE);
+
 
     collection.apply();
 
@@ -864,6 +904,42 @@ public class ProjectManagementService
 
         response.put("name", collection.getPocName());
         response.put("email", collection.getPocEmail());
+        
+        if (collection.getExifIncluded() != null)
+        {
+          response.put("exifIncluded", collection.getExifIncluded());
+        }
+
+        if (collection.getNorthBound() != null)
+        {
+          response.put("northBound", collection.getNorthBound().setScale(5, RoundingMode.HALF_UP));
+        }
+
+        if (collection.getSouthBound() != null)
+        {
+          response.put("southBound", collection.getSouthBound().setScale(5, RoundingMode.HALF_UP));
+        }
+
+        if (collection.getEastBound() != null)
+        {
+          response.put("eastBound", collection.getEastBound().setScale(5, RoundingMode.HALF_UP));
+        }
+
+        if (collection.getWestBound() != null)
+        {
+          response.put("westBound", collection.getWestBound().setScale(5, RoundingMode.HALF_UP));
+        }
+
+        if (collection.getAcquisitionDateStart() != null)
+        {
+          response.put("acquisitionDateStart", Util.formatIso8601(collection.getAcquisitionDateStart(), false));
+        }
+
+        if (collection.getAcquisitionDateEnd() != null)
+        {
+          response.put("acquisitionDateEnd", Util.formatIso8601(collection.getAcquisitionDateEnd(), false));
+        }
+
       }
     }
 

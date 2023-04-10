@@ -16,6 +16,7 @@ import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
 import { Criteria, StacItem } from '@site/model/layer';
 import { environment } from 'src/environments/environment';
+import { MetadataResponse } from '@site/model/uav';
 
 
 
@@ -568,7 +569,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getMetadataOptions(id: string): Promise<{ name: string, email: string, uav: any, sensor: any }> {
+	getMetadataOptions(id: string): Promise<MetadataResponse> {
 
 		let params: HttpParams = new HttpParams();
 
@@ -577,7 +578,7 @@ export class ManagementService {
 		}
 
 		return this.noErrorHttpClient
-			.get<{ name: string, email: string, uav: any, sensor: any }>(environment.apiUrl + '/project/metadata-options', { params: params })
+			.get<MetadataResponse>(environment.apiUrl + '/project/metadata-options', { params: params })
 			.toPromise()
 	}
 

@@ -23,3 +23,18 @@ export class MetadataOptions {
         email: string
     };
 }
+
+export class MetadataResponse {
+    name: string; 
+    email: string; 
+    uav: any; 
+    sensor: any;
+	northBound?: number;
+	southBound?: number;
+	eastBound?: number;
+	westBound?: number;
+	exifIncluded?: boolean;
+	acquisitionDateStart?: string;
+	acquisitionDateEnd?: string;
+}
+
