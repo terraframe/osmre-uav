@@ -989,6 +989,14 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
+  public RemoteFileObject downloadReport(String sessionId, String colId, String folder)
+  {
+    Collection collection = Collection.get(colId);
+    
+    return collection.downloadReport(folder);
+  }
+  
+  @Request(RequestType.SESSION)
   public String createCollection(String sessionId, String json)
   {
     JSONArray selections = new JSONArray(json);

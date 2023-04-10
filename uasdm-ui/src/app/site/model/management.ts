@@ -69,12 +69,16 @@ export class SiteEntity {
 	acquisitionDateEnd?: string;
 }
 
-export class CollectionArtifacts {
-	dem?: [SiteEntity];
-	ortho?: [SiteEntity];
-	ptcloud?: [SiteEntity];
+export class CollectionArtifact {
+	report?: boolean;
+	items?: [SiteEntity];
 }
 
+export class CollectionArtifacts {
+	dem?: CollectionArtifact;
+	ortho?: CollectionArtifact;
+	ptcloud?: CollectionArtifact;
+}
 
 export class CollectionHierarchy {
 	site: string;

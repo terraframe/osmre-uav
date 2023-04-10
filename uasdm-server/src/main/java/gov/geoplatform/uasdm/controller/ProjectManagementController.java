@@ -226,6 +226,16 @@ public class ProjectManagementController
 
     return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
   }
+  
+
+  @Endpoint(url = "download-report", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF downloadReport(ClientRequestIF request, final @RequestParamter(name = "colId") String colId, final @RequestParamter(name = "folder") String folder)
+  {
+    final String sessionId = request.getSessionId();
+
+    return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, folder));
+  }
+
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF runOrtho(ClientRequestIF request, 

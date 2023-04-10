@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -71,19 +71,19 @@ import net.geoprism.GeoprismUser;
 
 public class Collection extends CollectionBase implements ImageryComponent, CollectionIF
 {
-  public static final long serialVersionUID = 166854005;
+  public static final long    serialVersionUID = 166854005;
 
-  private static final String PARENT_EDGE = "gov.geoplatform.uasdm.graph.MissionHasCollection";
+  private static final String PARENT_EDGE      = "gov.geoplatform.uasdm.graph.MissionHasCollection";
 
-  public static final String SENSOR = "sensor";
+  public static final String  SENSOR           = "sensor";
 
-  public static final String POINT_OF_CONTACT = "pointOfContact";
+  public static final String  POINT_OF_CONTACT = "pointOfContact";
 
-  public static final String NAME = "name";
+  public static final String  NAME             = "name";
 
-  public static final String EMAIL = "email";
+  public static final String  EMAIL            = "email";
 
-  final Logger log = LoggerFactory.getLogger(Collection.class);
+  final Logger                log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
   {
@@ -189,6 +189,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     CollectionReport.updateDownloadCount(this);
 
     return super.download(key);
+  }
+
+  public RemoteFileObject downloadReport(String folder)
+  {
+    return this.download(folder + "/report.pdf");
   }
 
   @Override
@@ -469,7 +474,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    if (!(folder.equals(RAW) || folder.equals("image")) && ( pageNumber != null || pageSize != null ))
+    if (! ( folder.equals(RAW) || folder.equals("image") ) && ( pageNumber != null || pageSize != null ))
     {
       throw new ProgrammingErrorException(new UnsupportedOperationException("Pagination only supported for raw right now."));
     }

@@ -225,6 +225,12 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		// });
 	}
 
+	handleDownloadReport(section: { label: string, folder: string }): void {
+
+
+		window.location.href = environment.apiUrl + '/project/download-report?colId=' + this.entity.id + "&folder=" + section.folder;
+	}
+
 	capitalize(str): string {
 		return str.replace(/^\w/, c => c.toUpperCase());
 	}

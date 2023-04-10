@@ -88,6 +88,59 @@ import net.geoprism.rbac.RoleConstants;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
+  private static class Artifact
+  {
+    private List<SiteObject> objects;
+
+    private boolean          report;
+
+    private String           folder;
+
+    private String[]         extensions;
+
+    public Artifact(String folder, String... extensions)
+    {
+      this.folder = folder;
+      this.extensions = extensions;
+      this.report = false;
+      this.objects = new LinkedList<SiteObject>();
+    }
+
+    public void process(SiteObject object)
+    {
+      if (object.getKey().contains("/" + this.folder + "/"))
+      {
+        for (String extension : extensions)
+        {
+          if (object.getKey().toUpperCase().endsWith(extension))
+          {
+            this.objects.add(object);
+
+            break;
+          }
+        }
+
+        if (object.getKey().toUpperCase().endsWith("REPORT.PDF"))
+        {
+          this.report = true;
+        }
+      }
+
+    }
+
+    public JSONObject toJSON()
+    {
+      JSONArray items = new JSONArray();
+
+      this.objects.forEach(object -> items.put(object.toJSON()));
+
+      JSONObject object = new JSONObject();
+      object.put("report", this.report);
+      object.put("items", items);
+      return object;
+    }
+  }
+
   private static final long serialVersionUID = -1526604195;
 
   private Logger            log              = LoggerFactory.getLogger(UasComponent.class);
@@ -414,32 +467,25 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
 
-    JSONObject response = new JSONObject();
-
-    JSONArray dem = new JSONArray();
-    response.put(ImageryComponent.DEM, dem);
-
-    JSONArray ortho = new JSONArray();
-    response.put(ImageryComponent.ORTHO, ortho);
-
-    JSONArray ptcloud = new JSONArray();
-    response.put(ImageryComponent.PTCLOUD, ptcloud);
+    Artifact[] artifacts = new Artifact[] { 
+        new Artifact(ImageryComponent.DEM, ".TIF"), 
+        new Artifact(ImageryComponent.ORTHO, ".TIF"), 
+        new Artifact(ImageryComponent.PTCLOUD, ".LAZ", ".LAS")
+    };
 
     for (SiteObject object : objects)
     {
-      if (object.getKey().contains("/" + ImageryComponent.DEM + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
+      for (Artifact artifact : artifacts)
       {
-        dem.put(object.toJSON());
+        artifact.process(object);
       }
-      else if (object.getKey().contains("/" + ImageryComponent.ORTHO + "/") && object.getKey().toUpperCase().endsWith(".TIF"))
-      {
-        ortho.put(object.toJSON());
-      }
-      else if (object.getKey().contains("/" + ImageryComponent.PTCLOUD + "/") && 
-          (object.getKey().toUpperCase().endsWith(".LAZ") || object.getKey().toUpperCase().endsWith(".LAS")))
-      {
-        ptcloud.put(object.toJSON());
-      }
+    }
+
+    JSONObject response = new JSONObject();
+
+    for (Artifact artifact : artifacts)
+    {
+      response.put(artifact.folder, artifact.toJSON());
     }
 
     return response;
