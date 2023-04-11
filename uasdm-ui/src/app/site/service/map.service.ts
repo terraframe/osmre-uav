@@ -55,13 +55,17 @@ export class MapService {
             .get(url, { params: params })
             .toPromise()
     }
-    
+
     tilejson(url: string): Promise<TileJson> {
         let params: HttpParams = new HttpParams();
 
         return this.http
             .get<TileJson>(url)
             .toPromise()
+    }
+
+    getMapboxKey(): string {
+        return mapboxKey;
     }
 
 }

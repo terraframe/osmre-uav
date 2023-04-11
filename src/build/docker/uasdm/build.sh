@@ -25,7 +25,8 @@ tag=${tag:-'latest'}
 ([ -d target ] && rm -rf target) || true
 mkdir target
 cp ../../../../uasdm-web/target/uasdm.war target/uasdm.war
-cp -R ../../../../envcfg/prod target/appcfg
+cp -R ../../../../envcfg/osmre-dev target/appcfg
+cp -R ../../../../envcfg/envcfg.properties target/appcfg
 
 docker build -t terraframe/uasdm:$tag .
 
@@ -33,4 +34,4 @@ if [ "$CGR_RELEASE_VERSION" != "latest" ]; then
   docker tag terraframe/uasdm:$tag terraframe/uasdm:latest
 fi
 
-docker save terraframe/uasdm:$tag | gzip > target/uasdm.dimg.gz
+# docker save terraframe/uasdm:$tag | gzip > target/uasdm.dimg.gz

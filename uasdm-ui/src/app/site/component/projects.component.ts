@@ -130,13 +130,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   baseLayers: any[] = [{
     label: "Outdoors",
     id: "outdoors-v11",
+    url: "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/tiles/{z}/{x}/{y}",
     selected: true
   }, {
     label: "Satellite",
-    id: "satellite-v9"
+    id: "satellite-v9",
+    url: "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90"
   }, {
     label: "Streets",
-    id: "streets-v11"
+    id: "streets-v11",
+    url: "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}",
   }];
 
   layers: MapLayer[] = [];
@@ -327,7 +330,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           'raster-tiles': {
             'type': 'raster',
             'tiles': [
-              'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ'
+              this.baseLayers[0].url + "?access_token=" + this.mapService.getMapboxKey()
             ],
             'tileSize': 512,
           }
@@ -860,7 +863,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     layer.selected = true;
 
-    this.map.setStyle("mapbox://styles/mapbox/" + layer.id);
+    this.map.setStyle({
+      'version': 8,
+      'sources': {
+        'raster-tiles': {
+          'type': 'raster',
+          'tiles': [
+            layer.url + "?access_token=" + this.mapService.getMapboxKey()
+          ],
+          'tileSize': 512,
+        }
+      },
+      "glyphs": window.location.protocol + "//" + window.location.host + EnvironmentUtil.getApiUrl() + "/glyphs/{fontstack}/{range}.pbf",
+      'layers': [
+        {
+          'id': 'simple-tiles',
+          'type': 'raster',
+          'source': 'raster-tiles',
+          'minzoom': 0,
+          'maxzoom': 22
+        }
+      ]
+    });
   }
 
   highlightMapFeature(id: string): void {
