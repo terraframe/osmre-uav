@@ -17,7 +17,7 @@
         <td>
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
-	            <tr *ngFor="let artifact of artifacts[section.folder]">
+	            <tr *ngFor="let artifact of artifacts[section.folder].items">
 	              {{ artifact.name }}
 	            </tr>
             </table>
@@ -26,7 +26,7 @@
         <td>
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
-              <tr *ngFor="let artifact of artifacts[section.folder]">
+              <tr *ngFor="let artifact of artifacts[section.folder].items">
                 {{ artifact.tool }}
               </tr>
             </table>
@@ -35,7 +35,7 @@
         <td>
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
-              <tr *ngFor="let artifact of artifacts[section.folder]">
+              <tr *ngFor="let artifact of artifacts[section.folder].items">
                 {{ artifact.lastModified }}
               </tr>
             </table>
@@ -44,30 +44,35 @@
         <td>
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
-              <tr *ngFor="let artifact of artifacts[section.folder]">
+              <tr *ngFor="let artifact of artifacts[section.folder].items">
                 {{ artifact.description }}
               </tr>
             </table>
           </ng-container>
         </td>
         <td *ngIf="!edit" style="text-align:right;">
-          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].length > 0" type="button" class="btn btn-warning"
+          <button type="button" class="btn btn-secondary" *ngIf="artifacts[section.folder] != null && artifacts[section.folder].report"
+            [disabled]="processRunning" (click)="handleDownloadReport(section)" style="margin: 5px 5px;">
+            Download report
+          </button>
+
+          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].items.length > 0" type="button" class="btn btn-warning"
             [disabled]="processRunning" (click)="handleRemove(section)" style="margin: 5px 0;">
             Remove
           </button>
-          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].length == 0" type="button" class="btn btn-primary"
+          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].items.length == 0" type="button" class="btn btn-primary"
             [disabled]="processRunning" (click)="handleUpload(section.folder)" style="margin: 5px 0;">
             Upload
           </button>
         </td>
         <td *ngIf="edit">
           <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'">
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'">
           </boolean-field>
           <boolean-field *ngIf="section.folder === 'dem'" [(value)]="config.processDem"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
           <boolean-field *ngIf="section.folder === 'ortho'" [(value)]="config.processOrtho"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
         </td>
 
       </tr>

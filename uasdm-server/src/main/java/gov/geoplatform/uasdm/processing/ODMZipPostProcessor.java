@@ -163,6 +163,9 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dtm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
 
       this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new HillshadeProcessor(buildS3Path(DEM_GDAL, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+
+      // Add the report to the dem folder
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
 
     if (this.progressTask != null && this.progressTask.getProcessOrtho())
@@ -174,6 +177,9 @@ public class ODMZipPostProcessor
       {
         this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
       }
+      
+      // Add the report to the ortho folder
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
 
     if (this.progressTask != null && this.progressTask.getProcessPtcloud())
@@ -185,7 +191,12 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data"), this.product, this.collection, monitor));
+      
+      // Add the report to the pt clould folder
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
+    
+
   }
 
   public static String buildS3Path(String folder, String prefix, String filename)

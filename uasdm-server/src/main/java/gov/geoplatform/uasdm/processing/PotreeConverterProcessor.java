@@ -30,7 +30,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
-public class PotreeConverterProcessor extends S3FileUpload
+public class PotreeConverterProcessor extends ManagedDocument
 {
   private Logger logger = LoggerFactory.getLogger(PotreeConverterProcessor.class);
 
@@ -61,7 +61,16 @@ public class PotreeConverterProcessor extends S3FileUpload
 
         if (success && outputDirectory.exists())
         {
-          super.process(new FileResource(outputDirectory));
+          File[] files = outputDirectory.listFiles();
+
+          if (files != null)
+          {
+            // Upload all of the generated files
+            for (File outfile : files)
+            {
+              super.process(new FileResource(outfile));
+            }
+          }
         }
         else
         {
