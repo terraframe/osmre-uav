@@ -29,6 +29,8 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         minNumFeatures: 10000,
         pcQuality: "MEDIUM"
     };
+    
+    isAdvancedSettingsCollapsed = true;
 
     /*
      * Called on confirm

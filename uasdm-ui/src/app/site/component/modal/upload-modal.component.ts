@@ -47,6 +47,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	importedValues: boolean = false;
 
 	message: string = "";
+	
+	isAdvancedSettingsCollapsed = true;
 
 	/* 
 	 * Form values
