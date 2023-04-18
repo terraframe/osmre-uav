@@ -18,7 +18,7 @@
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
 	            <tr *ngFor="let artifact of artifacts[section.folder].items">
-	              {{ artifact.name }}
+	              <a (click)="handleDownloadFile(artifact)">{{ artifact.name }}</a>
 	            </tr>
             </table>
           </ng-container>
