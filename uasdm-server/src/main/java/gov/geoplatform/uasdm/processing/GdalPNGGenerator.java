@@ -27,11 +27,11 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
-public class GdalTransformProcessor extends ManagedDocument
+public class GdalPNGGenerator extends ManagedDocument
 {
-  private Logger logger = LoggerFactory.getLogger(GdalTransformProcessor.class);
+  private Logger logger = LoggerFactory.getLogger(GdalPNGGenerator.class);
   
-  public GdalTransformProcessor(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public GdalPNGGenerator(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
   {
     super(s3Path, product, collection, monitor, false);
   }

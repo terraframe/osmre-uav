@@ -47,7 +47,7 @@ export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
 
 sudo docker rm -f $(docker ps -a -q --filter="name=uasdm-clusterodm") || true
-docker run -d -p 4000:3000 -p 4500:8080 -p 10000:10000 -v $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-dev.json:/var/www/config-uasdm.json --link uasdm-nodeodm --name uasdm-clusterodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm --asr /var/www/config-uasdm.json --public-address http://67.165.199.18:4000/
+docker run -d -p 4000:3000 -p 4500:8080 -p 10000:10000 -v $UASDM/uasdm/uasdm-clusterodm/build/config/target/aws-config-dev.json:/var/www/config-uasdm.json --link uasdm-nodeodm --name uasdm-clusterodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm --debug --log-level debug --asr /var/www/config-uasdm.json --public-address http://67.165.199.18:4000/
 
 sleep 2;
 

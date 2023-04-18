@@ -37,7 +37,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
-import gov.geoplatform.uasdm.processing.GdalTransformProcessor;
+import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
@@ -92,7 +92,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
         new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(infile);
       }
 
-      new GdalTransformProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
+      new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
     }
 
     if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())

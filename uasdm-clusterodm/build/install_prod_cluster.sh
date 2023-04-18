@@ -111,7 +111,7 @@ docker run -d -p 4001:3000 --restart always -p 4501:8080 -p 10001:10000 \
   -v /data/odm-cluster/dev/config/aws-config-dev.json:/var/www/config-uasdm.json -v /data/odm-cluster/dev/tmp:/var/www/tmp \
   -v /data/odm-cluster/dev/data:/var/www/data \
   --link uasdm-nodeodm-dev \
-  --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --name uasdm-clusterodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:devdeploy \
   --debug --log-level debug \
   --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4001/
 
@@ -127,7 +127,7 @@ docker run -d -p 4002:3000 --restart always -p 4502:8080 -p 10002:10000 \
   -v /data/odm-cluster/staging/config/aws-config-staging.json:/var/www/config-uasdm.json -v /data/odm-cluster/staging/tmp:/var/www/tmp \
   -v /data/odm-cluster/staging/data:/var/www/data \
   --link uasdm-nodeodm-staging \
-  --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --name uasdm-clusterodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:staging \
   --debug --log-level debug \
   --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4002/
 
@@ -143,7 +143,7 @@ docker run -d -p 4000:3000 --restart always -p 4500:8080 -p 10000:10000 \
   -v /data/odm-cluster/prod/config/aws-config-prod.json:/var/www/config-uasdm.json -v /data/odm-cluster/prod/tmp:/var/www/tmp \
   -v /data/odm-cluster/prod/data:/var/www/data \
   --link uasdm-nodeodm-prod \
-  --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest \
+  --name uasdm-clusterodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:prod \
   --asr /var/www/config-uasdm.json --public-address http://10.120.10.21:4000/
 
 # If fresh install: (skip if patch)

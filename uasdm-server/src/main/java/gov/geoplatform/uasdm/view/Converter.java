@@ -136,11 +136,37 @@ public abstract class Converter
       }
       else if ( ( attribute instanceof AttributeNumberType ))
       {
-        Double decimal = (Double) siteItem.getValue(attribute.getName());
+        Number number = (Number) siteItem.getValue(attribute.getName());
 
-        if (decimal != null)
+        if (number != null)
         {
-          uasComponent.setValue(attribute.getName(), new BigDecimal(decimal));
+          BigDecimal dec;
+          if (number instanceof Double)
+          {
+            dec = new BigDecimal((Double) number);
+          }
+          else if (number instanceof Integer)
+          {
+            dec = new BigDecimal((Integer) number);
+          }
+          else if (number instanceof Float)
+          {
+            dec = new BigDecimal((Float) number);
+          }
+          else if (number instanceof Long)
+          {
+            dec = new BigDecimal((Long) number);
+          }
+          else if (number instanceof Short)
+          {
+            dec = new BigDecimal((Double) number);
+          }
+          else
+          {
+            throw new UnsupportedOperationException("Unsupported type [" + number.getClass().getTypeName() + "].");
+          }
+          
+          uasComponent.setValue(attribute.getName(), dec);
         }
         else
         {

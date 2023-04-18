@@ -406,11 +406,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     if (uploadTarget.equals(ImageryComponent.DEM))
     {
-      return Arrays.asList("tif");
+      return Arrays.asList("tif", "tiff");
     }
     else if (uploadTarget.equals(ImageryComponent.ORTHO))
     {
-      return Arrays.asList("png", "tif");
+      return Arrays.asList("png", "tif", "tiff");
     }
     else if (uploadTarget.equals(ImageryComponent.PTCLOUD))
     {
@@ -421,7 +421,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       return Arrays.asList("mp4");
     }
 
-    return Arrays.asList("jpg", "jpeg", "png");
+    return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
   }
 
   private static boolean isMultispectral(AbstractWorkflowTask task)
