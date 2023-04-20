@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.model;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
@@ -108,24 +109,16 @@ public interface UasComponentIF extends ComponentIF
   public UasComponentIF getChild(String name);
 
   public UasComponentIF createDefaultChild();
+  
+  public static final String DISALLOWED_FILENAME_REGEX = "[^a-zA-Z0-9._]";
 
   public static boolean isValidName(String name)
   {
-    if (name.contains(" ") || name.contains("<") || name.contains(">") || name.contains("-") || name.contains("+") || name.contains("=") || name.contains("!") || name.contains("@") || name.contains("#") || name.contains("$") || name.contains("%") || name.contains("^") || name.contains("&") || name.contains("*") || name.contains("?") || name.contains(";") || name.contains(":") || name.contains(",") || name.contains("^") || name.contains("{") || name.contains("}") || name.contains("]") || name.contains("[") || name.contains("`") || name.contains("~") || name.contains("|") || name.contains("/") || name.contains("\\"))
-    {
-      return false;
-    }
-
-    return true;
+    return ! Pattern.compile(DISALLOWED_FILENAME_REGEX).matcher(name).find();
   }
 
   public static boolean isValid(char c)
   {
-    if (c == ' ' || c == '<' || c == '>' || c == '-' || c == '+' || c == '=' || c == '!' || c == '@' || c == '#' || c == '$' || c == '%' || c == '^' || c == '&' || c == '*' || c == '?' || c == ';' || c == ':' || c == ',' || c == '^' || c == '{' || c == '}' || c == ']' || c == '[' || c == '`' || c == '~' || c == '|' || c == '/' || c == '\\')
-    {
-      return false;
-    }
-
-    return true;
+    return Character.isLetterOrDigit(c) || c == '_';
   }
 }

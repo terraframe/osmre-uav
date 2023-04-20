@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -227,6 +229,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     final boolean isMultispectral = isMultispectral(task);
 
     boolean hasFiles = false;
+    Set<String> filenameSet = new HashSet<String>();
 
     byte buffer[] = new byte[Util.BUFFER_SIZE];
 
@@ -249,7 +252,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               ZipArchiveEntry entry = entries.nextElement();
 
               String filename = entry.getName();
-
+              
               boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
               if (!entry.isDirectory())
@@ -259,6 +262,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 int len;
 
                 filename = FilenameUtils.getName(filename);
+                
+                filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
+                
+                if (filenameSet.contains(filename)) {
+                  task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
+                  continue;
+                } else {
+                  filenameSet.add(filename);
+                }
 
                 zos.putNextEntry(new ZipEntry(filename));
 
@@ -289,7 +301,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
               {
                 String filename = entry.getName();
-
+                
                 boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
                 if (!entry.isDirectory())
@@ -299,6 +311,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   int count;
 
                   filename = FilenameUtils.getName(filename);
+                  
+                  filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
+                  
+                  if (filenameSet.contains(filename)) {
+                    task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
+                    continue;
+                  } else {
+                    filenameSet.add(filename);
+                  }
 
                   TarArchiveEntry tarEntry = new TarArchiveEntry(filename);
 
@@ -374,9 +395,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       if (!isValidName)
       {
-        task.createAction("The filename [" + filename + "] is invalid. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.", TaskActionType.ERROR.getType());
+        task.createAction("The filename [" + filename + "] contains special characters which will be replaced with an underscore.", TaskActionType.ERROR.getType());
 
-        return false;
+        return true; // The file will be renamed later so it's valid. But we do want to let them know we're renaming it.
       }
 
       List<String> extensions = getSupportedExtensions(uploadTarget);

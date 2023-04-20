@@ -100,6 +100,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       if (DevProperties.uploadRaw())
       {
+        // TODO : processUpload is currently always set to true in upload-modal.component.ts
         if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
         {
           boolean isCog = new CogTifValidator().isValidCog(infile);
