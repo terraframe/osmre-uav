@@ -27,7 +27,8 @@
           <ng-container *ngIf="artifacts[section.folder] != null">
             <table>
               <tr *ngFor="let artifact of artifacts[section.folder].items">
-                {{ artifact.tool }}
+                <label *ngIf="!artifacts[section.folder].report || artifact.tool !== 'ODM'">{{ artifact.tool }}</label>
+                <a *ngIf="artifacts[section.folder].report && artifact.tool === 'ODM'" (click)="showODMRun(artifact)">{{ artifact.tool }}</a>
               </tr>
             </table>
           </ng-container>

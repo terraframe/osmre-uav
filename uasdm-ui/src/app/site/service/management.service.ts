@@ -10,7 +10,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -106,7 +106,14 @@ export class ManagementService {
 			.toPromise()
 	}
 
+	getODMRun(artifactId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('artifactId', artifactId);
 
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
+			.toPromise()
+	}
 
 	roots(id: string, conditions: { field: string, value: any }[], sort?: string): Promise<SiteEntity[]> {
 		let params: HttpParams = new HttpParams();

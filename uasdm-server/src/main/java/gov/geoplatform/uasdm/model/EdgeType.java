@@ -32,4 +32,8 @@ public interface EdgeType
   public static final String PROJECT_HAS_MISSION        = "gov.geoplatform.uasdm.graph.ProjectHasMission";
 
   public static final String MISSION_HAS_COLLECTION     = "gov.geoplatform.uasdm.graph.MissionHasCollection";
+  
+  public static final String ODM_RUN_INPUT              = "gov.geoplatform.uasdm.graph.ODMRunInput";
+  
+  public static final String ODM_RUN_OUTPUT             = "gov.geoplatform.uasdm.graph.ODMRunOutput";
 }

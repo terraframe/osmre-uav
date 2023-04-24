@@ -1,3 +1,5 @@
+import { CommonModule } from '@angular/common';  
+import { BrowserModule } from '@angular/platform-browser';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -13,6 +15,7 @@ import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
+import { ODMRunModalComponent } from './odmrun-modal.component';
 
 @Component({
 	selector: 'artifact-page',
@@ -167,7 +170,16 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	}
 
 
-
+	showODMRun(artifact): void {
+		const modal = this.modalService.show(ODMRunModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': ''
+		});
+		
+		modal.content.init(artifact);
+	}
 
 	handleDownloadFile(item: SiteEntity): void {
 		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;

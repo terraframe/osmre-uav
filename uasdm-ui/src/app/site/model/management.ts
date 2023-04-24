@@ -80,6 +80,27 @@ export class CollectionArtifacts {
 	ptcloud?: CollectionArtifact;
 }
 
+export class ODMRun {
+	output: string;
+	config: ODMRunConfig;
+	report: SiteEntity;
+	runStart: string;
+	runEnd: string;
+}
+
+export class ODMRunConfig {
+    processPtcloud: boolean;
+    processDem: boolean;
+    processOrtho: boolean;
+    includeGeoLocationFile: boolean;
+    outFileName: string;
+    resolution: number;
+    videoResolution: number;
+    matcherNeighbors: number;
+    minNumFeatures: number;
+    pcQuality: string;
+}
+
 export class CollectionHierarchy {
 	site: string;
 	project: string;

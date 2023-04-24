@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.processing;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -33,12 +34,15 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.odm.ODMFacade;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -103,7 +107,7 @@ public class ODMZipPostProcessor
         this.uploadAllZip(allZip);
       }
     }
-
+    
     List<String> list = new ArrayList<String>();
     if (this.progressTask != null)
     {
@@ -121,6 +125,30 @@ public class ODMZipPostProcessor
       {
         raw.addGeneratedProduct(product);
       }
+    }
+    
+    // Create an associated ODMRun
+    if (this.progressTask != null)
+    {
+      final ODMProcessingTask processingTask = (ODMProcessingTask) this.progressTask.getProcessingTask();
+      final ODMRun odmRun = ODMRun.getForTask(processingTask);
+      
+      product.getProductHasDocumentChildDocuments().forEach(doc -> {
+        odmRun.addODMRunOutputChild(doc).apply();
+        
+        if (doc.getName().equals("report.pdf"))
+        {
+          odmRun.setReport(doc);
+        }
+      });
+      
+      odmRun.setOutput(processingTask.getOdmOutput());
+      
+      odmRun.setComponent((Collection) this.collection);
+      
+      odmRun.setRunEnd(new Date());
+      
+      odmRun.apply();
     }
 
     product.updateBoundingBox();

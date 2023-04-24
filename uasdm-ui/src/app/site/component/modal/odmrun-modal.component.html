@@ -1,0 +1,128 @@
+<div>
+  <div class="modal-body" tabindex="-1" role="dialog">
+
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="label-holder">
+          <strong style="color:#8c0000;">Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+    
+    <div *ngIf="config" class="panel panel-default">
+    	<div class="panel-heading">
+    		Basic Information
+    	</div>
+	    <div class="panel-body" style="padding:10px;">
+	    	<div class="form-group">
+		    	<label>
+		    		Start Time
+		    	</label>
+			    <div>
+			      {{ formatDate(odmRun.runStart) }}
+			    </div>
+		    </div>
+		    
+		    <div class="form-group">
+			    <label>
+		    		End Time
+		    	</label>
+			    <div>
+			      {{ formatDate(odmRun.runEnd) }}
+			    </div>
+		    </div>
+		    
+		    <div class="form-group">
+			    <label>
+		    		Total Runtime
+		    	</label>
+			    <div>
+			      {{ getRuntime() }}
+			    </div>
+		    </div>
+	    </div>
+	</div>
+    
+    <div *ngIf="config" class="panel panel-default">
+    	<div class="panel-heading">
+    		Configuration
+    	</div>
+	    <div class="panel-body" style="padding:10px;">
+	        <div class="form-group">
+	            <label for="outFileName">Output Product Name Prefix</label>
+	            <input [(ngModel)]="config.outFileName" name="outFileName" type="input" class="form-control"
+	                placeholder="Output product name prefix..." disabled />
+	        </div>
+	
+	        <div class="form-group">
+	            <label for="resolution">Orthophoto and DEM Resolution (cm)</label>
+	            <input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control" placeholder="5"
+	                step="1" min="0" disabled />
+	        </div>
+	
+	        <div class="form-group">
+	            <label for="matcherNeighbors">Matcher Nieghbors</label>
+	            <input [(ngModel)]="config.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
+	                placeholder="0" step="1" min="0" disabled />
+	        </div>
+	
+	        <div class="form-group">
+	            <label for="minNumFeatures">Minimum number of features to extract per image</label>
+	            <input [(ngModel)]="config.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
+	                placeholder="10000" step="1" min="0" disabled />
+	        </div>
+	
+	        <div class="form-group">
+	            <label for="pcQuality">Generated point cloud quality</label>
+	            <select [(ngModel)]="config.pcQuality" name="pcQuality" class="form-control" disabled>
+	                <option value="ULTRA">ULTRA</option>
+	                <option value="HIGH">HIGH</option>
+	                <option value="MEDIUM">MEDIUM</option>
+	                <option value="LOW">LOW</option>
+	                <option value="LOWEST">LOWEST</option>
+	            </select>
+	        </div>
+	
+	        <div class="form-group">
+	            <boolean-field [(value)]="config.includeGeoLocationFile"
+	                label="Use geo location file when processing (if uploaded)" [disabled]="true"></boolean-field>
+	        </div>
+	    </div>
+	</div>
+	
+	<div *ngIf="odmRun && odmRun.output" class="panel panel-default">
+    	<div class="panel-heading">
+    		Output
+    	</div>
+	    <div class="panel-body">
+	      <textarea style="color: grey; width: 500px; height: 200px;" [innerHTML]="odmRun.output"></textarea>
+	    </div>
+	</div>
+    
+    <div class="modal-footer">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-holder" style="text-align: right;">
+                    <button type="button" (click)="close()"
+                        class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
+                        <span class="ui-button-text">Close</span>
+                    </button>
+                    <button type="button" (click)="downloadReport()"
+                        class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
+                        <span class="ui-button-text">Download Report</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+</div>

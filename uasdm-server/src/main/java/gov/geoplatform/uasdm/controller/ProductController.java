@@ -43,6 +43,12 @@ public class ProductController
     this.service = new ProductService();
   }
   
+  @Endpoint(url = "get-odm-run", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "artifactId") String artifactId) throws IOException
+  {
+    return new RestBodyResponse(service.getODMRun(request.getSessionId(), artifactId));
+  }
+  
   @Endpoint(url = "get-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getAllZip(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
   {

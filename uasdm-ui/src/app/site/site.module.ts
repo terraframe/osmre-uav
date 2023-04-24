@@ -19,6 +19,7 @@ import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
 import { UploadModalComponent } from './component/modal/upload-modal.component';
+import { ODMRunModalComponent } from './component/modal/odmrun-modal.component';
 import { CollectionModalComponent } from './component/modal/collection-modal.component';
 import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
 import { ProductModalComponent } from './component/modal/product-modal.component';
@@ -87,6 +88,7 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		ImagePreviewModalComponent,
 		CreateCollectionModalComponent,
 		UploadModalComponent,
+		ODMRunModalComponent,
 		ArtifactPageComponent,
 		RunOrthoModalComponent,
 		CollectionModalComponent,
@@ -128,6 +130,7 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		RunOrthoModalComponent,
 		CreateCollectionModalComponent,
 		UploadModalComponent,
+		ODMRunModalComponent,
 		EntityModalComponent,
 		ImagePreviewModalComponent,
 		MetadataModalComponent,

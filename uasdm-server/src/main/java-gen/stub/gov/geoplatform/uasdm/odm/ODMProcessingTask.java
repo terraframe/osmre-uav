@@ -32,6 +32,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.ODMRun;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -134,6 +135,8 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       }
       else
       {
+        ODMRun.createAndApplyFor(this);
+        
         this.appLock();
         this.setStatus(ODMStatus.RUNNING.getLabel());
         this.setOdmUUID(resp.getUUID());

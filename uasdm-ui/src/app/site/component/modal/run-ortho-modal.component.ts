@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '@site/service/management.service';
-import { SiteEntity } from '@site/model/management';
+import { SiteEntity, ODMRunConfig } from '@site/model/management';
 import { Subject } from 'rxjs';
 
 
@@ -17,18 +17,18 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
 
     message: string = null;
     entity: SiteEntity = null;
-    config = {
-        processPtcloud: false,
-        processDem: false,
-        processOrtho: false,
-        includeGeoLocationFile: false,
-        outFileName: '',
-        resolution: 5,
-        videoResolution: 4000,
-        matcherNeighbors: 0,
-        minNumFeatures: 10000,
-        pcQuality: "MEDIUM"
-    };
+    config: ODMRunConfig = {
+	    processPtcloud: false,
+	    processDem: false,
+	    processOrtho: false,
+	    includeGeoLocationFile: false,
+	    outFileName: '',
+	    resolution: 5,
+	    videoResolution: 4000,
+	    matcherNeighbors: 0,
+	    minNumFeatures: 10000,
+	    pcQuality: "MEDIUM"
+	};
     
     isAdvancedSettingsCollapsed = true;
 

@@ -1,0 +1,28 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.graph.ODMRun" label="ODMRun" generateController="false">
+        <attributes>
+          <text name="output" label="output"></text>
+          <text name="config" label="config"></text>
+          <dateTime name="runStart"></dateTime>
+          <dateTime name="runEnd"></dateTime>
+          <graphReference name="report" label="report" type="gov.geoplatform.uasdm.graph.Document"></graphReference>
+          <reference name="workflowTask" label="Workflow Task" type="gov.geoplatform.uasdm.odm.ODMProcessingTask"></reference>
+          <graphReference name="component" label="Component" type="gov.geoplatform.uasdm.graph.UasComponent"></graphReference>
+        </attributes>
+      </mdVertex>
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ODMRunInput" label="ODM Input Document" parent="gov.geoplatform.uasdm.graph.Document" child="gov.geoplatform.uasdm.graph.ODMRun"></mdEdge>
+      <mdEdge name="gov.geoplatform.uasdm.graph.ODMRunOutput" label="ODM Output Document" parent="gov.geoplatform.uasdm.graph.ODMRun" child="gov.geoplatform.uasdm.graph.Document"></mdEdge>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ODMRunInput" type="com.runwaysdk.system.metadata.MdEdge"></object>
+      <object key="gov.geoplatform.uasdm.graph.ODMRunOutput" type="com.runwaysdk.system.metadata.MdEdge"></object>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun" type="com.runwaysdk.system.metadata.MdVertex"></object>
+    </delete>
+  </undoIt>
+</version>

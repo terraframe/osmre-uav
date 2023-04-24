@@ -22,6 +22,8 @@ import java.util.List;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -29,6 +31,7 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
+import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -129,6 +132,15 @@ public class ProductService
     final Product product = Product.get(id);
     
     return product.getAllZip();
+  }
+
+  public ODMRunView getODMRun(String sessionId, String artifactId)
+  {
+    Document doc = Document.get(artifactId);
+    
+    ODMRun run = ODMRun.getGeneratingRun(doc);
+    
+    return ODMRunView.fromODMRun(run);
   }
 
 }
