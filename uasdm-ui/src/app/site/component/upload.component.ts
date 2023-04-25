@@ -53,7 +53,6 @@ export class UploadComponent implements OnInit {
         create: false,
         includeGeoLocationFile: false,
         geoLocationFormat:'RX1R2'
-        
     };
 
     /*

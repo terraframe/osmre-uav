@@ -32,13 +32,31 @@ public class ODMProcessConfiguration
     ODM, RX1R2;
   }
 
-  private boolean    includeGeoLocationFile;
+  public static final String INCLUDE_GEO_LOCATION_FILE = "includeGeoLocationFile";
 
-  private FileFormat geoLocationFormat;
+  public static final String GEO_LOCATION_FORMAT       = "geoLocationFormat";
 
-  private String     outFileNamePrefix;
+  public static final String GEO_LOCATION_FILE_NAME    = "geoLocationFileName";
 
-  private BigDecimal resolution;
+  public static final String OUT_FILE_NAME_PREFIX      = "outFileNamePrefix";
+
+  public static final String RESOLUTION                = "resolution";
+
+  public static final String MATCHING_NEIGHBORS        = "matcherNeighbors";
+
+  public static final String MIN_NUM_FEATURES          = "minNumFeatures";
+
+  public static final String PC_QUALITY                = "pcQuality";
+
+  private boolean            includeGeoLocationFile;
+
+  private FileFormat         geoLocationFormat;
+
+  private String             geoLocationFileName;
+
+  private String             outFileNamePrefix;
+
+  private BigDecimal         resolution;
 
   /*
    * video-resolution <positive integer>
@@ -46,7 +64,7 @@ public class ODMProcessConfiguration
    * The maximum output resolution of extracted video frames in pixels. Default:
    * 4000
    */
-  private Integer    videoResolution;
+  private Integer            videoResolution;
 
   /*
    * matcher-neighbors <positive integer>
@@ -54,7 +72,7 @@ public class ODMProcessConfiguration
    * Perform image matching with the nearest images based on GPS exif data. Set
    * to 0 to match by triangulation. Default: 0
    */
-  private Integer    matcherNeighbors;
+  private Integer            matcherNeighbors;
 
   /*
    * min-num-features <integer>
@@ -64,7 +82,7 @@ public class ODMProcessConfiguration
    * reconstruction of areas with little overlap or insufficient features. More
    * features also slow down processing. Default: 10000
    */
-  private Integer    minNumFeatures;
+  private Integer            minNumFeatures;
 
   /*
    * pc-quality ultra | high | medium | low | lowest
@@ -73,7 +91,7 @@ public class ODMProcessConfiguration
    * clouds, but requires more memory and takes longer. Each step up in quality
    * increases processing time roughly by a factor of 4x.. Default: medium
    */
-  private Quality    pcQuality;
+  private Quality            pcQuality;
 
   public ODMProcessConfiguration()
   {
@@ -90,6 +108,7 @@ public class ODMProcessConfiguration
     this.videoResolution = Integer.valueOf(4000);
     this.pcQuality = Quality.MEDIUM;
     this.geoLocationFormat = FileFormat.RX1R2;
+    this.geoLocationFileName = "geo.txt";
   }
 
   public FileFormat getGeoLocationFormat()
@@ -110,6 +129,16 @@ public class ODMProcessConfiguration
   public void setIncludeGeoLocationFile(boolean includeGeoLocationFile)
   {
     this.includeGeoLocationFile = includeGeoLocationFile;
+  }
+
+  public String getGeoLocationFileName()
+  {
+    return geoLocationFileName;
+  }
+
+  public void setGeoLocationFileName(String geoLocationFileName)
+  {
+    this.geoLocationFileName = geoLocationFileName;
   }
 
   public String getOutFileNamePrefix()
@@ -175,13 +204,14 @@ public class ODMProcessConfiguration
   public JsonObject toJson()
   {
     JsonObject object = new JsonObject();
-    object.addProperty("includeGeoLocationFile", this.includeGeoLocationFile);
-    object.addProperty("geoLocationFormat", this.geoLocationFormat.toString());
-    object.addProperty("outFileNamePrefix", this.outFileNamePrefix);
-    object.addProperty("resolution", this.resolution.toString());
-    object.addProperty("matcherNeighbors", this.matcherNeighbors);
-    object.addProperty("minNumFeatures", this.minNumFeatures);
-    object.addProperty("pcQuality", this.pcQuality.name());
+    object.addProperty(INCLUDE_GEO_LOCATION_FILE, this.includeGeoLocationFile);
+    object.addProperty(GEO_LOCATION_FORMAT, this.geoLocationFormat.toString());
+    object.addProperty(GEO_LOCATION_FILE_NAME, this.geoLocationFileName);
+    object.addProperty(OUT_FILE_NAME_PREFIX, this.outFileNamePrefix);
+    object.addProperty(RESOLUTION, this.resolution.toString());
+    object.addProperty(MATCHING_NEIGHBORS, this.matcherNeighbors);
+    object.addProperty(MIN_NUM_FEATURES, this.minNumFeatures);
+    object.addProperty(PC_QUALITY, this.pcQuality.name());
 
     return object;
   }
@@ -192,29 +222,39 @@ public class ODMProcessConfiguration
 
     ODMProcessConfiguration configuration = new ODMProcessConfiguration();
 
-    if (object.has("includeGeoLocationFile"))
+    if (object.has(INCLUDE_GEO_LOCATION_FILE))
     {
-      JsonElement element = object.get("includeGeoLocationFile");
+      JsonElement element = object.get(INCLUDE_GEO_LOCATION_FILE);
 
       if (!element.isJsonNull())
       {
-        configuration.setIncludeGeoLocationFile(object.get("includeGeoLocationFile").getAsBoolean());
+        configuration.setIncludeGeoLocationFile(object.get(INCLUDE_GEO_LOCATION_FILE).getAsBoolean());
       }
     }
 
-    if (object.has("geoLocationFormat"))
+    if (object.has(GEO_LOCATION_FORMAT))
     {
-      JsonElement element = object.get("geoLocationFormat");
+      JsonElement element = object.get(GEO_LOCATION_FORMAT);
 
       if (!element.isJsonNull())
       {
-        configuration.setGeoLocationFormat(FileFormat.valueOf(object.get("geoLocationFormat").getAsString()));
+        configuration.setGeoLocationFormat(FileFormat.valueOf(object.get(GEO_LOCATION_FORMAT).getAsString()));
       }
     }
 
-    if (object.has("outFileNamePrefix"))
+    if (object.has(GEO_LOCATION_FILE_NAME))
     {
-      JsonElement element = object.get("outFileNamePrefix");
+      JsonElement element = object.get(GEO_LOCATION_FILE_NAME);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setGeoLocationFileName(object.get(GEO_LOCATION_FILE_NAME).getAsString());
+      }
+    }
+
+    if (object.has(OUT_FILE_NAME_PREFIX))
+    {
+      JsonElement element = object.get(OUT_FILE_NAME_PREFIX);
 
       if (!element.isJsonNull())
       {
@@ -222,9 +262,9 @@ public class ODMProcessConfiguration
       }
     }
 
-    if (object.has("resolution"))
+    if (object.has(RESOLUTION))
     {
-      JsonElement element = object.get("resolution");
+      JsonElement element = object.get(RESOLUTION);
 
       if (!element.isJsonNull())
       {
@@ -232,33 +272,33 @@ public class ODMProcessConfiguration
       }
     }
 
-    if (object.has("matcherNeighbors"))
+    if (object.has(MATCHING_NEIGHBORS))
     {
-      JsonElement element = object.get("matcherNeighbors");
+      JsonElement element = object.get(MATCHING_NEIGHBORS);
 
       if (!element.isJsonNull())
       {
-        configuration.setMatcherNeighbors(Integer.valueOf(object.get("matcherNeighbors").getAsInt()));
+        configuration.setMatcherNeighbors(Integer.valueOf(object.get(MATCHING_NEIGHBORS).getAsInt()));
       }
     }
 
-    if (object.has("minNumFeatures"))
+    if (object.has(MIN_NUM_FEATURES))
     {
-      JsonElement element = object.get("minNumFeatures");
+      JsonElement element = object.get(MIN_NUM_FEATURES);
 
       if (!element.isJsonNull())
       {
-        configuration.setMinNumFeatures(Integer.valueOf(object.get("minNumFeatures").getAsInt()));
+        configuration.setMinNumFeatures(Integer.valueOf(object.get(MIN_NUM_FEATURES).getAsInt()));
       }
     }
 
-    if (object.has("pcQuality"))
+    if (object.has(PC_QUALITY))
     {
-      JsonElement element = object.get("pcQuality");
+      JsonElement element = object.get(PC_QUALITY);
 
       if (!element.isJsonNull())
       {
-        configuration.setPcQuality(Quality.valueOf(object.get("pcQuality").getAsString()));
+        configuration.setPcQuality(Quality.valueOf(object.get(PC_QUALITY).getAsString()));
       }
     }
 
@@ -275,39 +315,45 @@ public class ODMProcessConfiguration
       configuration.setOutFileNamePrefix(outFileNamePrefix);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("includeGeoLocationFile")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(INCLUDE_GEO_LOCATION_FILE)))
     {
-      Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
+      Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get(INCLUDE_GEO_LOCATION_FILE));
       configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("geoLocationFormat")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(GEO_LOCATION_FORMAT)))
     {
-      FileFormat geoLocationFormat = FileFormat.valueOf(parser.getCustomParams().get("geoLocationFormat"));
+      FileFormat geoLocationFormat = FileFormat.valueOf(parser.getCustomParams().get(GEO_LOCATION_FORMAT));
       configuration.setGeoLocationFormat(geoLocationFormat);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("resolution")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(GEO_LOCATION_FILE_NAME)))
     {
-      BigDecimal resolution = new BigDecimal(parser.getCustomParams().get("resolution"));
+      String geoLocationFileName = parser.getCustomParams().get(GEO_LOCATION_FILE_NAME);
+      configuration.setGeoLocationFileName(geoLocationFileName);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(RESOLUTION)))
+    {
+      BigDecimal resolution = new BigDecimal(parser.getCustomParams().get(RESOLUTION));
       configuration.setResolution(resolution);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("matcherNeighbors")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(MATCHING_NEIGHBORS)))
     {
-      Integer matcherNeighbors = Integer.valueOf(parser.getCustomParams().get("matcherNeighbors"));
+      Integer matcherNeighbors = Integer.valueOf(parser.getCustomParams().get(MATCHING_NEIGHBORS));
       configuration.setMatcherNeighbors(matcherNeighbors);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("minNumFeatures")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(MIN_NUM_FEATURES)))
     {
-      Integer minNumFeatures = Integer.valueOf(parser.getCustomParams().get("minNumFeatures"));
+      Integer minNumFeatures = Integer.valueOf(parser.getCustomParams().get(MIN_NUM_FEATURES));
       configuration.setMinNumFeatures(minNumFeatures);
     }
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("pcQuality")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(PC_QUALITY)))
     {
-      Quality pcQuality = Quality.valueOf(parser.getCustomParams().get("pcQuality"));
+      Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(PC_QUALITY));
       configuration.setPcQuality(pcQuality);
     }
 

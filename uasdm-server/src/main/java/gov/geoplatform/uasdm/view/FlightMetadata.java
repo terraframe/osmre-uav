@@ -241,7 +241,7 @@ public class FlightMetadata
       {
         try
         {
-          metadata.setSunsetDate(Util.parseIso8601(item.getAttribute("sunsetDate"), false));
+          metadata.setSunsetDate(Util.parseMetadata(item.getAttribute("sunsetDate"), false));
         }
         catch (ParseException e)
         {
@@ -464,7 +464,7 @@ public class FlightMetadata
       {
         try
         {
-          metadata.setAcquisitionDateStart(Util.parseIso8601(item.getAttribute("acquisitionDateStart"), false));
+          metadata.setAcquisitionDateStart(Util.parseMetadata(item.getAttribute("acquisitionDateStart"), false));
         }
         catch (ParseException e)
         {
@@ -478,7 +478,7 @@ public class FlightMetadata
       {
         try
         {
-          metadata.setAcquisitionDateEnd(Util.parseIso8601(item.getAttribute("acquisitionDateEnd"), false));
+          metadata.setAcquisitionDateEnd(Util.parseMetadata(item.getAttribute("acquisitionDateEnd"), false));
         }
         catch (ParseException e)
         {

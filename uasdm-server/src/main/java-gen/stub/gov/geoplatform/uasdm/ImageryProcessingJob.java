@@ -404,7 +404,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (isMultispectral)
       {
-        if (! ( filename.endsWith(".tif") || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ) ))
+        if (! ( filename.endsWith(".tif") || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
         {
           task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR.getType());
           return false;
@@ -412,7 +412,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else
       {
-        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ) ))
+        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
         {
           task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR.getType());
           return false;

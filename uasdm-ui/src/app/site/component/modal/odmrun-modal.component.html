@@ -103,6 +103,13 @@
 	            </select>
 	        </div>
 
+			<div class="form-group" *ngIf="config.includeGeoLocationFile">
+				<label for="geoLocationFileName">Geo location file name</label>
+				<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
+					placeholder="File name..." />
+			</div>
+
+
 	    </div>
 	</div>
 	
