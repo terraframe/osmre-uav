@@ -23,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
@@ -33,7 +34,7 @@ public class ODMFacadeTest
 {
 
   @Test
-  public void testFilterZip() throws IOException, URISyntaxException
+  public void testFilterZip() throws IOException, URISyntaxException, CsvValidationException
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
@@ -56,7 +57,7 @@ public class ODMFacadeTest
   }
 
   @Test
-  public void testFilterTarGz() throws IOException, URISyntaxException
+  public void testFilterTarGz() throws IOException, URISyntaxException, CsvValidationException
   {
     File file = FileTestUtils.createTarGz(this.getClass().getResource("/raw").toURI());
 

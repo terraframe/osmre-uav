@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +29,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.google.common.io.Files;
+import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
@@ -40,9 +42,10 @@ import com.runwaysdk.resource.CloseableFile;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
+import gov.geoplatform.uasdm.processing.RX1R2GeoFileConverter;
 
 public class ODMFacade
 {
@@ -129,7 +132,7 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static CloseablePair filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
+  public static CloseablePair filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     String extension = archive.getNameExtension();
 
@@ -145,7 +148,7 @@ public class ODMFacade
     throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
   }
 
-  private static CloseablePair filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
+  private static CloseablePair filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
 
@@ -166,7 +169,29 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ))
+          else if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+          {
+            File file = new File(parent, entry.getName());
+
+            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
+            {
+              try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(tarIn))
+              {
+                FileUtils.copyFile(reader.getOutput(), file);
+              }
+            }
+            else
+            {
+              try (FileOutputStream fos = new FileOutputStream(file))
+              {
+                IOUtils.copy(tarIn, fos);
+              }
+            }
+
+            itemCount++;
+
+          }
+          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
             File file = new File(parent, entry.getName());
 
@@ -185,7 +210,7 @@ public class ODMFacade
     return new CloseablePair(parent, itemCount);
   }
 
-  private static CloseablePair filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException
+  private static CloseablePair filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
@@ -205,7 +230,22 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ) || ( filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile() ))
+          if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+          {
+            File file = new File(parent, entry.getName());
+
+            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
+            {
+              try (InputStream zis = zipFile.getInputStream(entry))
+              {
+                try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(zis))
+                {
+                  FileUtils.copyFile(reader.getOutput(), file);
+                }
+              }
+            }
+          }
+          if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
             int len;
 

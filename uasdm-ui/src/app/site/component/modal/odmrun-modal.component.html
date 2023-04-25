@@ -94,6 +94,15 @@
 	            <boolean-field [(value)]="config.includeGeoLocationFile"
 	                label="Use geo location file when processing (if uploaded)" [disabled]="true"></boolean-field>
 	        </div>
+
+	        <div class="form-group" *ngIf="config.includeGeoLocationFile">
+	            <label for="geoLocationFormat">Geo location file format</label>
+	            <select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
+	                <option value="RX1R2">RX1R2</option>
+	                <option value="ODM">ODM</option>
+	            </select>
+	        </div>
+
 	    </div>
 	</div>
 	

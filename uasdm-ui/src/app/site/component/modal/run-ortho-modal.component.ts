@@ -18,18 +18,19 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
     message: string = null;
     entity: SiteEntity = null;
     config: ODMRunConfig = {
-	    processPtcloud: false,
-	    processDem: false,
-	    processOrtho: false,
-	    includeGeoLocationFile: false,
-	    outFileName: '',
-	    resolution: 5,
-	    videoResolution: 4000,
-	    matcherNeighbors: 0,
-	    minNumFeatures: 10000,
-	    pcQuality: "MEDIUM"
-	};
-    
+        processPtcloud: false,
+        processDem: false,
+        processOrtho: false,
+        includeGeoLocationFile: false,
+        outFileName: '',
+        resolution: 5,
+        videoResolution: 4000,
+        matcherNeighbors: 0,
+        minNumFeatures: 10000,
+        pcQuality: "MEDIUM",
+        geoLocationFormat: "RX1R2"
+    };
+
     isAdvancedSettingsCollapsed = true;
 
     /*

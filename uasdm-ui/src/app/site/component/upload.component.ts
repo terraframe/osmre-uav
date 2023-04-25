@@ -51,7 +51,9 @@ export class UploadComponent implements OnInit {
      */
     values: UploadForm = {
         create: false,
-        includeGeoLocationFile: false
+        includeGeoLocationFile: false,
+        geoLocationFormat:'RX1R2'
+        
     };
 
     /*

@@ -286,7 +286,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 				videoResolution: data.videoResolution,
 				matcherNeighbors: data.matcherNeighbors,
 				minNumFeatures: data.minNumFeatures,
-				pcQuality: data.pcQuality
+				pcQuality: data.pcQuality,
+				geoLocationFormat: data.geoLocationFormat
 			};
 
 			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {
