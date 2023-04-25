@@ -89,16 +89,17 @@ export class ODMRun {
 }
 
 export class ODMRunConfig {
-    processPtcloud: boolean;
-    processDem: boolean;
-    processOrtho: boolean;
-    includeGeoLocationFile: boolean;
-    outFileName: string;
-    resolution: number;
-    videoResolution: number;
-    matcherNeighbors: number;
-    minNumFeatures: number;
-    pcQuality: string;
+	processPtcloud: boolean;
+	processDem: boolean;
+	processOrtho: boolean;
+	includeGeoLocationFile: boolean;
+	outFileName: string;
+	resolution: number;
+	videoResolution: number;
+	matcherNeighbors: number;
+	minNumFeatures: number;
+	pcQuality: string;
+	geoLocationFormat: string;
 }
 
 export class CollectionHierarchy {
@@ -164,6 +165,8 @@ export class UploadForm {
 	matcherNeighbors?: number;
 	minNumFeatures?: number;
 	pcQuality?: string;
+	geoLocationFormat?: string;
+
 }
 
 export class Action {

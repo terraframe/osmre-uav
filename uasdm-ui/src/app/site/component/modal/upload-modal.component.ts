@@ -59,7 +59,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		videoResolution: 4000,
 		matcherNeighbors: 0,
 		minNumFeatures: 10000,
-		pcQuality: "MEDIUM"
+		pcQuality: "MEDIUM",
+		geoLocationFormat: "RX1R2"
 	} as UploadForm;
 
 	/*
@@ -90,9 +91,9 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 	// Upload config
 	config = {
-		processPtcloud: false,
-		processDem: false,
-		processOrtho: false
+		processPtcloud: true,
+		processDem: true,
+		processOrtho: true
 	};
 
 	/*

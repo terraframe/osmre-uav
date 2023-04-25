@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
@@ -161,7 +162,7 @@ public class ODMService implements ODMServiceIF
         throw new EmptyFileSetException();
       }
     }
-    catch (IOException e)
+    catch (IOException | CsvValidationException e)
     {
       throw new ProgrammingErrorException(e);
     }

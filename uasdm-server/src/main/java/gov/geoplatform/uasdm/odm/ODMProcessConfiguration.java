@@ -28,7 +28,13 @@ public class ODMProcessConfiguration
     }
   }
 
+  public static enum FileFormat {
+    ODM, RX1R2;
+  }
+
   private boolean    includeGeoLocationFile;
+
+  private FileFormat geoLocationFormat;
 
   private String     outFileNamePrefix;
 
@@ -83,6 +89,17 @@ public class ODMProcessConfiguration
     this.minNumFeatures = Integer.valueOf(10000);
     this.videoResolution = Integer.valueOf(4000);
     this.pcQuality = Quality.MEDIUM;
+    this.geoLocationFormat = FileFormat.RX1R2;
+  }
+
+  public FileFormat getGeoLocationFormat()
+  {
+    return geoLocationFormat;
+  }
+
+  public void setGeoLocationFormat(FileFormat geoLocationFormat)
+  {
+    this.geoLocationFormat = geoLocationFormat;
   }
 
   public boolean isIncludeGeoLocationFile()
@@ -159,6 +176,7 @@ public class ODMProcessConfiguration
   {
     JsonObject object = new JsonObject();
     object.addProperty("includeGeoLocationFile", this.includeGeoLocationFile);
+    object.addProperty("geoLocationFormat", this.geoLocationFormat.toString());
     object.addProperty("outFileNamePrefix", this.outFileNamePrefix);
     object.addProperty("resolution", this.resolution.toString());
     object.addProperty("matcherNeighbors", this.matcherNeighbors);
@@ -181,6 +199,16 @@ public class ODMProcessConfiguration
       if (!element.isJsonNull())
       {
         configuration.setIncludeGeoLocationFile(object.get("includeGeoLocationFile").getAsBoolean());
+      }
+    }
+
+    if (object.has("geoLocationFormat"))
+    {
+      JsonElement element = object.get("geoLocationFormat");
+
+      if (!element.isJsonNull())
+      {
+        configuration.setGeoLocationFormat(FileFormat.valueOf(object.get("geoLocationFormat").getAsString()));
       }
     }
 
@@ -251,6 +279,12 @@ public class ODMProcessConfiguration
     {
       Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get("includeGeoLocationFile"));
       configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get("geoLocationFormat")))
+    {
+      FileFormat geoLocationFormat = FileFormat.valueOf(parser.getCustomParams().get("geoLocationFormat"));
+      configuration.setGeoLocationFormat(geoLocationFormat);
     }
 
     if (!StringUtils.isEmpty(parser.getCustomParams().get("resolution")))
