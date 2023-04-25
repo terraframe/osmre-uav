@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,6 +29,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +44,9 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
@@ -341,6 +343,20 @@ public class Product extends ProductBase implements ProductIF
     {
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
+    }
+    
+    if (component instanceof Collection)
+    {
+      Collection collection = (Collection) component;
+      
+      collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
+      collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
+      collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
+      collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
+      
+      collection.apply();
+      
+      new MetadataXMLGenerator().generateAndUpload(collection);
     }
   }
 
