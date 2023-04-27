@@ -72,6 +72,46 @@ public class TiTillerProxy
       this.maxLong = maxLong;
     }
     
+    public double getMinLat()
+    {
+      return minLat;
+    }
+
+    public void setMinLat(double minLat)
+    {
+      this.minLat = minLat;
+    }
+
+    public double getMaxLat()
+    {
+      return maxLat;
+    }
+
+    public void setMaxLat(double maxLat)
+    {
+      this.maxLat = maxLat;
+    }
+
+    public double getMinLong()
+    {
+      return minLong;
+    }
+
+    public void setMinLong(double minLong)
+    {
+      this.minLong = minLong;
+    }
+
+    public double getMaxLong()
+    {
+      return maxLong;
+    }
+
+    public void setMaxLong(double maxLong)
+    {
+      this.maxLong = maxLong;
+    }
+
     /**
      * Perhaps Geoserver was returning bounding boxes of this format way back in the day? I dunno but
      * Mapbox expects [[long, lat], [long, lat]], and our front-end converts from this obscure format
