@@ -239,33 +239,33 @@ public class ODMService implements ODMServiceIF
       JSONObject param = new JSONObject();
       param.put("name", "matcher-neighbors");
       param.put("value", configuration.getMatcherNeighbors());
-      arr.put(param);      
+      arr.put(param);
     }
-    
+
     if (configuration.getMinNumFeatures() != null)
     {
       JSONObject param = new JSONObject();
       param.put("name", "min-num-features");
       param.put("value", configuration.getMinNumFeatures());
-      arr.put(param);      
+      arr.put(param);
     }
-    
+
     if (configuration.getPcQuality() != null)
     {
       JSONObject param = new JSONObject();
       param.put("name", "pc-quality");
       param.put("value", configuration.getPcQuality().getCode());
-      arr.put(param);      
+      arr.put(param);
     }
-    
+
     if (configuration.getVideoResolution() != null)
     {
       JSONObject param = new JSONObject();
       param.put("name", "video-resolution");
       param.put("value", configuration.getVideoResolution());
-      arr.put(param);      
+      arr.put(param);
     }
-    
+
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.addTextBody("options", arr.toString());
 

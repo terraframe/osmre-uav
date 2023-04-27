@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,6 @@ import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
@@ -169,9 +167,9 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+          else if (filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile())
           {
-            File file = new File(parent, entry.getName());
+            File file = new File(parent, "geo.txt");
 
             if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
             {
@@ -216,8 +214,6 @@ public class ODMFacade
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     int itemCount = 0;
 
-    byte[] buffer = new byte[Util.BUFFER_SIZE];
-
     try (CloseableFile fArchive = archive.openNewFile())
     {
       try (ZipFile zipFile = new ZipFile(fArchive))
@@ -230,9 +226,9 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+          if (filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile())
           {
-            File file = new File(parent, entry.getName());
+            File file = new File(parent, "geo.txt");
 
             if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
             {
@@ -244,21 +240,28 @@ public class ODMFacade
                 }
               }
             }
+            else
+            {
+              try (FileOutputStream fos = new FileOutputStream(file))
+              {
+                try (InputStream zis = zipFile.getInputStream(entry))
+                {
+                  IOUtils.copy(zis, fos);
+                }
+
+              }
+            }
+
           }
           if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
-            int len;
-
             File file = new File(parent, entry.getName());
 
             try (FileOutputStream fos = new FileOutputStream(file))
             {
               try (InputStream zis = zipFile.getInputStream(entry))
               {
-                while ( ( len = zis.read(buffer) ) > 0)
-                {
-                  fos.write(buffer, 0, len);
-                }
+                IOUtils.copy(zis, fos);
               }
             }
 

@@ -128,6 +128,22 @@ public class Util
     }
   }
 
+  public static Date parseMetadata(String date, boolean includeTime) throws ParseException
+  {
+    if (!includeTime)
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.parse(date);
+    }
+    else
+    {
+      SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+      formatter.setTimeZone(SYSTEM_TIMEZONE);
+      return formatter.parse(date);
+    }
+  }
+  
   public static CloseableFile download(String key, String storeName)
   {
     try
