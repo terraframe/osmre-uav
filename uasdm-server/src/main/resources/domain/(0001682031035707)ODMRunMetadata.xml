@@ -17,6 +17,34 @@
       <mdEdge name="gov.geoplatform.uasdm.graph.ODMRunOutput" label="ODM Output Document" parent="gov.geoplatform.uasdm.graph.ODMRun" child="gov.geoplatform.uasdm.graph.Document"></mdEdge>
     </create>
     <update></update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ODMRun">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ODMRunInput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ODMRunOutput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ODMRun">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ODMRunInput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ODMRunOutput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
   </doIt>
   <undoIt>
     <delete>
