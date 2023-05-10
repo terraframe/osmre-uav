@@ -198,13 +198,11 @@ public class ODMService implements ODMServiceIF
     dtm.put("value", "true");
     arr.put(dtm);
 
-    // Our custom Micasense multispectral parameter, which only works on our
-    // custom build of ODM.
     if (isMultispectral)
     {
       JSONObject multispectral = new JSONObject();
-      multispectral.put("name", "multispectral");
-      multispectral.put("value", String.valueOf(isMultispectral));
+      multispectral.put("name", "radiometric-calibration");
+      multispectral.put("value", "camera");
       arr.put(multispectral);
     }
 
@@ -216,10 +214,12 @@ public class ODMService implements ODMServiceIF
 
     // Another one of our custom parameters, which only exists on our custom
     // build of NodeODM.
+    /*
     JSONObject joImagesCount = new JSONObject();
     joImagesCount.put("name", "imagesCount");
     joImagesCount.put("value", imagesCount);
     arr.put(joImagesCount);
+    */
 
     if (configuration.getResolution() != null)
     {
