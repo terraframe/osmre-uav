@@ -36,6 +36,9 @@ Config changes needed for next deploy:
 4. `additionalMachineSetupCmd` changed to `nodeSetupCmd`
 5. Change nodeodm:latest tag to prod/staging/devdeploy
 
+
+6??. Change the deployed image for nodeodm, and also the image referenced in the config for staging/prod to use the opendronemap docker image, and not our custom micasense one.
+
 ########
 
 

@@ -1004,7 +1004,7 @@ public class ProjectManagementService
     return Collection.createCollection(selections);
   }
 
-  @Request(RequestType.SESSION)
+//  @Request(RequestType.SESSION) // This was causing quite a nasty little bug if the user has an expired session. Don't re-enable, since this endpoint is public
   public JSONObject configuration(String sessionId, String contextPath)
   {
     JSONObject config = new JSONObject();
