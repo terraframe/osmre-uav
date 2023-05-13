@@ -57,7 +57,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
-import gov.geoplatform.uasdm.cog.CogTiffS3PreviewReader;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
@@ -585,7 +585,7 @@ public class ProjectManagementService
       wfTask.delete();
     }
   }
-
+  
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
   {
@@ -740,10 +740,8 @@ public class ProjectManagementService
       if (op.isPresent())
       {
         Document document = (Document) op.get();
-
-        String s3url = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-
-        InputStream cogImage = CogTiffS3PreviewReader.read(s3url, 2);
+        
+        InputStream cogImage = new TiTillerProxy().getCogPreview(product, document);
 
         if (cogImage != null)
         {

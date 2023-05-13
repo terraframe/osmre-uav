@@ -129,6 +129,36 @@ public class TiTillerProxy
     }
   }
   
+  public InputStream getCogPreview(ProductIF product, DocumentIF document)
+  {
+    try
+    {
+      InputStream stream = null;
+      
+      String tifUrl;
+      
+      if (product.isPublished())
+      {
+        tifUrl = "s3://" + AppProperties.getPublicBucketName() + "/" + document.getS3location();
+      }
+      else
+      {
+        tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
+      }
+      
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put("url", Arrays.asList(tifUrl));
+      
+      stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/preview", parameters);
+      
+      return stream;
+    }
+    catch(URISyntaxException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
   public BBoxView getBoundingBox(ProductIF product, DocumentIF document)
   {
     try
