@@ -171,18 +171,29 @@ public class FileUploadController
 
       if (requestParser.getTotalParts() - 1 == requestParser.getPartIndex())
       {
-        File[] parts = getPartitionFiles(dir, requestParser.getUuid());
-        File outputFile = new File(dir, requestParser.getOriginalFilename());
+        Thread mergeThread = new Thread(() -> {
+          try {
+              File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+              File outputFile = new File(dir, requestParser.getOriginalFilename());
 
-        for (File part : parts)
-        {
-          this.mergeFiles(outputFile, part);
-        }
+              for (File part : parts) {
+                  this.mergeFiles(outputFile, part);
+              }
 
-        this.assertCombinedFileIsValid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-        deletePartitionFiles(dir, requestParser.getUuid());
+              this.assertCombinedFileIsValid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
 
-        this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
+              this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
+          } catch (Throwable t) {
+              this.pService.handleUploadMergeError(clientRequest.getSessionId(), requestParser, t);
+          } finally {
+              deletePartitionFiles(dir, requestParser.getUuid());
+          }
+        });
+  
+        mergeThread.setDaemon(true);
+        
+        this.pService.handleUploadMergeStart(clientRequest.getSessionId(), requestParser);
+        mergeThread.start();
       }
     }
     else

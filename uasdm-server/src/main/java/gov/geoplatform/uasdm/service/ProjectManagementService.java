@@ -55,7 +55,9 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -93,6 +95,7 @@ import gov.geoplatform.uasdm.view.TreeComponent;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
+import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import net.geoprism.GeoprismUser;
 import net.geoprism.localization.LocalizationService;
 
@@ -600,6 +603,42 @@ public class ProjectManagementService
     finally
     {
       FileUtils.deleteQuietly(infile);
+    }
+  }
+  
+  @Request(RequestType.SESSION)
+  public void handleUploadMergeError(String sessionId, RequestParserIF parser, Throwable t)
+  {
+    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
+    
+    task.lock();
+    task.setStatus(WorkflowTaskStatus.ERROR.toString());
+    task.setMessage(msg);
+    task.apply();
+
+    logger.error(msg, t);
+
+    if (Session.getCurrentSession() != null)
+    {
+      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+    }
+  }
+  
+  @Request(RequestType.SESSION)
+  public void handleUploadMergeStart(String sessionId, RequestParserIF parser)
+  {
+    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    final String msg = "Processing uploaded files...";
+    
+    task.lock();
+    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
+    task.setMessage(msg);
+    task.apply();
+
+    if (Session.getCurrentSession() != null)
+    {
+      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
     }
   }
 
