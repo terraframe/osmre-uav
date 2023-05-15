@@ -26,7 +26,14 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
+
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 
 public class ChunkManager implements Runnable
 {
@@ -72,10 +79,39 @@ public class ChunkManager implements Runnable
           }
         }
       }
+      
+      runInReq();
     }
     catch (Exception e)
     {
       logger.error("Chunk manager error", e);
+    }
+  }
+  
+  @Request
+  public void runInReq()
+  {
+    // Since we're removing chunks that are a certain age, we need to also remove the workflow task
+    
+    Calendar instance = Calendar.getInstance();
+    instance.setTime(new Date());
+    instance.add(Calendar.DATE, ( -1 * AppProperties.getChunkExpireTime() ));
+    
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getStatus().EQ(WorkflowTaskStatus.UPLOADING.toString()));
+    query.WHERE(query.getLastUpdateDate().LE(instance.getTime()));
+    OIterator<? extends WorkflowTask> it = query.getIterator();
+    
+    try
+    {
+      while (it.hasNext())
+      {
+        it.next().delete();
+      }
+    }
+    finally
+    {
+      it.close();
     }
   }
 
