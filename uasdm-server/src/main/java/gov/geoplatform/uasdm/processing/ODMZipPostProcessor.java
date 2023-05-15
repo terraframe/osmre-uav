@@ -201,11 +201,6 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto.png"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
 
-      if (this.collection.isMultiSpectral())
-      {
-        this.runProcessor(unzippedParentFolder, "micasense", new ManagedDocument("micasense", this.product, this.collection, monitor));
-      }
-      
       // Add the report to the ortho folder
       this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
