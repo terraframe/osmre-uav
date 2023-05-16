@@ -19,6 +19,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
 
 public abstract class AbstractUploadTask extends AbstractUploadTaskBase
 {
@@ -40,7 +41,15 @@ public abstract class AbstractUploadTask extends AbstractUploadTaskBase
     {
       if (it.hasNext())
       {
-        return it.next();
+        AbstractUploadTask task = it.next();
+        
+        if (it.hasNext())
+        {
+          ProcessingInProgressException ex = new ProcessingInProgressException();
+          throw ex;
+        }
+        
+        return task;
       }
     }
 

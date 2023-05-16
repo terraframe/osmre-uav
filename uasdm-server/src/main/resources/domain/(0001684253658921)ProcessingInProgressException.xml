@@ -1,0 +1,15 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdException name="gov.geoplatform.uasdm.processing.ProcessingInProgressException" 
+                   label="ProcessingInProgressException" 
+                   description="Thrown when a user attempts an operation which is invalid because processing has already begun." 
+                   message="You cannot perform this operation because processing on your upload has already begun. See the workflow tasks page for more information.">
+      </mdException>
+    </create>
+    <update></update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

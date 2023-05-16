@@ -581,11 +581,18 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)
   {
-    AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
-
-    if (wfTask != null)
+    try
     {
-      wfTask.delete();
+      AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
+  
+      if (wfTask != null)
+      {
+        wfTask.delete();
+      }
+    }
+    catch (ProcessingInProgressException ex)
+    {
+      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
     }
   }
   
