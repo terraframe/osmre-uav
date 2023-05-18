@@ -142,7 +142,7 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate);
+            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate, false);
 
             filenames.addAll(files);
           }
@@ -462,12 +462,12 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void downloadAll(String sessionId, String id, String key, OutputStream out)
+  public void downloadAll(String sessionId, String id, String key, OutputStream out, boolean incrementDownloadCount)
   {
-    this.downloadAll(sessionId, id, key, out, null);
+    this.downloadAll(sessionId, id, key, out, null, incrementDownloadCount);
   }
 
-  private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate)
+  private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
   {
     List<SiteObject> items = getObjects(id, key, null, null).getObjects();
 
@@ -482,7 +482,7 @@ public class ProjectManagementService
     {
       for (SiteObject item : items)
       {
-        try (RemoteFileObject remoteFile = download(sessionId, id, item.getKey()))
+        try (RemoteFileObject remoteFile = download(sessionId, id, item.getKey(), incrementDownloadCount))
         {
           try (InputStream istream = remoteFile.getObjectContent())
           {
@@ -761,17 +761,24 @@ public class ProjectManagementService
     return component.getArtifacts();
   }
 
-  public RemoteFileObject download(String sessionId, String id, String key)
+  public RemoteFileObject download(String sessionId, String id, String key, boolean incrementDownloadCount)
   {
     if (sessionId != null)
     {
-      return this.downloadInReq(sessionId, id, key);
+      return this.downloadInReq(sessionId, id, key, incrementDownloadCount);
     }
     else
     {
       UasComponentIF component = ComponentFacade.getComponent(id);
 
-      return component.download(key);
+      if (component instanceof Collection)
+      {
+        return ((Collection) component).download(key, incrementDownloadCount);
+      }
+      else
+      {
+        return component.download(key);
+      }
     }
   }
 
@@ -814,15 +821,22 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject downloadInReq(String sessionId, String id, String key)
+  public RemoteFileObject downloadInReq(String sessionId, String id, String key, boolean incrementDownloadCount)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    return component.download(key);
+    if (component instanceof Collection)
+    {
+      return ((Collection) component).download(key, incrementDownloadCount);
+    }
+    else
+    {
+      return component.download(key);
+    }
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject downloadLast(String sessionId, String id, String key)
+  public RemoteFileObject downloadLast(String sessionId, String id, String key, boolean incrementDownloadCount)
   {
     List<SiteObject> items = getObjects(id, key, null, null).getObjects();
 
@@ -838,7 +852,7 @@ public class ProjectManagementService
 
     if (last != null)
     {
-      return this.download(sessionId, id, last.getKey());
+      return this.download(sessionId, id, last.getKey(), incrementDownloadCount);
     }
     else
     {

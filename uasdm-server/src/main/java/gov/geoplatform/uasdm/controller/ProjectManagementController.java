@@ -200,7 +200,7 @@ public class ProjectManagementController
           try
           {
 
-            ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream);
+            ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream, true);
           }
           catch (Exception e)
           {
@@ -437,7 +437,7 @@ public class ProjectManagementController
       }
     }
 
-    return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key));
+    return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key, true));
   }
   
   @Endpoint(url = "downloadProductPreview", method = ServletMethod.GET, error = ErrorSerialization.JSON)
@@ -449,7 +449,7 @@ public class ProjectManagementController
   @Endpoint(url = "download-last", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF downloadLast(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
-    return new RemoteFileGetResponse(this.service.downloadLast(request.getSessionId(), id, key));
+    return new RemoteFileGetResponse(this.service.downloadLast(request.getSessionId(), id, key, true));
   }
 
   @Endpoint(url = "download-file", method = ServletMethod.GET, error = ErrorSerialization.JSON)

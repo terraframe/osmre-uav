@@ -160,11 +160,11 @@ public class PointcloudController
       
       if (url.contains("legacypotree/"))
       {
-        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, LEGACY_POTREE_SUPPORT + "/" + dataPath));
+        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, LEGACY_POTREE_SUPPORT + "/" + dataPath, true));
       }
       else
       {
-        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, ODMZipPostProcessor.POTREE + "/" + dataPath));
+        return new RemoteFileGetResponse(this.service.download(request.getSessionId(), componentId, ODMZipPostProcessor.POTREE + "/" + dataPath, true));
       }
     }
     else
