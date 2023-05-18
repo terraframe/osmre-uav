@@ -258,6 +258,14 @@ public class ODMService implements ODMServiceIF
       arr.put(param);
     }
 
+    if (configuration.getFeatureQuality() != null)
+    {
+      JSONObject param = new JSONObject();
+      param.put("name", "feature-quality");
+      param.put("value", configuration.getFeatureQuality().getCode());
+      arr.put(param);
+    }
+    
     if (configuration.getVideoResolution() != null)
     {
       JSONObject param = new JSONObject();

@@ -60,6 +60,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		matcherNeighbors: 0,
 		minNumFeatures: 10000,
 		pcQuality: "MEDIUM",
+		featureQuality: "HIGH",
 		geoLocationFormat: "RX1R2"
 	} as UploadForm;
 

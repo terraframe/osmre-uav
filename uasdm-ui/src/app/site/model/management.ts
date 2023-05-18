@@ -99,6 +99,7 @@ export class ODMRunConfig {
 	matcherNeighbors: number;
 	minNumFeatures: number;
 	pcQuality: string;
+	featureQuality: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 }
@@ -166,6 +167,7 @@ export class UploadForm {
 	matcherNeighbors?: number;
 	minNumFeatures?: number;
 	pcQuality?: string;
+	featureQuality?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 

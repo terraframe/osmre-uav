@@ -47,6 +47,8 @@ public class ODMProcessConfiguration
   public static final String MIN_NUM_FEATURES          = "minNumFeatures";
 
   public static final String PC_QUALITY                = "pcQuality";
+  
+  public static final String FEATURE_QUALITY           = "featureQuality";
 
   private boolean            includeGeoLocationFile;
 
@@ -85,13 +87,24 @@ public class ODMProcessConfiguration
   private Integer            minNumFeatures;
 
   /*
-   * pc-quality ultra | high | medium | low | lowest
+   * pc-quality <ultra | high | medium | low | lowest>
    * 
    * Set point cloud quality. Higher quality generates better, denser point
    * clouds, but requires more memory and takes longer. Each step up in quality
-   * increases processing time roughly by a factor of 4x.. Default: medium
+   * increases processing time roughly by a factor of 4x.
+   * 
+   * Default: medium
    */
   private Quality            pcQuality;
+  
+  /*
+   * feature-quality <ultra | high | medium | low | lowest>
+   * 
+   * Set feature extraction quality. Higher quality generates better features, but requires more memory and takes longer.
+   * 
+   * Default: high
+   */
+  private Quality            featureQuality;
 
   public ODMProcessConfiguration()
   {
@@ -107,8 +120,19 @@ public class ODMProcessConfiguration
     this.minNumFeatures = Integer.valueOf(10000);
     this.videoResolution = Integer.valueOf(4000);
     this.pcQuality = Quality.MEDIUM;
+    this.featureQuality = Quality.HIGH;
     this.geoLocationFormat = FileFormat.RX1R2;
     this.geoLocationFileName = "geo.txt";
+  }
+  
+  public Quality getFeatureQuality()
+  {
+    return featureQuality;
+  }
+
+  public void setFeatureQuality(Quality featureQuality)
+  {
+    this.featureQuality = featureQuality;
   }
 
   public FileFormat getGeoLocationFormat()
@@ -212,6 +236,7 @@ public class ODMProcessConfiguration
     object.addProperty(MATCHING_NEIGHBORS, this.matcherNeighbors);
     object.addProperty(MIN_NUM_FEATURES, this.minNumFeatures);
     object.addProperty(PC_QUALITY, this.pcQuality.name());
+    object.addProperty(FEATURE_QUALITY, this.featureQuality.name());
 
     return object;
   }
@@ -301,6 +326,16 @@ public class ODMProcessConfiguration
         configuration.setPcQuality(Quality.valueOf(object.get(PC_QUALITY).getAsString()));
       }
     }
+    
+    if (object.has(FEATURE_QUALITY))
+    {
+      JsonElement element = object.get(FEATURE_QUALITY);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setFeatureQuality(Quality.valueOf(object.get(FEATURE_QUALITY).getAsString()));
+      }
+    }
 
     return configuration;
   }
@@ -355,6 +390,12 @@ public class ODMProcessConfiguration
     {
       Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(PC_QUALITY));
       configuration.setPcQuality(pcQuality);
+    }
+    
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(FEATURE_QUALITY)))
+    {
+      Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(FEATURE_QUALITY));
+      configuration.setFeatureQuality(pcQuality);
     }
 
     return configuration;

@@ -287,6 +287,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 				matcherNeighbors: data.matcherNeighbors,
 				minNumFeatures: data.minNumFeatures,
 				pcQuality: data.pcQuality,
+				featureQuality: data.featureQuality,
 				geoLocationFormat: data.geoLocationFormat,
 				geoLocationFileName: data.geoLocationFileName
 			};
