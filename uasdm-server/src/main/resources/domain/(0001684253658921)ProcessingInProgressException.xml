@@ -10,6 +10,8 @@
     <update></update>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.processing.ProcessingInProgressException" type="com.runwaysdk.system.metadata.MdException"></object>
+    </delete>
   </undoIt>
 </version>
