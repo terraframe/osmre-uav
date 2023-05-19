@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.cog;
 
 import org.json.JSONObject;
+import org.springframework.util.MultiValueMap;
 
 import com.runwaysdk.mvc.ErrorRestResponse;
 import com.runwaysdk.mvc.InputStreamResponse;
@@ -33,13 +34,13 @@ public class CloudOptimizedGeoTiffService
   private TiTillerProxy proxy = new TiTillerProxy();
   
   @Request(RequestType.SESSION)
-  public ResponseIF tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format)
+  public ResponseIF tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
   {
     try
     {
       DocumentIF document = Document.find(path);
       
-      return new InputStreamResponse(proxy.tiles(document, matrixSetId, x, y, z, scale, format), "image/" + format);
+      return new InputStreamResponse(proxy.tiles(document, matrixSetId, x, y, z, scale, format, queryParams), "image/" + format);
     }
     catch (Throwable t)
     {

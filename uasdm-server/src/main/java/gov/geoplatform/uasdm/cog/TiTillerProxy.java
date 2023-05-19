@@ -17,18 +17,24 @@ package gov.geoplatform.uasdm.cog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.util.MultiValueMap;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
@@ -42,10 +48,15 @@ import com.amazonaws.http.ExecutionContext;
 import com.amazonaws.http.HttpMethodName;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
+import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -129,6 +140,49 @@ public class TiTillerProxy
     }
   }
   
+  public TitilerCogStatistics getCogStatistics(DocumentIF document)
+  {
+    try
+    {
+      InputStream stream = null;
+      
+      String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
+      
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put("url", Arrays.asList(tifUrl));
+      
+      stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/statistics", parameters);
+      
+      return new TitilerCogStatistics(IOUtils.toString(stream, "UTF-8"));
+    }
+    catch(URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  public TitilerCogInfo getCogInfo(DocumentIF document)
+  {
+    try
+    {
+      InputStream stream = null;
+      
+      String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
+      
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put("url", Arrays.asList(tifUrl));
+      
+      stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/info", parameters);
+      
+      ObjectMapper mapper = new ObjectMapper();
+      return mapper.readValue(stream, TitilerCogInfo.class);
+    }
+    catch(URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
   public InputStream getCogPreview(ProductIF product, DocumentIF document)
   {
     try
@@ -194,12 +248,36 @@ public class TiTillerProxy
     }
   }
   
-  public InputStream tiles(DocumentIF document, String matrixSetId, String x, String y, String z, String scale, String format)
+  public InputStream tiles(DocumentIF document, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
   {
     final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
     
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(layerS3Uri));
+    
+    String[] passThroughParams = new String[] {"bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"};
+    for (Entry<String, List<String>> entry : queryParams.entrySet())
+    {
+      if (ArrayUtils.contains(passThroughParams, entry.getKey()))
+      {
+        List<String> encoded = entry.getValue();
+        
+        List<String> decoded = new ArrayList<String>();
+        for (String val : encoded)
+        {
+          try
+          {
+            decoded.add(URLDecoder.decode(val, "UTF-8"));
+          }
+          catch (UnsupportedEncodingException e)
+          {
+            throw new ProgrammingErrorException(e);
+          }
+        }
+        
+        parameters.put(entry.getKey(), decoded);
+      }
+    }
     
     try
     {
@@ -229,6 +307,39 @@ public class TiTillerProxy
     // These are the min and max zooms which Mapbox will allow
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
+    
+    if (((gov.geoplatform.uasdm.graph.Collection)document.getComponent()).isMultiSpectral()
+        && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+    {
+      TitilerCogInfo info = this.getCogInfo(document);
+      if (info != null)
+      {
+        int redIdx = info.getColorinterp().indexOf("red");
+        int greenIdx = info.getColorinterp().indexOf("green");
+        int blueIdx = info.getColorinterp().indexOf("blue");
+        
+        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+        {
+          redIdx++;
+          greenIdx++;
+          blueIdx++;
+          
+          parameters.put("bidx", Arrays.asList(new String[] {String.valueOf(redIdx),String.valueOf(greenIdx),String.valueOf(blueIdx)}));
+          
+          TitilerCogStatistics stats = this.getCogStatistics(document);
+          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
+          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
+          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+          
+          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
+          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
+
+          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
+          
+          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+        }
+      }
+    }
     
     try
     {
@@ -302,7 +413,14 @@ public class TiTillerProxy
         .errorResponseHandler(new HttpResponseHandler<SdkBaseException>() {
             @Override
             public SdkBaseException handle(HttpResponse response) throws Exception {
-                AmazonServiceException ase = new AmazonServiceException(response.getStatusText());
+                String msg = response.getStatusText();
+                
+                if (response.getContent() != null)
+                {
+                  msg = msg + ": " + IOUtils.toString(response.getContent(), "UTF-8");
+                }
+              
+                AmazonServiceException ase = new AmazonServiceException(msg);
                 ase.setStatusCode(response.getStatusCode());
                 return ase;
             }

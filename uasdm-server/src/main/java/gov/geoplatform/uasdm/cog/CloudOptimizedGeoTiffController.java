@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
@@ -130,7 +132,19 @@ public class CloudOptimizedGeoTiffController
         scale = scale.substring(0, scale.length() - 1);
       }
       
-      return this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format);
+      
+      String fullUri;
+      StringBuilder requestURL = new StringBuilder(servletRequest.getRequestURL().toString());
+      String queryString = servletRequest.getQueryString();
+
+      if (queryString == null) {
+        fullUri = requestURL.toString();
+      } else {
+        fullUri = requestURL.append('?').append(queryString).toString();
+      }
+      MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(fullUri).build().getQueryParams();
+      
+      return this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format, queryParams);
     }
     else
     {
