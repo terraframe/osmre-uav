@@ -311,6 +311,17 @@
                   <option value="LOWEST">LOWEST</option>
                 </select>
               </div>
+              
+              <div *ngIf="config.processOrtho" class="form-group">
+                <label for="featureQuality">Generated feature quality</label>
+                <select [(ngModel)]="values.featureQuality" name="featureQuality" class="form-control">
+                  <option value="ULTRA">ULTRA</option>
+                  <option value="HIGH">HIGH</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="LOW">LOW</option>
+                  <option value="LOWEST">LOWEST</option>
+                </select>
+              </div>
 
 
               <div *ngIf="config.processOrtho || config.processDem" class="form-group">

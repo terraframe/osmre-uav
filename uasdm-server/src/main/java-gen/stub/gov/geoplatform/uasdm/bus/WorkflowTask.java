@@ -30,6 +30,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.ValueObject;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.AttributeUUID;
 import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.F;
@@ -69,6 +70,17 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     super.apply();
 
     CollectionStatus.updateStatus(this);
+  }
+  
+  @Override
+  @Transaction
+  public void delete()
+  {
+    String component = this.getComponent();
+    
+    super.delete();
+
+    CollectionStatus.updateStatus(component);
   }
 
   public static long getUserWorkflowTasksCount(String statuses)

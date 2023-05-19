@@ -404,7 +404,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (isMultispectral)
       {
-        if (! ( filename.endsWith(".tif") || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
+        if (! ( (ext.equals("tif") || ext.equals("tiff")) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
         {
           task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR.getType());
           return false;

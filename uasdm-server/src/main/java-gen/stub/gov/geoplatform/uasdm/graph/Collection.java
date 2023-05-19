@@ -190,6 +190,16 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return super.download(key);
   }
+  
+  public RemoteFileObject download(String key, boolean incrementDownloadCount)
+  {
+    if (incrementDownloadCount)
+    {
+      CollectionReport.updateDownloadCount(this);
+    }
+
+    return super.download(key);
+  }
 
   public RemoteFileObject downloadReport(String folder)
   {
