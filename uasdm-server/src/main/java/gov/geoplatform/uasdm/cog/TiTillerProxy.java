@@ -203,6 +203,8 @@ public class TiTillerProxy
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
       
+      addMultispectralRGBParams(document, parameters);
+      
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/preview", parameters);
       
       return stream;
@@ -308,38 +310,7 @@ public class TiTillerProxy
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
     
-    if (((gov.geoplatform.uasdm.graph.Collection)document.getComponent()).isMultiSpectral()
-        && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
-    {
-      TitilerCogInfo info = this.getCogInfo(document);
-      if (info != null)
-      {
-        int redIdx = info.getColorinterp().indexOf("red");
-        int greenIdx = info.getColorinterp().indexOf("green");
-        int blueIdx = info.getColorinterp().indexOf("blue");
-        
-        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
-        {
-          redIdx++;
-          greenIdx++;
-          blueIdx++;
-          
-          parameters.put("bidx", Arrays.asList(new String[] {String.valueOf(redIdx),String.valueOf(greenIdx),String.valueOf(blueIdx)}));
-          
-          TitilerCogStatistics stats = this.getCogStatistics(document);
-          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
-          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
-          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
-          
-          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
-          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
-
-          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
-          
-          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
-        }
-      }
-    }
+    addMultispectralRGBParams(document, parameters);
     
     try
     {
@@ -374,6 +345,42 @@ public class TiTillerProxy
     catch (IOException | URISyntaxException e)
     {
       throw new ProgrammingErrorException(e);
+    }
+  }
+
+  private void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
+  {
+    if (((gov.geoplatform.uasdm.graph.Collection)document.getComponent()).isMultiSpectral()
+        && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+    {
+      TitilerCogInfo info = this.getCogInfo(document);
+      if (info != null)
+      {
+        int redIdx = info.getColorinterp().indexOf("red");
+        int greenIdx = info.getColorinterp().indexOf("green");
+        int blueIdx = info.getColorinterp().indexOf("blue");
+        
+        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+        {
+          redIdx++;
+          greenIdx++;
+          blueIdx++;
+          
+          parameters.put("bidx", Arrays.asList(new String[] {String.valueOf(redIdx),String.valueOf(greenIdx),String.valueOf(blueIdx)}));
+          
+          TitilerCogStatistics stats = this.getCogStatistics(document);
+          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
+          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
+          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+          
+          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
+          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
+
+          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
+          
+          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+        }
+      }
     }
   }
   
