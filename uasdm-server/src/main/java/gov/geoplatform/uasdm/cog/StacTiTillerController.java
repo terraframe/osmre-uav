@@ -19,6 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
@@ -96,8 +98,19 @@ public class StacTiTillerController
       {
         scale = scale.substring(0, scale.length() - 1);
       }
+      
+      String fullUri;
+      StringBuilder requestURL = new StringBuilder(servletRequest.getRequestURL().toString());
+      String queryString = servletRequest.getQueryString();
 
-      return this.service.tiles(request.getSessionId(), matrixSetId, Integer.valueOf(x), Integer.valueOf(y), Integer.valueOf(z), Integer.valueOf(scale), format, url, assets);
+      if (queryString == null) {
+        fullUri = requestURL.toString();
+      } else {
+        fullUri = requestURL.append('?').append(queryString).toString();
+      }
+      MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(fullUri).build().getQueryParams();
+
+      return this.service.tiles(request.getSessionId(), matrixSetId, Integer.valueOf(x), Integer.valueOf(y), Integer.valueOf(z), Integer.valueOf(scale), format, url, assets, queryParams);
     }
     else
     {

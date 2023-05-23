@@ -28,16 +28,21 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.util.MultiValueMap;
 
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
+import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 
 public class StacTiTillerProxy extends TiTillerProxy
@@ -53,11 +58,13 @@ public class StacTiTillerProxy extends TiTillerProxy
     this.assets = assets;
   }
 
-  public InputStream tiles(String matrixSetId, Integer z, Integer x, Integer y, Integer scale, String format)
+  public InputStream tiles(String matrixSetId, Integer z, Integer x, Integer y, Integer scale, String format, MultiValueMap<String, String> queryParams)
   {
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
+    
+    passThroughParams(queryParams, parameters, new String[] {"asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"});
 
     try
     {
@@ -74,6 +81,8 @@ public class StacTiTillerProxy extends TiTillerProxy
 
   public JSONObject tilejson(String contextPath)
   {
+    Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+    
     // Update the download count
     // We know that the filename of the stac json is the product id. So parse out that id, fetch the product, and increment the count
     String key = new AmazonS3URI(this.url).getKey();
@@ -85,17 +94,18 @@ public class StacTiTillerProxy extends TiTillerProxy
       if (component instanceof Collection)
       {
         CollectionReport.updateDownloadCount((CollectionIF) component);
+        
+        addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
       }
     }
     
-    Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
     
     // These are the min and max zooms which Mapbox will allow
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
-
+    
     try
     {
       // We have to get the tilejson file from titiler and replace their urls
@@ -119,6 +129,44 @@ public class StacTiTillerProxy extends TiTillerProxy
     catch (IOException | URISyntaxException e)
     {
       throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  protected void addMultispectralRGBParamsForStac(Product product, Collection collection, Map<String, List<String>> parameters)
+  {
+    if ((collection).isMultiSpectral()
+        && assets.length() > 0 && assets.contains("odm_orthophoto"))
+    {
+      DocumentIF document = product.getMappableOrtho().get();
+      
+      TitilerCogInfo info = this.getCogInfo(document);
+      if (info != null)
+      {
+        int redIdx = info.getColorinterp().indexOf("red");
+        int greenIdx = info.getColorinterp().indexOf("green");
+        int blueIdx = info.getColorinterp().indexOf("blue");
+        
+        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+        {
+          redIdx++;
+          greenIdx++;
+          blueIdx++;
+          
+          parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
+          
+          TitilerCogStatistics stats = this.getCogStatistics(document);
+          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
+          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
+          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+          
+          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
+          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
+
+          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
+          
+          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+        }
+      }
     }
   }
 

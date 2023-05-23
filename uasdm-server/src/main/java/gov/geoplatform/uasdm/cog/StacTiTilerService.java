@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.cog;
 
 import org.json.JSONObject;
+import org.springframework.util.MultiValueMap;
 
 import com.runwaysdk.mvc.ErrorRestResponse;
 import com.runwaysdk.mvc.InputStreamResponse;
@@ -27,13 +28,13 @@ import com.runwaysdk.web.json.JSONRunwayExceptionDTO;
 public class StacTiTilerService
 {
   @Request(RequestType.SESSION)
-  public ResponseIF tiles(String sessionId, String matrixSetId, Integer x, Integer y, Integer z, Integer scale, String format, String url, String assets)
+  public ResponseIF tiles(String sessionId, String matrixSetId, Integer x, Integer y, Integer z, Integer scale, String format, String url, String assets, MultiValueMap<String, String> queryParams)
   {
     try
     {
       StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets);
 
-      return new InputStreamResponse(proxy.tiles(matrixSetId, z, x, y, scale, format), "image/" + format);
+      return new InputStreamResponse(proxy.tiles(matrixSetId, z, x, y, scale, format, queryParams), "image/" + format);
     }
     catch (Throwable t)
     {

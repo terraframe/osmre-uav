@@ -132,7 +132,6 @@ public class CloudOptimizedGeoTiffController
         scale = scale.substring(0, scale.length() - 1);
       }
       
-      
       String fullUri;
       StringBuilder requestURL = new StringBuilder(servletRequest.getRequestURL().toString());
       String queryString = servletRequest.getQueryString();

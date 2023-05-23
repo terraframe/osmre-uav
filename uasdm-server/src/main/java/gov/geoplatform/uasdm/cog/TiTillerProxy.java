@@ -257,7 +257,22 @@ public class TiTillerProxy
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(layerS3Uri));
     
-    String[] passThroughParams = new String[] {"bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"};
+    passThroughParams(queryParams, parameters, new String[] {"bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"});
+    
+    try
+    {
+      InputStream isTile = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tiles/" + matrixSetId + "/" + z + "/" + x + "/" + y + "@" + scale + "x", parameters);
+      
+      return isTile;
+    }
+    catch (URISyntaxException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  protected void passThroughParams(MultiValueMap<String, String> queryParams, Map<String, List<String>> parameters, String[] passThroughParams)
+  {
     for (Entry<String, List<String>> entry : queryParams.entrySet())
     {
       if (ArrayUtils.contains(passThroughParams, entry.getKey()))
@@ -279,17 +294,6 @@ public class TiTillerProxy
         
         parameters.put(entry.getKey(), decoded);
       }
-    }
-    
-    try
-    {
-      InputStream isTile = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tiles/" + matrixSetId + "/" + z + "/" + x + "/" + y + "@" + scale + "x", parameters);
-      
-      return isTile;
-    }
-    catch (URISyntaxException e)
-    {
-      throw new ProgrammingErrorException(e);
     }
   }
   
@@ -348,7 +352,7 @@ public class TiTillerProxy
     }
   }
 
-  private void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
+  protected void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
   {
     if (((gov.geoplatform.uasdm.graph.Collection)document.getComponent()).isMultiSpectral()
         && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
