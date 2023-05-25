@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -183,7 +185,7 @@ public class TiTillerProxy
     }
   }
   
-  public InputStream getCogPreview(ProductIF product, DocumentIF document)
+  public InputStream getCogPreview(ProductIF product, DocumentIF document, CogPreviewParams params)
   {
     try
     {
@@ -202,6 +204,8 @@ public class TiTillerProxy
       
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
+      
+      params.addParameters(parameters);
       
       addMultispectralRGBParams(document, parameters);
       
@@ -401,57 +405,96 @@ public class TiTillerProxy
    */
   public InputStream authenticatedInvokeURL(URI endpoint, String resourcePath, Map<String, List<String>> parameters)
   {
-    final BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-    
-    // Instantiate the request
-    com.amazonaws.Request<Void> request = new DefaultRequest<Void>("execute-api");
-    request.setHttpMethod(HttpMethodName.GET);
-    request.setEndpoint(endpoint);
-    request.setResourcePath(resourcePath);
-    request.setParameters(parameters);
-
-    // Sign it...
-    AWS4Signer signer = new AWS4Signer();
-    signer.setRegionName(AppProperties.getBucketRegion());
-    signer.setServiceName(request.getServiceName());
-    signer.sign(request, awsCreds);
-
-    // Execute it and get the response...
-    Response<InputStream> rsp = new AmazonHttpClient(new ClientConfiguration())
-        .requestExecutionBuilder()
-        .executionContext(new ExecutionContext(true))
-        .request(request)
-        .errorResponseHandler(new HttpResponseHandler<SdkBaseException>() {
-            @Override
-            public SdkBaseException handle(HttpResponse response) throws Exception {
-                String msg = response.getStatusText();
+    if (endpoint.toString().contains("titiler.xyz"))
+    {
+      // Titiler testing endpoint. Does not require authentication.
+      
+      try
+      {
+        String url = endpoint.toString() + resourcePath;
+        
+        url += "?";
+        
+        List<String> encodedParams = new ArrayList<>();
+        
+        for (Entry<String, List<String>> entry : parameters.entrySet())
+        {
+          for (String value : entry.getValue())
+          {
+            if (entry.getKey().equals("url"))
+            {
+              encodedParams.add(entry.getKey() + "=" + URLEncoder.encode(value.replace("osmre-uas-dev", "osmre-uas-dev-public"), "UTF-8"));
+            }
+            else
+            {
+              encodedParams.add(entry.getKey() + "=" + URLEncoder.encode(value, "UTF-8"));
+            }
+          }
+        }
+        
+        url += StringUtils.join(encodedParams, "&");
+        
+        return new URL(url).openStream();
+      }
+      catch (IOException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+    else
+    {
+      final BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+      
+      // Instantiate the request
+      com.amazonaws.Request<Void> request = new DefaultRequest<Void>("execute-api");
+      request.setHttpMethod(HttpMethodName.GET);
+      request.setEndpoint(endpoint);
+      request.setResourcePath(resourcePath);
+      request.setParameters(parameters);
+  
+      // Sign it...
+      AWS4Signer signer = new AWS4Signer();
+      signer.setRegionName(AppProperties.getBucketRegion());
+      signer.setServiceName(request.getServiceName());
+      signer.sign(request, awsCreds);
+  
+      // Execute it and get the response...
+      Response<InputStream> rsp = new AmazonHttpClient(new ClientConfiguration())
+          .requestExecutionBuilder()
+          .executionContext(new ExecutionContext(true))
+          .request(request)
+          .errorResponseHandler(new HttpResponseHandler<SdkBaseException>() {
+              @Override
+              public SdkBaseException handle(HttpResponse response) throws Exception {
+                  String msg = response.getStatusText();
+                  
+                  if (response.getContent() != null)
+                  {
+                    msg = msg + ": " + IOUtils.toString(response.getContent(), "UTF-8");
+                  }
                 
-                if (response.getContent() != null)
-                {
-                  msg = msg + ": " + IOUtils.toString(response.getContent(), "UTF-8");
-                }
-              
-                AmazonServiceException ase = new AmazonServiceException(msg);
-                ase.setStatusCode(response.getStatusCode());
-                return ase;
+                  AmazonServiceException ase = new AmazonServiceException(msg);
+                  ase.setStatusCode(response.getStatusCode());
+                  return ase;
+              }
+              @Override
+              public boolean needsConnectionLeftOpen() {
+                  return false;
+              }
+          })
+          .execute(new HttpResponseHandler<InputStream>() {
+            @Override
+            public InputStream handle(HttpResponse response) throws Exception {
+                return response.getContent();
             }
             @Override
             public boolean needsConnectionLeftOpen() {
-                return false;
+                return true;
             }
-        })
-        .execute(new HttpResponseHandler<InputStream>() {
-          @Override
-          public InputStream handle(HttpResponse response) throws Exception {
-              return response.getContent();
-          }
-          @Override
-          public boolean needsConnectionLeftOpen() {
-              return true;
-          }
-        });
-    
-    return rsp.getHttpResponse().getContent();
+          });
+      
+      return rsp.getHttpResponse().getContent();
+    }
   }
   
 

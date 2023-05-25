@@ -59,6 +59,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
+import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
@@ -795,7 +796,7 @@ public class ProjectManagementService
       {
         Document document = (Document) op.get();
         
-        InputStream cogImage = new TiTillerProxy().getCogPreview(product, document);
+        InputStream cogImage = new TiTillerProxy().getCogPreview(product, document, new CogPreviewParams());
 
         if (cogImage != null)
         {

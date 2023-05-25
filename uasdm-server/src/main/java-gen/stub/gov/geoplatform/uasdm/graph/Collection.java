@@ -15,6 +15,9 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -25,6 +28,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -55,6 +60,8 @@ import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
 import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.cog.CogPreviewParams;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -62,8 +69,10 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.remote.s3.InputStreamObjectWrapper;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -196,6 +205,25 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     if (incrementDownloadCount)
     {
       CollectionReport.updateDownloadCount(this);
+    }
+    
+    // TODO : Due to a bug in ODM png generation with multispectral we're hacking around it here
+    // @see https://github.com/OpenDroneMap/ODM/issues/1658
+    if (this.isMultiSpectral() && key.matches(Product.THUMBNAIL_ORTHO_PNG_REGEX))
+    {
+      Product product = this.getProducts().get(0);
+      InputStream is = new TiTillerProxy().getCogPreview(product, product.getMappableOrtho().get(), new CogPreviewParams(250, 250));
+      
+      try
+      {
+        byte[] bytes = IOUtils.toByteArray(is);
+        
+        return new InputStreamObjectWrapper(key, new ByteArrayInputStream(bytes), new BasicFileMetadata(ContentType.IMAGE_PNG.toString(), bytes.length));
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
     }
 
     return super.download(key);

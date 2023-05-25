@@ -56,7 +56,11 @@ public class RemoteFileGetResponse implements ResponseIF
       resp.setHeader("Content-Disposition", contentDisposition);
       resp.setHeader("Content-Length", Long.toString(metadata.getContentLength()));
       resp.setHeader("ETag", metadata.getETag());
-      resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
+      
+      if (metadata.getLastModified() != null)
+      {
+        resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
+      }
 
       try (OutputStream ostream = resp.getOutputStream())
       {
