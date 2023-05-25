@@ -162,7 +162,7 @@ public class StacTiTillerProxy extends TiTillerProxy
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
 
-          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
+          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
           
           parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
         }
