@@ -145,31 +145,38 @@
         <version>1.92</version>
         <inherited>false</inherited>
         <configuration>
-         <templateContent>
-# Changelog
+		  <file>CHANGELOG2.md</file>
+          <useIntegrations>true</useIntegrations>
+          <gitHubEnabled>true</gitHubEnabled>
+          <gitHubApi>https://api.github.com/repos/terraframe/osmre-uav</gitHubApi>
+          <templateContent>
 {{#tags}}
 {{#ifReleaseTag .}}
-{{#ifMatches name "(0\.15\.[1-9]+)|(0\.1[6-9]\.\d+)|(0\.[2-9]\d+\.\d+)|([1-9]+\.\d+\.\d+)"}}
+{{#ifMatches name "${project.version}"}}
 ## [{{name}}](https://github.com/terraframe/osmre-uav/releases/tag/{{name}}) ({{tagDate .}})
 
   {{#ifContainsType commits type='feat'}}
 ### Features
 
-    {{#commits}}
-      {{#ifCommitType . type='feat'}}
- - {{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/terraframe/osmre-uav/commit/{{hashFull}}))
-      {{/ifCommitType}}
-    {{/commits}}
+    {{#issues}}
+      {{#commits}}
+        {{#ifCommitType . type='feat'}}
+ - {{#ifCommitBreaking .}}![BREAKING CHANGE](https://raw.githubusercontent.com/terraframe/geoprism-registry/master/src/build/changelog/breaking-change.png) {{/ifCommitBreaking}}{{#eachCommitScope .}}**{{.}}** {{/eachCommitScope}}{{{commitDescription .}}} {{#messageBodyItems}}{{.}}{{/messageBodyItems}} {{#hasIssue}}([{{issue}}]({{link}})){{/hasIssue}} ([{{subString hash 0 5}}](https://github.com/terraframe/osmre-uav/commit/{{hashFull}}))
+        {{/ifCommitType}}
+      {{/commits}}
+    {{/issues}}
   {{/ifContainsType}}
 
   {{#ifContainsType commits type='fix'}}
 ### Bug Fixes
 
-    {{#commits}}
-      {{#ifCommitType . type='fix'}}
- - {{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}} {{{commitDescription .}}} ([{{hash}}](https://github.com/terraframe/osmre-uav/commit/{{hashFull}}))
-      {{/ifCommitType}}
-    {{/commits}}
+    {{#issues}}
+      {{#commits}}
+        {{#ifCommitType . type='fix'}}
+   - {{#ifCommitBreaking .}}![BREAKING CHANGE](https://raw.githubusercontent.com/terraframe/geoprism-registry/master/src/build/changelog/breaking-change.png) {{/ifCommitBreaking}}{{#eachCommitScope .}}**{{.}}** {{/eachCommitScope}}{{{commitDescription .}}} {{#messageBodyItems}}{{.}}{{/messageBodyItems}} {{#hasIssue}}([{{issue}}]({{link}})){{/hasIssue}} ([{{subString hash 0 5}}](https://github.com/terraframe/osmre-uav/commit/{{hashFull}}))
+        {{/ifCommitType}}
+      {{/commits}}
+    {{/issues}}
   {{/ifContainsType}}
 
 {{/ifMatches}}
