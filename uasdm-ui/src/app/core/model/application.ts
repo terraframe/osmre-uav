@@ -1,3 +1,7 @@
+///
+///
+///
+
 export class Configuration {
   contextPath: string;
   uasdmKeycloakEnabled: boolean;

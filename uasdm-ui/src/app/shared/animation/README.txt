@@ -1,3 +1,7 @@
+====
+
+====
+
 How to use these animations:
 
 1. Add and export an animation to one of the files in this directory.

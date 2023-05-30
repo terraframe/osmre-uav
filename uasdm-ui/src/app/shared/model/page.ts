@@ -1,3 +1,7 @@
+///
+///
+///
+
 export class PageResult<T> {
     count: number;
     pageNumber: number;

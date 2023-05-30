@@ -1,3 +1,7 @@
+///
+///
+///
+
 import { PageResult } from "./page";
 
 export interface GenericTableService {

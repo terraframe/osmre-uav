@@ -1,3 +1,7 @@
+///
+///
+///
+
 import { PageResult } from '@shared/model/page';
 import { Sensor } from './sensor';
 import { Platform } from './platform';

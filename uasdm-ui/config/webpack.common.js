@@ -1,3 +1,6 @@
+/*
+ *
+ */
 var webpack = require('webpack');
 var helpers = require('./helpers');
 var ngToolsWebpack = require('@ngtools/webpack');

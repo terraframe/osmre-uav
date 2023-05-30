@@ -1,3 +1,6 @@
+/*
+ *
+ */
 var path = require('path');
 var _root = path.resolve(__dirname, '..');
 function root(args) {

@@ -1,3 +1,6 @@
+/*
+ *
+ */
 Error.stackTraceLimit = Infinity;
 
 require('core-js/es6');

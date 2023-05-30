@@ -1,3 +1,7 @@
+///
+///
+///
+
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';

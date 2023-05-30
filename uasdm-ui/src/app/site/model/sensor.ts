@@ -1,3 +1,7 @@
+///
+///
+///
+
 export class Sensor {
     seq?: string;
     oid: string;

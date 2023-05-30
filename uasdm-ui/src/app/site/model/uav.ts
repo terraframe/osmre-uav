@@ -1,3 +1,7 @@
+///
+///
+///
+
 export class UAV {
     oid: string;
     serialNumber: string;
