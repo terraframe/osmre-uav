@@ -74,6 +74,7 @@ if [ "$release_uasdm" == "true" ]; then
   if [ "$dry_run" == "true" ]; then
     git tag $IDM_VERSION
   fi
+  sed -i "0,/<version>.*<\/version>/s//<version>$IDM_VERSION<\/version>/" pom.xml
   mvn git-changelog-maven-plugin:git-changelog --non-recursive
   mv CHANGELOG.md CHANGELOG-old.md
   head -n 3 CHANGELOG-old.md > CHANGELOG.md
