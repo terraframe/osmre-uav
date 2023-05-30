@@ -1,4 +1,7 @@
-# Changelog
+
+# Release Notes
+
+
 ## [0.15.2](https://github.com/terraframe/osmre-uav/releases/tag/0.15.2) (2022-10-13)
 
 ### Features
@@ -29,8 +32,4 @@
  -  Reprocess Imagery button to refresh correctly on tab change ([8b55949bbd10985](https://github.com/terraframe/osmre-uav/commit/8b55949bbd109859057d79ea68f9c067e95c6ed7))
  -  **keycloak**  Upgrade keycloak dependency. ([771ee0717289556](https://github.com/terraframe/osmre-uav/commit/771ee071728955679688c1a6f2c6ffb2d8e3f66d))
  -  uasdm-server/pom.xml to reduce vulnerabilities ([27b71e5234e960c](https://github.com/terraframe/osmre-uav/commit/27b71e5234e960cc5330d4ac8a7c95deaccbef8e))
-
-## [0.15.1](https://github.com/terraframe/osmre-uav/releases/tag/0.15.1) (2022-10-11)
-
-
 
