@@ -30,7 +30,7 @@ if [ "$release_uasdm" == "true" ]; then
   
   git checkout $release_branch
   git pull
-  sed -i -E "s_<span id=\"automated-version-replace\">.*</span>_<span id=\"automated-version-replace\">$IDM_VERSION</span>_g" uasdm-web/src/main/ng2/src/app/admin/component/system/system-info.component.html
+  sed -i -E "s_<span id=\"automated-version-replace\">.*</span>_<span id=\"automated-version-replace\">$IDM_VERSION</span>_g" uasdm-ui/src/app/admin/component/system/system-info.component.html
   cd uasdm-ui
   npm install --force
   node -v && npm -v

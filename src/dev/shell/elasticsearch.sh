@@ -17,7 +17,7 @@
 
 # Run with super user
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+then echo "Please run as root (with -E flag if using sudo)"
   exit
 fi
 

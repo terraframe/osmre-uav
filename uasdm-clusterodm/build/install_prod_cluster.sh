@@ -20,42 +20,11 @@
 #   pick and choose which commands to run based on what it is that you're doing. At some point this script will probably be converted into ansible.
 ###################
 
-
-
-
-
-
-
-
-########
-
-Config changes needed for next deploy:
-1. Make sure the dev-deploy bucket is updated since its currently on dev (not dev-deploy)
-2. Add `acl: none` to s3
-3. `vpcId` changed to `vpc`
-4. `additionalMachineSetupCmd` changed to `nodeSetupCmd`
-5. Change nodeodm:latest tag to prod/staging/devdeploy
-
-
-6??. Change the deployed image for nodeodm, and also the image referenced in the config for staging/prod to use the opendronemap docker image, and not our custom micasense one.
-
-########
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Run with super user
+if [ "$EUID" -ne 0 ]
+then echo "Please run as root (with -E flag if using sudo)"
+  exit
+fi
 
 # Before running, ensure uasdm-odm is setup and running currently (start with install_prod_odm.sh)
 
@@ -76,7 +45,9 @@ base=https://github.com/docker/machine/releases/download/v0.16.0 &&
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 #aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
+#aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com # Latest AWS CLI
 $(aws ecr get-login --no-include-email --region us-east-1)
+
 
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 
