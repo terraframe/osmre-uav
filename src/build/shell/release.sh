@@ -71,12 +71,22 @@ if [ "$release_uasdm" == "true" ]; then
   
   # Generate Changelog
   cd $WORKSPACE/uasdm
+  if [ "$dry_run" == "true" ]; then
+    git tag $IDM_VERSION
+  fi
   mvn git-changelog-maven-plugin:git-changelog --non-recursive
+  mv CHANGELOG.md CHANGELOG-old.md
+  head -n 3 CHANGELOG-old.md > CHANGELOG.md
+  echo "" >> CHANGELOG.md
+  cat CHANGELOG2.md >> CHANGELOG.md
+  tail -n +3 CHANGELOG-old.md >> CHANGELOG.md
   git add CHANGELOG.md
-  git commit -m "chore(release): Update changelog for $CGR_RELEASE_VERSION."
+  git commit --no-verify -m "chore(release): update changelog for $IDM_VERSION"
   if [ "$dry_run" == "false" ]; then
     git push
   else
+    echo "Generated changelog as:"
+    cat CHANGELOG.md
     git reset --hard
   fi
 fi
