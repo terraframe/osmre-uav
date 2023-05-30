@@ -6,6 +6,8 @@
 
 ### Features
 
+ - ![BREAKING CHANGE](https://raw.githubusercontent.com/terraframe/geoprism-registry/master/src/build/changelog/breaking-change.png) Upgrade Orientdb to v3.2
+ - ![BREAKING CHANGE](https://raw.githubusercontent.com/terraframe/geoprism-registry/master/src/build/changelog/breaking-change.png) Upgrade ODM to v3.1.4
  - **site-viewer** improve ortho preview  ([#222](https://github.com/terraframe/osmre-uav/issues/222)) ([4b369](https://github.com/terraframe/osmre-uav/commit/4b369efa389ca71df82a16c44db1ac6fd619fa55))
  - add support for feature-quality odm config option   ([3bd65](https://github.com/terraframe/osmre-uav/commit/3bd654f51bbf3433ba079ab68e0130e7ea5da4b6))
  - update collection metadata when calculating product bbox   ([de1df](https://github.com/terraframe/osmre-uav/commit/de1df2c534e767199bf498fbf8d3176d3efd239d))
