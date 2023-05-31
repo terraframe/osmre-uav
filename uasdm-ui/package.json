@@ -41,6 +41,7 @@
 		"ngx-cookie-service": "3.0.3",
 		"ngx-file-drop": "^14.0.2",
 		"ngx-pagination": "5.0.0",
+		"ngx-spinner": "^11.0.2",
 		"primeicons": "^6.0.1",
 		"primeng": "^14.2.3",
 		"proj4": "2.6.0",

@@ -10,6 +10,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
+import { NgxSpinnerService } from "ngx-spinner";
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
 import { SiteEntity, Selection } from '@site/model/management';
@@ -74,6 +75,10 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 	 * Current page  
 	 */
 	hierarchyChange: boolean = false;
+	
+	CONSTANTS = {
+        NEXT_OVERLAY: "create-collection-next"
+    };
 
 	/*
 	 * Current page  
@@ -94,7 +99,7 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private service: ManagementService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
+	constructor(private spinner: NgxSpinnerService, private service: ManagementService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
 	}
 
 
@@ -264,13 +269,16 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 				else {
 					if (!this.page.selection.isNew && this.page.selection.value != null && this.page.selection.value.length > 0) {
 
+						this.spinner.show(this.CONSTANTS.NEXT_OVERLAY);
 						this.service.getChildren(this.page.selection.value).then(children => {
 							nextPage.options = children.filter(child => {
 								return child.type === nextPage.selection.type;
 							});
 
 							this.page = nextPage;
+							this.spinner.hide(this.CONSTANTS.NEXT_OVERLAY);
 						}).catch((err: HttpErrorResponse) => {
+							this.spinner.hide(this.CONSTANTS.NEXT_OVERLAY);
 							this.error(err);
 						});
 					}
