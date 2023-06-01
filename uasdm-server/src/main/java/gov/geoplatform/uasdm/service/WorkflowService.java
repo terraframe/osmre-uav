@@ -35,6 +35,7 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 
 public class WorkflowService
@@ -65,6 +66,14 @@ public class WorkflowService
         workflowTask.setProcessDem(parser.getProcessDem());
         workflowTask.setProcessOrtho(parser.getProcessOrtho());
         workflowTask.setProcessPtcloud(parser.getProcessPtcloud());
+      }
+      
+      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection &&
+          ((gov.geoplatform.uasdm.graph.Collection) uasComponent).getStatus() == "Processing"
+          )
+      {
+        ProcessingInProgressException ex = new ProcessingInProgressException();
+        throw ex;
       }
     }
     else

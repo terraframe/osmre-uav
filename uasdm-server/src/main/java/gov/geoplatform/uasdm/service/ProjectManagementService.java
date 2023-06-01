@@ -438,6 +438,14 @@ public class ProjectManagementService
   public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho, String configuration)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
+    
+    if (collection instanceof gov.geoplatform.uasdm.graph.Collection &&
+        ((gov.geoplatform.uasdm.graph.Collection) collection).getStatus() == "Processing"
+        )
+    {
+      ProcessingInProgressException ex = new ProcessingInProgressException();
+      throw ex;
+    }
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(id);
@@ -583,19 +591,19 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void removeTask(String sessionId, String uploadId)
   {
-    try
-    {
+//    try
+//    {
       AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
   
       if (wfTask != null)
       {
         wfTask.delete();
       }
-    }
-    catch (ProcessingInProgressException ex)
-    {
-      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
-    }
+//    }
+//    catch (ProcessingInProgressException ex)
+//    {
+//      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
+//    }
   }
   
   @Request(RequestType.SESSION)
