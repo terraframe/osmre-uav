@@ -285,7 +285,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 						//that.currentTask = null;
 
 						if (that.currentTask && that.currentTask.uploadId) {
-							that.service.removeTask(that.currentTask.uploadId)
+							that.service.removeUploadTask(that.currentTask.uploadId)
 								.then(() => {
 									this.clearStoredFiles();
 								})
@@ -609,7 +609,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		modal.content.submitText = 'Cancel Upload';
 
 		modal.content.onConfirm.subscribe(data => {
-			this.service.removeTask(this.uploader.getResumableFilesData()[0].uuid)
+			this.service.removeUploadTask(this.uploader.getResumableFilesData()[0].uuid)
 				.then(() => {
 					//that.uploader.clearStoredFiles();
 					//that.uploader.cancelAll()

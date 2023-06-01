@@ -302,11 +302,19 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
+  
+  @Endpoint(url = "remove-upload-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF removeUploadTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  {
+    this.service.removeUploadTask(request.getSessionId(), uploadId);
+
+    return new RestResponse();
+  }
 
   @Endpoint(url = "remove-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  public ResponseIF removeTask(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId)
   {
-    this.service.removeTask(request.getSessionId(), uploadId);
+    this.service.removeTask(request.getSessionId(), taskId);
 
     return new RestResponse();
   }

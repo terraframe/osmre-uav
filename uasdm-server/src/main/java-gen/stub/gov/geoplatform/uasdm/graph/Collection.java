@@ -336,7 +336,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public void delete()
   {
     String status = this.getStatus();
-    if (status == "Processing")
+    if (status.equals("Processing"))
     {
       CannotDeleteProcessingCollection ex = new CannotDeleteProcessingCollection();
       ex.setCollectionName(this.getName());

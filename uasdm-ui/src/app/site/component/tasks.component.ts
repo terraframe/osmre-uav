@@ -304,48 +304,6 @@ export class TasksComponent implements OnInit {
     })
   }
 
-  removeTask(task: Task): void {
-
-    this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-      animated: true,
-      backdrop: true,
-      ignoreBackdropClick: true,
-    });
-    this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + '?';
-    this.bsModalRef.content.data = task;
-    this.bsModalRef.content.type = 'DANGER';
-    this.bsModalRef.content.submitText = 'Delete';
-
-    (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(task => {
-      this.deleteTask(task);
-    });
-
-  }
-
-  deleteTask(task: Task) {
-    this.managementService.removeTask(task.uploadId)
-      .then(() => {
-        let pos = null;
-        for (let i = 0; i < this.tasks.resultSet.length; i++) {
-          let thisTask = this.tasks[i];
-
-          if (thisTask.uploadId === task.uploadId) {
-            pos = i;
-            break;
-          }
-        }
-
-        if (pos !== null) {
-          this.tasks.resultSet.splice(pos, 1);
-        }
-
-        this.getMessages();
-
-        this.totalTaskCount = this.tasks.count;
-
-      });
-  }
-
   getMessages(): void {
     this.onMessagePageChange(this.messages.pageNumber);
   }

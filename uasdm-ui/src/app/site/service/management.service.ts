@@ -326,8 +326,8 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
-
-	removeTask(uploadId: string): Promise<void> {
+	
+	removeUploadTask(uploadId: string): Promise<void> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -336,7 +336,23 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/remove-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
+			.post<void>(environment.apiUrl + '/project/remove-upload-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
+	removeTask(taskId: string): Promise<void> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<void>(environment.apiUrl + '/project/remove-task', JSON.stringify({ taskId: taskId }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

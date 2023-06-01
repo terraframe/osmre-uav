@@ -62,7 +62,6 @@ export class TasksPanelComponent implements OnInit {
 	ngOnDestroy(): void {
 	}
 
-
 	removeTask(task: Task): void {
 
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
@@ -82,13 +81,13 @@ export class TasksPanelComponent implements OnInit {
 	}
 
 	deleteTask(task: Task) {
-		this.managementService.removeTask(task.uploadId)
+		this.managementService.removeTask(task.oid)
 			.then(() => {
 				let pos = null;
 				for (let i = 0; i < this.taskGroupType.tasks.length; i++) {
 					let thisTask = this.taskGroupType.tasks[i];
 
-					if (thisTask.uploadId === task.uploadId) {
+					if (thisTask.oid === task.oid) {
 						pos = i;
 						break;
 					}

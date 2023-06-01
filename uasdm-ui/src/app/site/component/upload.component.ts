@@ -190,7 +190,7 @@ export class UploadComponent implements OnInit {
                         //that.currentTask = null;
 
                         if (that.currentTask && that.currentTask.uploadId) {
-                            that.service.removeTask(that.currentTask.uploadId)
+                            that.service.removeUploadTask(that.currentTask.uploadId)
                                 .then(() => {
                                     this.clearStoredFiles();
                                 })
@@ -387,7 +387,7 @@ export class UploadComponent implements OnInit {
         this.bsModalRef.content.submitText = 'Cancel Upload';
 
         (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
-            this.service.removeTask(this.uploader.getResumableFilesData()[0].uuid)
+            this.service.removeUploadTask(this.uploader.getResumableFilesData()[0].uuid)
                 .then(() => {
                     //that.uploader.clearStoredFiles();
                     //that.uploader.cancelAll()

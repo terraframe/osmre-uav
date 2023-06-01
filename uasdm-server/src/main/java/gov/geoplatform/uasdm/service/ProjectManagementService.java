@@ -59,6 +59,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -440,7 +441,7 @@ public class ProjectManagementService
     CollectionIF collection = ComponentFacade.getCollection(id);
     
     if (collection instanceof gov.geoplatform.uasdm.graph.Collection &&
-        ((gov.geoplatform.uasdm.graph.Collection) collection).getStatus() == "Processing"
+        ((gov.geoplatform.uasdm.graph.Collection) collection).getStatus().equals("Processing")
         )
     {
       ProcessingInProgressException ex = new ProcessingInProgressException();
@@ -587,23 +588,46 @@ public class ProjectManagementService
 
     uasComponent.deleteObject(key);
   }
-
+  
   @Request(RequestType.SESSION)
-  public void removeTask(String sessionId, String uploadId)
+  public void removeUploadTask(String sessionId, String uploadId)
   {
-//    try
-//    {
+    try
+    {
       AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
   
       if (wfTask != null)
       {
+        if (! (wfTask.getStatus().equals(WorkflowTaskStatus.STARTED.toString()) || wfTask.getStatus().equals(WorkflowTaskStatus.UPLOADING.toString())))
+        {
+          ProcessingInProgressException ex = new ProcessingInProgressException();
+          throw ex;
+        }
+        
         wfTask.delete();
       }
-//    }
-//    catch (ProcessingInProgressException ex)
-//    {
-//      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
-//    }
+    }
+    catch (ProcessingInProgressException ex)
+    {
+      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
+    }
+  }
+
+  @Request(RequestType.SESSION)
+  public void removeTask(String sessionId, String taskId)
+  {
+    WorkflowTask task = WorkflowTask.get(taskId);
+  
+    if (task != null)
+    {
+      if (task.getNormalizedStatus().equals(WorkflowTaskStatus.PROCESSING.toString()))
+      {
+        ProcessingInProgressException ex = new ProcessingInProgressException();
+        throw ex;
+      }
+      
+      task.delete();
+    }
   }
   
   @Request(RequestType.SESSION)

@@ -69,7 +69,7 @@ public class WorkflowService
       }
       
       if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection &&
-          ((gov.geoplatform.uasdm.graph.Collection) uasComponent).getStatus() == "Processing"
+          ((gov.geoplatform.uasdm.graph.Collection) uasComponent).getStatus().equals("Processing")
           )
       {
         ProcessingInProgressException ex = new ProcessingInProgressException();
