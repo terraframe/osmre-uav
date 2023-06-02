@@ -79,6 +79,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
+      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
       ql.append(" )");
     }
     else if (this.folder.equals("data"))
@@ -88,6 +89,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
+      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
       ql.append(" )");
     }
 
@@ -117,6 +119,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       query.setParameter("jpg", "%.JPG");
       query.setParameter("png", "%.PNG");
       query.setParameter("tif", "%.TIF");
+      query.setParameter("tif", "%.TIFF");
     }
 
     return query;
