@@ -327,7 +327,15 @@
                   <option value="LOWEST">LOWEST</option>
                 </select>
               </div>
-
+              
+              <div *ngIf="config.processOrtho" class="form-group">
+                <label for="radiometricCalibration">Radiometric calibration</label>
+                <select [(ngModel)]="values.radiometricCalibration" name="radiometricCalibration" class="form-control">
+                  <option value="NONE">NONE</option>
+                  <option value="CAMERA">CAMERA</option>
+                  <option value="CAMERA+SUN">CAMERA+SUN</option>
+                </select>
+              </div>
 
               <div *ngIf="config.processOrtho || config.processDem" class="form-group">
                 <boolean-field [(value)]="values.includeGeoLocationFile"

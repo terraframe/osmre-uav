@@ -33,6 +33,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         minNumFeatures: 10000,
         pcQuality: "MEDIUM",
         featureQuality: "HIGH",
+        radiometricCalibration: "NONE",
         geoLocationFormat: "RX1R2"
     };
 

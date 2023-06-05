@@ -42,6 +42,22 @@ public class ODMProcessConfiguration
       return code;
     }
   }
+  
+  public static enum RadiometricCalibration {
+    NONE("none"), CAMERA("camera"), CAMERA_SUN("camera+sun");
+
+    private String code;
+
+    private RadiometricCalibration(String code)
+    {
+      this.code = code;
+    }
+
+    public String getCode()
+    {
+      return code;
+    }
+  }
 
   public static enum FileFormat {
     ODM, RX1R2;
@@ -64,6 +80,8 @@ public class ODMProcessConfiguration
   public static final String PC_QUALITY                = "pcQuality";
   
   public static final String FEATURE_QUALITY           = "featureQuality";
+  
+  public static final String RADIOMETRIC_CALIBRATION   = "radiometricCalibration";
 
   private boolean            includeGeoLocationFile;
 
@@ -120,6 +138,15 @@ public class ODMProcessConfiguration
    * Default: high
    */
   private Quality            featureQuality;
+  
+  /*
+   * radiometric-calibration <none | camera | camera+sun>
+   * 
+   * Set the radiometric calibration to perform on images. When processing multispectral and thermal images you should set this option to obtain reflectance/temperature values (otherwise you will get digital number values). [camera] applies black level, vignetting, row gradient gain/exposure compensation (if appropriate EXIF tags are found) and computes absolute temperature values. [camera+sun] is experimental, applies all the corrections of [camera], plus compensates for spectral radiance registered via a downwelling light sensor (DLS) taking in consideration the angle of the sun.
+   * 
+   * default: none
+   */
+  private RadiometricCalibration radiometricCalibration;
 
   public ODMProcessConfiguration()
   {
@@ -138,8 +165,19 @@ public class ODMProcessConfiguration
     this.featureQuality = Quality.HIGH;
     this.geoLocationFormat = FileFormat.RX1R2;
     this.geoLocationFileName = "geo.txt";
+    this.radiometricCalibration = RadiometricCalibration.NONE;
   }
   
+  public RadiometricCalibration getRadiometricCalibration()
+  {
+    return radiometricCalibration;
+  }
+
+  public void setRadiometricCalibration(RadiometricCalibration radiometricCalibration)
+  {
+    this.radiometricCalibration = radiometricCalibration;
+  }
+
   public Quality getFeatureQuality()
   {
     return featureQuality;
@@ -252,6 +290,7 @@ public class ODMProcessConfiguration
     object.addProperty(MIN_NUM_FEATURES, this.minNumFeatures);
     object.addProperty(PC_QUALITY, this.pcQuality.name());
     object.addProperty(FEATURE_QUALITY, this.featureQuality.name());
+    object.addProperty(RADIOMETRIC_CALIBRATION, this.radiometricCalibration.name());
 
     return object;
   }
@@ -351,6 +390,16 @@ public class ODMProcessConfiguration
         configuration.setFeatureQuality(Quality.valueOf(object.get(FEATURE_QUALITY).getAsString()));
       }
     }
+    
+    if (object.has(RADIOMETRIC_CALIBRATION))
+    {
+      JsonElement element = object.get(RADIOMETRIC_CALIBRATION);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setRadiometricCalibration(RadiometricCalibration.valueOf(object.get(RADIOMETRIC_CALIBRATION).getAsString()));
+      }
+    }
 
     return configuration;
   }
@@ -411,6 +460,12 @@ public class ODMProcessConfiguration
     {
       Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(FEATURE_QUALITY));
       configuration.setFeatureQuality(pcQuality);
+    }
+    
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION)))
+    {
+      RadiometricCalibration rc = RadiometricCalibration.valueOf(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION));
+      configuration.setRadiometricCalibration(rc);
     }
 
     return configuration;

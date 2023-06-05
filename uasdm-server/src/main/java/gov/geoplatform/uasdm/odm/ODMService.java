@@ -198,12 +198,12 @@ public class ODMService implements ODMServiceIF
     dtm.put("value", "true");
     arr.put(dtm);
 
-    if (isMultispectral)
+    if (configuration.getRadiometricCalibration() != null)
     {
-      JSONObject multispectral = new JSONObject();
-      multispectral.put("name", "radiometric-calibration");
-      multispectral.put("value", "camera");
-      arr.put(multispectral);
+      JSONObject param = new JSONObject();
+      param.put("name", "radiometric-calibration");
+      param.put("value", configuration.getRadiometricCalibration().getCode());
+      arr.put(param);
     }
 
     // Create Cloud-Optimized GeoTIFFs instead of normal GeoTIFFs
@@ -273,7 +273,7 @@ public class ODMService implements ODMServiceIF
       param.put("value", configuration.getVideoResolution());
       arr.put(param);
     }
-
+    
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.addTextBody("options", arr.toString());
 

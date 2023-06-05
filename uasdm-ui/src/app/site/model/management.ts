@@ -104,6 +104,7 @@ export class ODMRunConfig {
 	minNumFeatures: number;
 	pcQuality: string;
 	featureQuality: string;
+	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 }
@@ -172,6 +173,7 @@ export class UploadForm {
 	minNumFeatures?: number;
 	pcQuality?: string;
 	featureQuality?: string;
+	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 

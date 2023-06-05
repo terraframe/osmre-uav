@@ -100,8 +100,6 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 			this.config.processOrtho = (this.artifacts.ortho == null);
 			this.config.processPtcloud = (this.artifacts.ptcloud == null);
 
-			console.log(this.artifacts);
-
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
