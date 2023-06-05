@@ -48,6 +48,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
 
     init(entity: SiteEntity) {
         this.entity = entity;
+        this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
     }
 
     ngOnInit(): void {

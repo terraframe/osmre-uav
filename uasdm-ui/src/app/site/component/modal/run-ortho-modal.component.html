@@ -76,10 +76,10 @@
 		        
 		        <div *ngIf="config.radiometricCalibration" class="form-group">
 		            <label for="radiometricCalibration">Radiometric calibration</label>
-		            <select [(ngModel)]="config.featureQuality" name="radiometricCalibration" class="form-control" >
+		            <select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration" class="form-control" >
 		                <option value="NONE">NONE</option>
 		                <option value="CAMERA">CAMERA</option>
-		                <option value="CAMERA+SUN">CAMERA+SUN</option>
+		                <option value="CAMERA_SUN">CAMERA+SUN</option>
 		            </select>
 		        </div>
 		
