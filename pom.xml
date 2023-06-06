@@ -33,7 +33,7 @@
   </modules>
 
   <properties>
-    <geoprism.version>1.0.4</geoprism.version>
+    <geoprism.version>1.0.5-SNAPSHOT</geoprism.version>
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>

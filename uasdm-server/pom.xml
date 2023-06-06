@@ -159,6 +159,11 @@
       <artifactId>geoprism-forgot-password</artifactId>
       <version>${geoprism.version}</version>
     </dependency>
+    <dependency>
+      <groupId>net.geoprism</groupId>
+      <artifactId>geoprism-labeled-property-graph</artifactId>
+      <version>${geoprism.version}</version>
+    </dependency>
     <!--
     <dependency>
       <groupId>net.geoprism</groupId>

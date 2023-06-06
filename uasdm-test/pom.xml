@@ -21,7 +21,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>0.15.3-SNAPSHOT</version>
+    <version>0.16.1-SNAPSHOT</version>
   </parent>
   <artifactId>uasdm-test</artifactId>
   <packaging>war</packaging>
@@ -67,6 +67,18 @@
       <type>war</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>5.3.24</version>
+      <scope>test</scope>
+    </dependency>    
   </dependencies>
 
   <profiles>
