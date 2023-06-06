@@ -45,6 +45,7 @@ import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 
@@ -281,7 +282,10 @@ public class ODMZipPostProcessor
 
       if (DevProperties.runOrtho())
       {
-        allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
+        // https://github.com/OpenDroneMap/ClusterODM/issues/113
+//        allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
+        
+        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
       }
       else
       {
