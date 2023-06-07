@@ -65,6 +65,10 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
+import { LPGSyncTableComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-table.component';
+import { LPGSyncPageComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-page.component';
+import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
+import { LPGSyncService } from './service/lpg-sync.service';
 
 @NgModule({
 	imports: [
@@ -118,7 +122,10 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		MetadataPageComponent,
 		ReportsComponent,
         EquipmentComponent,
-		LayerPanelComponent
+		LayerPanelComponent,
+		LPGSyncTableComponent,
+		LPGSyncPageComponent,
+		LPGSyncComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -130,7 +137,8 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		MetadataService,
 		ClassificationService,
 		UAVService,
-		ReportService
+		ReportService,
+		LPGSyncService
 	],
 	entryComponents: [
 		RunOrthoModalComponent,

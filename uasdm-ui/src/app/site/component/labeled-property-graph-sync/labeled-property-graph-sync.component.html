@@ -1,0 +1,102 @@
+<!--
+
+
+
+-->
+<div>
+  <uasdm-header></uasdm-header>
+
+  <div id="app-container" class="container">
+
+    <div *ngIf="sync != null" class="modal-body">
+      <div *ngIf="message != null" class="error-container">
+        <div class="label-holder">
+          <strong>Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-title-container">
+        <h3>Labeled Property Graph Synchronization Profile</h3>
+      </div>
+
+      <form #ngForm="ngForm">
+        <div class="form-group">
+          <label>URL</label>
+          <input [(ngModel)]="sync.url" name="url" type="url" class="form-control" [disabled]="!newInstance"
+            (change)="handleURLChange()" required />
+        </div>
+        <ng-container *ngIf="newInstance">
+
+          <div class="form-group" *ngIf="types != null">
+            <label>Remote Labeled Property Graph Type</label>
+            <select [(ngModel)]="sync.remoteType" [disabled]="mode === 'READ'" name="remoteType" type="input"
+              class="form-control" (change)="handleTypeChange()" required>
+              <option></option>
+              <option *ngFor="let type of types" [value]="type.oid">
+                {{type.label}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="entries != null">
+            <label>Remote Labeled Property Graph Entry</label>
+            <select [(ngModel)]="sync.remoteEntry" [disabled]="mode === 'READ'" name="remoteEntry" type="input"
+              class="form-control" (change)="handleEntryChange()" required>
+              <option></option>
+              <option *ngFor="let entry of entries" [value]="entry.oid">
+                {{entry.forDate}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="versions != null">
+            <label>Remote Labeled Property Graph Version</label>
+            <select [(ngModel)]="sync.remoteVersion" [disabled]="mode === 'READ'" name="remoteVersion" type="input"
+              class="form-control" (change)="handleVersionChange()" required>
+              <option></option>
+              <option *ngFor="let version of versions" [value]="version.oid">
+                {{version.versionNumber}}
+              </option>
+            </select>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!newInstance">
+
+          <div class="form-group">
+            <label>Remote Labeled Property Graph Type</label>
+            <input [(ngModel)]="sync.displayLabel.localizedValue" name="displayLabel" type="text" class="form-control" [disabled]="true"
+              required />
+          </div>
+          <div class="form-group">
+            <label>Remote Labeled Property Graph Entry</label>
+            <input [(ngModel)]="sync.forDate" name="forDate" type="text" class="form-control" [disabled]="true"
+              required />
+          </div>
+          <div class="form-group">
+            <label>Remote Labeled Property Graph Version</label>
+            <input [(ngModel)]="sync.versionNumber" name="versionNumber" type="number" class="form-control" [disabled]="true"
+              required />
+          </div>
+        </ng-container>
+
+
+        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">
+          <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+            [disabled]="!ngForm.valid || !isValid()">Apply</button>
+        </div>
+        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;">
+<!--
+  <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+-->          
+          <button type="submit" class="btn btn-primary" (click)="handleOnSynchronize()">Synchronize from
+            server</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

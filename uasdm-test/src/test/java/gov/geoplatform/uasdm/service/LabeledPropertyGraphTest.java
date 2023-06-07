@@ -83,6 +83,7 @@ public class LabeledPropertyGraphTest
   @Request
   public void testSynchronization() throws Exception
   {
+//  https://localhost:8444/georegistry/
     testData.execute(() -> {
       String url = "https://localhost:8443/georegistry/";
 
