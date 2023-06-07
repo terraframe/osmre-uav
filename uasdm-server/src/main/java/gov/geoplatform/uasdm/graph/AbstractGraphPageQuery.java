@@ -90,13 +90,13 @@ public abstract class AbstractGraphPageQuery<K, T extends JSONSerializable>
           {
             parameters.put(attributeName, "%" + value.toUpperCase() + "%");
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + ".toUpperCase() LIKE :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : " AND " ) + columnName + ".toUpperCase() LIKE :" + attributeName);
           }
           else if (mode.equals("equals"))
           {
             parameters.put(attributeName, value);
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + " = :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : " AND " ) + columnName + " = :" + attributeName);
           }
 
           i++;
@@ -150,13 +150,13 @@ public abstract class AbstractGraphPageQuery<K, T extends JSONSerializable>
           {
             parameters.put(attributeName, "%" + value.toUpperCase() + "%");
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + ".toUpperCase() LIKE :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : " AND " ) + columnName + ".toUpperCase() LIKE :" + attributeName);
           }
           else if (mode.equals("equals"))
           {
             parameters.put(attributeName, value);
 
-            statement.append( ( ( i == 0 ) ? " WHERE " : "AND " ) + columnName + " = :" + attributeName);
+            statement.append( ( ( i == 0 ) ? " WHERE " : " AND " ) + columnName + " = :" + attributeName);
           }
 
           i++;
