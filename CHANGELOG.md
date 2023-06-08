@@ -2,6 +2,23 @@
 # Release Notes
 
 
+## [0.16.1](https://github.com/terraframe/osmre-uav/releases/tag/0.16.1) (2023-06-08)
+
+### Features
+
+ - **site-viewer** busy spinner on create collection modal  ([#223](https://github.com/terraframe/osmre-uav/issues/223)) ([7855b](https://github.com/terraframe/osmre-uav/commit/7855b1f6f05a929f87de28572b26d6fc3ccdf6e4))
+ - **processing** ability to specify radiometric-calibration   ([fa734](https://github.com/terraframe/osmre-uav/commit/fa734f05831b2b5c0e2c4df6c403b0a4b2cc1ef9))
+
+### Bug Fixes
+
+   - **processing** prevent collection clobbering  ([#228](https://github.com/terraframe/osmre-uav/issues/228)) ([2fa5a](https://github.com/terraframe/osmre-uav/commit/2fa5a041f065678d9f0bab26fd0d17e076f81710))
+   - **workflow-tasks** deleting workflow tasks  ([#229](https://github.com/terraframe/osmre-uav/issues/229)) ([ef951](https://github.com/terraframe/osmre-uav/commit/ef9512d37b169ac88e44abb0cf3f9e98aa17eb45))
+   - **uav-table** filtering on multiple columns throws error   ([218ef](https://github.com/terraframe/osmre-uav/commit/218ef3eed7ec283a07cd5050ad7bf1a0bf90949f))
+   - **processing** occasional unspecified error during store   ([f80f5](https://github.com/terraframe/osmre-uav/commit/f80f55763b73f4642ae8b16c713e18b4b78370a7))
+   - **collection-modal** not displaying raw .tiff images   ([e2a0c](https://github.com/terraframe/osmre-uav/commit/e2a0c3915405ad28aebe8e0d01ddd33e362a89ca))
+
+
+
 ## [0.16.0](https://github.com/terraframe/osmre-uav/releases/tag/0.16.0) (2023-05-30)
 
 ### Features
