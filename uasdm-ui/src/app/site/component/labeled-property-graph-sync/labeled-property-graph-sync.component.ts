@@ -123,7 +123,7 @@ export class LPGSyncComponent implements OnInit {
             this.mode = 'READ';
 
             if (this.newInstance) {
-                this.router.navigate(['/site/lpg-syncs', data.oid]);
+                this.router.navigate(['/site/lpg-sync', data.oid]);
                 this.newInstance = false;
                 this.original = data;
             }
