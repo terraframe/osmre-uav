@@ -122,7 +122,7 @@
 
 	        <div class="form-group" *ngIf="config.includeGeoLocationFile">
 	            <label for="geoLocationFormat">Geo location file format</label>
-	            <select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
+	            <select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" [disabled]="true" class="form-control">
 	                <option value="RX1R2">RX1R2</option>
 	                <option value="ODM">ODM</option>
 	            </select>
@@ -130,7 +130,7 @@
 
 			<div class="form-group" *ngIf="config.includeGeoLocationFile">
 				<label for="geoLocationFileName">Geo location file name</label>
-				<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
+				<input [(ngModel)]="config.geoLocationFileName" [disabled]="true" name="geoLocationFileName" type="input" class="form-control"
 					placeholder="File name..." />
 			</div>
 

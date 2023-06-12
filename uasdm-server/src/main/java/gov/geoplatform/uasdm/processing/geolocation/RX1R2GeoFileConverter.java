@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.processing;
+package gov.geoplatform.uasdm.processing.geolocation;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -84,7 +84,7 @@ public class RX1R2GeoFileConverter implements AutoCloseable
         // we are going to read data line by line
         while ( ( line = csvReader.readNext() ) != null)
         {
-          if (line.length == 4)
+          if (line.length >= 4)
           {
             String fileName = line[0];
             BigDecimal geoY = new BigDecimal(line[1]);
@@ -102,12 +102,6 @@ public class RX1R2GeoFileConverter implements AutoCloseable
 
             writer.write(geoZ.toPlainString());
             writer.write("\n");
-          }
-          else
-          {
-//            GenericException exception = new GenericException();
-//            exception.setUserMessage("Unable to parse geo logger file: Unexpected number of columns");
-//            throw exception;
           }
         }
       }

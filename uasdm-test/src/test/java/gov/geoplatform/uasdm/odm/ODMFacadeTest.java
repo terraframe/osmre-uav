@@ -27,7 +27,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
-import gov.geoplatform.uasdm.odm.ODMFacade.CloseablePair;
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 
 public class ODMFacadeTest
@@ -40,7 +40,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final CloseablePair result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();
@@ -63,7 +63,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final CloseablePair result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();

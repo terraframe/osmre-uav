@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -38,7 +39,8 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.odm.ODMFacade.CloseablePair;
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 
 public class ODMService implements ODMServiceIF
 {
@@ -128,11 +130,20 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    try (CloseablePair parent = ODMFacade.filterAndExtract(images, configuration))
+    try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration))
     {
-      if (parent.getItemCount() > 0)
+      if (payload.getImageCount() > 0)
       {
-        HttpNewResponse resp = this.taskNewInit(parent.getItemCount(), isMultispectral, configuration);
+        if (configuration.isIncludeGeoLocationFile() && StringUtils.isEmpty(payload.getGeoLocationFile()))
+        {
+          throw new GeoLocationFileMissingException(configuration.getGeoLocationFileName());
+        }
+        else if (configuration.isIncludeGeoLocationFile())
+        {
+          GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload);
+        }
+        
+        HttpNewResponse resp = this.taskNewInit(payload.getImageCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())
         {
@@ -142,7 +153,7 @@ public class ODMService implements ODMServiceIF
 
         String uuid = resp.getUUID();
 
-        for (File child : parent.getFile().listFiles())
+        for (File child : payload.getFile().listFiles())
         {
           ODMResponse uploadResp = this.taskNewUpload(uuid, new FileResource(child));
 
