@@ -347,20 +347,20 @@ public class Product extends ProductBase implements ProductIF
     {
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
-    }
-    
-    if (component instanceof Collection)
-    {
-      Collection collection = (Collection) component;
       
-      collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
-      collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
-      collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
-      collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-      
-      collection.apply();
-      
-      new MetadataXMLGenerator().generateAndUpload(collection);
+      if (component instanceof Collection)
+      {
+        Collection collection = (Collection) component;
+        
+        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
+        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
+        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
+        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
+        
+        collection.apply();
+        
+        new MetadataXMLGenerator().generateAndUpload(collection);
+      }
     }
   }
 
