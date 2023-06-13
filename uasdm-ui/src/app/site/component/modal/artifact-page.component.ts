@@ -180,7 +180,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 			'class': ''
 		});
 		
-		modal.content.init(artifact);
+		modal.content.initOnArtifact(artifact);
 	}
 
 	handleDownloadFile(item: SiteEntity): void {

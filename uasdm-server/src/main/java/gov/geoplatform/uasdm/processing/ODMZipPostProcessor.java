@@ -132,7 +132,7 @@ public class ODMZipPostProcessor
     if (this.progressTask != null)
     {
       final ODMProcessingTask processingTask = (ODMProcessingTask) this.progressTask.getProcessingTask();
-      final ODMRun odmRun = ODMRun.getForTask(processingTask);
+      final ODMRun odmRun = ODMRun.getForTask(processingTask.getOid());
       
       product.getProductHasDocumentChildDocuments().forEach(doc -> {
         odmRun.addODMRunOutputChild(doc).apply();

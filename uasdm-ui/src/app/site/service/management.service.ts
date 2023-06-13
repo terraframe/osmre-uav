@@ -119,12 +119,21 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getODMRun(artifactId: string): Promise<ODMRun> {
+	getODMRunByArtifact(artifactId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('artifactId', artifactId);
 
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
+			.toPromise()
+	}
+	
+	getODMRunByTask(taskId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('taskId', taskId);
+
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
 			.toPromise()
 	}
 

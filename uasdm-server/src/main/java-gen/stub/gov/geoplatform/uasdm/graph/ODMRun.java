@@ -97,7 +97,7 @@ public class ODMRun extends ODMRunBase
    * @param task
    * @return
    */
-  public static ODMRun getForTask(ODMProcessingTask task)
+  public static ODMRun getForTask(String taskId)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);
     
@@ -105,7 +105,7 @@ public class ODMRun extends ODMRunBase
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + ODMRun.WORKFLOWTASK + " = :oid");
 
     final GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement.toString());
-    query.setParameter("oid", task.getOid());
+    query.setParameter("oid", taskId);
 
     return query.getSingleResult();
   }

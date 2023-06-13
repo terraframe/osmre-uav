@@ -196,6 +196,7 @@ export class Task {
 	actions: Action[];
 	uploadId: string;
 	odmOutput: string;
+	odmRunId: string;
 	collection: string;
 	collectionLabel: string;
 	type: string;

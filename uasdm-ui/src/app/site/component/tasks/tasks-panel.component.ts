@@ -10,6 +10,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 
 import { Task, TaskGroup, TaskGroupType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
+import { ODMRunModalComponent } from '../modal/odmrun-modal.component';
 
 
 @Component({
@@ -60,6 +61,17 @@ export class TasksPanelComponent implements OnInit {
 	}
 
 	ngOnDestroy(): void {
+	}
+	
+	viewOdmRun(task: Task): void {
+		const modal = this.modalService.show(ODMRunModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': ''
+		});
+		
+		modal.content.initOnWorkflowTask(task);
 	}
 
 	removeTask(task: Task): void {

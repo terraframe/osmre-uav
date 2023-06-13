@@ -43,8 +43,10 @@ import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.cache.DataNotFoundException;
+import com.runwaysdk.dataaccess.metadata.MdClassDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -92,6 +94,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.FlightMetadata;
+import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -1146,6 +1149,19 @@ public class ProjectManagementService
       
       return config.toJson().toString();
     }
+  }
+  
+  @Request(RequestType.SESSION)
+  public ODMRunView getODMRunByTask(String sessionId, String taskId)
+  {
+    ODMRun run = ODMRun.getForTask(taskId);
+    
+    if (run == null)
+    {
+      throw new DataNotFoundException("Run does not exist", MdVertexDAO.getMdVertexDAO(ODMRun.CLASS));
+    }
+    
+    return ODMRunView.fromODMRun(run);
   }
 
   // public void logLoginAttempt(String sessionId, String username)

@@ -100,6 +100,12 @@ public class ProjectManagementController
     return new RestBodyResponse(config);
   }
   
+  @Endpoint(url = "get-odm-run-by-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
+  {
+    return new RestBodyResponse(service.getODMRunByTask(request.getSessionId(), taskId));
+  }
+  
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
