@@ -85,6 +85,8 @@ public class Product extends ProductBase implements ProductIF
   public static final String THUMBNAIL_ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/" + "thumbnails" + "\\/[^\\/]+orthophoto[^\\\\/]*" + ".png".replaceAll("\\.", "\\\\.");
 
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
+  
+  public static final String GEO_LOCATION_FILE = "geo.txt";
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
 

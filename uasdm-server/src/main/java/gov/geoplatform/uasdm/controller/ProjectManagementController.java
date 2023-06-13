@@ -44,6 +44,7 @@ import com.runwaysdk.request.ServletRequestIF;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
@@ -89,6 +90,14 @@ public class ProjectManagementController
     JSONObject configuration = this.service.configuration(cRequest.getSessionId(), request.getContextPath());
 
     return new RestBodyResponse(configuration);
+  }
+  
+  @Endpoint(url = "get-default-odm-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getDefaultODMRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  {
+    String config = this.service.getDefaultODMRunConfig(request.getSessionId(), collectionId);
+
+    return new RestBodyResponse(config);
   }
   
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)

@@ -14,7 +14,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ODMRunConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -107,6 +107,15 @@ export class ManagementService {
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
+			.toPromise()
+	}
+	
+	getDefaultODMRunConfig(collectionId: string): Promise<ODMRunConfig> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
+
+		return this.http
+			.get<ODMRunConfig>(environment.apiUrl + '/project/get-default-odm-run-config', { params: params })
 			.toPromise()
 	}
 

@@ -88,7 +88,7 @@
 		                label="Use geo location file when processing (if uploaded)"></boolean-field>
 		        </div>
 
-				<div class="form-group" *ngIf="config.includeGeoLocationFile">
+				<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile">
 					<label for="geoLocationFormat">Geo location file format</label>
 					<select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
 						<option value="RX1R2">RX1R2</option>
@@ -96,13 +96,13 @@
 					</select>
 				</div>
 
-				<div class="form-group" *ngIf="config.includeGeoLocationFile">
+				<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile">
 					<label for="geoLocationFileName">Geo location file name</label>
 					<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
 						placeholder="File name..." />
 				</div>	
 	
-		        <div *ngIf="config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
+		        <div *ngIf="config.processOrtho && config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
 		            <p>File format:</p>
 		            <pre>
 		                <code>

@@ -44,6 +44,7 @@ import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -64,6 +65,7 @@ import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -81,6 +83,7 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
@@ -1106,6 +1109,43 @@ public class ProjectManagementService
     config.put("localization", new JSONObject(new LocalizationService().getAllView()));
 
     return config;
+  }
+
+  @Request(RequestType.SESSION)
+  public String getDefaultODMRunConfig(String sessionId, String collectionId)
+  {
+    List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
+    
+    if (runs.size() > 0)
+    {
+      ODMRun run = runs.get(runs.size() - 1);
+      
+      ODMProcessConfiguration config = run.getConfiguration();
+      
+      if (config.isIncludeGeoLocationFile())
+      {
+        config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
+      }
+      
+      return config.toJson().toString();
+    }
+    else
+    {
+      Collection collection = Collection.get(collectionId);
+      
+      ODMProcessConfiguration config = new ODMProcessConfiguration();
+      
+      Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);
+      
+      if (geoFile != null)
+      {
+        config.setIncludeGeoLocationFile(true);
+        config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
+        config.setGeoLocationFormat(FileFormat.ODM); // Default value
+      }
+      
+      return config.toJson().toString();
+    }
   }
 
   // public void logLoginAttempt(String sessionId, String username)

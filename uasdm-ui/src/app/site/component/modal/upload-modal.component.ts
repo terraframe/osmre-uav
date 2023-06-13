@@ -66,7 +66,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		pcQuality: "MEDIUM",
 		featureQuality: "HIGH",
 		radiometricCalibration: "NONE",
-		geoLocationFormat: "RX1R2"
+		geoLocationFormat: "ODM",
+		geoLocationFileName: "geo.txt"
 	} as UploadForm;
 
 	/*
