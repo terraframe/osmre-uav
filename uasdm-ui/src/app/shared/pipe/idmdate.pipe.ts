@@ -10,7 +10,7 @@ import { DatePipe } from '@angular/common';
 export class IdmDatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
 
-  transform(date: Date | string, format: string = "MMM dd, yyyy hh:mm:ss"): string {
+  transform(date: Date | string, format: string = "MMM dd, yyyy hh:mm:ss a"): string {
     date = new Date(date);
     
     let transformed: string = null;
