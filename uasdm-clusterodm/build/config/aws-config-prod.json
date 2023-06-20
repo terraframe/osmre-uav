@@ -21,7 +21,7 @@
     "createRetries": 3,
 
     "monitoring": false,
-    "maxRuntime": 259200,
+    "maxRuntime": 604800,
     "maxUploadTime": 259200,
     "region": "us-east-1",
     "tags": ["type,clusterodm"],
