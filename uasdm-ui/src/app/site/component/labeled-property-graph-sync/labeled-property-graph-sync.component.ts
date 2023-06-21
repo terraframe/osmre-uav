@@ -5,7 +5,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { ErrorHandler } from '@shared/component';
+import { BasicConfirmModalComponent, ErrorHandler, NotificationModalComponent } from '@shared/component';
 
 import { AuthService } from '@shared/service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -147,11 +147,57 @@ export class LPGSyncComponent implements OnInit {
         this.message = null;
 
         this.service.execute(this.sync.oid).then(data => {
-            alert("Finished synchronizing")
+            const bsModalRef = this.modalService.show(NotificationModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: true,
+            });
+            bsModalRef.content.messageTitle = "";
+            bsModalRef.content.message = "Finished synchronizing with the remote server."
+            bsModalRef.content.submitText = "OK";
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });
     }
+
+    handleOnCheckVersion(): void {
+        this.service.getVersions(this.sync.url, this.sync.remoteEntry).then((v: LabeledPropertyGraphTypeVersion[]) => {
+            const versions = v.filter((version) => version.versionNumber > this.sync.versionNumber);
+
+            if (versions.length > 0) {
+                const version = versions[versions.length - 1];
+
+                const bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
+                    animated: true,
+                    backdrop: true,
+                    ignoreBackdropClick: true,
+                });
+                bsModalRef.content.message = "A new version of the labeled property graph has been released.  Do you want to upgrade to version [" + version.versionNumber + "]? This action cannot be undone.";
+                bsModalRef.content.type = 'DANGER';
+                bsModalRef.content.submitText = "Upgrade";
+
+                bsModalRef.content.onConfirm.subscribe(data => {
+                    this.service.updateRemoteVersion(this.sync.oid, version.oid, version.versionNumber).then(sync => {
+                        this.sync = sync;
+
+                        this.handleOnSynchronize();
+                    })
+                });
+            }
+            else {
+                const bsModalRef = this.modalService.show(NotificationModalComponent, {
+                    animated: true,
+                    backdrop: true,
+                    ignoreBackdropClick: true,
+                });
+                bsModalRef.content.messageTitle = "";
+                bsModalRef.content.message = "No newer versions were found."
+                bsModalRef.content.submitText = "OK";
+            }
+
+        });
+    }
+
 
 
     isValid(): boolean {

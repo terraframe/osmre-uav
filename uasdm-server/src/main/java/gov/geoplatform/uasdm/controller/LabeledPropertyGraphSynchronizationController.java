@@ -84,6 +84,17 @@ public class LabeledPropertyGraphSynchronizationController
     return new RestResponse();
   }
 
+  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "update-remote-version")
+  public ResponseIF updateRemoteVersion(ClientRequestIF request, 
+      @RequestParamter(name = "oid", required = true) String oid, 
+      @RequestParamter(name = "versionId", required = true) String versionId, 
+      @RequestParamter(name = "versionNumber", required = true) Integer versionNumber) throws JSONException
+  {
+    JsonObject response = this.service.updateRemoteVersion(request.getSessionId(), oid, versionId, versionNumber);
+    
+    return new RestBodyResponse(response);
+  }
+  
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "newInstance")
   public ResponseIF newInstance(ClientRequestIF request) throws JSONException
   {

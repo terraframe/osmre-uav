@@ -68,8 +68,8 @@
 
           <div class="form-group">
             <label>Remote Labeled Property Graph Type</label>
-            <input [(ngModel)]="sync.displayLabel.localizedValue" name="displayLabel" type="text" class="form-control" [disabled]="true"
-              required />
+            <input [(ngModel)]="sync.displayLabel.localizedValue" name="displayLabel" type="text" class="form-control"
+              [disabled]="true" required />
           </div>
           <div class="form-group">
             <label>Remote Labeled Property Graph Entry</label>
@@ -78,8 +78,8 @@
           </div>
           <div class="form-group">
             <label>Remote Labeled Property Graph Version</label>
-            <input [(ngModel)]="sync.versionNumber" name="versionNumber" type="number" class="form-control" [disabled]="true"
-              required />
+            <input [(ngModel)]="sync.versionNumber" name="versionNumber" type="number" class="form-control"
+              [disabled]="true" required />
           </div>
         </ng-container>
 
@@ -90,11 +90,11 @@
             [disabled]="!ngForm.valid || !isValid()">Apply</button>
         </div>
         <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;">
-<!--
+          <!--
   <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
--->          
-          <button type="submit" class="btn btn-primary" (click)="handleOnSynchronize()">Synchronize from
-            server</button>
+-->
+          <button type="submit" class="btn btn-secondary" (click)="handleOnCheckVersion()">Check for new version</button>
+          <button type="submit" class="btn btn-primary" (click)="handleOnSynchronize()">Synchronize from server</button>
         </div>
       </form>
     </div>

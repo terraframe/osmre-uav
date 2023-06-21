@@ -116,5 +116,16 @@ public class LabeledPropertyGraphSynchronizationService
   {
     return LabeledPropertyGraphSynchronization.page(criteria).toJSON();
   }
+  
+  @Request(RequestType.SESSION)
+  public JsonObject updateRemoteVersion(String sessionId, String oid, String versionId, Integer versionNumber)
+  {
+    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    synchronization.updateRemoteVersion(versionId, versionNumber);
+    
+    return synchronization.toJSON();
+  }
+
+
 
 }

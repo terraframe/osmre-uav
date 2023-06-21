@@ -95,6 +95,26 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
+    updateRemoteVersion(oid: string, versionId: string, versionNumber: number): Promise<LPGSync> {
+
+        let headers = new HttpHeaders({
+            'Content-Type': 'application/json'
+        });
+
+        this.eventService.start();
+
+        return this.http
+            .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/update-remote-version', JSON.stringify({
+                oid: oid,
+                versionId: versionId,
+                versionNumber: versionNumber
+            }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
+            .toPromise();
+    }
+
 
     apply(sync: LPGSync): Promise<LPGSync> {
 

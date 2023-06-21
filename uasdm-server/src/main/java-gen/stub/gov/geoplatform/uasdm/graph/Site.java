@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -21,22 +21,28 @@ import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKTWriter;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.WKTWriter;
+import com.runwaysdk.system.metadata.MdEdge;
+import com.runwaysdk.system.metadata.MdVertex;
 
-import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -45,12 +51,15 @@ import gov.geoplatform.uasdm.view.AttributeListType;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class Site extends SiteBase implements SiteIF
 {
-  public static final long serialVersionUID = 2038909434;
+  public static final long    serialVersionUID = 2038909434;
 
-  private static final String CHILD_EDGE = "gov.geoplatform.uasdm.graph.SiteHasProject";
+  private static final String CHILD_EDGE       = "gov.geoplatform.uasdm.graph.SiteHasProject";
 
   public Site()
   {
@@ -60,7 +69,9 @@ public class Site extends SiteBase implements SiteIF
   @Override
   public void applyWithParent(UasComponentIF parent)
   {
-    if (this.isNew() && isDuplicateSiteName(this.getOid(), this.getName()))
+    boolean isNew = this.isNew();
+
+    if (isNew && isDuplicateSiteName(this.getOid(), this.getName()))
     {
       DuplicateSiteException e = new DuplicateSiteException();
       e.setFolderName(this.getName());
@@ -81,6 +92,48 @@ public class Site extends SiteBase implements SiteIF
     }
 
     super.applyWithParent(parent);
+
+    // Assign the site to a leaf node in each labeled property graph
+    LabeledPropertyGraphSynchronizationQuery query = new LabeledPropertyGraphSynchronizationQuery(new QueryFactory());
+
+    try (OIterator<? extends LabeledPropertyGraphSynchronization> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        LabeledPropertyGraphSynchronization synchronization = iterator.next();
+
+        this.assignHierarchyParents(synchronization);
+      }
+    }
+  }
+
+  public void assignHierarchyParents(LabeledPropertyGraphSynchronization synchronization)
+  {
+    LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+    MdEdge synchronizationEdge = SynchronizationEdge.get(version).getGraphEdge();
+
+    MdVertex graphMdVertex = version.getRootType().getGraphMdVertex();
+
+    version.getHierarchies().forEach(hierarchy -> {
+      MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
+
+      StringBuffer sql = new StringBuffer();
+      sql.append("SELECT FROM " + graphMdVertex.getDbClassName());
+      sql.append(" WHERE outE('" + hierarchyEdge.getDbClassName() + "').size() == 0");
+      sql.append(" AND ST_WITHIN(ST_GeomFromText(:wkt), geometry) = true");
+
+      Point point = this.getGeoPoint();
+
+      GraphQuery<VertexObject> gQuery = new GraphQuery<VertexObject>(sql.toString());
+      gQuery.setParameter("wkt", point.toText());
+
+      List<VertexObject> results = gQuery.getResults();
+
+      for (VertexObject result : results)
+      {
+        result.addChild(this, synchronizationEdge.definesType()).apply();
+      }
+    });
   }
 
   @Override
@@ -295,5 +348,13 @@ public class Site extends SiteBase implements SiteIF
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.SITE_HAS_PROJECT);
 
     return "OUT('" + mdEdge.getDBClassName() + "')." + Project.expandClause();
+  }
+
+  public static List<Site> getAll()
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
+
+    GraphQuery<Site> query = new GraphQuery<Site>("SELECT FROM " + mdVertex.getDBClassName());
+    return query.getResults();
   }
 }

@@ -41,7 +41,7 @@ export class LPGSyncTableComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'LPGSync'
+            label: 'Synchronization Profile'
         }
         this.refresh = new Subject<void>();
     }
