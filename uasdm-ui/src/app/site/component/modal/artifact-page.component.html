@@ -73,12 +73,12 @@
         </td>
         <td *ngIf="edit">
           <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'">
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'">
           </boolean-field>
           <boolean-field *ngIf="section.folder === 'dem'" [(value)]="config.processDem"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
           <boolean-field *ngIf="section.folder === 'ortho'" [(value)]="config.processOrtho"
-            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwirte' : 'Generate'"></boolean-field>
+            [label]="(artifacts[section.folder] != null && artifacts[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
         </td>
 
       </tr>

@@ -75,7 +75,7 @@ export class SiteEntity {
 
 export class CollectionArtifact {
 	report?: boolean;
-	items?: [SiteEntity];
+	items?: SiteEntity[];
 }
 
 export class CollectionArtifacts {
