@@ -66,8 +66,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		pcQuality: "MEDIUM",
 		featureQuality: "HIGH",
 		radiometricCalibration: "NONE",
-		geoLocationFormat: "ODM",
-		geoLocationFileName: "geo.txt"
+		geoLocationFormat: "RX1R2",
+		geoLocationFileName: "PIX4D.CSV"
 	} as UploadForm;
 
 	/*
@@ -378,6 +378,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		}
 		
 		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
 	}
 
 	close(): void {

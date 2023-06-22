@@ -1144,7 +1144,7 @@ public class ProjectManagementService
       {
         config.setIncludeGeoLocationFile(true);
         config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
-        config.setGeoLocationFormat(FileFormat.ODM); // Default value
+        config.setGeoLocationFormat(FileFormat.RX1R2);
       }
       
       return config.toJson().toString();

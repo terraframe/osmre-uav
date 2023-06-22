@@ -1,0 +1,17 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+		<mdVertex name="gov.geoplatform.uasdm.graph.Sensor">
+			<create>
+				<attributes>
+			`		<boolean name="hasGeologger" required="false" label="Has Geo-Logger"/>
+				</attributes>
+			</create>
+		</mdVertex>
+	</update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

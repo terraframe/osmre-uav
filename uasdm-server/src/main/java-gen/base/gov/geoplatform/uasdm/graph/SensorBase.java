@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 361660861)
+@com.runwaysdk.business.ClassSignature(hash = 241838431)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,23 +11,25 @@ package gov.geoplatform.uasdm.graph;
 public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Sensor";
-  public static java.lang.String DATECREATED = "dateCreated";
-  public static java.lang.String DATEUPDATED = "dateUpdated";
-  public static java.lang.String DESCRIPTION = "description";
-  public static java.lang.String MODEL = "model";
-  public static java.lang.String NAME = "name";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String PIXELSIZEHEIGHT = "pixelSizeHeight";
-  public static java.lang.String PIXELSIZEWIDTH = "pixelSizeWidth";
-  public static java.lang.String REALPIXELSIZEHEIGHT = "realPixelSizeHeight";
-  public static java.lang.String REALPIXELSIZEWIDTH = "realPixelSizeWidth";
-  public static java.lang.String REALSENSORHEIGHT = "realSensorHeight";
-  public static java.lang.String REALSENSORWIDTH = "realSensorWidth";
-  public static java.lang.String SENSORHEIGHT = "sensorHeight";
-  public static java.lang.String SENSORTYPE = "sensorType";
-  public static java.lang.String SENSORWIDTH = "sensorWidth";
-  public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = 361660861;
+  public final static java.lang.String DATECREATED = "dateCreated";
+  public final static java.lang.String DATEUPDATED = "dateUpdated";
+  public final static java.lang.String DESCRIPTION = "description";
+  public final static java.lang.String HASGEOLOGGER = "hasGeologger";
+  public final static java.lang.String MODEL = "model";
+  public final static java.lang.String NAME = "name";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String PIXELSIZEHEIGHT = "pixelSizeHeight";
+  public final static java.lang.String PIXELSIZEWIDTH = "pixelSizeWidth";
+  public final static java.lang.String REALPIXELSIZEHEIGHT = "realPixelSizeHeight";
+  public final static java.lang.String REALPIXELSIZEWIDTH = "realPixelSizeWidth";
+  public final static java.lang.String REALSENSORHEIGHT = "realSensorHeight";
+  public final static java.lang.String REALSENSORWIDTH = "realSensorWidth";
+  public final static java.lang.String SENSORHEIGHT = "sensorHeight";
+  public final static java.lang.String SENSORTYPE = "sensorType";
+  public final static java.lang.String SENSORWIDTH = "sensorWidth";
+  public final static java.lang.String SEQ = "seq";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 241838431;
   
   public SensorBase()
   {
@@ -95,6 +82,22 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setDescription(String value)
   {
     this.setValue(DESCRIPTION, value);
+  }
+  
+  public Boolean getHasGeologger()
+  {
+    return (Boolean) this.getObjectValue(HASGEOLOGGER);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getHasGeologgerMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(HASGEOLOGGER);
+  }
+  
+  public void setHasGeologger(Boolean value)
+  {
+    this.setValue(HASGEOLOGGER, value);
   }
   
   public String getModel()
