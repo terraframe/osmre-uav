@@ -85,16 +85,13 @@ public class LabeledPropertyGraphSynchronizationController
   }
 
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "update-remote-version")
-  public ResponseIF updateRemoteVersion(ClientRequestIF request, 
-      @RequestParamter(name = "oid", required = true) String oid, 
-      @RequestParamter(name = "versionId", required = true) String versionId, 
-      @RequestParamter(name = "versionNumber", required = true) Integer versionNumber) throws JSONException
+  public ResponseIF updateRemoteVersion(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "versionId", required = true) String versionId, @RequestParamter(name = "versionNumber", required = true) Integer versionNumber) throws JSONException
   {
     JsonObject response = this.service.updateRemoteVersion(request.getSessionId(), oid, versionId, versionNumber);
-    
+
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "newInstance")
   public ResponseIF newInstance(ClientRequestIF request) throws JSONException
   {
@@ -107,6 +104,22 @@ public class LabeledPropertyGraphSynchronizationController
   public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.get(request.getSessionId(), oid);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "roots")
+  public ResponseIF roots(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "includeRoot", required = true) Boolean includeRoot) throws JSONException
+  {
+    JsonArray response = this.service.roots(request.getSessionId(), oid, includeRoot);
+
+    return new RestBodyResponse(response);
+  }
+
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "children")
+  public ResponseIF children(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "parentType", required = true) String parentType, @RequestParamter(name = "parentId", required = true) String parentId) throws JSONException
+  {
+    JsonArray response = this.service.children(request.getSessionId(), oid, parentType, parentId);
 
     return new RestBodyResponse(response);
   }

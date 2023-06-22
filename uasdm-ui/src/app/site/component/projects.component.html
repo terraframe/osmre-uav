@@ -155,9 +155,10 @@
                         (click)="select(node, null, $event)">
                         <div class="card-body">
                           <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
-                          [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
-                          aria-hidden="true"></i>
-                          <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px" (click)="handleEdit(node, $event)" title="Edit"></a>                          
+                            [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
+                            aria-hidden="true"></i>
+                          <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
+                            (click)="handleEdit(node, $event)" title="Edit"></a>
 
                           <h4 style="word-break: break-all;">{{node.name}}</h4>
                           <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
@@ -248,8 +249,40 @@
         <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
           style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
-          <layer-panel [layer]="stacLayer" [bounds]="bounds" (confirm)="handleStacConfirm($event)" (cancel)="handleStacCancel()">
+          <layer-panel [layer]="stacLayer" [bounds]="bounds" (confirm)="handleStacConfirm($event)"
+            (cancel)="handleStacCancel()">
           </layer-panel>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="viewMode === 2">
+        <div class="row">
+          <div class="col-md-12">
+            <label>Hierarchy</label>
+            <select [(ngModel)]="sync" name="sync" (change)="refreshRoots()">
+              <option></option>
+              <option *ngFor="let sync of syncs" [value]="sync.oid">
+                {{sync.displayLabel.localizedValue}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row" *ngIf="sync">
+          <div class="col-md-12">
+            <div id="hierarchy-tree-container"
+              class="location-management-widget-section location-management-list-container"
+              [style]="'height: calc(100vh-360px);overflow-y: auto;overflow-x:hidden;'">
+              <div class="list-group">
+
+                <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
+                  <div [@fadeInOnEnter] class="card card-default clickable" (click)="handleHierarchyClick(child)">
+                    <div class="card-body">
+                      <h4 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </ng-container>
     </div>
@@ -298,9 +331,9 @@
                 <div class="list-group">
 
                   <h4>Layers</h4>
-                  
-<!--                   <span *ngIf="stacLayers.length === 0" style="font-style: italic;color:grey;">No custom layers</span> -->
-                  
+
+                  <!--                   <span *ngIf="stacLayers.length === 0" style="font-style: italic;color:grey;">No custom layers</span> -->
+
                   <div *ngFor="let layer of stacLayers" class="list-group-item" style="padding:0;height:30px;">
                     <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label=""
                       [inline]="true">
@@ -312,8 +345,7 @@
                           [title]="'Edit ' + layer.layerName"></a>
                         <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
                           [title]="'Remove ' + layer.layerName"></a>
-                        <a class="fa fa-eye" (click)="handleStacZoom(layer)"
-                          [title]="'Zoom to ' + layer.layerName"></a>
+                        <a class="fa fa-eye" (click)="handleStacZoom(layer)" [title]="'Zoom to ' + layer.layerName"></a>
                       </span>
                     </span>
 
@@ -323,9 +355,9 @@
               <div class="row-form">
                 <a class="fa fa-plus" (click)="handleStacLayer()" title="Create a layer">&nbsp;Create layer</a>
               </div>
-              
+
               <hr style="margin-top:10px;margin-bottom:10px;">
-              
+
               <h4>Basemaps</h4>
               <div class="row-form" *ngFor="let baseLayer of baseLayers">
                 <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id'

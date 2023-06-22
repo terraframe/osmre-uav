@@ -21,6 +21,13 @@ export class LPGSyncService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
 
+    getAll(): Promise<LPGSync[]> {
+        let params: HttpParams = new HttpParams();
+
+        return this.http
+            .get<LPGSync[]>(environment.apiUrl + '/labeled-property-graph-synchronization/get-all', { params: params })
+            .toPromise();
+    }
 
     page(criteria: Object): Promise<PageResult<LPGSync>> {
         let params: HttpParams = new HttpParams();
@@ -171,6 +178,27 @@ export class LPGSyncService implements GenericTableService {
 
         return this.http
             .get<LabeledPropertyGraphTypeVersion[]>(url + 'api/labeled-property-graph-type/versions', { params: params })
+            .toPromise();
+    }
+
+    roots(oid: string): Promise<any[]> {
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
+        params = params.set('includeRoot', false);
+
+        return this.http
+            .get<any[]>(environment.apiUrl + '/labeled-property-graph-synchronization/roots', { params: params })
+            .toPromise();
+    }
+
+    children(oid: string, parentType: string, parentId: string): Promise<any[]> {
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
+        params = params.set('parentType', parentType);
+        params = params.set('parentId', parentId);
+
+        return this.http
+            .get<any[]>(environment.apiUrl + '/labeled-property-graph-synchronization/children', { params: params })
             .toPromise();
     }
 

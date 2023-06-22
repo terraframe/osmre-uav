@@ -44,15 +44,15 @@ import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
 import { APP_BASE_HREF } from "@angular/common";
+import { LPGSync } from "@site/model/lpg-sync";
+import { LPGSyncService } from "@site/service/lpg-sync.service";
 
 
 const enum VIEW_MODE {
   SITE = 0,
-  STAC = 1
+  STAC = 1,
+  LPG = 2
 }
-
-
-
 
 @Component({
   selector: "projects",
@@ -181,12 +181,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   stacLayer: StacLayer = null;
 
-  viewMode: number = VIEW_MODE.SITE;
+  viewMode: number = VIEW_MODE.LPG;
 
-  constructor(private configuration: ConfigurationService,
-    private service: ManagementService, private authService: AuthService, private mapService: MapService,
-    private modalService: BsModalService, private metadataService: MetadataService, private route: ActivatedRoute,
-    private cookieService: CookieService
+  syncs: LPGSync[] = [];
+
+  sync: string = null;
+  children: any[] = [];
+
+  constructor(
+    private configuration: ConfigurationService,
+    private service: ManagementService,
+    private authService: AuthService,
+    private mapService: MapService,
+    private modalService: BsModalService,
+    private metadataService: MetadataService,
+    private route: ActivatedRoute,
+    private cookieService: CookieService,
+    private syncService: LPGSyncService
   ) {
 
     this.subject = new Subject();
@@ -228,6 +239,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.service.bureaus().then(bureaus => {
       this.bureaus = bureaus;
     });
+
+    this.syncService.getAll().then(syncs => this.syncs = syncs);
 
     this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 
@@ -439,7 +452,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addLayers(): void {
 
-    this.map.addSource("sites", {
+    // Add the hierarchy layer first, so that the sites layer is underneath it
+    this.map.addSource("hierarchy", {
       type: "geojson",
       data: {
         "type": "FeatureCollection",
@@ -447,6 +461,44 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    // Polygon layer
+    this.map.addLayer({
+      "id": "hierarchy-polygon",
+      "source": "hierarchy",
+      "type": "fill",
+      "paint": {
+        "fill-color": "#00ffff",
+        "fill-opacity": 0.5,
+        "fill-outline-color": "black"
+      }
+    });
+
+    // Label layer
+    this.map.addLayer({
+      "id": "hierarchy-label",
+      "source": "hierarchy",
+      "type": "symbol",
+      "paint": {
+        "text-color": "black",
+        "text-halo-color": "#fff",
+        "text-halo-width": 2
+      },
+      "layout": {
+        "text-field": ["get", "localizedValue", ["get", "displayLabel"]],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top",
+        "text-size": 12,
+      }
+    });
+
+    this.map.addSource("sites", {
+      type: "geojson",
+      data: {
+        "type": "FeatureCollection",
+        "features": []
+      }
+    });
 
     // Point layer
     this.map.addLayer({
@@ -1322,6 +1374,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     layer.items.forEach(item => {
       this.removeImageLayer(layer.id + '-' + item.id + '-' + item.asset);
     });
+  }
+
+  refreshRoots(): void {
+    if (this.sync != null && this.sync.length > 0) {
+      this.syncService.roots(this.sync).then(children => {
+        this.children = children;
+
+        (this.map.getSource("hierarchy") as any).setData({
+          "type": "FeatureCollection",
+          "features": children
+        });
+      });
+    }
+  }
+
+  handleHierarchyClick(row: any): void {
+    if (this.sync != null && this.sync.length > 0) {
+      this.syncService.children(this.sync, row.properties.type, row.properties.uid).then(children => {
+        this.children = children;
+
+        (this.map.getSource("hierarchy") as any).setData({
+          "type": "FeatureCollection",
+          "features": children
+        });
+
+      });
+    }
   }
 
 }
