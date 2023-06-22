@@ -214,7 +214,7 @@
     <dependency>
 	  <groupId>com.amazonaws</groupId>
 	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.458</version>
+	  <version>1.12.493</version>
 	  <exclusions>
 	    <exclusion>
 	      <groupId>com.amazonaws</groupId>
@@ -227,7 +227,7 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
-      <version>8.7.0</version>
+      <version>9.0.0</version>
       <exclusions>
       	<exclusion>
       		<groupId>org.apache.zookeeper</groupId>
@@ -391,7 +391,7 @@
                   <mainClass>com.runwaysdk.dataaccess.io.UndoAll</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
@@ -438,7 +438,7 @@
                   <mainClass>net.geoprism.ImportSchema</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument />
+                    <argument/>
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
