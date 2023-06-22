@@ -31,8 +31,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ODMRunModalComponent implements OnInit, OnDestroy {
 	message: string = "";
 	
-	artifact: SiteEntity;
-	
 	odmRun: ODMRun = null;
 	
 	config: ODMRunConfig = null;
@@ -51,10 +49,17 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 
 	}
 
-	init(artifact: SiteEntity): void {
-		this.artifact = artifact;
-		
-		this.service.getODMRun(this.artifact.id).then(odmRun => {
+	initOnArtifact(artifact: SiteEntity): void {
+		this.service.getODMRunByArtifact(artifact.id).then(odmRun => {
+			this.odmRun = odmRun;
+			this.config = odmRun.config;
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
+	
+	initOnWorkflowTask(task: Task): void {
+		this.service.getODMRunByTask(task.oid).then(odmRun => {
 			this.odmRun = odmRun;
 			this.config = odmRun.config;
 		}).catch((err: HttpErrorResponse) => {

@@ -14,7 +14,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ODMRunConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -109,13 +109,31 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
+	
+	getDefaultODMRunConfig(collectionId: string): Promise<ODMRunConfig> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
 
-	getODMRun(artifactId: string): Promise<ODMRun> {
+		return this.http
+			.get<ODMRunConfig>(environment.apiUrl + '/project/get-default-odm-run-config', { params: params })
+			.toPromise()
+	}
+
+	getODMRunByArtifact(artifactId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('artifactId', artifactId);
 
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
+			.toPromise()
+	}
+	
+	getODMRunByTask(taskId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('taskId', taskId);
+
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
 			.toPromise()
 	}
 

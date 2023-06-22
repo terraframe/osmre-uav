@@ -55,15 +55,18 @@ public class ODMRun extends ODMRunBase
     return ODMProcessConfiguration.parse(this.getConfig());
   }
   
-  public static List<ODMRun> getRunsForComponent(UasComponent component)
+  public static List<ODMRun> getByComponentOrdered(String componentId)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);
+    final String oid = mdVertex.definesAttribute(ODMRun.OID).getColumnName();
+    final String component = mdVertex.definesAttribute(ODMRun.COMPONENT).getColumnName();
+    final String runEnd = mdVertex.definesAttribute(ODMRun.RUNEND).getColumnName();
     
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + ODMRun.COMPONENT + " = :oid");
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + component + "." + oid + " = :oid ORDER BY " + runEnd + " DESC");
 
     final GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement.toString());
-    query.setParameter("oid", component.getOid());
+    query.setParameter("oid", componentId);
 
     return query.getResults();
   }
@@ -94,7 +97,7 @@ public class ODMRun extends ODMRunBase
    * @param task
    * @return
    */
-  public static ODMRun getForTask(ODMProcessingTask task)
+  public static ODMRun getForTask(String taskId)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);
     
@@ -102,7 +105,7 @@ public class ODMRun extends ODMRunBase
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + ODMRun.WORKFLOWTASK + " = :oid");
 
     final GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement.toString());
-    query.setParameter("oid", task.getOid());
+    query.setParameter("oid", taskId);
 
     return query.getSingleResult();
   }

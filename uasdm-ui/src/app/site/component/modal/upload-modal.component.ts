@@ -65,7 +65,9 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		minNumFeatures: 10000,
 		pcQuality: "MEDIUM",
 		featureQuality: "HIGH",
-		geoLocationFormat: "RX1R2"
+		radiometricCalibration: "NONE",
+		geoLocationFormat: "ODM",
+		geoLocationFileName: "geo.txt"
 	} as UploadForm;
 
 	/*
@@ -324,7 +326,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.onUploadComplete = new Subject();
 		this.onUploadCancel = new Subject();
-
+		
 		// this.service.getMetadataOptions(null).then((options) => {
 		// 	this.sensors = options.sensors;
 		// 	this.platforms = options.platforms;
@@ -374,6 +376,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		if (this.existingTask) {
 			this.page = this.pages[this.pages.length - 1];
 		}
+		
+		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
 	}
 
 	close(): void {
@@ -473,7 +477,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleNextPage(): void {
-
+		
 		if ((this.page.index + 1) < this.pages.length) {
 
 			const nextPage = this.pages[this.page.index + 1];

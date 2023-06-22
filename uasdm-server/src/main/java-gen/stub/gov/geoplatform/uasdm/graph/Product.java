@@ -85,6 +85,8 @@ public class Product extends ProductBase implements ProductIF
   public static final String THUMBNAIL_ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/" + "thumbnails" + "\\/[^\\/]+orthophoto[^\\\\/]*" + ".png".replaceAll("\\.", "\\\\.");
 
   public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
+  
+  public static final String GEO_LOCATION_FILE = "geo.txt";
 
   private static final Logger logger = LoggerFactory.getLogger(Product.class);
 
@@ -345,20 +347,20 @@ public class Product extends ProductBase implements ProductIF
     {
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
-    }
-    
-    if (component instanceof Collection)
-    {
-      Collection collection = (Collection) component;
       
-      collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
-      collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
-      collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
-      collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-      
-      collection.apply();
-      
-      new MetadataXMLGenerator().generateAndUpload(collection);
+      if (component instanceof Collection)
+      {
+        Collection collection = (Collection) component;
+        
+        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
+        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
+        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
+        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
+        
+        collection.apply();
+        
+        new MetadataXMLGenerator().generateAndUpload(collection);
+      }
     }
   }
 

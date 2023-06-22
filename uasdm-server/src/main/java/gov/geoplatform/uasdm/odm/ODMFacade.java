@@ -20,7 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -43,33 +45,53 @@ import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
-import gov.geoplatform.uasdm.processing.RX1R2GeoFileConverter;
+import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
 {
-  public static class CloseablePair implements AutoCloseable
+  public static class ODMProcessingPayload implements AutoCloseable
   {
     private CloseableFile file;
 
-    private int           itemCount;
-
-    public CloseablePair(CloseableFile file, int itemCount)
+    private Set<String>   imageNames = new HashSet<String>();
+    
+    private String        geoLocationFile;
+    
+    public ODMProcessingPayload(CloseableFile file)
     {
-      super();
       this.file = file;
-      this.itemCount = itemCount;
+    }
+    
+    public void setGeoLocationFile(String geoLocationFile)
+    {
+      this.geoLocationFile = geoLocationFile;
+    }
+    
+    public String getGeoLocationFile()
+    {
+      return geoLocationFile;
     }
 
     public CloseableFile getFile()
     {
       return file;
     }
-
-    public int getItemCount()
+    
+    public void addImage(String filename)
     {
-      return itemCount;
+      imageNames.add(filename);
     }
 
+    public int getImageCount()
+    {
+      return imageNames.size();
+    }
+    
+    public Set<String> getImageNames()
+    {
+      return imageNames;
+    }
+    
     public void close()
     {
       this.file.close();
@@ -130,7 +152,7 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static CloseablePair filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  public static ODMProcessingPayload filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     String extension = archive.getNameExtension();
 
@@ -146,12 +168,12 @@ public class ODMFacade
     throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
   }
 
-  private static CloseablePair filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  private static ODMProcessingPayload filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
 
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
-    int itemCount = 0;
+    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
 
     try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
     {
@@ -167,7 +189,7 @@ public class ODMFacade
           if (entry.isDirectory())
           {
           }
-          else if (filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile())
+          else if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
           {
             File file = new File(parent, "geo.txt");
 
@@ -186,8 +208,7 @@ public class ODMFacade
               }
             }
 
-            itemCount++;
-
+            payload.setGeoLocationFile(IOUtils.toString(tarIn, "UTF-8"));
           }
           else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
@@ -198,21 +219,21 @@ public class ODMFacade
               IOUtils.copy(tarIn, fos);
             }
 
-            itemCount++;
+            payload.addImage(filename);
           }
 
         }
       }
     }
 
-    return new CloseablePair(parent, itemCount);
+    return payload;
   }
 
-  private static CloseablePair filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  private static ODMProcessingPayload filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
-    int itemCount = 0;
+    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
 
     try (CloseableFile fArchive = archive.openNewFile())
     {
@@ -226,7 +247,7 @@ public class ODMFacade
           final String filename = entry.getName();
           final String ext = FilenameUtils.getExtension(filename).toLowerCase();
 
-          if (filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile())
+          if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
           {
             File file = new File(parent, "geo.txt");
 
@@ -252,6 +273,7 @@ public class ODMFacade
               }
             }
 
+            payload.setGeoLocationFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
           }
           if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
@@ -265,7 +287,7 @@ public class ODMFacade
               }
             }
 
-            itemCount++;
+            payload.addImage(filename);
           }
         }
       }
@@ -275,7 +297,7 @@ public class ODMFacade
       }
     }
 
-    return new CloseablePair(parent, itemCount);
+    return payload;
   }
 
 }

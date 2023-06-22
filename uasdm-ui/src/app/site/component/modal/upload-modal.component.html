@@ -327,7 +327,15 @@
                   <option value="LOWEST">LOWEST</option>
                 </select>
               </div>
-
+              
+              <div *ngIf="config.processOrtho" class="form-group">
+                <label for="radiometricCalibration">Radiometric calibration</label>
+                <select [(ngModel)]="values.radiometricCalibration" name="radiometricCalibration" class="form-control">
+                  <option value="NONE">NONE</option>
+                  <option value="CAMERA">CAMERA</option>
+                  <option value="CAMERA_SUN">CAMERA+SUN</option>
+                </select>
+              </div>
 
               <div *ngIf="config.processOrtho || config.processDem" class="form-group">
                 <boolean-field [(value)]="values.includeGeoLocationFile"
@@ -342,7 +350,7 @@
                 </select>
               </div>
 
-              <div class="form-group" *ngIf="values.includeGeoLocationFile">
+              <div title="Enter the path of the geo location file inside your uploaded zip. This file will be renamed to 'geo.txt' upon upload and used to provide location data for your images." class="form-group" *ngIf="values.includeGeoLocationFile">
                 <label for="geoLocationFileName">Geo location file name</label>
                 <input [(ngModel)]="values.geoLocationFileName" name="geoLocationFileName" type="input"
                   class="form-control" placeholder="File name..." />

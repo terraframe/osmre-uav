@@ -75,7 +75,7 @@ export class SiteEntity {
 
 export class CollectionArtifact {
 	report?: boolean;
-	items?: [SiteEntity];
+	items?: SiteEntity[];
 }
 
 export class CollectionArtifacts {
@@ -104,6 +104,7 @@ export class ODMRunConfig {
 	minNumFeatures: number;
 	pcQuality: string;
 	featureQuality: string;
+	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 }
@@ -172,6 +173,7 @@ export class UploadForm {
 	minNumFeatures?: number;
 	pcQuality?: string;
 	featureQuality?: string;
+	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 
@@ -194,6 +196,7 @@ export class Task {
 	actions: Action[];
 	uploadId: string;
 	odmOutput: string;
+	odmRunId: string;
 	collection: string;
 	collectionLabel: string;
 	type: string;

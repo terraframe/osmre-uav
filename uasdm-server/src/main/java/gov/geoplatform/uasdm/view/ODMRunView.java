@@ -25,6 +25,7 @@ import com.runwaysdk.mvc.JsonConfiguration;
 import com.runwaysdk.mvc.JsonSerializable;
 import com.runwaysdk.mvc.RestSerializer;
 
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 
@@ -55,7 +56,11 @@ public class ODMRunView implements JsonSerializable
     
     view.setConfig(run.getConfiguration());
     
-    view.setReport(DocumentView.fromDocument(run.getReport()));
+    Document report = run.getReport();
+    if (report != null)
+    {
+      view.setReport(DocumentView.fromDocument(report));
+    }
     
     view.setRunStart(run.getRunStart());
     

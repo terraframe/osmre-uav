@@ -33,6 +33,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         minNumFeatures: 10000,
         pcQuality: "MEDIUM",
         featureQuality: "HIGH",
+        radiometricCalibration: "NONE",
         geoLocationFormat: "RX1R2"
     };
 
@@ -43,10 +44,17 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
      */
     public onConfirm: Subject<any>;
 
-    constructor(public bsModalRef: BsModalRef) { }
+    constructor(public bsModalRef: BsModalRef, private service: ManagementService,) { }
 
     init(entity: SiteEntity) {
         this.entity = entity;
+        this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+        
+        this.service.getDefaultODMRunConfig(this.entity.id).then((config: ODMRunConfig) => {
+			this.config = config;
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
     }
 
     ngOnInit(): void {

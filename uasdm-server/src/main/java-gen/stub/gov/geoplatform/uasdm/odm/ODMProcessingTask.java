@@ -71,7 +71,16 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
   public JSONObject toJSON()
   {
     JSONObject obj = super.toJSON();
-    obj.put("odmOutput", this.getOdmOutput());
+    
+    ODMRun run = ODMRun.getForTask(this.getOid());
+    if (run != null)
+    {
+      obj.put("odmRunId", run.getOid());
+    }
+    else if (StringUtils.isNotEmpty((this.getOdmOutput())))
+    {
+      obj.put("odmOutput", this.getOdmOutput());
+    }
 
     return obj;
   }

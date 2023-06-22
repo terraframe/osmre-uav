@@ -265,6 +265,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 
                 filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
                 
+                if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+                {
+                  filename = "geo.txt";
+                }
+                
                 if (filenameSet.contains(filename)) {
                   task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
                   continue;
@@ -313,6 +318,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   filename = FilenameUtils.getName(filename);
                   
                   filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
+                  
+                  if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+                  {
+                    filename = "geo.txt";
+                  }
                   
                   if (filenameSet.contains(filename)) {
                     task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
