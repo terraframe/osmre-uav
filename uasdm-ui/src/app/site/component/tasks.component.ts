@@ -229,7 +229,15 @@ export class TasksComponent implements OnInit {
         }
 
         if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
-          group.status = 'Warning';
+			group.status = sortedTasks[0].actions.map(action => action.type).reduce((a,b) => {
+				if (a === "error" || b === "error") {
+					return "Warning"; // Oddly, this isn't considered an error unless the WorkflowTask considers it to be one. If we're here in the code then it doesn't.
+				} else if (a === "warning" || b === "warning") {
+					return "Warning";
+				} else {
+					return "Complete";
+				}
+			}, "Complete");
         }
       }
     });

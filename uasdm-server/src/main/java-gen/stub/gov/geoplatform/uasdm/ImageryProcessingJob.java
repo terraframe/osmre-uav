@@ -397,7 +397,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     if (isDirectory)
     {
-      task.createAction("We will be processing all files located in the directory [" + path + "] inside the uploaded archive.", TaskActionType.WARNING.getType());
+      task.createAction("We will be processing all files located in the directory [" + path + "] inside the uploaded archive.", TaskActionType.INFO.getType());
       return true;
     }
 

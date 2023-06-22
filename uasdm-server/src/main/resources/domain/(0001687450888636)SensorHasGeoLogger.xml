@@ -12,6 +12,8 @@
 	</update>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.Sensor.hasGeologger" type="com.runwaysdk.system.metadata.MdAttributeBoolean" />
+    </delete>
   </undoIt>
 </version>

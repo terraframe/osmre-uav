@@ -60,7 +60,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
   }
 
   public static enum TaskActionType {
-    ERROR("error"), WARNING("warning");
+    ERROR("error"), WARNING("warning"), INFO("info");
 
     private String type;
 
