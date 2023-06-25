@@ -116,10 +116,14 @@ public class LabeledPropertyGraphSynchronizationController
     return new RestBodyResponse(response);
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "children")
-  public ResponseIF children(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "parentType", required = true) String parentType, @RequestParamter(name = "parentId", required = true) String parentId) throws JSONException
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "select")
+  public ResponseIF select(ClientRequestIF request, 
+      @RequestParamter(name = "oid", required = true) String oid, 
+      @RequestParamter(name = "parentType", required = true) String parentType, 
+      @RequestParamter(name = "parentId", required = true) String parentId,
+      @RequestParamter(name = "includeMetadata", required = true) Boolean includeMetadata) throws JSONException
   {
-    JsonArray response = this.service.children(request.getSessionId(), oid, parentType, parentId);
+    JsonObject response = this.service.select(request.getSessionId(), oid, parentType, parentId, includeMetadata);
 
     return new RestBodyResponse(response);
   }

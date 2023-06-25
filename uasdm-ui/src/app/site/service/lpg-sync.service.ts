@@ -191,14 +191,21 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
-    children(oid: string, parentType: string, parentId: string): Promise<any[]> {
+    select(oid: string, parentType: string, parentId: string, includeMetadata: boolean): Promise<{
+        children: any[],
+        metadata?: any
+    }> {
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
         params = params.set('parentType', parentType);
         params = params.set('parentId', parentId);
+        params = params.set('includeMetadata', includeMetadata);
 
         return this.http
-            .get<any[]>(environment.apiUrl + '/labeled-property-graph-synchronization/children', { params: params })
+            .get<{
+                children: any[],
+                metadata?: any
+            }>(environment.apiUrl + '/labeled-property-graph-synchronization/select', { params: params })
             .toPromise();
     }
 

@@ -201,9 +201,44 @@ public class LabeledPropertyGraphSynchronizationService
   }
 
   @Request(RequestType.SESSION)
-  public JsonArray children(String sessionId, String oid, String parentType, String parentId)
+  public JsonObject select(String sessionId, String oid, String parentType, String parentId, Boolean includeMetadata)
   {
-    return this.children(oid, parentType, parentId);
+    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+    GeoObjectTypeSnapshot snapshot = version.getSnapshot(parentType);
+
+    VertexObject parent = this.getObject(snapshot, parentId);
+
+    JsonArray children = this.children(version, parent);
+
+    JsonObject object = new JsonObject();
+    object.add("children", children);
+
+    if (includeMetadata)
+    {
+      object.add("metadata", snapshot.toGeoObjectType().toJSON());
+    }
+
+    return object;
+  }
+
+  private VertexObject getObject(LabeledPropertyGraphTypeVersion version, String typeCode, String uid)
+  {
+    return getObject(version.getSnapshot(typeCode), uid);
+  }
+
+  private VertexObject getObject(GeoObjectTypeSnapshot snapshot, String uid)
+  {
+    MdVertex mdVertex = snapshot.getGraphMdVertex();
+
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT FROM " + mdVertex.getDbClassName());
+    sql.append(" WHERE uuid = :uuid");
+
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
+    query.setParameter("uuid", uid);
+
+    return query.getSingleResult();
   }
 
   private JsonArray children(String oid, String parentType, String parentId)
@@ -211,22 +246,23 @@ public class LabeledPropertyGraphSynchronizationService
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
 
-    GeoObjectTypeSnapshot snapshot = version.getSnapshot(parentType);
-    MdVertex mdVertex = snapshot.getGraphMdVertex();
+    return this.children(version, parentType, parentId);
+  }
+
+  private JsonArray children(LabeledPropertyGraphTypeVersion version, String parentType, String parentId)
+  {
+    VertexObject parent = this.getObject(version, parentType, parentId);
+
+    return children(version, parent);
+  }
+
+  private JsonArray children(LabeledPropertyGraphTypeVersion version, VertexObject parent)
+  {
+    JsonArray array = new JsonArray();
 
     HierarchyTypeSnapshot hierarchy = version.getHierarchies().get(0);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
-    JsonArray array = new JsonArray();
-
-    StringBuffer sql = new StringBuffer();
-    sql.append("SELECT FROM " + mdVertex.getDbClassName());
-    sql.append(" WHERE uuid = :uuid");
-
-    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
-    query.setParameter("uuid", parentId);
-
-    VertexObject parent = query.getSingleResult();
     List<VertexObject> children = parent.getChildren(mdEdge, VertexObject.class);
 
     HashMap<String, GeoObjectType> cache = new HashMap<String, GeoObjectType>();

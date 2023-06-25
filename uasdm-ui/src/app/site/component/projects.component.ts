@@ -43,7 +43,6 @@ import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
-import { APP_BASE_HREF } from "@angular/common";
 import { LPGSync } from "@site/model/lpg-sync";
 import { LPGSyncService } from "@site/service/lpg-sync.service";
 
@@ -181,12 +180,34 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   stacLayer: StacLayer = null;
 
-  viewMode: number = VIEW_MODE.LPG;
+  viewMode: number = VIEW_MODE.SITE;
 
+  /*
+   * Fields for hierarchy layers
+   */
   syncs: LPGSync[] = [];
 
+  // oid of currently selected synchronization profile
   sync: string = null;
+
+  // list of geojson objects of the children locations
   children: any[] = [];
+
+  // currently selected geojson and metadata object
+  selected: {
+    metadata: any,
+    object: any
+  } = null;
+
+  // Cache of all of the selected metadata types. Used to prevent needing multiple trips to the server
+  metadataCache: { [key: string]: any } = {};
+
+  /* 
+   * Breadcrumb of previous locations
+   */
+  locationBreadcrumbs: any[] = [];
+
+
 
   constructor(
     private configuration: ConfigurationService,
@@ -453,6 +474,46 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   addLayers(): void {
 
     // Add the hierarchy layer first, so that the sites layer is underneath it
+    this.map.addSource("parent", {
+      type: "geojson",
+      data: {
+        "type": "FeatureCollection",
+        "features": []
+      }
+    });
+
+    // Add the parent hierarchy polygon layer
+    this.map.addLayer({
+      "id": "parent-polygon",
+      "source": "parent",
+      "type": "fill",
+      "paint": {
+        "fill-color": "grey",
+        "fill-opacity": 0.75,
+        "fill-outline-color": "black"
+      }
+    });
+
+    // Add the parent hierarchy label layer
+    this.map.addLayer({
+      "id": "parent-label",
+      "source": "parent",
+      "type": "symbol",
+      "paint": {
+        "text-color": "black",
+        "text-halo-color": "#fff",
+        "text-halo-width": 2
+      },
+      "layout": {
+        "text-field": ["get", "localizedValue", ["get", "displayLabel"]],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top",
+        "text-size": 12,
+      }
+    });
+
+
     this.map.addSource("hierarchy", {
       type: "geojson",
       data: {
@@ -461,7 +522,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // Polygon layer
+    // Add the hierarchy polygon layer
     this.map.addLayer({
       "id": "hierarchy-polygon",
       "source": "hierarchy",
@@ -473,7 +534,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // Label layer
+    // Add the hierarchy label layer
     this.map.addLayer({
       "id": "hierarchy-label",
       "source": "hierarchy",
@@ -492,6 +553,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+
+    // Add the site layers
     this.map.addSource("sites", {
       type: "geojson",
       data: {
@@ -1379,26 +1442,92 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshRoots(): void {
     if (this.sync != null && this.sync.length > 0) {
       this.syncService.roots(this.sync).then(children => {
+        this.selected = null;
         this.children = children;
+
+        // Clear the parent layer
+        (this.map.getSource("parent") as any).setData({
+          "type": "FeatureCollection",
+          "features": []
+        });
 
         (this.map.getSource("hierarchy") as any).setData({
           "type": "FeatureCollection",
           "features": children
         });
+
       });
+    }
+  }
+
+  setLocation(row: any): void {
+
+    if (row != null) {
+      var indexOf = this.locationBreadcrumbs.findIndex(i => i.properties.uid === row.properties.uid);
+
+      this.locationBreadcrumbs.splice(indexOf);
+
+      this.selected = null;
+      this.children = [];
+
+      this.handleHierarchyClick(row);
+    }
+    else if (this.locationBreadcrumbs.length > 0) {
+      this.locationBreadcrumbs = [];
+      this.selected = null;
+
+      this.refreshRoots();
     }
   }
 
   handleHierarchyClick(row: any): void {
     if (this.sync != null && this.sync.length > 0) {
-      this.syncService.children(this.sync, row.properties.type, row.properties.uid).then(children => {
-        this.children = children;
+
+      const includeMetadata = (this.metadataCache[row.properties.type] == null);
+
+      this.syncService.select(this.sync, row.properties.type, row.properties.uid, includeMetadata).then(result => {
+
+        if (result.metadata != null) {
+          const metadata = result.metadata;
+          metadata.attributes = metadata.attributes.filter(attribute => {
+            return (attribute.code == 'code'
+              || attribute.code == 'displayLabel'
+              || (!attribute.isDefault
+                && attribute.code == 'uid'));
+          });
+
+          this.metadataCache[row.properties.type] = result.metadata;
+        }
+
+        this.selected = {
+          object: row,
+          metadata: this.metadataCache[row.properties.type]
+        };
+
+        this.locationBreadcrumbs.push(row);
+
+        this.children = result.children;
+
+        const collection = {
+          "type": "FeatureCollection",
+          "features": [row]
+        };
+
+        // Set the parent layer
+        (this.map.getSource("parent") as any).setData(collection);
 
         (this.map.getSource("hierarchy") as any).setData({
           "type": "FeatureCollection",
-          "features": children
+          "features": result.children
         });
 
+        // Zoom to the layer
+        const env = envelope(collection);
+        const bounds = bbox(env) as [number, number, number, number];
+
+        this.map.fitBounds(bounds, {
+          padding: 20
+        });
       });
     }
   }
