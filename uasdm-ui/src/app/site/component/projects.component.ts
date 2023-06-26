@@ -1491,7 +1491,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           const metadata = result.metadata;
           metadata.attributes = metadata.attributes.filter(attribute => {
             return (attribute.code == 'code'
-              || attribute.code == 'displayLabel'
               || (!attribute.isDefault
                 && attribute.code == 'uid'));
           });

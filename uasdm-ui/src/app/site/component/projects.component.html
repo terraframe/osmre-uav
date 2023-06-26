@@ -266,9 +266,9 @@
               <div class="col-md-12">
                 <div id="hierarchy-tree-container"
                   class="location-management-widget-section location-management-list-container"
-                  [style]="'height: calc(100vh-360px);overflow-y: auto;overflow-x:hidden;'">
+                  style="height: calc(-200px + 100vh);overflow-y: auto;overflow-x:hidden;">
 
-                  <div class="row" *ngIf="selected != null">
+                  <div class="row" *ngIf="selected != null" style="margin-right: 10px;">
                     <div class="col-md-12">
                       <hr>
 
@@ -288,7 +288,7 @@
                       </ul>
 
                       <h3>
-                        {{selected.metadata.label.localizedValue}}
+                        {{selected.object.properties.displayLabel.localizedValue}}
                       </h3>
 
                       <div class="form-group" *ngFor="let attribute of selected.metadata.attributes ">
