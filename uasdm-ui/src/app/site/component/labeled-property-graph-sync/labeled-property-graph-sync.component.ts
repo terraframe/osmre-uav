@@ -72,7 +72,9 @@ export class LPGSyncComponent implements OnInit {
             if (valid) {
                 this.service.getTypes(this.sync.url).then((types: any[]) => {
                     this.types = types;
-                });
+                }).catch(e => {
+                    ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + e.status + ']' }, this.modalService);
+                })
             }
             else {
                 ErrorHandler.showErrorAsDialog({ message: 'Invalid URL format' }, this.modalService);
@@ -86,8 +88,10 @@ export class LPGSyncComponent implements OnInit {
             this.service.getEntries(this.sync.url, this.sync.remoteType).then((type: LabeledPropertyGraphType) => {
                 this.sync.displayLabel = type.displayLabel;
                 this.entries = type.entries;
-            });
-        }
+            }).catch(e => {
+                ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + e.status + ']' }, this.modalService);
+            })
+    }
     }
 
     handleEntryChange(): void {
@@ -100,8 +104,10 @@ export class LPGSyncComponent implements OnInit {
 
             this.service.getVersions(this.sync.url, this.sync.remoteEntry).then((versions: LabeledPropertyGraphTypeVersion[]) => {
                 this.versions = versions;
-            });
-        }
+            }).catch(e => {
+                ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + e.status + ']' }, this.modalService);
+            })
+    }
     }
 
     handleVersionChange(): void {
@@ -201,19 +207,19 @@ export class LPGSyncComponent implements OnInit {
 
 
     isValid(): boolean {
-        if (this.sync.url == null && this.sync.url.length == 0) {
+        if (this.sync.url == null || this.sync.url.length == 0) {
             return false;
         }
 
-        if (this.sync.remoteType == null && this.sync.remoteType.length == 0) {
+        if (this.sync.remoteType == null || this.sync.remoteType.length == 0) {
             return false;
         }
 
-        if (this.sync.remoteEntry == null && this.sync.remoteEntry.length == 0) {
+        if (this.sync.remoteEntry == null || this.sync.remoteEntry.length == 0) {
             return false;
         }
 
-        if (this.sync.remoteVersion == null && this.sync.remoteVersion.length == 0) {
+        if (this.sync.remoteVersion == null || this.sync.remoteVersion.length == 0) {
             return false;
         }
 

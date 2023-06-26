@@ -131,7 +131,7 @@ export class LPGSyncService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.noErrorHttpClient
+        return this.http
             .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/apply', JSON.stringify({ sync: sync }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
@@ -148,7 +148,7 @@ export class LPGSyncService implements GenericTableService {
             url += '/';
         }
 
-        return this.http
+        return this.noErrorHttpClient
             .get<any[]>(url + 'api/labeled-property-graph-type/get-all', { params: params })
             .toPromise();
     }
@@ -162,7 +162,7 @@ export class LPGSyncService implements GenericTableService {
             url += '/';
         }
 
-        return this.http
+        return this.noErrorHttpClient
             .get<LabeledPropertyGraphType>(url + 'api/labeled-property-graph-type/entries', { params: params })
             .toPromise();
     }
@@ -176,7 +176,7 @@ export class LPGSyncService implements GenericTableService {
             url += '/';
         }
 
-        return this.http
+        return this.noErrorHttpClient
             .get<LabeledPropertyGraphTypeVersion[]>(url + 'api/labeled-property-graph-type/versions', { params: params })
             .toPromise();
     }

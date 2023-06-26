@@ -13,6 +13,81 @@
     <div id="navigator-left-sidebar" class="col-md-3 lw-inner-col">
       <ng-container *ngIf="viewMode === 0">
         <tabset #outerTabs class="nav-full-width">
+          <tab heading="Hierarchies">
+            <div class="row">
+              <div class="col-md-12">
+                <label>Hierarchy</label>
+                <select [(ngModel)]="sync" name="sync" (change)="refreshRoots()">
+                  <option></option>
+                  <option *ngFor="let sync of syncs" [value]="sync.oid">
+                    {{sync.displayLabel.localizedValue}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="row" *ngIf="sync">
+              <div class="col-md-12">
+                <div id="hierarchy-tree-container"
+                  class="location-management-widget-section location-management-list-container"
+                  style="height: calc(-200px + 100vh);overflow-y: auto;overflow-x:hidden;">
+
+                  <div class="row" *ngIf="selected != null" style="margin-right: 10px;">
+                    <div class="col-md-12">
+                      <hr>
+
+                      <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
+                        <li>
+                          <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
+                          <a (click)="setLocation(null)" style="color: #007276;">Root</a>
+                        </li>
+                        <li *ngFor="let entity of locationBreadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
+                          <a *ngIf="!isLast" (click)="setLocation(entity)" style="color: #007276;">
+                            {{entity.properties.displayLabel.localizedValue}}
+                          </a>
+                          <span *ngIf="isLast">
+                            <b>{{entity.properties.displayLabel.localizedValue}}</b>
+                          </span>
+                        </li>
+                      </ul>
+
+                      <h3>
+                        {{selected.object.properties.displayLabel.localizedValue}}
+                      </h3>
+
+                      <div class="form-group" *ngFor="let attribute of selected.metadata.attributes ">
+                        <label>
+                          {{attribute.label.localizedValue}}
+                        </label>
+                        <container-element [ngSwitch]="attribute.type">
+                          <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
+                            [(ngModel)]="selected.object.properties[attribute.code].localizedValue" disabled>
+                          <input *ngSwitchDefault type="text" [name]="attribute.code"
+                            [(ngModel)]="selected.object.properties[attribute.code]" disabled>
+                        </container-element>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" *ngIf="children.length > 0">
+                    <div class="col-md-12">
+                      <div *ngIf="selected != null">
+                        <label>
+                          Children
+                        </label>
+                      </div>
+                      <div class="list-group">
+                        <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
+                          <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
+                            <h4 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h4>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </tab>
           <tab heading="Sites">
 
             <div class="row">
@@ -91,7 +166,7 @@
                   <tab heading="Data">
                     <div id="hierarchy-tree-container"
                       class="location-management-widget-section location-management-list-container"
-                      [style]="current != null ? 'height: calc(100vh - 360px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 430px);overflow-y: auto;overflow-x:hidden;'">
+                      [style]="current != null ? 'height: calc(100vh - 340px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 400px);overflow-y: auto;overflow-x:hidden;'">
                       <div class="list-group">
 
                         <!-- If -->
@@ -249,81 +324,6 @@
                 </div>
               </div>
             </footer>
-          </tab>
-          <tab heading="Hierarchies">
-            <div class="row">
-              <div class="col-md-12">
-                <label>Hierarchy</label>
-                <select [(ngModel)]="sync" name="sync" (change)="refreshRoots()">
-                  <option></option>
-                  <option *ngFor="let sync of syncs" [value]="sync.oid">
-                    {{sync.displayLabel.localizedValue}}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="row" *ngIf="sync">
-              <div class="col-md-12">
-                <div id="hierarchy-tree-container"
-                  class="location-management-widget-section location-management-list-container"
-                  style="height: calc(-200px + 100vh);overflow-y: auto;overflow-x:hidden;">
-
-                  <div class="row" *ngIf="selected != null" style="margin-right: 10px;">
-                    <div class="col-md-12">
-                      <hr>
-
-                      <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
-                        <li>
-                          <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
-                          <a (click)="setLocation(null)" style="color: #007276;">Root</a>
-                        </li>
-                        <li *ngFor="let entity of locationBreadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
-                          <a *ngIf="!isLast" (click)="setLocation(entity)" style="color: #007276;">
-                            {{entity.properties.displayLabel.localizedValue}}
-                          </a>
-                          <span *ngIf="isLast">
-                            <b>{{entity.properties.displayLabel.localizedValue}}</b>
-                          </span>
-                        </li>
-                      </ul>
-
-                      <h3>
-                        {{selected.object.properties.displayLabel.localizedValue}}
-                      </h3>
-
-                      <div class="form-group" *ngFor="let attribute of selected.metadata.attributes ">
-                        <label>
-                          {{attribute.label.localizedValue}}
-                        </label>
-                        <container-element [ngSwitch]="attribute.type">
-                          <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
-                            [(ngModel)]="selected.object.properties[attribute.code].localizedValue" disabled>
-                          <input *ngSwitchDefault type="text" [name]="attribute.code"
-                            [(ngModel)]="selected.object.properties[attribute.code]" disabled>
-                        </container-element>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row" *ngIf="children.length > 0">
-                    <div class="col-md-12">
-                      <div *ngIf="selected != null">
-                        <label>
-                          Children
-                        </label>
-                      </div>
-                      <div class="list-group">
-                        <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
-                          <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
-                            <h4 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h4>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </tab>
         </tabset>
       </ng-container>
