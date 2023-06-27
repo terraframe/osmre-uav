@@ -13,8 +13,14 @@ export class ArtifactUploadComponent {
   @Input() componentId: string;
   @Input() folder: string;
   
+  // Optional. If specified, we will tell the user they are reuploading to a file that already exists.
+  @Input() label: string = "Upload";
+  
   // Optional. If specified, we will rename the uploaded file, which is useful if the uploaded file is intended to replace an existing file.
   @Input() replaceName: string = null;
+  
+  // Optional. If specified, we will direct the user to upload a file of one of the specified file types. Multiple types can be provided with a comma. Example: .xls,.xlsx
+  @Input() accept: string = "";
   
   uploadStatus: string = null;
 
@@ -24,8 +30,6 @@ export class ArtifactUploadComponent {
     const file:File = event.target.files[0];
 
     if (file) {
-	  let upload = this.replaceName == null ? "upload" : "reupload";
-	  
 	  this.managementService.upload(this.componentId, this.folder, file, this.replaceName).then(() => {
         this.uploadStatus = "success";
       }).catch(er => {

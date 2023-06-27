@@ -1,9 +1,8 @@
-<input type="file" class="file-input"
-       (change)="onFileSelected($event)" #fileUpload>
+<input type="file" class="file-input" (change)="onFileSelected($event)" [accept]="accept" #fileUpload>
 
-<button *ngIf="uploadStatus == null" type="button" class="btn btn-primary"
-  (click)="fileUpload.click()" style="margin: 5px 0;">
-  {{replaceName == null ? "Upload" : "Reupload"}}
+<button *ngIf="uploadStatus == null" type="button" class="btn btn-primary" style="margin-left:0;"
+  (click)="fileUpload.click()">
+  {{this.label}}
 </button>
 <span class="upload-success" *ngIf="uploadStatus === 'success'"><span>Uploaded</span><i class="fa fa-solid fa-check"></i></span>
 <span class="upload-fail" *ngIf="uploadStatus === 'error'"><span>Failed</span><i class="fa fa-solid fa-exclamation"></i></span>

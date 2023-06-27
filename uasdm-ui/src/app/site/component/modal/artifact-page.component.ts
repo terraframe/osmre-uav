@@ -24,7 +24,7 @@ import { ODMRunModalComponent } from './odmrun-modal.component';
 @Component({
 	selector: 'artifact-page',
 	templateUrl: './artifact-page.component.html',
-	styleUrls: [],
+	styleUrls: ['./artifact-page.component.css'],
 	providers: []
 })
 export class ArtifactPageComponent implements OnInit, OnDestroy {
