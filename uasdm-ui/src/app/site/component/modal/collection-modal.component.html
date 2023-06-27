@@ -176,6 +176,8 @@
                 <tr *ngFor="let item of page.results">
                   <td>{{item.name}}</td>
                   <td style="text-align:right;">
+                    <artifact-upload *ngIf="item.name == 'geo.txt'" [componentId]="entity.id" [folder]="'raw'" [replaceName]="'geo.txt'">
+                    </artifact-upload>
                     <button type="button" class="btn btn-primary"
                       (click)="handleDownloadFile(item)" style="margin: 5px 0;">
                       Download

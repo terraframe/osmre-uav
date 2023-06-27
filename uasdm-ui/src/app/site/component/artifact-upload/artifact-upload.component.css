@@ -1,0 +1,9 @@
+.file-input {
+    display: none;
+}
+.upload-success .fa {
+	color: green;
+}
+.upload-fail .fa {
+	color: red;
+}

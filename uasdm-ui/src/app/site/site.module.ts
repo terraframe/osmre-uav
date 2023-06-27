@@ -65,6 +65,7 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
+import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 
 @NgModule({
 	imports: [
@@ -118,7 +119,8 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		MetadataPageComponent,
 		ReportsComponent,
         EquipmentComponent,
-		LayerPanelComponent
+		LayerPanelComponent,
+  		ArtifactUploadComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
