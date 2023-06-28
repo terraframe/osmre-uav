@@ -273,10 +273,10 @@
             [attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic"
             style="margin-top:20px;">Advanced Settings
           </button>
-		  <div *ngIf="!isAdvancedSettingsCollapsed" class="panel panel-default">
-		    <div class="panel-body" style="padding:10px;">
+		  <div style="padding-top:10px;" [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true">
+		    <div class="panel panel-default" style="padding:10px;">
           
-	          <div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" style="padding:10px;">
+	          <div class="panel-body" style="padding:10px;">
 	            <div style="padding:10px;">
 	              <div class="form-group">
 	                <label for="outFileName">Output Product Name Prefix</label>
