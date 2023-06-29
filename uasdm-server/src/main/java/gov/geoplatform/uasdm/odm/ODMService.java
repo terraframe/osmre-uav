@@ -39,6 +39,7 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 
@@ -126,7 +127,7 @@ public class ODMService implements ODMServiceIF
    * tasknewinit
    */
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
+  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, AbstractWorkflowTask task)
   {
     initialize();
 
@@ -140,7 +141,7 @@ public class ODMService implements ODMServiceIF
         }
         else if (configuration.isIncludeGeoLocationFile())
         {
-          GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload);
+          GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload, task);
         }
         
         HttpNewResponse resp = this.taskNewInit(payload.getImageCount(), isMultispectral, configuration);

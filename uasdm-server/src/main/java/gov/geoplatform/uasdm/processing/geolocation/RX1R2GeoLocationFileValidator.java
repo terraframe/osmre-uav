@@ -19,11 +19,12 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
   }
   
   @Override
-  public void validate()
+  public GeoLocationValidationResults validate()
   {
+    GeoLocationValidationResults results = new GeoLocationValidationResults();
+    
     try (CSVReader csvReader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(this.payload.getGeoLocationFile().getBytes()))))
     {
-
       String[] line;
       int num = 1;
 
@@ -36,33 +37,59 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
           
           if (!payload.getImageNames().contains(fileName))
           {
-            throw new GeoLocationFileInvalidFormatException("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
+            results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
           }
           
-          BigDecimal latitude = new BigDecimal(line[1]);
-          BigDecimal longitude = new BigDecimal(line[2]);
-          new BigDecimal(line[3]);
-
-          if (longitude.compareTo(new BigDecimal(180)) > 0 || longitude.compareTo(new BigDecimal(-180)) < 0)
+          try
           {
-            throw new GeoLocationFileInvalidFormatException("Line [" + num + "] contains a longitude which is out of bounds. Longitude must be between -180 and 180.");
+            BigDecimal latitude = new BigDecimal(line[1]);
+            
+            if (latitude.compareTo(new BigDecimal(90)) > 0 || latitude.compareTo(new BigDecimal(-90)) < 0)
+            {
+              results.addError("Line [" + num + "] contains a latitude which is out of bounds. Latitude must be between -90 and 90.");
+            }
           }
-          if (latitude.compareTo(new BigDecimal(90)) > 0 || latitude.compareTo(new BigDecimal(-90)) < 0)
+          catch (Throwable t)
           {
-            throw new GeoLocationFileInvalidFormatException("Line [" + num + "] contains a latitude which is out of bounds. Latitude must be between -90 and 90.");
+            results.addError("Line [" + num + "] contains a non-numeric latitude.");
           }
+          
+          try
+          {
+            BigDecimal longitude = new BigDecimal(line[2]);
+            
+            if (longitude.compareTo(new BigDecimal(180)) > 0 || longitude.compareTo(new BigDecimal(-180)) < 0)
+            {
+              results.addError("Line [" + num + "] contains a longitude which is out of bounds. Longitude must be between -180 and 180.");
+            }
+          }
+          catch (Throwable t)
+          {
+            results.addError("Line [" + num + "] contains a non-numeric longitude.");
+          }
+          
+          try
+          {
+            new BigDecimal(line[3]);
+          }
+          catch (Throwable t)
+          {
+            results.addError("Line [" + num + "] contains a non-numeric value.");
+          }
+        }
+        else
+        {
+          results.addError("Expected at least 4 values on line [" + num + "].");
         }
         
         num++;
       }
     }
-    catch (GeoLocationFileInvalidFormatException e)
-    {
-      throw e;
-    }
     catch (Throwable t)
     {
       throw new GeoLocationFileInvalidFormatException(t.getMessage(), t);
     }
+    
+    return results;
   }
 }

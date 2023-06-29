@@ -112,7 +112,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
       if (DevProperties.runOrtho())
       {
-        resp = ODMFacade.taskNew(images, isMultispectral, this.getConfiguration());
+        resp = ODMFacade.taskNew(images, isMultispectral, this.getConfiguration(), this);
       }
       else
       {

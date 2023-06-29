@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +34,7 @@ import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileInvalidFormatException;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationValidationResults;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class RX1R2GeoFileConverterTest
@@ -66,7 +68,7 @@ public class RX1R2GeoFileConverterTest
     payload.addImage("DSC00003.jpg");
     
     payload.setGeoLocationFile("DSC00001.jpg,47.6537057,-092.5672988,0589.32\nDSC00002.jpg,47.6537057,-092.5672988,0589.32\nDSC00003.jpg,47.6537057,-092.5672988,0589.32");
-    GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    validateThrowErrors(payload);
   }
   
   @Test(expected = GeoLocationFileInvalidFormatException.class)
@@ -79,7 +81,7 @@ public class RX1R2GeoFileConverterTest
     payload.addImage("DSC00003.JPG");
     
     payload.setGeoLocationFile("DSC00001.jpg,47.6537057,-092.5672988,0589.32\nDSC00002.jpg,47.6537057,-092.5672988,0589.32\nDSC00003.jpg,47.6537057,-092.5672988,0589.32");
-    GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    validateThrowErrors(payload);
   }
   
   /*
@@ -93,7 +95,7 @@ public class RX1R2GeoFileConverterTest
     payload.addImage("DSC00003.jpg");
     
     payload.setGeoLocationFile("DSC00001.jpg,47.6537057,-092.5672988,0589.32\nDSC00002.jpg,47.6537057,-092.5672988,0589.32");
-    GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    validateThrowErrors(payload);
   }
   */
   
@@ -107,7 +109,7 @@ public class RX1R2GeoFileConverterTest
     payload.addImage("DSC00003.jpg");
     
     payload.setGeoLocationFile("DSC00001.jpg,-092.5672988,47.6537057,0589.32\nDSC00002.jpg,47.6537057,-092.5672988,0589.32\nDSC00003.jpg,47.6537057,-092.5672988,0589.32");
-    GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    validateThrowErrors(payload);
   }
   
   @Test(expected = GeoLocationFileInvalidFormatException.class)
@@ -120,6 +122,16 @@ public class RX1R2GeoFileConverterTest
     payload.addImage("DSC00003.jpg");
     
     payload.setGeoLocationFile("DSC00001.jpg,47.6537057,-0192.5672988,0589.32\nDSC00002.jpg,47.6537057,-092.5672988,0589.32\nDSC00003.jpg,47.6537057,-092.5672988,0589.32");
-    GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    validateThrowErrors(payload);
+  }
+  
+  private void validateThrowErrors(ODMProcessingPayload payload)
+  {
+    GeoLocationValidationResults results = GeoLocationFileValidator.validate(FileFormat.RX1R2, payload);
+    
+    if (results.hasErrors())
+    {
+      throw new GeoLocationFileInvalidFormatException(StringUtils.join(results.getErrors(), ", "));
+    }
   }
 }

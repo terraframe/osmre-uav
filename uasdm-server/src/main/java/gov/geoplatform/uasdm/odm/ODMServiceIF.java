@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.odm;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+
 public interface ODMServiceIF
 {
 
@@ -34,7 +36,7 @@ public interface ODMServiceIF
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration);
+  NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, AbstractWorkflowTask task);
 
   NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration);
 

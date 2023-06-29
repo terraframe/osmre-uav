@@ -114,7 +114,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
   {
     try
     {
-      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration());
+      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration(), this);
 
       if (resp.getHTTPResponse().isUnreachableHost())
       {

@@ -16,9 +16,11 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -73,6 +75,11 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     {
       return this.type;
     }
+    
+    public static Optional<TaskActionType> forType(String type)
+    {
+      return Arrays.stream(TaskActionType.values()).filter(t -> t.getType().equals(type)).findAny();
+    }
   }
 
   public AbstractWorkflowTask()
@@ -110,11 +117,18 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     }
   }
 
+  @Deprecated
   @Transaction
   public void createAction(String message, String type)
   {
+    createAction(message, TaskActionType.forType(type).get());
+  }
+  
+  @Transaction
+  public void createAction(String message, TaskActionType type)
+  {
     WorkflowAction action = new WorkflowAction();
-    action.setActionType(type);
+    action.setActionType(type.getType());
     action.setDescription(message);
     action.setWorkflowTask(this);
     action.apply();
