@@ -12,6 +12,18 @@
   <div class="row">
     <div id="navigator-left-sidebar" class="col-md-3 lw-inner-col">
       <ng-container *ngIf="viewMode === 0">
+        <!-- Search bar -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="location-management-widget-section">
+              <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
+                [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
+                [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
+                [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault()" />
+            </div>
+          </div>
+        </div>
+
         <tabset #outerTabs class="nav-full-width">
           <tab heading="Hierarchies">
             <div class="row">
@@ -142,18 +154,6 @@
                   </div>
                 </div>
 
-                <!-- Search bar -->
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="location-management-widget-section">
-                      <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
-                        [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
-                        [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate"
-                        typeaheadOptionField="label" [ngModelOptions]="{standalone: true}"
-                        (keydown.enter)="$event.preventDefault()" />
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -429,17 +429,27 @@
 </div>
 
 <ng-template #bsItemTemplate let-match="match" let-query="query">
-  <span *ngIf="match.item.filename == null">
-    <i class="fa fa-folder-open"></i>
-  </span>
-  <span *ngIf="match.item.filename != null">
-    <i class="fa fa-file"></i>
-  </span>
-  <span>
-    <span *ngFor="let site of match.item.hierarchy; index as i">
-      {{site.label}} /
-      <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
+  <ng-container *ngIf="match.item.type === 'LOCATION'">
+    <span>
+      <i class="fa fa-folder-open"></i>
     </span>
-  </span>
-  <b>{{ match.item.label}}</b>
+    <b>{{ match.item.label}}</b>
+  </ng-container>
+  
+  <ng-container *ngIf="match.item.type === 'SITE'">
+    <span *ngIf="match.item.filename == null">
+      <i class="fa fa-folder-open"></i>
+    </span>
+    <span *ngIf="match.item.filename != null">
+      <i class="fa fa-file"></i>
+    </span>
+    <span>
+      <span *ngFor="let site of match.item.hierarchy; index as i">
+        {{site.label}} /
+        <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
+      </span>
+    </span>
+    <b>{{ match.item.label}}</b>
+  </ng-container>
+
 </ng-template>

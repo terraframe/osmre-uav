@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -39,6 +40,8 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class IndexService
 {
@@ -48,7 +51,7 @@ public class IndexService
   {
     index = i;
   }
-  
+
   public synchronized static Index getIndex()
   {
     return index;
@@ -79,7 +82,7 @@ public class IndexService
       index.clear();
     }
   }
-  
+
   public static void deleteDocuments(String fieldId, String oid)
   {
     if (AppProperties.isSearchEnabled())
@@ -195,7 +198,7 @@ public class IndexService
       }
 
       String results = handler.toString();
-      
+
       return results;
     }
     catch (SAXException | TikaException | IOException e)
@@ -204,4 +207,19 @@ public class IndexService
     }
   }
 
+  public static void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
+  {
+    if (AppProperties.isSearchEnabled())
+    {
+      index.createDocument(synchronization, object);
+    }
+  }
+
+  public static void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
+  {
+    if (AppProperties.isSearchEnabled())
+    {
+      index.deleteDocuments(synchronization);
+    }
+  }
 }

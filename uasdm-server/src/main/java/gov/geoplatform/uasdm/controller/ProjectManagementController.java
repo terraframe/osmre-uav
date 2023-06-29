@@ -44,7 +44,6 @@ import com.runwaysdk.request.ServletRequestIF;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
@@ -58,6 +57,7 @@ import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.QuerySiteResult;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
@@ -387,7 +387,7 @@ public class ProjectManagementController
   {
     List<QueryResult> list = this.service.search(request.getSessionId(), term);
 
-    return new RestBodyResponse(QueryResult.serialize(list));
+    return new RestBodyResponse(QuerySiteResult.serialize(list));
   }
 
   @Endpoint(url = "get-totals", method = ServletMethod.GET, error = ErrorSerialization.JSON)

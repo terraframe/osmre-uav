@@ -37,6 +37,7 @@ import org.apache.solr.common.params.CursorMarkParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
@@ -50,6 +51,8 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.QuerySiteResult;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 
 public class SolrIndex implements Index
 {
@@ -423,7 +426,7 @@ public class SolrIndex implements Index
             {
               SolrDocument document = iterator.next();
 
-              results.add(QueryResult.build(document));
+              results.add(QuerySiteResult.build(document));
             }
 
             if (cursorMark.equals(nextCursorMark))
@@ -468,5 +471,18 @@ public class SolrIndex implements Index
   public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
     return new Page<StacItem>();
+  }
+  
+  @Override
+  public void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  @Override
+  public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
+  {
+    // TODO Auto-generated method stub    
   }
 }

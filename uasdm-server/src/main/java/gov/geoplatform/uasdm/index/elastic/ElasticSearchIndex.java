@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -30,19 +30,21 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.runwaysdk.business.graph.VertexObject;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -68,7 +70,11 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.view.QueryLocationResult;
 import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.QuerySiteResult;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.registry.conversion.LocalizedValueConverter;
 
 public class ElasticSearchIndex implements Index
 {
@@ -77,6 +83,8 @@ public class ElasticSearchIndex implements Index
   public static String  COMPONENT_INDEX_NAME = "components";
 
   public static String  STAC_INDEX_NAME      = "stac";
+
+  public static String  LOCATION_INDEX_NAME  = "location";
 
   private RestClient    restClient;
 
@@ -120,7 +128,10 @@ public class ElasticSearchIndex implements Index
 
           this.restClient = builder.build();
 
-          ElasticsearchClient client = this.createClient();
+          ElasticsearchTransport transport = new RestClientTransport(this.restClient, new JacksonJsonpMapper());
+
+          // And create the API client
+          ElasticsearchClient client = new ElasticsearchClient(transport);
 
           try
           {
@@ -130,6 +141,26 @@ public class ElasticSearchIndex implements Index
           {
             // Index doesn't exist, create it
             client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+          }
+
+          try
+          {
+            client.indices().get(g -> g.index(ElasticSearchIndex.LOCATION_INDEX_NAME));
+          }
+          catch (ElasticsearchException e)
+          {
+            // Index doesn't exist, create it
+            client.indices().create(i -> i.index(ElasticSearchIndex.LOCATION_INDEX_NAME));
+          }
+          
+          try
+          {
+            client.indices().get(g -> g.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
+          }
+          catch (ElasticsearchException e)
+          {
+            // Index doesn't exist, create it
+            client.indices().create(i -> i.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
           }
         }
         catch (Exception e)
@@ -196,7 +227,8 @@ public class ElasticSearchIndex implements Index
       ElasticsearchClient client = createClient();
       client.indices().delete(i -> i.index(STAC_INDEX_NAME));
       client.indices().delete(i -> i.index(COMPONENT_INDEX_NAME));
-      
+      client.indices().delete(i -> i.index(LOCATION_INDEX_NAME));
+
       this.shutdown();
     }
     catch (IOException e)
@@ -394,7 +426,7 @@ public class ElasticSearchIndex implements Index
       {
         ElasticsearchClient client = createClient();
 
-        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
+        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
 
         for (Hit<ElasticDocument> hit : search.hits().hits())
         {
@@ -414,15 +446,29 @@ public class ElasticSearchIndex implements Index
   {
     ElasticDocument document = hit.source();
 
-    QueryResult result = new QueryResult();
-    result.setId(hit.id());
-    result.setFilename(document.getFilename());
-    result.addItem(document.getSiteId(), document.getSiteName());
-    result.addItem(document.getProjectId(), document.getProjectName());
-    result.addItem(document.getMissionId(), document.getMissionName());
-    result.addItem(document.getCollectionId(), document.getCollectionName());
+    if (hit.index().equals(LOCATION_INDEX_NAME))
+    {
+      QueryLocationResult result = new QueryLocationResult();
+      result.setId(hit.id());
+      result.setVersionId(document.getVersionId());
+      result.setSynchronizationId(document.getSynchronizationId());
+      result.setLabel(document.getLabel());
+      result.setOid(document.getOid());
 
-    return result;
+      return result;
+    }
+    else
+    {
+      QuerySiteResult result = new QuerySiteResult();
+      result.setId(hit.id());
+      result.setFilename(document.getFilename());
+      result.addItem(document.getSiteId(), document.getSiteName());
+      result.addItem(document.getProjectId(), document.getProjectName());
+      result.addItem(document.getMissionId(), document.getMissionName());
+      result.addItem(document.getCollectionId(), document.getCollectionName());
+
+      return result;
+    }
   }
 
   @Override
@@ -754,5 +800,47 @@ public class ElasticSearchIndex implements Index
     object.put("total", total);
 
     return object;
+  }
+
+  @Override
+  public void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
+  {
+    try
+    {
+      LocalizedValue localizedValue = LocalizedValueConverter.convert(object.getEmbeddedComponent("displayLabel"));
+      String label = localizedValue.getValue();
+
+      ElasticsearchClient client = createClient();
+
+      ElasticLocation document = new ElasticLocation();
+      document.setOid(object.getOid());
+      document.setSynchronizationId(synchronization.getOid());
+      document.setVersionId(synchronization.getVersionOid());
+      document.setLabel(label);
+
+      client.index(i -> i.index(LOCATION_INDEX_NAME).id(UUID.randomUUID().toString()).document(document));
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Override
+  public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
+  {
+    try
+    {
+      DeleteByQueryRequest request = new DeleteByQueryRequest.Builder().index(LOCATION_INDEX_NAME).query(q -> {
+        return q.bool(b -> b.must(m -> m.queryString(qs -> qs.fields("versionId").query(synchronization.getVersionOid()))));
+      }).build();
+
+      ElasticsearchClient client = createClient();
+      client.deleteByQuery(request);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
   }
 }

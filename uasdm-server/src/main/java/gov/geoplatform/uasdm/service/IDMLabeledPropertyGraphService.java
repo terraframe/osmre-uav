@@ -6,6 +6,7 @@ import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.springframework.stereotype.Component;
 
 import com.runwaysdk.ComponentIF;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.Operation;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.constants.MdAttributeBooleanInfo;
@@ -103,8 +104,6 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
   @Override
   public void postDelete(LabeledPropertyGraphTypeVersion version)
   {
-    // Do nothing
-
   }
 
   @Override
@@ -157,6 +156,18 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
     query.WHERE(query.getDbClassName().EQ(name));
 
     return query.getCount() > 0;
+  }
+  
+  @Override
+  public void postSynchronization(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
+  {
+    IndexService.createDocument(synchronization, object);
+  }
+  
+  @Override
+  public void postTruncate(LabeledPropertyGraphSynchronization synchronization)
+  {
+    IndexService.deleteDocuments(synchronization);
   }
 
 }

@@ -21,11 +21,14 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.business.graph.VertexObject;
+
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 
 public interface Index
 {
@@ -58,4 +61,8 @@ public interface Index
   public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber);
 
   public void clear();
+  
+  public void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object);
+
+  public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization);
 }

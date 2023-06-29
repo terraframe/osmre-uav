@@ -127,4 +127,14 @@ public class LabeledPropertyGraphSynchronizationController
 
     return new RestBodyResponse(response);
   }
+  
+  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-object")
+  public ResponseIF getObject(ClientRequestIF request, 
+      @RequestParamter(name = "synchronizationId", required = true) String synchronizationId, 
+      @RequestParamter(name = "oid", required = true) String oid) throws JSONException
+  {
+    JsonObject response = this.service.getObject(request.getSessionId(), synchronizationId, oid);
+    
+    return new RestBodyResponse(response);
+  }
 }

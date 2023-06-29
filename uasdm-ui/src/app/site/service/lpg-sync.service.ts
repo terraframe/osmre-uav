@@ -209,4 +209,18 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
+    getObject(synchronizationId: string, oid: string): Promise<any> {
+        let params: HttpParams = new HttpParams();
+        params = params.set('synchronizationId', synchronizationId);
+        params = params.set('oid', oid);
+
+        return this.http
+            .get<{
+                children: any[],
+                metadata?: any
+            }>(environment.apiUrl + '/labeled-property-graph-synchronization/get-object', { params: params })
+            .toPromise();
+    }
+
+
 }

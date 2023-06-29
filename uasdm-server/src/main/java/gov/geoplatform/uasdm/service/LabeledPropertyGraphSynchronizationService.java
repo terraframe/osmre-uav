@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
 import gov.geoplatform.uasdm.GenericException;
@@ -198,6 +200,73 @@ public class LabeledPropertyGraphSynchronizationService
     });
 
     return array;
+  }
+
+  @Request(RequestType.SESSION)
+  public JsonObject getObject(String sessionId, String synchronizationId, String oid)
+  {
+    JsonObject object = new JsonObject();
+    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
+    LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+    GeoObjectTypeSnapshot type = version.getRootType();
+    MdVertex mdVertex = type.getGraphMdVertex();
+    HierarchyTypeSnapshot hierarchy = version.getHierarchies().get(0);
+    MdEdge mdEdge = hierarchy.getGraphMdEdge();
+
+    StringBuffer statement = new StringBuffer();
+    statement.append("SELECT FROM " + mdVertex.getDbClassName());
+    statement.append(" WHERE oid = :oid");
+
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
+    query.setParameter("oid", oid);
+
+    VertexObject result = query.getSingleResult();
+
+    MdVertexDAOIF childVertex = (MdVertexDAOIF) result.getMdClass();
+
+    GeoObjectTypeSnapshot childType = GeoObjectTypeSnapshot.get(version, childVertex);
+    GeoObjectType geoObjectType = childType.toGeoObjectType();
+
+    GeoObject geoObject = LabeledPropertyGraphJsonExporter.serialize(result, geoObjectType);
+
+    object.add("object", geoObject.toJSON());
+    object.add("parents", getParents(version, mdEdge, result));
+
+    return object;
+  }
+
+  private JsonArray getParents(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
+  {
+    JsonArray parents = new JsonArray();
+
+    StringBuffer s = new StringBuffer();
+    s.append("SELECT FROM (");
+    s.append(" TRAVERSE in('" + mdEdge.getDbClassName() + "') FROM :rid");
+    s.append(") WHERE $depth >= 1");
+
+    GraphQuery<VertexObject> squery = new GraphQuery<VertexObject>(s.toString());
+    squery.setParameter("rid", child.getRID());
+
+    List<VertexObject> p = squery.getResults();
+    Collections.reverse(p);
+
+    // Remove the root object
+    // TODO: Figure out a configurable way to determine if the root object
+    // should be included or not
+    p.remove(0);
+
+    p.forEach(parent -> {
+      MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();
+
+      GeoObjectTypeSnapshot parentType = GeoObjectTypeSnapshot.get(version, parentVertex);
+
+      GeoObject parentObject = LabeledPropertyGraphJsonExporter.serialize(parent, parentType);
+
+      parents.add(parentObject.toJSON());
+
+    });
+
+    return parents;
   }
 
   @Request(RequestType.SESSION)

@@ -1010,18 +1010,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleClick($event: any): void {
     let result = $event.item;
 
-    if (result.center) {
-      this.map.flyTo({
-        center: result.center,
-        zoom: 18
-      })
+    if (result.type === 'SITE') {
+      if (result.center) {
+        this.map.flyTo({
+          center: result.center,
+          zoom: 18
+        })
+      }
+      else {
+        const index = result.hierarchy.length - 1;
+
+        const selected = result.hierarchy[index];
+
+        this.handleViewSite(selected.id);
+      }
     }
-    else {
-      const index = result.hierarchy.length - 1;
-
-      const selected = result.hierarchy[index];
-
-      this.handleViewSite(selected.id);
+    else if (result.type === 'LOCATION') {
+      this.handleViewLocation(result.synchronizationId, result.oid);
     }
   }
 
@@ -1460,6 +1465,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  handleViewLocation(synchronizationId: string, oid: string): void {
+    this.syncService.getObject(synchronizationId, oid).then(result => {
+      this.sync = synchronizationId;
+      this.locationBreadcrumbs = result.parents;
+
+      this.handleHierarchyClick(result.object);
+    });
+
+  }
+
   setLocation(row: any): void {
 
     if (row != null) {
@@ -1487,12 +1502,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.syncService.select(this.sync, row.properties.type, row.properties.uid, includeMetadata).then(result => {
 
+
         if (result.metadata != null) {
           const metadata = result.metadata;
+
           metadata.attributes = metadata.attributes.filter(attribute => {
             return (attribute.code == 'code'
               || (!attribute.isDefault
-                && attribute.code == 'uid'));
+                && attribute.code != 'uuid'));
           });
 
           this.metadataCache[row.properties.type] = result.metadata;
@@ -1502,6 +1519,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           object: row,
           metadata: this.metadataCache[row.properties.type]
         };
+
 
         this.locationBreadcrumbs.push(row);
 
