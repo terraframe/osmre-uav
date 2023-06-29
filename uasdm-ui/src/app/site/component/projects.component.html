@@ -3,6 +3,32 @@
 
 
 -->
+<ng-template #bsItemTemplate let-match="match" let-query="query">
+  <ng-container *ngIf="match.item.type != null && match.item.type === 'LOCATION'">
+    <span>
+      <i class="fa fa-folder-open"></i>
+    </span>
+    <b>{{ match.item.label}}</b>
+  </ng-container>
+  
+  <ng-container *ngIf="match.item.type == null || match.item.type !== 'LOCATION'">
+    <span *ngIf="match.item.filename == null">
+      <i class="fa fa-folder-open"></i>
+    </span>
+    <span *ngIf="match.item.filename != null">
+      <i class="fa fa-file"></i>
+    </span>
+    <span>
+      <span *ngFor="let site of match.item.hierarchy; index as i">
+        {{site.label}} /
+        <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
+      </span>
+    </span>
+    <b>{{ match.item.label}}</b>
+  </ng-container>
+
+</ng-template>
+
 <div id="navigator-header-container">
   <uasdm-header [title]="'Site Viewer'"></uasdm-header>
 </div>
@@ -427,29 +453,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #bsItemTemplate let-match="match" let-query="query">
-  <ng-container *ngIf="match.item.type === 'LOCATION'">
-    <span>
-      <i class="fa fa-folder-open"></i>
-    </span>
-    <b>{{ match.item.label}}</b>
-  </ng-container>
-  
-  <ng-container *ngIf="match.item.type === 'SITE'">
-    <span *ngIf="match.item.filename == null">
-      <i class="fa fa-folder-open"></i>
-    </span>
-    <span *ngIf="match.item.filename != null">
-      <i class="fa fa-file"></i>
-    </span>
-    <span>
-      <span *ngFor="let site of match.item.hierarchy; index as i">
-        {{site.label}} /
-        <!-- <span *ngIf="i < (match.item.hierarchy.length -1)">/</span> -->
-      </span>
-    </span>
-    <b>{{ match.item.label}}</b>
-  </ng-container>
-
-</ng-template>
