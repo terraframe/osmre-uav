@@ -401,7 +401,7 @@ public class Product extends ProductBase implements ProductIF
   {
     final CollectionIF collection = (CollectionIF) this.getComponent();
 
-    boolean allZipExists = this.getAllZip() != null;
+    boolean allZipExists = this.hasAllZip();
 
     if (allZipExists)
     {
@@ -409,6 +409,12 @@ public class Product extends ProductBase implements ProductIF
 
       uploader.processAllZip();
     }
+  }
+  
+  public boolean hasAllZip()
+  {
+//    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
+    return ((Collection) this.getComponent()).hasAllZip();
   }
 
   public SiteObject getAllZip()
@@ -490,13 +496,11 @@ public class Product extends ProductBase implements ProductIF
 
   public RemoteFileObject downloadAllZip()
   {
-    final UasComponentIF component = this.getComponent();
-
     SiteObject all = this.getAllZip();
 
     if (all != null)
     {
-      return component.download(all.getKey());
+      return this.getComponent().download(all.getKey());
     }
     else
     {

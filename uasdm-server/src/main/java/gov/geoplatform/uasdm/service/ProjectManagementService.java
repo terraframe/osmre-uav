@@ -1121,7 +1121,7 @@ public class ProjectManagementService
     
     if (runs.size() > 0)
     {
-      ODMRun run = runs.get(runs.size() - 1);
+      ODMRun run = runs.get(0);
       
       ODMProcessConfiguration config = run.getConfiguration();
       

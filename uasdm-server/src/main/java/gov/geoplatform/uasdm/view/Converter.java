@@ -314,16 +314,7 @@ public abstract class Converter
     boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
-    // boolean hasAllZip = product.getDocuments().stream().filter(doc ->
-    // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
-    SiteObject allZip = ( (Product) product ).getAllZip(); // The
-                                                           // ProductHasDocument
-                                                           // relationship for
-                                                           // the all zip is
-                                                           // corrupt so we have
-                                                           // to fetch it this
-                                                           // way.
-    view.setHasAllZip(allZip != null);
+    view.setHasAllZip(( (Product) product ).hasAllZip());
 
     view.setComponents(list);
     view.setId(product.getOid());

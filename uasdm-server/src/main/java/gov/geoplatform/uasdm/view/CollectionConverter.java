@@ -79,8 +79,7 @@ public class CollectionConverter extends Converter
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
       
-      SiteObject allZip = ((Collection) collection).getAllZip();
-      siteItem.setHasAllZip(allZip != null);
+      siteItem.setHasAllZip(((Collection) collection).hasAllZip());
 
       if (collection.getCollectionDate() != null)
       {
