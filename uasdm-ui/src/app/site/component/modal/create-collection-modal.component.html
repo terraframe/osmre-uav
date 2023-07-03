@@ -144,22 +144,19 @@
           </button>
 
 		  <span style="position: relative; display: inline-block;">
-		  	  <ngx-spinner [fullScreen]="false" [name]="CONSTANTS.NEXT_OVERLAY" type="ball-clip-rotate-multiple"
-                    size="medium"></ngx-spinner>
-	          <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled" class="btn btn-secondary"
+	          <button *ngIf="page.index > 0" type="button btn btn-primary" [disabled]="disabled || loading" class="btn btn-secondary"
 	            (click)="handleBackPage()">
-	            <i class="icon-upload icon-white"></i>
 	            Back
 	          </button>
 	
 	          <button *ngIf="page.index < (pages.length - 1)" type="button btn btn-primary"
-	            [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleNextPage()">
+	            [disabled]="!isPageValid(page) || disabled || loading" class="btn btn-primary" (click)="handleNextPage()">
 	            <i class="icon-upload icon-white"></i>
 	            Next
 	          </button>
 	
 	          <button *ngIf="page.index === (pages.length - 1)" type="button btn btn-primary"
-	            [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleCreate()">
+	            [disabled]="!isPageValid(page) || disabled || loading" class="btn btn-primary" (click)="handleCreate()">
 	            <i class="icon-upload icon-white"></i>
 	            Create
 	          </button>

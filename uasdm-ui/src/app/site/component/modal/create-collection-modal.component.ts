@@ -10,12 +10,12 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { NgxSpinnerService } from "ngx-spinner";
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
 import { SiteEntity, Selection } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
+import { EventService } from '@shared/service/event.service';
 
 import { StepConfig } from '@shared/modal/step-indicator/modal-step-indicator'
 
@@ -75,10 +75,6 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 	 * Current page  
 	 */
 	hierarchyChange: boolean = false;
-	
-	CONSTANTS = {
-        NEXT_OVERLAY: "create-collection-next"
-    };
 
 	/*
 	 * Current page  
@@ -99,7 +95,9 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private spinner: NgxSpinnerService, private service: ManagementService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
+	loading: boolean = false;
+
+	constructor(private event: EventService, private service: ManagementService, private metadataService: MetadataService, public bsModalRef: BsModalRef) {
 	}
 
 
@@ -269,17 +267,21 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 				else {
 					if (!this.page.selection.isNew && this.page.selection.value != null && this.page.selection.value.length > 0) {
 
-						this.spinner.show(this.CONSTANTS.NEXT_OVERLAY);
+						this.loading = true;
+
+						this.event.start();
+
 						this.service.getChildren(this.page.selection.value).then(children => {
 							nextPage.options = children.filter(child => {
 								return child.type === nextPage.selection.type;
 							});
 
 							this.page = nextPage;
-							this.spinner.hide(this.CONSTANTS.NEXT_OVERLAY);
 						}).catch((err: HttpErrorResponse) => {
-							this.spinner.hide(this.CONSTANTS.NEXT_OVERLAY);
 							this.error(err);
+						}).finally(() => {
+							this.event.complete();
+							this.loading = false;
 						});
 					}
 					else {
@@ -328,7 +330,7 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 
 	hasField(fieldName: string): boolean {
 		return this.metadataService.hasExtraField(this.page.selection.type, fieldName);
-	}	
+	}
 
 	error(err: any): void {
 		this.message = ErrorHandler.getMessageFromError(err);

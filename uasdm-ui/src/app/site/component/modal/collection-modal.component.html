@@ -142,7 +142,10 @@
           <tabset class="nav-full-width">
 
             <tab heading="raw images" (selectTab)="onSelect('image')">
+              <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+
               <div class="image-list-container">
+                
                 <ul class="list-group row">
                   <li
                     *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
@@ -168,6 +171,8 @@
             </tab>
 
             <tab heading="raw data" (selectTab)="onSelect('data')">
+              <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+
               <table style="width: 100%;">
                 <thead>
                   <th>Name</th>
@@ -192,6 +197,8 @@
 
 
             <tab heading="video" (selectTab)="onSelect('video')">
+              <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+
               <div *ngIf="video.src !== null">
                 <div class="row">
                   <div class="col-md-1"></div>

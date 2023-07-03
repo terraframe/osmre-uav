@@ -79,6 +79,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	context: string;
 
 	notifier: WebSocketSubject<any>;
+	loading = false;
 
 	constructor(
 		private service: ManagementService,
@@ -197,6 +198,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
+		
+		this.loading = true;
+
 		this.service.getObjects(component, folder, pageNumber, pageSize).then(resultSet => {
 			this.page = resultSet;
 
@@ -210,7 +214,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 				}
 
 			}
-		});
+		}).finally(() => {
+			this.loading = false;
+		})
 	}
 
 	isImage(item: any): boolean {
