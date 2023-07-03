@@ -15,6 +15,10 @@
  */
 package gov.geoplatform.uasdm.bus;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
 import com.runwaysdk.query.OIterator;
@@ -23,6 +27,7 @@ import com.runwaysdk.query.QueryFactory;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class MissingMetadataMessage extends MissingMetadataMessageBase
@@ -49,7 +54,7 @@ public class MissingMetadataMessage extends MissingMetadataMessageBase
   {
     return this.getImageryComponent().getName();
   }
-
+  
   public ImageryComponent getImageryComponent()
   {
     return (ImageryComponent) getComponentInstance();

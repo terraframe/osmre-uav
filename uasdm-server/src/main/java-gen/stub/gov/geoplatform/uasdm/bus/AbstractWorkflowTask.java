@@ -222,5 +222,11 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
   {
     return "";
   }
+  
+  @Override
+  public String getDetailedComponentLabel()
+  {
+    return "";
+  }
 
 }

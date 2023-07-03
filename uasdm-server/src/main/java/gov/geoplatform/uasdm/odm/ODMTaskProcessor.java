@@ -95,8 +95,8 @@ public class ODMTaskProcessor
       if (task.getStatus().equals(ODMStatus.FAILED.getLabel()))
       {
         final String subject = "Orthorectification Processing Failed";
-
-        final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has failed. " + task.getMessage();
+        
+        final String body = "The orthorectification processing for [" + task.getDetailedComponentLabel() + "] has failed. " + task.getMessage();
 
         new EmailBusinessService().sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()
@@ -106,7 +106,7 @@ public class ODMTaskProcessor
       {
         final String subject = "Orthorectification Processing Completed";
 
-        final String body = "The orthorectification processing for [" + task.getComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
+        final String body = "The orthorectification processing for [" + task.getDetailedComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
 
         new EmailBusinessService().sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()

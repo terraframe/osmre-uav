@@ -20,7 +20,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -276,6 +278,21 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   {
     return this.getImageryComponent().getName();
   }
+  
+  @Override
+  public String getDetailedComponentLabel()
+  {
+    UasComponentIF component = this.getComponentInstance();
+    
+    List<UasComponentIF> components = component.getAncestors();
+    Collections.reverse(components);
+    components.add(component);
+    
+    String label = StringUtils.join(components.stream().map(a -> a.getName()).collect(Collectors.toList()), ", ");
+    
+    return label;
+  }
+
 
   public ImageryComponent getImageryComponent()
   {
