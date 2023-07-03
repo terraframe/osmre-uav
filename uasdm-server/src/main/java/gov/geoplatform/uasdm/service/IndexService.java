@@ -41,7 +41,6 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
-import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class IndexService
 {

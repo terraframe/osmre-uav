@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.session.Session;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -454,6 +455,8 @@ public class ElasticSearchIndex implements Index
       result.setSynchronizationId(document.getSynchronizationId());
       result.setLabel(document.getLabel());
       result.setOid(document.getOid());
+      result.setTypeLabel(document.getTypeLabel());
+      result.setHierarchyLabel(document.getHierarchyLabel());
 
       return result;
     }
@@ -817,6 +820,8 @@ public class ElasticSearchIndex implements Index
       document.setSynchronizationId(synchronization.getOid());
       document.setVersionId(synchronization.getVersionOid());
       document.setLabel(label);
+      document.setHierarchyLabel(synchronization.getDisplayLabel().getValue());
+      document.setTypeLabel(object.getMdClass().getDisplayLabel(Session.getCurrentLocale()));
 
       client.index(i -> i.index(LOCATION_INDEX_NAME).id(UUID.randomUUID().toString()).document(document));
     }

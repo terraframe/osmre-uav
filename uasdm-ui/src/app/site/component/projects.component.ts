@@ -1449,6 +1449,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.syncService.roots(this.sync).then(children => {
         this.selected = null;
         this.children = children;
+        this.locationBreadcrumbs = [];
 
         // Clear the parent layer
         (this.map.getSource("parent") as any).setData({
@@ -1461,6 +1462,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           "features": children
         });
 
+      });
+    } else {
+      this.selected = null;
+      this.children = [];
+      this.locationBreadcrumbs = [];
+
+      // Clear the parent layer
+      (this.map.getSource("parent") as any).setData({
+        "type": "FeatureCollection",
+        "features": []
+      });
+
+      (this.map.getSource("hierarchy") as any).setData({
+        "type": "FeatureCollection",
+        "features": []
       });
     }
   }

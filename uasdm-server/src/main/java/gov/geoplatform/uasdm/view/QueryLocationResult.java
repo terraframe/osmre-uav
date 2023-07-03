@@ -29,6 +29,10 @@ public class QueryLocationResult implements QueryResult
 
   private String label;
 
+  private String typeLabel;
+
+  private String hierarchyLabel;
+
   public String getId()
   {
     return id;
@@ -79,6 +83,26 @@ public class QueryLocationResult implements QueryResult
     this.label = label;
   }
   
+  public String getTypeLabel()
+  {
+    return typeLabel;
+  }
+  
+  public void setTypeLabel(String typeLabel)
+  {
+    this.typeLabel = typeLabel;
+  }
+  
+  public String getHierarchyLabel()
+  {
+    return hierarchyLabel;
+  }
+  
+  public void setHierarchyLabel(String hierarchyLabel)
+  {
+    this.hierarchyLabel = hierarchyLabel;
+  }
+
   @Override
   public Type getType()
   {
@@ -93,6 +117,8 @@ public class QueryLocationResult implements QueryResult
     object.put("synchronizationId", this.synchronizationId);
     object.put("versionId", this.versionId);
     object.put("type", this.getType().name());
+    object.put("typeLabel", this.typeLabel);
+    object.put("hierarchyLabel", this.hierarchyLabel);
 
     return object;
   }

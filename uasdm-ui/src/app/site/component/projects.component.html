@@ -6,9 +6,9 @@
 <ng-template #bsItemTemplate let-match="match" let-query="query">
   <ng-container *ngIf="match.item.type != null && match.item.type === 'LOCATION'">
     <span>
-      <i class="fa fa-folder-open"></i>
+      <i class="fa fa-map"></i>
     </span>
-    <b>{{ match.item.label}}</b>
+    <b>{{ match.item.label}} : {{ match.item.typeLabel}}</b>
   </ng-container>
   
   <ng-container *ngIf="match.item.type == null || match.item.type !== 'LOCATION'">

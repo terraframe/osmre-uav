@@ -25,6 +25,10 @@ public class ElasticLocation
 
   private String label;
 
+  private String typeLabel;
+
+  private String hierarchyLabel;
+
   public String getOid()
   {
     return oid;
@@ -63,5 +67,25 @@ public class ElasticLocation
   public void setLabel(String label)
   {
     this.label = label;
+  }
+  
+  public String getHierarchyLabel()
+  {
+    return hierarchyLabel;
+  }
+  
+  public void setHierarchyLabel(String hierarchyLabel)
+  {
+    this.hierarchyLabel = hierarchyLabel;
+  }
+  
+  public String getTypeLabel()
+  {
+    return typeLabel;
+  }
+  
+  public void setTypeLabel(String typeLabel)
+  {
+    this.typeLabel = typeLabel;
   }
 }

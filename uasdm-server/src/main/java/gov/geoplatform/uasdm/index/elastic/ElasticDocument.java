@@ -15,10 +15,8 @@
  */
 package gov.geoplatform.uasdm.index.elastic;
 
-public class ElasticDocument
+public class ElasticDocument extends ElasticLocation
 {
-  private String oid;
-
   private String key;
 
   private String filename;
@@ -44,22 +42,6 @@ public class ElasticDocument
   private String description;
 
   private String bureau;
-
-  private String versionId;
-
-  private String synchronizationId;
-
-  private String label;
-
-  public String getOid()
-  {
-    return oid;
-  }
-
-  public void setOid(String oid)
-  {
-    this.oid = oid;
-  }
 
   public String getKey()
   {
@@ -189,36 +171,6 @@ public class ElasticDocument
   public void setDescription(String description)
   {
     this.description = description;
-  }
-
-  public String getLabel()
-  {
-    return label;
-  }
-
-  public void setLabel(String label)
-  {
-    this.label = label;
-  }
-
-  public String getVersionId()
-  {
-    return versionId;
-  }
-
-  public void setVersionId(String versionId)
-  {
-    this.versionId = versionId;
-  }
-  
-  public String getSynchronizationId()
-  {
-    return synchronizationId;
-  }
-  
-  public void setSynchronizationId(String synchronizationId)
-  {
-    this.synchronizationId = synchronizationId;
   }
 
   public void populate(String fieldName, String value)
