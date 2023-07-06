@@ -16,7 +16,6 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
-import { NgxSpinnerModule } from "ngx-spinner";
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
@@ -84,8 +83,7 @@ import { ArtifactUploadComponent } from './component/artifact-upload/artifact-up
 		CollapseModule.forRoot(),
 		SharedModule,
 		SiteRoutingModule,
-		NgxFileDropModule,
-		NgxSpinnerModule
+		NgxFileDropModule
 	],
 	declarations: [
 		MapAttributeComponent,
