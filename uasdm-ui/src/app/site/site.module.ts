@@ -16,7 +16,6 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
-import { NgxSpinnerModule } from "ngx-spinner";
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
@@ -69,6 +68,7 @@ import { LPGSyncTableComponent } from './component/labeled-property-graph-sync/l
 import { LPGSyncPageComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-page.component';
 import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
 import { LPGSyncService } from './service/lpg-sync.service';
+import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 
 @NgModule({
 	imports: [
@@ -87,8 +87,7 @@ import { LPGSyncService } from './service/lpg-sync.service';
 		CollapseModule.forRoot(),
 		SharedModule,
 		SiteRoutingModule,
-		NgxFileDropModule,
-		NgxSpinnerModule
+		NgxFileDropModule
 	],
 	declarations: [
 		MapAttributeComponent,
@@ -125,7 +124,8 @@ import { LPGSyncService } from './service/lpg-sync.service';
 		LayerPanelComponent,
 		LPGSyncTableComponent,
 		LPGSyncPageComponent,
-		LPGSyncComponent
+		LPGSyncComponent,
+  		ArtifactUploadComponent
 	],
 	providers: [
 		CanDeactivateGuardService,

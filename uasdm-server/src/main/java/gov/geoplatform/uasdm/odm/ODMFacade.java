@@ -42,6 +42,7 @@ import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
@@ -127,9 +128,9 @@ public class ODMFacade
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration)
+  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, AbstractWorkflowTask task)
   {
-    return service.taskNew(images, isMultispectral, configuration);
+    return service.taskNew(images, isMultispectral, configuration, task);
   }
 
   public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)

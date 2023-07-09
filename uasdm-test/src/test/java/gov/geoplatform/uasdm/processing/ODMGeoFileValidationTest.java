@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.processing;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import com.runwaysdk.resource.CloseableFile;
@@ -23,6 +24,7 @@ import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileInvalidFormatException;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationValidationResults;
 
 public class ODMGeoFileValidationTest
 {
@@ -35,8 +37,8 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00002.jpg");
     payload.addImage("DSC00003.jpg");
     
-    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg    47.6537057  -092.5672988    0589.32\nDSC00002.jpg   47.6537057  -092.5672988    0589.32\nDSC00003.jpg   47.6537057  -092.5672988    0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg    -092.5672988  47.6537057    0589.32\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\nDSC00003.jpg   -092.5672988  47.6537057    0589.32");
+    validateThrowErrors(payload);
   }
   
   @Test
@@ -48,8 +50,8 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00002.jpg");
     payload.addImage("DSC00003.jpg");
     
-    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg	47.6537057  -092.5672988	0589.32\nDSC00002.jpg   47.6537057  -092.5672988	0589.32\nDSC00003.jpg   47.6537057  -092.5672988	0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg	-092.5672988   47.6537057	0589.32\nDSC00002.jpg   -092.5672988  47.6537057	0589.32\nDSC00003.jpg   -092.5672988  47.6537057	0589.32");
+    validateThrowErrors(payload);
   }
   
   @Test(expected = GeoLocationFileInvalidFormatException.class)
@@ -61,8 +63,8 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00002.jpg");
     payload.addImage("DSC00003.jpg");
     
-    payload.setGeoLocationFile("DSC00001.jpg    47.6537057  -092.5672988    0589.32\\nDSC00002.jpg   47.6537057  -092.5672988    0589.32\\nDSC00003.jpg   47.6537057  -092.5672988    0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    payload.setGeoLocationFile("DSC00001.jpg    -092.5672988   47.6537057   0589.32\\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\\nDSC00003.jpg   -092.5672988   47.6537057   0589.32");
+    validateThrowErrors(payload);
   }
   
   @Test(expected = GeoLocationFileInvalidFormatException.class)
@@ -74,8 +76,8 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00002.JPG");
     payload.addImage("DSC00003.JPG");
     
-    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg 47.6537057 -092.5672988 0589.32\nDSC00002.jpg 47.6537057 -092.5672988 0589.32\nDSC00003.jpg 47.6537057 -092.5672988 0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.5672988 47.6537057 0589.32");
+    validateThrowErrors(payload);
   }
   
   /*
@@ -103,7 +105,7 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00003.jpg");
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg 47.6537057 -092.5672988 0589.32\nDSC00003.jpg 47.6537057 -092.5672988 0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    validateThrowErrors(payload);
   }
   
   @Test(expected = GeoLocationFileInvalidFormatException.class)
@@ -115,7 +117,17 @@ public class ODMGeoFileValidationTest
     payload.addImage("DSC00002.jpg");
     payload.addImage("DSC00003.jpg");
     
-    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg 47.6537057 -0192.5672988 0589.32\nDSC00002.jpg 47.6537057 -092.5672988 0589.32\nDSC00003.jpg 47.6537057 -092.5672988 0589.32");
-    GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -0192.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.567298847.6537057  0589.32");
+    validateThrowErrors(payload);
+  }
+  
+  private void validateThrowErrors(ODMProcessingPayload payload)
+  {
+    GeoLocationValidationResults results = GeoLocationFileValidator.validate(FileFormat.ODM, payload);
+    
+    if (results.hasErrors())
+    {
+      throw new GeoLocationFileInvalidFormatException(StringUtils.join(results.getErrors(), ", "));
+    }
   }
 }

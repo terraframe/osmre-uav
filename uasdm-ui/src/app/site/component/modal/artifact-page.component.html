@@ -17,7 +17,7 @@
         <th></th>
     </thead>
     <ng-container *ngFor="let section of sections; let i = index">
-      <tr>
+      <tr class="artifact-row">
       	<td>{{section.label}}</td>
         <td>
           <ng-container *ngIf="artifacts[section.folder] != null">
@@ -56,20 +56,26 @@
             </table>
           </ng-container>
         </td>
-        <td *ngIf="!edit" style="text-align:right;">
-          <button type="button" class="btn btn-secondary" *ngIf="artifacts[section.folder] != null && artifacts[section.folder].report"
-            [disabled]="processRunning" (click)="handleDownloadReport(section)" style="margin: 5px 5px;">
-            Download report
-          </button>
-
-          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].items.length > 0" type="button" class="btn btn-warning"
-            [disabled]="processRunning" (click)="handleRemove(section)" style="margin: 5px 0;">
-            Remove
-          </button>
-          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].items.length == 0" type="button" class="btn btn-primary"
-            [disabled]="processRunning" (click)="handleUpload(section.folder)" style="margin: 5px 0;">
-            Upload
-          </button>
+        <td *ngIf="!edit" class="no-edit-actions">
+          <span class="action-col">
+	          <button *ngIf="artifacts[section.folder] != null && artifacts[section.folder].items.length > 0" type="button" class="btn btn-warning"
+	            [disabled]="processRunning" (click)="handleRemove(section)">
+	            Remove
+	          </button>
+	          <button *ngIf="artifacts[section.folder] == null || artifacts[section.folder].items.length == 0" type="button" class="btn btn-primary"
+	            [disabled]="processRunning" (click)="handleUpload(section.folder)">
+	            Upload
+	          </button>
+          </span>
+          
+          <span class="action-col" *ngIf="artifacts[section.folder] != null" style="width:9em;">
+	          <artifact-upload [componentId]="entity.id" [folder]="section.folder" [replaceName]="'report.pdf'" [accept]="'.pdf'" [label]="artifacts[section.folder].report ? 'Reupload report' : 'Upload report'">
+	          </artifact-upload>
+	          <button style="width:100%;" *ngIf="artifacts[section.folder].report" type="button" class="btn btn-secondary"
+	            [disabled]="processRunning" (click)="handleDownloadReport(section)">
+	            Download report
+	          </button>
+          </span>
         </td>
         <td *ngIf="edit">
           <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"

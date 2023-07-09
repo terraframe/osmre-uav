@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -278,13 +279,39 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       CollectionReport.create(this);
     }
   }
+  
+  public boolean hasAllZip()
+  {
+    /*
+    List<Product> products = this.getProducts();
+    
+    if (products.size() == 0)
+    {
+      return Optional.empty();
+    }
+    
+    return products.get(0).getAllZipDocument();
+    */
+    
+    Optional<ODMRun> odmRun = ODMRun.getByComponentOrdered(this.getOid()).stream().findFirst();
+    
+    if (odmRun.isPresent())
+    {
+      return odmRun.get().getODMRunOutputChildDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
+    }
+    else
+    {
+      return getAllZip() != null;
+    }
+  }
 
+  /**
+   * TODO: This is an order of magnitude slower than querying the database because it does an s3 list objects request.
+   * But, since we have a corruption in our database with the all zip document relationship with the product it is sometimes
+   * necessary.
+   */
   public SiteObject getAllZip()
   {
-    // We unfortunately have to go to S3 for this operation since the
-    // relationship between the AllZip document and the product is corrupt /
-    // does not exist for all products.
-
     List<SiteObject> items = RemoteFileFacade.getSiteObjects(this, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
 
     SiteObject last = null;

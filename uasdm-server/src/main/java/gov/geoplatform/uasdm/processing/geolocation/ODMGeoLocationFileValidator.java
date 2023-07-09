@@ -28,8 +28,10 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
   }
   
   @Override
-  public void validate()
+  public GeoLocationValidationResults validate()
   {
+    GeoLocationValidationResults results = new GeoLocationValidationResults();
+    
     try (BufferedReader br = new BufferedReader(new StringReader(this.payload.getGeoLocationFile())))
     {
       int num = 1;
@@ -39,7 +41,7 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
         {
           if (!line.strip().equals("EPSG:4326"))
           {
-            throw new GeoLocationFileInvalidFormatException("First line must be 'EPSG:4326'");
+            results.addError("First line must be 'EPSG:4326'");
           }
         }
         else
@@ -48,7 +50,7 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
           
           if (vals.length < 3)
           {
-            throw new GeoLocationFileInvalidFormatException("Line [" + num + "] must contain at least three values.");
+            results.addError("Line [" + num + "] must contain at least three values.");
           }
           
           for (int i = 0; i < vals.length; ++i)
@@ -58,25 +60,46 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
               case 0:
                 if (!payload.getImageNames().contains(vals[i]))
                 {
-                  throw new GeoLocationFileInvalidFormatException("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
+                  results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
                 }
                 break;
               case 1:
-                BigDecimal longitude = new BigDecimal(vals[i]);
-                if (longitude.compareTo(new BigDecimal(180)) > 0 || longitude.compareTo(new BigDecimal(-180)) < 0)
+                try
                 {
-                  throw new GeoLocationFileInvalidFormatException("Line [" + num + "] contains a longitude which is out of bounds. Longitude must be between -180 and 180.");
+                  BigDecimal longitude = new BigDecimal(vals[i]);
+                  if (longitude.compareTo(new BigDecimal(180)) > 0 || longitude.compareTo(new BigDecimal(-180)) < 0)
+                  {
+                    results.addError("Line [" + num + "] contains a longitude which is out of bounds. Longitude must be between -180 and 180.");
+                  }
+                }
+                catch (Throwable t)
+                {
+                  results.addError("Line [" + num + "] contains a non-numeric longitude.");
                 }
                 break;
               case 2:
-                BigDecimal latitude = new BigDecimal(vals[i]);
-                if (latitude.compareTo(new BigDecimal(90)) > 0 || latitude.compareTo(new BigDecimal(-90)) < 0)
+                try
                 {
-                  throw new GeoLocationFileInvalidFormatException("Line [" + num + "] contains a latitude which is out of bounds. Latitude must be between -90 and 90.");
+                  BigDecimal latitude = new BigDecimal(vals[i]);
+                  if (latitude.compareTo(new BigDecimal(90)) > 0 || latitude.compareTo(new BigDecimal(-90)) < 0)
+                  {
+                    results.addError("Line [" + num + "] contains a latitude which is out of bounds. Latitude must be between -90 and 90.");
+                  }
+                }
+                catch (Throwable t)
+                {
+                  results.addError("Line [" + num + "] contains a non-numeric latitude.");
                 }
                 break;
               case 3: case 4: case 5: case 6: case 7: case 8:
-                new BigDecimal(vals[i]);
+                try
+                {
+                  new BigDecimal(vals[i]);
+                }
+                catch (Throwable t)
+                {
+                  results.addError("Line [" + num + "] contains a non-numeric value.");
+                }
                 break;
               default:
                 break;
@@ -95,6 +118,8 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
     {
       throw new GeoLocationFileInvalidFormatException(t.getMessage(), t);
     }
+    
+    return results;
   }
   
 }

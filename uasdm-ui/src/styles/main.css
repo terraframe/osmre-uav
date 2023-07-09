@@ -1669,14 +1669,20 @@ span.select-area span.center {
 */
 div.standby-overlay {
 	background-color: #CCCCCC;
-	background-image: url('../assets/loading_spinner_splitring.gif');
-	background-repeat: no-repeat;
-	background-position: center center;
 	position: absolute;
 	display: block;
 	opacity: 0.8;
 	z-index: 99999 !important;
 }
+
+div.standby-div { 
+	width: 100%; 
+	margin-left: 25%; 
+	padding-left: 25%; 
+	padding-right: 25%; 
+	margin-top: 30%
+ }
+
 
 div.gdb-maincontent-busy {
 	background-color: #CCCCCC;
@@ -2193,6 +2199,10 @@ i.fa.fa-cloud-upload{
 
 i.fa {
     font-size: 18px;
+}
+
+i.fa-5x {
+	font-size: 3em;
 }
 
 a.fa:hover, 

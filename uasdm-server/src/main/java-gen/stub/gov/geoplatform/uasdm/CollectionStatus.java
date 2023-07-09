@@ -33,6 +33,8 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
@@ -153,6 +155,23 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     });
     return status;
   }
+  
+  public static String mergeTaskActionStatuses(List<WorkflowAction> actions)
+  {
+    String status = actions.stream().map(action -> action.getActionType()).reduce(TaskActionType.INFO.getType(), (a, b) -> {
+      if (a.equals(TaskActionType.ERROR.getType()) || b.equals(TaskActionType.ERROR.getType()))
+      {
+        return TaskActionType.ERROR.getType();
+      }
+      if (a.equals(TaskActionType.WARNING.getType()) || b.equals(TaskActionType.WARNING.getType()))
+      {
+        return TaskActionType.WARNING.getType();
+      }
+
+      return TaskActionType.INFO.getType();
+    });
+    return status;
+  }
 
   private static String getGroupStatus(LinkedList<WorkflowTask> componentTasks)
   {
@@ -175,7 +194,17 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     }
     else if (task.getActions().size() > 0)
     {
-      status = "Warning";
+      String mergedActionType = mergeTaskActionStatuses(task.getActions());
+      
+      if (mergedActionType.equals(TaskActionType.ERROR.getType()))
+      {
+        // status = "Failed";
+        status = "Warning"; // I know this seems weird, but if the action failed and it actually affected the task then the task's status would be error or failed.
+      }
+      else if (mergedActionType.equals(TaskActionType.WARNING.getType()))
+      {
+        status = "Warning";
+      }
     }
 
     return status;

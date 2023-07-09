@@ -12,6 +12,7 @@ export class Sensor {
     dateUpdate?: string;
     sensorTypeOid: string;
     sensorType: SensorType;
+    hasGeologger: boolean;
     wavelengths: string[];
     pixelSizeWidth: number;
     pixelSizeHeight: number;

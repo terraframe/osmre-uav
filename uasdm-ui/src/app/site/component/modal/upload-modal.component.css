@@ -27,3 +27,9 @@
 	color: #155724;
 	background-color: #c3e6cb;
 }
+
+button.btn[aria-expanded="true"] {
+  box-shadow: inset 1px 2px 5px #777;
+  transform: translateY(1px);
+  background: #e5e5e5;
+}

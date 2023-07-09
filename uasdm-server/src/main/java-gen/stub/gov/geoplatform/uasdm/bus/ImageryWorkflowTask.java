@@ -15,6 +15,10 @@
  */
 package gov.geoplatform.uasdm.bus;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.Util;
@@ -22,6 +26,7 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements ImageryWorkflowTaskIF
 {
@@ -69,5 +74,18 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
   public String getComponentLabel()
   {
     return this.getImageryInstance().getName();
+  }
+  
+  @Override
+  public String getDetailedComponentLabel()
+  {
+    ImageryIF imagery = this.getImageryInstance();
+    
+    List<UasComponentIF> ancestors = imagery.getAncestors();
+    ancestors.add((UasComponentIF) imagery);
+    
+    String label = StringUtils.join(ancestors.stream().map(a -> a.getName()).collect(Collectors.toList()), ", ");
+    
+    return label;
   }
 }

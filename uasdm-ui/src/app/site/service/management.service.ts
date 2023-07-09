@@ -377,12 +377,17 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	upload(id: string, folder: string, file: File): Promise<Document> {
+	upload(id: string, folder: string, file: File, fileName: string = null): Promise<Document> {
 
 		this.eventService.start();
 
 		const formData = new FormData()
-		formData.append('file', file);
+
+		if (fileName == null) {
+			formData.append('file', file);
+		} else {
+			formData.append('file', file, fileName);
+		}
 		formData.append('id', id);
 		formData.append('folder', folder);
 
