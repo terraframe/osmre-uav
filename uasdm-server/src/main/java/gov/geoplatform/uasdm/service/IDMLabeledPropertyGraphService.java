@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,7 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
   }
   
   @Override
-  public void postSynchronization(LabeledPropertyGraphSynchronization synchronization)
+  public void postSynchronization(LabeledPropertyGraphSynchronization synchronization, Map<String, Object> cache)
   {
     List<Site> sites = Site.getAll();
 
@@ -159,7 +160,7 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
   }
   
   @Override
-  public void postSynchronization(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
+  public void postSynchronization(LabeledPropertyGraphSynchronization synchronization, VertexObject object, Map<String, Object> cache)
   {
     IndexService.createDocument(synchronization, object);
   }

@@ -15,8 +15,12 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
@@ -30,6 +34,7 @@ import org.locationtech.jts.io.WKTWriter;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -51,9 +56,13 @@ import gov.geoplatform.uasdm.view.AttributeListType;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
+import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.graph.StrategyConfiguration;
+import net.geoprism.graph.TreeStrategyConfiguration;
 
 public class Site extends SiteBase implements SiteIF
 {
@@ -109,18 +118,26 @@ public class Site extends SiteBase implements SiteIF
 
   public void assignHierarchyParents(LabeledPropertyGraphSynchronization synchronization)
   {
+    this.assignHierarchyParents(synchronization, new HashMap<>());
+  }
+
+  public void assignHierarchyParents(LabeledPropertyGraphSynchronization synchronization, Map<String, Object> cache)
+  {
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     MdEdge synchronizationEdge = SynchronizationEdge.get(version).getGraphEdge();
 
     MdVertex graphMdVertex = version.getRootType().getGraphMdVertex();
 
     version.getHierarchies().forEach(hierarchy -> {
-      MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
+      // MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
 
       StringBuffer sql = new StringBuffer();
       sql.append("SELECT FROM " + graphMdVertex.getDbClassName());
-      sql.append(" WHERE outE('" + hierarchyEdge.getDbClassName() + "').size() == 0");
-      sql.append(" AND ST_WITHIN(ST_GeomFromText(:wkt), geometry) = true");
+      sql.append(" WHERE ST_WITHIN(ST_GeomFromText(:wkt), geometry) = true");
+
+      // sql.append(" WHERE outE('" + hierarchyEdge.getDbClassName() +
+      // "').size() == 0");
+      // sql.append(" AND ST_WITHIN(ST_GeomFromText(:wkt), geometry) = true");
 
       Point point = this.getGeoPoint();
 
@@ -129,11 +146,87 @@ public class Site extends SiteBase implements SiteIF
 
       List<VertexObject> results = gQuery.getResults();
 
-      for (VertexObject result : results)
+      MdVertex lowestType = null;
+
+      /*
+       * Assign the site to the lowest level that contains that site
+       */
+
+      // Get the list of types ordered by the reverse of a flattened breadth
+      // first visit of the hierarchy tree
+      String key = "ordered-" + version.getOid();
+
+      if (!cache.containsKey(key))
       {
-        result.addChild(this, synchronizationEdge.definesType()).apply();
+        cache.put(key, getOrderedTypes(synchronization, version));
+      }
+
+      List<GeoObjectTypeSnapshot> orderedTypes = (List<GeoObjectTypeSnapshot>) cache.get(key);
+
+      for (GeoObjectTypeSnapshot type : orderedTypes)
+      {
+        // Once a lowest type has been select we don't need to try any other
+        // types
+        if (lowestType == null)
+        {
+          MdVertex actualVertex = type.getGraphMdVertex();
+
+          for (VertexObject result : results)
+          {
+            MdClassDAOIF mdClass = result.getMdClass();
+
+            // If the type of the current object is the same type as the current
+            // lowest available type
+            // then assign that type as the selected lowest type
+            if (lowestType == null && actualVertex.getOid().equals(mdClass.getOid()))
+            {
+              lowestType = actualVertex;
+            }
+
+            // Assign the site to all geo objects of the selected lowest type
+            if (lowestType != null && lowestType.getOid().equals(mdClass.getOid()))
+            {
+              result.addChild(this, synchronizationEdge.definesType()).apply();
+            }
+          }
+        }
       }
     });
+  }
+
+  private List<GeoObjectTypeSnapshot> getOrderedTypes(LabeledPropertyGraphSynchronization synchronization, LabeledPropertyGraphTypeVersion version)
+  {
+    List<GeoObjectTypeSnapshot> types = new LinkedList<GeoObjectTypeSnapshot>();
+
+    LabeledPropertyGraphType graphType = synchronization.getGraphType();
+    StrategyConfiguration config = graphType.toStrategyConfiguration();
+
+    if (config instanceof TreeStrategyConfiguration)
+    {
+      String rootType = ( (TreeStrategyConfiguration) config ).getTypeCode();
+
+      Queue<GeoObjectTypeSnapshot> queue = new LinkedList<>();
+      queue.add(version.getSnapshot(rootType));
+
+      while (!queue.isEmpty())
+      {
+        GeoObjectTypeSnapshot snapshot = queue.poll();
+
+        types.add(snapshot);
+
+        try (OIterator<? extends GeoObjectTypeSnapshot> it = snapshot.getAllChildSnapshot())
+        {
+          while (it.hasNext())
+          {
+            queue.offer(it.next());
+          }
+        }
+      }
+    }
+
+    Collections.reverse(types);
+
+    return types;
   }
 
   @Override
