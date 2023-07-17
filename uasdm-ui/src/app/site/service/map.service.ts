@@ -39,7 +39,7 @@ export class MapService {
         (mapboxgl as any).accessToken = mapboxKey;
     }
 
-    features(conditions: { field: string, value: any }[]): Promise<{ features: GeoJSONSource, bbox: number[] }> {
+    features(conditions: { hierarchy: any, array: { field: string, value: any }[] }): Promise<{ features: GeoJSONSource, bbox: number[] }> {
         let params: HttpParams = new HttpParams();
         if (conditions != null) {
             params = params.set('conditions', JSON.stringify(conditions));
