@@ -4,7 +4,6 @@
 
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
-import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from "mapbox-gl";
 
@@ -16,7 +15,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -50,20 +49,10 @@ import { LPGSyncService } from "@site/service/lpg-sync.service";
 const enum VIEW_MODE {
   SITE = 0,
   STAC = 1,
-  LPG = 2
+  LPG = 2,
+  PRODUCT = 3,  
 }
 
-const enum SELECTION_TYPE {
-  SITE = 0,
-  LOCATION = 1
-}
-
-
-class Selection {
-  type: SELECTION_TYPE;
-  data: any;
-  metadata?: any;
-}
 
 @Component({
   selector: "projects",
@@ -75,8 +64,6 @@ class Selection {
   ]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  @ViewChild("staticTabs") staticTabs: TabsetComponent;
 
   // imageToShow: any;
   userName: string = "";
@@ -111,12 +98,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
    * Breadcrumb of previous sites clicked on
    */
-  breadcrumbs: Selection[] = [];
+  breadcrumbs: ViewerSelection[] = [];
 
   /* 
    * Root nodes of the tree
    */
-  current: Selection;
+  current: ViewerSelection;
 
   /* 
    * mapbox-gl map
@@ -1310,7 +1297,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  back(breadcrumb: Selection): void {
+  back(breadcrumb: ViewerSelection): void {
 
     if (breadcrumb == null) {
       if (this.breadcrumbs.length > 0) {
@@ -1324,7 +1311,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         else {
           this.refreshSites().then(() => {
             this.breadcrumbs = [];
-            this.staticTabs.tabs[0].active = true;
+            this.current = null;
 
             this.map.fitBounds(this.allPointsBounds, { padding: 50 });
 
@@ -1596,7 +1583,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.current = {
           type: SELECTION_TYPE.LOCATION,
           data: row,
-          metadata: this.metadataCache[row.properties.type]
+          metadata: this.metadataCache[row.properties.type],
+          hierarchy: this.sync
         };
 
 

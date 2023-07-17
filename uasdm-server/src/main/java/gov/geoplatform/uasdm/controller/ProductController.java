@@ -30,6 +30,7 @@ import com.runwaysdk.mvc.RestResponse;
 
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProductService;
+import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 
@@ -56,9 +57,9 @@ public class ProductController
   }
 
   @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "sortField") String sortField, @RequestParamter(name = "sortOrder") String sortOrder) throws IOException
+  public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws IOException
   {
-    List<ProductView> products = service.getProducts(request.getSessionId(), id, sortField, sortOrder);
+    List<ProductView> products = service.getProducts(request.getSessionId(), ProductCriteria.deserialize(criteria));
 
     return new RestBodyResponse(ProductView.serialize(products));
   }

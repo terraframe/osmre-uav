@@ -9,7 +9,7 @@ import { finalize } from 'rxjs/operators';
 
 import { EventService } from '@shared/service/event.service';
 
-import { Product, ProductDetail } from '../model/management';
+import { Product, ProductCriteria, ProductDetail } from '../model/management';
 import { environment } from 'src/environments/environment';
 
 
@@ -19,11 +19,9 @@ export class ProductService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
 
-	getProducts(id: string, sortField: string, sortOrder: string): Promise<Product[]> {
+	getProducts(criteria: ProductCriteria): Promise<Product[]> {
 		let params: HttpParams = new HttpParams();
-		params = params.set('id', id);
-		params = params.set('sortField', sortField);
-		params = params.set('sortOrder', sortOrder);
+		params = params.set('criteria', JSON.stringify(criteria));
 
 		return this.http.get<Product[]>(environment.apiUrl + '/product/get-all', { params: params }).toPromise();
 	}

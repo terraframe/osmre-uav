@@ -51,11 +51,9 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
-import gov.geoplatform.uasdm.service.ProductService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -489,15 +487,6 @@ public class ProjectManagementController
     response.set("bbox", this.service.bbox(request.getSessionId()));
 
     return response;
-  }
-
-  @Endpoint(url = "products", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF products(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "sortField") String sortField, @RequestParamter(name = "sortOrder") String sortOrder) throws IOException
-  {
-    ProductService service = new ProductService();
-    List<ProductView> products = service.getProducts(request.getSessionId(), id, sortField, sortOrder);
-
-    return new RestBodyResponse(ProductView.serialize(products));
   }
 
   @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)

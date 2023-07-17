@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
+import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -43,9 +44,10 @@ public class ProductService
   {
     Product.refreshAllDocuments();
   }
-  
+
   /**
-   * Downloads the product's ODM all.zip and refreshes S3 and database documents with the data contained.
+   * Downloads the product's ODM all.zip and refreshes S3 and database documents
+   * with the data contained.
    * 
    * @param sessionId
    * @param productId
@@ -55,10 +57,10 @@ public class ProductService
   public void refreshDocuments(String sessionId, String productId) throws InterruptedException
   {
     final Product product = Product.get(productId);
-    
+
     product.refreshDocuments();
   }
-  
+
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
@@ -66,12 +68,21 @@ public class ProductService
   }
 
   @Request(RequestType.SESSION)
-  public List<ProductView> getProducts(String sessionId, String oid, String sortField, String sortOrder)
+  public List<ProductView> getProducts(String sessionId, ProductCriteria criteria)
   {
     List<ProductView> list = new LinkedList<ProductView>();
 
-    final UasComponentIF parent = ComponentFacade.getComponent(oid);
-    final List<ProductIF> products = parent.getDerivedProducts(sortField, sortOrder);
+    List<ProductIF> products = null;
+
+    if (criteria.getType().equals(ProductCriteria.SITE))
+    {
+      final UasComponentIF parent = ComponentFacade.getComponent(criteria.getId());
+      products = parent.getDerivedProducts(criteria.getSortField(), criteria.getSortOrder());
+    }
+    else
+    {
+      products = ComponentFacade.getProducts(criteria);
+    }
 
     for (ProductIF product : products)
     {
@@ -117,29 +128,29 @@ public class ProductService
 
     return Converter.toView(product, components);
   }
-  
+
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadAllZip(String sessionId, String id)
   {
     final Product product = Product.get(id);
-    
+
     return product.downloadAllZip();
   }
-  
+
   @Request(RequestType.SESSION)
   public SiteObject getAllZip(String sessionId, String id)
   {
     final Product product = Product.get(id);
-    
+
     return product.getAllZip();
   }
 
   public ODMRunView getODMRunByArtifact(String sessionId, String artifactId)
   {
     Document doc = Document.get(artifactId);
-    
+
     ODMRun run = ODMRun.getGeneratingRun(doc);
-    
+
     return ODMRunView.fromODMRun(run);
   }
 

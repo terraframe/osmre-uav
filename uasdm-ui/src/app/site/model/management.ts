@@ -248,6 +248,15 @@ export class ProductDocument {
 	key: string;
 }
 
+export class ProductCriteria {
+	type: SELECTION_TYPE;
+	id?: string;
+	hierarchy?: string;
+	uid?: string;
+	sortField: string;
+	sortOrder: string;
+}
+
 export class Product {
 	id: string;
 	name: string;
@@ -292,4 +301,16 @@ export class ProductDetail extends Product {
 	platform: Platform;
 	uav: UAV;
 	page?: PageResult<ProductDocument>;
+}
+
+export enum SELECTION_TYPE {
+	SITE = 0,
+	LOCATION = 1
+}
+
+export class ViewerSelection {
+	type: SELECTION_TYPE;
+	data: any;
+	metadata?: any;
+	hierarchy?: string;
 }

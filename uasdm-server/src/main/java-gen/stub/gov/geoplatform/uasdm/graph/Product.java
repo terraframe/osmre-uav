@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -44,6 +45,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
@@ -67,7 +69,11 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.graph.HierarchyTypeSnapshot;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -76,23 +82,23 @@ public class Product extends ProductBase implements ProductIF
     SSLLocalhostTrustConfiguration.trustLocalhost();
   }
 
-  public static final String ODM_ALL_DIR = "odm_all";
+  public static final String  ODM_ALL_DIR               = "odm_all";
 
-  public static final String MAPPABLE_ORTHO_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
+  public static final String  MAPPABLE_ORTHO_REGEX      = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
-  public static final String ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + ".png".replaceAll("\\.", "\\\\.");
-  
-  public static final String THUMBNAIL_ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/" + "thumbnails" + "\\/[^\\/]+orthophoto[^\\\\/]*" + ".png".replaceAll("\\.", "\\\\.");
+  public static final String  ORTHO_PNG_REGEX           = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + ".png".replaceAll("\\.", "\\\\.");
 
-  public static final String MAPPABLE_DEM_REGEX = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
-  
-  public static final String GEO_LOCATION_FILE = "geo.txt";
+  public static final String  THUMBNAIL_ORTHO_PNG_REGEX = ".*\\/" + ImageryComponent.ORTHO + "\\/" + "thumbnails" + "\\/[^\\/]+orthophoto[^\\\\/]*" + ".png".replaceAll("\\.", "\\\\.");
 
-  private static final Logger logger = LoggerFactory.getLogger(Product.class);
+  public static final String  MAPPABLE_DEM_REGEX        = ".*\\/" + ODMZipPostProcessor.DEM_GDAL + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
-  private static final long serialVersionUID = -1476643617;
+  public static final String  GEO_LOCATION_FILE         = "geo.txt";
 
-  private String imageKey = null;
+  private static final Logger logger                    = LoggerFactory.getLogger(Product.class);
+
+  private static final long   serialVersionUID          = -1476643617;
+
+  private String              imageKey                  = null;
 
   public Product()
   {
@@ -347,18 +353,18 @@ public class Product extends ProductBase implements ProductIF
     {
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
-      
+
       if (component instanceof Collection)
       {
         Collection collection = (Collection) component;
-        
+
         collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
         collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
         collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
         collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-        
+
         collection.apply();
-        
+
         new MetadataXMLGenerator().generateAndUpload(collection);
       }
     }
@@ -410,11 +416,12 @@ public class Product extends ProductBase implements ProductIF
       uploader.processAllZip();
     }
   }
-  
+
   public boolean hasAllZip()
   {
-//    return this.getDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    return ((Collection) this.getComponent()).hasAllZip();
+    // return this.getDocuments().stream().filter(doc ->
+    // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
+    return ( (Collection) this.getComponent() ).hasAllZip();
   }
 
   public SiteObject getAllZip()
@@ -718,7 +725,7 @@ public class Product extends ProductBase implements ProductIF
 
     return query.getResults();
   }
-  
+
   /**
    * Refreshes S3 and the database with contents from the all zip for all
    * products in the system.
@@ -744,5 +751,70 @@ public class Product extends ProductBase implements ProductIF
       logger.info("Refreshing documents for product [" + product.getName() + " : " + product.getOid() + "].");
       product.refreshDocuments();
     }
-  }  
+  }
+
+  public static List<ProductIF> getProducts(ProductCriteria criteria)
+  {
+    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
+    LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+    HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
+
+    SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
+    MdEdge siteEdge = synchronizationEdge.getGraphEdge();
+
+    VertexObject object = version.getObject(criteria.getUid());
+    
+    /*
+SELECT EXPAND(OUT('component_has_product')) FROM (
+  SELECT FROM (
+    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (
+      SELECT FROM (traverse out('g_0__operational', 'ha_0__graph_271118') from #485:20 ) where @class = 'site0'
+    )
+  ) ORDER by collectionSensor.realPixelSizeWidth ASC
+)   
+     */
+    
+    String sortField = criteria.getSortField();
+    String sortOrder = criteria.getSortOrder();
+    
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(OUT('component_has_product')) FROM (\n");
+    statement.append("  SELECT FROM (\n");
+    statement.append("    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
+    statement.append("      SELECT FROM (\n");
+    statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
+    statement.append("      ) WHERE @class = 'site0' \n");
+    statement.append("    )\n");
+    statement.append("  )");
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+    else if (sortField.equals("sensor"))
+    {
+      statement.append("  ORDER BY collectionSensor.name " + sortOrder);
+    }
+    else if (sortField.equals("serialNumber"))
+    {
+      statement.append("  ORDER BY uav.serialNumber " + sortOrder);
+    }
+    else if (sortField.equals("faaNumber"))
+    {
+      statement.append("  ORDER BY uav.faaNumber " + sortOrder);
+    }
+
+    statement.append(")\n");
+
+    if (sortField.equals(Product.LASTUPDATEDATE))
+    {
+      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+    }
+
+    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+    query.setParameter("rid", object.getRID());
+
+    return query.getResults();
+  }
 }

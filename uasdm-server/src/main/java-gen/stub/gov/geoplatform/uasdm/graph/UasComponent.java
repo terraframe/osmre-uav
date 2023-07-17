@@ -86,7 +86,6 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
-import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
@@ -671,16 +670,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
         LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
         LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-        GeoObjectTypeSnapshot rootType = version.getRootType();
         HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
 
         SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
         MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
-        GraphQuery<VertexObject> query = new GraphQuery<VertexObject>("SELECT FROM " + rootType.getGraphMdVertex().getDbClassName() + " WHERE uuid = :uuid");
-        query.setParameter("uuid", uid);
-
-        VertexObject object = query.getSingleResult();
+        VertexObject object = version.getObject(uid);
 
         statement = new StringBuilder();
         statement.append("SELECT FROM (");
@@ -900,12 +895,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   @Override
   public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
-  {
-    /*
-     * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT
-     * EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0')) FROM
-     * #57:0 ) ORDER by collectionSensor.realPixelSizeWidth ASC )
-     */
+  {    
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
 

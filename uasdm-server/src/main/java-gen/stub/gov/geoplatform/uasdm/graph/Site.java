@@ -360,7 +360,7 @@ public class Site extends SiteBase implements SiteIF
     if (conditions != null && conditions.length() > 0)
     {
       JSONObject cObject = new JSONObject(conditions);
-      
+
       boolean isFirst = true;
 
       /*
@@ -375,16 +375,12 @@ public class Site extends SiteBase implements SiteIF
 
         LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
         LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-        GeoObjectTypeSnapshot rootType = version.getRootType();
         HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
 
         SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
         MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
-        GraphQuery<VertexObject> query = new GraphQuery<VertexObject>("SELECT FROM " + rootType.getGraphMdVertex().getDbClassName() + " WHERE uuid = :uuid");
-        query.setParameter("uuid", uid);
-
-        VertexObject object = query.getSingleResult();
+        VertexObject object = version.getObject(uid);
 
         statement = new StringBuilder();
         statement.append("SELECT FROM (");
@@ -392,7 +388,7 @@ public class Site extends SiteBase implements SiteIF
         statement.append(") WHERE @class = 'site0'");
 
         parameters.put("rid", object.getRID());
-        
+
         isFirst = false;
       }
 
@@ -460,7 +456,7 @@ public class Site extends SiteBase implements SiteIF
             parameters.put(mdAttribute.getColumnName(), value);
           }
         }
-        
+
         isFirst = false;
       }
     }

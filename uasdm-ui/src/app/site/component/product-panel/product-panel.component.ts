@@ -10,7 +10,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 import { ProductModalComponent } from '../modal/product-modal.component';
 
-import { Product } from '@site/model/management';
+import { Product, ProductCriteria, SELECTION_TYPE, ViewerSelection } from '@site/model/management';
 import { ProductService } from '@site/service/product.service';
 import { ManagementService } from '@site/service/management.service';
 
@@ -36,7 +36,7 @@ import EnvironmentUtil from '@core/utility/environment-util';
 })
 export class ProductPanelComponent implements OnDestroy {
 
-    @Input() id: string;
+    @Input() selection: ViewerSelection;
 
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
 
@@ -71,10 +71,10 @@ export class ProductPanelComponent implements OnDestroy {
     context: string;
 
 
-    constructor(private configuration:ConfigurationService, private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) { 
+    constructor(private configuration: ConfigurationService, private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) {
         this.context = EnvironmentUtil.getApiUrl();
     }
-    
+
     ngOnDestroy(): void {
         this.products.forEach(product => {
             if (product.orthoMapped) {
@@ -88,14 +88,14 @@ export class ProductPanelComponent implements OnDestroy {
 
     ngOnChanges(changes: SimpleChanges) {
 
-        this.refreshProducts(changes['id'].currentValue);
+        this.refreshProducts(changes['selection'].currentValue);
     }
 
     refresh(): void {
-        this.refreshProducts(this.id);
+        this.refreshProducts(this.selection);
     }
 
-    refreshProducts(id: string): void {
+    refreshProducts(selection: ViewerSelection): void {
         this.products = [];
         this.thumbnails = {};
 
@@ -103,7 +103,22 @@ export class ProductPanelComponent implements OnDestroy {
 
         const original = ++this.requestId;
 
-        this.pService.getProducts(id, this.sortField, "ASC").then(products => {
+        const criteria: ProductCriteria = {
+            type: selection.type,
+            sortField: this.sortField,
+            sortOrder: 'ASC'
+        }
+
+        if (criteria.type === SELECTION_TYPE.SITE) {
+            criteria.id = selection.data.id;
+        }
+
+        if (criteria.type === SELECTION_TYPE.LOCATION) {
+            criteria.uid = selection.data.properties.uid;
+            criteria.hierarchy = selection.hierarchy;
+        }
+
+        this.pService.getProducts(criteria).then(products => {
             if (original === this.requestId) {
 
                 this.products = products;
