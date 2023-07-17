@@ -53,6 +53,18 @@ const enum VIEW_MODE {
   LPG = 2
 }
 
+const enum SELECTION_TYPE {
+  SITE = 0,
+  LOCATION = 1
+}
+
+
+class Selection {
+  type: SELECTION_TYPE;
+  data: any;
+  metadata?: any;
+}
+
 @Component({
   selector: "projects",
   templateUrl: "./projects.component.html",
@@ -99,12 +111,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
    * Breadcrumb of previous sites clicked on
    */
-  breadcrumbs = [] as SiteEntity[];
+  breadcrumbs: Selection[] = [];
 
   /* 
    * Root nodes of the tree
    */
-  current: SiteEntity;
+  current: Selection;
 
   /* 
    * mapbox-gl map
@@ -193,20 +205,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // list of geojson objects of the children locations
   children: any[] = [];
 
-  // currently selected geojson and metadata object
-  selected: {
-    metadata: any,
-    object: any
-  } = null;
-
   // Cache of all of the selected metadata types. Used to prevent needing multiple trips to the server
   metadataCache: { [key: string]: any } = {};
 
-  /* 
-   * Breadcrumb of previous locations
-   */
-  locationBreadcrumbs: any[] = [];
-
+  showSites: boolean = true;
 
 
   constructor(
@@ -406,7 +408,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let features = this.map.queryRenderedFeatures(e.point, { layers: ["points"] });
 
-      if (this.current == null) {
+      if (this.current == null || this.current.type === SELECTION_TYPE.LOCATION) {
         if (features.length > 0) {
           let focusFeatureId = features[0].properties.oid; // just the first
           this.map.setFilter("hover-points", ["all",
@@ -650,23 +652,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bounds = bounds;
     }
 
-    if (this.current == null) {
+    if (this.current == null || this.current.type === SELECTION_TYPE.LOCATION) {
       this.refreshSites();
     }
   }
 
   refreshSites(): Promise<void> {
-    const conditions = [];
+    const conditions = {
+      hierarchy: null,
+      array : []
+    };
+
+    if(this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
+      conditions.hierarchy = {
+        oid: this.sync,
+        uid: this.current.data.properties.uid
+      }
+    }
 
     if (this.bounds != null) {
-      conditions.push({
+      conditions.array.push({
         field: "bounds",
         value: this.bounds
       });
     }
 
     if (this.filter.value != null && this.filter.value.length > 0) {
-      conditions.push(this.filter);
+      conditions.array.push(this.filter);
     }
 
     this.refreshMapPoints(false);
@@ -701,17 +713,27 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   refreshMapPoints(zoom: boolean): void {
 
-    const conditions = [];
+    const conditions = {
+      hierarchy: null,
+      array : []
+    };
+
+    if(this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
+      conditions.hierarchy = {
+        oid: this.sync,
+        uid: this.current.data.properties.uid
+      }
+    }
 
     if (this.bounds != null) {
-      conditions.push({
+      conditions.array.push({
         field: "bounds",
         value: this.bounds
       });
     }
 
     if (this.filter.value != null && this.filter.value.length > 0) {
-      conditions.push(this.filter);
+      conditions.array.push(this.filter);
     }
 
 
@@ -764,7 +786,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       ignoreBackdropClick: true,
       "class": "upload-modal"
     });
-    this.bsModalRef.content.init(this.breadcrumbs);
+    this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
     this.bsModalRef.content.onCreateComplete.subscribe(oid => {
 
@@ -853,7 +875,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         entity.active = node.active;
 
         this.refreshEntity(entity, this.nodes);
-        this.refreshEntity(entity, this.breadcrumbs);
+        this.refreshEntity(entity, this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
         this.nodes.forEach(node => {
           this.refreshEntity(entity, node.children);
@@ -979,7 +1001,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onListEntityHover(event: any, site: SiteEntity): void {
-    if (this.current == null) {
+    if (this.current == null || this.current.type === SELECTION_TYPE.LOCATION) {
       this.highlightMapFeature(site.id);
     }
   }
@@ -1011,6 +1033,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     let result = $event.item;
 
     if (result.type === 'SITE') {
+
+      this.sync = null;
+      this.refreshRoots();
+
       if (result.center) {
         this.map.flyTo({
           center: result.center,
@@ -1036,15 +1062,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       const breadcrumbs = response.breadcrumbs;
 
       if (this.getMetadata(node).leaf) {
-        this.breadcrumbs = breadcrumbs;
-        this.current = breadcrumbs[breadcrumbs.length - 1];
-        this.nodes = this.current.children;
+        this.breadcrumbs = breadcrumbs.map(b => {
+          return { type: SELECTION_TYPE.SITE, data: b }
+        });
+        this.current = {
+          type: SELECTION_TYPE.SITE,
+          data: breadcrumbs[breadcrumbs.length - 1]
+        };
+
+        this.nodes = this.current.data.children;
 
         this.select(node, null, null);
       }
       else {
         const parent = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
-        this.breadcrumbs = breadcrumbs;
+
+        this.breadcrumbs = breadcrumbs.map(b => {
+          return { type: SELECTION_TYPE.SITE, data: b }
+        });
 
         this.select(node, parent, null);
       }
@@ -1197,16 +1232,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       const breadcrumbs = [...this.breadcrumbs];
 
       if (parent != null) {
-        breadcrumbs.push(parent);
+        breadcrumbs.push({
+          type: SELECTION_TYPE.SITE,
+          data: parent
+        });
       }
 
       if (this.metadataService.getTypeContainsFolders(node)) {
         this.service.getItems(node.id, null).then(nodes => {
-          this.showLeafModal(node, nodes, breadcrumbs);
+          this.showLeafModal(node, nodes, breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
         });
       }
       else {
-        this.showLeafModal(this.current, [node], breadcrumbs);
+        this.showLeafModal(this.current.data, [node], breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
       }
     }
     else if (node.type === "object") {
@@ -1215,7 +1253,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else {
       this.service.getItems(node.id, null).then(nodes => {
-        this.current = node;
+        this.current = {
+          type: SELECTION_TYPE.SITE,
+          data: node
+        };
 
         if (parent != null) {
           this.addBreadcrumb(parent);
@@ -1229,8 +1270,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addBreadcrumb(node: SiteEntity): void {
 
-    if (this.breadcrumbs.length == 0 || this.breadcrumbs[this.breadcrumbs.length - 1].id !== node.id) {
-      this.breadcrumbs.push(node);
+    if (this.breadcrumbs.length == 0 || this.breadcrumbs[this.breadcrumbs.length - 1].data.id !== node.id) {
+
+      this.breadcrumbs.push({
+        type: SELECTION_TYPE.SITE,
+        data: node
+      });
     }
   }
 
@@ -1265,9 +1310,37 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  back(node: SiteEntity): void {
+  back(breadcrumb: Selection): void {
 
-    if (node != null) {
+    if (breadcrumb == null) {
+      if (this.breadcrumbs.length > 0) {
+
+        if (this.sync != null && this.sync.length > 0) {
+          this.breadcrumbs = [];
+          this.current = null;
+
+          this.refreshRoots();
+        }
+        else {
+          this.refreshSites().then(() => {
+            this.breadcrumbs = [];
+            this.staticTabs.tabs[0].active = true;
+
+            this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+
+            // This hack exists because the handleExtentChange method gets called immediately after we do fitBounds
+            // and it gets called with some really closely zoomed-in bbox which dumps our nodes we just fetched...
+            let that = this;
+            window.setTimeout(function () {
+              that.current = null;
+            }, 500);
+          });
+        }
+      }
+    }
+    else if (breadcrumb.type === SELECTION_TYPE.SITE) {
+      const node: SiteEntity = breadcrumb.data;
+
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
 
@@ -1278,34 +1351,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.service.getItems(node.id, null).then(nodes => {
-        var indexOf = this.breadcrumbs.findIndex(i => i.id === node.id);
+        var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.SITE && i.data.id === node.id);
 
-        this.current = node;
+        this.current = breadcrumb;
         this.breadcrumbs.splice(indexOf + 1);
         this.setNodes(nodes);
       });
     }
-    else if (this.breadcrumbs.length > 0) {
+    else if (breadcrumb.type === SELECTION_TYPE.LOCATION) {
+      const row: any = breadcrumb.data;
 
-      this.refreshSites().then(() => {
-        this.breadcrumbs = [];
-        this.staticTabs.tabs[0].active = true;
+      var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.LOCATION && i.data.properties.uid === row.properties.uid);
 
-        this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+      this.breadcrumbs.splice(indexOf);
 
-        // This hack exists because the handleExtentChange method gets called immediately after we do fitBounds
-        // and it gets called with some really closely zoomed-in bbox which dumps our nodes we just fetched...
-        let that = this;
-        window.setTimeout(function () {
-          that.current = null;
-        }, 500);
-      });
+      this.current = null;
+      this.children = [];
+
+      this.handleHierarchyClick(row);
     }
   }
 
   expand(node: SiteEntity) {
     node.active = true;
-    this.current = node;
+    this.current = {
+      type: SELECTION_TYPE.SITE,
+      data: node
+    };
   }
 
   setNodes(nodes: SiteEntity[]): void {
@@ -1446,10 +1518,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   refreshRoots(): void {
     if (this.sync != null && this.sync.length > 0) {
+      this.showSites = false;
+
       this.syncService.roots(this.sync).then(children => {
-        this.selected = null;
+        this.current = null;
+
         this.children = children;
-        this.locationBreadcrumbs = [];
+        this.breadcrumbs = [];
 
         // Clear the parent layer
         (this.map.getSource("parent") as any).setData({
@@ -1464,9 +1539,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       });
     } else {
-      this.selected = null;
+      this.showSites = true;
+      this.current = null;
+
       this.children = [];
-      this.locationBreadcrumbs = [];
+      this.breadcrumbs = [];
 
       // Clear the parent layer
       (this.map.getSource("parent") as any).setData({
@@ -1484,31 +1561,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleViewLocation(synchronizationId: string, oid: string): void {
     this.syncService.getObject(synchronizationId, oid).then(result => {
       this.sync = synchronizationId;
-      this.locationBreadcrumbs = result.parents;
+      this.breadcrumbs = result.parents.map(p => {
+        return {
+          type: SELECTION_TYPE.LOCATION,
+          data: p
+        }
+      });
 
       this.handleHierarchyClick(result.object);
     });
 
-  }
-
-  setLocation(row: any): void {
-
-    if (row != null) {
-      var indexOf = this.locationBreadcrumbs.findIndex(i => i.properties.uid === row.properties.uid);
-
-      this.locationBreadcrumbs.splice(indexOf);
-
-      this.selected = null;
-      this.children = [];
-
-      this.handleHierarchyClick(row);
-    }
-    else if (this.locationBreadcrumbs.length > 0) {
-      this.locationBreadcrumbs = [];
-      this.selected = null;
-
-      this.refreshRoots();
-    }
   }
 
   handleHierarchyClick(row: any): void {
@@ -1531,13 +1593,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.metadataCache[row.properties.type] = result.metadata;
         }
 
-        this.selected = {
-          object: row,
+        this.current = {
+          type: SELECTION_TYPE.LOCATION,
+          data: row,
           metadata: this.metadataCache[row.properties.type]
         };
 
 
-        this.locationBreadcrumbs.push(row);
+        this.breadcrumbs.push({
+          type: SELECTION_TYPE.LOCATION,
+          data: row
+        });
 
         this.children = result.children;
 

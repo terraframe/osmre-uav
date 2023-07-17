@@ -109,7 +109,7 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
-	
+
 	getDefaultODMRunConfig(collectionId: string): Promise<ODMRunConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('collectionId', collectionId);
@@ -127,7 +127,7 @@ export class ManagementService {
 			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
 			.toPromise()
 	}
-	
+
 	getODMRunByTask(taskId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
@@ -137,7 +137,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	roots(id: string, conditions: { field: string, value: any }[], sort?: string): Promise<SiteEntity[]> {
+	roots(id: string, conditions: { hierarchy: any, array: { field: string, value: any }[] }, sort?: string): Promise<SiteEntity[]> {
 		let params: HttpParams = new HttpParams();
 
 		if (id != null) {
@@ -344,7 +344,7 @@ export class ManagementService {
 			}))
 			.toPromise()
 	}
-	
+
 	removeUploadTask(uploadId: string): Promise<void> {
 
 		let headers = new HttpHeaders({
@@ -473,24 +473,24 @@ export class ManagementService {
 				}
 			}))
 	}
-  
-  downloadProductPreview(productId: string, useSpinner: boolean): Observable<Blob> {
 
-    let params: HttpParams = new HttpParams();
-    params = params.set('productId', productId);
-    params = params.set('artifactName', "ortho");
+	downloadProductPreview(productId: string, useSpinner: boolean): Observable<Blob> {
 
-    if (useSpinner) {
-      this.eventService.start();
-    }
+		let params: HttpParams = new HttpParams();
+		params = params.set('productId', productId);
+		params = params.set('artifactName', "ortho");
 
-    return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
-      .pipe(finalize(() => {
-        if (useSpinner) {
-          this.eventService.complete();
-        }
-      }))
-  }
+		if (useSpinner) {
+			this.eventService.start();
+		}
+
+		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
+			.pipe(finalize(() => {
+				if (useSpinner) {
+					this.eventService.complete();
+				}
+			}))
+	}
 
 	downloadFile(url: string, useSpinner: boolean): Promise<Blob> {
 

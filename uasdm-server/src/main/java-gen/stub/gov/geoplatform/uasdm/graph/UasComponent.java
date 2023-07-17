@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -55,6 +56,7 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
+import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
@@ -84,6 +86,10 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.HierarchyTypeSnapshot;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
@@ -649,7 +655,44 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (conditions != null && conditions.length() > 0)
     {
-      JSONArray array = new JSONArray(conditions);
+      JSONObject cObject = new JSONObject(conditions);
+      
+      boolean isFirst = true;
+
+      /*
+       * select from ( traverse out('g_0__operational', 'ha_0__graph_271118')
+       * from #474:1 ) where @class = 'site0'
+       */
+      if (cObject.has("hierarchy") && !cObject.isNull("hierarchy"))
+      {
+        JSONObject hierarchy = cObject.getJSONObject("hierarchy");
+        String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
+        String uid = hierarchy.getString("uid");
+
+        LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+        LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+        GeoObjectTypeSnapshot rootType = version.getRootType();
+        HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
+
+        SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
+        MdEdge siteEdge = synchronizationEdge.getGraphEdge();
+
+        GraphQuery<VertexObject> query = new GraphQuery<VertexObject>("SELECT FROM " + rootType.getGraphMdVertex().getDbClassName() + " WHERE uuid = :uuid");
+        query.setParameter("uuid", uid);
+
+        VertexObject object = query.getSingleResult();
+
+        statement = new StringBuilder();
+        statement.append("SELECT FROM (");
+        statement.append(" TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
+        statement.append(") WHERE @class = 'site0'");
+
+        parameters.put("rid", object.getRID());
+        
+        isFirst = false;
+      }
+      
+      JSONArray array = cObject.getJSONArray("array");
 
       for (int i = 0; i < array.length(); i++)
       {
@@ -675,7 +718,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
           GeometryFactory factory = new GeometryFactory();
           Geometry geometry = factory.toGeometry(envelope);
 
-          statement.append(i == 0 ? " WHERE" : " AND");
+          statement.append(isFirst ? " WHERE" : " AND");
           statement.append(" ST_WITHIN(geoPoint, ST_GeomFromText(:wkt)) = true");
 
           parameters.put("wkt", wktwriter.write(geometry));
@@ -690,7 +733,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
           {
             String value = condition.getString("value");
 
-            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(isFirst ? " WHERE" : " AND");
             statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
 
             parameters.put(mdAttribute.getColumnName(), value);
@@ -707,7 +750,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
           {
             String value = condition.getString("value");
 
-            statement.append(i == 0 ? " WHERE" : " AND");
+            statement.append(isFirst ? " WHERE" : " AND");
             statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
 
             parameters.put(mdAttribute.getColumnName(), value);
