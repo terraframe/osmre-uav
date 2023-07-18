@@ -46,13 +46,19 @@ import { LPGSync } from "@site/model/lpg-sync";
 import { LPGSyncService } from "@site/service/lpg-sync.service";
 
 
-const enum VIEW_MODE {
+const enum PANEL_TYPE {
   SITE = 0,
   STAC = 1,
-  LPG = 2,
-  PRODUCT = 3,  
+  LPG = 2
 }
 
+const enum PANEL_CONTENT {
+  NONE = 0,
+  ATTRIBUTE = 1,
+  SITE = 2,
+  PRODUCT = 3,
+  LOCATION = 4
+}
 
 @Component({
   selector: "projects",
@@ -179,11 +185,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   stacLayer: StacLayer = null;
 
-  viewMode: number = VIEW_MODE.SITE;
-
   /*
-   * Fields for hierarchy layers
-   */
+  * Fields for hierarchy layers
+  */
   syncs: LPGSync[] = [];
 
   // oid of currently selected synchronization profile
@@ -195,8 +199,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // Cache of all of the selected metadata types. Used to prevent needing multiple trips to the server
   metadataCache: { [key: string]: any } = {};
 
-  showSites: boolean = true;
+  // Type of panel being displayed
+  panelType: PANEL_TYPE = PANEL_TYPE.SITE;
 
+  // Content of the site panel
+  content: PANEL_CONTENT = PANEL_CONTENT.SITE;
 
   constructor(
     private configuration: ConfigurationService,
@@ -647,10 +654,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshSites(): Promise<void> {
     const conditions = {
       hierarchy: null,
-      array : []
+      array: []
     };
 
-    if(this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
+    if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
       conditions.hierarchy = {
         oid: this.sync,
         uid: this.current.data.properties.uid
@@ -702,10 +709,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const conditions = {
       hierarchy: null,
-      array : []
+      array: []
     };
 
-    if(this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
+    if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
       conditions.hierarchy = {
         oid: this.sync,
         uid: this.current.data.properties.uid
@@ -1050,7 +1057,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.getMetadata(node).leaf) {
         this.breadcrumbs = breadcrumbs.map(b => {
-          return { type: SELECTION_TYPE.SITE, data: b }
+          return { type: SELECTION_TYPE.SITE, data: b, }
         });
         this.current = {
           type: SELECTION_TYPE.SITE,
@@ -1405,7 +1412,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleStacLayer(layer?: StacLayer): void {
 
-    this.viewMode = VIEW_MODE.STAC;
+    this.panelType = PANEL_TYPE.STAC;
 
     if (layer != null) {
       this.stacLayer = JSON.parse(JSON.stringify(layer));
@@ -1446,7 +1453,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showStacLayer(layer);
     }
 
-    this.viewMode = VIEW_MODE.SITE;
+    this.panelType = PANEL_TYPE.SITE;
     this.stacLayer = null;
   }
 
@@ -1462,7 +1469,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleStacCancel(): void {
-    this.viewMode = VIEW_MODE.SITE;
+    this.panelType = PANEL_TYPE.SITE;
     this.stacLayer = null;
   }
 
@@ -1505,7 +1512,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   refreshRoots(): void {
     if (this.sync != null && this.sync.length > 0) {
-      this.showSites = false;
+      this.content = PANEL_CONTENT.NONE;
 
       this.syncService.roots(this.sync).then(children => {
         this.current = null;
@@ -1526,7 +1533,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       });
     } else {
-      this.showSites = true;
+      this.content = PANEL_CONTENT.ATTRIBUTE;
       this.current = null;
 
       this.children = [];
@@ -1588,12 +1595,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
 
-        this.breadcrumbs.push({
-          type: SELECTION_TYPE.LOCATION,
-          data: row
-        });
+        this.breadcrumbs.push(this.current);
 
         this.children = result.children;
+
+        this.content = PANEL_CONTENT.ATTRIBUTE;
 
         const collection = {
           "type": "FeatureCollection",

@@ -751,6 +751,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
             parameters.put(mdAttribute.getColumnName(), value);
           }
         }
+        
+        isFirst = false;
       }
     }
 
