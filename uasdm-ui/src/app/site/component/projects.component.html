@@ -29,8 +29,12 @@
   <ng-container *ngFor="let type of types">
     <div class="row">
       <div class="col-md-12">
-        <a (click)="onContentChange(type)" [attr.aria-expanded]="content === type.code">
-          <h3>{{type.label.localizedValue}}</h3>
+        <a (click)="onContentChange(type)">
+          <h3>
+            {{type.label.localizedValue}}
+            <i *ngIf="content === type.code" class="fa fa-caret-down"></i>
+            <i *ngIf="content !== type.code" class="fa fa-caret-right"></i>
+          </h3>
         </a>
         <div [collapse]="content !== type.code">
           <hr>
