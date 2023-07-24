@@ -1509,14 +1509,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onContentChange(type: any): void {
 
-    this.content = type.code;
-
-    this.children = this.childMap[this.content];
+    if (this.content !== type.code) {
+      this.content = type.code;
+      this.children = this.childMap[this.content];
+    }
+    else {
+      this.content = "";
+      this.children = [];
+    }
 
     (this.map.getSource("hierarchy") as any).setData({
       "type": "FeatureCollection",
       "features": this.children
     });
+
+    console.log(this.types.size);
   }
 
   onHierarchyChange(): void {
@@ -1665,9 +1672,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       "type": "FeatureCollection",
       "features": this.children
     });
-
-    console.log(this.content);
-    console.log(this.types.size);
   }
 
 }

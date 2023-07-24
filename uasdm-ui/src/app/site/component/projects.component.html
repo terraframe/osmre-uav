@@ -32,8 +32,8 @@
         <a (click)="onContentChange(type)" [attr.aria-expanded]="content === type.code">
           <h3>{{type.label.localizedValue}}</h3>
         </a>
-        <hr>
         <div [collapse]="content !== type.code">
+          <hr>
           <div class="list-group" *ngIf="content === type.code">
             <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
               <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
@@ -269,7 +269,7 @@
                         {{current.data.name}}
                       </h3>
 
-                      <tabset *ngIf="current.type === 1">
+                      <tabset *ngIf="current.type === 1">          
                         <tab heading="Overview">
                           <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
                             <label>
@@ -311,7 +311,7 @@
                   </div>
 
                   <ng-container *ngIf="current == null">
-                    <ng-container [ngTemplateOutlet]="locations" *ngIf="sync != null && children.length > 0">
+                    <ng-container [ngTemplateOutlet]="locations" *ngIf="sync != null">
                     </ng-container>
 
                     <ng-container *ngIf="sync == null || sync.length === 0">
