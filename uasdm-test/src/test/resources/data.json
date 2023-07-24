@@ -1,0 +1,903 @@
+{
+  "geoObjects": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataUSA",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataUSA"
+            }
+          ]
+        },
+        "uid": "a228787b-bfc2-484a-9b79-4ceabbd33431",
+        "code": "USATestDataUSA",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataCountry",
+        "uuid": "a228787b-bfc2-484a-9b79-4ceabbd33431"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                10,
+                10
+              ],
+              [
+                1,
+                10
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataWashington",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataWashington"
+            }
+          ]
+        },
+        "code": "USATestDataWashington",
+        "type": "USATestDataState",
+        "uuid": "bc2e3924-f132-4845-8ded-eb42b570a489",
+        "uid": "bc2e3924-f132-4845-8ded-eb42b570a489",
+        "invalid": false,
+        "exists": true,
+        "testClassification": {},
+        "testTerm": []
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataColorado",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataColorado"
+            }
+          ]
+        },
+        "code": "USATestDataColorado",
+        "type": "USATestDataState",
+        "uuid": "3f38eb46-044f-4ee3-9098-779156e02270",
+        "uid": "3f38eb46-044f-4ee3-9098-779156e02270",
+        "invalid": false,
+        "exists": true,
+        "testClassification": {
+          "code": "Test Term",
+          "label": {
+            "localizedValue": "Test Classification",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Test Classification"
+              }
+            ]
+          }
+        },
+        "testTerm": []
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataColoradoCountyOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataColoradoCountyOne"
+            }
+          ]
+        },
+        "uid": "86891afb-48cc-4259-ba18-dab816c0d4a7",
+        "code": "USATestDataColoradoCountyOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataCounty",
+        "uuid": "86891afb-48cc-4259-ba18-dab816c0d4a7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30,
+              10
+            ],
+            [
+              40,
+              40
+            ],
+            [
+              20,
+              40
+            ],
+            [
+              10,
+              20
+            ],
+            [
+              30,
+              10
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataColoradoAreaOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataColoradoAreaOne"
+            }
+          ]
+        },
+        "uid": "b03874dd-6b71-4038-8c45-093a79bc400d",
+        "code": "USATestDataColoradoAreaOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataArea",
+        "uuid": "b03874dd-6b71-4038-8c45-093a79bc400d"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110,
+          80
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataWashingtonDistrictTwo",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataWashingtonDistrictTwo"
+            }
+          ]
+        },
+        "uid": "8431ef73-2194-4803-b0f6-8f2d722a846f",
+        "code": "USATestDataWashingtonDistrictTwo",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataDistrict",
+        "uuid": "8431ef73-2194-4803-b0f6-8f2d722a846f"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110,
+          80
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataWashingtonDistrictOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataWashingtonDistrictOne"
+            }
+          ]
+        },
+        "uid": "9256fa0c-7da5-4aca-92f1-59dd85b13f87",
+        "code": "USATestDataWashingtonDistrictOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataDistrict",
+        "uuid": "9256fa0c-7da5-4aca-92f1-59dd85b13f87"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110,
+          80
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataColoradoDistrictTwo",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataColoradoDistrictTwo"
+            }
+          ]
+        },
+        "uid": "fb34b714-c901-4c6c-a4ec-f7bb661f5b4f",
+        "code": "USATestDataColoradoDistrictTwo",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataDistrict",
+        "uuid": "fb34b714-c901-4c6c-a4ec-f7bb661f5b4f"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110,
+          80
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataColoradoDistrictOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataColoradoDistrictOne"
+            }
+          ]
+        },
+        "uid": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+        "code": "USATestDataColoradoDistrictOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataDistrict",
+        "uuid": "4f978fb9-1a42-4d3c-88d7-b438388001d7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataHpTwo",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataHpTwo"
+            }
+          ]
+        },
+        "uid": "63f84a98-d4ad-459b-bde2-541d8dd9fc3f",
+        "code": "USATestDataHpTwo",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataHealthPost"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataHpOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataHpOne"
+            }
+          ]
+        },
+        "uid": "952af9f1-5ce6-4d6b-a244-7b9363cf590e",
+        "code": "USATestDataHpOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataHealthPost"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataHsTwo",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataHsTwo"
+            }
+          ]
+        },
+        "uid": "c10e1297-a03e-4fc4-b500-31d2a216c780",
+        "code": "USATestDataHsTwo",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataHealthStop"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "EPSG:0"
+          }
+        }
+      },
+      "properties": {
+        "displayLabel": {
+          "localizedValue": "USATestDataHsOne",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "USATestDataHsOne"
+            }
+          ]
+        },
+        "uid": "6c5f7a8f-3443-4604-8c49-875538cf7275",
+        "code": "USATestDataHsOne",
+        "invalid": false,
+        "exists": true,
+        "type": "USATestDataHealthStop"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "startNode": "a228787b-bfc2-484a-9b79-4ceabbd33431",
+      "startType": "USATestDataCountry",
+      "endNode": "bc2e3924-f132-4845-8ded-eb42b570a489",
+      "endType": "USATestDataState",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "a228787b-bfc2-484a-9b79-4ceabbd33431",
+      "startType": "USATestDataCountry",
+      "endNode": "3f38eb46-044f-4ee3-9098-779156e02270",
+      "endType": "USATestDataState",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "bc2e3924-f132-4845-8ded-eb42b570a489",
+      "startType": "USATestDataState",
+      "endNode": "8431ef73-2194-4803-b0f6-8f2d722a846f",
+      "endType": "USATestDataDistrict",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "bc2e3924-f132-4845-8ded-eb42b570a489",
+      "startType": "USATestDataState",
+      "endNode": "9256fa0c-7da5-4aca-92f1-59dd85b13f87",
+      "endType": "USATestDataDistrict",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "3f38eb46-044f-4ee3-9098-779156e02270",
+      "startType": "USATestDataState",
+      "endNode": "86891afb-48cc-4259-ba18-dab816c0d4a7",
+      "endType": "USATestDataCounty",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "3f38eb46-044f-4ee3-9098-779156e02270",
+      "startType": "USATestDataState",
+      "endNode": "fb34b714-c901-4c6c-a4ec-f7bb661f5b4f",
+      "endType": "USATestDataDistrict",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "3f38eb46-044f-4ee3-9098-779156e02270",
+      "startType": "USATestDataState",
+      "endNode": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+      "endType": "USATestDataDistrict",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "86891afb-48cc-4259-ba18-dab816c0d4a7",
+      "startType": "USATestDataCounty",
+      "endNode": "b03874dd-6b71-4038-8c45-093a79bc400d",
+      "endType": "USATestDataArea",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+      "startType": "USATestDataDistrict",
+      "endNode": "c10e1297-a03e-4fc4-b500-31d2a216c780",
+      "endType": "USATestDataHealthStop",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+      "startType": "USATestDataDistrict",
+      "endNode": "6c5f7a8f-3443-4604-8c49-875538cf7275",
+      "endType": "USATestDataHealthStop",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+      "startType": "USATestDataDistrict",
+      "endNode": "63f84a98-d4ad-459b-bde2-541d8dd9fc3f",
+      "endType": "USATestDataHealthPost",
+      "type": "USATestDataAdminCode"
+    },
+    {
+      "startNode": "4f978fb9-1a42-4d3c-88d7-b438388001d7",
+      "startType": "USATestDataDistrict",
+      "endNode": "952af9f1-5ce6-4d6b-a244-7b9363cf590e",
+      "endType": "USATestDataHealthPost",
+      "type": "USATestDataAdminCode"
+    }
+  ]
+}
+

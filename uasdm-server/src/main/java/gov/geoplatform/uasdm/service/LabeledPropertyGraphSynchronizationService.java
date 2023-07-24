@@ -165,7 +165,7 @@ public class LabeledPropertyGraphSynchronizationService
   }
 
   @Request(RequestType.SESSION)
-  public JsonArray roots(String sessionId, String oid, Boolean includeRoot)
+  public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
@@ -199,7 +199,17 @@ public class LabeledPropertyGraphSynchronizationService
       }
     });
 
-    return array;
+    JsonArray metadata = new JsonArray();
+
+    version.getTypes().stream().filter(t -> !t.getIsAbstract()).forEach(t -> {
+      metadata.add(t.toGeoObjectType().toJSON());
+    });
+
+    JsonObject response = new JsonObject();
+    response.add("roots", array);
+    response.add("metadata", metadata);
+
+    return response;
   }
 
   @Request(RequestType.SESSION)

@@ -1,0 +1,26 @@
+{
+  "oid": "3129cae7-0f19-4d34-8e2a-528218000670",
+  "displayLabel": "Test List",
+  "forDate": "2020-04-04",
+  "createDate": "2023-07-24",
+  "period": {
+    "type": "date",
+    "value": "2020-04-04"
+  },
+  "versions": [
+    {
+      "oid": "3730f9e6-d9f9-40d1-a9f8-e7d610000674",
+      "displayLabel": "Test List",
+      "graphType": "9fe2c9a5-f4e4-40b7-98ef-d2efa6000671",
+      "entry": "3129cae7-0f19-4d34-8e2a-528218000670",
+      "forDate": "2020-04-04",
+      "createDate": "2023-07-24",
+      "versionNumber": 0,
+      "period": {
+        "type": "date",
+        "value": "2020-04-04"
+      }
+    }
+  ]
+}
+

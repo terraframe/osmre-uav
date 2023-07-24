@@ -52,14 +52,6 @@ const enum PANEL_TYPE {
   LPG = 2
 }
 
-const enum PANEL_CONTENT {
-  NONE = 0,
-  ATTRIBUTE = 1,
-  SITE = 2,
-  PRODUCT = 3,
-  LOCATION = 4
-}
-
 @Component({
   selector: "projects",
   templateUrl: "./projects.component.html",
@@ -193,17 +185,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // oid of currently selected synchronization profile
   sync: string = null;
 
+  childMap: { [key: string]: any[] } = {};
+
   // list of geojson objects of the children locations
   children: any[] = [];
 
   // Cache of all of the selected metadata types. Used to prevent needing multiple trips to the server
   metadataCache: { [key: string]: any } = {};
 
+  // List of direct types of the selected location
+  types: Set<any> = new Set();
+
   // Type of panel being displayed
   panelType: PANEL_TYPE = PANEL_TYPE.SITE;
 
-  // Content of the site panel
-  content: PANEL_CONTENT = PANEL_CONTENT.SITE;
+  // Content of the location panel
+  content: string = "";
 
   constructor(
     private configuration: ConfigurationService,
@@ -1029,7 +1026,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (result.type === 'SITE') {
 
       this.sync = null;
-      this.refreshRoots();
+      this.onHierarchyChange();
 
       if (result.center) {
         this.map.flyTo({
@@ -1313,7 +1310,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.breadcrumbs = [];
           this.current = null;
 
-          this.refreshRoots();
+          this.onHierarchyChange();
         }
         else {
           this.refreshSites().then(() => {
@@ -1510,15 +1507,40 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  refreshRoots(): void {
-    if (this.sync != null && this.sync.length > 0) {
-      this.content = PANEL_CONTENT.NONE;
+  onContentChange(type: any): void {
 
-      this.syncService.roots(this.sync).then(children => {
+    this.content = type.code;
+
+    this.children = this.childMap[this.content];
+
+    (this.map.getSource("hierarchy") as any).setData({
+      "type": "FeatureCollection",
+      "features": this.children
+    });
+  }
+
+  onHierarchyChange(): void {
+    if (this.sync != null && this.sync.length > 0) {
+
+      this.syncService.roots(this.sync).then(resp => {
         this.current = null;
 
-        this.children = children;
+        // Pre populate the cache
+        this.metadataCache = {};
+        resp.metadata.forEach(metadata => {
+
+          metadata.attributes = metadata.attributes.filter(attribute => {
+            return (attribute.code == 'code'
+              || (!attribute.isDefault
+                && attribute.code != 'uuid'));
+          });
+
+          this.metadataCache[metadata.code] = metadata;
+        });
+
         this.breadcrumbs = [];
+
+        this.processLocations(resp.roots);
 
         // Clear the parent layer
         (this.map.getSource("parent") as any).setData({
@@ -1526,16 +1548,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           "features": []
         });
 
-        (this.map.getSource("hierarchy") as any).setData({
-          "type": "FeatureCollection",
-          "features": children
-        });
-
       });
     } else {
-      this.content = PANEL_CONTENT.ATTRIBUTE;
+      this.content = "";
       this.current = null;
 
+      this.childMap = {};
       this.children = [];
       this.breadcrumbs = [];
 
@@ -1594,12 +1612,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           hierarchy: this.sync
         };
 
-
         this.breadcrumbs.push(this.current);
 
-        this.children = result.children;
-
-        this.content = PANEL_CONTENT.ATTRIBUTE;
+        this.processLocations(result.children);
 
         const collection = {
           "type": "FeatureCollection",
@@ -1608,11 +1623,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Set the parent layer
         (this.map.getSource("parent") as any).setData(collection);
-
-        (this.map.getSource("hierarchy") as any).setData({
-          "type": "FeatureCollection",
-          "features": result.children
-        });
 
         // Zoom to the layer
         const env = envelope(collection);
@@ -1623,6 +1633,41 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     }
+  }
+
+  processLocations(children: any[]): void {
+    // Reset the cached child results
+    this.childMap = {};
+    this.types = new Set();
+    this.children = [];
+
+    children.forEach(c => {
+      const type = c.properties.type;
+
+      this.types.add(this.metadataCache[type]);
+
+
+      if (this.childMap[type] == null) {
+        this.childMap[type] = [];
+      }
+
+      this.childMap[type].push(c);
+    });
+
+    if (this.types.size > 0) {
+      const type = this.types.values().next().value;
+
+      this.content = type.code;
+      this.children = this.childMap[this.content];
+    }
+
+    (this.map.getSource("hierarchy") as any).setData({
+      "type": "FeatureCollection",
+      "features": this.children
+    });
+
+    console.log(this.content);
+    console.log(this.types.size);
   }
 
 }

@@ -200,7 +200,8 @@ export class LPGSyncComponent implements OnInit {
                 bsModalRef.content.message = "No newer versions were found."
                 bsModalRef.content.submitText = "OK";
             }
-
+        }).catch((err: HttpErrorResponse) => {
+            ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + err.status + ']' }, this.modalService);
         });
     }
 

@@ -26,17 +26,25 @@
 
 <!-- Template for showing the hierarchy locations within a selected location -->
 <ng-template #locations>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="list-group">
-        <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
-          <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
-            <h4 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}} ({{child.properties.type}})</h4>
-          </a>
+  <ng-container *ngFor="let type of types">
+    <div class="row">
+      <div class="col-md-12">
+        <a (click)="onContentChange(type)" [attr.aria-expanded]="content === type.code">
+          <h3>{{type.label.localizedValue}}</h3>
+        </a>
+        <hr>
+        <div [collapse]="content !== type.code">
+          <div class="list-group" *ngIf="content === type.code">
+            <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
+              <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
+                <h5 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h5>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </ng-template>
 
 <!-- Template for showing the sites within a selected location -->
@@ -194,15 +202,10 @@
 
             <!-- IF at Site level -->
             <ng-container *ngIf="current == null || current.type === 1">
-              <div class="row">
-                <div class="col-md-6" style="height: 64px;">
-                  <h3 style="font-weight:bold;">IDM Sites</h3>
-                </div>
-              </div>
-              <div class="row">
+              <div class="row" *ngIf="syncs != null && syncs.length > 0">
                 <div class="col-md-12">
                   <label>Hierarchy</label>
-                  <select [(ngModel)]="sync" name="sync" (change)="refreshRoots()">
+                  <select [(ngModel)]="sync" name="sync" (change)="onHierarchyChange()">
                     <option></option>
                     <option *ngFor="let sync of syncs" [value]="sync.oid">
                       {{sync.displayLabel.localizedValue}}
@@ -210,18 +213,6 @@
                   </select>
                 </div>
               </div>
-              <!--            
-            <div class="row">
-              <div class="col-sm-12">
-                <label>Sort</label>
-                <select [(ngModel)]="sort" name="sort" (change)="refreshSites()">
-                  <option></option>
-                  <option value="name">Name</option>
-                  <option value="bureau">Bureau</option>
-                </select>
-              </div>
-            </div>
-          -->
             </ng-container>
 
 
@@ -263,7 +254,7 @@
 
             <div id="hierarchy-tree-container"
               class="location-management-widget-section location-management-list-container"
-              [style]="current != null && current.type === 1 ? 'height: calc(100vh - 380px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 260px);overflow-y: auto;overflow-x:hidden;'">
+              [style]="current != null && current.type === 1 ? 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;'">
 
 
               <div class="row" style="margin-left: 10px;">
@@ -278,69 +269,60 @@
                         {{current.data.name}}
                       </h3>
 
-                      <ng-container *ngIf="content === 1">
-                        <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
-                          <label>
-                            {{attribute.label.localizedValue}}
-                          </label>
-                          <container-element [ngSwitch]="attribute.type">
-                            <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
-                              [(ngModel)]="current.data.properties[attribute.code].localizedValue" disabled>
-                            <input *ngSwitchDefault type="text" [name]="attribute.code"
-                              [(ngModel)]="current.data.properties[attribute.code]" disabled>
-                          </container-element>
-                        </div>
-                      </ng-container>
+                      <tabset *ngIf="current.type === 1">
+                        <tab heading="Overview">
+                          <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
+                            <label>
+                              {{attribute.label.localizedValue}}
+                            </label>
+                            <container-element [ngSwitch]="attribute.type">
+                              <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
+                                [(ngModel)]="current.data.properties[attribute.code].localizedValue" disabled>
+                              <input *ngSwitchDefault type="text" [name]="attribute.code"
+                                [(ngModel)]="current.data.properties[attribute.code]" disabled>
+                            </container-element>
+                          </div>
 
+                          <ng-container [ngTemplateOutlet]="locations">
+                          </ng-container>
+                        </tab>
+                        <tab heading="Sites">
+                          <ng-container [ngTemplateOutlet]="sites">
+                          </ng-container>
+                        </tab>
+                        <tab heading="Products">
+                          <product-panel [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                            (toggleMapDem)="handleMapDem($event)"></product-panel>
+                        </tab>
+                      </tabset>
 
-                      <div class="row" *ngIf="content !== 1 && current.type === 1">
-                        <div class="col-md-12"
-                          style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-                          <button (click)="content = 1" class="btn btn-primary">Attributes</button>
-                        </div>
-                      </div>
+                      <tabset *ngIf="current.type !== 1">
+                        <tab [heading]="getMetadata(current.data).childLabel">
+                          <ng-container [ngTemplateOutlet]="sites">
+                          </ng-container>
+                        </tab>
+                        <tab heading="Products">
+                          <product-panel [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                            (toggleMapDem)="handleMapDem($event)"></product-panel>
+                        </tab>
+                      </tabset>
 
-                      <div class="row" *ngIf="content !== 2">
-                        <div class="col-md-12"
-                          style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-                          <button (click)="content = 2" class="btn btn-primary">Sites</button>
-                        </div>
-                      </div>
-
-                      <div class="row" *ngIf="content !== 3">
-                        <div class="col-md-12"
-                          style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-                          <button (click)="content = 3" class="btn btn-primary">Products</button>
-                        </div>
-                      </div>
-
-                      <div class="row" *ngIf="content !== 4 && current.type === 1">
-                        <div class="col-md-12"
-                          style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-                          <button (click)="content = 4" class="btn btn-primary">Locations</button>
-                        </div>
-                      </div>
-
-                      <ng-container [ngTemplateOutlet]="sites" *ngIf="content === 2">
-                      </ng-container>
-
-                      <div [hidden]="content !== 3">
-                        <product-panel [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
-                          (toggleMapDem)="handleMapDem($event)"></product-panel>
-                      </div>
-
-                      <ng-container [ngTemplateOutlet]="locations" *ngIf="content === 4">
-                      </ng-container>
                     </div>
                   </div>
 
                   <ng-container *ngIf="current == null">
                     <ng-container [ngTemplateOutlet]="locations" *ngIf="sync != null && children.length > 0">
                     </ng-container>
-  
-                    <ng-container [ngTemplateOutlet]="sites" *ngIf="sync == null">
-                    </ng-container>      
-                  </ng-container>  
+
+                    <ng-container *ngIf="sync == null || sync.length === 0">
+                      <tabset>
+                        <tab heading="Sites">
+                          <ng-container [ngTemplateOutlet]="sites">
+                          </ng-container>
+                        </tab>
+                      </tabset>
+                    </ng-container>
+                  </ng-container>
                 </div>
               </div>
             </div>

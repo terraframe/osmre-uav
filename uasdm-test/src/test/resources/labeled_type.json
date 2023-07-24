@@ -1,0 +1,31 @@
+{
+  "oid": "7557ff1a-831d-4fb4-b574-e18e98000671",
+  "displayLabel": {
+    "localizedValue": "Test List",
+    "localeValues": [
+      {
+        "locale": "defaultLocale",
+        "value": "Test List"
+      }
+    ]
+  },
+  "description": {
+    "localizedValue": "My Abstract",
+    "localeValues": [
+      {
+        "locale": "defaultLocale",
+        "value": "My Abstract"
+      }
+    ]
+  },
+  "code": "TEST_CODE",
+  "hierarchy": "USATestDataAdminCode",
+  "strategyType": "TREE",
+  "strategyConfiguration": {
+    "code": "USATestDataUSA",
+    "typeCode": "USATestDataCountry"
+  },
+  "graphType": "single",
+  "validOn": "2020-04-04"
+}
+

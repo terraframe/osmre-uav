@@ -111,7 +111,7 @@ public class LabeledPropertyGraphSynchronizationController
   @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "roots")
   public ResponseIF roots(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "includeRoot", required = true) Boolean includeRoot) throws JSONException
   {
-    JsonArray response = this.service.roots(request.getSessionId(), oid, includeRoot);
+    JsonObject response = this.service.roots(request.getSessionId(), oid, includeRoot);
 
     return new RestBodyResponse(response);
   }

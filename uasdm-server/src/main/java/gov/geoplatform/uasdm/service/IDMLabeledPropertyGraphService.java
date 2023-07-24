@@ -36,6 +36,11 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
   public static final String PREFIX = "ha_";
 
   public static final String SPLIT  = "__";
+  
+  @Override
+  public void preApply(LabeledPropertyGraphType type)
+  {
+  }
 
   @Override
   public void assignPermissions(ComponentIF component)
@@ -69,8 +74,9 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
 
   }
 
+  
   @Override
-  public void postCreate(LabeledPropertyGraphTypeVersion version)
+  public void postCreate(LabeledPropertyGraphTypeVersion version, boolean createTypes)
   {
     if (SynchronizationEdge.get(version) == null)
     {

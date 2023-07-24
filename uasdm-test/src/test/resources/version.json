@@ -1,0 +1,1978 @@
+{
+  "oid": "017cca98-cce6-428e-969b-429da6000674",
+  "displayLabel": "Test List",
+  "graphType": "a3f139e8-4383-41cf-9584-f8bf00000671",
+  "entry": "8a589a82-84d9-4b25-b455-114a0a000670",
+  "forDate": "2020-04-04",
+  "createDate": "2023-07-24",
+  "versionNumber": 0,
+  "period": {
+    "type": "date",
+    "value": "2020-04-04"
+  },
+  "types": [
+    {
+      "code": "USATestDataHealthFacility",
+      "displayLabel": {
+        "localizedValue": "USATestDataHealthFacility",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthFacility"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataHealthFacility",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthFacility"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": true,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataCountry",
+      "displayLabel": {
+        "localizedValue": "USATestDataCountry",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataCountry"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataCountry",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataCountry"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataState",
+      "displayLabel": {
+        "localizedValue": "USATestDataState",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataState"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataState",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataState"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "testTerm",
+          "type": "term",
+          "label": {
+            "localizedValue": "testTermLocalName",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "testTermLocalName"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "testTermLocalDescrip",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "testTermLocalDescrip"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "testClassification",
+          "type": "classification",
+          "label": {
+            "localizedValue": "testClassificationLocalName",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "testClassificationLocalName"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "testClassificationLocalDescrip",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "testClassificationLocalDescrip"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true,
+          "classificationType": "TEST_PROG",
+          "rootTerm": {
+            "code": "Test Term",
+            "label": {
+              "localizedValue": "Test Classification",
+              "localeValues": [
+                {
+                  "locale": "defaultLocale",
+                  "value": "Test Classification"
+                }
+              ]
+            },
+            "description": {
+              "localeValues": [
+                {
+                  "locale": "defaultLocale"
+                }
+              ]
+            },
+            "children": []
+          }
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataDistrict",
+      "displayLabel": {
+        "localizedValue": "USATestDataDistrict",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataDistrict"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataDistrict",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataDistrict"
+          }
+        ]
+      },
+      "geometryType": "POINT",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataHealthPost",
+      "displayLabel": {
+        "localizedValue": "USATestDataHealthPost",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthPost"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataHealthPost",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthPost"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "USATestDataHealthFacility"
+    },
+    {
+      "code": "USATestDataHealthStop",
+      "displayLabel": {
+        "localizedValue": "USATestDataHealthStop",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthStop"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataHealthStop",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataHealthStop"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "USATestDataHealthFacility"
+    },
+    {
+      "code": "USATestDataCounty",
+      "displayLabel": {
+        "localizedValue": "USATestDataCounty",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataCounty"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataCounty",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataCounty"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataArea",
+      "displayLabel": {
+        "localizedValue": "USATestDataArea",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataArea"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataArea",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataArea"
+          }
+        ]
+      },
+      "geometryType": "POLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataMexico_State_GOT",
+      "displayLabel": {
+        "localizedValue": "USATestDataMexico_State_GOT",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataMexico_State_GOT"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataMexico_State_GOT",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataMexico_State_GOT"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        }
+      ],
+      "parent": "__ROOT__"
+    },
+    {
+      "code": "USATestDataMexico_City_GOT",
+      "displayLabel": {
+        "localizedValue": "USATestDataMexico_City_GOT",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataMexico_City_GOT"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataMexico_City_GOT",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataMexico_City_GOT"
+          }
+        ]
+      },
+      "geometryType": "MULTIPOLYGON",
+      "isAbstract": false,
+      "isRoot": false,
+      "isPrivate": false,
+      "attributes": [
+        {
+          "code": "uuid",
+          "type": "character",
+          "label": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "UID",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "UID"
+              }
+            ]
+          },
+          "isDefault": false,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "createDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Create Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Create Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "code",
+          "type": "character",
+          "label": {
+            "localizedValue": "Code",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Code"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Human readable unique identified",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Human readable unique identified"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": true,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "invalid",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Invalid",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Invalid"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "This Geo-Object is no longer valid.",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "This Geo-Object is no longer valid."
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "exists",
+          "type": "boolean",
+          "label": {
+            "localizedValue": "Exists",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Exists"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Does this GeoObject exist",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Does this GeoObject exist"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": true
+        },
+        {
+          "code": "lastUpdateDate",
+          "type": "date",
+          "label": {
+            "localizedValue": "Last Update Date",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Last Update Date"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": ""
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": false,
+          "unique": false,
+          "isChangeOverTime": false
+        },
+        {
+          "code": "displayLabel",
+          "type": "local",
+          "label": {
+            "localizedValue": "Display Label",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Display Label"
+              }
+            ]
+          },
+          "description": {
+            "localizedValue": "Label of the location",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Label of the location"
+              }
+            ]
+          },
+          "isDefault": true,
+          "required": true,
+          "unique": false,
+          "isChangeOverTime": true
+        }
+      ],
+      "parent": "__ROOT__"
+    }
+  ],
+  "hierarchies": [
+    {
+      "code": "USATestDataAdminCode",
+      "displayLabel": {
+        "localizedValue": "USATestDataAdmin Display Label",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataAdmin Display Label"
+          }
+        ]
+      },
+      "description": {
+        "localizedValue": "USATestDataAdmin Display Label",
+        "localeValues": [
+          {
+            "locale": "defaultLocale",
+            "value": "USATestDataAdmin Display Label"
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "code": "USATestDataCountry",
+          "nodes": [
+            {
+              "code": "USATestDataState",
+              "nodes": [
+                {
+                  "code": "USATestDataDistrict",
+                  "nodes": [
+                    {
+                      "code": "USATestDataHealthFacility",
+                      "nodes": []
+                    }
+                  ]
+                },
+                {
+                  "code": "USATestDataCounty",
+                  "nodes": [
+                    {
+                      "code": "USATestDataArea",
+                      "nodes": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "code": "USATestDataMexico_State_GOT",
+              "nodes": [
+                {
+                  "code": "USATestDataMexico_City_GOT",
+                  "nodes": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "classifications": [
+    {
+      "type": {
+        "oid": "6f3c0d6a-a75a-4f25-9e2e-075db3000602",
+        "type": "net.geoprism.registry.classification.TEST_PROG",
+        "code": "TEST_PROG",
+        "displayLabel": {
+          "localizedValue": "Test Prog",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "Test Prog"
+            }
+          ]
+        },
+        "description": {
+          "localizedValue": "Test Description",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "Test Description"
+            }
+          ]
+        },
+        "root": {
+          "code": "Test Term",
+          "displayLabel": {
+            "localizedValue": "Test Classification",
+            "localeValues": [
+              {
+                "locale": "defaultLocale",
+                "value": "Test Classification"
+              }
+            ]
+          },
+          "description": {
+            "localeValues": [
+              {
+                "locale": "defaultLocale"
+              }
+            ]
+          }
+        }
+      },
+      "tree": {
+        "code": "Test Term",
+        "displayLabel": {
+          "localizedValue": "Test Classification",
+          "localeValues": [
+            {
+              "locale": "defaultLocale",
+              "value": "Test Classification"
+            }
+          ]
+        },
+        "description": {
+          "localeValues": [
+            {
+              "locale": "defaultLocale"
+            }
+          ]
+        },
+        "children": []
+      }
+    }
+  ]
+}
