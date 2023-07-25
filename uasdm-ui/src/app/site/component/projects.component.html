@@ -39,11 +39,18 @@
         <div [collapse]="content !== type.code">
           <hr>
           <div class="list-group" *ngIf="content === type.code">
-            <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
-              <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
-                <h5 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h5>
-              </a>
-            </div>
+            <ng-container *ngIf="children.length > 0">
+              <div *ngFor="let child of children; let i = index" [@fadeInOnEnter] class="list-group-item">
+                <a [@fadeInOnEnter] (click)="handleHierarchyClick(child)">
+                  <h5 style="word-break: break-all;">{{child.properties.displayLabel.localizedValue}}</h5>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="children.length === 0">
+              <span>
+                <h4>No {{type.label.localizedValue}}(s) in this area.</h4>
+              </span>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -273,7 +280,7 @@
                         {{current.metadata.label}} {{current.data.name}}
                       </h3>
 
-                      <tabset *ngIf="current.type === 1" class="nav-full-width">          
+                      <tabset *ngIf="current.type === 1" class="nav-full-width">
                         <tab heading="Overview">
                           <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
                             <label>
@@ -435,7 +442,8 @@
                 <hr style="margin-top:10px;margin-bottom:10px;">
 
                 <div class="list-group-item" style="padding:0;height:30px;">
-                  <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label="" [inline]="true">
+                  <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
+                    [inline]="true">
                   </boolean-field>
                   <span style="padding-top: 2px;">
                     <label style="padding-left: 5px;">{{hierarchy.label}}</label>

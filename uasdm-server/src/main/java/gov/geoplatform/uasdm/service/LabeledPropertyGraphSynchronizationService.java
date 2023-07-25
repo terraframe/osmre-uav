@@ -343,10 +343,9 @@ public class LabeledPropertyGraphSynchronizationService
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     List<VertexObject> children = parent.getChildren(mdEdge, VertexObject.class);
-
     HashMap<String, GeoObjectType> cache = new HashMap<String, GeoObjectType>();
 
-    children.forEach(child -> {
+    children.stream().map(child -> {
       MdVertexDAOIF childVertex = (MdVertexDAOIF) child.getMdClass();
 
       if (!cache.containsKey(childVertex.getOid()))
@@ -359,8 +358,10 @@ public class LabeledPropertyGraphSynchronizationService
 
       GeoObjectType type = cache.get(childVertex.getOid());
 
-      GeoObject geoObject = LabeledPropertyGraphJsonExporter.serialize(child, type);
-
+      return LabeledPropertyGraphJsonExporter.serialize(child, type);
+    }).sorted((a, b) -> {
+      return a.getDisplayLabel().getValue().compareTo(b.getDisplayLabel().getValue());
+    }).forEach(geoObject -> {
       array.add(geoObject.toJSON());
     });
 
