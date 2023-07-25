@@ -31,7 +31,7 @@
       <div class="col-md-12">
         <a (click)="onContentChange(type)">
           <h3>
-            {{type.label.localizedValue}}
+            {{type.label.localizedValue}}(s)
             <i *ngIf="content === type.code" class="fa fa-caret-down"></i>
             <i *ngIf="content !== type.code" class="fa fa-caret-right"></i>
           </h3>
@@ -209,7 +209,7 @@
               <div class="row" *ngIf="syncs != null && syncs.length > 0">
                 <div class="col-md-12">
                   <label>Hierarchy</label>
-                  <select [(ngModel)]="sync" name="sync" (change)="onHierarchyChange()">
+                  <select [(ngModel)]="hierarchy.oid" name="sync" (change)="onHierarchyChange()">
                     <option></option>
                     <option *ngFor="let sync of syncs" [value]="sync.oid">
                       {{sync.displayLabel.localizedValue}}
@@ -258,7 +258,7 @@
 
             <div id="hierarchy-tree-container"
               class="location-management-widget-section location-management-list-container"
-              [style]="current != null && current.type === 1 ? 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;'">
+              [style]="current != null && current.type === 0 ? 'height: calc(100vh - 257px);overflow-y: auto;overflow-x:hidden;' : 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;'">
 
 
               <div class="row" style="margin-left: 10px;">
@@ -270,10 +270,10 @@
                         {{current.data.properties.displayLabel.localizedValue}}
                       </h3>
                       <h3 *ngIf="current.type === 0">
-                        {{current.data.name}}
+                        {{current.metadata.label}} {{current.data.name}}
                       </h3>
 
-                      <tabset *ngIf="current.type === 1">          
+                      <tabset *ngIf="current.type === 1" class="nav-full-width">          
                         <tab heading="Overview">
                           <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
                             <label>
@@ -300,8 +300,8 @@
                         </tab>
                       </tabset>
 
-                      <tabset *ngIf="current.type !== 1">
-                        <tab [heading]="getMetadata(current.data).childLabel">
+                      <tabset *ngIf="current.type !== 1" class="nav-full-width">
+                        <tab [heading]="current.metadata.childLabel">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
                         </tab>
@@ -315,11 +315,11 @@
                   </div>
 
                   <ng-container *ngIf="current == null">
-                    <ng-container [ngTemplateOutlet]="locations" *ngIf="sync != null">
+                    <ng-container [ngTemplateOutlet]="locations" *ngIf="hierarchy.oid != null">
                     </ng-container>
 
-                    <ng-container *ngIf="sync == null || sync.length === 0">
-                      <tabset>
+                    <ng-container *ngIf="hierarchy.oid == null || hierarchy.oid.length === 0">
+                      <tabset class="nav-full-width">
                         <tab heading="Sites">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
@@ -430,6 +430,20 @@
               <div class="row-form">
                 <a class="fa fa-plus" (click)="handleStacLayer()" title="Create a layer">&nbsp;Create layer</a>
               </div>
+
+              <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
+                <hr style="margin-top:10px;margin-bottom:10px;">
+
+                <div class="list-group-item" style="padding:0;height:30px;">
+                  <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label="" [inline]="true">
+                  </boolean-field>
+                  <span style="padding-top: 2px;">
+                    <label style="padding-left: 5px;">{{hierarchy.label}}</label>
+                  </span>
+
+                </div>
+
+              </ng-container>
 
               <hr style="margin-top:10px;margin-bottom:10px;">
 

@@ -10,8 +10,10 @@ export class Metadata {
     uploadable: boolean;
     processable: boolean;
     childLabel: string;
+    label: string;
 
-    constructor( root: boolean, leaf: boolean, drillable: boolean, expandable: boolean, uploadable: boolean, processable: boolean, childLabel: string ) {
+    constructor(label: string, root: boolean, leaf: boolean, drillable: boolean, expandable: boolean, uploadable: boolean, processable: boolean, childLabel: string) {
+        this.label = label;
         this.root = root;
         this.leaf = leaf;
         this.drillable = drillable;

@@ -183,7 +183,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   syncs: LPGSync[] = [];
 
   // oid of currently selected synchronization profile
-  sync: string = null;
+  hierarchy: {
+    oid: string,
+    visible: boolean,
+    label: string
+  } = {
+      oid: null,
+      visible: true,
+      label: ""
+    };
 
   childMap: { [key: string]: any[] } = {};
 
@@ -331,8 +339,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           task: task,
           filename: resumable.name
         };
-
-        console.log(this.existingTask);
       })
     }
   }
@@ -433,7 +439,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (features.length > 0) {
         let focusFeatureId = features[0].properties.oid; // just the first
 
-        this.handleViewSite(focusFeatureId);
+        const index = this.nodes.findIndex(n => n.id === focusFeatureId);
+        
+        if(index !== -1) {
+          this.select(this.nodes[index], null, null);
+        }
+        else {
+          this.handleViewSite(focusFeatureId);
+        }
+
+
       }
     });
 
@@ -656,7 +671,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
       conditions.hierarchy = {
-        oid: this.sync,
+        oid: this.hierarchy.oid,
         uid: this.current.data.properties.uid
       }
     }
@@ -711,7 +726,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
       conditions.hierarchy = {
-        oid: this.sync,
+        oid: this.hierarchy.oid,
         uid: this.current.data.properties.uid
       }
     }
@@ -1025,7 +1040,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (result.type === 'SITE') {
 
-      this.sync = null;
+      this.hierarchy.oid = null;
       this.onHierarchyChange();
 
       if (result.center) {
@@ -1054,11 +1069,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.getMetadata(node).leaf) {
         this.breadcrumbs = breadcrumbs.map(b => {
-          return { type: SELECTION_TYPE.SITE, data: b, }
+          return {
+            type: SELECTION_TYPE.SITE,
+            data: b,
+            metadata: this.getMetadata(b)
+          };
         });
+
+        const site = breadcrumbs[breadcrumbs.length - 1];
+
         this.current = {
           type: SELECTION_TYPE.SITE,
-          data: breadcrumbs[breadcrumbs.length - 1]
+          data: site,
+          metadata: this.getMetadata(site)
         };
 
         this.nodes = this.current.data.children;
@@ -1069,7 +1092,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         const parent = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
 
         this.breadcrumbs = breadcrumbs.map(b => {
-          return { type: SELECTION_TYPE.SITE, data: b }
+          return {
+            type: SELECTION_TYPE.SITE,
+            data: b,
+            metadata: this.getMetadata(b)
+          }
         });
 
         this.select(node, parent, null);
@@ -1225,7 +1252,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (parent != null) {
         breadcrumbs.push({
           type: SELECTION_TYPE.SITE,
-          data: parent
+          data: parent,
+          metadata: this.getMetadata(parent)
         });
       }
 
@@ -1246,7 +1274,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.service.getItems(node.id, null).then(nodes => {
         this.current = {
           type: SELECTION_TYPE.SITE,
-          data: node
+          data: node,
+          metadata: this.getMetadata(node)
         };
 
         if (parent != null) {
@@ -1265,7 +1294,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.breadcrumbs.push({
         type: SELECTION_TYPE.SITE,
-        data: node
+        data: node,
+        metadata: this.getMetadata(node)
       });
     }
   }
@@ -1306,7 +1336,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (breadcrumb == null) {
       if (this.breadcrumbs.length > 0) {
 
-        if (this.sync != null && this.sync.length > 0) {
+        if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
           this.breadcrumbs = [];
           this.current = null;
 
@@ -1365,9 +1395,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   expand(node: SiteEntity) {
     node.active = true;
+
     this.current = {
       type: SELECTION_TYPE.SITE,
-      data: node
+      data: node,
+      metadata: this.getMetadata(node)
     };
   }
 
@@ -1522,14 +1554,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       "type": "FeatureCollection",
       "features": this.children
     });
-
-    console.log(this.types.size);
   }
 
   onHierarchyChange(): void {
-    if (this.sync != null && this.sync.length > 0) {
+    if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
 
-      this.syncService.roots(this.sync).then(resp => {
+      this.syncService.roots(this.hierarchy.oid).then(resp => {
+        this.hierarchy.label = this.syncs.filter(s => s.oid === this.hierarchy.oid).map(s => s.displayLabel.localizedValue).reduce((a, b) => a);
+
         this.current = null;
 
         // Pre populate the cache
@@ -1579,7 +1611,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleViewLocation(synchronizationId: string, oid: string): void {
     this.syncService.getObject(synchronizationId, oid).then(result => {
-      this.sync = synchronizationId;
+      this.hierarchy.oid = synchronizationId;
+
       this.breadcrumbs = result.parents.map(p => {
         return {
           type: SELECTION_TYPE.LOCATION,
@@ -1593,11 +1626,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleHierarchyClick(row: any): void {
-    if (this.sync != null && this.sync.length > 0) {
+    if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
 
       const includeMetadata = (this.metadataCache[row.properties.type] == null);
 
-      this.syncService.select(this.sync, row.properties.type, row.properties.uid, includeMetadata).then(result => {
+      this.syncService.select(this.hierarchy.oid, row.properties.type, row.properties.uid, includeMetadata).then(result => {
 
 
         if (result.metadata != null) {
@@ -1616,7 +1649,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           type: SELECTION_TYPE.LOCATION,
           data: row,
           metadata: this.metadataCache[row.properties.type],
-          hierarchy: this.sync
+          hierarchy: this.hierarchy.oid
         };
 
         this.breadcrumbs.push(this.current);
@@ -1672,6 +1705,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       "type": "FeatureCollection",
       "features": this.children
     });
+  }
+
+
+  handleVisibilityChange(): void {
+    this.hierarchy.visible = !this.hierarchy.visible;
+
+    if (!this.hierarchy.visible) {
+      this.map.setLayoutProperty("parent-polygon", 'visibility', 'none');
+      this.map.setLayoutProperty("parent-label", 'visibility', 'none');
+      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'none');
+      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'none');
+    } else {
+      this.map.setLayoutProperty("parent-polygon", 'visibility', 'visible');
+      this.map.setLayoutProperty("parent-label", 'visibility', 'visible');
+      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'visible');
+      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'visible');
+    }
   }
 
 }

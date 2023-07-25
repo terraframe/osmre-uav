@@ -311,6 +311,6 @@ export enum SELECTION_TYPE {
 export class ViewerSelection {
 	type: SELECTION_TYPE;
 	data: any;
-	metadata?: any;
+	metadata: any;
 	hierarchy?: string;
 }
