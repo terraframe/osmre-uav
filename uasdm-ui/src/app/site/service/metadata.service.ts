@@ -58,7 +58,7 @@ export class MetadataService {
                 || fieldName === 'uav');
         }
         else if (type === 'Project') {
-            return (fieldName === 'shortName' || fieldName === 'restricted' || fieldName === 'sunsetDate');
+            return (fieldName === 'shortName' || fieldName === 'restricted' || fieldName === 'sunsetDate' || fieldName == 'projectType');
         }
         else if (type === 'Mission') {
             return (fieldName === 'contractingOffice' || fieldName === 'vendor');

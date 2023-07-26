@@ -10,7 +10,7 @@ import { LngLat } from 'mapbox-gl';
 
 import { ErrorHandler } from '@shared/component';
 
-import { SiteEntity, AttributeType } from '@site/model/management';
+import { SiteEntity, AttributeType, projectTypes } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 
@@ -39,6 +39,8 @@ export class EntityModalComponent implements OnInit {
 
 	center: LngLat = null;
 	zoom: number = null;
+	
+	public projectTypes: string[] = projectTypes;
 
     /*
      * Observable subject for TreeNode changes.  Called when create is successful 

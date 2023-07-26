@@ -331,7 +331,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
     }
     catch (IOException e)
     {
@@ -345,7 +345,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source.description='" + component.getDescription() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source.description='" + component.getDescription() + "'"))));
     }
     catch (IOException e)
     {
