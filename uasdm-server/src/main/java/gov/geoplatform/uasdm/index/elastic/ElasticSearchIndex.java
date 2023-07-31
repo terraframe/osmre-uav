@@ -45,6 +45,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTWriter;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.Conflicts;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
@@ -331,7 +332,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).conflicts(Conflicts.Proceed).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
     }
     catch (IOException e)
     {
@@ -345,7 +346,7 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source.description='" + component.getDescription() + "'"))));
+      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).conflicts(Conflicts.Proceed).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx._source.description='" + component.getDescription() + "'"))));
     }
     catch (IOException e)
     {

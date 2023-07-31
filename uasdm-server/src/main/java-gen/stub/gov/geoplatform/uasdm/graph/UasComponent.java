@@ -268,6 +268,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
+  @Transaction
   public void apply()
   {
     boolean isNameModified = this.isModified(UasComponent.NAME);
