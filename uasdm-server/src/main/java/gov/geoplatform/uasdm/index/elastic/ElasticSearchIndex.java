@@ -153,7 +153,7 @@ public class ElasticSearchIndex implements Index
             // Index doesn't exist, create it
             client.indices().create(i -> i.index(ElasticSearchIndex.LOCATION_INDEX_NAME));
           }
-          
+
           try
           {
             client.indices().get(g -> g.index(ElasticSearchIndex.COMPONENT_INDEX_NAME));
@@ -357,28 +357,43 @@ public class ElasticSearchIndex implements Index
 
     return null;
   }
-
-  public void updateName(UasComponentIF component)
+  
+  @Override
+  public void updateComponent(UasComponentIF component, boolean isNameModified)
   {
     try
     {
       ElasticsearchClient client = createClient();
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field(component.getSolrIdField()).query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
-    }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-  }
+      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))), ElasticDocument.class);
 
-  public void updateComponent(UasComponentIF component)
-  {
-    try
-    {
-      ElasticsearchClient client = createClient();
+      for (Hit<ElasticDocument> hit : search.hits().hits())
+      {
+        ElasticDocument document = hit.source();
+        document.setDescription(component.getDescription());
+        document.populate(component.getSolrNameField(), component.getName());
 
-      client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))).script(s -> s.inline(i -> i.source("ctx.source.description='" + component.getDescription() + "'"))));
+        if (component instanceof SiteIF)
+        {
+          document.setBureau( ( (SiteIF) component ).getBureau().getName());
+        }
+
+        client.update(b -> b.index(COMPONENT_INDEX_NAME).id(hit.id()).doc(document), Void.class);
+      }
+
+      if (isNameModified)
+        client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> {
+          b.mustNot(mu -> mu.match(m -> m.field("oid").query(component.getOid())));
+          b.must(mu -> mu.match(m -> m.field(component.getSolrIdField()).query(component.getOid())));
+                    
+          return b;
+        })).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
+
+      // client.updateByQuery(request ->
+      // request.index(COMPONENT_INDEX_NAME).conflicts(Conflicts.Proceed).query(q
+      // -> q.match(m -> m.field("oid").query(component.getOid()))).script(s ->
+      // s.inline(i -> i.source("ctx._source.description='" +
+      // component.getDescription() + "'"))));
     }
     catch (IOException e)
     {

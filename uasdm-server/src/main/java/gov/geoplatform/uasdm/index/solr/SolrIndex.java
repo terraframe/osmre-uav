@@ -295,7 +295,7 @@ public class SolrIndex implements Index
     }
   }
 
-  public void updateComponent(UasComponentIF component)
+  public void updateComponent(UasComponentIF component, boolean isNameUpdated)
   {
     try
     {

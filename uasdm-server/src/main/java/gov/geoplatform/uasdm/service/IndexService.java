@@ -114,19 +114,11 @@ public class IndexService
     }
   }
 
-  public static void updateName(UasComponentIF component)
+  public static void updateComponent(UasComponentIF component, boolean isNameModified)
   {
     if (AppProperties.isSearchEnabled())
     {
-      index.updateName(component);
-    }
-  }
-
-  public static void updateComponent(UasComponentIF component)
-  {
-    if (AppProperties.isSearchEnabled())
-    {
-      index.updateComponent(component);
+      index.updateComponent(component, isNameModified);
     }
   }
 

@@ -190,14 +190,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (!isNew)
     {
-      if (isNameModified)
+      if (isNameModified || needsUpdate)
       {
-        IndexService.updateName(this);
-      }
-
-      if (needsUpdate)
-      {
-        IndexService.updateComponent(this);
+        IndexService.updateComponent(this, isNameModified);
       }
     }
   }

@@ -37,7 +37,7 @@ public class MockIndex implements Index
 {
 
   public static enum IndexActionType {
-    CLEAR, DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_NAME, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC
+    CLEAR, DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC
   }
 
   public static class IndexAction
@@ -115,15 +115,9 @@ public class MockIndex implements Index
   }
 
   @Override
-  public void updateName(UasComponentIF component)
+  public void updateComponent(UasComponentIF component, boolean isNameModified)
   {
-    this.actions.add(new IndexAction(IndexActionType.UPDATE_NAME, component.getOid()));
-  }
-
-  @Override
-  public void updateComponent(UasComponentIF component)
-  {
-    this.actions.add(new IndexAction(IndexActionType.UPDATE_COMPONENT, component.getOid()));
+    this.actions.add(new IndexAction(IndexActionType.UPDATE_COMPONENT, component.getOid(), isNameModified));
   }
 
   @Override
@@ -171,13 +165,13 @@ public class MockIndex implements Index
 
     return new Page<StacItem>(0, 1, 10, new LinkedList<StacItem>());
   }
-  
+
   @Override
   public void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object)
   {
     this.actions.add(new IndexAction(IndexActionType.UPDATE_DOCUMENT, synchronization, object));
   }
-  
+
   @Override
   public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
   {

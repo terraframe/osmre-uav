@@ -273,6 +273,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
+  @Transaction
   public void apply()
   {
     boolean isNameModified = this.isModified(UasComponent.NAME);
@@ -293,16 +294,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (!isNew)
     {
-      if (isNameModified)
+      if (needsUpdate || isNameModified)
       {
-        IndexService.updateName(this);
-      }
-
-      if (needsUpdate)
-      {
-        IndexService.updateComponent(this);
-      }
-
+        IndexService.updateComponent(this, isNameModified);
+      }      
+      
       CollectionReport.update(this);
     }
   }

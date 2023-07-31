@@ -100,7 +100,7 @@ public class Site extends SiteBase implements SiteIF
   {
     return this.addProjects((Project) uasComponent);
   }
-
+  
   protected boolean needsUpdate()
   {
     return this.isModified(Site.BUREAU);
