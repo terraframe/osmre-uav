@@ -12,7 +12,7 @@ import { ErrorHandler } from '@shared/component';
 
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
-import { SiteEntity, Selection } from '@site/model/management';
+import { SiteEntity, Selection, projectTypes } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { EventService } from '@shared/service/event.service';
@@ -55,6 +55,8 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 	 * List of selections: One per hierarchy type
 	 */
 	selections: Selection[] = [];
+	
+	public projectTypes: string[] = projectTypes;
 
 	/*
 	 * List of previous selection labels

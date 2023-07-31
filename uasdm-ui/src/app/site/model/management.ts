@@ -7,6 +7,53 @@ import { Sensor } from './sensor';
 import { Platform } from './platform';
 import { UAV } from './uav'
 
+export const projectTypes: string[] = [
+	"Other",
+	"Aircraft Pilot, Unit Inspect",
+	"Pilot training",
+	"Aircraft Maintenance",
+	"Personnel trans, Fire Suppress.",
+	"Recon (Flight gathering intel)",
+	"Detection (Flight for Detecting wildfires)",
+	"Air Attack",
+	"Lead Plane",
+	"Fire Chemical/water",
+	"Smokejumper Operations",
+	"Helitack Operations",
+	"Rappel Operations",
+	"Equipment/Supply transport, Fire related.",
+	"Infared imagery, Fire Suppress",
+	"Aerial ignition, Fire Suppression",
+	"Other, Fire Suppression",
+	"Personnel transp. Admin",
+	"Survey/Observation",
+	"Ferry",
+	"Wildlife/Animal Count",
+	"Search and Rescue",
+	"Law Enforcement/Investigation",
+	"Research",
+	"Air Quality Monitoring",
+	"Fire Management",
+	"Prescribed Burning",
+	"Spray Projects",
+	"Cargo transport, other than fire",
+	"Aerial Photography, normal act.",
+	"Infared imagery, normal Activities.",
+	"aerial ignitions, normal activities.",
+	"Accident investigations",
+	"Other, normal activities",
+	"Helicoptor Coordination",
+	"Training, Other than pilot",
+	"Seed and Fertilization",
+	"Medivac",
+	"Air Attack (Aerial Supervision Module)",
+	"Lead Plane (Aerial Supervision Module)",
+	"Aerial ignition (PSD)",
+	"Aerial ignition (Helitorch)",
+	"Hoist",
+	"Short Haul"
+];
+
 export class Condition {
 	name: string;
 	value: string;
@@ -132,6 +179,7 @@ export class Selection {
 	shortName?: string;
 	restricted?: boolean;
 	sunsetDate?: string;
+	projectType?: string;
 	contractingOffice?: string;
 	vendor?: string;
 	collectionDate?: string;

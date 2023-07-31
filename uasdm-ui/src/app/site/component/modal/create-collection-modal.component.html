@@ -97,6 +97,15 @@
               <input [(ngModel)]="page.selection.sunsetDate" name="sunsetDate" type="date" class="form-control" />
             </div>
           </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('projectType')">
+            <div class="col-md-8">
+              <label for="proejctType" style="margin-top: 10px;">Project Type:</label>
+              <select [(ngModel)]="page.selection.projectType" [name]="'projectType'">
+	            <option></option>
+	            <option *ngFor="let projectType of projectTypes" value="projectType">{{projectType}}</option>
+	          </select>
+            </div>
+          </div>
 
           <div [@fadeInOnEnter] class="row" *ngIf="hasField('contractingOffice')">
             <div class="col-md-8">

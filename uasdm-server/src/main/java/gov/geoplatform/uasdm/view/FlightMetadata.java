@@ -37,9 +37,9 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.MissionIF;
-import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -175,6 +175,18 @@ public class FlightMetadata
     private String  shortName;
 
     private Date    sunsetDate;
+    
+    private String  projectType;
+    
+    public String getProjectType()
+    {
+      return projectType;
+    }
+
+    public void setProjectType(String projectType)
+    {
+      this.projectType = projectType;
+    }
 
     public Boolean getRestricted()
     {
@@ -211,13 +223,14 @@ public class FlightMetadata
     {
       super.populate(component);
 
-      if (component instanceof ProjectIF)
+      if (component instanceof Project)
       {
-        ProjectIF project = (ProjectIF) component;
+        Project project = (Project) component;
 
         this.setShortName(project.getShortName());
         this.setSunsetDate(project.getSunsetDate());
         this.setRestricted(project.getRestricted());
+        this.setProjectType(project.getProjectType());
       }
     }
 
@@ -249,6 +262,11 @@ public class FlightMetadata
           exception.setUserMessage(e.getMessage());
           throw exception;
         }
+      }
+      
+      if (item.hasAttribute("projectType"))
+      {
+        metadata.setProjectType(item.getAttribute("projectType"));
       }
 
       return metadata;

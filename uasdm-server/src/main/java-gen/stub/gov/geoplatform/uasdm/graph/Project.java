@@ -70,6 +70,7 @@ public class Project extends ProjectBase implements ProjectIF
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Project.SHORTNAME)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Project.RESTRICTED)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Project.SUNSETDATE)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Project.PROJECTTYPE)));
 
     return attributes;
   }

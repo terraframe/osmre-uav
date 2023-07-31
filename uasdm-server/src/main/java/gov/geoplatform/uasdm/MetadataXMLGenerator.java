@@ -321,6 +321,12 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("sunsetDate", Util.formatMetadata(project.getSunsetDate(), false));
     }
+    
+    if (project.getProjectType() != null)
+    {
+      e.setAttribute("projectType", project.getProjectType());
+    }
+    
     return e;
   }
 
