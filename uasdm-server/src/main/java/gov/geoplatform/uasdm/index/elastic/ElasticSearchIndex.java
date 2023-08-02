@@ -75,6 +75,7 @@ import gov.geoplatform.uasdm.view.QueryLocationResult;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
 
 public class ElasticSearchIndex implements Index
@@ -855,6 +856,24 @@ public class ElasticSearchIndex implements Index
         return q.bool(b -> b.must(m -> m.queryString(qs -> qs.fields("versionId").query(synchronization.getVersionOid()))));
       }).build();
 
+      ElasticsearchClient client = createClient();
+      client.deleteByQuery(request);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  @Override
+  public void deleteDocuments(LabeledPropertyGraphTypeVersion version)
+  {
+    try
+    {
+      DeleteByQueryRequest request = new DeleteByQueryRequest.Builder().index(LOCATION_INDEX_NAME).query(q -> {
+        return q.bool(b -> b.must(m -> m.queryString(qs -> qs.fields("versionId").query(version.getOid()))));
+      }).build();
+      
       ElasticsearchClient client = createClient();
       client.deleteByQuery(request);
     }

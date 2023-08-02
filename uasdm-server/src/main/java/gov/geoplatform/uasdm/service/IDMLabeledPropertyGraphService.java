@@ -111,6 +111,7 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
   @Override
   public void postDelete(LabeledPropertyGraphTypeVersion version)
   {
+    IndexService.deleteDocuments(version);
   }
 
   @Override

@@ -43,7 +43,6 @@ import com.runwaysdk.system.metadata.MdVertex;
 import gov.geoplatform.uasdm.GenericException;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
-import net.geoprism.graph.LabeledPropertyGraphJsonExporter;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
@@ -187,7 +186,7 @@ public class LabeledPropertyGraphSynchronizationService
     query.setParameter("code", code);
 
     query.getResults().forEach(result -> {
-      GeoObject geoObject = LabeledPropertyGraphJsonExporter.serialize(result, snapshot);
+      GeoObject geoObject = snapshot.toGeoObject(result);
 
       if (includeRoot)
       {
@@ -235,9 +234,8 @@ public class LabeledPropertyGraphSynchronizationService
     MdVertexDAOIF childVertex = (MdVertexDAOIF) result.getMdClass();
 
     GeoObjectTypeSnapshot childType = GeoObjectTypeSnapshot.get(version, childVertex);
-    GeoObjectType geoObjectType = childType.toGeoObjectType();
 
-    GeoObject geoObject = LabeledPropertyGraphJsonExporter.serialize(result, geoObjectType);
+    GeoObject geoObject = childType.toGeoObject(result);
 
     object.add("object", geoObject.toJSON());
     object.add("parents", getParents(version, mdEdge, result));
@@ -270,7 +268,7 @@ public class LabeledPropertyGraphSynchronizationService
 
       GeoObjectTypeSnapshot parentType = GeoObjectTypeSnapshot.get(version, parentVertex);
 
-      GeoObject parentObject = LabeledPropertyGraphJsonExporter.serialize(parent, parentType);
+      GeoObject parentObject = parentType.toGeoObject(parent);
 
       parents.add(parentObject.toJSON());
 
@@ -358,7 +356,7 @@ public class LabeledPropertyGraphSynchronizationService
 
       GeoObjectType type = cache.get(childVertex.getOid());
 
-      return LabeledPropertyGraphJsonExporter.serialize(child, type);
+      return GeoObjectTypeSnapshot.toGeoObject(child, type);
     }).sorted((a, b) -> {
       return a.getDisplayLabel().getValue().compareTo(b.getDisplayLabel().getValue());
     }).forEach(geoObject -> {

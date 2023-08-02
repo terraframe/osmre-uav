@@ -53,6 +53,7 @@ import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class SolrIndex implements Index
 {
@@ -484,5 +485,12 @@ public class SolrIndex implements Index
   public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
   {
     // TODO Auto-generated method stub    
+  }
+  
+  @Override
+  public void deleteDocuments(LabeledPropertyGraphTypeVersion version)
+  {
+    // TODO Auto-generated method stub
+    
   }
 }

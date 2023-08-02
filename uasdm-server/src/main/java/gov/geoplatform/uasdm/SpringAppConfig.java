@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -41,6 +41,7 @@ import net.geoprism.rbac.RoleBusinessService;
 import net.geoprism.rbac.RoleBusinessServiceIF;
 import net.geoprism.rbac.RoleService;
 import net.geoprism.rbac.RoleServiceIF;
+import net.geoprism.session.LoginBruteForceGuardService;
 import net.geoprism.session.SessionController;
 import net.geoprism.session.SessionFilter;
 import net.geoprism.spring.JsonExceptionHandler;
@@ -50,37 +51,40 @@ import net.geoprism.spring.JsonExceptionHandler;
 @ComponentScan(basePackages = { "net.geoprism.spring", "net.geoprism.graph", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service", "net.geoprism.account" })
 public class SpringAppConfig extends WebMvcConfigurationSupport
 {
-//  @Bean(name = "multipartResolver")
-//  public CommonsMultipartResolver multipartResolver()
-//  {
-//    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-//    multipartResolver.setMaxUploadSize(-1);
-//    return multipartResolver;
-//  }
+  // @Bean(name = "multipartResolver")
+  // public CommonsMultipartResolver multipartResolver()
+  // {
+  // CommonsMultipartResolver multipartResolver = new
+  // CommonsMultipartResolver();
+  // multipartResolver.setMaxUploadSize(-1);
+  // return multipartResolver;
+  // }
 
-//  @Bean
-//  @Override
-//  public FormattingConversionService mvcConversionService()
-//  {
-//    DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService(false);
-//
-//    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("GMT");
-////    dateTimeFormatter.withZone(ZoneId.of(GeoRegistryUtil.SYSTEM_TIMEZONE.getID()));
-//
-//    DateTimeFormatterRegistrar dateTimeRegistrar = new DateTimeFormatterRegistrar();
-//    dateTimeRegistrar.setDateFormatter(dateTimeFormatter);
-//    dateTimeRegistrar.setDateTimeFormatter(dateTimeFormatter);
-//    dateTimeRegistrar.registerFormatters(conversionService);
-//
-//    DateFormatter dateFormatter = new DateFormatter("GMT");
-////    dateFormatter.setTimeZone(GeoRegistryUtil.SYSTEM_TIMEZONE);
-//
-//    DateFormatterRegistrar dateRegistrar = new DateFormatterRegistrar();
-//    dateRegistrar.setFormatter(dateFormatter);
-//    dateRegistrar.registerFormatters(conversionService);
-//
-//    return conversionService;
-//  }
+  // @Bean
+  // @Override
+  // public FormattingConversionService mvcConversionService()
+  // {
+  // DefaultFormattingConversionService conversionService = new
+  // DefaultFormattingConversionService(false);
+  //
+  // DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("GMT");
+  //// dateTimeFormatter.withZone(ZoneId.of(GeoRegistryUtil.SYSTEM_TIMEZONE.getID()));
+  //
+  // DateTimeFormatterRegistrar dateTimeRegistrar = new
+  // DateTimeFormatterRegistrar();
+  // dateTimeRegistrar.setDateFormatter(dateTimeFormatter);
+  // dateTimeRegistrar.setDateTimeFormatter(dateTimeFormatter);
+  // dateTimeRegistrar.registerFormatters(conversionService);
+  //
+  // DateFormatter dateFormatter = new DateFormatter("GMT");
+  //// dateFormatter.setTimeZone(GeoRegistryUtil.SYSTEM_TIMEZONE);
+  //
+  // DateFormatterRegistrar dateRegistrar = new DateFormatterRegistrar();
+  // dateRegistrar.setFormatter(dateFormatter);
+  // dateRegistrar.registerFormatters(conversionService);
+  //
+  // return conversionService;
+  // }
 
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
@@ -90,64 +94,82 @@ public class SpringAppConfig extends WebMvcConfigurationSupport
     // msgConverter.setGson(gson);
     // converters.add(msgConverter);
   }
-  
+
   @Bean
-  Filter sessionFilter() {
+  Filter sessionFilter()
+  {
     return new SessionFilter();
   }
-  
+
   @Bean
-  JsonExceptionHandler errorHandler() {
+  JsonExceptionHandler errorHandler()
+  {
     return new JsonExceptionHandler();
   }
-  
+
   @Bean
-  SessionController sessionController() {
+  SessionController sessionController()
+  {
     return new SessionController();
   }
-  
+
   @Bean
-  EncodingFilter encodingFilter() {
+  EncodingFilter encodingFilter()
+  {
     return new EncodingFilter();
   }
-  
+
   @Bean
-  ForgotPasswordServiceIF forgotPasswordServiceIF() {
+  ForgotPasswordServiceIF forgotPasswordServiceIF()
+  {
     return new ForgotPasswordService();
   }
-  
+
   @Bean
-  ForgotPasswordBusinessServiceIF forgotPasswordBusinessServiceIF() {
+  ForgotPasswordBusinessServiceIF forgotPasswordBusinessServiceIF()
+  {
     return new ForgotPasswordBusinessService();
   }
-  
+
   @Bean
-  ForgotPasswordController forgotPasswordController() {
+  ForgotPasswordController forgotPasswordController()
+  {
     return new ForgotPasswordController();
   }
-  
+
   @Bean
-  RoleServiceIF roleServiceIF() {
+  RoleServiceIF roleServiceIF()
+  {
     return new RoleService();
   }
-  
+
   @Bean
-  RoleBusinessServiceIF roleBusinessServiceIF() {
+  RoleBusinessServiceIF roleBusinessServiceIF()
+  {
     return new RoleBusinessService();
   }
-  
+
   @Bean
-  EmailServiceIF emailService() {
+  EmailServiceIF emailService()
+  {
     return new EmailService();
   }
-  
+
   @Bean
-  EmailBusinessServiceIF emailBusinessService() {
+  EmailBusinessServiceIF emailBusinessService()
+  {
     return new EmailBusinessService();
   }
-  
+
   @Bean
-  EmailController emailController() {
+  EmailController emailController()
+  {
     return new EmailController();
+  }
+
+  @Bean
+  LoginBruteForceGuardService loginBruteForceGuard()
+  {
+    return new LoginBruteForceGuardService();
   }
 }

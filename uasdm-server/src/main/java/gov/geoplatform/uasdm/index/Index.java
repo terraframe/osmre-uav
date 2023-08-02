@@ -29,6 +29,7 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.QueryResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public interface Index
 {
@@ -63,4 +64,6 @@ public interface Index
   public void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object);
 
   public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization);
+  
+  public void deleteDocuments(LabeledPropertyGraphTypeVersion version);
 }
