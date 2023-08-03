@@ -18,6 +18,7 @@ export class Sensor {
     pixelSizeHeight: number;
     sensorWidth: number;
     sensorHeight: number;
+    focalLength: number;
     platforms: {
         oid: string;
         name: string;

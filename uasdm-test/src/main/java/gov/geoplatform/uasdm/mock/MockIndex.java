@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.view.QueryResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
 public class MockIndex implements Index
 {
@@ -176,5 +177,11 @@ public class MockIndex implements Index
   public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization)
   {
     this.actions.add(new IndexAction(IndexActionType.DELETE_DOCUMENTS, synchronization));
+  }
+  
+  @Override
+  public void deleteDocuments(LabeledPropertyGraphTypeVersion version)
+  {
+    this.actions.add(new IndexAction(IndexActionType.DELETE_DOCUMENTS, version));
   }
 }

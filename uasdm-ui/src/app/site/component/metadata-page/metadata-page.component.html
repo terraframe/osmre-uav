@@ -82,6 +82,57 @@
                                 class="form-control" />
                         </div>
                     </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Focal Length:</label>
+                            <input [(ngModel)]="page.selection.focalLength" name="focalLength" step="1" type="number"
+                                class="form-control" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Flying Height (ft):</label>
+                            <input [(ngModel)]="page.selection.flyingHeight" name="flyingHeight" type="number"
+                                class="form-control" step="1" min="0" max="1000" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;"># of flights:</label>
+                            <input [(ngModel)]="page.selection.numberOfFlights" name="numberOfFlights" type="number"
+                                class="form-control" step="1" min="0" max="50" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Percent Endlap:</label>
+                            <input [(ngModel)]="page.selection.percentEndLap" name="percentEndLap" type="number"
+                                class="form-control" step="1" min="0" max="100" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Percent Sidelap:</label>
+                            <input [(ngModel)]="page.selection.percentSideLap" name="percentSideLap" type="number"
+                                class="form-control" step="1" min="0" max="100" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Area Covered (acres):</label>
+                            <input [(ngModel)]="page.selection.areaCovered" name="areaCovered" type="number"
+                                class="form-control" min="0" max="5000" />
+                        </div>
+                    </div>
+                    <div [@fadeInOnEnter] class="row">
+                        <div class="col-md-8">
+                            <label for="platform" style="margin-top: 10px;">Weather conditions:</label>
+                            <textarea [(ngModel)]="page.selection.weatherConditions" name="weatherConditions"
+                                class="form-control">
+                            </textarea>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

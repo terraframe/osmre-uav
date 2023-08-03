@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -175,9 +175,9 @@ public class FlightMetadata
     private String  shortName;
 
     private Date    sunsetDate;
-    
+
     private String  projectType;
-    
+
     public String getProjectType()
     {
       return projectType;
@@ -263,7 +263,7 @@ public class FlightMetadata
           throw exception;
         }
       }
-      
+
       if (item.hasAttribute("projectType"))
       {
         metadata.setProjectType(item.getAttribute("projectType"));
@@ -354,6 +354,18 @@ public class FlightMetadata
 
     private Date       acquisitionDateEnd;
 
+    private Integer    flyingHeight;
+
+    private Integer    numberOfFlights;
+
+    private Integer    percentEndLap;
+
+    private Integer    percentSideLap;
+
+    private BigDecimal areaCovered;
+
+    private String     weatherConditions;
+
     public BigDecimal getNorthBound()
     {
       return northBound;
@@ -424,6 +436,66 @@ public class FlightMetadata
       this.acquisitionDateEnd = acquisitionDateEnd;
     }
 
+    public Integer getFlyingHeight()
+    {
+      return flyingHeight;
+    }
+
+    public void setFlyingHeight(Integer flyingHeight)
+    {
+      this.flyingHeight = flyingHeight;
+    }
+
+    public Integer getNumberOfFlights()
+    {
+      return numberOfFlights;
+    }
+
+    public void setNumberOfFlights(Integer numberOfFlights)
+    {
+      this.numberOfFlights = numberOfFlights;
+    }
+
+    public Integer getPercentEndLap()
+    {
+      return percentEndLap;
+    }
+
+    public void setPercentEndLap(Integer percentEndLap)
+    {
+      this.percentEndLap = percentEndLap;
+    }
+
+    public Integer getPercentSideLap()
+    {
+      return percentSideLap;
+    }
+
+    public void setPercentSideLap(Integer percentSideLap)
+    {
+      this.percentSideLap = percentSideLap;
+    }
+
+    public BigDecimal getAreaCovered()
+    {
+      return areaCovered;
+    }
+
+    public void setAreaCovered(BigDecimal areaCovered)
+    {
+      this.areaCovered = areaCovered;
+    }
+
+    public String getWeatherConditions()
+    {
+      return weatherConditions;
+    }
+
+    public void setWeatherConditions(String weatherConditions)
+    {
+      this.weatherConditions = weatherConditions;
+    }
+
     @Override
     public void populate(UasComponentIF component)
     {
@@ -440,6 +512,12 @@ public class FlightMetadata
         this.setExifIncluded(collection.getExifIncluded());
         this.setAcquisitionDateStart(collection.getAcquisitionDateStart());
         this.setAcquisitionDateEnd(collection.getAcquisitionDateEnd());
+        this.setFlyingHeight(collection.getFlyingHeight());
+        this.setNumberOfFlights(collection.getNumberOfFlights());
+        this.setPercentEndLap(collection.getPercentEndLap());
+        this.setPercentSideLap(collection.getPercentSideLap());
+        this.setAreaCovered(collection.getAreaCovered());
+        this.setWeatherConditions(collection.getWeatherConditions());
       }
     }
 
@@ -506,31 +584,63 @@ public class FlightMetadata
         }
       }
 
+      if (item.hasAttribute("flyingHeight"))
+      {
+        metadata.setFlyingHeight(Integer.parseInt(item.getAttribute("flyingHeight")));
+      }
+
+      if (item.hasAttribute("numberOfFlights"))
+      {
+        metadata.setNumberOfFlights(Integer.parseInt(item.getAttribute("numberOfFlights")));
+      }
+
+      if (item.hasAttribute("percentEndLap"))
+      {
+        metadata.setPercentEndLap(Integer.parseInt(item.getAttribute("percentEndLap")));
+      }
+
+      if (item.hasAttribute("percentSideLap"))
+      {
+        metadata.setPercentEndLap(Integer.parseInt(item.getAttribute("percentSideLap")));
+      }
+
+      if (item.hasAttribute("areaCovered"))
+      {
+        metadata.setAreaCovered(new BigDecimal(item.getAttribute("areaCovered")));
+      }
+
+      if (item.hasAttribute("weatherConditions"))
+      {
+        metadata.setWeatherConditions(item.getAttribute("weatherConditions"));
+      }
+
       return metadata;
     }
   }
 
   public static class SensorMetadata
   {
-    private String name;
+    private String  name;
 
-    private String type;
+    private String  type;
 
-    private String model;
+    private String  model;
 
-    private String wavelength;
+    private String  wavelength;
 
-    private String imageWidth;
+    private String  imageWidth;
 
-    private String imageHeight;
+    private String  imageHeight;
 
-    private String sensorWidth;
+    private String  sensorWidth;
 
-    private String sensorHeight;
+    private String  sensorHeight;
 
-    private String pixelSizeWidth;
+    private String  pixelSizeWidth;
 
-    private String pixelSizeHeight;
+    private String  pixelSizeHeight;
+
+    private Integer focalLength;
 
     public String getName()
     {
@@ -632,6 +742,16 @@ public class FlightMetadata
       this.pixelSizeHeight = pixelSizeHeight;
     }
 
+    public Integer getFocalLength()
+    {
+      return focalLength;
+    }
+
+    public void setFocalLength(Integer focalLength)
+    {
+      this.focalLength = focalLength;
+    }
+
     public static SensorMetadata parse(Element item)
     {
       SensorMetadata metadata = new SensorMetadata();
@@ -645,6 +765,11 @@ public class FlightMetadata
       metadata.setSensorHeight(item.getAttribute("sensorHeight"));
       metadata.setPixelSizeWidth(item.getAttribute("pixelSizeWidth"));
       metadata.setPixelSizeHeight(item.getAttribute("pixelSizeHeight"));
+
+      if (item.hasAttribute("focalLength"))
+      {
+        metadata.setFocalLength(Integer.parseInt(item.getAttribute("focalLength")));
+      }
 
       return metadata;
     }
@@ -899,6 +1024,11 @@ public class FlightMetadata
     metadata.getSensor().setSensorHeight(jSensor.get("sensorHeight").toString());
     metadata.getSensor().setPixelSizeWidth(jSensor.get("pixelSizeWidth").toString());
     metadata.getSensor().setPixelSizeHeight(jSensor.get("pixelSizeHeight").toString());
+
+    if (jSensor.has("focalLength"))
+    {
+      metadata.getSensor().setFocalLength(jSensor.getInt("focalLength"));
+    }
 
     return metadata;
   }

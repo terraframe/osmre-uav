@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 451132453)
+@com.runwaysdk.business.ClassSignature(hash = 374923005)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -28,22 +13,28 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Collection";
   public final static java.lang.String ACQUISITIONDATEEND = "acquisitionDateEnd";
   public final static java.lang.String ACQUISITIONDATESTART = "acquisitionDateStart";
+  public final static java.lang.String AREACOVERED = "areaCovered";
   public final static java.lang.String COLLECTIONDATE = "collectionDate";
   public final static java.lang.String COLLECTIONSENSOR = "collectionSensor";
   public final static java.lang.String EASTBOUND = "eastBound";
   public final static java.lang.String EXIFINCLUDED = "exifIncluded";
+  public final static java.lang.String FLYINGHEIGHT = "flyingHeight";
   public final static java.lang.String IMAGEHEIGHT = "imageHeight";
   public final static java.lang.String IMAGEWIDTH = "imageWidth";
   public final static java.lang.String METADATAUPLOADED = "metadataUploaded";
   public final static java.lang.String NORTHBOUND = "northBound";
+  public final static java.lang.String NUMBEROFFLIGHTS = "numberOfFlights";
+  public final static java.lang.String PERCENTENDLAP = "percentEndLap";
+  public final static java.lang.String PERCENTSIDELAP = "percentSideLap";
   public final static java.lang.String POCEMAIL = "pocEmail";
   public final static java.lang.String POCNAME = "pocName";
   public final static java.lang.String PRIVILEGETYPE = "privilegeType";
   public final static java.lang.String SOUTHBOUND = "southBound";
   public final static java.lang.String UAV = "uav";
+  public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 451132453;
+  private static final long serialVersionUID = 374923005;
   
   public CollectionBase()
   {
@@ -80,6 +71,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setAcquisitionDateStart(java.util.Date value)
   {
     this.setValue(ACQUISITIONDATESTART, value);
+  }
+  
+  public java.math.BigDecimal getAreaCovered()
+  {
+    return (java.math.BigDecimal) this.getObjectValue(AREACOVERED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF getAreaCoveredMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDecimalDAOIF)mdClassIF.definesAttribute(AREACOVERED);
+  }
+  
+  public void setAreaCovered(java.math.BigDecimal value)
+  {
+    this.setValue(AREACOVERED, value);
   }
   
   public java.util.Date getCollectionDate()
@@ -146,6 +153,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     this.setValue(EXIFINCLUDED, value);
   }
   
+  public Integer getFlyingHeight()
+  {
+    return (Integer) this.getObjectValue(FLYINGHEIGHT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getFlyingHeightMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(FLYINGHEIGHT);
+  }
+  
+  public void setFlyingHeight(Integer value)
+  {
+    this.setValue(FLYINGHEIGHT, value);
+  }
+  
   public Integer getImageHeight()
   {
     return (Integer) this.getObjectValue(IMAGEHEIGHT);
@@ -208,6 +231,54 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setNorthBound(java.math.BigDecimal value)
   {
     this.setValue(NORTHBOUND, value);
+  }
+  
+  public Integer getNumberOfFlights()
+  {
+    return (Integer) this.getObjectValue(NUMBEROFFLIGHTS);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getNumberOfFlightsMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(NUMBEROFFLIGHTS);
+  }
+  
+  public void setNumberOfFlights(Integer value)
+  {
+    this.setValue(NUMBEROFFLIGHTS, value);
+  }
+  
+  public Integer getPercentEndLap()
+  {
+    return (Integer) this.getObjectValue(PERCENTENDLAP);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPercentEndLapMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PERCENTENDLAP);
+  }
+  
+  public void setPercentEndLap(Integer value)
+  {
+    this.setValue(PERCENTENDLAP, value);
+  }
+  
+  public Integer getPercentSideLap()
+  {
+    return (Integer) this.getObjectValue(PERCENTSIDELAP);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPercentSideLapMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PERCENTSIDELAP);
+  }
+  
+  public void setPercentSideLap(Integer value)
+  {
+    this.setValue(PERCENTSIDELAP, value);
   }
   
   public String getPocEmail()
@@ -305,6 +376,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setUav(gov.geoplatform.uasdm.graph.UAV value)
   {
     this.setValue(UAV, value);
+  }
+  
+  public String getWeatherConditions()
+  {
+    return (String) this.getObjectValue(WEATHERCONDITIONS);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getWeatherConditionsMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(WEATHERCONDITIONS);
+  }
+  
+  public void setWeatherConditions(String value)
+  {
+    this.setValue(WEATHERCONDITIONS, value);
   }
   
   public java.math.BigDecimal getWestBound()

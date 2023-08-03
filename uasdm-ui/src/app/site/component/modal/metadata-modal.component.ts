@@ -73,7 +73,14 @@ export class MetadataModalComponent implements OnInit, OnDestroy {
 					pointOfContact: {
 						name: options.name,
 						email: options.email
-					}
+					},
+					focalLength : options.focalLength,
+					flyingHeight : options.flyingHeight,
+					numberOfFlights : options.numberOfFlights,
+					percentEndLap : options.percentEndLap,
+					percentSideLap : options.percentSideLap,
+					areaCovered : options.areaCovered,
+					weatherConditions : options.weatherConditions,
 				}
 			}
 

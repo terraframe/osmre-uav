@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -134,6 +134,30 @@ public abstract class Converter
           uasComponent.setValue(attribute.getName(), null);
         }
       }
+      else if ( ( attribute instanceof AttributeIntegerType ))
+      {
+        Number number = (Number) siteItem.getValue(attribute.getName());
+
+        if (number != null)
+        {
+          Integer dec;
+
+          if (number instanceof Number)
+          {
+            dec = Integer.valueOf((int) number);
+          }
+          else
+          {
+            throw new UnsupportedOperationException("Unsupported type [" + number.getClass().getTypeName() + "].");
+          }
+
+          uasComponent.setValue(attribute.getName(), dec);
+        }
+        else
+        {
+          uasComponent.setValue(attribute.getName(), null);
+        }
+      }
       else if ( ( attribute instanceof AttributeNumberType ))
       {
         Number number = (Number) siteItem.getValue(attribute.getName());
@@ -165,7 +189,7 @@ public abstract class Converter
           {
             throw new UnsupportedOperationException("Unsupported type [" + number.getClass().getTypeName() + "].");
           }
-          
+
           uasComponent.setValue(attribute.getName(), dec);
         }
         else
@@ -314,7 +338,7 @@ public abstract class Converter
     boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
-    view.setHasAllZip(( (Product) product ).hasAllZip());
+    view.setHasAllZip( ( (Product) product ).hasAllZip());
 
     view.setComponents(list);
     view.setId(product.getOid());

@@ -118,6 +118,13 @@ export class SiteEntity {
 	exifIncluded?: boolean;
 	acquisitionDateStart?: string;
 	acquisitionDateEnd?: string;
+	focalLength?: number;
+	flyingHeight?: number;
+	numberOfFlights?: number;
+	percentEndLap?: number;
+	percentSideLap?: number;
+	areaCovered?: number;
+	weatherConditions?: string;
 }
 
 export class CollectionArtifact {
@@ -194,6 +201,13 @@ export class Selection {
 	exifIncluded?: boolean;
 	acquisitionDateStart?: string;
 	acquisitionDateEnd?: string;
+	focalLength?: number;
+	flyingHeight?: number;
+	numberOfFlights?: number;
+	percentEndLap?: number;
+	percentSideLap?: number;
+	areaCovered?: number;
+	weatherConditions?: string;
 };
 
 export class UploadForm {

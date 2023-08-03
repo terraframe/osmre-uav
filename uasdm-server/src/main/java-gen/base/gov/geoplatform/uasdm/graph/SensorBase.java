@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 241838431)
+@com.runwaysdk.business.ClassSignature(hash = -1231909143)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -29,6 +14,7 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String DATECREATED = "dateCreated";
   public final static java.lang.String DATEUPDATED = "dateUpdated";
   public final static java.lang.String DESCRIPTION = "description";
+  public final static java.lang.String FOCALLENGTH = "focalLength";
   public final static java.lang.String HASGEOLOGGER = "hasGeologger";
   public final static java.lang.String MODEL = "model";
   public final static java.lang.String NAME = "name";
@@ -44,7 +30,7 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String SENSORWIDTH = "sensorWidth";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 241838431;
+  private static final long serialVersionUID = -1231909143;
   
   public SensorBase()
   {
@@ -97,6 +83,22 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setDescription(String value)
   {
     this.setValue(DESCRIPTION, value);
+  }
+  
+  public Integer getFocalLength()
+  {
+    return (Integer) this.getObjectValue(FOCALLENGTH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getFocalLengthMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(FOCALLENGTH);
+  }
+  
+  public void setFocalLength(Integer value)
+  {
+    this.setValue(FOCALLENGTH, value);
   }
   
   public Boolean getHasGeologger()

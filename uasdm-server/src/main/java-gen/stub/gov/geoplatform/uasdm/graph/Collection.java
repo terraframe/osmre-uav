@@ -123,7 +123,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WESTBOUND)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATESTART)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATEEND)));
-
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.FLYINGHEIGHT)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.NUMBEROFFLIGHTS)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.PERCENTENDLAP)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.PERCENTSIDELAP)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.AREACOVERED)));
+    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WEATHERCONDITIONS)));
+    
     return attributes;
   }
 

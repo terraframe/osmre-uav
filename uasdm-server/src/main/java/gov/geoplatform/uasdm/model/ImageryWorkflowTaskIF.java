@@ -158,6 +158,12 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             setDateValue(selection, child, Collection.ACQUISITIONDATESTART);
             setDateValue(selection, child, Collection.ACQUISITIONDATEEND);
             setDateValue(selection, child, Collection.COLLECTIONDATE);
+            setIntegerValue(selection, child, Collection.FLYINGHEIGHT);
+            setIntegerValue(selection, child, Collection.NUMBEROFFLIGHTS);
+            setIntegerValue(selection, child, Collection.PERCENTENDLAP);
+            setIntegerValue(selection, child, Collection.PERCENTSIDELAP);
+            setDecimalValue(selection, child, Collection.AREACOVERED);
+            setStringValue(selection, child, Collection.WEATHERCONDITIONS);
 
             if (selection.has(Collection.UAV))
             {
@@ -251,6 +257,36 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
   }
 
+  public static void setIntegerValue(JSONObject selection, UasComponentIF child, String attributeName)
+  {
+    if (selection.has(attributeName))
+    {
+      if (!selection.isNull(attributeName))
+      {
+        child.setValue(attributeName, Integer.valueOf(selection.getInt(attributeName)));
+      }
+      else
+      {
+        child.setValue(attributeName, null);
+      }
+    }
+  }
+  
+  public static void setStringValue(JSONObject selection, UasComponentIF child, String attributeName)
+  {
+    if (selection.has(attributeName))
+    {
+      if (!selection.isNull(attributeName))
+      {
+        child.setValue(attributeName, selection.getString(attributeName));
+      }
+      else
+      {
+        child.setValue(attributeName, null);
+      }
+    }
+  }
+  
   /**
    * Returns the {@link AbstractWorkflowTask} for the given {@link UasComponent}
    * or null if none exists.

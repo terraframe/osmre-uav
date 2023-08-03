@@ -94,6 +94,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
+    object.put(Sensor.FOCALLENGTH, this.getFocalLength());
 
     if (this.getDateCreated() != null)
     {
@@ -151,6 +152,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.SENSORTYPE, sensorType.getName());
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
+    object.put(Sensor.FOCALLENGTH, this.getFocalLength());
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
@@ -198,6 +200,11 @@ public class Sensor extends SensorBase implements JSONSerializable
       sensor.setHasGeologger(json.getBoolean(Sensor.HASGEOLOGGER));
     }
 
+    if (json.has(Sensor.FOCALLENGTH))
+    {
+      sensor.setFocalLength(json.getInt(Sensor.FOCALLENGTH));
+    }
+    
     if (json.has(Sensor.SENSOR_TYPE_OID))
     {
       String oid = json.getString(Sensor.SENSOR_TYPE_OID);

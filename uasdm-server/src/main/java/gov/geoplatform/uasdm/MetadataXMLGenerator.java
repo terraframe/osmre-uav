@@ -18,7 +18,6 @@ package gov.geoplatform.uasdm;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collector;
@@ -61,6 +60,7 @@ import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.CollectionMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.MissionMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ProjectMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.SensorMetadata;
 
 public class MetadataXMLGenerator
 {
@@ -149,6 +149,7 @@ public class MetadataXMLGenerator
       metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
       metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
       metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+      metadata.getSensor().setFocalLength(sensor.getFocalLength());
     }
 
     return metadata;
@@ -202,13 +203,15 @@ public class MetadataXMLGenerator
 
   private Element createSensorElement(FlightMetadata metadata, Document dom)
   {
+    SensorMetadata sensor = metadata.getSensor();
+    
     Element e = dom.createElement("Sensor");
-    e.setAttribute("name", metadata.getSensor().getName());
-    e.setAttribute("type", metadata.getSensor().getType());
-    e.setAttribute("model", metadata.getSensor().getModel());
-    e.setAttribute("wavelength", metadata.getSensor().getWavelength());
+    e.setAttribute("name", sensor.getName());
+    e.setAttribute("type", sensor.getType());
+    e.setAttribute("model", sensor.getModel());
+    e.setAttribute("wavelength", sensor.getWavelength());
 
-    String width = metadata.getSensor().getImageWidth();
+    String width = sensor.getImageWidth();
     if (width != null && width.length() > 0)
     {
       e.setAttribute("imageWidth", width);
@@ -218,7 +221,7 @@ public class MetadataXMLGenerator
       e.setAttribute("imageWidth", "");
     }
 
-    String height = metadata.getSensor().getImageHeight();
+    String height = sensor.getImageHeight();
     if (height != null && height.length() > 0)
     {
       e.setAttribute("imageHeight", height);
@@ -228,12 +231,19 @@ public class MetadataXMLGenerator
       e.setAttribute("imageHeight", "");
     }
 
-    e.setAttribute("sensorWidth", metadata.getSensor().getSensorWidth());
+    e.setAttribute("sensorWidth", sensor.getSensorWidth());
     e.setAttribute("sensorWidthUnits", "mm");
-    e.setAttribute("sensorHeight", metadata.getSensor().getSensorHeight());
+    e.setAttribute("sensorHeight", sensor.getSensorHeight());
     e.setAttribute("sensorHeightUnits", "mm");
-    e.setAttribute("pixelSizeWidth", metadata.getSensor().getPixelSizeWidth());
-    e.setAttribute("pixelSizeHeight", metadata.getSensor().getPixelSizeHeight());
+    e.setAttribute("pixelSizeWidth", sensor.getPixelSizeWidth());
+    e.setAttribute("pixelSizeHeight", sensor.getPixelSizeHeight());
+    
+    if (sensor.getFocalLength() != null)
+    {
+      e.setAttribute("rawFocalLength", sensor.getFocalLength().toString());
+    }
+    
+
     return e;
   }
 
@@ -299,6 +309,37 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("acquisitionDateEnd", Util.formatMetadata(collection.getAcquisitionDateEnd(), false));
     }
+    
+    if (collection.getFlyingHeight() != null)
+    {
+      e.setAttribute("flyingHeight", collection.getFlyingHeight().toString());
+    }
+    
+    if (collection.getNumberOfFlights() != null)
+    {
+      e.setAttribute("numberOfFlights", collection.getNumberOfFlights().toString());
+    }
+    
+    if (collection.getPercentEndLap() != null)
+    {
+      e.setAttribute("percentEndLap", collection.getPercentEndLap().toString());
+    }
+    
+    if (collection.getPercentSideLap() != null)
+    {
+      e.setAttribute("percentSideLap", collection.getPercentSideLap().toString());
+    }
+    
+    if (collection.getAreaCovered() != null)
+    {
+      e.setAttribute("areaCovered", collection.getAreaCovered().setScale(5, RoundingMode.HALF_UP).toPlainString());
+    }
+    
+    if (collection.getWeatherConditions() != null)
+    {
+      e.setAttribute("weatherConditions", collection.getWeatherConditions().toString());
+    }        
+
 
     return e;
   }

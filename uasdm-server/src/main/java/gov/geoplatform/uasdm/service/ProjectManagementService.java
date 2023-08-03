@@ -751,6 +751,12 @@ public class ProjectManagementService
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATESTART);
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATEEND);
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONDATE);
+    ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.FLYINGHEIGHT);
+    ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.NUMBEROFFLIGHTS);
+    ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.PERCENTENDLAP);
+    ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.PERCENTSIDELAP);
+    ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.AREACOVERED);
+    ImageryWorkflowTaskIF.setStringValue(selection, collection, Collection.WEATHERCONDITIONS);
 
 
     collection.apply();
@@ -1037,6 +1043,35 @@ public class ProjectManagementService
           response.put("acquisitionDateEnd", Util.formatIso8601(collection.getAcquisitionDateEnd(), false));
         }
 
+        if (collection.getFlyingHeight() != null)
+        {
+          response.put("flyingHeight", collection.getFlyingHeight());
+        }
+        
+        if (collection.getNumberOfFlights() != null)
+        {
+          response.put("numberOfFlights", collection.getNumberOfFlights());
+        }
+        
+        if (collection.getPercentEndLap() != null)
+        {
+          response.put("percentEndLap", collection.getPercentEndLap());
+        }
+        
+        if (collection.getPercentSideLap() != null)
+        {
+          response.put("percentSideLap", collection.getPercentSideLap());
+        }
+        
+        if (collection.getAreaCovered() != null)
+        {
+          response.put("areaCovered", collection.getAreaCovered().setScale(5, RoundingMode.HALF_UP));
+        }
+        
+        if (collection.getWeatherConditions() != null)
+        {
+          response.put("weatherConditions", collection.getWeatherConditions());
+        }        
       }
     }
 
