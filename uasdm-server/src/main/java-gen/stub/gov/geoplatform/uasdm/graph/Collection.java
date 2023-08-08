@@ -1,23 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -129,7 +130,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.PERCENTSIDELAP)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.AREACOVERED)));
     attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WEATHERCONDITIONS)));
-    
+
     return attributes;
   }
 
@@ -169,6 +170,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return Collection.expandClause();
   }
 
+  @Override
+  public List<CollectionIF> getDerivedCollections()
+  {
+    return Arrays.asList(this);
+  }
+
   public JSONObject toMetadataMessage()
   {
     final List<UasComponentIF> ancestors = this.getAncestors();
@@ -206,25 +213,26 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return super.download(key);
   }
-  
+
   public RemoteFileObject download(String key, boolean incrementDownloadCount)
   {
     if (incrementDownloadCount)
     {
       CollectionReport.updateDownloadCount(this);
     }
-    
-    // TODO : Due to a bug in ODM png generation with multispectral we're hacking around it here
+
+    // TODO : Due to a bug in ODM png generation with multispectral we're
+    // hacking around it here
     // @see https://github.com/OpenDroneMap/ODM/issues/1658
     if (this.isMultiSpectral() && key.matches(Product.THUMBNAIL_ORTHO_PNG_REGEX))
     {
       Product product = this.getProducts().get(0);
       InputStream is = new TiTillerProxy().getCogPreview(product, product.getMappableOrtho().get(), new CogPreviewParams(250, 250));
-      
+
       try
       {
         byte[] bytes = IOUtils.toByteArray(is);
-        
+
         return new InputStreamObjectWrapper(key, new ByteArrayInputStream(bytes), new BasicFileMetadata(ContentType.IMAGE_PNG.toString(), bytes.length));
       }
       catch (IOException e)
@@ -285,22 +293,19 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       CollectionReport.create(this);
     }
   }
-  
+
   public boolean hasAllZip()
   {
     /*
-    List<Product> products = this.getProducts();
-    
-    if (products.size() == 0)
-    {
-      return Optional.empty();
-    }
-    
-    return products.get(0).getAllZipDocument();
-    */
-    
+     * List<Product> products = this.getProducts();
+     * 
+     * if (products.size() == 0) { return Optional.empty(); }
+     * 
+     * return products.get(0).getAllZipDocument();
+     */
+
     Optional<ODMRun> odmRun = ODMRun.getByComponentOrdered(this.getOid()).stream().findFirst();
-    
+
     if (odmRun.isPresent())
     {
       return odmRun.get().getODMRunOutputChildDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
@@ -312,9 +317,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   /**
-   * TODO: This is an order of magnitude slower than querying the database because it does an s3 list objects request.
-   * But, since we have a corruption in our database with the all zip document relationship with the product it is sometimes
-   * necessary.
+   * TODO: This is an order of magnitude slower than querying the database
+   * because it does an s3 list objects request. But, since we have a corruption
+   * in our database with the all zip document relationship with the product it
+   * is sometimes necessary.
    */
   public SiteObject getAllZip()
   {

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -37,14 +39,329 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class FlightMetadata
 {
+  public static class ProcessingRunMetadata
+  {
+    private String                 type;
+
+    private Date                   startDate;
+
+    private Date                   endDate;
+
+    private BigDecimal             resolution;
+
+    private Integer                matchingNeighbors;
+
+    private Integer                minimumExtractFeatures;
+
+    private Quality                generatedFeatureQuality;
+
+    private RadiometricCalibration radiometricCallibration;
+
+    private Boolean                geoLoggerUsed;
+
+    private Quality                ptCloudQuality;
+
+    public String getType()
+    {
+      return type;
+    }
+
+    public void setType(String type)
+    {
+      this.type = type;
+    }
+
+    public Date getStartDate()
+    {
+      return startDate;
+    }
+
+    public void setStartDate(Date startDate)
+    {
+      this.startDate = startDate;
+    }
+
+    public Date getEndDate()
+    {
+      return endDate;
+    }
+
+    public void setEndDate(Date endDate)
+    {
+      this.endDate = endDate;
+    }
+
+    public BigDecimal getResolution()
+    {
+      return resolution;
+    }
+
+    public void setResolution(BigDecimal resolution)
+    {
+      this.resolution = resolution;
+    }
+
+    public Integer getMatchingNeighbors()
+    {
+      return matchingNeighbors;
+    }
+
+    public void setMatchingNeighbors(Integer matchingNeighbors)
+    {
+      this.matchingNeighbors = matchingNeighbors;
+    }
+
+    public Integer getMinimumExtractFeatures()
+    {
+      return minimumExtractFeatures;
+    }
+
+    public void setMinimumExtractFeatures(Integer minimumExtractFeatures)
+    {
+      this.minimumExtractFeatures = minimumExtractFeatures;
+    }
+
+    public Quality getGeneratedFeatureQuality()
+    {
+      return generatedFeatureQuality;
+    }
+
+    public void setGeneratedFeatureQuality(Quality generatedFeatureQuality)
+    {
+      this.generatedFeatureQuality = generatedFeatureQuality;
+    }
+
+    public RadiometricCalibration getRadiometricCallibration()
+    {
+      return radiometricCallibration;
+    }
+
+    public void setRadiometricCallibration(RadiometricCalibration radiometricCallibration)
+    {
+      this.radiometricCallibration = radiometricCallibration;
+    }
+
+    public Boolean getGeoLoggerUsed()
+    {
+      return geoLoggerUsed;
+    }
+
+    public void setGeoLoggerUsed(Boolean geoLoggerUsed)
+    {
+      this.geoLoggerUsed = geoLoggerUsed;
+    }
+
+    public Quality getPtCloudQuality()
+    {
+      return ptCloudQuality;
+    }
+
+    public void setPtCloudQuality(Quality ptCloudQuality)
+    {
+      this.ptCloudQuality = ptCloudQuality;
+    }
+
+    public ProcessingRunMetadata populate(ODMRun run)
+    {
+      ODMProcessConfiguration configuration = run.getConfiguration();
+
+      this.setType("ODM");
+      this.setStartDate(run.getRunStart());
+      this.setEndDate(run.getRunEnd());
+      this.setResolution(configuration.getResolution());
+      this.setMatchingNeighbors(configuration.getMatcherNeighbors());
+      this.setMinimumExtractFeatures(configuration.getMinNumFeatures());
+      this.setGeneratedFeatureQuality(configuration.getFeatureQuality());
+      this.setRadiometricCallibration(configuration.getRadiometricCalibration());
+      this.setGeoLoggerUsed(configuration.isIncludeGeoLocationFile());
+      this.setPtCloudQuality(configuration.getPcQuality());
+
+      return this;
+    }
+
+    public static ProcessingRunMetadata parse(Element item)
+    {
+      ProcessingRunMetadata metadata = new ProcessingRunMetadata();
+      metadata.setType(item.getAttribute("type"));
+
+      if (item.hasAttribute("startDate"))
+      {
+        try
+        {
+          metadata.setStartDate(Util.parseMetadata(item.getAttribute("startDate"), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+
+      if (item.hasAttribute("endDate"))
+      {
+        try
+        {
+          metadata.setEndDate(Util.parseMetadata(item.getAttribute("endDate"), false));
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+
+      if (item.hasAttribute("resolution"))
+      {
+        metadata.setResolution(new BigDecimal(item.getAttribute("resolution")));
+      }
+
+      if (item.hasAttribute("matchingNeighbors"))
+      {
+        metadata.setMatchingNeighbors(Integer.valueOf(item.getAttribute("matchingNeighbors")));
+      }
+
+      if (item.hasAttribute("minimumExtractFeatures"))
+      {
+        metadata.setMinimumExtractFeatures(Integer.valueOf(item.getAttribute("minimumExtractFeatures")));
+      }
+
+      if (item.hasAttribute("generatedFeatureQuality"))
+      {
+        metadata.setGeneratedFeatureQuality(Quality.valueOf(item.getAttribute("generatedFeatureQuality")));
+      }
+
+      if (item.hasAttribute("radiometricCallibration"))
+      {
+        metadata.setRadiometricCallibration(RadiometricCalibration.valueOf(item.getAttribute("radiometricCallibration")));
+      }
+
+      if (item.hasAttribute("geoLoggerUsed"))
+      {
+        metadata.setGeoLoggerUsed(Boolean.valueOf(item.getAttribute("geoLoggerUsed")));
+      }
+
+      if (item.hasAttribute("ptCloudQuality"))
+      {
+        metadata.setPtCloudQuality(Quality.valueOf(item.getAttribute("ptCloudQuality")));
+      }
+
+      return metadata;
+    }
+  }
+
+  public static class ArtifactMetadata
+  {
+    private String                type;
+
+    private String                bands;
+
+    private String                format;
+
+    private String                resolution;
+
+    private ProcessingRunMetadata processingRun;
+
+    public String getType()
+    {
+      return type;
+    }
+
+    public void setType(String type)
+    {
+      this.type = type;
+    }
+
+    public String getBands()
+    {
+      return bands;
+    }
+
+    public void setBands(String bands)
+    {
+      this.bands = bands;
+    }
+
+    public String getFormat()
+    {
+      return format;
+    }
+
+    public void setFormat(String format)
+    {
+      this.format = format;
+    }
+
+    public String getResolution()
+    {
+      return resolution;
+    }
+
+    public void setResolution(String resolution)
+    {
+      this.resolution = resolution;
+    }
+
+    public ProcessingRunMetadata getProcessingRun()
+    {
+      return processingRun;
+    }
+
+    public void setProcessingRun(ProcessingRunMetadata processingRun)
+    {
+      this.processingRun = processingRun;
+    }
+
+    public ArtifactMetadata populate(Artifact artifact)
+    {
+      this.type = artifact.getFolder();
+
+      List<SiteObject> objects = artifact.getObjects();
+
+      SiteObject object = objects.get(0);
+
+      ODMRun run = ODMRun.getGeneratingRun(gov.geoplatform.uasdm.graph.Document.get(object.getId()));
+
+      if (run != null)
+      {
+        this.processingRun = new ProcessingRunMetadata().populate(run);
+      }
+
+      return this;
+    }
+
+    public static ArtifactMetadata parse(Element item)
+    {
+      ArtifactMetadata metadata = new ArtifactMetadata();
+      metadata.setType(item.getAttribute("type"));
+
+      NodeList list = item.getElementsByTagName("ProcessingRun");
+
+      if (list.getLength() > 0)
+      {
+        Node child = list.item(0);
+
+        metadata.setProcessingRun(ProcessingRunMetadata.parse((Element) child));
+      }
+
+      return metadata;
+    }
+
+  }
+
   public static class PlatformMetadata
   {
     private String name;
@@ -776,19 +1093,21 @@ public class FlightMetadata
 
   }
 
-  private String             name;
+  private String                 name;
 
-  private String             email;
+  private String                 email;
 
-  private ProjectMetadata    project;
+  private ProjectMetadata        project;
 
-  private MissionMetadata    mission;
+  private MissionMetadata        mission;
 
-  private CollectionMetadata collection;
+  private CollectionMetadata     collection;
 
-  private PlatformMetadata   platform;
+  private PlatformMetadata       platform;
 
-  private SensorMetadata     sensor;
+  private SensorMetadata         sensor;
+
+  private List<ArtifactMetadata> artifacts;
 
   public FlightMetadata()
   {
@@ -799,6 +1118,7 @@ public class FlightMetadata
     this.collection = new CollectionMetadata();
     this.platform = new PlatformMetadata();
     this.sensor = new SensorMetadata();
+    this.artifacts = new LinkedList<>();
   }
 
   public String getName()
@@ -869,6 +1189,16 @@ public class FlightMetadata
   public void setSensor(SensorMetadata sensor)
   {
     this.sensor = sensor;
+  }
+
+  public void addArtifact(ArtifactMetadata artifact)
+  {
+    this.artifacts.add(artifact);
+  }
+
+  public List<ArtifactMetadata> getArtifacts()
+  {
+    return artifacts;
   }
 
   public void parse(Document document)
@@ -1028,6 +1358,16 @@ public class FlightMetadata
     if (jSensor.has("focalLength"))
     {
       metadata.getSensor().setFocalLength(jSensor.getInt("focalLength"));
+    }
+
+    Artifact[] artifacts = collection.getArtifactObjects();
+
+    for (Artifact artifact : artifacts)
+    {
+      if (artifact.hasObjects())
+      {
+        metadata.addArtifact(new ArtifactMetadata().populate(artifact));
+      }
     }
 
     return metadata;

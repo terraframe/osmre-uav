@@ -142,52 +142,57 @@ public class Site extends SiteBase implements SiteIF
 
       Point point = this.getGeoPoint();
 
-      GraphQuery<VertexObject> gQuery = new GraphQuery<VertexObject>(sql.toString());
-      gQuery.setParameter("wkt", point.toText());
-
-      List<VertexObject> results = gQuery.getResults();
-
-      MdVertex lowestType = null;
-
-      /*
-       * Assign the site to the lowest level that contains that site
-       */
-
-      // Get the list of types ordered by the reverse of a flattened breadth
-      // first visit of the hierarchy tree
-      String key = "ordered-" + version.getOid();
-
-      if (!cache.containsKey(key))
+      if (point != null)
       {
-        cache.put(key, getOrderedTypes(synchronization, version));
-      }
 
-      List<GeoObjectTypeSnapshot> orderedTypes = (List<GeoObjectTypeSnapshot>) cache.get(key);
+        GraphQuery<VertexObject> gQuery = new GraphQuery<VertexObject>(sql.toString());
+        gQuery.setParameter("wkt", point.toText());
 
-      for (GeoObjectTypeSnapshot type : orderedTypes)
-      {
-        // Once a lowest type has been select we don't need to try any other
-        // types
-        if (lowestType == null)
+        List<VertexObject> results = gQuery.getResults();
+
+        MdVertex lowestType = null;
+
+        /*
+         * Assign the site to the lowest level that contains that site
+         */
+
+        // Get the list of types ordered by the reverse of a flattened breadth
+        // first visit of the hierarchy tree
+        String key = "ordered-" + version.getOid();
+
+        if (!cache.containsKey(key))
         {
-          MdVertex actualVertex = type.getGraphMdVertex();
+          cache.put(key, getOrderedTypes(synchronization, version));
+        }
 
-          for (VertexObject result : results)
+        List<GeoObjectTypeSnapshot> orderedTypes = (List<GeoObjectTypeSnapshot>) cache.get(key);
+
+        for (GeoObjectTypeSnapshot type : orderedTypes)
+        {
+          // Once a lowest type has been select we don't need to try any other
+          // types
+          if (lowestType == null)
           {
-            MdClassDAOIF mdClass = result.getMdClass();
+            MdVertex actualVertex = type.getGraphMdVertex();
 
-            // If the type of the current object is the same type as the current
-            // lowest available type
-            // then assign that type as the selected lowest type
-            if (lowestType == null && actualVertex.getOid().equals(mdClass.getOid()))
+            for (VertexObject result : results)
             {
-              lowestType = actualVertex;
-            }
+              MdClassDAOIF mdClass = result.getMdClass();
 
-            // Assign the site to all geo objects of the selected lowest type
-            if (lowestType != null && lowestType.getOid().equals(mdClass.getOid()))
-            {
-              result.addChild(this, synchronizationEdge.definesType()).apply();
+              // If the type of the current object is the same type as the
+              // current
+              // lowest available type
+              // then assign that type as the selected lowest type
+              if (lowestType == null && actualVertex.getOid().equals(mdClass.getOid()))
+              {
+                lowestType = actualVertex;
+              }
+
+              // Assign the site to all geo objects of the selected lowest type
+              if (lowestType != null && lowestType.getOid().equals(mdClass.getOid()))
+              {
+                result.addChild(this, synchronizationEdge.definesType()).apply();
+              }
             }
           }
         }

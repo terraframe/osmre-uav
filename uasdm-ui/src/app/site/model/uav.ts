@@ -40,7 +40,6 @@ export class MetadataResponse {
 	exifIncluded?: boolean;
 	acquisitionDateStart?: string;
 	acquisitionDateEnd?: string;
-	focalLength?: number;
 	flyingHeight?: number;
 	numberOfFlights?: number;
 	percentEndLap?: number;

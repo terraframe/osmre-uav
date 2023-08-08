@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -30,6 +30,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -41,13 +44,12 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdBusiness;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
-import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.command.IndexCreateDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
+import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
+import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
@@ -55,8 +57,8 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.AdminCondition;
+import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -175,7 +177,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (isNew)
     {
-      IndexService.createDocument(this.getAncestors(), this);
+      new IndexCreateDocumentCommand(this.getAncestors(), this).doIt();
     }
   }
 
@@ -192,7 +194,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       if (isNameModified || needsUpdate)
       {
-        IndexService.updateComponent(this, isNameModified);
+        new IndexUpdateDocumentCommand(this, isNameModified).doIt();
       }
     }
   }
@@ -303,7 +305,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     throw new UnsupportedOperationException();
   }
-  
+
+  @Override
+  public Artifact[] getArtifactObjects()
+  {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public void removeArtifacts(String folder)
   {
@@ -638,7 +646,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       return new LinkedList<Product>(iterator.getAll());
     }
   }
-  
+
   @Override
   public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
   {

@@ -15,12 +15,21 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.Page;
 
 public class PlatformType extends PlatformTypeBase implements Classification
@@ -32,6 +41,43 @@ public class PlatformType extends PlatformTypeBase implements Classification
   public PlatformType()
   {
     super();
+  }
+  
+  @Override
+  public void apply()
+  {
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (!isNew)
+    {
+      this.getCollections().forEach(collection -> {
+        new GenerateMetadataCommand(collection).doIt();
+      });
+    }
+  }
+
+  public List<CollectionIF> getCollections()
+  {
+    final MdVertexDAOIF platformVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+    MdAttributeDAOIF platformAttribute = platformVertex.definesAttribute(Platform.PLATFORMTYPE);    
+    
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO("gov.geoplatform.uasdm.graph.PlatformHasSensor");
+    
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " IN (");
+    statement.append("   SELECT OUT ('" + mdEdge.getDBClassName() + "') FROM " + platformVertex.getDBClassName());    
+    statement.append("   WHERE " + platformAttribute.getColumnName() + " = :rid");    
+    statement.append(" )");
+
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
   }
   
   public static PlatformType getByName(String name)

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -64,6 +64,7 @@ import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
@@ -444,10 +445,8 @@ public class ProjectManagementService
   public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho, String configuration)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
-    
-    if (collection instanceof gov.geoplatform.uasdm.graph.Collection &&
-        ((gov.geoplatform.uasdm.graph.Collection) collection).getStatus().equals("Processing")
-        )
+
+    if (collection instanceof gov.geoplatform.uasdm.graph.Collection && ( (gov.geoplatform.uasdm.graph.Collection) collection ).getStatus().equals("Processing"))
     {
       ProcessingInProgressException ex = new ProcessingInProgressException();
       throw ex;
@@ -531,34 +530,11 @@ public class ProjectManagementService
 
     uasComponent.apply();
 
-    this.updateMetadata(uasComponent);
-
     // uasComponent.unlock();
 
     SiteItem updatedSiteItem = Converter.toSiteItem(uasComponent, false);
 
     return updatedSiteItem;
-  }
-
-  private void updateMetadata(UasComponentIF component)
-  {
-    if (component instanceof CollectionIF)
-    {
-      try
-      {
-
-        new MetadataXMLGenerator().generateAndUpload((CollectionIF) component);
-      }
-      catch (Exception e)
-      {
-        // Swallow error and print the stack
-        e.printStackTrace();
-      }
-    }
-    else
-    {
-      component.getChildren().forEach(child -> this.updateMetadata(child));
-    }
   }
 
   @Request(RequestType.SESSION)
@@ -593,28 +569,30 @@ public class ProjectManagementService
 
     uasComponent.deleteObject(key);
   }
-  
+
   @Request(RequestType.SESSION)
   public void removeUploadTask(String sessionId, String uploadId)
   {
     try
     {
       AbstractUploadTask wfTask = AbstractUploadTask.getTaskByUploadId(uploadId);
-  
+
       if (wfTask != null)
       {
-        if (! (wfTask.getStatus().equals(WorkflowTaskStatus.STARTED.toString()) || wfTask.getStatus().equals(WorkflowTaskStatus.UPLOADING.toString())))
+        if (! ( wfTask.getStatus().equals(WorkflowTaskStatus.STARTED.toString()) || wfTask.getStatus().equals(WorkflowTaskStatus.UPLOADING.toString()) ))
         {
           ProcessingInProgressException ex = new ProcessingInProgressException();
           throw ex;
         }
-        
+
         wfTask.delete();
       }
     }
     catch (ProcessingInProgressException ex)
     {
-      // At the end of the day, the front-end is just trying to cancel out their fine-uploader status. Let them cancel their upload since it's corrupt anyway.
+      // At the end of the day, the front-end is just trying to cancel out their
+      // fine-uploader status. Let them cancel their upload since it's corrupt
+      // anyway.
     }
   }
 
@@ -622,7 +600,7 @@ public class ProjectManagementService
   public void removeTask(String sessionId, String taskId)
   {
     WorkflowTask task = WorkflowTask.get(taskId);
-  
+
     if (task != null)
     {
       if (task.getNormalizedStatus().equals(WorkflowTaskStatus.PROCESSING.toString()))
@@ -630,11 +608,11 @@ public class ProjectManagementService
         ProcessingInProgressException ex = new ProcessingInProgressException();
         throw ex;
       }
-      
+
       task.delete();
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
   {
@@ -651,13 +629,13 @@ public class ProjectManagementService
       FileUtils.deleteQuietly(infile);
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public void handleUploadMergeError(String sessionId, RequestParserIF parser, Throwable t)
   {
     final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
-    
+
     task.lock();
     task.setStatus(WorkflowTaskStatus.ERROR.toString());
     task.setMessage(msg);
@@ -670,13 +648,13 @@ public class ProjectManagementService
       NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public void handleUploadMergeStart(String sessionId, RequestParserIF parser)
   {
     final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     final String msg = "Processing uploaded files...";
-    
+
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage(msg);
@@ -738,7 +716,7 @@ public class ProjectManagementService
         collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
-    
+
     if (selection.has(Collection.EXIFINCLUDED))
     {
       collection.setValue(Collection.EXIFINCLUDED, selection.getBoolean(Collection.EXIFINCLUDED));
@@ -758,10 +736,7 @@ public class ProjectManagementService
     ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.AREACOVERED);
     ImageryWorkflowTaskIF.setStringValue(selection, collection, Collection.WEATHERCONDITIONS);
 
-
     collection.apply();
-
-    new MetadataXMLGenerator().generateAndUpload(collection);
   }
 
   @Request(RequestType.SESSION)
@@ -817,7 +792,7 @@ public class ProjectManagementService
 
       if (component instanceof Collection)
       {
-        return ((Collection) component).download(key, incrementDownloadCount);
+        return ( (Collection) component ).download(key, incrementDownloadCount);
       }
       else
       {
@@ -838,7 +813,7 @@ public class ProjectManagementService
       if (op.isPresent())
       {
         Document document = (Document) op.get();
-        
+
         InputStream cogImage = new TiTillerProxy().getCogPreview(product, document, new CogPreviewParams());
 
         if (cogImage != null)
@@ -871,7 +846,7 @@ public class ProjectManagementService
 
     if (component instanceof Collection)
     {
-      return ((Collection) component).download(key, incrementDownloadCount);
+      return ( (Collection) component ).download(key, incrementDownloadCount);
     }
     else
     {
@@ -1007,7 +982,7 @@ public class ProjectManagementService
 
         response.put("name", collection.getPocName());
         response.put("email", collection.getPocEmail());
-        
+
         if (collection.getExifIncluded() != null)
         {
           response.put("exifIncluded", collection.getExifIncluded());
@@ -1047,31 +1022,31 @@ public class ProjectManagementService
         {
           response.put("flyingHeight", collection.getFlyingHeight());
         }
-        
+
         if (collection.getNumberOfFlights() != null)
         {
           response.put("numberOfFlights", collection.getNumberOfFlights());
         }
-        
+
         if (collection.getPercentEndLap() != null)
         {
           response.put("percentEndLap", collection.getPercentEndLap());
         }
-        
+
         if (collection.getPercentSideLap() != null)
         {
           response.put("percentSideLap", collection.getPercentSideLap());
         }
-        
+
         if (collection.getAreaCovered() != null)
         {
           response.put("areaCovered", collection.getAreaCovered().setScale(5, RoundingMode.HALF_UP));
         }
-        
+
         if (collection.getWeatherConditions() != null)
         {
           response.put("weatherConditions", collection.getWeatherConditions());
-        }        
+        }
       }
     }
 
@@ -1124,10 +1099,10 @@ public class ProjectManagementService
   public RemoteFileObject downloadReport(String sessionId, String colId, String folder)
   {
     Collection collection = Collection.get(colId);
-    
+
     return collection.downloadReport(folder);
   }
-  
+
   @Request(RequestType.SESSION)
   public String createCollection(String sessionId, String json)
   {
@@ -1136,7 +1111,9 @@ public class ProjectManagementService
     return Collection.createCollection(selections);
   }
 
-//  @Request(RequestType.SESSION) // This was causing quite a nasty little bug if the user has an expired session. Don't re-enable, since this endpoint is public
+  // @Request(RequestType.SESSION) // This was causing quite a nasty little bug
+  // if the user has an expired session. Don't re-enable, since this endpoint is
+  // public
   public JSONObject configuration(String sessionId, String contextPath)
   {
     JSONObject config = new JSONObject();
@@ -1152,49 +1129,49 @@ public class ProjectManagementService
   public String getDefaultODMRunConfig(String sessionId, String collectionId)
   {
     List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
-    
+
     if (runs.size() > 0)
     {
       ODMRun run = runs.get(0);
-      
+
       ODMProcessConfiguration config = run.getConfiguration();
-      
+
       if (config.isIncludeGeoLocationFile())
       {
         config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
       }
-      
+
       return config.toJson().toString();
     }
     else
     {
       Collection collection = Collection.get(collectionId);
-      
+
       ODMProcessConfiguration config = new ODMProcessConfiguration();
-      
+
       Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);
-      
+
       if (geoFile != null)
       {
         config.setIncludeGeoLocationFile(true);
         config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
         config.setGeoLocationFormat(FileFormat.RX1R2);
       }
-      
+
       return config.toJson().toString();
     }
   }
-  
+
   @Request(RequestType.SESSION)
   public ODMRunView getODMRunByTask(String sessionId, String taskId)
   {
     ODMRun run = ODMRun.getForTask(taskId);
-    
+
     if (run == null)
     {
       throw new DataNotFoundException("Run does not exist", MdVertexDAO.getMdVertexDAO(ODMRun.CLASS));
     }
-    
+
     return ODMRunView.fromODMRun(run);
   }
 

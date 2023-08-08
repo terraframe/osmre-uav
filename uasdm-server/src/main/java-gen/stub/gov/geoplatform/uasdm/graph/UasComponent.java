@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -66,22 +66,28 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.command.IndexCreateDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
+import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
+import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
+import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.AdminCondition;
+import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -93,59 +99,6 @@ import net.geoprism.rbac.RoleConstants;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
 {
-  private static class Artifact
-  {
-    private List<SiteObject> objects;
-
-    private boolean          report;
-
-    private String           folder;
-
-    private String[]         extensions;
-
-    public Artifact(String folder, String... extensions)
-    {
-      this.folder = folder;
-      this.extensions = extensions;
-      this.report = false;
-      this.objects = new LinkedList<SiteObject>();
-    }
-
-    public void process(SiteObject object)
-    {
-      if (object.getKey().contains("/" + this.folder + "/"))
-      {
-        for (String extension : extensions)
-        {
-          if (object.getKey().toUpperCase().endsWith(extension))
-          {
-            this.objects.add(object);
-
-            break;
-          }
-        }
-
-        if (object.getKey().toUpperCase().endsWith("REPORT.PDF"))
-        {
-          this.report = true;
-        }
-      }
-
-    }
-
-    public JSONObject toJSON()
-    {
-      JSONArray items = new JSONArray();
-
-      this.objects.forEach(object -> items.put(object.toJSON()));
-
-      JSONObject object = new JSONObject();
-      object.put("report", this.report);
-      object.put("items", items);
-      return object;
-    }
-  }
-
   private static final long serialVersionUID = -1526604195;
 
   private Logger            log              = LoggerFactory.getLogger(UasComponent.class);
@@ -268,7 +221,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (isNew)
     {
-      IndexService.createDocument(this.getAncestors(), this);
+      new IndexCreateDocumentCommand(this.getAncestors(), this).doIt();
     }
   }
 
@@ -296,9 +249,22 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       if (needsUpdate || isNameModified)
       {
-        IndexService.updateComponent(this, isNameModified);
-      }      
-      
+        new IndexUpdateDocumentCommand(this, isNameModified).doIt();
+
+        this.getDerivedProducts(null, null).forEach(product -> {
+          new ReIndexStacItemCommand(product).doIt();
+        });
+      }
+
+      // Site data is not included in the XML metadata spec and as
+      // such we do not need to update when there is a change.
+      if (! ( ( this instanceof SiteIF ) ))
+      {
+        this.getDerivedCollections().forEach(collection -> {
+          new GenerateMetadataCommand(collection).doIt();
+        });
+      }
+
       CollectionReport.update(this);
     }
   }
@@ -466,13 +432,23 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public JSONObject getArtifacts()
   {
+    Artifact[] artifacts = getArtifactObjects();
+
+    JSONObject response = new JSONObject();
+
+    for (Artifact artifact : artifacts)
+    {
+      response.put(artifact.getFolder(), artifact.toJSON());
+    }
+
+    return response;
+  }
+
+  public Artifact[] getArtifactObjects()
+  {
     List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
 
-    Artifact[] artifacts = new Artifact[] { 
-        new Artifact(ImageryComponent.DEM, ".TIF"), 
-        new Artifact(ImageryComponent.ORTHO, ".TIF"), 
-        new Artifact(ImageryComponent.PTCLOUD, ".LAZ", ".LAS")
-    };
+    Artifact[] artifacts = new Artifact[] { new Artifact(ImageryComponent.DEM, ".TIF", ".TIFF"), new Artifact(ImageryComponent.ORTHO, ".TIF", ".TIFF"), new Artifact(ImageryComponent.PTCLOUD, ".LAZ", ".LAS") };
 
     for (SiteObject object : objects)
     {
@@ -481,15 +457,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         artifact.process(object);
       }
     }
-
-    JSONObject response = new JSONObject();
-
-    for (Artifact artifact : artifacts)
-    {
-      response.put(artifact.folder, artifact.toJSON());
-    }
-
-    return response;
+    return artifacts;
   }
 
   @Override
@@ -527,8 +495,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       // Re-index the products
       this.getProducts().forEach(product -> {
-        IndexService.createStacItems(product);
+        new ReIndexStacItemCommand(product).doIt();
       });
+    }
+
+    if (this instanceof Collection)
+    {
+      new GenerateMetadataCommand((Collection) this).doIt();
     }
   }
 
@@ -651,7 +624,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     if (conditions != null && conditions.length() > 0)
     {
       JSONObject cObject = new JSONObject(conditions);
-      
+
       boolean isFirst = true;
 
       /*
@@ -679,10 +652,10 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         statement.append(") WHERE @class = 'site0'");
 
         parameters.put("rid", object.getRID());
-        
+
         isFirst = false;
       }
-      
+
       JSONArray array = cObject.getJSONArray("array");
 
       for (int i = 0; i < array.length(); i++)
@@ -747,7 +720,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
             parameters.put(mdAttribute.getColumnName(), value);
           }
         }
-        
+
         isFirst = false;
       }
     }
@@ -891,9 +864,23 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
+  public List<CollectionIF> getDerivedCollections()
+  {
+    String expand = this.buildProductExpandClause();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(" + expand + ")");
+    statement.append("FROM :rid ");
+
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
+  }
+
   @Override
   public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
-  {    
+  {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
 

@@ -15,13 +15,22 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.Page;
 
 public class SensorType extends SensorTypeBase implements Classification
@@ -38,6 +47,43 @@ public class SensorType extends SensorTypeBase implements Classification
   {
     super();
   }
+  
+  @Override
+  public void apply()
+  {
+    boolean isNew = this.isNew();
+
+    super.apply();
+
+    if (!isNew)
+    {
+      this.getCollections().forEach(collection -> {
+        new GenerateMetadataCommand(collection).doIt();
+      });
+    }
+  }
+
+  public List<CollectionIF> getCollections()
+  {
+    final MdVertexDAOIF sensorVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+    MdAttributeDAOIF sensorAttribute = sensorVertex.definesAttribute(Sensor.SENSORTYPE);    
+    
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " IN (");
+    statement.append("   SELECT FROM " + sensorVertex.getDBClassName());    
+    statement.append("   WHERE " + sensorAttribute.getColumnName() + " = :rid");    
+    statement.append(" )");
+
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
+  }
+
   
   @Request
   public static SensorType getByName(String name)

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -34,6 +34,8 @@ import com.runwaysdk.session.SessionIF;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import net.geoprism.GeoprismUser;
@@ -56,6 +58,10 @@ public class UAV extends UAVBase implements JSONSerializable
 
     if (!isNew)
     {
+      this.getCollections().forEach(collection -> {
+        new GenerateMetadataCommand(collection).doIt();
+      });
+
       CollectionReport.update(this);
     }
   }
@@ -89,6 +95,21 @@ public class UAV extends UAVBase implements JSONSerializable
   public Platform getPlatform()
   {
     return Platform.get(this.getObjectValue(PLATFORM));
+  }
+
+  public List<CollectionIF> getCollections()
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.UAV);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :rid");
+
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
   }
 
   @Override

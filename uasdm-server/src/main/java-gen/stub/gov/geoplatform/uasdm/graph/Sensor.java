@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -34,14 +34,16 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 
 public class Sensor extends SensorBase implements JSONSerializable
 {
-  private static final long serialVersionUID = 1045467848;
+  private static final long  serialVersionUID = 1045467848;
 
-  public static final String SENSOR_TYPE_OID = "sensorTypeOid";
+  public static final String SENSOR_TYPE_OID  = "sensorTypeOid";
 
   public Sensor()
   {
@@ -51,21 +53,40 @@ public class Sensor extends SensorBase implements JSONSerializable
   @Override
   public void apply()
   {
-    if (this.isNew())
+    boolean isNew = this.isNew();
+
+    if (isNew)
     {
       this.setDateCreated(new Date());
     }
 
     this.setDateUpdated(new Date());
 
-    boolean isNew = this.isNew();
-
     super.apply();
 
     if (!isNew)
     {
+      this.getCollections().forEach(collection -> {
+        new GenerateMetadataCommand(collection).doIt();
+      });
+
       CollectionReport.update(this);
     }
+  }
+
+  public List<CollectionIF> getCollections()
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :rid");
+
+    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getResults();
   }
 
   @Override
@@ -194,7 +215,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     sensor.setRealSensorWidth(new BigDecimal(json.getDouble(Sensor.SENSORWIDTH)));
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
     sensor.setModel(json.has(Sensor.MODEL) ? json.getString(Sensor.MODEL) : null);
-    
+
     if (json.has(Sensor.HASGEOLOGGER))
     {
       sensor.setHasGeologger(json.getBoolean(Sensor.HASGEOLOGGER));
@@ -204,7 +225,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     {
       sensor.setFocalLength(json.getInt(Sensor.FOCALLENGTH));
     }
-    
+
     if (json.has(Sensor.SENSOR_TYPE_OID))
     {
       String oid = json.getString(Sensor.SENSOR_TYPE_OID);

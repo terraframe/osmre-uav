@@ -118,7 +118,6 @@ export class SiteEntity {
 	exifIncluded?: boolean;
 	acquisitionDateStart?: string;
 	acquisitionDateEnd?: string;
-	focalLength?: number;
 	flyingHeight?: number;
 	numberOfFlights?: number;
 	percentEndLap?: number;
@@ -201,7 +200,6 @@ export class Selection {
 	exifIncluded?: boolean;
 	acquisitionDateStart?: string;
 	acquisitionDateEnd?: string;
-	focalLength?: number;
 	flyingHeight?: number;
 	numberOfFlights?: number;
 	percentEndLap?: number;

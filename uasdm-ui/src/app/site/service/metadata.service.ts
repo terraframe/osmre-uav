@@ -53,7 +53,6 @@ export class MetadataService {
                 || fieldName === 'exifIncluded'
                 || fieldName === 'acquisitionDateStart'
                 || fieldName === 'acquisitionDateEnd'
-                || fieldName === 'focalLength'
                 || fieldName === 'flyingHeight'
                 || fieldName === 'numberOfFlights'
                 || fieldName === 'percentEndLap'

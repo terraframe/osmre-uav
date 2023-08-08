@@ -49,6 +49,7 @@ public class IndexDeleteStacCommand implements Command
    */
   public void undoIt()
   {
+    IndexService.createStacItems(product);
   }
 
   /**

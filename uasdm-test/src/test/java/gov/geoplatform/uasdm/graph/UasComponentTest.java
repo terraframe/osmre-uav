@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -46,21 +46,21 @@ public class UasComponentTest
 {
   private static Area51DataSet testData;
 
-  private Product product;
+  private Product              product;
 
-  private Site site;
+  private Site                 site;
 
-  private Project project;
+  private Project              project;
 
-  private Mission mission;
+  private Mission              mission;
 
-  private Collection collection;
+  private Collection           collection;
 
-  private Document target;
+  private Document             target;
 
-  private Document source;
+  private Document             source;
 
-  private Document image;
+  private Document             image;
 
   @BeforeClass
   public static void setUpClass()
@@ -92,7 +92,7 @@ public class UasComponentTest
     target = Area51DataSet.ORTHO_DOCUMENT.getServerObject();
     image = Area51DataSet.IMAGE_DOCUMENT.getServerObject();
     source = Area51DataSet.RAW_DOCUMENT.getServerObject();
-    
+
     testData.logIn();
   }
 
@@ -101,7 +101,7 @@ public class UasComponentTest
   public void tearDown()
   {
     testData.logOut();
-    
+
     if (product != null)
     {
       product.delete();
@@ -129,10 +129,10 @@ public class UasComponentTest
     Assert.assertTrue(artifacts.has(ImageryComponent.ORTHO));
     Assert.assertTrue(artifacts.has(ImageryComponent.PTCLOUD));
 
-    Assert.assertEquals(0, artifacts.getJSONArray(ImageryComponent.DEM).length());
-    Assert.assertEquals(0, artifacts.getJSONArray(ImageryComponent.PTCLOUD).length());
+    Assert.assertEquals(0, artifacts.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
+    Assert.assertEquals(0, artifacts.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
 
-    JSONArray result = artifacts.getJSONArray(ImageryComponent.ORTHO);
+    JSONArray result = artifacts.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
     Assert.assertEquals(1, result.length());
 
     JSONObject artifact = result.getJSONObject(0);
@@ -258,10 +258,13 @@ public class UasComponentTest
     name.put("field", "name");
     name.put("value", site.getName());
 
-    JSONArray conditions = new JSONArray();
-    conditions.put(bounds);
-    conditions.put(bureau);
-    conditions.put(name);
+    JSONArray array = new JSONArray();
+    array.put(bounds);
+    array.put(bureau);
+    array.put(name);
+
+    JSONObject conditions = new JSONObject();
+    conditions.put("array", array);
 
     JSONObject results = UasComponent.features(conditions.toString());
 
@@ -370,17 +373,17 @@ public class UasComponentTest
   public void testToMetadataMessage() throws IOException
   {
     JSONArray messages = Collection.toMetadataMessage(Arrays.asList(collection));
-    
+
     Assert.assertEquals(1, messages.length());
-    
+
     JSONObject message = messages.getJSONObject(0);
-    
+
     Assert.assertEquals("Metadata missing for collection [Fishbed_E]", message.getString("message"));
     Assert.assertEquals(collection.getOid(), message.getString("collectionId"));
     Assert.assertEquals(collection.getName(), message.getString("collectionName"));
     Assert.assertEquals(3, message.getJSONArray("ancestors").length());
   }
-  
+
   @Test
   public void testGetMissingMetadata()
   {

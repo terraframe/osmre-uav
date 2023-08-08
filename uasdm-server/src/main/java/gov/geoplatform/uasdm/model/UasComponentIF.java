@@ -20,17 +20,18 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.Actor;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -79,6 +80,8 @@ public interface UasComponentIF extends ComponentIF
   public SiteObjectsResultSet getSiteObjects(String key, Long pageNumber, Long pageSize);
 
   public JSONObject getArtifacts();
+  
+  public Artifact[] getArtifactObjects();
 
   public void removeArtifacts(String folder);
 

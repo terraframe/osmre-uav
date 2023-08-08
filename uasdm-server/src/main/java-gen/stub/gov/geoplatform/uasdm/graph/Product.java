@@ -48,11 +48,12 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
+import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -365,8 +366,12 @@ public class Product extends ProductBase implements ProductIF
 
         collection.apply();
 
-        new MetadataXMLGenerator().generateAndUpload(collection);
       }
+    }
+
+    if (component instanceof Collection)
+    {
+      new GenerateMetadataCommand((Collection) component).doIt();
     }
   }
 
@@ -521,26 +526,31 @@ public class Product extends ProductBase implements ProductIF
   {
     IndexService.removeStacItems(this);
 
-    this.setPublished(!this.isPublished());
-    this.apply();
-
-    List<DocumentIF> documents = this.getDocuments();
-
-    for (DocumentIF document : documents)
+    try
     {
-      if (this.isPublished())
+      this.setPublished(!this.isPublished());
+      this.apply();
+
+      List<DocumentIF> documents = this.getDocuments();
+
+      for (DocumentIF document : documents)
       {
-        // Add to public S3 bucket
-        RemoteFileFacade.copyObject(document.getS3location(), AppProperties.getBucketName(), document.getS3location(), AppProperties.getPublicBucketName());
-      }
-      else
-      {
-        // Remove from public S3 bucket
-        RemoteFileFacade.deleteObject(document.getS3location(), AppProperties.getPublicBucketName());
+        if (this.isPublished())
+        {
+          // Add to public S3 bucket
+          RemoteFileFacade.copyObject(document.getS3location(), AppProperties.getBucketName(), document.getS3location(), AppProperties.getPublicBucketName());
+        }
+        else
+        {
+          // Remove from public S3 bucket
+          RemoteFileFacade.deleteObject(document.getS3location(), AppProperties.getPublicBucketName());
+        }
       }
     }
-
-    IndexService.createStacItems(this);
+    finally
+    {
+      new ReIndexStacItemCommand(this).doIt();
+    }
   }
 
   @Override
@@ -763,20 +773,17 @@ public class Product extends ProductBase implements ProductIF
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
     VertexObject object = version.getObject(criteria.getUid());
-    
+
     /*
-SELECT EXPAND(OUT('component_has_product')) FROM (
-  SELECT FROM (
-    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (
-      SELECT FROM (traverse out('g_0__operational', 'ha_0__graph_271118') from #485:20 ) where @class = 'site0'
-    )
-  ) ORDER by collectionSensor.realPixelSizeWidth ASC
-)   
+     * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT
+     * EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('
+     * mission_has_collection0')) FROM ( SELECT FROM (traverse
+     * out('g_0__operational', 'ha_0__graph_271118') from #485:20 ) where @class
+     * = 'site0' ) ) ORDER by collectionSensor.realPixelSizeWidth ASC )
      */
-    
+
     String sortField = criteria.getSortField();
     String sortOrder = criteria.getSortOrder();
-    
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT EXPAND(OUT('component_has_product')) FROM (\n");

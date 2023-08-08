@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -56,9 +56,12 @@ import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.FlightMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.ArtifactMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.CollectionMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.MissionMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.ProcessingRunMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ProjectMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.SensorMetadata;
 
@@ -107,6 +110,16 @@ public class MetadataXMLGenerator
 
     metadata.getCollection().populate(collection);
 
+    Artifact[] artifacts = collection.getArtifactObjects();
+
+    for (Artifact artifact : artifacts)
+    {
+      if (artifact.hasObjects())
+      {
+        metadata.addArtifact(new ArtifactMetadata().populate(artifact));
+      }
+    }
+
     UAV uav = collection.getUav();
     Platform platform = uav.getPlatform();
     PlatformType platformType = platform.getPlatformType();
@@ -145,10 +158,26 @@ public class MetadataXMLGenerator
         metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
       }
 
-      metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
-      metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
-      metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
-      metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+      if (sensor.getRealSensorWidth() != null)
+      {
+        metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
+      }
+
+      if (sensor.getRealSensorHeight() != null)
+      {
+        metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
+      }
+
+      if (sensor.getRealPixelSizeWidth() != null)
+      {
+        metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+      }
+
+      if (sensor.getRealPixelSizeHeight() != null)
+      {
+        metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+      }
+
       metadata.getSensor().setFocalLength(sensor.getFocalLength());
     }
 
@@ -194,6 +223,9 @@ public class MetadataXMLGenerator
     e = this.createSensorElement(metadata, dom);
     root.appendChild(e);
 
+    e = this.createArtifactsElement(metadata, dom);
+    root.appendChild(e);
+
     e = dom.createElement("Upload");
     e.setAttribute("dataType", "raw");
     root.appendChild(e);
@@ -204,7 +236,7 @@ public class MetadataXMLGenerator
   private Element createSensorElement(FlightMetadata metadata, Document dom)
   {
     SensorMetadata sensor = metadata.getSensor();
-    
+
     Element e = dom.createElement("Sensor");
     e.setAttribute("name", sensor.getName());
     e.setAttribute("type", sensor.getType());
@@ -237,12 +269,113 @@ public class MetadataXMLGenerator
     e.setAttribute("sensorHeightUnits", "mm");
     e.setAttribute("pixelSizeWidth", sensor.getPixelSizeWidth());
     e.setAttribute("pixelSizeHeight", sensor.getPixelSizeHeight());
-    
+
     if (sensor.getFocalLength() != null)
     {
       e.setAttribute("rawFocalLength", sensor.getFocalLength().toString());
     }
-    
+
+    return e;
+  }
+
+  private Element createArtifactsElement(FlightMetadata metadata, Document dom)
+  {
+    Element element = dom.createElement("Artifacts");
+
+    metadata.getArtifacts().stream().forEach(artifact -> {
+
+      Element e = this.createArtifactElement(artifact, dom);
+
+      element.appendChild(e);
+    });
+
+    return element;
+  }
+
+  private Element createArtifactElement(ArtifactMetadata metadata, Document dom)
+  {
+    Element element = dom.createElement("Artifact");
+    element.setAttribute("type", metadata.getType());
+
+    if (metadata.getFormat() != null)
+    {
+      element.setAttribute("format", metadata.getFormat());
+    }
+
+    if (metadata.getResolution() != null)
+    {
+      element.setAttribute("resolution", metadata.getResolution());
+    }
+
+    if (metadata.getBands() != null)
+    {
+      element.setAttribute("bands", metadata.getBands());
+    }
+
+    if (metadata.getProcessingRun() != null)
+    {
+      Element e = this.createProcessingRunElement(metadata.getProcessingRun(), dom);
+
+      element.appendChild(e);
+
+    }
+
+    return element;
+  }
+
+  private Element createProcessingRunElement(ProcessingRunMetadata metadata, Document dom)
+  {
+    Element e = dom.createElement("ProcessingRun");
+
+    if (metadata.getType() != null)
+    {
+      e.setAttribute("type", metadata.getType());
+    }
+
+    if (metadata.getStartDate() != null)
+    {
+      e.setAttribute("endDate", Util.formatMetadata(metadata.getEndDate(), false));
+    }
+
+    if (metadata.getEndDate() != null)
+    {
+      e.setAttribute("endDate", Util.formatMetadata(metadata.getEndDate(), false));
+    }
+
+    if (metadata.getGeneratedFeatureQuality() != null)
+    {
+      e.setAttribute("generatedFeatureQuality", metadata.getGeneratedFeatureQuality().name());
+    }
+
+    if (metadata.getResolution() != null)
+    {
+      e.setAttribute("resolution", metadata.getResolution().setScale(5, RoundingMode.HALF_UP).toPlainString());
+    }
+
+    if (metadata.getMatchingNeighbors() != null)
+    {
+      e.setAttribute("matchingNeighbors", metadata.getMatchingNeighbors().toString());
+    }
+
+    if (metadata.getMinimumExtractFeatures() != null)
+    {
+      e.setAttribute("minimumExtractFeatures", metadata.getMinimumExtractFeatures().toString());
+    }
+
+    if (metadata.getRadiometricCallibration() != null)
+    {
+      e.setAttribute("radiometricCalibration", metadata.getRadiometricCallibration().toString());
+    }
+
+    if (metadata.getGeoLoggerUsed() != null)
+    {
+      e.setAttribute("geoLoggerUsed", metadata.getGeoLoggerUsed().toString());
+    }
+
+    if (metadata.getPtCloudQuality() != null)
+    {
+      e.setAttribute("ptCloudQuality", metadata.getPtCloudQuality().name());
+    }
 
     return e;
   }
@@ -309,37 +442,36 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("acquisitionDateEnd", Util.formatMetadata(collection.getAcquisitionDateEnd(), false));
     }
-    
+
     if (collection.getFlyingHeight() != null)
     {
       e.setAttribute("flyingHeight", collection.getFlyingHeight().toString());
     }
-    
+
     if (collection.getNumberOfFlights() != null)
     {
       e.setAttribute("numberOfFlights", collection.getNumberOfFlights().toString());
     }
-    
+
     if (collection.getPercentEndLap() != null)
     {
       e.setAttribute("percentEndLap", collection.getPercentEndLap().toString());
     }
-    
+
     if (collection.getPercentSideLap() != null)
     {
       e.setAttribute("percentSideLap", collection.getPercentSideLap().toString());
     }
-    
+
     if (collection.getAreaCovered() != null)
     {
       e.setAttribute("areaCovered", collection.getAreaCovered().setScale(5, RoundingMode.HALF_UP).toPlainString());
     }
-    
+
     if (collection.getWeatherConditions() != null)
     {
       e.setAttribute("weatherConditions", collection.getWeatherConditions().toString());
-    }        
-
+    }
 
     return e;
   }
@@ -362,12 +494,12 @@ public class MetadataXMLGenerator
     {
       e.setAttribute("sunsetDate", Util.formatMetadata(project.getSunsetDate(), false));
     }
-    
+
     if (project.getProjectType() != null)
     {
       e.setAttribute("projectType", project.getProjectType());
     }
-    
+
     return e;
   }
 
@@ -424,9 +556,12 @@ public class MetadataXMLGenerator
 
       IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 
-      collection.appLock();
-      collection.setMetadataUploaded(true);
-      collection.apply();
+      if (!collection.getMetadataUploaded())
+      {
+        collection.appLock();
+        collection.setMetadataUploaded(true);
+        collection.apply();
+      }
 
       // Remove any messages
       MissingMetadataMessage.remove(collection);

@@ -4,7 +4,9 @@ import java.io.InputStreamReader;
 
 import org.apache.http.NameValuePair;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.session.Request;
 
@@ -19,6 +21,9 @@ public class MockRegistryConnectionBuilder implements RegistryConnectorBuilderIF
 
   public static class LocalRegistryConnector implements RegistryConnectorIF
   {
+    private int objectCount = 0;
+
+    private int edgeCount   = 0;
 
     @Override
     public String getServerUrl()
@@ -33,26 +38,54 @@ public class MockRegistryConnectionBuilder implements RegistryConnectorBuilderIF
       if (url.endsWith("get"))
       {
         JsonElement element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/labeled_type.json")));
-        
+
         return new RegistryResponse(element.toString(), 200);
       }
       else if (url.endsWith("entry"))
       {
         JsonElement element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/entry.json")));
-        
-        return new RegistryResponse(element.toString(), 200);        
+
+        return new RegistryResponse(element.toString(), 200);
       }
       else if (url.endsWith("version"))
       {
         JsonElement element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/version.json")));
-        
+
         return new RegistryResponse(element.toString(), 200);
       }
       else if (url.endsWith("data"))
       {
         JsonElement element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/data.json")));
-        
+
         return new RegistryResponse(element.toString(), 200);
+      }
+      else if (url.endsWith("geo-objects"))
+      {
+        if (objectCount == 0)
+        {
+          objectCount++;
+
+          JsonObject element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/data.json"))).getAsJsonObject();
+          JsonArray objects = element.get("geoObjects").getAsJsonArray();
+
+          return new RegistryResponse(objects.toString(), 200);
+        }
+
+        return new RegistryResponse(new JsonArray().toString(), 200);
+      }
+      else if (url.endsWith("edges"))
+      {
+        if (edgeCount == 0)
+        {
+          edgeCount++;
+
+          JsonObject element = JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("/data.json"))).getAsJsonObject();
+          JsonArray edges = element.get("edges").getAsJsonArray();
+
+          return new RegistryResponse(edges.toString(), 200);
+        }
+
+        return new RegistryResponse(new JsonArray().toString(), 200);
       }
 
       throw new BadServerUriException();
