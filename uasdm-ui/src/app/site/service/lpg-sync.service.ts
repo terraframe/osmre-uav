@@ -186,8 +186,13 @@ export class LPGSyncService implements GenericTableService {
         params = params.set('oid', oid);
         params = params.set('includeRoot', false);
 
+        this.eventService.start();
+
         return this.http
             .get<{roots: any[], metadata: any[]}>(environment.apiUrl + '/labeled-property-graph-synchronization/roots', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
@@ -201,11 +206,16 @@ export class LPGSyncService implements GenericTableService {
         params = params.set('parentId', parentId);
         params = params.set('includeMetadata', includeMetadata);
 
+        this.eventService.start();
+
         return this.http
             .get<{
                 children: any[],
                 metadata?: any
             }>(environment.apiUrl + '/labeled-property-graph-synchronization/select', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
@@ -214,11 +224,16 @@ export class LPGSyncService implements GenericTableService {
         params = params.set('synchronizationId', synchronizationId);
         params = params.set('oid', oid);
 
+        this.eventService.start();
+
         return this.http
             .get<{
                 children: any[],
                 metadata?: any
             }>(environment.apiUrl + '/labeled-property-graph-synchronization/get-object', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
             .toPromise();
     }
 
