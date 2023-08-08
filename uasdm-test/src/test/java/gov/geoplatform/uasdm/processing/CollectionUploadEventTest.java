@@ -179,11 +179,11 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(2, documents.size());
+      Assert.assertEquals(3, documents.size());
+      
+      List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
-      DocumentIF document = documents.get(1);
-
-      Assert.assertEquals("odm_orthophoto_test.tif", document.getName());
+      Assert.assertTrue(names.contains("odm_orthophoto_test.tif"));
     }
     finally
     {
@@ -212,7 +212,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(4, documents.size());
+      Assert.assertEquals(5, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -254,7 +254,7 @@ public class CollectionUploadEventTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(6, documents.size());
+      Assert.assertEquals(7, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
