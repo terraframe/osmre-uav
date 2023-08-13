@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -545,7 +546,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool)
+  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
   {
     return Document.createIfNotExist(this, key, name);
   }

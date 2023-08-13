@@ -626,6 +626,11 @@ public class Product extends ProductBase implements ProductIF
 
       if (dateTime == null)
       {
+        dateTime = ( (Collection) component ).getCollectionEndDate();
+      }
+      
+      if (dateTime == null)
+      {
         dateTime = this.getLastUpdateDate();
       }
 

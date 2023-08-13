@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -64,7 +66,7 @@ import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.graph.ArtifactQuery;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
@@ -722,6 +724,35 @@ public class ProjectManagementService
       collection.setValue(Collection.EXIFINCLUDED, selection.getBoolean(Collection.EXIFINCLUDED));
     }
 
+    if (selection.has("artifacts"))
+    {
+      JSONArray array = selection.getJSONArray("artifacts");
+
+      for (int i = 0; i < array.length(); i++)
+      {
+        JSONObject object = array.getJSONObject(i);
+
+        if (object.getString("folder").equals(ImageryComponent.PTCLOUD))
+        {
+          String ptEpsg = object.has(Document.PTEPSG) ? object.getString(Document.PTEPSG) : null;
+
+          new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
+            return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
+          }).forEach(document -> {
+            String name = document.getName().toUpperCase();
+
+            if (name.endsWith(".LAZ") || name.endsWith(".LAS"))
+            {
+              document.setStartDate(ImageryWorkflowTaskIF.getDateValue(object, Document.STARTDATE));
+              document.setEndDate(ImageryWorkflowTaskIF.getDateValue(object, Document.ENDDATE));
+              document.setPtEpsg(ptEpsg);
+              document.apply();
+            }
+          });
+        }
+      }
+    }
+
     ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.NORTHBOUND);
     ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.SOUTHBOUND);
     ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.EASTBOUND);
@@ -729,6 +760,7 @@ public class ProjectManagementService
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATESTART);
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATEEND);
     ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONDATE);
+    ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONENDDATE);
     ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.FLYINGHEIGHT);
     ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.NUMBEROFFLIGHTS);
     ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.PERCENTENDLAP);
@@ -737,6 +769,7 @@ public class ProjectManagementService
     ImageryWorkflowTaskIF.setStringValue(selection, collection, Collection.WEATHERCONDITIONS);
 
     collection.apply();
+
   }
 
   @Request(RequestType.SESSION)
@@ -1047,6 +1080,9 @@ public class ProjectManagementService
         {
           response.put("weatherConditions", collection.getWeatherConditions());
         }
+
+        JSONArray artifacts = Arrays.stream(collection.getArtifactObjects()).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+        response.put("artifacts", artifacts);
       }
     }
 

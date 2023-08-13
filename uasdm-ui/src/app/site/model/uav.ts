@@ -29,22 +29,23 @@ export class MetadataOptions {
 }
 
 export class MetadataResponse {
-    name: string; 
-    email: string; 
-    uav: any; 
+    name: string;
+    email: string;
+    uav: any;
     sensor: any;
-	northBound?: number;
-	southBound?: number;
-	eastBound?: number;
-	westBound?: number;
-	exifIncluded?: boolean;
-	acquisitionDateStart?: string;
-	acquisitionDateEnd?: string;
-	flyingHeight?: number;
-	numberOfFlights?: number;
-	percentEndLap?: number;
-	percentSideLap?: number;
-	areaCovered?: number;
-	weatherConditions?: string;
+    northBound?: number;
+    southBound?: number;
+    eastBound?: number;
+    westBound?: number;
+    exifIncluded?: boolean;
+    acquisitionDateStart?: string;
+    acquisitionDateEnd?: string;
+    flyingHeight?: number;
+    numberOfFlights?: number;
+    percentEndLap?: number;
+    percentSideLap?: number;
+    areaCovered?: number;
+    weatherConditions?: string;
+    artifacts?: any[];
 }
 

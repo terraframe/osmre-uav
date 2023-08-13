@@ -87,6 +87,12 @@ public class CollectionConverter extends Converter
         siteItem.setCollectionDate(date);
       }
 
+      if (collection.getCollectionEndDate() != null)
+      {
+        String date = Util.formatIso8601(collection.getCollectionEndDate(), false);
+        siteItem.setCollectionEndDate(date);
+      }
+      
       List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
       if (tasks.size() > 0)
       {

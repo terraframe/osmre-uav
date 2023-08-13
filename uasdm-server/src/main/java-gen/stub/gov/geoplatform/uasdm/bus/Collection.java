@@ -85,6 +85,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return null;
   }
+  
+  @Override
+  public Date getCollectionEndDate()
+  {
+    return null;
+  }
 
   @Override
   public String getPocEmail()

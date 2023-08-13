@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1855874339)
+@com.runwaysdk.business.ClassSignature(hash = -1808355913)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,15 +11,19 @@ package gov.geoplatform.uasdm.graph;
 public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Document";
-  public static java.lang.String DESCRIPTION = "description";
-  public static java.lang.String EXCLUDE = "exclude";
-  public static java.lang.String LASTMODIFIED = "lastModified";
-  public static java.lang.String NAME = "name";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String S3LOCATION = "s3location";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String TOOL = "tool";
-  private static final long serialVersionUID = -1855874339;
+  public final static java.lang.String DESCRIPTION = "description";
+  public final static java.lang.String ENDDATE = "endDate";
+  public final static java.lang.String EXCLUDE = "exclude";
+  public final static java.lang.String LASTMODIFIED = "lastModified";
+  public final static java.lang.String NAME = "name";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String PTEPSG = "ptEpsg";
+  public final static java.lang.String S3LOCATION = "s3location";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String STARTDATE = "startDate";
+  public final static java.lang.String TOOL = "tool";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1808355913;
   
   public DocumentBase()
   {
@@ -55,6 +44,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setDescription(String value)
   {
     this.setValue(DESCRIPTION, value);
+  }
+  
+  public java.util.Date getEndDate()
+  {
+    return (java.util.Date) this.getObjectValue(ENDDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getEndDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(ENDDATE);
+  }
+  
+  public void setEndDate(java.util.Date value)
+  {
+    this.setValue(ENDDATE, value);
   }
   
   public Boolean getExclude()
@@ -116,6 +121,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
   }
   
+  public String getPtEpsg()
+  {
+    return (String) this.getObjectValue(PTEPSG);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getPtEpsgMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PTEPSG);
+  }
+  
+  public void setPtEpsg(String value)
+  {
+    this.setValue(PTEPSG, value);
+  }
+  
   public String getS3location()
   {
     return (String) this.getObjectValue(S3LOCATION);
@@ -146,6 +167,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setSeq(Long value)
   {
     this.setValue(SEQ, value);
+  }
+  
+  public java.util.Date getStartDate()
+  {
+    return (java.util.Date) this.getObjectValue(STARTDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getStartDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(STARTDATE);
+  }
+  
+  public void setStartDate(java.util.Date value)
+  {
+    this.setValue(STARTDATE, value);
   }
   
   public String getTool()
@@ -185,6 +222,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getChildren("gov.geoplatform.uasdm.graph.DocumentGeneratedProduct",gov.geoplatform.uasdm.graph.Product.class);
   }
   
+  public com.runwaysdk.business.graph.EdgeObject addODMRunInputChild(gov.geoplatform.uasdm.graph.ODMRun oDMRun)
+  {
+    return super.addChild(oDMRun, "gov.geoplatform.uasdm.graph.ODMRunInput");
+  }
+  
+  public void removeODMRunInputChild(gov.geoplatform.uasdm.graph.ODMRun oDMRun)
+  {
+    super.removeChild(oDMRun, "gov.geoplatform.uasdm.graph.ODMRunInput");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.ODMRun> getODMRunInputChildODMRuns()
+  {
+    return super.getChildren("gov.geoplatform.uasdm.graph.ODMRunInput",gov.geoplatform.uasdm.graph.ODMRun.class);
+  }
+  
   public com.runwaysdk.business.graph.EdgeObject addComponentHasDocumentParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
   {
     return super.addParent(uasComponent, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
@@ -199,6 +252,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public java.util.List<gov.geoplatform.uasdm.graph.UasComponent> getComponentHasDocumentParentUasComponents()
   {
     return super.getParents("gov.geoplatform.uasdm.graph.ComponentHasDocument", gov.geoplatform.uasdm.graph.UasComponent.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addODMRunOutputParent(gov.geoplatform.uasdm.graph.ODMRun oDMRun)
+  {
+    return super.addParent(oDMRun, "gov.geoplatform.uasdm.graph.ODMRunOutput");
+  }
+  
+  public void removeODMRunOutputParent(gov.geoplatform.uasdm.graph.ODMRun oDMRun)
+  {
+    super.removeParent(oDMRun, "gov.geoplatform.uasdm.graph.ODMRunOutput");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.ODMRun> getODMRunOutputParentODMRuns()
+  {
+    return super.getParents("gov.geoplatform.uasdm.graph.ODMRunOutput", gov.geoplatform.uasdm.graph.ODMRun.class);
   }
   
   public com.runwaysdk.business.graph.EdgeObject addProductHasDocumentParent(gov.geoplatform.uasdm.graph.Product product)

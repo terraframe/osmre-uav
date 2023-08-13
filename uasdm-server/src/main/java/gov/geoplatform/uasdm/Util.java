@@ -380,7 +380,7 @@ public class Util
 
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
-    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, null, null);
+    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, null, null, null, null, null);
 
     if (document.isNew())
     {
@@ -402,7 +402,7 @@ public class Util
         Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
 
         final UasComponentIF component = imageryComponent.getUasComponent();
-        component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool());
+        component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool(), task.getPtEpsg(), task.getStartDate(), task.getEndDate());
 
         IndexService.updateOrCreateDocument(ancestors, component, key, name);
 

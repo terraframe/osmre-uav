@@ -60,6 +60,8 @@ public interface CollectionIF extends UasComponentIF
 
   public Date getCollectionDate();
 
+  public Date getCollectionEndDate();
+
   public void setImageHeight(Integer imageHeight);
 
   public void setImageWidth(Integer imageWidth);

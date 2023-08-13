@@ -59,6 +59,9 @@ public class WorkflowService
       task = uasComponent.createWorkflowTask(parser.getUuid(), parser.getUploadTarget());
       task.setDescription(parser.getDescription());
       task.setTool(parser.getTool());
+      task.setPtEpsg(parser.getPtEpsg());
+      task.setStartDate(parser.getStartDate());
+      task.setEndDate(parser.getEndDate());
 
       if (task instanceof WorkflowTask)
       {

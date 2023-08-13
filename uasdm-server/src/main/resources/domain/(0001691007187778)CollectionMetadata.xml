@@ -29,6 +29,7 @@
             <integer name="percentSideLap" label="% sidelap" />
             <decimal name="areaCovered" label="Area covered" length="9" decimal="5" />            
             <text name="weatherConditions" label="Weather conditions" />
+            <dateTime name="collectionEndDate" required="false" label="Collection End Date" description="End Date collection was flown" />            
           </attributes>      
         </create>      
       </mdVertex>    
@@ -39,10 +40,34 @@
           </attributes>
         </create>
       </mdVertex>
-    </update>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
+        <create>
+          <attributes>
+            <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
+            <dateTime name="startDate" required="false" label="Start Date" />                        
+            <dateTime name="endDate" required="false" label="End Date" />                                    
+          </attributes>
+        </create>
+      </mdBusiness>  
+      <mdVertex name="gov.geoplatform.uasdm.graph.Document">
+        <create>      
+          <attributes>
+            <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
+            <dateTime name="startDate" required="false" label="Start Date" />                        
+            <dateTime name="endDate" required="false" label="End Date" />            
+          </attributes>
+        </create>        
+      </mdVertex>    
+    </update>    
   </doIt>
   <undoIt>
     <delete>
+      <object key="gov.geoplatform.uasdm.graph.Document.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Document.startDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Document.endDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.startDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.endDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Sensor.focalLength" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.flyingHeight" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.numberOfFlights" type="com.runwaysdk.system.metadata.MdAttribute"/>
@@ -50,6 +75,7 @@
       <object key="gov.geoplatform.uasdm.graph.Collection.percentSideLap" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.areaCovered" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.weatherConditions" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Collection.collectionEndDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
     </delete>
   </undoIt>
 </version>

@@ -45,7 +45,7 @@ import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.processing.ManagedDocument.DocumentInfo;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 
@@ -208,7 +208,10 @@ public class ODMZipPostProcessor
 
     if (this.progressTask != null && this.progressTask.getProcessPtcloud())
     {
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor));
+      EpsgProcessor processor = new EpsgProcessor();
+      
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferencing_model_geo.txt", processor);
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo(processor.getLine())));
 
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.product, this.collection, monitor));
@@ -283,9 +286,9 @@ public class ODMZipPostProcessor
       if (DevProperties.runOrtho())
       {
         // https://github.com/OpenDroneMap/ClusterODM/issues/113
-//        allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
+        allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
         
-        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
+//        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
       }
       else
       {

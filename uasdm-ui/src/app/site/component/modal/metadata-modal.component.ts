@@ -80,6 +80,7 @@ export class MetadataModalComponent implements OnInit, OnDestroy {
 					percentSideLap : options.percentSideLap,
 					areaCovered : options.areaCovered,
 					weatherConditions : options.weatherConditions,
+					artifacts: options.artifacts
 				}
 			}
 

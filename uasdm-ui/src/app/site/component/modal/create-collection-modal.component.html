@@ -77,6 +77,13 @@
                 required />
             </div>
           </div>
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('collectionEndDate')">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">Collection End Date:</label>
+              <input [(ngModel)]="page.selection.collectionEndDate" name="collectionEndDate" type="date" class="form-control"
+                />
+            </div>
+          </div>
 
           <div [@fadeInOnEnter] class="row" *ngIf="hasField('shortName')">
             <div class="col-md-8">

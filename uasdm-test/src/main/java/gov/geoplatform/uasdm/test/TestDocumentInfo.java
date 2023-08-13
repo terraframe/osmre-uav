@@ -29,6 +29,8 @@ public class TestDocumentInfo
   protected String description;
 
   protected String tool;
+  
+  protected String ptEpsg;
 
   public TestDocumentInfo(TestCollectionInfo component, String key, String fileName)
   {
@@ -93,6 +95,16 @@ public class TestDocumentInfo
   {
     this.tool = tool;
   }
+  
+  public String getPtEpsg()
+  {
+    return ptEpsg;
+  }
+  
+  public void setPtEpsg(String ptEpsg)
+  {
+    this.ptEpsg = ptEpsg;
+  }
 
   public void populate(Document document)
   {
@@ -102,7 +114,7 @@ public class TestDocumentInfo
   {
     UasComponent collection = this.component.getServerObject();
 
-    return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, this.description, this.tool);
+    return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, this.description, this.tool, this.ptEpsg, null, null);
   }
 
   public Document getServerObject()

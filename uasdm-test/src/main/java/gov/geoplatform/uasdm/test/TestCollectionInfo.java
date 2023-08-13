@@ -18,7 +18,6 @@ package gov.geoplatform.uasdm.test;
 import java.util.Date;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.UasComponent;
 

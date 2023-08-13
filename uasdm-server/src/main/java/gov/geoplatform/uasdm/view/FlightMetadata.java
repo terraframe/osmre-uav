@@ -42,6 +42,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
@@ -273,6 +274,12 @@ public class FlightMetadata
 
     private String                resolution;
 
+    private String                ptEpsg;
+
+    private Date                  startDate;
+
+    private Date                  endDate;
+
     private ProcessingRunMetadata processingRun;
 
     public String getType()
@@ -325,14 +332,46 @@ public class FlightMetadata
       this.processingRun = processingRun;
     }
 
+    public String getPtEpsg()
+    {
+      return ptEpsg;
+    }
+
+    public void setPtEpsg(String ptEpsg)
+    {
+      this.ptEpsg = ptEpsg;
+    }
+
+    public Date getStartDate()
+    {
+      return startDate;
+    }
+
+    public void setStartDate(Date startDate)
+    {
+      this.startDate = startDate;
+    }
+
+    public Date getEndDate()
+    {
+      return endDate;
+    }
+
+    public void setEndDate(Date endDate)
+    {
+      this.endDate = endDate;
+    }
+
     public ArtifactMetadata populate(Artifact artifact)
     {
       this.type = artifact.getFolder();
+      this.ptEpsg = artifact.getPtEpsg();
+      this.startDate = artifact.getStartDate();
+      this.endDate = artifact.getEndDate();
 
       List<SiteObject> objects = artifact.getObjects();
 
       SiteObject object = objects.get(0);
-
       ODMRun run = ODMRun.getGeneratingRun(gov.geoplatform.uasdm.graph.Document.get(object.getId()));
 
       if (run != null)
@@ -347,6 +386,75 @@ public class FlightMetadata
     {
       ArtifactMetadata metadata = new ArtifactMetadata();
       metadata.setType(item.getAttribute("type"));
+
+      // Point cloud specific metadata
+      if (metadata.getType().equals(ImageryComponent.PTCLOUD))
+      {
+        if (item.hasAttribute("ptCloudEpsgNumber"))
+        {
+          metadata.setPtEpsg(item.getAttribute("ptCloudEpsgNumber"));
+        }
+
+        if (item.hasAttribute("ptCloudStartDate"))
+        {
+          try
+          {
+            metadata.setStartDate(Util.parseIso8601(item.getAttribute("ptCloudStartDate"), false));
+          }
+          catch (ParseException e)
+          {
+            GenericException exception = new GenericException(e);
+            exception.setUserMessage(e.getMessage());
+            throw exception;
+          }
+        }
+
+        if (item.hasAttribute("ptCloudEndDate"))
+        {
+          try
+          {
+            metadata.setStartDate(Util.parseIso8601(item.getAttribute("ptCloudEndDate"), false));
+          }
+          catch (ParseException e)
+          {
+            GenericException exception = new GenericException(e);
+            exception.setUserMessage(e.getMessage());
+            throw exception;
+          }
+        }
+      }
+
+      // Otho specific metadata
+      if (metadata.getType().equals(ImageryComponent.ORTHO))
+      {
+        if (item.hasAttribute("orthoStartDate"))
+        {
+          try
+          {
+            metadata.setStartDate(Util.parseIso8601(item.getAttribute("orthoStartDate"), false));
+          }
+          catch (ParseException e)
+          {
+            GenericException exception = new GenericException(e);
+            exception.setUserMessage(e.getMessage());
+            throw exception;
+          }
+        }
+
+        if (item.hasAttribute("orthoStartDate"))
+        {
+          try
+          {
+            metadata.setStartDate(Util.parseIso8601(item.getAttribute("orthoStartDate"), false));
+          }
+          catch (ParseException e)
+          {
+            GenericException exception = new GenericException(e);
+            exception.setUserMessage(e.getMessage());
+            throw exception;
+          }
+        }
+      }
 
       NodeList list = item.getElementsByTagName("ProcessingRun");
 

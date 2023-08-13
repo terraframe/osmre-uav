@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -25,50 +25,63 @@ import org.json.JSONObject;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.runwaysdk.ComponentIF;
 
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
 {
-  public static final String KEY = "key";
+  public static final String KEY               = "key";
 
-  public static final String NAME = "name";
+  public static final String NAME              = "name";
 
-  public static final String COMPONENT = "component";
+  public static final String COMPONENT         = "component";
 
-  public static final String FOLDER = "folder";
+  public static final String FOLDER            = "folder";
 
-  public static final String OBJECT = "object";
+  public static final String OBJECT            = "object";
 
-  public static final String IMAGE_KEY = "imageKey";
+  public static final String IMAGE_KEY         = "imageKey";
 
   public static final String LAST_MODIFIED_KEY = "lastModified";
 
-  public static final String EXCLUDE = "exclude";
+  public static final String EXCLUDE           = "exclude";
 
-  public static final String DESCRIPTION = "description";
+  public static final String DESCRIPTION       = "description";
 
-  public static final String TOOL = "tool";
+  public static final String TOOL              = "tool";
 
-  private String id;
+  public static final String PT_EPSG           = "ptEpsg";
 
-  private String name;
+  public static final String START_DATE        = "startDate";
 
-  private String componentId;
+  public static final String END_DATE          = "endDate";
 
-  private String key;
+  private String             id;
 
-  private String type;
+  private String             name;
 
-  private String imageKey;
+  private String             componentId;
 
-  private Date lastModified;
+  private String             key;
 
-  private Boolean exclude;
+  private String             type;
 
-  private String description;
+  private String             imageKey;
 
-  private String tool;
+  private Date               lastModified;
+
+  private Boolean            exclude;
+
+  private String             description;
+
+  private String             tool;
+
+  private String             ptEpsg;
+
+  private Date               startDate;
+
+  private Date               endDate;
 
   public String getId()
   {
@@ -170,6 +183,36 @@ public class SiteObject implements TreeComponent
     this.tool = tool;
   }
 
+  public String getPtEpsg()
+  {
+    return ptEpsg;
+  }
+
+  public void setPtEpsg(String ptEpsg)
+  {
+    this.ptEpsg = ptEpsg;
+  }
+
+  public Date getStartDate()
+  {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate)
+  {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate()
+  {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate)
+  {
+    this.endDate = endDate;
+  }
+
   @Override
   public void addChild(TreeComponent child)
   {
@@ -188,6 +231,10 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.EXCLUDE, this.exclude);
     json.put(SiteObject.DESCRIPTION, this.description);
     json.put(SiteObject.TOOL, this.tool);
+    json.put(SiteObject.PT_EPSG, this.ptEpsg);
+    json.put(SiteObject.START_DATE, Util.formatIso8601(this.startDate, false));
+    json.put(SiteObject.END_DATE, Util.formatIso8601(this.endDate, false));
+    
 
     // if (this.type.equals(SiteObject.FOLDER))
     // {
@@ -234,6 +281,9 @@ public class SiteObject implements TreeComponent
     object.setLastModified(document.getLastModified());
     object.setDescription(document.getDescription());
     object.setTool(document.getTool());
+    object.setPtEpsg(document.getPtEpsg());
+    object.setStartDate(document.getStartDate());
+    object.setEndDate(document.getEndDate());
 
     return object;
   }

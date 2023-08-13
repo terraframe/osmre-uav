@@ -103,8 +103,12 @@ export class SiteEntity {
 	pilotName?: string;
 	dateTime?: string;
 	collectionDate?: string;
+	collectionEndDate?: string;
 	description?: string;
 	tool?: string;
+	ptEpsg?: string;
+	startDate?: string;
+	endDate?: string;
 	hasAllZip?: boolean;
 	shortName?: string;
 	restricted?: boolean;
@@ -189,6 +193,7 @@ export class Selection {
 	contractingOffice?: string;
 	vendor?: string;
 	collectionDate?: string;
+	collectionEndDate?: string;
 	pointOfContact?: {
 		name: string,
 		email: string
@@ -206,6 +211,7 @@ export class Selection {
 	percentSideLap?: number;
 	areaCovered?: number;
 	weatherConditions?: string;
+	artifacts?: any[];
 };
 
 export class UploadForm {
@@ -225,6 +231,9 @@ export class UploadForm {
 	processDem?: boolean;
 	processPtcloud?: boolean;
 	tool?: string;
+	ptEpsg?: string;
+	startDate?: string;
+	endDate?: string;
 	description?: string;
 	includeGeoLocationFile?: boolean;
 	resolution?: number;
@@ -357,6 +366,7 @@ export class ProductDetail extends Product {
 	pilotName: string;
 	dateTime: string;
 	collectionDate: string;
+	collectionEndDate?: string;
 	sensor: Sensor;
 	platform: Platform;
 	uav: UAV;

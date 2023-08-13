@@ -1,22 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
 import java.io.BufferedReader;
 import java.net.URLDecoder;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,85 +29,99 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.json.JSONArray;
 
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 
 public class RequestParser implements RequestParserIF
 {
-  private static String FILENAME_PARAM = "qqfile";
+  private static String       FILENAME_PARAM       = "qqfile";
 
-  private static String PART_INDEX_PARAM = "qqpartindex";
+  private static String       PART_INDEX_PARAM     = "qqpartindex";
 
-  private static String FILE_SIZE_PARAM = "qqtotalfilesize";
+  private static String       FILE_SIZE_PARAM      = "qqtotalfilesize";
 
-  private static String TOTAL_PARTS_PARAM = "qqtotalparts";
+  private static String       TOTAL_PARTS_PARAM    = "qqtotalparts";
 
-  private static String UUID_PARAM = "qquuid";
+  private static String       UUID_PARAM           = "qquuid";
 
-  private static String PART_FILENAME_PARAM = "qqfilename";
+  private static String       PART_FILENAME_PARAM  = "qqfilename";
 
-  private static String PART_RESUME_PARAM = "qqresume";
+  private static String       PART_RESUME_PARAM    = "qqresume";
 
-  private static String METHOD_PARAM = "_method";
+  private static String       METHOD_PARAM         = "_method";
 
-  private static String GENERATE_ERROR_PARAM = "generateError";
+  private static String       GENERATE_ERROR_PARAM = "generateError";
 
-  private static String UAS_COMPONENT_OID = "uasComponentOid";
+  private static String       UAS_COMPONENT_OID    = "uasComponentOid";
 
-  private static String PROCESS_UPLOAD = "processUpload";
+  private static String       PROCESS_UPLOAD       = "processUpload";
 
-  private static String PROCESS_DEM = "processDem";
+  private static String       PROCESS_DEM          = "processDem";
 
-  private static String PROCESS_ORTHO = "processOrtho";
+  private static String       PROCESS_ORTHO        = "processOrtho";
 
-  private static String PROCESS_PTCLOUD = "processPtcloud";
+  private static String       PROCESS_PTCLOUD      = "processPtcloud";
 
-  private static String SELECTIONS = "selections";
+  private static String       SELECTIONS           = "selections";
 
-  private static String UPLOAD_TARGET = "uploadTarget";
+  private static String       UPLOAD_TARGET        = "uploadTarget";
 
-  private static String DESCRIPTION = "description";
+  private static String       DESCRIPTION          = "description";
 
-  private static String TOOL = "tool";
+  private static String       TOOL                 = "tool";
 
-  private String filename;
+  private static String       PT_EPSG              = "ptEpsg";
 
-  private FileItem uploadItem;
+  private static String       START_DATE           = "startDate";
 
-  private boolean generateError;
+  private static String       END_DATE             = "endDate";
 
-  private int partIndex = -1;
+  private String              filename;
 
-  private long totalFileSize;
+  private FileItem            uploadItem;
 
-  private int totalParts;
+  private boolean             generateError;
 
-  private String uuid;
+  private int                 partIndex            = -1;
 
-  private String originalFilename;
+  private long                totalFileSize;
 
-  private String method;
+  private int                 totalParts;
 
-  private Map<String, String> customParams = new HashMap<>();
+  private String              uuid;
 
-  private Boolean resume;
+  private String              originalFilename;
 
-  private String uasComponentOid;
+  private String              method;
 
-  private String uploadTarget;
+  private Map<String, String> customParams         = new HashMap<>();
 
-  private String description;
+  private Boolean             resume;
 
-  private String tool;
+  private String              uasComponentOid;
 
-  private Boolean processUpload;
+  private String              uploadTarget;
 
-  private Boolean processPtcloud;
+  private String              description;
 
-  private Boolean processOrtho;
+  private String              tool;
 
-  private Boolean processDem;
+  private String              ptEpsg;
 
-  private JSONArray selections;
+  private Date                startDate;
+
+  private Date                endDate;
+
+  private Boolean             processUpload;
+
+  private Boolean             processPtcloud;
+
+  private Boolean             processOrtho;
+
+  private Boolean             processDem;
+
+  private JSONArray           selections;
 
   private RequestParser()
   {
@@ -242,6 +258,32 @@ public class RequestParser implements RequestParserIF
   }
 
   @Override
+  public String getPtEpsg()
+  {
+    return ptEpsg;
+  }
+
+  public Date getStartDate()
+  {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate)
+  {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate()
+  {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate)
+  {
+    this.endDate = endDate;
+  }
+
+  @Override
   public String getOriginalFilename()
   {
     return originalFilename;
@@ -342,6 +384,39 @@ public class RequestParser implements RequestParserIF
       requestParser.tool = multipartUploadParser.getParams().get(TOOL);
     }
 
+    if (requestParser.ptEpsg == null)
+    {
+      requestParser.ptEpsg = multipartUploadParser.getParams().get(PT_EPSG);
+    }
+
+    if (requestParser.startDate == null)
+    {
+      try
+      {
+        requestParser.startDate = Util.parseIso8601(multipartUploadParser.getParams().get(START_DATE), false);
+      }
+      catch (ParseException e)
+      {
+        GenericException exception = new GenericException(e);
+        exception.setUserMessage(e.getMessage());
+        throw exception;
+      }
+    }
+
+    if (requestParser.endDate == null)
+    {
+      try
+      {
+        requestParser.endDate = Util.parseIso8601(multipartUploadParser.getParams().get(END_DATE), false);
+      }
+      catch (ParseException e)
+      {
+        GenericException exception = new GenericException(e);
+        exception.setUserMessage(e.getMessage());
+        throw exception;
+      }
+    }
+
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -432,6 +507,39 @@ public class RequestParser implements RequestParserIF
       requestParser.tool = req.getParameter(TOOL);
     }
 
+    if (requestParser.ptEpsg == null)
+    {
+      requestParser.ptEpsg = req.getParameter(PT_EPSG);
+    }
+
+    if (requestParser.startDate == null)
+    {
+      try
+      {
+        requestParser.startDate = Util.parseIso8601(req.getParameter(START_DATE), false);
+      }
+      catch (ParseException e)
+      {
+        GenericException exception = new GenericException(e);
+        exception.setUserMessage(e.getMessage());
+        throw exception;
+      }
+    }
+
+    if (requestParser.endDate == null)
+    {
+      try
+      {
+        requestParser.endDate = Util.parseIso8601(req.getParameter(END_DATE), false);
+      }
+      catch (ParseException e)
+      {
+        GenericException exception = new GenericException(e);
+        exception.setUserMessage(e.getMessage());
+        throw exception;
+      }
+    }
+
     if (requestParser.method == null)
     {
       requestParser.method = req.getParameter(METHOD_PARAM);
@@ -504,6 +612,36 @@ public class RequestParser implements RequestParserIF
       else if (key.equals(TOOL))
       {
         requestParser.tool = value;
+      }
+      else if (key.equals(PT_EPSG))
+      {
+        requestParser.ptEpsg = value;
+      }
+      else if (key.equals(START_DATE))
+      {
+        try
+        {
+          requestParser.startDate = Util.parseIso8601(value, false);
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+      else if (key.equals(END_DATE))
+      {
+        try
+        {
+          requestParser.endDate = Util.parseIso8601(value, false);
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
       }
       else if (key.equals(METHOD_PARAM))
       {

@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.model;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -101,7 +102,7 @@ public interface UasComponentIF extends ComponentIF
 
   public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream);
 
-  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool);
+  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate);
 
   public ProductIF createProductIfNotExist();
 

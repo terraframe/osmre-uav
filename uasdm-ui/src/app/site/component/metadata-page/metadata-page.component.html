@@ -131,6 +131,53 @@
         </div>
     </div>
 
+    <div class="row" *ngIf="page.selection.artifacts != null && page.selection.artifacts.length > 0">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Artifacts</div>
+                <div class="panel-body">
+                    <div class="panel panel-default" *ngFor="let artifact of page.selection.artifacts">
+                        <div class="panel-heading">{{artifact.folder}}</div>
+                        <div class="panel-body">
+                            <ng-container *ngIf="artifact.folder === 'ptcloud'">
+                                <div class="form-group">
+                                    <label for="ptEpsg">EPSG Number</label>
+                                    <input [(ngModel)]="artifact.ptEpsg" name="ptEpsg" type="text"
+                                        class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="startDate">Point Cloud Start Date</label>
+                                    <input [(ngModel)]="artifact.startDate" name="startDate" type="date"
+                                        class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Point Cloud End Date</label>
+                                    <input [(ngModel)]="artifact.endDate" name="endDate" type="date"
+                                        class="form-control" />
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="artifact.folder === 'ortho'">
+                                <div class="form-group">
+                                    <label for="startDate">Ortho Start Date</label>
+                                    <input [(ngModel)]="artifact.startDate" name="startDate" type="date"
+                                        class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Ortho End Date</label>
+                                    <input [(ngModel)]="artifact.endDate" name="endDate" type="date"
+                                        class="form-control" />
+                                </div>
+                            </ng-container>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <div class="row">
         <div class="col-md-12">

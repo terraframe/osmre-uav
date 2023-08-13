@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.Artifact;
@@ -296,6 +297,37 @@ public class MetadataXMLGenerator
   {
     Element element = dom.createElement("Artifact");
     element.setAttribute("type", metadata.getType());
+
+    if (metadata.getType().equals(ImageryComponent.PTCLOUD))
+    {
+      if (metadata.getPtEpsg() != null)
+      {
+        element.setAttribute("ptCloudEpsgNumber", metadata.getPtEpsg());
+      }
+
+      if (metadata.getStartDate() != null)
+      {
+        element.setAttribute("ptCloudStartDate", Util.formatIso8601(metadata.getStartDate(), false));
+      }
+
+      if (metadata.getEndDate() != null)
+      {
+        element.setAttribute("ptCloudEndDate", Util.formatIso8601(metadata.getEndDate(), false));
+      }
+    }
+
+    if (metadata.getType().equals(ImageryComponent.ORTHO))
+    {
+      if (metadata.getStartDate() != null)
+      {
+        element.setAttribute("orthoStartDate", Util.formatIso8601(metadata.getStartDate(), false));
+      }
+
+      if (metadata.getEndDate() != null)
+      {
+        element.setAttribute("orthoEndDate", Util.formatIso8601(metadata.getEndDate(), false));
+      }
+    }
 
     if (metadata.getFormat() != null)
     {
@@ -552,7 +584,7 @@ public class MetadataXMLGenerator
       String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
-      collection.createDocumentIfNotExist(key, fileName, null, null);
+      collection.createDocumentIfNotExist(key, fileName, null, null, null, null, null);
 
       IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 374923005)
+@com.runwaysdk.business.ClassSignature(hash = 1732615370)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -15,6 +15,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public final static java.lang.String ACQUISITIONDATESTART = "acquisitionDateStart";
   public final static java.lang.String AREACOVERED = "areaCovered";
   public final static java.lang.String COLLECTIONDATE = "collectionDate";
+  public final static java.lang.String COLLECTIONENDDATE = "collectionEndDate";
   public final static java.lang.String COLLECTIONSENSOR = "collectionSensor";
   public final static java.lang.String EASTBOUND = "eastBound";
   public final static java.lang.String EXIFINCLUDED = "exifIncluded";
@@ -34,7 +35,7 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 374923005;
+  private static final long serialVersionUID = 1732615370;
   
   public CollectionBase()
   {
@@ -103,6 +104,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public void setCollectionDate(java.util.Date value)
   {
     this.setValue(COLLECTIONDATE, value);
+  }
+  
+  public java.util.Date getCollectionEndDate()
+  {
+    return (java.util.Date) this.getObjectValue(COLLECTIONENDDATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getCollectionEndDateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(COLLECTIONENDDATE);
+  }
+  
+  public void setCollectionEndDate(java.util.Date value)
+  {
+    this.setValue(COLLECTIONENDDATE, value);
   }
   
   public gov.geoplatform.uasdm.graph.Sensor getCollectionSensor()

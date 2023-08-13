@@ -1,20 +1,21 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.mock;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,43 +27,49 @@ import gov.geoplatform.uasdm.view.RequestParserIF;
 
 public class MockRequestParser implements RequestParserIF
 {
-  private String filename;
+  private String              filename;
 
-  private FileItem uploadItem;
+  private FileItem            uploadItem;
 
-  private boolean generateError;
+  private boolean             generateError;
 
-  private int partIndex = -1;
+  private int                 partIndex    = -1;
 
-  private long totalFileSize;
+  private long                totalFileSize;
 
-  private int totalParts;
+  private int                 totalParts;
 
-  private String uuid;
+  private String              uuid;
 
-  private String originalFilename;
+  private String              originalFilename;
 
-  private String method;
+  private String              method;
 
   private Map<String, String> customParams = new HashMap<>();
 
-  private String uasComponentOid;
+  private String              uasComponentOid;
 
-  private String uploadTarget;
+  private String              uploadTarget;
 
-  private String description;
+  private String              description;
 
-  private String tool;
+  private String              tool;
 
-  private Boolean processUpload;
+  private String              ptEpsg;
 
-  private Boolean processPtcloud;
+  private Date                startDate;
 
-  private Boolean processOrtho;
+  private Date                endDate;
 
-  private Boolean processDem;
+  private Boolean             processUpload;
 
-  private JSONArray selections;
+  private Boolean             processPtcloud;
+
+  private Boolean             processOrtho;
+
+  private Boolean             processDem;
+
+  private JSONArray           selections;
 
   public MockRequestParser(String uasComponentOid)
   {
@@ -71,6 +78,9 @@ public class MockRequestParser implements RequestParserIF
     this.uploadTarget = "raw";
     this.description = "Test Upload";
     this.tool = "ODM";
+    this.ptEpsg = "4326";
+    this.startDate = new Date();
+    this.endDate = new Date();
     this.processUpload = false;
     this.processPtcloud = true;
     this.processOrtho = true;
@@ -217,6 +227,38 @@ public class MockRequestParser implements RequestParserIF
   public void setTool(String tool)
   {
     this.tool = tool;
+  }
+
+  @Override
+  public String getPtEpsg()
+  {
+    return this.ptEpsg;
+  }
+
+  public void setPtEpsg(String ptEpsg)
+  {
+    this.ptEpsg = ptEpsg;
+  }
+
+  @Override
+  public Date getStartDate()
+  {
+    return this.startDate;
+  }
+
+  public void setStartDate(Date startDate)
+  {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate()
+  {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate)
+  {
+    this.endDate = endDate;
   }
 
   public Boolean getProcessUpload()

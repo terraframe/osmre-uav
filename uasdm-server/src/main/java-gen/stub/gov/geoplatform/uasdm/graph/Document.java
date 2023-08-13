@@ -115,7 +115,7 @@ public class Document extends DocumentBase implements DocumentIF
     return this.getS3location();
   }
 
-  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name, String description, String tool)
+  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
   {
     Document document = Document.find(key);
 
@@ -131,6 +131,9 @@ public class Document extends DocumentBase implements DocumentIF
     document.setName(name);
     document.setDescription(description);
     document.setTool(tool);
+    document.setPtEpsg(ptEpsg);
+    document.setStartDate(startDate);
+    document.setEndDate(endDate);
     document.apply(uasComponent);
 
     return document;

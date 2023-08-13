@@ -58,14 +58,35 @@
 
       <ng-container *ngIf="uploadTarget !== 'raw'">
 
-        <div [@fadeInOnEnter] *ngIf="uploadTarget === 'ortho'" class="row">
-          <div class="col-md-2"></div>
-          <div class="col-md-8">
-            <div class="form-group">
-              <boolean-field [(value)]="config.processOrtho" label="Generate png from upload"></boolean-field>
+        <ng-container *ngIf="uploadTarget === 'ortho'">
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <boolean-field [(value)]="config.processOrtho" label="Generate png from upload"></boolean-field>
+              </div>
             </div>
           </div>
-        </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="startDate">Ortho Start Date</label>
+                <input [(ngModel)]="values.startDate" name="startDate" type="date" class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="endDate">Ortho End Date</label>
+                <input [(ngModel)]="values.endDate" name="endDate" type="date" class="form-control" />
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
         <div [@fadeInOnEnter] *ngIf="uploadTarget === 'dem'" class="row">
           <div class="col-md-2"></div>
           <div class="col-md-8">
@@ -74,15 +95,45 @@
             </div>
           </div>
         </div>
-        <div [@fadeInOnEnter] *ngIf="uploadTarget === 'ptcloud'" class="row">
-          <div class="col-md-2"></div>
-          <div class="col-md-8">
-            <div class="form-group">
-              <boolean-field [(value)]="config.processPtcloud" label="Enable Potree viewer for point cloud">
-              </boolean-field>
+
+        <ng-container *ngIf="uploadTarget === 'ptcloud'">
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <boolean-field [(value)]="config.processPtcloud" label="Enable Potree viewer for point cloud">
+                </boolean-field>
+              </div>
             </div>
           </div>
-        </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="ptEpsg">Point Cloud EPSG Number</label>
+                <input [(ngModel)]="values.ptEpsg" name="ptEpsg" type="input" class="form-control" placeholder="" />
+              </div>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="startDate">Point Cloud Start Date</label>
+                <input [(ngModel)]="values.startDate" name="startDate" type="date" class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="endDate">Point Cloud End Date</label>
+                <input [(ngModel)]="values.endDate" name="endDate" type="date" class="form-control" />
+              </div>
+            </div>
+          </div>
+        </ng-container>
 
         <div [@fadeInOnEnter] class="row">
           <div class="col-md-2"></div>
@@ -268,119 +319,122 @@
 
         <ng-container *ngIf="processUpload">
 
-		  <button type="button" class="btn btn-default"
+          <button type="button" class="btn btn-default"
             (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
             [attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic"
             style="margin-top:20px;">Advanced Settings
           </button>
-		  <div style="padding-top:10px;" [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true">
-		    <div class="panel panel-default" style="padding:10px;">
-          
-	          <div class="panel-body" style="padding:10px;">
-	            <div style="padding:10px;">
-	              <div class="form-group">
-	                <label for="outFileName">Output Product Name Prefix</label>
-	                <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
-	                  placeholder="Output product name prefix..." />
-	              </div>
-	
-	              <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-	                <label for="outFileName">Orthophoto and DEM Resolution (cm)</label>
-	                <input [(ngModel)]="values.resolution" name="resolution" type="number" class="form-control"
-	                  placeholder="5" />
-	              </div>
-	
-	              <!--         TODO: Determine if this should be removed because IDM doesn't currently process video. -->
-	              <!--             <div class="form-group"> -->
-	              <!--               <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label> -->
-	              <!--               <input [(ngModel)]="values.videoResolution" name="videoResolution" type="number" class="form-control" -->
-	              <!--                 placeholder="4000" step="1" min="0" /> -->
-	              <!--             </div> -->
-	
-	              <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-	                <label for="matcherNeighbors">Matcher Nieghbors</label>
-	                <input [(ngModel)]="values.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
-	                  placeholder="0" step="1" min="0" />
-	              </div>
-	
-	              <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-	                <label for="minNumFeatures">Minimum number of features to extract per image</label>
-	                <input [(ngModel)]="values.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
-	                  placeholder="10000" step="1" min="0" />
-	              </div>
-	
-	              <div *ngIf="config.processPtcloud" class="form-group">
-	                <label for="pcQuality">Generated point cloud quality</label>
-	                <select [(ngModel)]="values.pcQuality" name="pcQuality" class="form-control">
-	                  <option value="ULTRA">ULTRA</option>
-	                  <option value="HIGH">HIGH</option>
-	                  <option value="MEDIUM">MEDIUM</option>
-	                  <option value="LOW">LOW</option>
-	                  <option value="LOWEST">LOWEST</option>
-	                </select>
-	              </div>
-	              
-	              <div *ngIf="config.processOrtho" class="form-group">
-	                <label for="featureQuality">Generated feature quality</label>
-	                <select [(ngModel)]="values.featureQuality" name="featureQuality" class="form-control">
-	                  <option value="ULTRA">ULTRA</option>
-	                  <option value="HIGH">HIGH</option>
-	                  <option value="MEDIUM">MEDIUM</option>
-	                  <option value="LOW">LOW</option>
-	                  <option value="LOWEST">LOWEST</option>
-	                </select>
-	              </div>
-	              
-	              <div *ngIf="config.processOrtho" class="form-group">
-	                <label for="radiometricCalibration">Radiometric calibration</label>
-	                <select [(ngModel)]="values.radiometricCalibration" name="radiometricCalibration" class="form-control">
-	                  <option value="NONE">NONE</option>
-	                  <option value="CAMERA">CAMERA</option>
-	                  <option value="CAMERA_SUN">CAMERA+SUN</option>
-	                </select>
-	              </div>
-	
-	              <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-	                <boolean-field [(value)]="values.includeGeoLocationFile"
-	                  label="Use geo location file when processing (if uploaded)"></boolean-field>
-	              </div>
-	
-	              <div class="form-group" *ngIf="values.includeGeoLocationFile">
-	                <label for="geoLocationFormat">Geo location file format</label>
-	                <select [(ngModel)]="values.geoLocationFormat" name="geoLocationFormat" class="form-control">
-	                  <option value="RX1R2">RX1R2</option>
-	                  <option value="ODM">ODM</option>
-	                </select>
-	              </div>
-	
-	              <div title="Enter the path of the geo location file inside your uploaded zip. This file will be renamed to 'geo.txt' upon upload and used to provide location data for your images." class="form-group" *ngIf="values.includeGeoLocationFile">
-	                <label for="geoLocationFileName">Geo location file name</label>
-	                <input [(ngModel)]="values.geoLocationFileName" name="geoLocationFileName" type="input"
-	                  class="form-control" placeholder="File name..." />
-	              </div>
-	
-	              <div *ngIf="values.includeGeoLocationFile && values.geoLocationFormat === 'ODM'">
-	                <p>File format:</p>
-	                <pre>
+          <div style="padding-top:10px;" [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true">
+            <div class="panel panel-default" style="padding:10px;">
+
+              <div class="panel-body" style="padding:10px;">
+                <div style="padding:10px;">
+                  <div class="form-group">
+                    <label for="outFileName">Output Product Name Prefix</label>
+                    <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
+                      placeholder="Output product name prefix..." />
+                  </div>
+
+                  <div *ngIf="config.processOrtho || config.processDem" class="form-group">
+                    <label for="outFileName">Orthophoto and DEM Resolution (cm)</label>
+                    <input [(ngModel)]="values.resolution" name="resolution" type="number" class="form-control"
+                      placeholder="5" />
+                  </div>
+
+                  <!--         TODO: Determine if this should be removed because IDM doesn't currently process video. -->
+                  <!--             <div class="form-group"> -->
+                  <!--               <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label> -->
+                  <!--               <input [(ngModel)]="values.videoResolution" name="videoResolution" type="number" class="form-control" -->
+                  <!--                 placeholder="4000" step="1" min="0" /> -->
+                  <!--             </div> -->
+
+                  <div *ngIf="config.processOrtho || config.processDem" class="form-group">
+                    <label for="matcherNeighbors">Matcher Nieghbors</label>
+                    <input [(ngModel)]="values.matcherNeighbors" name="matcherNeighbors" type="number"
+                      class="form-control" placeholder="0" step="1" min="0" />
+                  </div>
+
+                  <div *ngIf="config.processOrtho || config.processDem" class="form-group">
+                    <label for="minNumFeatures">Minimum number of features to extract per image</label>
+                    <input [(ngModel)]="values.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
+                      placeholder="10000" step="1" min="0" />
+                  </div>
+
+                  <div *ngIf="config.processPtcloud" class="form-group">
+                    <label for="pcQuality">Generated point cloud quality</label>
+                    <select [(ngModel)]="values.pcQuality" name="pcQuality" class="form-control">
+                      <option value="ULTRA">ULTRA</option>
+                      <option value="HIGH">HIGH</option>
+                      <option value="MEDIUM">MEDIUM</option>
+                      <option value="LOW">LOW</option>
+                      <option value="LOWEST">LOWEST</option>
+                    </select>
+                  </div>
+
+                  <div *ngIf="config.processOrtho" class="form-group">
+                    <label for="featureQuality">Generated feature quality</label>
+                    <select [(ngModel)]="values.featureQuality" name="featureQuality" class="form-control">
+                      <option value="ULTRA">ULTRA</option>
+                      <option value="HIGH">HIGH</option>
+                      <option value="MEDIUM">MEDIUM</option>
+                      <option value="LOW">LOW</option>
+                      <option value="LOWEST">LOWEST</option>
+                    </select>
+                  </div>
+
+                  <div *ngIf="config.processOrtho" class="form-group">
+                    <label for="radiometricCalibration">Radiometric calibration</label>
+                    <select [(ngModel)]="values.radiometricCalibration" name="radiometricCalibration"
+                      class="form-control">
+                      <option value="NONE">NONE</option>
+                      <option value="CAMERA">CAMERA</option>
+                      <option value="CAMERA_SUN">CAMERA+SUN</option>
+                    </select>
+                  </div>
+
+                  <div *ngIf="config.processOrtho || config.processDem" class="form-group">
+                    <boolean-field [(value)]="values.includeGeoLocationFile"
+                      label="Use geo location file when processing (if uploaded)"></boolean-field>
+                  </div>
+
+                  <div class="form-group" *ngIf="values.includeGeoLocationFile">
+                    <label for="geoLocationFormat">Geo location file format</label>
+                    <select [(ngModel)]="values.geoLocationFormat" name="geoLocationFormat" class="form-control">
+                      <option value="RX1R2">RX1R2</option>
+                      <option value="ODM">ODM</option>
+                    </select>
+                  </div>
+
+                  <div
+                    title="Enter the path of the geo location file inside your uploaded zip. This file will be renamed to 'geo.txt' upon upload and used to provide location data for your images."
+                    class="form-group" *ngIf="values.includeGeoLocationFile">
+                    <label for="geoLocationFileName">Geo location file name</label>
+                    <input [(ngModel)]="values.geoLocationFileName" name="geoLocationFileName" type="input"
+                      class="form-control" placeholder="File name..." />
+                  </div>
+
+                  <div *ngIf="values.includeGeoLocationFile && values.geoLocationFormat === 'ODM'">
+                    <p>File format:</p>
+                    <pre>
 	                          <code>
 	                          projection
 	                          image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
 	                          ...
 	                          </code>
 	                      </pre>
-	                <p>Example:</p>
-	                <pre>
+                    <p>Example:</p>
+                    <pre>
 	                          <code>
 	                          EPSG:4326
 	                          DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
 	                          DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
 	                          </code>        
 	                      </pre>
-	              </div>
-	            </div>
-	          </div>
-	        </div>
-	      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </ng-container>
 

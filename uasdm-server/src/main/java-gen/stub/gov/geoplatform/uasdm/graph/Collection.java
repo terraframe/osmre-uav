@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +100,17 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Collection()
   {
     super();
+  }
+
+  @Override
+  public void apply()
+  {
+    if (this.getCollectionEndDate() == null)
+    {
+      this.setCollectionEndDate(this.getCollectionDate());
+    }
+
+    super.apply();
   }
 
   @Override
@@ -659,9 +671,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool)
+  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
   {
-    DocumentIF document = super.createDocumentIfNotExist(key, name, description, tool);
+    DocumentIF document = super.createDocumentIfNotExist(key, name, description, tool, ptEpsg, startDate, endDate);
 
     CollectionReport.update(this, document);
 

@@ -115,6 +115,24 @@ public class Document extends DocumentBase implements DocumentIF
   {
     return null;
   }
+  
+  @Override
+  public String getPtEpsg()
+  {
+    return null;
+  }
+  
+  @Override
+  public Date getStartDate()
+  {
+    return null;
+  }
+  
+  @Override
+  public Date getEndDate()
+  {
+    return null;
+  }
 
   public DocumentGeneratedProduct getDocumentGeneratedProduct(ProductIF product)
   {

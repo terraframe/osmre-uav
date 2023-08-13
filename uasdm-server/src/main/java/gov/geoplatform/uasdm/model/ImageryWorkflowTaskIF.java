@@ -1,22 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -158,6 +159,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
             setDateValue(selection, child, Collection.ACQUISITIONDATESTART);
             setDateValue(selection, child, Collection.ACQUISITIONDATEEND);
             setDateValue(selection, child, Collection.COLLECTIONDATE);
+            setDateValue(selection, child, Collection.COLLECTIONENDDATE);
             setIntegerValue(selection, child, Collection.FLYINGHEIGHT);
             setIntegerValue(selection, child, Collection.NUMBEROFFLIGHTS);
             setIntegerValue(selection, child, Collection.PERCENTENDLAP);
@@ -217,6 +219,28 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     return component;
   }
 
+  public static Date getDateValue(JSONObject selection, String attributeName)
+  {
+    if (selection.has(attributeName))
+    {
+      if (!selection.isNull(attributeName))
+      {
+        try
+        {
+          return Util.parseIso8601(selection.getString(attributeName), false);
+        }
+        catch (ParseException e)
+        {
+          GenericException exception = new GenericException(e);
+          exception.setUserMessage(e.getMessage());
+          throw exception;
+        }
+      }
+    }
+    
+    return null;
+  }
+
   public static void setDateValue(JSONObject selection, UasComponentIF child, String attributeName)
   {
     if (selection.has(attributeName))
@@ -271,7 +295,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
       }
     }
   }
-  
+
   public static void setStringValue(JSONObject selection, UasComponentIF child, String attributeName)
   {
     if (selection.has(attributeName))
@@ -286,7 +310,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
       }
     }
   }
-  
+
   /**
    * Returns the {@link AbstractWorkflowTask} for the given {@link UasComponent}
    * or null if none exists.

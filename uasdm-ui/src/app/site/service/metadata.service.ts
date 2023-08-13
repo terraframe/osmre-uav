@@ -46,6 +46,7 @@ export class MetadataService {
     hasExtraField(type: string, fieldName: string): boolean {
         if (type === 'Collection') {
             return (fieldName === 'collectionDate'
+                || fieldName === 'collectionEndDate'
                 || fieldName === 'northBound'
                 || fieldName === 'southBound'
                 || fieldName === 'eastBound'
