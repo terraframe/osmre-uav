@@ -467,7 +467,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   @Override
   @Transaction
-  public void removeArtifacts(String folder)
+  public void removeArtifacts(String folder, boolean updateMetadata)
   {
     if (folder.equalsIgnoreCase(ImageryComponent.RAW) || folder.equalsIgnoreCase(ImageryComponent.VIDEO))
     {
@@ -504,7 +504,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       });
     }
 
-    if (this instanceof Collection)
+    if (updateMetadata && this instanceof Collection)
     {
       new GenerateMetadataCommand((Collection) this).doIt();
     }

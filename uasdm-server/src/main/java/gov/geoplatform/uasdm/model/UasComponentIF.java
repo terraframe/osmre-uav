@@ -84,7 +84,7 @@ public interface UasComponentIF extends ComponentIF
   
   public Artifact[] getArtifactObjects();
 
-  public void removeArtifacts(String folder);
+  public void removeArtifacts(String folder, boolean updateMetadata);
 
   public List<DocumentIF> getDocuments();
 

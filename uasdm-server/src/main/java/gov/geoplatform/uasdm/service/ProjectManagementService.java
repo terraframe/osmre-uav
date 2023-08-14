@@ -808,7 +808,7 @@ public class ProjectManagementService
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    component.removeArtifacts(folder);
+    component.removeArtifacts(folder, true);
 
     return component.getArtifacts();
   }

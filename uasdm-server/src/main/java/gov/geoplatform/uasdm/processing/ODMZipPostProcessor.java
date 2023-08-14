@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -34,6 +34,7 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
@@ -41,11 +42,11 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
 import gov.geoplatform.uasdm.processing.ManagedDocument.DocumentInfo;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 
@@ -82,8 +83,8 @@ public class ODMZipPostProcessor
 
   public ProductIF processAllZip() throws InterruptedException
   {
-    final String colName = FilenameUtils.getName(this.collection.getS3location().endsWith("/") ? this.collection.getS3location().substring(0, this.collection.getS3location().length()-1) : this.collection.getS3location());
-    
+    final String colName = FilenameUtils.getName(this.collection.getS3location().endsWith("/") ? this.collection.getS3location().substring(0, this.collection.getS3location().length() - 1) : this.collection.getS3location());
+
     final String folderName = "odm-" + colName + "-" + new Random().nextInt();
 
     try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
@@ -108,7 +109,7 @@ public class ODMZipPostProcessor
         this.uploadAllZip(allZip);
       }
     }
-    
+
     List<String> list = new ArrayList<String>();
     if (this.progressTask != null)
     {
@@ -127,28 +128,28 @@ public class ODMZipPostProcessor
         raw.addGeneratedProduct(product);
       }
     }
-    
+
     // Create an associated ODMRun
     if (this.progressTask != null)
     {
       final ODMProcessingTask processingTask = (ODMProcessingTask) this.progressTask.getProcessingTask();
       final ODMRun odmRun = ODMRun.getForTask(processingTask.getOid());
-      
+
       product.getProductHasDocumentChildDocuments().forEach(doc -> {
         odmRun.addODMRunOutputChild(doc).apply();
-        
+
         if (doc.getName().equals("report.pdf"))
         {
           odmRun.setReport(doc);
         }
       });
-      
+
       odmRun.setOutput(processingTask.getOdmOutput());
-      
+
       odmRun.setComponent((Collection) this.collection);
-      
+
       odmRun.setRunEnd(new Date());
-      
+
       odmRun.apply();
     }
 
@@ -167,19 +168,27 @@ public class ODMZipPostProcessor
   {
     if (this.progressTask != null)
     {
-      if (this.progressTask.getProcessDem())
+      try
       {
-        this.collection.removeArtifacts(ImageryComponent.DEM);
-      }
 
-      if (this.progressTask.getProcessOrtho())
-      {
-        this.collection.removeArtifacts(ImageryComponent.ORTHO);
-      }
+        if (this.progressTask.getProcessDem())
+        {
+          this.collection.removeArtifacts(ImageryComponent.DEM, false);
+        }
 
-      if (this.progressTask.getProcessPtcloud())
+        if (this.progressTask.getProcessOrtho())
+        {
+          this.collection.removeArtifacts(ImageryComponent.ORTHO, false);
+        }
+
+        if (this.progressTask.getProcessPtcloud())
+        {
+          this.collection.removeArtifacts(ImageryComponent.PTCLOUD, false);
+        }
+      }
+      finally
       {
-        this.collection.removeArtifacts(ImageryComponent.PTCLOUD);
+        new GenerateMetadataCommand(this.collection).doIt();
       }
     }
   }
@@ -209,7 +218,7 @@ public class ODMZipPostProcessor
     if (this.progressTask != null && this.progressTask.getProcessPtcloud())
     {
       EpsgProcessor processor = new EpsgProcessor();
-      
+
       this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferencing_model_geo.txt", processor);
       this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo(processor.getLine())));
 
@@ -218,11 +227,10 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-sources", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-sources"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-hierarchy", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-hierarchy"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-data"), this.product, this.collection, monitor));
-      
+
       // Add the report to the pt clould folder
       this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
-    
 
   }
 
@@ -286,9 +294,9 @@ public class ODMZipPostProcessor
       if (DevProperties.runOrtho())
       {
         // https://github.com/OpenDroneMap/ClusterODM/issues/113
-        allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
-        
-//        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
+        // allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
+
+        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
       }
       else
       {

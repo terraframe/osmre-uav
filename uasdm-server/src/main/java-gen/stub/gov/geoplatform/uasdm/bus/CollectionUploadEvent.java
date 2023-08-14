@@ -91,7 +91,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     if (!uploadTarget.equals(ImageryComponent.RAW))
     {
-      component.removeArtifacts(uploadTarget);
+      component.removeArtifacts(uploadTarget, true);
     }
 
     List<String> uploadedFiles = new LinkedList<String>();

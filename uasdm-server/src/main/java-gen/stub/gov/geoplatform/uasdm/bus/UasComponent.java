@@ -314,7 +314,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public void removeArtifacts(String folder)
+  public void removeArtifacts(String folder, boolean updateMetadata)
   {
     throw new UnsupportedOperationException();
   }
