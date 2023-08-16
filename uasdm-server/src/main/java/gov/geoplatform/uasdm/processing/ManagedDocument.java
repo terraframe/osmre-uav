@@ -15,8 +15,6 @@
  */
 package gov.geoplatform.uasdm.processing;
 
-import java.util.Date;
-
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -25,6 +23,7 @@ import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.service.IndexService;
 
@@ -36,9 +35,7 @@ public class ManagedDocument extends S3FileUpload
 
     private String  ptEpsg;
 
-    private Date    startDate;
-
-    private Date    endDate;
+    private String  orthoCorrectionModel;
 
     public DocumentInfo()
     {
@@ -59,9 +56,11 @@ public class ManagedDocument extends S3FileUpload
       return searchable;
     }
 
-    public void setSearchable(boolean searchable)
+    public DocumentInfo setSearchable(boolean searchable)
     {
       this.searchable = searchable;
+      
+      return this;
     }
 
     public String getPtEpsg()
@@ -69,29 +68,23 @@ public class ManagedDocument extends S3FileUpload
       return ptEpsg;
     }
 
-    public void setPtEpsg(String ptEpsg)
+    public DocumentInfo setPtEpsg(String ptEpsg)
     {
       this.ptEpsg = ptEpsg;
+      
+      return this;
     }
-
-    public Date getStartDate()
+    
+    public String getOrthoCorrectionModel()
     {
-      return startDate;
+      return orthoCorrectionModel;
     }
-
-    public void setStartDate(Date startDate)
+    
+    public DocumentInfo setOrthoCorrectionModel(String orthoCorrectionModel)
     {
-      this.startDate = startDate;
-    }
-
-    public Date getEndDate()
-    {
-      return endDate;
-    }
-
-    public void setEndDate(Date endDate)
-    {
-      this.endDate = endDate;
+      this.orthoCorrectionModel = orthoCorrectionModel;
+      
+      return this;
     }
   }
 
@@ -131,8 +124,10 @@ public class ManagedDocument extends S3FileUpload
       String key = this.getS3Key();
 
       String documentName = key.substring(key.lastIndexOf("/") + 1);
+      
+      Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getOrthoCorrectionModel());
 
-      DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, null, this.getTool().name(), this.info.getPtEpsg(), this.info.getStartDate(), this.info.getEndDate());
+      DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, metadata);
 
       final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);
 

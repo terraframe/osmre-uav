@@ -123,13 +123,7 @@ public class Document extends DocumentBase implements DocumentIF
   }
   
   @Override
-  public Date getStartDate()
-  {
-    return null;
-  }
-  
-  @Override
-  public Date getEndDate()
+  public String getOrthoCorrectionModel()
   {
     return null;
   }

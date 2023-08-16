@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -669,11 +668,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return false;
   }
-
+  
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
+  public DocumentIF createDocumentIfNotExist(String key, String name, DocumentIF.Metadata metadata)
   {
-    DocumentIF document = super.createDocumentIfNotExist(key, name, description, tool, ptEpsg, startDate, endDate);
+    DocumentIF document = super.createDocumentIfNotExist(key, name, metadata);
 
     CollectionReport.update(this, document);
 

@@ -44,8 +44,7 @@
         <create>
           <attributes>
             <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
-            <dateTime name="startDate" required="false" label="Start Date" />                        
-            <dateTime name="endDate" required="false" label="End Date" />                                    
+            <char name="orthoCorrectionModel" label="Ortho correction model" size="4096" required="false" />
           </attributes>
         </create>
       </mdBusiness>  
@@ -53,8 +52,7 @@
         <create>      
           <attributes>
             <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
-            <dateTime name="startDate" required="false" label="Start Date" />                        
-            <dateTime name="endDate" required="false" label="End Date" />            
+            <char name="orthoCorrectionModel" label="Ortho correction model" size="4096" required="false" />
           </attributes>
         </create>        
       </mdVertex>    
@@ -63,11 +61,9 @@
   <undoIt>
     <delete>
       <object key="gov.geoplatform.uasdm.graph.Document.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
-      <object key="gov.geoplatform.uasdm.graph.Document.startDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
-      <object key="gov.geoplatform.uasdm.graph.Document.endDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Document.orthoCorrectionModel" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
-      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.startDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
-      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.endDate" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.orthoCorrectionModel" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Sensor.focalLength" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.flyingHeight" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Collection.numberOfFlights" type="com.runwaysdk.system.metadata.MdAttribute"/>

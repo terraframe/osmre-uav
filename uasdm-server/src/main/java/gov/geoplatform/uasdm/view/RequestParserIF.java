@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.view;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
@@ -70,8 +69,7 @@ public interface RequestParserIF
   int getPercent();
 
   String getPtEpsg();
+  
+  String getOrthoCorrectionModel();
 
-  Date getStartDate();
-
-  Date getEndDate();
 }

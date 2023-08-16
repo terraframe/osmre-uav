@@ -49,6 +49,7 @@ import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
@@ -380,7 +381,7 @@ public class Util
 
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
-    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, null, null, null, null, null);
+    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, new DocumentIF.Metadata());
 
     if (document.isNew())
     {
@@ -400,9 +401,11 @@ public class Util
       try
       {
         Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
+        
+        Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getOrthoCorrectionModel());
 
         final UasComponentIF component = imageryComponent.getUasComponent();
-        component.createDocumentIfNotExist(key, name, task.getDescription(), task.getTool(), task.getPtEpsg(), task.getStartDate(), task.getEndDate());
+        component.createDocumentIfNotExist(key, name, metadata);
 
         IndexService.updateOrCreateDocument(ancestors, component, key, name);
 

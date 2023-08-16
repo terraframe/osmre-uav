@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1714823149)
+@com.runwaysdk.business.ClassSignature(hash = 2049691593)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -93,23 +93,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableMoment getEndDate()
-  {
-    return getEndDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
@@ -272,6 +255,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OID, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel()
+  {
+    return getOrthoCorrectionModel(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, displayLabel);
+
+  }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
   {
     return getOwner(null);
@@ -344,23 +344,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.SITEMASTER, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableMoment getStartDate()
-  {
-    return getStartDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getStatus()
@@ -507,9 +490,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getDescription();
     public com.runwaysdk.query.SelectableChar getDescription(String alias);
     public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableMoment getEndDate();
-    public com.runwaysdk.query.SelectableMoment getEndDate(String alias);
-    public com.runwaysdk.query.SelectableMoment getEndDate(String alias, String displayLabel);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
@@ -534,6 +514,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel();
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias);
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias, String displayLabel);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
@@ -546,9 +529,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getSiteMaster();
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias);
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableMoment getStartDate();
-    public com.runwaysdk.query.SelectableMoment getStartDate(String alias);
-    public com.runwaysdk.query.SelectableMoment getStartDate(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getStatus();
     public com.runwaysdk.query.SelectableChar getStatus(String alias);
     public com.runwaysdk.query.SelectableChar getStatus(String alias, String displayLabel);
@@ -645,23 +625,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableMoment getEndDate()
-  {
-    return getEndDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
@@ -800,6 +763,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OID, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel()
+  {
+    return getOrthoCorrectionModel(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, displayLabel);
+
+  }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
   {
     return getOwner(null);
@@ -866,23 +846,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.SITEMASTER, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableMoment getStartDate()
-  {
-    return getStartDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getStatus()
@@ -1006,9 +969,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getDescription();
     public com.runwaysdk.query.SelectableChar getDescription(String alias);
     public com.runwaysdk.query.SelectableChar getDescription(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableMoment getEndDate();
-    public com.runwaysdk.query.SelectableMoment getEndDate(String alias);
-    public com.runwaysdk.query.SelectableMoment getEndDate(String alias, String displayLabel);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain();
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias);
     public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain(String alias, String displayLabel);
@@ -1033,6 +993,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel();
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias);
+    public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias, String displayLabel);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
@@ -1045,9 +1008,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.query.SelectableChar getSiteMaster();
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias);
     public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableMoment getStartDate();
-    public com.runwaysdk.query.SelectableMoment getStartDate(String alias);
-    public com.runwaysdk.query.SelectableMoment getStartDate(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getStatus();
     public com.runwaysdk.query.SelectableChar getStatus(String alias);
     public com.runwaysdk.query.SelectableChar getStatus(String alias, String displayLabel);
@@ -1195,23 +1155,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.DESCRIPTION, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableMoment getEndDate()
-  {
-    return getEndDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getEndDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ENDDATE, alias, displayLabel);
-
-  }
   public com.runwaysdk.system.metadata.MdDomainQuery.MdDomainQueryReferenceIF getEntityDomain()
   {
     return getEntityDomain(null);
@@ -1348,6 +1291,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OID, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel()
+  {
+    return getOrthoCorrectionModel(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getOrthoCorrectionModel(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ORTHOCORRECTIONMODEL, alias, displayLabel);
+
+  }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
   {
     return getOwner(null);
@@ -1414,23 +1374,6 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.query.SelectableChar getSiteMaster(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.SITEMASTER, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableMoment getStartDate()
-  {
-    return getStartDate(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableMoment getStartDate(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableMoment)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.STARTDATE, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getStatus()

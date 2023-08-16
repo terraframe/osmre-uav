@@ -25,37 +25,34 @@ import org.json.JSONObject;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.runwaysdk.ComponentIF;
 
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class SiteObject implements TreeComponent
 {
-  public static final String KEY               = "key";
+  public static final String KEY                    = "key";
 
-  public static final String NAME              = "name";
+  public static final String NAME                   = "name";
 
-  public static final String COMPONENT         = "component";
+  public static final String COMPONENT              = "component";
 
-  public static final String FOLDER            = "folder";
+  public static final String FOLDER                 = "folder";
 
-  public static final String OBJECT            = "object";
+  public static final String OBJECT                 = "object";
 
-  public static final String IMAGE_KEY         = "imageKey";
+  public static final String IMAGE_KEY              = "imageKey";
 
-  public static final String LAST_MODIFIED_KEY = "lastModified";
+  public static final String LAST_MODIFIED_KEY      = "lastModified";
 
-  public static final String EXCLUDE           = "exclude";
+  public static final String EXCLUDE                = "exclude";
 
-  public static final String DESCRIPTION       = "description";
+  public static final String DESCRIPTION            = "description";
 
-  public static final String TOOL              = "tool";
+  public static final String TOOL                   = "tool";
 
-  public static final String PT_EPSG           = "ptEpsg";
+  public static final String PT_EPSG                = "ptEpsg";
 
-  public static final String START_DATE        = "startDate";
-
-  public static final String END_DATE          = "endDate";
+  public static final String ORTHO_CORRECTION_MODEL = "orthoCorrectionModel";
 
   private String             id;
 
@@ -79,9 +76,7 @@ public class SiteObject implements TreeComponent
 
   private String             ptEpsg;
 
-  private Date               startDate;
-
-  private Date               endDate;
+  private String             orthoCorrectionModel;
 
   public String getId()
   {
@@ -192,25 +187,15 @@ public class SiteObject implements TreeComponent
   {
     this.ptEpsg = ptEpsg;
   }
-
-  public Date getStartDate()
+  
+  public String getOrthoCorrectionModel()
   {
-    return startDate;
+    return orthoCorrectionModel;
   }
-
-  public void setStartDate(Date startDate)
+  
+  public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
-    this.startDate = startDate;
-  }
-
-  public Date getEndDate()
-  {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate)
-  {
-    this.endDate = endDate;
+    this.orthoCorrectionModel = orthoCorrectionModel;
   }
 
   @Override
@@ -232,9 +217,7 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.DESCRIPTION, this.description);
     json.put(SiteObject.TOOL, this.tool);
     json.put(SiteObject.PT_EPSG, this.ptEpsg);
-    json.put(SiteObject.START_DATE, Util.formatIso8601(this.startDate, false));
-    json.put(SiteObject.END_DATE, Util.formatIso8601(this.endDate, false));
-    
+    json.put(SiteObject.ORTHO_CORRECTION_MODEL, this.orthoCorrectionModel);
 
     // if (this.type.equals(SiteObject.FOLDER))
     // {
@@ -282,8 +265,7 @@ public class SiteObject implements TreeComponent
     object.setDescription(document.getDescription());
     object.setTool(document.getTool());
     object.setPtEpsg(document.getPtEpsg());
-    object.setStartDate(document.getStartDate());
-    object.setEndDate(document.getEndDate());
+    object.setOrthoCorrectionModel(document.getOrthoCorrectionModel());
 
     return object;
   }

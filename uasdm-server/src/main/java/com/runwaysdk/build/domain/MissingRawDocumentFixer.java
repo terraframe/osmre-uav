@@ -82,7 +82,7 @@ public class MissingRawDocumentFixer implements Runnable
         for (SiteObject object : objects)
         {
           // This should also create a component_has_document relationship between the collection and the document.
-          DocumentIF document = col.createDocumentIfNotExist(object.getKey(), object.getName(), null, null, null, null, null);
+          DocumentIF document = col.createDocumentIfNotExist(object.getKey(), object.getName(), new DocumentIF.Metadata());
 
           rDocuments.add(document);
           

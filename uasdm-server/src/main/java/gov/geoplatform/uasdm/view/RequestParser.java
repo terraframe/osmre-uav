@@ -35,47 +35,45 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 
 public class RequestParser implements RequestParserIF
 {
-  private static String       FILENAME_PARAM       = "qqfile";
+  private static String       FILENAME_PARAM         = "qqfile";
 
-  private static String       PART_INDEX_PARAM     = "qqpartindex";
+  private static String       PART_INDEX_PARAM       = "qqpartindex";
 
-  private static String       FILE_SIZE_PARAM      = "qqtotalfilesize";
+  private static String       FILE_SIZE_PARAM        = "qqtotalfilesize";
 
-  private static String       TOTAL_PARTS_PARAM    = "qqtotalparts";
+  private static String       TOTAL_PARTS_PARAM      = "qqtotalparts";
 
-  private static String       UUID_PARAM           = "qquuid";
+  private static String       UUID_PARAM             = "qquuid";
 
-  private static String       PART_FILENAME_PARAM  = "qqfilename";
+  private static String       PART_FILENAME_PARAM    = "qqfilename";
 
-  private static String       PART_RESUME_PARAM    = "qqresume";
+  private static String       PART_RESUME_PARAM      = "qqresume";
 
-  private static String       METHOD_PARAM         = "_method";
+  private static String       METHOD_PARAM           = "_method";
 
-  private static String       GENERATE_ERROR_PARAM = "generateError";
+  private static String       GENERATE_ERROR_PARAM   = "generateError";
 
-  private static String       UAS_COMPONENT_OID    = "uasComponentOid";
+  private static String       UAS_COMPONENT_OID      = "uasComponentOid";
 
-  private static String       PROCESS_UPLOAD       = "processUpload";
+  private static String       PROCESS_UPLOAD         = "processUpload";
 
-  private static String       PROCESS_DEM          = "processDem";
+  private static String       PROCESS_DEM            = "processDem";
 
-  private static String       PROCESS_ORTHO        = "processOrtho";
+  private static String       PROCESS_ORTHO          = "processOrtho";
 
-  private static String       PROCESS_PTCLOUD      = "processPtcloud";
+  private static String       PROCESS_PTCLOUD        = "processPtcloud";
 
-  private static String       SELECTIONS           = "selections";
+  private static String       SELECTIONS             = "selections";
 
-  private static String       UPLOAD_TARGET        = "uploadTarget";
+  private static String       UPLOAD_TARGET          = "uploadTarget";
 
-  private static String       DESCRIPTION          = "description";
+  private static String       DESCRIPTION            = "description";
 
-  private static String       TOOL                 = "tool";
+  private static String       TOOL                   = "tool";
 
-  private static String       PT_EPSG              = "ptEpsg";
+  private static String       PT_EPSG                = "ptEpsg";
 
-  private static String       START_DATE           = "startDate";
-
-  private static String       END_DATE             = "endDate";
+  private static String       ORTHO_CORRECTION_MODEL = "orthoCorrectionModel";
 
   private String              filename;
 
@@ -83,7 +81,7 @@ public class RequestParser implements RequestParserIF
 
   private boolean             generateError;
 
-  private int                 partIndex            = -1;
+  private int                 partIndex              = -1;
 
   private long                totalFileSize;
 
@@ -95,7 +93,7 @@ public class RequestParser implements RequestParserIF
 
   private String              method;
 
-  private Map<String, String> customParams         = new HashMap<>();
+  private Map<String, String> customParams           = new HashMap<>();
 
   private Boolean             resume;
 
@@ -109,9 +107,7 @@ public class RequestParser implements RequestParserIF
 
   private String              ptEpsg;
 
-  private Date                startDate;
-
-  private Date                endDate;
+  private String              orthoCorrectionModel;
 
   private Boolean             processUpload;
 
@@ -262,25 +258,11 @@ public class RequestParser implements RequestParserIF
   {
     return ptEpsg;
   }
-
-  public Date getStartDate()
+  
+  @Override
+  public String getOrthoCorrectionModel()
   {
-    return startDate;
-  }
-
-  public void setStartDate(Date startDate)
-  {
-    this.startDate = startDate;
-  }
-
-  public Date getEndDate()
-  {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate)
-  {
-    this.endDate = endDate;
+    return this.orthoCorrectionModel;
   }
 
   @Override
@@ -389,34 +371,11 @@ public class RequestParser implements RequestParserIF
       requestParser.ptEpsg = multipartUploadParser.getParams().get(PT_EPSG);
     }
 
-    if (requestParser.startDate == null)
+    if (requestParser.orthoCorrectionModel == null)
     {
-      try
-      {
-        requestParser.startDate = Util.parseIso8601(multipartUploadParser.getParams().get(START_DATE), false);
-      }
-      catch (ParseException e)
-      {
-        GenericException exception = new GenericException(e);
-        exception.setUserMessage(e.getMessage());
-        throw exception;
-      }
+      requestParser.orthoCorrectionModel = multipartUploadParser.getParams().get(ORTHO_CORRECTION_MODEL);
     }
-
-    if (requestParser.endDate == null)
-    {
-      try
-      {
-        requestParser.endDate = Util.parseIso8601(multipartUploadParser.getParams().get(END_DATE), false);
-      }
-      catch (ParseException e)
-      {
-        GenericException exception = new GenericException(e);
-        exception.setUserMessage(e.getMessage());
-        throw exception;
-      }
-    }
-
+    
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -512,34 +471,11 @@ public class RequestParser implements RequestParserIF
       requestParser.ptEpsg = req.getParameter(PT_EPSG);
     }
 
-    if (requestParser.startDate == null)
+    if (requestParser.orthoCorrectionModel == null)
     {
-      try
-      {
-        requestParser.startDate = Util.parseIso8601(req.getParameter(START_DATE), false);
-      }
-      catch (ParseException e)
-      {
-        GenericException exception = new GenericException(e);
-        exception.setUserMessage(e.getMessage());
-        throw exception;
-      }
+      requestParser.orthoCorrectionModel = req.getParameter(ORTHO_CORRECTION_MODEL);
     }
-
-    if (requestParser.endDate == null)
-    {
-      try
-      {
-        requestParser.endDate = Util.parseIso8601(req.getParameter(END_DATE), false);
-      }
-      catch (ParseException e)
-      {
-        GenericException exception = new GenericException(e);
-        exception.setUserMessage(e.getMessage());
-        throw exception;
-      }
-    }
-
+    
     if (requestParser.method == null)
     {
       requestParser.method = req.getParameter(METHOD_PARAM);
@@ -617,31 +553,9 @@ public class RequestParser implements RequestParserIF
       {
         requestParser.ptEpsg = value;
       }
-      else if (key.equals(START_DATE))
+      else if (key.equals(ORTHO_CORRECTION_MODEL))
       {
-        try
-        {
-          requestParser.startDate = Util.parseIso8601(value, false);
-        }
-        catch (ParseException e)
-        {
-          GenericException exception = new GenericException(e);
-          exception.setUserMessage(e.getMessage());
-          throw exception;
-        }
-      }
-      else if (key.equals(END_DATE))
-      {
-        try
-        {
-          requestParser.endDate = Util.parseIso8601(value, false);
-        }
-        catch (ParseException e)
-        {
-          GenericException exception = new GenericException(e);
-          exception.setUserMessage(e.getMessage());
-          throw exception;
-        }
+        requestParser.orthoCorrectionModel = value;
       }
       else if (key.equals(METHOD_PARAM))
       {

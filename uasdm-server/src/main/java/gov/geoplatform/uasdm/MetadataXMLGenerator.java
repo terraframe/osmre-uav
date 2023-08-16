@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -117,7 +118,7 @@ public class MetadataXMLGenerator
     {
       if (artifact.hasObjects())
       {
-        metadata.addArtifact(new ArtifactMetadata().populate(artifact));
+        metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
       }
     }
 
@@ -318,6 +319,11 @@ public class MetadataXMLGenerator
 
     if (metadata.getType().equals(ImageryComponent.ORTHO))
     {
+      if (metadata.getOrthoCorrectionModel() != null)
+      {
+        element.setAttribute("orthoCorrectionModel", metadata.getOrthoCorrectionModel());
+      }
+      
       if (metadata.getStartDate() != null)
       {
         element.setAttribute("orthoStartDate", Util.formatIso8601(metadata.getStartDate(), false));
@@ -584,7 +590,7 @@ public class MetadataXMLGenerator
       String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
-      collection.createDocumentIfNotExist(key, fileName, null, null, null, null, null);
+      collection.createDocumentIfNotExist(key, fileName, new DocumentIF.Metadata());
 
       IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 

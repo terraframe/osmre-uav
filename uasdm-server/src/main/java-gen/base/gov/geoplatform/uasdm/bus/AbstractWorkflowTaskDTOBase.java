@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1908775018)
+@com.runwaysdk.business.ClassSignature(hash = -1654491374)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1908775018;
+  private static final long serialVersionUID = -1654491374;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -31,7 +31,6 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String DESCRIPTION = "description";
-  public static java.lang.String ENDDATE = "endDate";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
   public static java.lang.String GEOPRISMUSER = "geoprismUser";
   public static java.lang.String KEYNAME = "keyName";
@@ -40,11 +39,11 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String LOCKEDBY = "lockedBy";
   public static java.lang.String MESSAGE = "message";
   public static java.lang.String OID = "oid";
+  public static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public static java.lang.String OWNER = "owner";
   public static java.lang.String PTEPSG = "ptEpsg";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String STARTDATE = "startDate";
   public static java.lang.String STATUS = "status";
   public static java.lang.String TASKLABEL = "taskLabel";
   public static java.lang.String TOOL = "tool";
@@ -146,43 +145,6 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getDescriptionMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(DESCRIPTION).getAttributeMdDTO();
-  }
-  
-  public java.util.Date getEndDate()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(ENDDATE));
-  }
-  
-  public void setEndDate(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(ENDDATE, "");
-    }
-    else
-    {
-      setValue(ENDDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
-    }
-  }
-  
-  public boolean isEndDateWritable()
-  {
-    return isWritable(ENDDATE);
-  }
-  
-  public boolean isEndDateReadable()
-  {
-    return isReadable(ENDDATE);
-  }
-  
-  public boolean isEndDateModified()
-  {
-    return isModified(ENDDATE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO getEndDateMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO) getAttributeDTO(ENDDATE).getAttributeMdDTO();
   }
   
   public com.runwaysdk.system.metadata.MdDomainDTO getEntityDomain()
@@ -456,6 +418,43 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(MESSAGE).getAttributeMdDTO();
   }
   
+  public String getOrthoCorrectionModel()
+  {
+    return getValue(ORTHOCORRECTIONMODEL);
+  }
+  
+  public void setOrthoCorrectionModel(String value)
+  {
+    if(value == null)
+    {
+      setValue(ORTHOCORRECTIONMODEL, "");
+    }
+    else
+    {
+      setValue(ORTHOCORRECTIONMODEL, value);
+    }
+  }
+  
+  public boolean isOrthoCorrectionModelWritable()
+  {
+    return isWritable(ORTHOCORRECTIONMODEL);
+  }
+  
+  public boolean isOrthoCorrectionModelReadable()
+  {
+    return isReadable(ORTHOCORRECTIONMODEL);
+  }
+  
+  public boolean isOrthoCorrectionModelModified()
+  {
+    return isModified(ORTHOCORRECTIONMODEL);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getOrthoCorrectionModelMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(ORTHOCORRECTIONMODEL).getAttributeMdDTO();
+  }
+  
   public com.runwaysdk.system.ActorDTO getOwner()
   {
     if(getValue(OWNER) == null || getValue(OWNER).trim().equals(""))
@@ -590,43 +589,6 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getSiteMasterMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SITEMASTER).getAttributeMdDTO();
-  }
-  
-  public java.util.Date getStartDate()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(STARTDATE));
-  }
-  
-  public void setStartDate(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(STARTDATE, "");
-    }
-    else
-    {
-      setValue(STARTDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
-    }
-  }
-  
-  public boolean isStartDateWritable()
-  {
-    return isWritable(STARTDATE);
-  }
-  
-  public boolean isStartDateReadable()
-  {
-    return isReadable(STARTDATE);
-  }
-  
-  public boolean isStartDateModified()
-  {
-    return isModified(STARTDATE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO getStartDateMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO) getAttributeDTO(STARTDATE).getAttributeMdDTO();
   }
   
   public String getStatus()

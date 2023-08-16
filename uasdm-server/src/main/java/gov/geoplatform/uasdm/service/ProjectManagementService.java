@@ -735,6 +735,7 @@ public class ProjectManagementService
         if (object.getString("folder").equals(ImageryComponent.PTCLOUD))
         {
           String ptEpsg = object.has(Document.PTEPSG) ? object.getString(Document.PTEPSG) : null;
+          String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
 
           new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
             return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
@@ -743,9 +744,8 @@ public class ProjectManagementService
 
             if (name.endsWith(".LAZ") || name.endsWith(".LAS"))
             {
-              document.setStartDate(ImageryWorkflowTaskIF.getDateValue(object, Document.STARTDATE));
-              document.setEndDate(ImageryWorkflowTaskIF.getDateValue(object, Document.ENDDATE));
               document.setPtEpsg(ptEpsg);
+              document.setOrthoCorrectionModel(orthoCorrectionModel);
               document.apply();
             }
           });

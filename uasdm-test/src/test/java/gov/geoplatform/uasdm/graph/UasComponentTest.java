@@ -144,7 +144,7 @@ public class UasComponentTest
   @Request
   public void testRemoveArtifacts()
   {
-    collection.removeArtifacts(ImageryComponent.ORTHO);
+    collection.removeArtifacts(ImageryComponent.ORTHO, true);
 
     Assert.assertNull(Document.get(target.getOid()));
     Assert.assertNull(Document.get(image.getOid()));

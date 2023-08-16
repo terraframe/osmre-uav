@@ -276,6 +276,8 @@ public class FlightMetadata
 
     private String                ptEpsg;
 
+    private String                orthoCorrectionModel;
+
     private Date                  startDate;
 
     private Date                  endDate;
@@ -342,6 +344,16 @@ public class FlightMetadata
       this.ptEpsg = ptEpsg;
     }
 
+    public String getOrthoCorrectionModel()
+    {
+      return orthoCorrectionModel;
+    }
+
+    public void setOrthoCorrectionModel(String orthoCorrectionModel)
+    {
+      this.orthoCorrectionModel = orthoCorrectionModel;
+    }
+
     public Date getStartDate()
     {
       return startDate;
@@ -362,12 +374,18 @@ public class FlightMetadata
       this.endDate = endDate;
     }
 
-    public ArtifactMetadata populate(Artifact artifact)
+    public ArtifactMetadata populate(Artifact artifact, CollectionIF collection)
     {
       this.type = artifact.getFolder();
       this.ptEpsg = artifact.getPtEpsg();
-      this.startDate = artifact.getStartDate();
-      this.endDate = artifact.getEndDate();
+      this.orthoCorrectionModel = artifact.getOrthoCorrectionModel();
+      this.startDate = collection.getCollectionDate();
+      this.endDate = collection.getCollectionEndDate();
+
+      if (this.endDate == null)
+      {
+        this.endDate = collection.getCollectionDate();
+      }
 
       List<SiteObject> objects = artifact.getObjects();
 
@@ -427,6 +445,11 @@ public class FlightMetadata
       // Otho specific metadata
       if (metadata.getType().equals(ImageryComponent.ORTHO))
       {
+        if (item.hasAttribute("orthoCorrectionModel"))
+        {
+          metadata.setOrthoCorrectionModel(item.getAttribute("orthoCorrectionModel"));
+        }
+
         if (item.hasAttribute("orthoStartDate"))
         {
           try
@@ -1474,7 +1497,7 @@ public class FlightMetadata
     {
       if (artifact.hasObjects())
       {
-        metadata.addArtifact(new ArtifactMetadata().populate(artifact));
+        metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
       }
     }
 

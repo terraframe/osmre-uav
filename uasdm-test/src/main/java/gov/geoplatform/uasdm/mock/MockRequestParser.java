@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.mock;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -57,9 +56,7 @@ public class MockRequestParser implements RequestParserIF
 
   private String              ptEpsg;
 
-  private Date                startDate;
-
-  private Date                endDate;
+  private String              orthoCorrectionModel;
 
   private Boolean             processUpload;
 
@@ -79,8 +76,7 @@ public class MockRequestParser implements RequestParserIF
     this.description = "Test Upload";
     this.tool = "ODM";
     this.ptEpsg = "4326";
-    this.startDate = new Date();
-    this.endDate = new Date();
+    this.orthoCorrectionModel = "UNKNOWN";
     this.processUpload = false;
     this.processPtcloud = true;
     this.processOrtho = true;
@@ -240,25 +236,14 @@ public class MockRequestParser implements RequestParserIF
     this.ptEpsg = ptEpsg;
   }
 
-  @Override
-  public Date getStartDate()
+  public String getOrthoCorrectionModel()
   {
-    return this.startDate;
+    return orthoCorrectionModel;
   }
 
-  public void setStartDate(Date startDate)
+  public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
-    this.startDate = startDate;
-  }
-
-  public Date getEndDate()
-  {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate)
-  {
-    this.endDate = endDate;
+    this.orthoCorrectionModel = orthoCorrectionModel;
   }
 
   public Boolean getProcessUpload()

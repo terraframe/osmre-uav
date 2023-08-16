@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
@@ -1012,9 +1011,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public DocumentIF createDocumentIfNotExist(String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
+  public DocumentIF createDocumentIfNotExist(String key, String name, DocumentIF.Metadata metadata)
   {
-    return Document.createIfNotExist(this, key, name, description, tool, ptEpsg, startDate, endDate);
+    return Document.createIfNotExist(this, key, name, metadata);
   }
 
   @Override

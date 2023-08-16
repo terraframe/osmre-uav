@@ -379,15 +379,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		
 		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
 		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
-
-		if(component.collectionDate != null) {
-			this.values.startDate = component.collectionDate;
-			this.values.endDate = component.collectionDate;
-		}
-
-		if(component.collectionEndDate != null) {
-			this.values.endDate = component.collectionEndDate;
-		}
 	}
 
 	close(): void {

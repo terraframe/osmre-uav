@@ -25,6 +25,67 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public interface DocumentIF extends ComponentIF, JSONSerializable
 {
+  public static class Metadata
+  {
+    private String description;
+
+    private String tool;
+
+    private String ptEpsg;
+
+    private String orthoCorrectionModel;
+
+    public String getDescription()
+    {
+      return description;
+    }
+
+    public void setDescription(String description)
+    {
+      this.description = description;
+    }
+
+    public String getTool()
+    {
+      return tool;
+    }
+
+    public void setTool(String tool)
+    {
+      this.tool = tool;
+    }
+
+    public String getPtEpsg()
+    {
+      return ptEpsg;
+    }
+
+    public void setPtEpsg(String ptEpsg)
+    {
+      this.ptEpsg = ptEpsg;
+    }
+
+    public String getOrthoCorrectionModel()
+    {
+      return orthoCorrectionModel;
+    }
+
+    public void setOrthoCorrectionModel(String orthoCorrectionModel)
+    {
+      this.orthoCorrectionModel = orthoCorrectionModel;
+    }
+
+    public static Metadata build(String description, String tool, String ptEpsg, String orthoCorrectionModel)
+    {
+      Metadata metadata = new Metadata();
+      metadata.setDescription(description);
+      metadata.setTool(tool);
+      metadata.setPtEpsg(ptEpsg);
+      metadata.setOrthoCorrectionModel(orthoCorrectionModel);
+
+      return metadata;
+    }
+  }
 
   public String getS3location();
 
@@ -53,10 +114,8 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
   public String getTool();
 
   public String getPtEpsg();
-  
-  public Date getStartDate();
-  
-  public Date getEndDate();
+
+  public String getOrthoCorrectionModel();
 
   public RemoteFileObject download();
 

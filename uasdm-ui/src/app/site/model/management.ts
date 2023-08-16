@@ -104,11 +104,6 @@ export class SiteEntity {
 	dateTime?: string;
 	collectionDate?: string;
 	collectionEndDate?: string;
-	description?: string;
-	tool?: string;
-	ptEpsg?: string;
-	startDate?: string;
-	endDate?: string;
 	hasAllZip?: boolean;
 	shortName?: string;
 	restricted?: boolean;
@@ -128,6 +123,12 @@ export class SiteEntity {
 	percentSideLap?: number;
 	areaCovered?: number;
 	weatherConditions?: string;
+
+	// Document metadata fields
+	description?: string;
+	tool?: string;
+	ptEpsg?: string;
+	orthoCorrectionModel?: string;
 }
 
 export class CollectionArtifact {
@@ -224,17 +225,14 @@ export class UploadForm {
 	mission?: string;
 	collection?: any;
 	imagery?: any;
-	uploadTarget?: string;
 	selections?: string;
+
+	// Processing configuration fields
+	uploadTarget?: string;
 	processUpload?: boolean;
 	processOrtho?: boolean;
 	processDem?: boolean;
 	processPtcloud?: boolean;
-	tool?: string;
-	ptEpsg?: string;
-	startDate?: string;
-	endDate?: string;
-	description?: string;
 	includeGeoLocationFile?: boolean;
 	resolution?: number;
 	videoResolution?: number;
@@ -246,6 +244,11 @@ export class UploadForm {
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 
+	// Document metadata fields
+	tool?: string;
+	ptEpsg?: string;
+	orthoCorrectionModel?: string;
+	description?: string;
 }
 
 export class Action {

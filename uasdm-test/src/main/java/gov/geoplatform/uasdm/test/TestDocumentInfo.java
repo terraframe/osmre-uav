@@ -1,36 +1,38 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.test;
 
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 
 public class TestDocumentInfo
 {
   protected TestCollectionInfo component;
 
-  protected String key;
+  protected String             key;
 
-  protected String fileName;
+  protected String             fileName;
 
-  protected String description;
+  protected String             description;
 
-  protected String tool;
-  
-  protected String ptEpsg;
+  protected String             tool;
+
+  protected String             ptEpsg;
 
   public TestDocumentInfo(TestCollectionInfo component, String key, String fileName)
   {
@@ -95,12 +97,12 @@ public class TestDocumentInfo
   {
     this.tool = tool;
   }
-  
+
   public String getPtEpsg()
   {
     return ptEpsg;
   }
-  
+
   public void setPtEpsg(String ptEpsg)
   {
     this.ptEpsg = ptEpsg;
@@ -114,7 +116,9 @@ public class TestDocumentInfo
   {
     UasComponent collection = this.component.getServerObject();
 
-    return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, this.description, this.tool, this.ptEpsg, null, null);
+    Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null);
+
+    return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, metadata);
   }
 
   public Document getServerObject()

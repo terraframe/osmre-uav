@@ -60,8 +60,7 @@ public class WorkflowService
       task.setDescription(parser.getDescription());
       task.setTool(parser.getTool());
       task.setPtEpsg(parser.getPtEpsg());
-      task.setStartDate(parser.getStartDate());
-      task.setEndDate(parser.getEndDate());
+      task.setOrthoCorrectionModel(parser.getOrthoCorrectionModel());
 
       if (task instanceof WorkflowTask)
       {

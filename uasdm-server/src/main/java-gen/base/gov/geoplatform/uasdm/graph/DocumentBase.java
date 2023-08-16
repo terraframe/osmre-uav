@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1808355913)
+@com.runwaysdk.business.ClassSignature(hash = 144443213)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -12,18 +12,17 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Document";
   public final static java.lang.String DESCRIPTION = "description";
-  public final static java.lang.String ENDDATE = "endDate";
   public final static java.lang.String EXCLUDE = "exclude";
   public final static java.lang.String LASTMODIFIED = "lastModified";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
+  public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String S3LOCATION = "s3location";
   public final static java.lang.String SEQ = "seq";
-  public final static java.lang.String STARTDATE = "startDate";
   public final static java.lang.String TOOL = "tool";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1808355913;
+  private static final long serialVersionUID = 144443213;
   
   public DocumentBase()
   {
@@ -44,22 +43,6 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setDescription(String value)
   {
     this.setValue(DESCRIPTION, value);
-  }
-  
-  public java.util.Date getEndDate()
-  {
-    return (java.util.Date) this.getObjectValue(ENDDATE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getEndDateMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(ENDDATE);
-  }
-  
-  public void setEndDate(java.util.Date value)
-  {
-    this.setValue(ENDDATE, value);
   }
   
   public Boolean getExclude()
@@ -121,6 +104,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
   }
   
+  public String getOrthoCorrectionModel()
+  {
+    return (String) this.getObjectValue(ORTHOCORRECTIONMODEL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getOrthoCorrectionModelMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(ORTHOCORRECTIONMODEL);
+  }
+  
+  public void setOrthoCorrectionModel(String value)
+  {
+    this.setValue(ORTHOCORRECTIONMODEL, value);
+  }
+  
   public String getPtEpsg()
   {
     return (String) this.getObjectValue(PTEPSG);
@@ -167,22 +166,6 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setSeq(Long value)
   {
     this.setValue(SEQ, value);
-  }
-  
-  public java.util.Date getStartDate()
-  {
-    return (java.util.Date) this.getObjectValue(STARTDATE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getStartDateMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(STARTDATE);
-  }
-  
-  public void setStartDate(java.util.Date value)
-  {
-    this.setValue(STARTDATE, value);
   }
   
   public String getTool()

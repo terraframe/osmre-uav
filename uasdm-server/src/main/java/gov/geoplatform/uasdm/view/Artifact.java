@@ -1,13 +1,10 @@
 package gov.geoplatform.uasdm.view;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import gov.geoplatform.uasdm.Util;
 
 public class Artifact
 {
@@ -20,10 +17,7 @@ public class Artifact
   private String[]         extensions;
 
   private String           ptEpsg;
-
-  private Date             startDate;
-
-  private Date             endDate;
+  private String           orthoCorrectionModel;
 
   public Artifact(String folder, String... extensions)
   {
@@ -43,8 +37,7 @@ public class Artifact
     this.objects = objects;
 
     objects.stream().map(a -> a.getPtEpsg()).filter(a -> a != null).findAny().ifPresent(a -> this.setPtEpsg(a));
-    objects.stream().map(a -> a.getStartDate()).filter(a -> a != null).findAny().ifPresent(a -> this.setStartDate(a));
-    objects.stream().map(a -> a.getEndDate()).filter(a -> a != null).findAny().ifPresent(a -> this.setEndDate(a));
+    objects.stream().map(a -> a.getOrthoCorrectionModel()).filter(a -> a != null).findAny().ifPresent(a -> this.setOrthoCorrectionModel(a));
   }
 
   public boolean isReport()
@@ -86,25 +79,15 @@ public class Artifact
   {
     this.ptEpsg = ptEpsg;
   }
-
-  public Date getStartDate()
+  
+  public String getOrthoCorrectionModel()
   {
-    return startDate;
+    return orthoCorrectionModel;
   }
-
-  public void setStartDate(Date startDate)
+  
+  public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
-    this.startDate = startDate;
-  }
-
-  public Date getEndDate()
-  {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate)
-  {
-    this.endDate = endDate;
+    this.orthoCorrectionModel = orthoCorrectionModel;
   }
 
   public void process(SiteObject object)
@@ -128,8 +111,7 @@ public class Artifact
     }
 
     objects.stream().map(a -> a.getPtEpsg()).filter(a -> a != null).findAny().ifPresent(a -> this.setPtEpsg(a));
-    objects.stream().map(a -> a.getStartDate()).filter(a -> a != null).findAny().ifPresent(a -> this.setStartDate(a));
-    objects.stream().map(a -> a.getEndDate()).filter(a -> a != null).findAny().ifPresent(a -> this.setEndDate(a));
+    objects.stream().map(a -> a.getOrthoCorrectionModel()).filter(a -> a != null).findAny().ifPresent(a -> this.setOrthoCorrectionModel(a));    
   }
 
   public boolean hasObjects()
@@ -162,16 +144,11 @@ public class Artifact
       object.put("ptEpsg", this.ptEpsg);
     }
 
-    if (this.startDate != null)
+    if (orthoCorrectionModel != null)
     {
-      object.put("startDate", Util.formatIso8601(this.startDate, false));
+      object.put("orthoCorrectionModel", this.orthoCorrectionModel);
     }
-
-    if (this.endDate != null)
-    {
-      object.put("endDate", Util.formatIso8601(this.endDate, false));
-    }
-
+    
     return object;
   }
 }

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 334399978)
+@com.runwaysdk.business.ClassSignature(hash = 1745458578)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -14,7 +14,6 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String CREATEDATE = "createDate";
   public final static java.lang.String CREATEDBY = "createdBy";
   public final static java.lang.String DESCRIPTION = "description";
-  public final static java.lang.String ENDDATE = "endDate";
   public final static java.lang.String ENTITYDOMAIN = "entityDomain";
   public final static java.lang.String GEOPRISMUSER = "geoprismUser";
   public final static java.lang.String KEYNAME = "keyName";
@@ -23,17 +22,17 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String LOCKEDBY = "lockedBy";
   public final static java.lang.String MESSAGE = "message";
   public final static java.lang.String OID = "oid";
+  public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public final static java.lang.String OWNER = "owner";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String SITEMASTER = "siteMaster";
-  public final static java.lang.String STARTDATE = "startDate";
   public final static java.lang.String STATUS = "status";
   public final static java.lang.String TASKLABEL = "taskLabel";
   public final static java.lang.String TOOL = "tool";
   public final static java.lang.String TYPE = "type";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 334399978;
+  private static final long serialVersionUID = 1745458578;
   
   public AbstractWorkflowTaskBase()
   {
@@ -109,34 +108,6 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     else
     {
       setValue(DESCRIPTION, value);
-    }
-  }
-  
-  public java.util.Date getEndDate()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(ENDDATE));
-  }
-  
-  public void validateEndDate()
-  {
-    this.validateAttribute(ENDDATE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getEndDateMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(ENDDATE);
-  }
-  
-  public void setEndDate(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(ENDDATE, "");
-    }
-    else
-    {
-      setValue(ENDDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
     }
   }
   
@@ -388,6 +359,34 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
   }
   
+  public String getOrthoCorrectionModel()
+  {
+    return getValue(ORTHOCORRECTIONMODEL);
+  }
+  
+  public void validateOrthoCorrectionModel()
+  {
+    this.validateAttribute(ORTHOCORRECTIONMODEL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getOrthoCorrectionModelMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(ORTHOCORRECTIONMODEL);
+  }
+  
+  public void setOrthoCorrectionModel(String value)
+  {
+    if(value == null)
+    {
+      setValue(ORTHOCORRECTIONMODEL, "");
+    }
+    else
+    {
+      setValue(ORTHOCORRECTIONMODEL, value);
+    }
+  }
+  
   public com.runwaysdk.system.Actor getOwner()
   {
     if (getValue(OWNER).trim().equals(""))
@@ -498,34 +497,6 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(SITEMASTER);
-  }
-  
-  public java.util.Date getStartDate()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(STARTDATE));
-  }
-  
-  public void validateStartDate()
-  {
-    this.validateAttribute(STARTDATE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF getStartDateMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDateTimeDAOIF)mdClassIF.definesAttribute(STARTDATE);
-  }
-  
-  public void setStartDate(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(STARTDATE, "");
-    }
-    else
-    {
-      setValue(STARTDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
-    }
   }
   
   public String getStatus()

@@ -32,11 +32,8 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.processing.CogTifProcessor;
-import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
@@ -115,7 +112,7 @@ public class Document extends DocumentBase implements DocumentIF
     return this.getS3location();
   }
 
-  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name, String description, String tool, String ptEpsg, Date startDate, Date endDate)
+  public static Document createIfNotExist(UasComponentIF uasComponent, String key, String name, DocumentIF.Metadata metadata)
   {
     Document document = Document.find(key);
 
@@ -129,11 +126,10 @@ public class Document extends DocumentBase implements DocumentIF
     }
 
     document.setName(name);
-    document.setDescription(description);
-    document.setTool(tool);
-    document.setPtEpsg(ptEpsg);
-    document.setStartDate(startDate);
-    document.setEndDate(endDate);
+    document.setDescription(metadata.getDescription());
+    document.setTool(metadata.getTool());
+    document.setPtEpsg(metadata.getPtEpsg());
+    document.setOrthoCorrectionModel(metadata.getOrthoCorrectionModel());
     document.apply(uasComponent);
 
     return document;
