@@ -303,9 +303,14 @@ public class MetadataXMLGenerator
     {
       if (metadata.getPtEpsg() != null)
       {
-        element.setAttribute("ptCloudEpsgNumber", metadata.getPtEpsg());
+        element.setAttribute("ptCloudEpsgNumber", metadata.getPtEpsg().toString());
       }
 
+      if (metadata.getProjectionName() != null)
+      {
+        element.setAttribute("ptCloudProjectionName", metadata.getProjectionName());
+      }
+      
       if (metadata.getStartDate() != null)
       {
         element.setAttribute("ptCloudStartDate", Util.formatIso8601(metadata.getStartDate(), false));

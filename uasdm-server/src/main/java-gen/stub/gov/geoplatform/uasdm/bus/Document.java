@@ -117,7 +117,13 @@ public class Document extends DocumentBase implements DocumentIF
   }
   
   @Override
-  public String getPtEpsg()
+  public String getProjectionName()
+  {
+    return null;
+  }
+  
+  @Override
+  public Integer getPtEpsg()
   {
     return null;
   }

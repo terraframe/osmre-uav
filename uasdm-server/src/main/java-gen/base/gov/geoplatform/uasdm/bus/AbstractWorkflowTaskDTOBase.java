@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1654491374)
+@com.runwaysdk.business.ClassSignature(hash = 1611138145)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1654491374;
+  private static final long serialVersionUID = 1611138145;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -41,6 +41,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String OID = "oid";
   public static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PROJECTIONNAME = "projectionName";
   public static java.lang.String PTEPSG = "ptEpsg";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
@@ -504,12 +505,49 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
   }
   
-  public String getPtEpsg()
+  public String getProjectionName()
   {
-    return getValue(PTEPSG);
+    return getValue(PROJECTIONNAME);
   }
   
-  public void setPtEpsg(String value)
+  public void setProjectionName(String value)
+  {
+    if(value == null)
+    {
+      setValue(PROJECTIONNAME, "");
+    }
+    else
+    {
+      setValue(PROJECTIONNAME, value);
+    }
+  }
+  
+  public boolean isProjectionNameWritable()
+  {
+    return isWritable(PROJECTIONNAME);
+  }
+  
+  public boolean isProjectionNameReadable()
+  {
+    return isReadable(PROJECTIONNAME);
+  }
+  
+  public boolean isProjectionNameModified()
+  {
+    return isModified(PROJECTIONNAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getProjectionNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PROJECTIONNAME).getAttributeMdDTO();
+  }
+  
+  public Integer getPtEpsg()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(PTEPSG));
+  }
+  
+  public void setPtEpsg(Integer value)
   {
     if(value == null)
     {
@@ -517,7 +555,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     }
     else
     {
-      setValue(PTEPSG, value);
+      setValue(PTEPSG, java.lang.Integer.toString(value));
     }
   }
   
@@ -536,9 +574,9 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
     return isModified(PTEPSG);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getPtEpsgMd()
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getPtEpsgMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PTEPSG).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(PTEPSG).getAttributeMdDTO();
   }
   
   public Long getSeq()

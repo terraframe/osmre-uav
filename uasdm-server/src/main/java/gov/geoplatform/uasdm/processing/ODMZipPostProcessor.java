@@ -42,6 +42,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
@@ -220,7 +221,7 @@ public class ODMZipPostProcessor
       EpsgProcessor processor = new EpsgProcessor();
 
       this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferencing_model_geo.txt", processor);
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo(processor.getLine())));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, this.filePrefix, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo().setProjectionName(processor.getLine())));
 
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept.json"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildS3Path(POTREE, this.filePrefix, "ept-build.json"), this.product, this.collection, monitor));
@@ -293,10 +294,15 @@ public class ODMZipPostProcessor
 
       if (DevProperties.runOrtho())
       {
-        // https://github.com/OpenDroneMap/ClusterODM/issues/113
-        // allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
-
-        allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
+        if (DevProperties.isLocalODM())
+        {
+          allZip = ODMFacade.taskDownload(progressTask.getOdmUUID());
+        }
+        else
+        {
+          // https://github.com/OpenDroneMap/ClusterODM/issues/113
+          allZip = RemoteFileFacade.download(progressTask.getOdmUUID() + "/all.zip").openNewFile();
+        }
       }
       else
       {

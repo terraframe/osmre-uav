@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 2049691593)
+@com.runwaysdk.business.ClassSignature(hash = 363008970)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -295,21 +295,38 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER, mdAttributeIF, this, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getPtEpsg()
+  public com.runwaysdk.query.SelectableChar getProjectionName()
+  {
+    return getProjectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getPtEpsg()
   {
     return getPtEpsg(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()
@@ -520,9 +537,12 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getPtEpsg();
-    public com.runwaysdk.query.SelectableChar getPtEpsg(String alias);
-    public com.runwaysdk.query.SelectableChar getPtEpsg(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProjectionName();
+    public com.runwaysdk.query.SelectableChar getProjectionName(String alias);
+    public com.runwaysdk.query.SelectableChar getProjectionName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getPtEpsg();
+    public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias);
+    public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -797,21 +817,38 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER,  alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getPtEpsg()
+  public com.runwaysdk.query.SelectableChar getProjectionName()
+  {
+    return getProjectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getPtEpsg()
   {
     return getPtEpsg(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()
@@ -999,9 +1036,12 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getPtEpsg();
-    public com.runwaysdk.query.SelectableChar getPtEpsg(String alias);
-    public com.runwaysdk.query.SelectableChar getPtEpsg(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProjectionName();
+    public com.runwaysdk.query.SelectableChar getProjectionName(String alias);
+    public com.runwaysdk.query.SelectableChar getProjectionName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getPtEpsg();
+    public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias);
+    public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -1325,21 +1365,38 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER,  alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getPtEpsg()
+  public com.runwaysdk.query.SelectableChar getProjectionName()
+  {
+    return getProjectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProjectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PROJECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableInteger getPtEpsg()
   {
     return getPtEpsg(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getPtEpsg(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getPtEpsg(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PTEPSG, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()

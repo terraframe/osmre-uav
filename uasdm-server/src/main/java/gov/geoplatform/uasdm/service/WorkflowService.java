@@ -60,6 +60,7 @@ public class WorkflowService
       task.setDescription(parser.getDescription());
       task.setTool(parser.getTool());
       task.setPtEpsg(parser.getPtEpsg());
+      task.setProjectionName(parser.getProjectionName());
       task.setOrthoCorrectionModel(parser.getOrthoCorrectionModel());
 
       if (task instanceof WorkflowTask)

@@ -16,7 +16,10 @@ public class Artifact
 
   private String[]         extensions;
 
-  private String           ptEpsg;
+  private Integer          ptEpsg;
+
+  private String           projectionName;
+
   private String           orthoCorrectionModel;
 
   public Artifact(String folder, String... extensions)
@@ -37,6 +40,7 @@ public class Artifact
     this.objects = objects;
 
     objects.stream().map(a -> a.getPtEpsg()).filter(a -> a != null).findAny().ifPresent(a -> this.setPtEpsg(a));
+    objects.stream().map(a -> a.getProjectionName()).filter(a -> a != null).findAny().ifPresent(a -> this.setProjectionName(a));
     objects.stream().map(a -> a.getOrthoCorrectionModel()).filter(a -> a != null).findAny().ifPresent(a -> this.setOrthoCorrectionModel(a));
   }
 
@@ -69,22 +73,32 @@ public class Artifact
   {
     this.extensions = extensions;
   }
-
-  public String getPtEpsg()
+  
+  public Integer getPtEpsg()
   {
     return ptEpsg;
   }
-
-  public void setPtEpsg(String ptEpsg)
+  
+  public void setPtEpsg(Integer ptEpsg)
   {
     this.ptEpsg = ptEpsg;
   }
   
+  public String getProjectionName()
+  {
+    return projectionName;
+  }
+  
+  public void setProjectionName(String projectionName)
+  {
+    this.projectionName = projectionName;
+  }
+
   public String getOrthoCorrectionModel()
   {
     return orthoCorrectionModel;
   }
-  
+
   public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
     this.orthoCorrectionModel = orthoCorrectionModel;
@@ -111,7 +125,8 @@ public class Artifact
     }
 
     objects.stream().map(a -> a.getPtEpsg()).filter(a -> a != null).findAny().ifPresent(a -> this.setPtEpsg(a));
-    objects.stream().map(a -> a.getOrthoCorrectionModel()).filter(a -> a != null).findAny().ifPresent(a -> this.setOrthoCorrectionModel(a));    
+    objects.stream().map(a -> a.getProjectionName()).filter(a -> a != null).findAny().ifPresent(a -> this.setProjectionName(a));
+    objects.stream().map(a -> a.getOrthoCorrectionModel()).filter(a -> a != null).findAny().ifPresent(a -> this.setOrthoCorrectionModel(a));
   }
 
   public boolean hasObjects()
@@ -143,12 +158,17 @@ public class Artifact
     {
       object.put("ptEpsg", this.ptEpsg);
     }
+    
+    if (projectionName != null)
+    {
+      object.put("projectionName", this.projectionName);
+    }
 
     if (orthoCorrectionModel != null)
     {
       object.put("orthoCorrectionModel", this.orthoCorrectionModel);
     }
-    
+
     return object;
   }
 }

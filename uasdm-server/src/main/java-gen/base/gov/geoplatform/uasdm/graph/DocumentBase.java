@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 144443213)
+@com.runwaysdk.business.ClassSignature(hash = -741667164)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -17,12 +17,13 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
+  public final static java.lang.String PROJECTIONNAME = "projectionName";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String S3LOCATION = "s3location";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String TOOL = "tool";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 144443213;
+  private static final long serialVersionUID = -741667164;
   
   public DocumentBase()
   {
@@ -120,18 +121,34 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     this.setValue(ORTHOCORRECTIONMODEL, value);
   }
   
-  public String getPtEpsg()
+  public String getProjectionName()
   {
-    return (String) this.getObjectValue(PTEPSG);
+    return (String) this.getObjectValue(PROJECTIONNAME);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getPtEpsgMd()
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getProjectionNameMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PTEPSG);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PROJECTIONNAME);
   }
   
-  public void setPtEpsg(String value)
+  public void setProjectionName(String value)
+  {
+    this.setValue(PROJECTIONNAME, value);
+  }
+  
+  public Integer getPtEpsg()
+  {
+    return (Integer) this.getObjectValue(PTEPSG);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPtEpsgMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PTEPSG);
+  }
+  
+  public void setPtEpsg(Integer value)
   {
     this.setValue(PTEPSG, value);
   }

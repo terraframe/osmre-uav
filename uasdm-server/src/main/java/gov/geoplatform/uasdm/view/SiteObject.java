@@ -52,6 +52,8 @@ public class SiteObject implements TreeComponent
 
   public static final String PT_EPSG                = "ptEpsg";
 
+  public static final String PROJECTION_NAME        = "projectionName";
+
   public static final String ORTHO_CORRECTION_MODEL = "orthoCorrectionModel";
 
   private String             id;
@@ -74,7 +76,9 @@ public class SiteObject implements TreeComponent
 
   private String             tool;
 
-  private String             ptEpsg;
+  private Integer            ptEpsg;
+
+  private String             projectionName;
 
   private String             orthoCorrectionModel;
 
@@ -178,21 +182,31 @@ public class SiteObject implements TreeComponent
     this.tool = tool;
   }
 
-  public String getPtEpsg()
+  public Integer getPtEpsg()
   {
     return ptEpsg;
   }
 
-  public void setPtEpsg(String ptEpsg)
+  public void setPtEpsg(Integer ptEpsg)
   {
     this.ptEpsg = ptEpsg;
   }
-  
+
+  public String getProjectionName()
+  {
+    return projectionName;
+  }
+
+  public void setProjectionName(String projectionName)
+  {
+    this.projectionName = projectionName;
+  }
+
   public String getOrthoCorrectionModel()
   {
     return orthoCorrectionModel;
   }
-  
+
   public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
     this.orthoCorrectionModel = orthoCorrectionModel;
@@ -217,6 +231,7 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.DESCRIPTION, this.description);
     json.put(SiteObject.TOOL, this.tool);
     json.put(SiteObject.PT_EPSG, this.ptEpsg);
+    json.put(SiteObject.PROJECTION_NAME, this.projectionName);
     json.put(SiteObject.ORTHO_CORRECTION_MODEL, this.orthoCorrectionModel);
 
     // if (this.type.equals(SiteObject.FOLDER))
@@ -265,6 +280,7 @@ public class SiteObject implements TreeComponent
     object.setDescription(document.getDescription());
     object.setTool(document.getTool());
     object.setPtEpsg(document.getPtEpsg());
+    object.setProjectionName(document.getProjectionName());
     object.setOrthoCorrectionModel(document.getOrthoCorrectionModel());
 
     return object;

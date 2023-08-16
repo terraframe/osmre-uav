@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1745458578)
+@com.runwaysdk.business.ClassSignature(hash = 57120225)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -24,6 +24,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String PROJECTIONNAME = "projectionName";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String SITEMASTER = "siteMaster";
@@ -32,7 +33,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String TOOL = "tool";
   public final static java.lang.String TYPE = "type";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1745458578;
+  private static final long serialVersionUID = 57120225;
   
   public AbstractWorkflowTaskBase()
   {
@@ -439,9 +440,37 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     }
   }
   
-  public String getPtEpsg()
+  public String getProjectionName()
   {
-    return getValue(PTEPSG);
+    return getValue(PROJECTIONNAME);
+  }
+  
+  public void validateProjectionName()
+  {
+    this.validateAttribute(PROJECTIONNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getProjectionNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PROJECTIONNAME);
+  }
+  
+  public void setProjectionName(String value)
+  {
+    if(value == null)
+    {
+      setValue(PROJECTIONNAME, "");
+    }
+    else
+    {
+      setValue(PROJECTIONNAME, value);
+    }
+  }
+  
+  public Integer getPtEpsg()
+  {
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(PTEPSG));
   }
   
   public void validatePtEpsg()
@@ -449,13 +478,13 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     this.validateAttribute(PTEPSG);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getPtEpsgMd()
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getPtEpsgMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PTEPSG);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(PTEPSG);
   }
   
-  public void setPtEpsg(String value)
+  public void setPtEpsg(Integer value)
   {
     if(value == null)
     {
@@ -463,7 +492,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     }
     else
     {
-      setValue(PTEPSG, value);
+      setValue(PTEPSG, java.lang.Integer.toString(value));
     }
   }
   

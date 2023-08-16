@@ -43,7 +43,8 @@
       <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
         <create>
           <attributes>
-            <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
+            <integer name="ptEpsg" label="Point cloud EPSG" required="false" />
+            <char name="projectionName" label="Projection Name" size="4096" required="false" />
             <char name="orthoCorrectionModel" label="Ortho correction model" size="4096" required="false" />
           </attributes>
         </create>
@@ -51,7 +52,8 @@
       <mdVertex name="gov.geoplatform.uasdm.graph.Document">
         <create>      
           <attributes>
-            <char name="ptEpsg" label="Point cloud EPSG" size="4096" required="false" />
+            <integer name="ptEpsg" label="Point cloud EPSG" required="false" />
+            <char name="projectionName" label="Projection Name" size="4096" required="false" />
             <char name="orthoCorrectionModel" label="Ortho correction model" size="4096" required="false" />
           </attributes>
         </create>        
@@ -62,6 +64,7 @@
     <delete>
       <object key="gov.geoplatform.uasdm.graph.Document.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Document.orthoCorrectionModel" type="com.runwaysdk.system.metadata.MdAttribute"/>
+      <object key="gov.geoplatform.uasdm.graph.Document.projectionName" type="com.runwaysdk.system.metadata.MdAttribute"/>     
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.ptEpsg" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.orthoCorrectionModel" type="com.runwaysdk.system.metadata.MdAttribute"/>
       <object key="gov.geoplatform.uasdm.graph.Sensor.focalLength" type="com.runwaysdk.system.metadata.MdAttribute"/>

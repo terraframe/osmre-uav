@@ -33,8 +33,10 @@ public class ManagedDocument extends S3FileUpload
   {
     private boolean searchable;
 
-    private String  ptEpsg;
+    private Integer  ptEpsg;
 
+    private String  projectionName;
+    
     private String  orthoCorrectionModel;
 
     public DocumentInfo()
@@ -46,7 +48,7 @@ public class ManagedDocument extends S3FileUpload
       this.searchable = searchable;
     }
 
-    public DocumentInfo(String ptEpsg)
+    public DocumentInfo(Integer ptEpsg)
     {
       this.ptEpsg = ptEpsg;
     }
@@ -63,14 +65,26 @@ public class ManagedDocument extends S3FileUpload
       return this;
     }
 
-    public String getPtEpsg()
+    public Integer getPtEpsg()
     {
       return ptEpsg;
     }
 
-    public DocumentInfo setPtEpsg(String ptEpsg)
+    public DocumentInfo setPtEpsg(Integer ptEpsg)
     {
       this.ptEpsg = ptEpsg;
+      
+      return this;
+    }
+    
+    public String getProjectionName()
+    {
+      return projectionName;
+    }
+    
+    public DocumentInfo setProjectionName(String projectionName)
+    {
+      this.projectionName = projectionName;
       
       return this;
     }
@@ -125,7 +139,7 @@ public class ManagedDocument extends S3FileUpload
 
       String documentName = key.substring(key.lastIndexOf("/") + 1);
       
-      Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getOrthoCorrectionModel());
+      Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getProjectionName(), this.info.getOrthoCorrectionModel());
 
       DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, metadata);
 

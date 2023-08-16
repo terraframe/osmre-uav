@@ -734,8 +734,8 @@ public class ProjectManagementService
 
         if (object.getString("folder").equals(ImageryComponent.PTCLOUD))
         {
-          String ptEpsg = object.has(Document.PTEPSG) ? object.getString(Document.PTEPSG) : null;
-          String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
+          Integer ptEpsg = object.has(Document.PTEPSG) ? object.getInt(Document.PTEPSG) : null;
+          String projectName = object.has(Document.PROJECTIONNAME) ? object.getString(Document.PROJECTIONNAME) : null;
 
           new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
             return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
@@ -745,6 +745,23 @@ public class ProjectManagementService
             if (name.endsWith(".LAZ") || name.endsWith(".LAS"))
             {
               document.setPtEpsg(ptEpsg);
+              document.setProjectionName(projectName);
+              document.apply();
+            }
+          });
+        }
+        
+        if (object.getString("folder").equals(ImageryComponent.ORTHO))
+        {
+          String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
+          
+          new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
+            return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
+          }).forEach(document -> {
+            String name = document.getName().toUpperCase();
+            
+            if (name.endsWith(".TIF"))
+            {
               document.setOrthoCorrectionModel(orthoCorrectionModel);
               document.apply();
             }

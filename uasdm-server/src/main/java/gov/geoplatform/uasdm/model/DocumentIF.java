@@ -27,13 +27,15 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
 {
   public static class Metadata
   {
-    private String description;
+    private String  description;
 
-    private String tool;
+    private String  tool;
 
-    private String ptEpsg;
+    private Integer ptEpsg;
 
-    private String orthoCorrectionModel;
+    private String  projectionName;
+
+    private String  orthoCorrectionModel;
 
     public String getDescription()
     {
@@ -55,12 +57,22 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
       this.tool = tool;
     }
 
-    public String getPtEpsg()
+    public String getProjectionName()
+    {
+      return projectionName;
+    }
+
+    public void setProjectionName(String projectionName)
+    {
+      this.projectionName = projectionName;
+    }
+
+    public Integer getPtEpsg()
     {
       return ptEpsg;
     }
 
-    public void setPtEpsg(String ptEpsg)
+    public void setPtEpsg(Integer ptEpsg)
     {
       this.ptEpsg = ptEpsg;
     }
@@ -75,12 +87,13 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
       this.orthoCorrectionModel = orthoCorrectionModel;
     }
 
-    public static Metadata build(String description, String tool, String ptEpsg, String orthoCorrectionModel)
+    public static Metadata build(String description, String tool, Integer ptEpsg, String projectionName, String orthoCorrectionModel)
     {
       Metadata metadata = new Metadata();
       metadata.setDescription(description);
       metadata.setTool(tool);
       metadata.setPtEpsg(ptEpsg);
+      metadata.setProjectionName(projectionName);
       metadata.setOrthoCorrectionModel(orthoCorrectionModel);
 
       return metadata;
@@ -113,7 +126,9 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
 
   public String getTool();
 
-  public String getPtEpsg();
+  public Integer getPtEpsg();
+
+  public String getProjectionName();
 
   public String getOrthoCorrectionModel();
 

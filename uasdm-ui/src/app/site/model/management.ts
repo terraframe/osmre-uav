@@ -127,7 +127,8 @@ export class SiteEntity {
 	// Document metadata fields
 	description?: string;
 	tool?: string;
-	ptEpsg?: string;
+	ptEpsg?: number;
+	projectionName?: string;
 	orthoCorrectionModel?: string;
 }
 
@@ -246,7 +247,8 @@ export class UploadForm {
 
 	// Document metadata fields
 	tool?: string;
-	ptEpsg?: string;
+	ptEpsg?: number;
+	projectionName?: string;
 	orthoCorrectionModel?: string;
 	description?: string;
 }

@@ -68,6 +68,11 @@ public class DevProperties
     return getInstance().props.getBoolean("dev.runOrtho", true);
   }
   
+  public static Boolean isLocalODM()
+  {
+    return getInstance().props.getBoolean("dev.isLocalODM", false);
+  }
+  
   public static CloseableFile orthoResults()
   {
     return new CloseableFile(getInstance().props.getString("dev.orthoResults"), false);

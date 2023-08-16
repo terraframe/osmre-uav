@@ -402,7 +402,7 @@ public class Util
       {
         Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
         
-        Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getOrthoCorrectionModel());
+        Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getProjectionName(), task.getOrthoCorrectionModel());
 
         final UasComponentIF component = imageryComponent.getUasComponent();
         component.createDocumentIfNotExist(key, name, metadata);

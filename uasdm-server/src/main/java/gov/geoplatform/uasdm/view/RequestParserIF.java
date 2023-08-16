@@ -68,8 +68,10 @@ public interface RequestParserIF
 
   int getPercent();
 
-  String getPtEpsg();
-  
+  Integer getPtEpsg();
+
   String getOrthoCorrectionModel();
+
+  String getProjectionName();
 
 }

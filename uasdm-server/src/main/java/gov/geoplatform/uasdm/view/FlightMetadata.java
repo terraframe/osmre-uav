@@ -274,7 +274,9 @@ public class FlightMetadata
 
     private String                resolution;
 
-    private String                ptEpsg;
+    private Integer               ptEpsg;
+
+    private String                projectionName;
 
     private String                orthoCorrectionModel;
 
@@ -333,15 +335,25 @@ public class FlightMetadata
     {
       this.processingRun = processingRun;
     }
-
-    public String getPtEpsg()
+    
+    public Integer getPtEpsg()
     {
       return ptEpsg;
     }
-
-    public void setPtEpsg(String ptEpsg)
+    
+    public void setPtEpsg(Integer ptEpsg)
     {
       this.ptEpsg = ptEpsg;
+    }
+    
+    public String getProjectionName()
+    {
+      return projectionName;
+    }
+    
+    public void setProjectionName(String projectionName)
+    {
+      this.projectionName = projectionName;
     }
 
     public String getOrthoCorrectionModel()
@@ -378,6 +390,7 @@ public class FlightMetadata
     {
       this.type = artifact.getFolder();
       this.ptEpsg = artifact.getPtEpsg();
+      this.projectionName = artifact.getProjectionName();
       this.orthoCorrectionModel = artifact.getOrthoCorrectionModel();
       this.startDate = collection.getCollectionDate();
       this.endDate = collection.getCollectionEndDate();
@@ -410,7 +423,12 @@ public class FlightMetadata
       {
         if (item.hasAttribute("ptCloudEpsgNumber"))
         {
-          metadata.setPtEpsg(item.getAttribute("ptCloudEpsgNumber"));
+          metadata.setPtEpsg(Integer.parseInt(item.getAttribute("ptCloudEpsgNumber")));
+        }
+        
+        if (item.hasAttribute("ptCloudProjectionName"))
+        {
+          metadata.setProjectionName(item.getAttribute("ptCloudProjectionName"));
         }
 
         if (item.hasAttribute("ptCloudStartDate"))

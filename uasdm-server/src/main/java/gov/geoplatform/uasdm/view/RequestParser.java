@@ -73,6 +73,8 @@ public class RequestParser implements RequestParserIF
 
   private static String       PT_EPSG                = "ptEpsg";
 
+  private static String       PROJECTION_NAME        = "projectionName";
+
   private static String       ORTHO_CORRECTION_MODEL = "orthoCorrectionModel";
 
   private String              filename;
@@ -105,7 +107,9 @@ public class RequestParser implements RequestParserIF
 
   private String              tool;
 
-  private String              ptEpsg;
+  private Integer             ptEpsg;
+
+  private String              projectionName;
 
   private String              orthoCorrectionModel;
 
@@ -254,11 +258,17 @@ public class RequestParser implements RequestParserIF
   }
 
   @Override
-  public String getPtEpsg()
+  public Integer getPtEpsg()
   {
-    return ptEpsg;
+    return this.ptEpsg;
   }
-  
+
+  @Override
+  public String getProjectionName()
+  {
+    return this.projectionName;
+  }
+
   @Override
   public String getOrthoCorrectionModel()
   {
@@ -366,16 +376,21 @@ public class RequestParser implements RequestParserIF
       requestParser.tool = multipartUploadParser.getParams().get(TOOL);
     }
 
-    if (requestParser.ptEpsg == null)
+    if (requestParser.ptEpsg == null && multipartUploadParser.getParams().containsKey(PT_EPSG))
     {
-      requestParser.ptEpsg = multipartUploadParser.getParams().get(PT_EPSG);
+      requestParser.ptEpsg = Integer.parseInt(multipartUploadParser.getParams().get(PT_EPSG));
+    }
+
+    if (requestParser.projectionName == null)
+    {
+      requestParser.projectionName = multipartUploadParser.getParams().get(PROJECTION_NAME);
     }
 
     if (requestParser.orthoCorrectionModel == null)
     {
       requestParser.orthoCorrectionModel = multipartUploadParser.getParams().get(ORTHO_CORRECTION_MODEL);
     }
-    
+
     if (requestParser.originalFilename == null)
     {
       requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
@@ -468,14 +483,24 @@ public class RequestParser implements RequestParserIF
 
     if (requestParser.ptEpsg == null)
     {
-      requestParser.ptEpsg = req.getParameter(PT_EPSG);
+      String param = req.getParameter(PT_EPSG);
+
+      if (param != null)
+      {
+        requestParser.ptEpsg = Integer.parseInt(param);
+      }
+    }
+
+    if (requestParser.projectionName == null)
+    {
+      requestParser.projectionName = req.getParameter(PROJECTION_NAME);
     }
 
     if (requestParser.orthoCorrectionModel == null)
     {
       requestParser.orthoCorrectionModel = req.getParameter(ORTHO_CORRECTION_MODEL);
     }
-    
+
     if (requestParser.method == null)
     {
       requestParser.method = req.getParameter(METHOD_PARAM);
@@ -549,9 +574,13 @@ public class RequestParser implements RequestParserIF
       {
         requestParser.tool = value;
       }
-      else if (key.equals(PT_EPSG))
+      else if (key.equals(PT_EPSG) && value != null)
       {
-        requestParser.ptEpsg = value;
+        requestParser.ptEpsg = Integer.parseInt(value);
+      }
+      else if (key.equals(PROJECTION_NAME))
+      {
+        requestParser.projectionName = value;
       }
       else if (key.equals(ORTHO_CORRECTION_MODEL))
       {
