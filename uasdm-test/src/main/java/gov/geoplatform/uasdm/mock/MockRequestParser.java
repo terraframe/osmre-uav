@@ -54,9 +54,11 @@ public class MockRequestParser implements RequestParserIF
 
   private String              tool;
 
-  private String              ptEpsg;
+  private Integer             ptEpsg;
 
   private String              orthoCorrectionModel;
+
+  private String              projectionName;
 
   private Boolean             processUpload;
 
@@ -75,7 +77,7 @@ public class MockRequestParser implements RequestParserIF
     this.uploadTarget = "raw";
     this.description = "Test Upload";
     this.tool = "ODM";
-    this.ptEpsg = "4326";
+    this.ptEpsg = 4326;
     this.orthoCorrectionModel = "UNKNOWN";
     this.processUpload = false;
     this.processPtcloud = true;
@@ -226,12 +228,12 @@ public class MockRequestParser implements RequestParserIF
   }
 
   @Override
-  public String getPtEpsg()
+  public Integer getPtEpsg()
   {
     return this.ptEpsg;
   }
 
-  public void setPtEpsg(String ptEpsg)
+  public void setPtEpsg(Integer ptEpsg)
   {
     this.ptEpsg = ptEpsg;
   }
@@ -244,6 +246,17 @@ public class MockRequestParser implements RequestParserIF
   public void setOrthoCorrectionModel(String orthoCorrectionModel)
   {
     this.orthoCorrectionModel = orthoCorrectionModel;
+  }
+  
+  @Override
+  public String getProjectionName()
+  {
+    return this.projectionName;
+  }
+  
+  public void setProjectionName(String projectionName)
+  {
+    this.projectionName = projectionName;
   }
 
   public Boolean getProcessUpload()

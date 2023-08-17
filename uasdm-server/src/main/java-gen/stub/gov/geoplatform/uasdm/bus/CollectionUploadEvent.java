@@ -246,17 +246,17 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           collection.setImageWidth(width);
           collection.apply();
 
-          // Update the metadata
-          FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
-
-          if (metadata != null)
-          {
-            metadata.getSensor().setImageWidth(Integer.toString(width));
-            metadata.getSensor().setImageHeight(Integer.toString(height));
-
-            MetadataXMLGenerator generator = new MetadataXMLGenerator();
-            generator.generateAndUpload(collection, metadata);
-          }
+//          // Update the metadata
+//          FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
+//
+//          if (metadata != null)
+//          {
+//            metadata.getSensor().setImageWidth(Integer.toString(width));
+//            metadata.getSensor().setImageHeight(Integer.toString(height));
+//
+//            MetadataXMLGenerator generator = new MetadataXMLGenerator();
+//            generator.generateAndUpload(collection, metadata);
+//          }
 
         }
       }

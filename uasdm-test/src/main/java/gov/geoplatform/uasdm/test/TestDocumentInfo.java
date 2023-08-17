@@ -32,7 +32,7 @@ public class TestDocumentInfo
 
   protected String             tool;
 
-  protected String             ptEpsg;
+  protected Integer            ptEpsg;
 
   public TestDocumentInfo(TestCollectionInfo component, String key, String fileName)
   {
@@ -97,13 +97,13 @@ public class TestDocumentInfo
   {
     this.tool = tool;
   }
-
-  public String getPtEpsg()
+  
+  public Integer getPtEpsg()
   {
     return ptEpsg;
   }
-
-  public void setPtEpsg(String ptEpsg)
+  
+  public void setPtEpsg(Integer ptEpsg)
   {
     this.ptEpsg = ptEpsg;
   }
@@ -116,7 +116,7 @@ public class TestDocumentInfo
   {
     UasComponent collection = this.component.getServerObject();
 
-    Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null);
+    Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null, null);
 
     return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, metadata);
   }
