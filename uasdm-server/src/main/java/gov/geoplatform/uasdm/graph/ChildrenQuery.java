@@ -1,11 +1,13 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,24 +17,18 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTWriter;
 
 import com.runwaysdk.business.graph.GraphQuery;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDateDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
-import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import net.geoprism.graph.HierarchyTypeSnapshot;
-import net.geoprism.graph.LabeledPropertyGraphSynchronization;
-import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 
-public class SiteQuery
+public class ChildrenQuery
 {
   private static class QueryBucket
   {
@@ -40,7 +36,7 @@ public class SiteQuery
 
     private JSONArray   conditions;
 
-    private String      edgeName;
+    private String      outEdge;
 
     private Set<String> fields;
 
@@ -65,16 +61,16 @@ public class SiteQuery
       return this.fields.contains(field);
     }
 
-    public static QueryBucket build(String className, String edgeType, String... fields)
+    public static QueryBucket build(String className, String outEdge, String... fields)
     {
 
       QueryBucket bucket = new QueryBucket();
       bucket.className = className;
 
-      if (edgeType != null)
+      if (outEdge != null)
       {
-        MdEdgeDAOIF mdEdgeDAO = MdEdgeDAO.getMdEdgeDAO(edgeType);
-        bucket.edgeName = mdEdgeDAO.getDBClassName();
+        MdEdgeDAOIF mdEdgeDAO = MdEdgeDAO.getMdEdgeDAO(outEdge);
+        bucket.outEdge = mdEdgeDAO.getDBClassName();
       }
 
       for (String field : fields)
@@ -92,8 +88,11 @@ public class SiteQuery
 
   private String                        conditions;
 
-  public SiteQuery(String conditions)
+  private UasComponent                  component;
+
+  public ChildrenQuery(UasComponent component, String conditions)
   {
+    this.component = component;
     this.conditions = conditions;
 
     this.process();
@@ -119,22 +118,6 @@ public class SiteQuery
 
   private final void process()
   {
-    // select EXPAND(
-    // in('mission_has_collection0')[folderName = 'mm1'].
-    // in('project_has_mission0')[shortName = 'PP1'].
-    // in('site_has_project')[bureau = '458f2e85-78f6-4d28-81fd-51cd87000531'])
-    // FROM (
-    // SELECT FROM (
-    // SELECT
-    // EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0'))
-    // FROM (
-    // SELECT FROM (
-    // TRAVERSE OUT('g_0__forestoperational', 'ha_0__graph_340221') FROM #454:0
-    // )
-    // )
-    // )
-    // ) where uav = #382:0
-
     JSONObject cObject = ( conditions != null && conditions.length() > 0 ) ? new JSONObject(conditions) : new JSONObject();
 
     List<QueryBucket> buckets = getBuckets(cObject);
@@ -143,12 +126,13 @@ public class SiteQuery
 
     for (int i = first; i >= 0; i--)
     {
-      String edgeName = buckets.get(i).edgeName;
+      QueryBucket bucket = buckets.get(i);
 
-      if (edgeName != null)
+      String edgeName = bucket.outEdge;
+
+      if (edgeName != null && i != first)
       {
-        QueryBucket bucket = buckets.get(i);
-        this.statement.append("SELECT EXPAND ( IN('" + bucket.edgeName + "')) FROM (\n");
+        this.statement.append("SELECT EXPAND ( IN('" + bucket.outEdge + "')) FROM (\n");
       }
       else
       {
@@ -350,7 +334,7 @@ public class SiteQuery
 
     for (QueryBucket bucket : buckets)
     {
-      if (found || bucket.hasCondition())
+      if (found || this.includeBucket(bucket))
       {
         trimed.add(bucket);
 
@@ -358,81 +342,86 @@ public class SiteQuery
       }
     }
 
-    return trimed;
+    // Filter out all buckets which are at an equal or higher level of the
+    // selected component
+    return trimed.stream().filter(bucket -> {
+
+      if (component.getType().equals(Project.CLASS))
+      {
+        return Arrays.asList(Mission.CLASS, Collection.CLASS).contains(bucket.className);
+      }
+      else if (component.getType().equals(Mission.CLASS))
+      {
+        return Arrays.asList(Collection.CLASS).contains(bucket.className);
+      }
+      else if (component.getType().equals(Collection.CLASS))
+      {
+        return true;
+      }
+
+      return !component.getType().equals(bucket.className);
+
+    }).collect(Collectors.toList());
   }
 
-  private boolean processFromClause(JSONObject cObject, List<QueryBucket> buckets)
+  protected boolean includeBucket(QueryBucket bucket)
   {
-    /*
-     * select from ( traverse out('g_0__operational', 'ha_0__graph_271118') from
-     * #474:1 ) where @class = 'site0'
-     */
-    if (cObject.has("hierarchy") && !cObject.isNull("hierarchy"))
+    if (this.component.getType().equals(Site.CLASS) && bucket.className.equals(Project.CLASS))
     {
-      JSONObject hierarchy = cObject.getJSONObject("hierarchy");
-      String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
-      String uid = hierarchy.getString("uid");
-
-      LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
-      LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-      HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
-
-      SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
-      MdEdge siteEdge = synchronizationEdge.getGraphEdge();
-
-      VertexObject object = version.getObject(uid);
-
-      boolean hasConditions = buckets.size() > 0 && !buckets.get(0).className.equals(Site.CLASS);
-
-      if (hasConditions)
-      {
-        statement.append("SELECT EXPAND(");
-        int first = buckets.size() - 1;
-
-        boolean isFirst = true;
-
-        for (int i = first; i >= 0; i--)
-        {
-          String edgeName = buckets.get(i).edgeName;
-
-          if (edgeName != null)
-          {
-            if (!isFirst)
-            {
-              statement.append(".");
-            }
-
-            statement.append("OUT('" + edgeName + "')");
-
-            isFirst = false;
-          }
-        }
-
-        statement.append(")\n");
-        statement.append(" FROM (\n");
-      }
-
-      statement.append("SELECT FROM (\n");
-      statement.append(" TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid\n");
-      statement.append(") WHERE @class = 'site0'\n");
-
-      if (hasConditions)
-      {
-        statement.append(")\n");
-      }
-
-      parameters.put("rid", object.getRID());
-
+      return true;
+    }
+    else if (this.component.getType().equals(Project.CLASS) && bucket.className.equals(Mission.CLASS))
+    {
+      return true;
+    }
+    else if (this.component.getType().equals(Mission.CLASS) && bucket.className.equals(Collection.CLASS))
+    {
       return true;
     }
 
-    String className = buckets.size() > 0 ? buckets.get(0).className : Site.CLASS;
+    return bucket.hasCondition();
+  }
 
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(className);
+  private void processFromClause(JSONObject cObject, List<QueryBucket> buckets)
+  {
+    boolean hasConditions = buckets.size() > 0;
 
-    statement.append("SELECT FROM " + mdVertex.getDBClassName() + "\n");
+    if (hasConditions)
+    {
+      statement.append("SELECT EXPAND(");
+      int first = buckets.size() - 1;
 
-    return false;
+      boolean isFirst = true;
+
+      for (int i = first; i >= 0; i--)
+      {
+        String edgeName = buckets.get(i).outEdge;
+
+        if (edgeName != null)
+        {
+          if (!isFirst)
+          {
+            statement.append(".");
+          }
+
+          statement.append("OUT('" + edgeName + "')");
+
+          isFirst = false;
+        }
+      }
+
+      statement.append(")\n");
+      statement.append(" FROM (\n");
+    }
+
+    statement.append("SELECT FROM :rid");
+
+    if (hasConditions)
+    {
+      statement.append(")\n");
+    }
+
+    parameters.put("rid", this.component.getRID());
   }
 
 }

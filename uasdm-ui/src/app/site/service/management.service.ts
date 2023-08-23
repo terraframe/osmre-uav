@@ -68,12 +68,16 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getItems(id: string, key: string): Promise<SiteEntity[]> {
+	getItems(id: string, key: string, conditions: { hierarchy: any, array: { field: string, value: any }[] }): Promise<SiteEntity[]> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
 
 		if (key != null) {
 			params = params.set('key', key);
+		}
+
+		if (conditions != null) {
+			params = params.set('conditions', JSON.stringify(conditions));
 		}
 
 		return this.http

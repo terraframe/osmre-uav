@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Point;
 
@@ -348,7 +349,7 @@ public class Site extends SiteBase implements SiteIF
   {
     SiteQuery query = new SiteQuery(conditions);
 
-    return query.getSites();
+    return query.getResults().stream().map(a -> (SiteIF) a).collect(Collectors.toList());
   }
 
   public static String expandClause()

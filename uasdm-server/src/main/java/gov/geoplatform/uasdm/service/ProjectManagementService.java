@@ -200,16 +200,23 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public List<TreeComponent> getChildren(String sessionId, String parentid)
   {
-    return this.getChildren(parentid);
+    LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
+    
+    UasComponentIF uasComponent = ComponentFacade.getComponent(parentid);
+    
+    final List<UasComponentIF> i = uasComponent.getChildren();
+    i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
+    
+    return children;
   }
 
-  public List<TreeComponent> getChildren(String parentid)
+  public List<TreeComponent> getComponentChildren(String parentid, String conditions)
   {
     LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
 
     UasComponentIF uasComponent = ComponentFacade.getComponent(parentid);
 
-    final List<UasComponentIF> i = uasComponent.getChildren();
+    final List<UasComponentIF> i = uasComponent.getChildrenWithConditions(conditions);
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
 
     return children;
@@ -968,18 +975,18 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> items(String sessionId, String id, String key)
+  public List<TreeComponent> items(String sessionId, String id, String key, String conditions )
   {
-    return this.items(id, key);
+    return this.items(id, key, conditions);
   }
 
-  public List<TreeComponent> items(String id, String key)
+  public List<TreeComponent> items(String id, String key, String conditions)
   {
     List<TreeComponent> items = new LinkedList<TreeComponent>();
 
     if (key == null || key.length() == 0)
     {
-      items.addAll(this.getChildren(id));
+      items.addAll(this.getComponentChildren(id, conditions));
       items.addAll(this.getObjects(id, null, null, null).getObjects());
     }
     else

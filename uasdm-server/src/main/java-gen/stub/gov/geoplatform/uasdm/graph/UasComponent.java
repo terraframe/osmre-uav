@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,15 +29,11 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -56,7 +51,6 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 import com.runwaysdk.system.metadata.MdBusiness;
-import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
@@ -92,9 +86,6 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
-import net.geoprism.graph.HierarchyTypeSnapshot;
-import net.geoprism.graph.LabeledPropertyGraphSynchronization;
-import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 
 public abstract class UasComponent extends UasComponentBase implements UasComponentIF
@@ -621,7 +612,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     SiteQuery query = new SiteQuery(conditions);
     
-    final List<SiteIF> sites = query.getSites();
+    final List<UasComponentIF> sites = query.getResults();
 
     StringWriter sWriter = new StringWriter();
     JSONWriter writer = new JSONWriter(sWriter);
@@ -633,7 +624,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     writer.key("features");
     writer.array();
 
-    for (SiteIF site : sites)
+    for (UasComponentIF site : sites)
     {
       if (site.getGeoPoint() != null)
       {
@@ -833,6 +824,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public List<UasComponentIF> getChildren()
   {
     return this.getChildren(this.getChildMdEdge(), UasComponentIF.class);
+  }
+  
+  @Override
+  public List<UasComponentIF> getChildrenWithConditions(String conditions)
+  {
+    return new ChildrenQuery(this, conditions).getResults();
   }
 
   public UasComponentIF getChild(String name)

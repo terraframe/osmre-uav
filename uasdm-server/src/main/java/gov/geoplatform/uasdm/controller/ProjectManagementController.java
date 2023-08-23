@@ -405,9 +405,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "conditions") String conditions)
   {
-    List<TreeComponent> children = this.service.items(request.getSessionId(), id, key);
+    List<TreeComponent> children = this.service.items(request.getSessionId(), id, key, conditions);
 
     JSONArray response = SiteItem.serialize(children);
 

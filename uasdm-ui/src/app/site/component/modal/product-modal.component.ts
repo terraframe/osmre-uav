@@ -103,7 +103,7 @@ export class ProductModalComponent implements OnInit {
 		const breadcrumbs = this.product.entities;
 
 
-		this.service.getItems(entity.id, null).then(nodes => {
+		this.service.getItems(entity.id, null, null).then(nodes => {
 			this.initData = { "entity": entity, "folders": nodes, "previous": breadcrumbs }
 
 			this.showSite = true;

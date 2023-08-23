@@ -110,6 +110,8 @@ public interface UasComponentIF extends ComponentIF
   public List<ProductIF> getDerivedProducts(String sortField, String sortOrder);
 
   public List<UasComponentIF> getChildren();
+  
+  public List<UasComponentIF> getChildrenWithConditions(String conditions);
 
   public UasComponentIF getChild(String name);
 

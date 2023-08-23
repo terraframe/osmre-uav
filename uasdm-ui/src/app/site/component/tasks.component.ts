@@ -300,7 +300,7 @@ export class TasksComponent implements OnInit {
       const entity = response.item;
       const breadcrumbs = response.breadcrumbs;
 
-      this.managementService.getItems(collectionId, null).then(nodes => {
+      this.managementService.getItems(collectionId, null, null).then(nodes => {
         this.bsModalRef = this.modalService.show(CollectionModalComponent, {
           animated: true,
           backdrop: true,

@@ -18,12 +18,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
-import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.mock.MockRegistryConnectionBuilder;
-import gov.geoplatform.uasdm.model.SiteIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.test.TestDataSet;
 import net.geoprism.GeoprismUser;
@@ -45,8 +44,6 @@ public class SiteQueryTest
   private Site                                       site;
 
   private Project                                    project;
-
-  private Mission                                    mission;
 
   private Collection                                 collection;
 
@@ -83,7 +80,6 @@ public class SiteQueryTest
 
     site = (Site) Area51DataSet.SITE_AREA_51.getServerObject();
     project = (Project) Area51DataSet.PROJECT_DREAMLAND.getServerObject();
-    mission = (Mission) Area51DataSet.MISSION_HAVE_DOUGHNUT.getServerObject();
     collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     testData.logIn();
@@ -164,9 +160,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -190,9 +184,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -242,9 +234,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -278,9 +268,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -307,9 +295,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -364,9 +350,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -390,9 +374,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -416,9 +398,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -442,9 +422,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }
@@ -468,9 +446,7 @@ public class SiteQueryTest
 
     SiteQuery query = new SiteQuery(conditions.toString());
 
-    System.out.println(query.getStatement());
-
-    List<SiteIF> results = query.getSites();
+    List<UasComponentIF> results = query.getResults();
 
     Assert.assertEquals(1, results.size());
   }

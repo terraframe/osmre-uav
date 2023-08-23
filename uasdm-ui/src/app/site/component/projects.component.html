@@ -62,9 +62,9 @@
 <ng-template #sites>
   <div class="row">
     <div class="col-md-12">
-      <div class="row" style="margin-right: 10px;" *ngIf="current == null || current.type === 1">
+      <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12 float-right">
-          <a (click)="onFilterOpen()"><i class="fa fa-filter"></i></a>
+          <a (click)="onFilterOpen()"><i class="fa" [ngClass]="{'fa-filter' : !hasFilter, 'fa-funnel-dollar': hasFilter}"></i></a>
         </div>
       </div>
 

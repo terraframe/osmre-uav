@@ -170,6 +170,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Filter by bureau
    */
   filter: Filter = {};
+  hasFilter: boolean = false;
   bureaus: { value: string, label: string }[] = [];
   bounds: LngLatBounds = null;
   sort: string = "name";
@@ -1219,7 +1220,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (this.metadataService.getTypeContainsFolders(node)) {
-        this.service.getItems(node.id, null).then(nodes => {
+        this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
           this.showLeafModal(node, nodes, breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
         });
       }
@@ -1232,7 +1233,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       //                return this.service.getItems( node.data.id, node.data.name );
     }
     else {
-      this.service.getItems(node.id, null).then(nodes => {
+      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
         this.current = {
           type: SELECTION_TYPE.SITE,
           data: node,
@@ -1268,7 +1269,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (node.children == null || node.children.length == 0) {
-      this.service.getItems(node.id, null).then(nodes => {
+      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
         node.children = nodes;
 
         this.expand(node);
@@ -1286,7 +1287,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const breadcrumbs = product.entities;
 
-    this.service.getItems(entity.id, null).then(nodes => {
+    this.service.getItems(entity.id, null, this.getConditions()).then(nodes => {
       this.showLeafModal(entity, nodes, breadcrumbs);
     });
   }
@@ -1332,7 +1333,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
 
-      this.service.getItems(node.id, null).then(nodes => {
+      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
         var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.SITE && i.data.id === node.id);
 
         this.current = breadcrumb;
@@ -1700,7 +1701,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     (<FilterModalComponent>this.bsModalRef.content).onFilterChange.subscribe(filter => {
       this.filter = filter;
-      this.refreshSites();
+
+      const conditions = this.getConditions();
+
+      this.hasFilter = conditions.array.length > 0 && conditions.array[0].field !== 'bounds';
+
+      if (this.current == null || this.current.type === SELECTION_TYPE.LOCATION) {
+        this.refreshSites();
+      }
+      else {
+        // Refresh the current items
+        this.service.getItems(this.current.data.id, null, this.getConditions()).then(nodes => {
+          this.setNodes(nodes);
+        });
+      }
     });
   }
 
