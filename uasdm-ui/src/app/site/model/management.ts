@@ -389,3 +389,14 @@ export class ViewerSelection {
 	metadata: any;
 	hierarchy?: string;
 }
+
+export class Filter {
+
+	collectionDate?: string;
+	sensor?: string;
+	uav?: string;
+	platform?: string;
+	owner?: string;
+	projectType?: string;
+	bureau?: string;
+}

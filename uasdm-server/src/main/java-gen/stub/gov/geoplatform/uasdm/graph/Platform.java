@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -77,17 +78,17 @@ public class Platform extends PlatformBase implements JSONSerializable
 
   public List<CollectionIF> getCollections()
   {
-//    SELECT from collection0 where collectionSensor IN (
-//        select out('platform_has_sensor') from platform0)
-    
+    // SELECT from collection0 where collectionSensor IN (
+    // select out('platform_has_sensor') from platform0)
+
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO("gov.geoplatform.uasdm.graph.PlatformHasSensor");
-    
+
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
     statement.append(" WHERE " + mdAttribute.getColumnName() + " IN (");
-    statement.append("   SELECT OUT ('" + mdEdge.getDBClassName() + "') FROM :rid");    
+    statement.append("   SELECT OUT ('" + mdEdge.getDBClassName() + "') FROM :rid");
     statement.append(" )");
 
     final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
@@ -338,6 +339,34 @@ public class Platform extends PlatformBase implements JSONSerializable
     Long result = query.getSingleResult();
 
     return ( result != null && result > 0 );
+  }
+
+  public static List<Platform> search(String text)
+  {
+    if (text != null)
+    {
+      final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
+      MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.NAME);
+
+      if (mdAttribute != null)
+      {
+        StringBuilder statement = new StringBuilder();
+        statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+        statement.append(" WHERE " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+        statement.append(" ORDER BY " + mdAttribute.getColumnName());
+
+        final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
+        query.setParameter("text", "%" + text.toUpperCase() + "%");
+
+        return query.getResults();
+      }
+      else
+      {
+        throw new GenericException("Unable to search on field [" + Platform.NAME + "]");
+      }
+    }
+
+    return new LinkedList<Platform>();
   }
 
 }

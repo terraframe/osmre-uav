@@ -41,6 +41,9 @@ public class TestProjectInfo extends TestUasComponentInfo
   public void populate(UasComponent component)
   {
     super.populate(component);
+    
+    Project project = ((Project)component);
+    project.setProjectType("TEST");
   }
 
   @Override

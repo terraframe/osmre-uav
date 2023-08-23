@@ -21,19 +21,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.TreeMap;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.io.WKTWriter;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
-import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -57,7 +49,6 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
-import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
@@ -355,137 +346,9 @@ public class Site extends SiteBase implements SiteIF
 
   public static List<SiteIF> getSites(String conditions, String sort)
   {
-    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
+    SiteQuery query = new SiteQuery(conditions);
 
-    final TreeMap<String, Object> parameters = new TreeMap<String, Object>();
-
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName());
-
-    if (conditions != null && conditions.length() > 0)
-    {
-      JSONObject cObject = new JSONObject(conditions);
-
-      boolean isFirst = true;
-
-      /*
-       * select from ( traverse out('g_0__operational', 'ha_0__graph_271118')
-       * from #474:1 ) where @class = 'site0'
-       */
-      if (cObject.has("hierarchy") && !cObject.isNull("hierarchy"))
-      {
-        JSONObject hierarchy = cObject.getJSONObject("hierarchy");
-        String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
-        String uid = hierarchy.getString("uid");
-
-        LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
-        LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-        HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
-
-        SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
-        MdEdge siteEdge = synchronizationEdge.getGraphEdge();
-
-        VertexObject object = version.getObject(uid);
-
-        statement = new StringBuilder();
-        statement.append("SELECT FROM (");
-        statement.append(" TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
-        statement.append(") WHERE @class = 'site0'");
-
-        parameters.put("rid", object.getRID());
-
-        isFirst = false;
-      }
-
-      JSONArray array = cObject.getJSONArray("array");
-
-      for (int i = 0; i < array.length(); i++)
-      {
-        JSONObject condition = array.getJSONObject(i);
-
-        String field = condition.getString("field");
-
-        if (field.equalsIgnoreCase("bounds"))
-        {
-          // {"_sw":{"lng":-90.55128715174949,"lat":20.209904454730363},"_ne":{"lng":-32.30032930862288,"lat":42.133128793454745}}
-          JSONObject object = condition.getJSONObject("value");
-
-          JSONObject sw = object.getJSONObject("_sw");
-          JSONObject ne = object.getJSONObject("_ne");
-
-          double x1 = sw.getDouble("lng");
-          double x2 = ne.getDouble("lng");
-          double y1 = sw.getDouble("lat");
-          double y2 = ne.getDouble("lat");
-
-          Envelope envelope = new Envelope(x1, x2, y1, y2);
-          WKTWriter writer = new WKTWriter();
-          GeometryFactory factory = new GeometryFactory();
-          Geometry geometry = factory.toGeometry(envelope);
-
-          statement.append(isFirst ? " WHERE" : " AND");
-          statement.append(" ST_WITHIN(geoPoint, ST_GeomFromText(:wkt)) = true");
-
-          parameters.put("wkt", writer.write(geometry));
-        }
-        else if (field.equalsIgnoreCase(Site.BUREAU))
-        {
-          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(field.equalsIgnoreCase(Site.BUREAU) ? Site.CLASS : UasComponent.CLASS);
-
-          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
-
-          if (mdAttribute != null)
-          {
-            String value = condition.getString("value");
-
-            statement.append(isFirst ? " WHERE" : " AND");
-            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
-
-            parameters.put(mdAttribute.getColumnName(), value);
-          }
-
-        }
-        else
-        {
-          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
-
-          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
-
-          if (mdAttribute != null)
-          {
-            String value = condition.getString("value");
-
-            statement.append(isFirst ? " WHERE" : " AND");
-            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName());
-
-            parameters.put(mdAttribute.getColumnName(), value);
-          }
-        }
-
-        isFirst = false;
-      }
-    }
-
-    if (sort != null && sort.length() > 0)
-    {
-      MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(sort.equalsIgnoreCase(Site.BUREAU) ? Site.CLASS : UasComponent.CLASS);
-
-      MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(sort);
-
-      statement.append(" ORDER BY " + mdAttribute.getColumnName());
-    }
-    else
-    {
-      MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
-
-      MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UasComponent.NAME);
-
-      statement.append(" ORDER BY " + mdAttribute.getColumnName());
-    }
-
-    final GraphQuery<SiteIF> query = new GraphQuery<SiteIF>(statement.toString(), parameters);
-
-    return query.getResults();
+    return query.getSites();
   }
 
   public static String expandClause()

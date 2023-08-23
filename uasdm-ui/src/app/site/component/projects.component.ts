@@ -15,7 +15,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -44,6 +44,7 @@ import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
 import { LPGSync } from "@site/model/lpg-sync";
 import { LPGSyncService } from "@site/service/lpg-sync.service";
+import { FilterModalComponent } from "./modal/filter-modal.component";
 
 
 const enum PANEL_TYPE {
@@ -168,7 +169,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
    * Filter by bureau
    */
-  filter = { field: "bureau", value: "" };
+  filter: Filter = {};
   bureaus: { value: string, label: string }[] = [];
   bounds: LngLatBounds = null;
   sort: string = "name";
@@ -256,7 +257,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
 
-    this.filter = { field: "bureau", value: this.authService.getBureau() };
+    this.filter = {
+      bureau: this.authService.getBureau()
+    };
 
     this.service.bureaus().then(bureaus => {
       this.bureaus = bureaus;
@@ -440,8 +443,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         let focusFeatureId = features[0].properties.oid; // just the first
 
         const index = this.nodes.findIndex(n => n.id === focusFeatureId);
-        
-        if(index !== -1) {
+
+        if (index !== -1) {
           this.select(this.nodes[index], null, null);
         }
         else {
@@ -664,28 +667,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   refreshSites(): Promise<void> {
-    const conditions = {
-      hierarchy: null,
-      array: []
-    };
 
-    if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
-      conditions.hierarchy = {
-        oid: this.hierarchy.oid,
-        uid: this.current.data.properties.uid
-      }
-    }
-
-    if (this.bounds != null) {
-      conditions.array.push({
-        field: "bounds",
-        value: this.bounds
-      });
-    }
-
-    if (this.filter.value != null && this.filter.value.length > 0) {
-      conditions.array.push(this.filter);
-    }
+    const conditions = this.getConditions();
 
     this.refreshMapPoints(false);
 
@@ -719,29 +702,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   refreshMapPoints(zoom: boolean): void {
 
-    const conditions = {
-      hierarchy: null,
-      array: []
-    };
-
-    if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
-      conditions.hierarchy = {
-        oid: this.hierarchy.oid,
-        uid: this.current.data.properties.uid
-      }
-    }
-
-    if (this.bounds != null) {
-      conditions.array.push({
-        field: "bounds",
-        value: this.bounds
-      });
-    }
-
-    if (this.filter.value != null && this.filter.value.length > 0) {
-      conditions.array.push(this.filter);
-    }
-
+    const conditions = this.getConditions();
 
     this.mapService.features(conditions).then(data => {
       (<any>this.map.getSource("sites")).setData(data.features);
@@ -1724,4 +1685,56 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+
+  // Filter functionality
+
+  onFilterOpen(): void {
+
+
+    this.bsModalRef = this.modalService.show(FilterModalComponent, {
+      animated: true,
+      backdrop: true,
+      ignoreBackdropClick: true,
+    });
+    this.bsModalRef.content.init(this.filter, this.bureaus);
+
+    (<FilterModalComponent>this.bsModalRef.content).onFilterChange.subscribe(filter => {
+      this.filter = filter;
+      this.refreshSites();
+    });
+  }
+
+  getConditions(): { hierarchy: any, array: any[] } {
+    const conditions = {
+      hierarchy: null,
+      array: []
+    };
+
+    conditions.array.push({ field: 'bureau', value: this.filter.bureau });
+    conditions.array.push({ field: 'collectionDate', value: this.filter.collectionDate });
+    conditions.array.push({ field: 'owner', value: this.filter.owner });
+    conditions.array.push({ field: 'platform', value: this.filter.platform });
+    conditions.array.push({ field: 'projectType', value: this.filter.projectType });
+    conditions.array.push({ field: 'sensor', value: this.filter.sensor });
+    conditions.array.push({ field: 'uav', value: this.filter.uav });
+
+    conditions.array = conditions.array.filter(c => c.value != null && c.value.length > 0);
+
+    if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
+      conditions.hierarchy = {
+        oid: this.hierarchy.oid,
+        uid: this.current.data.properties.uid
+      }
+    }
+
+    if (this.bounds != null) {
+      conditions.array.push({
+        field: "bounds",
+        value: this.bounds
+      });
+    }
+
+
+    return conditions;
+  }
 }

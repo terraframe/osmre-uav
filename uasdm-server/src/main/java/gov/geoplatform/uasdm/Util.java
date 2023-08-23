@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -129,6 +129,31 @@ public class Util
     }
   }
 
+  public static Date parseIso8601GenericException(String date, boolean includeTime)
+  {
+    try
+    {
+      if (!includeTime)
+      {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        formatter.setTimeZone(SYSTEM_TIMEZONE);
+        return formatter.parse(date);
+      }
+      else
+      {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        formatter.setTimeZone(SYSTEM_TIMEZONE);
+        return formatter.parse(date);
+      }
+    }
+    catch (ParseException e)
+    {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("Unable to parse date from value [" + date + "]");
+      throw ex;
+    }
+  }
+
   public static Date parseMetadata(String date, boolean includeTime) throws ParseException
   {
     if (!includeTime)
@@ -144,7 +169,7 @@ public class Util
       return formatter.parse(date);
     }
   }
-  
+
   public static CloseableFile download(String key, String storeName)
   {
     try
@@ -401,7 +426,7 @@ public class Util
       try
       {
         Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
-        
+
         Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getProjectionName(), task.getOrthoCorrectionModel());
 
         final UasComponentIF component = imageryComponent.getUasComponent();

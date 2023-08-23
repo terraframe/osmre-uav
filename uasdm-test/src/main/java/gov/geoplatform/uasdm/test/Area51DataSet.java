@@ -31,7 +31,7 @@ public class Area51DataSet extends TestDataSet
 
   public static final String TEST_DATA_KEY = "BDS";
 
-  public static final String POINT_AREA_51 = "Point(115.7930 37.2431)";
+  public static final String POINT_AREA_51 = "Point(1.5 1.5)";
 
   public static final TestUserInfo USER_ADMIN = new TestUserInfo(TEST_DATA_KEY + "_" + "admin", "admin", "admin@area51.com", new String[] {
       RoleDAO.ADMIN_ROLE

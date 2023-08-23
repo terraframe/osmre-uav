@@ -1,0 +1,82 @@
+<!--
+
+
+
+-->
+
+<div>
+  <h3>Filter Sites</h3>
+  <div *ngIf="filter != null" class="modal-body" tabindex="-1" role="dialog">
+    <div [@fadeInOnEnter] class="form-group">
+
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>Bureau</label>
+          <select [(ngModel)]="filter.bureau" name="filter" class="form-control">
+            <option></option>
+            <option *ngFor="let bureau of bureaus" [value]="bureau.value">
+              {{bureau.label}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>Project Type</label>
+          <select [(ngModel)]="filter.projectType" name="projectType" class="form-control">
+            <option></option>
+            <option *ngFor="let projectType of projectTypes" [value]="projectType">{{projectType}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>Collection Date</label>
+          <input type="date" [(ngModel)]="filter.collectionDate" name="collectionDate" class="form-control">
+        </div>
+      </div>
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>Sensor</label>
+          <input class="form-control search-input" type="text" name="sensor" placeholder="Search for sensors..."
+            autocomplete="off" [(ngModel)]="filter.sensor" [typeaheadAsync]="true" [typeahead]="sensorSource"
+            [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"
+            (keydown.enter)="$event.preventDefault()" />
+        </div>
+      </div>
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>UAV FAA Number</label>
+          <input class="form-control search-input" type="text" name="uav" placeholder="Search for FAA Numbers..."
+            autocomplete="off" [(ngModel)]="filter.uav" [typeaheadAsync]="true" [typeahead]="uavSource"
+            [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"
+            (keydown.enter)="$event.preventDefault()" />
+        </div>
+      </div>
+      <div class="row" style="margin-right: 10px;">
+        <div class="col-sm-12">
+          <label>Platform</label>
+          <input class="form-control search-input" type="text" name="platform" placeholder="Search for platforms..."
+            autocomplete="off" [(ngModel)]="filter.platform" [typeaheadAsync]="true" [typeahead]="platformSource"
+            [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"
+            (keydown.enter)="$event.preventDefault()" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-holder" style="text-align: right;">
+          <button type="button" (click)="close()" class="btn btn-default" role="button" aria-disabled="false"
+            style="padding: 4px 18px;">
+            <span class="ui-button-text">Close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

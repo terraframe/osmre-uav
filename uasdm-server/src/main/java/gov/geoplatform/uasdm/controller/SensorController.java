@@ -90,4 +90,13 @@ public class SensorController
 
     return new RestBodyResponse(response);
   }
+  
+  @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text)
+  {
+    JSONArray response = this.service.search(request.getSessionId(), text);
+
+    return new RestBodyResponse(response);
+  }
+
 }

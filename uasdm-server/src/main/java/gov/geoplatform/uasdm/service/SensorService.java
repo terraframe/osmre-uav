@@ -15,12 +15,16 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.util.List;
+import java.util.stream.Collector;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 
 public class SensorService
@@ -66,5 +70,19 @@ public class SensorService
   public JSONObject newInstance(String sessionId)
   {
     return new Sensor().toJSON();
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray search(String sessionId, String text)
+  {
+    List<Sensor> sensors = Sensor.search(text);
+
+    return sensors.stream().map(w -> {
+      JSONObject object = new JSONObject();
+      object.put(Sensor.OID, w.getOid());
+      object.put(Sensor.NAME, w.getName());
+
+      return object;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
 }

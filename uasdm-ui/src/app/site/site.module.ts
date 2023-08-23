@@ -69,6 +69,7 @@ import { LPGSyncPageComponent } from './component/labeled-property-graph-sync/la
 import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
 import { LPGSyncService } from './service/lpg-sync.service';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
+import { FilterModalComponent } from './component/modal/filter-modal.component';
 
 @NgModule({
 	imports: [
@@ -103,6 +104,7 @@ import { ArtifactUploadComponent } from './component/artifact-upload/artifact-up
 		CollectionModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
+		FilterModalComponent,
 		ProjectsComponent,
 		UploadComponent,
 		TasksComponent,
@@ -141,6 +143,7 @@ import { ArtifactUploadComponent } from './component/artifact-upload/artifact-up
 		LPGSyncService
 	],
 	entryComponents: [
+		FilterModalComponent,
 		RunOrthoModalComponent,
 		CreateCollectionModalComponent,
 		UploadModalComponent,

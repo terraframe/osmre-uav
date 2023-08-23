@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -78,7 +79,7 @@ public class Sensor extends SensorBase implements JSONSerializable
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
-    
+
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
     statement.append(" WHERE " + mdAttribute.getColumnName() + " = :rid");
@@ -348,6 +349,34 @@ public class Sensor extends SensorBase implements JSONSerializable
     Long result = query.getSingleResult();
 
     return ( result != null && result > 0 );
+  }
+
+  public static List<Sensor> search(String text)
+  {
+    if (text != null)
+    {
+      final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
+      MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Sensor.NAME);
+
+      if (mdAttribute != null)
+      {
+        StringBuilder statement = new StringBuilder();
+        statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
+        statement.append(" WHERE " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :text");
+        statement.append(" ORDER BY " + mdAttribute.getColumnName());
+
+        final GraphQuery<Sensor> query = new GraphQuery<Sensor>(statement.toString());
+        query.setParameter("text", "%" + text.toUpperCase() + "%");
+
+        return query.getResults();
+      }
+      else
+      {
+        throw new GenericException("Unable to search on field [" + Sensor.NAME + "]");
+      }
+    }
+
+    return new LinkedList<Sensor>();
   }
 
 }

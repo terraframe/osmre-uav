@@ -15,11 +15,13 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
@@ -112,6 +114,8 @@ public interface UasComponentIF extends ComponentIF
   public UasComponentIF getChild(String name);
 
   public UasComponentIF createDefaultChild();
+  
+  public void writeFeature(JSONWriter writer) throws IOException;
 
   public static final String DISALLOWED_FILENAME_REGEX = "[^a-zA-Z0-9._]";
 

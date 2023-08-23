@@ -109,4 +109,14 @@ export class PlatformService implements GenericTableService {
             }))
             .toPromise();
     }
+
+    search(text: string): Promise<{ oid: string, name: string }[]> {
+        let params: HttpParams = new HttpParams();
+        params = params.append('text', text);
+
+        return this.http
+            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/platform/search', { params: params })
+            .toPromise();
+    }
+
 }

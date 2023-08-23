@@ -63,14 +63,8 @@
   <div class="row">
     <div class="col-md-12">
       <div class="row" style="margin-right: 10px;" *ngIf="current == null || current.type === 1">
-        <div class="col-sm-12">
-          <label>Filter Sites by Bureau</label>
-          <select [(ngModel)]="filter.value" name="filter" (change)="refreshSites()">
-            <option></option>
-            <option *ngFor="let bureau of bureaus" [value]="bureau.value">
-              {{bureau.label}}
-            </option>
-          </select>
+        <div class="col-sm-12 float-right">
+          <a (click)="onFilterOpen()"><i class="fa fa-filter"></i></a>
         </div>
       </div>
 
