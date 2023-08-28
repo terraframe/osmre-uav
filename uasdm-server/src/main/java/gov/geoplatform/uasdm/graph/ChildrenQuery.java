@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -110,6 +111,11 @@ public class ChildrenQuery
 
   public List<UasComponentIF> getResults()
   {
+    if (this.component.getType().equals(Collection.CLASS))
+    {
+      return new LinkedList<>();
+    }
+
     final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
 
     return query.getResults();
@@ -136,7 +142,7 @@ public class ChildrenQuery
       }
       else
       {
-        this.statement.append("SELECT FROM (\n");
+        this.statement.append("SELECT DISTINCT * FROM (\n");
       }
     }
 
@@ -356,7 +362,7 @@ public class ChildrenQuery
       }
       else if (component.getType().equals(Collection.CLASS))
       {
-        return true;
+        return false;
       }
 
       return !component.getType().equals(bucket.className);
@@ -377,6 +383,10 @@ public class ChildrenQuery
     else if (this.component.getType().equals(Mission.CLASS) && bucket.className.equals(Collection.CLASS))
     {
       return true;
+    }
+    else if (this.component.getType().equals(Collection.CLASS))
+    {
+      return false;
     }
 
     return bucket.hasCondition();

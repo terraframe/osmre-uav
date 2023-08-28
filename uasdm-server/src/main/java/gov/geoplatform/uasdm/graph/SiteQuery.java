@@ -152,7 +152,7 @@ public class SiteQuery
       }
       else
       {
-        this.statement.append("SELECT FROM (\n");
+        this.statement.append("SELECT DISTINCT * FROM (\n");
       }
     }
 
