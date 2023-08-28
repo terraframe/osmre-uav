@@ -80,8 +80,14 @@ export class ManagementService {
 			params = params.set('conditions', JSON.stringify(conditions));
 		}
 
+		this.eventService.start();
+
+
 		return this.http
 			.get<SiteEntity[]>(environment.apiUrl + '/project/items', { params: params })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
 			.toPromise()
 	}
 
