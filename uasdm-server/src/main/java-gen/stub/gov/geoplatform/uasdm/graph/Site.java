@@ -33,6 +33,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
@@ -69,6 +70,7 @@ public class Site extends SiteBase implements SiteIF
   }
 
   @Override
+  @Transaction
   public void applyWithParent(UasComponentIF parent)
   {
     boolean isNew = this.isNew();
