@@ -56,6 +56,21 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
     builderRole.grantPermission(Operation.READ_ALL, component.getOid());
   }
   
+  public void assignEdgePermissions(ComponentIF component)
+  {
+    RoleDAO adminRole = RoleDAO.findRole(RoleConstants.ADMIN).getBusinessDAO();
+    adminRole.grantPermission(Operation.CREATE, component.getOid());
+    adminRole.grantPermission(Operation.DELETE, component.getOid());
+    adminRole.grantPermission(Operation.WRITE, component.getOid());
+    adminRole.grantPermission(Operation.WRITE_ALL, component.getOid());
+    
+    RoleDAO builderRole = RoleDAO.findRole(RoleConstants.DASHBOARD_BUILDER).getBusinessDAO();
+    builderRole.grantPermission(Operation.CREATE, component.getOid());
+    builderRole.grantPermission(Operation.DELETE, component.getOid());
+    builderRole.grantPermission(Operation.WRITE, component.getOid());
+    builderRole.grantPermission(Operation.WRITE_ALL, component.getOid());
+  }
+  
   @Override
   public void postSynchronization(LabeledPropertyGraphSynchronization synchronization, Map<String, Object> cache)
   {
@@ -99,7 +114,7 @@ public class IDMLabeledPropertyGraphService implements LabeledPropertyGraphServi
       mdEdgeDAO.setValue(MdEdgeInfo.ENABLE_CHANGE_OVER_TIME, MdAttributeBooleanInfo.FALSE);
       mdEdgeDAO.apply();
 
-      LabeledPropertyGraphServiceIF.getInstance().assignPermissions(mdEdgeDAO);
+      this.assignEdgePermissions(mdEdgeDAO);
       
       SynchronizationEdge edge = new SynchronizationEdge();
       edge.setVersion(version);
