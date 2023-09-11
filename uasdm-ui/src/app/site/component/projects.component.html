@@ -324,7 +324,7 @@
                   </div>
 
                   <ng-container *ngIf="current == null">
-                    <ng-container [ngTemplateOutlet]="locations" *ngIf="hierarchy.oid != null">
+                    <ng-container [ngTemplateOutlet]="locations" *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
                     </ng-container>
 
                     <ng-container *ngIf="hierarchy.oid == null || hierarchy.oid.length === 0">
