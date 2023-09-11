@@ -38,6 +38,13 @@
       </h3>
     </div>
     <hr>
+    
+    <div *ngIf="profile.bureau != null" class="form-group">
+      <label>
+        Bureau
+      </label>
+      <input [disabled]="true" type="text" [(ngModel)]="profile.bureau" name="bureau" required>
+    </div>
 
     <div class="form-group">
       <label>
