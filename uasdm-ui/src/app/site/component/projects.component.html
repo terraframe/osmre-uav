@@ -219,7 +219,7 @@
                 <div class="col-md-12">
                   <label>Hierarchy</label>
                   <select [(ngModel)]="hierarchy.oid" name="sync" (change)="onHierarchyChange()">
-                    <option></option>
+                    <option [ngValue]="null">IDM Hierarchy</option>
                     <option *ngFor="let sync of syncs" [value]="sync.oid">
                       {{sync.displayLabel.localizedValue}}
                     </option>
