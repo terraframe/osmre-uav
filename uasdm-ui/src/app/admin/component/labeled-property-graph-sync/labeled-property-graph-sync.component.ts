@@ -9,8 +9,8 @@ import { BasicConfirmModalComponent, ErrorHandler, NotificationModalComponent } 
 
 import { AuthService } from '@shared/service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LPGSyncService } from '@site/service/lpg-sync.service';
-import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@site/model/lpg-sync';
+import { LPGSyncService } from '@shared/service/lpg-sync.service';
+import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({

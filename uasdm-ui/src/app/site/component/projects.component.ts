@@ -42,8 +42,8 @@ import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
 import { WebSockets } from "@core/utility/web-sockets";
-import { LPGSync } from "@site/model/lpg-sync";
-import { LPGSyncService } from "@site/service/lpg-sync.service";
+import { LPGSync } from "@shared/model/lpg";
+import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
 
 

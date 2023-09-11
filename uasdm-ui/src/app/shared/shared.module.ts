@@ -53,6 +53,8 @@ import { SessionService } from './service/session.service';
 import { AdminGuardService, AuthGuard } from './service/guard.service';
 import { HttpBackendClient } from './service/http-backend-client.service';
 
+import { LPGSyncService } from './service/lpg-sync.service';
+
 
 @NgModule({
 	imports: [
@@ -138,7 +140,8 @@ export class SharedModule {
 				DateService,
 				AdminGuardService,
 				AuthGuard,
-				HttpBackendClient
+				HttpBackendClient,
+				LPGSyncService
 			]
 		};
 	}

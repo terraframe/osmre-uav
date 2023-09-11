@@ -11,8 +11,8 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
-import { LPGSyncService } from '@site/service/lpg-sync.service';
-import { LPGSync } from '@site/model/lpg-sync';
+import { LPGSyncService } from '@shared/service/lpg-sync.service';
+import { LPGSync } from '@shared/model/lpg';
 
 @Component({
     selector: 'labeled-property-graph-sync-table',
@@ -80,10 +80,10 @@ export class LPGSyncTableComponent implements OnInit {
     }
 
     onView(sync: LPGSync): void {
-        this.router.navigate(['/site/lpg-sync', sync.oid]);
+        this.router.navigate(['/admin/lpg-sync', sync.oid]);
     }
 
     newInstance(): void {
-        this.router.navigate(['/site/lpg-sync', '__NEW__']);
+        this.router.navigate(['/admin/lpg-sync', '__NEW__']);
     }
 }

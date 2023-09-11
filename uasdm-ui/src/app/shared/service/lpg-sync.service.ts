@@ -12,7 +12,7 @@ import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 import { PageResult } from '@shared/model/page';
 import { GenericTableService } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
-import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@site/model/lpg-sync';
+import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
 
 
 
