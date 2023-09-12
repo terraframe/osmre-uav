@@ -33,6 +33,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -477,6 +478,13 @@ public class ODMTaskProcessor
       task.writeODMtoS3(output);
 
       processODMOutputAndCreateTasks(output, task);
+      
+      ODMRun run = ODMRun.getForTask(task.getOid());
+      if (run != null)
+      {
+        run.setOutput(sb.toString());
+        run.apply();
+      }
     }
   }
 
