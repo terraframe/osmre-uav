@@ -2,6 +2,44 @@
 # Release Notes
 
 
+## [0.18.1](https://github.com/terraframe/osmre-uav/releases/tag/0.18.1) (2023-09-12)
+
+### Features
+
+ - **collection** ability to upload reports and product table styling (refs #216) ([#216](https://github.com/terraframe/osmre-uav/issues/216)) ([cab5f](https://github.com/terraframe/osmre-uav/commit/cab5f19a8ccc5d7a4aa95c804212f111f6bf9727))
+ - **site-viewer** busy spinner on create collection modal  ([#223](https://github.com/terraframe/osmre-uav/issues/223)) ([7855b](https://github.com/terraframe/osmre-uav/commit/7855b1f6f05a929f87de28572b26d6fc3ccdf6e4))
+ - **odm-config** geo location defaults when reprocessing  ([#232](https://github.com/terraframe/osmre-uav/issues/232)) ([4ba25](https://github.com/terraframe/osmre-uav/commit/4ba253b3b1aabf33ac7448da6eea6c5a9b04b7c8))
+ - **workflow-tasks** Ability To View ODM Run Information For Failed Processing Runs (refs #233) ([#233](https://github.com/terraframe/osmre-uav/issues/233)) ([d3fcb](https://github.com/terraframe/osmre-uav/commit/d3fcbc9736f5f2b1cff1857c66840b17279473db))
+ - **sensor** default geologger configuration by sensor  ([#241](https://github.com/terraframe/osmre-uav/issues/241)) ([b3425](https://github.com/terraframe/osmre-uav/commit/b3425e61cedcde01811cd9edc0a2e2af15665061))
+ - **upload** better advanced settings styling  ([#243](https://github.com/terraframe/osmre-uav/issues/243)) ([45b92](https://github.com/terraframe/osmre-uav/commit/45b92cdf5a4109427ed1d5de8d0e9ec0d63d0722))
+ - **collection** ability to reupload a geo location file  ([#245](https://github.com/terraframe/osmre-uav/issues/245)) ([6ae40](https://github.com/terraframe/osmre-uav/commit/6ae40687a02b318b506f735db80c690d0b044621))
+ - **geolocation** show all geo location failures as a list of complete errors, not just a one by one basis (refs #246) ([#246](https://github.com/terraframe/osmre-uav/issues/246)) ([47ba0](https://github.com/terraframe/osmre-uav/commit/47ba02483e95d4ee153c76c44c674bfdb118c030))
+ - **collection** increase speed for opening a collection  ([#247](https://github.com/terraframe/osmre-uav/issues/247)) ([bad3d](https://github.com/terraframe/osmre-uav/commit/bad3dc516b15d72b2b3901a9fc1f48b65b951313))
+ - add a ProjectType field to project  ([#253](https://github.com/terraframe/osmre-uav/issues/253)) ([0be3e](https://github.com/terraframe/osmre-uav/commit/0be3eb99303ca67009ac4d9cf263b2f4c996536f))
+ - add bureau to account (profile) modal   ([58a6c](https://github.com/terraframe/osmre-uav/commit/58a6ce3c0a37a6d96b11e2fcc755ca36cce7862f))
+ - **processing** increase max runtime on prod to 7 days   ([fad7c](https://github.com/terraframe/osmre-uav/commit/fad7cb05f430b058695e8c9cd4ef991c4b9c484c))
+ - **geologging** Added format validation for geo location files   ([ab1c5](https://github.com/terraframe/osmre-uav/commit/ab1c50b6121ab4777f70fcb1c5564b368faf466b))
+ - **processing** ability to specify radiometric-calibration   ([fa734](https://github.com/terraframe/osmre-uav/commit/fa734f05831b2b5c0e2c4df6c403b0a4b2cc1ef9))
+
+### Bug Fixes
+
+   - **processing** prevent collection clobbering  ([#228](https://github.com/terraframe/osmre-uav/issues/228)) ([2fa5a](https://github.com/terraframe/osmre-uav/commit/2fa5a041f065678d9f0bab26fd0d17e076f81710))
+   - **workflow-tasks** deleting workflow tasks  ([#229](https://github.com/terraframe/osmre-uav/issues/229)) ([ef951](https://github.com/terraframe/osmre-uav/commit/ef9512d37b169ac88e44abb0cf3f9e98aa17eb45))
+   - **workflow-tasks** Workflow Task Timestamps Are In 12 Hour Clock And Missing AM/PM (refs #234) ([#234](https://github.com/terraframe/osmre-uav/issues/234)) ([161ba](https://github.com/terraframe/osmre-uav/commit/161bac9df73b7aa20244b63cc6372a5ebf8b70bd))
+   - **collection** automatically check the "generate" boxes  ([#239](https://github.com/terraframe/osmre-uav/issues/239)) ([f3ca8](https://github.com/terraframe/osmre-uav/commit/f3ca8cec508ea0c0e7c1c02f11a3512de8fdb17d))
+   - odm output not present unless the all zip was generated   ([c5483](https://github.com/terraframe/osmre-uav/commit/c548319c55d0b70e76c22446713033c1189d78b5))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGBOUNCYCASTLE-5771340  ([0d498](https://github.com/terraframe/osmre-uav/commit/0d498b583dab4e895591a9d5be522d094af3a230))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426- https://snyk.io/vuln/SNYK-JAVA-COMMONSCODEC-561518  ([493ca](https://github.com/terraframe/osmre-uav/commit/493ca792bec6ba1a783cfaf7bd4bddca376042aa))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426- https://snyk.io/vuln/SNYK-JAVA-COMMONSCODEC-561518  ([39c10](https://github.com/terraframe/osmre-uav/commit/39c1003f9300c5ef91900c5844e63a7bdab90f08))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGECLIPSEJETTY-5426161  ([31b7d](https://github.com/terraframe/osmre-uav/commit/31b7d39f2f1530c39a9f104e4de11cd159f277d5))
+   - **tasks** inner directories are reported as info not warning   ([f37fc](https://github.com/terraframe/osmre-uav/commit/f37fced2efdbbc24639e7d0ffe0a629daec0cf07))
+   - **processing** unspecified error generating bounding boxes   ([2c7e4](https://github.com/terraframe/osmre-uav/commit/2c7e42d0ebfc6cafd3883c8014fcd4b04d491ad2))
+   - **uav-table** filtering on multiple columns throws error   ([218ef](https://github.com/terraframe/osmre-uav/commit/218ef3eed7ec283a07cd5050ad7bf1a0bf90949f))
+   - **processing** occasional unspecified error during store   ([f80f5](https://github.com/terraframe/osmre-uav/commit/f80f55763b73f4642ae8b16c713e18b4b78370a7))
+   - **collection-modal** not displaying raw .tiff images   ([e2a0c](https://github.com/terraframe/osmre-uav/commit/e2a0c3915405ad28aebe8e0d01ddd33e362a89ca))
+
+
+
 ## [0.18.0](https://github.com/terraframe/osmre-uav/releases/tag/0.18.0) (2023-09-09)
 
 ### Features
