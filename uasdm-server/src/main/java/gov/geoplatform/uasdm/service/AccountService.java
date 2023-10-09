@@ -22,13 +22,21 @@ import org.json.JSONObject;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInvite;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.InvalidPasswordException;
+import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
+import net.geoprism.GeoprismUserDTO;
+import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.ExternalProfileDTO;
+import net.geoprism.account.GeoprismUserView;
 
 public class AccountService
 {
@@ -89,6 +97,37 @@ public class AccountService
     final GeoprismUser user = UserInfo.deserialize(object);
 
     UserInvite.complete(token, user);
+  }
+  
+  @Request(RequestType.SESSION)
+  public IDMUserView getCurrentUser(String sessionId)
+  {
+    SessionIF session = Session.getCurrentSession();
+
+    if (session != null)
+    {
+      SingleActor user = SingleActor.get(session.getUser().getOid());
+      
+      if (!(user instanceof ExternalProfile))
+      {
+        return IDMUserView.fromUser((GeoprismUser) user, UserInfo.getByUser(user));
+      }
+      else
+      {
+        ExternalProfile ep = (ExternalProfile) user;
+        
+        UserInfo info = UserInfo.getByUser(user);
+        String bureau = null;
+        if (info != null && info.getBureau() != null)
+        {
+          bureau = info.getBureau().getDisplayLabel();
+        }
+        
+        return new IDMUserView(ep.getDisplayName(), ep.getEmail(), ep.getFirstName(), ep.getLastName(), ep.getPhoneNumber(), ep.getOid(), bureau);
+      }
+    }
+
+    return null;
   }
 
   public static boolean isValidPassword(String password)

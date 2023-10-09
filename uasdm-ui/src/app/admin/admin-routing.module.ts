@@ -18,6 +18,7 @@ import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
 import { SystemConfigurationComponent } from './component/system/system-configuration.component';
+import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
 
 const routes: Routes = [
     {
@@ -67,6 +68,11 @@ const routes: Routes = [
         canActivate: [AdminGuardService],
         component: SessionEventComponent,
         data: {}
+    },
+    {
+        path: 'lpg-sync/:oid',
+        canActivate: [AdminGuardService],
+        component: LPGSyncComponent,
     },
     {
         path: 'system-info',

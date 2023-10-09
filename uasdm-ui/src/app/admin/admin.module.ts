@@ -30,6 +30,9 @@ import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
 import { SystemConfigurationComponent } from './component/system/system-configuration.component';
 
+import { LPGSyncTableComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-table.component';
+import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
+
 import { AdminRoutingModule } from './admin-routing.module';
 
 import { SharedModule } from '../shared/shared.module';
@@ -60,7 +63,9 @@ import { SharedModule } from '../shared/shared.module';
 		EmailComponent,
 		SystemInfoComponent,
 		SessionEventComponent,
-        SystemConfigurationComponent
+        SystemConfigurationComponent,
+        LPGSyncTableComponent,
+		LPGSyncComponent
 	],
 	providers: [
 		SystemLogoService,

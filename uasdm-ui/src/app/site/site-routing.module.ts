@@ -24,8 +24,6 @@ import { UAVsPageComponent } from './component/uav/uavs-page.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { ReportsComponent } from './component/report/reports.component';
 import { EquipmentComponent } from './component/equipment/equipment.component';
-import { LPGSyncPageComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-page.component';
-import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
 
 const routes: Routes = [
     {
@@ -131,17 +129,7 @@ const routes: Routes = [
         canActivate: [AdminGuardService],
         component: EquipmentComponent,
         data: {}
-    },
-    {
-        path: 'lpg-syncs',
-        canActivate: [AdminGuardService],
-        component: LPGSyncPageComponent,
-    },
-    {
-        path: 'lpg-sync/:oid',
-        canActivate: [AuthGuard],
-        component: LPGSyncComponent,
-    },
+    }
 
 ];
 

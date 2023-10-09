@@ -26,6 +26,8 @@ public interface ODMProcessingTaskIF extends ImageryWorkflowTaskIF
   public ODMProcessConfiguration getConfiguration();
 
   public void setConfiguration(ODMProcessConfiguration configuration);
+  
+  public String getOid();
 
   public String getOdmUUID();
 

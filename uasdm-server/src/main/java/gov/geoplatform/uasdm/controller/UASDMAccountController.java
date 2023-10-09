@@ -180,18 +180,7 @@ public class UASDMAccountController extends RunwaySpringController
   @GetMapping(API_PATH + "/get")
   public GeoprismUserView get() throws JSONException
   {
-    SingleActorDTO user = GeoprismUserDTO.getCurrentUser(this.getClientRequest());
-    
-    if (!(user instanceof ExternalProfileDTO))
-    {
-      return GeoprismUserView.fromGeoprismUserDTO((GeoprismUserDTO) user);
-    }
-    else
-    {
-      ExternalProfileDTO ep = (ExternalProfileDTO) user;
-      
-      return new GeoprismUserView(ep.getDisplayName(), ep.getEmail(), ep.getFirstName(), ep.getLastName(), ep.getPhoneNumber(), ep.getOid());
-    }
+    return this.service.getCurrentUser(getSessionId());
   }
 
   @PostMapping(API_PATH + "/inviteUser")

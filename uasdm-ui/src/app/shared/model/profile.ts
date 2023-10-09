@@ -10,4 +10,5 @@ export class Profile {
   lastName: string;
   email: string;
   changePassword: boolean;
+  bureau: string;
 }

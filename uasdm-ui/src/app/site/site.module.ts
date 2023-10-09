@@ -64,10 +64,6 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
-import { LPGSyncTableComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-table.component';
-import { LPGSyncPageComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-page.component';
-import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
-import { LPGSyncService } from './service/lpg-sync.service';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 import { FilterModalComponent } from './component/modal/filter-modal.component';
 
@@ -124,10 +120,7 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		ReportsComponent,
         EquipmentComponent,
 		LayerPanelComponent,
-		LPGSyncTableComponent,
-		LPGSyncPageComponent,
-		LPGSyncComponent,
-  		ArtifactUploadComponent
+		ArtifactUploadComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -139,8 +132,7 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		MetadataService,
 		ClassificationService,
 		UAVService,
-		ReportService,
-		LPGSyncService
+		ReportService
 	],
 	entryComponents: [
 		FilterModalComponent,

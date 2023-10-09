@@ -25,7 +25,8 @@ export class ProfileComponent {
     firstName: '',
     lastName: '',
     email: '',
-    changePassword:false    
+    changePassword:false,
+    bureau: ''
   };
   
   externalProfile: boolean = false;
