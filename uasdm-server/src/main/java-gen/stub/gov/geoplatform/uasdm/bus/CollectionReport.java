@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -100,21 +100,21 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.DOWNLOADCOUNTS, this.getDownloadCounts());
     object.put(CollectionReport.DELETEDATE, Util.formatIso8601(this.getDeleteDate(), false));
     object.put(CollectionReport.CREATEDATE, Util.formatIso8601(this.getCreateDate(), false));
-    
+
     if (this.getValue(PRODUCT) != null)
     {
       Product product = Product.get(this.getValue(PRODUCT));
       if (product != null)
       {
         List<DocumentIF> mappables = product.getMappableDocuments();
-        
+
         if (mappables.size() > 0)
         {
           JSONArray availableServices = new JSONArray();
           for (DocumentIF mappable : mappables)
           {
             String sUrl;
-            
+
             try
             {
               sUrl = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
@@ -123,16 +123,16 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
             {
               throw new ProgrammingErrorException(e);
             }
-            
+
             availableServices.put(sUrl);
           }
-         
+
           object.put("productURLs", availableServices);
-         
+
         }
       }
     }
-    
+
     Long storageSize = this.getAllStorageSize();
 
     if (storageSize != null)
@@ -320,11 +320,19 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setCollectionName(collection.getName());
-        report.setCollectionDate(collection.getCollectionDate());
-        report.setErosMetadataComplete(collection.getMetadataUploaded());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setCollectionName(collection.getName());
+          report.setCollectionDate(collection.getCollectionDate());
+          report.setErosMetadataComplete(collection.getMetadataUploaded());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -351,9 +359,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setMissionName(mission.getName());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setMissionName(mission.getName());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -369,9 +385,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setProjectName(project.getName());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setProjectName(project.getName());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -387,10 +411,18 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setSiteName(site.getName());
-        report.setGeometry(site.getGeoPoint());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setSiteName(site.getName());
+          report.setGeometry(site.getGeoPoint());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -406,10 +438,18 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setFaaIdNumber(uav.getFaaNumber());
-        report.setSerialNumber(uav.getSerialNumber());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setFaaIdNumber(uav.getFaaNumber());
+          report.setSerialNumber(uav.getSerialNumber());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -425,9 +465,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setSensorName(sensor.getName());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setSensorName(sensor.getName());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -443,9 +491,16 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setPlatformName(platform.getName());
-        report.apply();
+        try
+        {
+          report.appLock();
+          report.setPlatformName(platform.getName());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -468,13 +523,21 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setRawImagesCount(rawDocuments.size());
-        report.setVideo(videoDocuments.size() > 0);
-        report.setOrthomosaic(orthoDocuments.size() > 0);
-        report.setPointCloud(pointCloudDocuments.size() > 0);
-        report.setHillshade(demDocuments.size() > 0);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setRawImagesCount(rawDocuments.size());
+          report.setVideo(videoDocuments.size() > 0);
+          report.setOrthomosaic(orthoDocuments.size() > 0);
+          report.setPointCloud(pointCloudDocuments.size() > 0);
+          report.setHillshade(demDocuments.size() > 0);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -492,9 +555,16 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         while (iterator.hasNext())
         {
           CollectionReport report = iterator.next();
-          report.appLock();
-          report.setOdmProcessing(status);
-          report.apply();
+          try
+          {
+            report.appLock();
+            report.setOdmProcessing(status);
+            report.apply();
+          }
+          finally
+          {
+            report.releaseAppLock();
+          }
         }
       }
     }
@@ -513,10 +583,18 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setProductsShared(product.getPublished());
-        report.setProduct(product);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setProductsShared(product.getPublished());
+          report.setProduct(product);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -532,9 +610,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setUserName(actor.getUsername());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setUserName(actor.getUsername());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -552,12 +638,20 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setCollectionName(collection.getName());
-        report.setCollectionDate(collection.getCollectionDate());
-        report.setErosMetadataComplete(collection.getMetadataUploaded());
-        report.setAllStorageSize(storageSize);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setCollectionName(collection.getName());
+          report.setCollectionDate(collection.getCollectionDate());
+          report.setErosMetadataComplete(collection.getMetadataUploaded());
+          report.setAllStorageSize(storageSize);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -575,9 +669,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setAllStorageSize(storageSize);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setAllStorageSize(storageSize);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -593,14 +695,22 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setCollection(null);
-        report.setMission(null);
-        report.setProject(null);
-        report.setSite(null);
-        report.setExists(false);
-        report.setDeleteDate(new Date());
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setCollection(null);
+          report.setMission(null);
+          report.setProject(null);
+          report.setSite(null);
+          report.setExists(false);
+          report.setDeleteDate(new Date());
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -616,9 +726,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setUav(null);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setUav(null);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -634,10 +752,18 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setProductsShared(false);
-        report.setProduct(null);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setProductsShared(false);
+          report.setProduct(null);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -653,9 +779,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setActor(null);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setActor(null);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -671,9 +805,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setSensor(null);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setSensor(null);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -689,9 +831,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setPlatform(null);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setPlatform(null);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
@@ -707,9 +857,17 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       while (iterator.hasNext())
       {
         CollectionReport report = iterator.next();
-        report.appLock();
-        report.setDownloadCounts(report.getDownloadCounts() != null ? ( report.getDownloadCounts() + 1 ) : 1L);
-        report.apply();
+
+        try
+        {
+          report.appLock();
+          report.setDownloadCounts(report.getDownloadCounts() != null ? ( report.getDownloadCounts() + 1 ) : 1L);
+          report.apply();
+        }
+        finally
+        {
+          report.releaseAppLock();
+        }
       }
     }
   }
