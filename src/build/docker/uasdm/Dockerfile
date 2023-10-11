@@ -22,6 +22,9 @@ ENV POSTGRES_PORT=5432
 
 RUN mkdir -p $CATALINA_HOME/wars
 
+# Install exiftool
+RUN apt-get update && apt-get -y install exiftool 
+
 # Install GDAL and COG Tiff validator
 RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
 RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"

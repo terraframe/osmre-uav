@@ -30,7 +30,7 @@ public class SystemProcessExecutor
 
   private static final Logger logger = LoggerFactory.getLogger(SystemProcessExecutor.class);
   
-  private StatusMonitorIF monitor;
+  private StatusMonitorIF monitor = null;
   
   private StringBuffer stdOut = null;
   
@@ -41,6 +41,11 @@ public class SystemProcessExecutor
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
     this.monitor = monitor;
+  }
+  
+  public SystemProcessExecutor()
+  {
+    // When monitor is null, we will throw errors as exceptions.
   }
   
   public String getStdOut()
@@ -125,6 +130,10 @@ public class SystemProcessExecutor
       {
         this.monitor.addError("Interrupted when invoking system process. " + RunwayException.localizeThrowable(t, Locale.US));
       }
+      else
+      {
+        throw new RuntimeException(t);
+      }
       logger.info("Interrupted when invoking system process", t);
       return false;
     }
@@ -140,6 +149,10 @@ public class SystemProcessExecutor
       if (this.monitor != null)
       {
         this.monitor.addError(msg);
+      }
+      else
+      {
+        throw new RuntimeException(msg);
       }
       logger.info(msg);
       return false;

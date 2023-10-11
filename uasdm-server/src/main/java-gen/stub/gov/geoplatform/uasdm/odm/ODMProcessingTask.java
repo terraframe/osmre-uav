@@ -32,6 +32,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
@@ -112,7 +113,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
       if (DevProperties.runOrtho())
       {
-        resp = ODMFacade.taskNew(images, isMultispectral, this.getConfiguration(), this);
+        resp = ODMFacade.taskNew(images, isMultispectral, this.getConfiguration(), (Collection) this.getImageryComponent(), this);
       }
       else
       {

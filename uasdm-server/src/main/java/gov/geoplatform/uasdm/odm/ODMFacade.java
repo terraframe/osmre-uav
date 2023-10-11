@@ -39,13 +39,17 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
+import gov.geoplatform.uasdm.processing.WorkswellWirisThermalPhotometricProcessor;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
@@ -128,9 +132,9 @@ public class ODMFacade
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, AbstractWorkflowTask task)
+  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
-    return service.taskNew(images, isMultispectral, configuration, task);
+    return service.taskNew(images, isMultispectral, configuration, col, task);
   }
 
   public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
@@ -153,20 +157,32 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static ODMProcessingPayload filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  public static ODMProcessingPayload filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
   {
     String extension = archive.getNameExtension();
 
+    ODMProcessingPayload payload;
+    
     if (extension.equalsIgnoreCase("zip"))
     {
-      return filterZipArchive(archive, configuration);
+      payload = filterZipArchive(archive, configuration);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      return filterTarGzArchive(archive, configuration);
+      payload = filterTarGzArchive(archive, configuration);
     }
-
-    throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
+    else
+    {
+      throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
+    }
+    
+    if ( (col.getSensor().getName().toLowerCase().contains("workswell wiris pro") || col.getSensor().getModel().toLowerCase().contains("wiris pro"))
+        && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
+    {
+      new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(payload.getFile()));
+    }
+    
+    return payload;
   }
 
   private static ODMProcessingPayload filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
@@ -276,7 +292,7 @@ public class ODMFacade
 
             payload.setGeoLocationFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
           }
-          if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
+          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
             File file = new File(parent, entry.getName());
 

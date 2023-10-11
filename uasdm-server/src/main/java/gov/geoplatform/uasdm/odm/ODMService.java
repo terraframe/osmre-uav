@@ -40,6 +40,7 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 
@@ -127,11 +128,11 @@ public class ODMService implements ODMServiceIF
    * tasknewinit
    */
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, AbstractWorkflowTask task)
+  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
     initialize();
-
-    try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration))
+    
+    try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration, col))
     {
       if (payload.getImageCount() > 0)
       {

@@ -36,6 +36,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
@@ -114,7 +115,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
   {
     try
     {
-      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration(), this);
+      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration(), (Collection) this.getImageryComponent(), this);
 
       if (resp.getHTTPResponse().isUnreachableHost())
       {
