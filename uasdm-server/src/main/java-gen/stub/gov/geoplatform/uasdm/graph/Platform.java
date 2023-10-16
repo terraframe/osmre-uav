@@ -40,6 +40,7 @@ import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class Platform extends PlatformBase implements JSONSerializable
 {
@@ -72,7 +73,7 @@ public class Platform extends PlatformBase implements JSONSerializable
         new GenerateMetadataCommand(collection).doIt();
       });
 
-      CollectionReport.update(this);
+      CollectionReportFacade.update(this).doIt();
     }
   }
 
@@ -98,6 +99,7 @@ public class Platform extends PlatformBase implements JSONSerializable
   }
 
   @Override
+  @Transaction
   public void delete()
   {
     if (UAV.isPlatformReferenced(this))

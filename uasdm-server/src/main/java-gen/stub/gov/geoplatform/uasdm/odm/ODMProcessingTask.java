@@ -31,9 +31,9 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -132,7 +132,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setMessage(resp.getError());
         this.apply();
 
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -141,7 +141,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
 
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else
       {
@@ -172,7 +172,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
 
-      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+      CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
     finally
     {

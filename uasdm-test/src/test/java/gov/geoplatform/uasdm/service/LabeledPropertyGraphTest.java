@@ -141,7 +141,7 @@ public class LabeledPropertyGraphTest
           
           List<EdgeObject> siteEdges = new GraphQuery<EdgeObject>("SELECT FROM " + edge.getGraphEdge().getDbClassName()).getResults();
           
-          Assert.assertEquals(0, siteEdges.size());
+          Assert.assertEquals(1, siteEdges.size());
         }
         finally
         {

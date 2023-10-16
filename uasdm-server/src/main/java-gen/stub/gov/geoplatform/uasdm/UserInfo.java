@@ -37,6 +37,7 @@ import com.runwaysdk.system.SingleActor;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.BureauQuery;
 import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
 import net.geoprism.account.AccountBusinessService;
@@ -280,7 +281,7 @@ public class UserInfo extends UserInfoBase
 
     info.apply();
 
-    CollectionReport.update(user);
+    CollectionReportFacade.update(user).doIt();
 
     return serialize(user, info);
   }

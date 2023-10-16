@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -436,7 +437,7 @@ public class Util
 
         if (component instanceof CollectionIF)
         {
-          CollectionReport.updateSize((CollectionIF) component);
+          CollectionReportFacade.updateSize((CollectionIF) component).doIt();
         }
 
         return true;

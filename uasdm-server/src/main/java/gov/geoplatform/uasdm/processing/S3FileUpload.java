@@ -22,6 +22,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class S3FileUpload implements Processor
@@ -70,7 +71,7 @@ public class S3FileUpload implements Processor
     
     this.uploadFile(res);
 
-    CollectionReport.updateSize(this.collection);
+    CollectionReportFacade.updateSize(this.collection).doIt();
     
     return true;
   }

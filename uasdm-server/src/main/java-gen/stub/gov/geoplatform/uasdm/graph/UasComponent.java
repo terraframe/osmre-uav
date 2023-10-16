@@ -77,6 +77,7 @@ import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -256,7 +257,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         });
       }
 
-      CollectionReport.update(this);
+      CollectionReportFacade.update(this).doIt();
     }
   }
 

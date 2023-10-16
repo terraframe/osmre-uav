@@ -685,7 +685,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public void handleDelete(Collection collection)
+  public static void handleDelete(Collection collection)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
@@ -849,8 +849,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   @Transaction
   public static void updateDownloadCount(CollectionIF collection)
   {
-    // Disabled because it is causing massive deadlock problems
-    /*
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
 
@@ -872,7 +870,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         }
       }
     }
-    */
   }
 
   @SuppressWarnings("unchecked")

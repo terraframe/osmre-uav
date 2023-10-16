@@ -24,6 +24,9 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask.Type;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class RemoteFileDeleteCommand implements Command
@@ -61,7 +64,7 @@ public class RemoteFileDeleteCommand implements Command
 
     if (this.component instanceof CollectionIF)
     {
-      CollectionReport.updateSize((CollectionIF) this.component);
+      CollectionReportFacade.process(new CollectionReportTask(Type.SIZE, this.component));
     }
   }
 

@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.processing;
 
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.graph.Document;
@@ -129,6 +130,7 @@ public class ManagedDocument extends S3FileUpload
   }
 
   @Override
+  @Transaction
   public boolean process(ApplicationFileResource res)
   {
     boolean success = super.process(res);

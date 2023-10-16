@@ -41,6 +41,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -129,7 +130,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setMessage(resp.getError());
         this.apply();
 
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -138,7 +139,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
 
-        CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else
       {
@@ -162,7 +163,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
 
-      CollectionReport.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+      CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
   }
 
@@ -209,7 +210,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
       if (component instanceof CollectionIF)
       {
-        CollectionReport.updateSize((CollectionIF) component);
+        CollectionReportFacade.updateSize((CollectionIF) component).doIt();
       }
     }
     catch (IOException e)

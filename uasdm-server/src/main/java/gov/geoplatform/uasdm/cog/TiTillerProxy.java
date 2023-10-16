@@ -63,6 +63,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class TiTillerProxy
 {
@@ -306,7 +307,7 @@ public class TiTillerProxy
     UasComponentIF component = document.getComponent();
     if (component instanceof CollectionIF)
     {
-      CollectionReport.updateDownloadCount((CollectionIF) component);
+      CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
     }
     
     final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();

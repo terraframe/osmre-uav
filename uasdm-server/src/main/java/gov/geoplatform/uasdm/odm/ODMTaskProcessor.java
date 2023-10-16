@@ -39,6 +39,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
@@ -142,7 +143,7 @@ public class ODMTaskProcessor
 
       this.sendEmail(uploadTask);
 
-      CollectionReport.update(uploadTask.getImageryComponent().getOid(), ODMStatus.COMPLETED.getLabel());
+      CollectionReportFacade.update(uploadTask.getImageryComponent().getOid(), ODMStatus.COMPLETED.getLabel()).doIt();
     }
     catch (Throwable t)
     {
@@ -157,7 +158,7 @@ public class ODMTaskProcessor
 
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-      CollectionReport.update(uploadTask.getImageryComponent().getOid(), ODMStatus.FAILED.getLabel());
+      CollectionReportFacade.update(uploadTask.getImageryComponent().getOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
   }
 
@@ -255,7 +256,7 @@ public class ODMTaskProcessor
 
         sendEmail(task);
 
-        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (resp.hasError())
       {
@@ -268,7 +269,7 @@ public class ODMTaskProcessor
 
         sendEmail(task);
 
-        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -280,7 +281,7 @@ public class ODMTaskProcessor
 
         result.setStatus(TaskStatus.ERROR);
 
-        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else
       {
@@ -299,7 +300,7 @@ public class ODMTaskProcessor
 
           removeFromOdm(task, task.getOdmUUID());
 
-          CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+          CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
         }
         else if (ODMStatus.FAILED.equals(respStatus))
         {
@@ -315,7 +316,7 @@ public class ODMTaskProcessor
 
           removeFromOdm(task, task.getOdmUUID());
 
-          CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+          CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
         }
         else if (ODMStatus.RUNNING.equals(respStatus))
         {
@@ -405,7 +406,7 @@ public class ODMTaskProcessor
 
       result.setStatus(TaskStatus.ERROR);
 
-      CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+      CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
 
     return result;

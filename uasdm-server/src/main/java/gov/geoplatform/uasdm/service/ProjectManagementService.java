@@ -91,6 +91,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -188,7 +189,7 @@ public class ProjectManagementService
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        CollectionReport.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel());
+        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
 
         throw t;
       }

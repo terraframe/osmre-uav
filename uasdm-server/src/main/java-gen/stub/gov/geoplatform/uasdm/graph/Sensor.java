@@ -39,6 +39,7 @@ import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class Sensor extends SensorBase implements JSONSerializable
 {
@@ -71,7 +72,7 @@ public class Sensor extends SensorBase implements JSONSerializable
         new GenerateMetadataCommand(collection).doIt();
       });
 
-      CollectionReport.update(this);
+      CollectionReportFacade.update(this).doIt();
     }
   }
 

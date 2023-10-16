@@ -34,7 +34,6 @@ import com.amazonaws.services.s3.AmazonS3URI;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
 import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
@@ -43,6 +42,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 
 public class StacTiTillerProxy extends TiTillerProxy
@@ -93,7 +93,7 @@ public class StacTiTillerProxy extends TiTillerProxy
       UasComponent component = product.getComponent();
       if (component instanceof Collection)
       {
-        CollectionReport.updateDownloadCount((CollectionIF) component);
+        CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
         
         addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
       }

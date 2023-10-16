@@ -66,6 +66,7 @@ import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
@@ -118,7 +119,7 @@ public class Product extends ProductBase implements ProductIF
       this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_PRODUCT).apply();
     }
 
-    CollectionReport.update(this);
+    CollectionReportFacade.update(this).doIt();
   }
 
   @Override

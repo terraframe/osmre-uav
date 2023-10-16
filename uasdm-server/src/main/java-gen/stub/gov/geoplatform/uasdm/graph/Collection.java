@@ -71,6 +71,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -220,7 +221,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public RemoteFileObject download(String key)
   {
-    CollectionReport.updateDownloadCount(this);
+    CollectionReportFacade.updateDownloadCount(this).doIt();
 
     return super.download(key);
   }
@@ -229,7 +230,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     if (incrementDownloadCount)
     {
-      CollectionReport.updateDownloadCount(this);
+      CollectionReportFacade.updateDownloadCount(this).doIt();
     }
 
     // TODO : Due to a bug in ODM png generation with multispectral we're
@@ -267,7 +268,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     if (isStart > 0)
     {
-      CollectionReport.updateDownloadCount(this);
+      CollectionReportFacade.updateDownloadCount(this).doIt();
     }
 
     return super.download(key, ranges);
@@ -406,13 +407,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     {
       event.delete();
     }
-
-    List<CollectionReport> reports = this.getReports();
-
-    for (CollectionReport report : reports)
-    {
-      report.handleDelete(this);
-    }
+    
+    CollectionReport.handleDelete(this);
 
     MissingUploadMessage.remove(this);
 
@@ -674,7 +670,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     DocumentIF document = super.createDocumentIfNotExist(key, name, metadata);
 
-    CollectionReport.update(this, document);
+    CollectionReportFacade.update(this, document).doIt();
 
     return document;
   }
