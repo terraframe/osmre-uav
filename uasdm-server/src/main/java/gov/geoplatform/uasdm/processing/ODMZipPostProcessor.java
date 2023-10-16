@@ -28,7 +28,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
@@ -83,7 +82,6 @@ public class ODMZipPostProcessor
     this.progressTask = progressTask;
   }
 
-  @Transaction
   public ProductIF processAllZip() throws InterruptedException
   {
     final String colName = FilenameUtils.getName(this.collection.getS3location().endsWith("/") ? this.collection.getS3location().substring(0, this.collection.getS3location().length() - 1) : this.collection.getS3location());
