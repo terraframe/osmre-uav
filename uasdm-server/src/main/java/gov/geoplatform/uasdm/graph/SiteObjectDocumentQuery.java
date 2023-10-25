@@ -67,6 +67,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
   {
     final MdVertexDAOIF mdGraph = MdVertexDAO.getMdVertexDAO(Document.CLASS);
     MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
+    MdAttributeDAOIF name = mdGraph.definesAttribute(Document.NAME);
 
     StringBuilder ql = new StringBuilder();
     ql.append("SELECT FROM " + mdGraph.getDBClassName());
@@ -92,6 +93,8 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
       ql.append(" )");
     }
+    
+    ql.append(" ORDER BY " + name.getColumnName() + " DESC");
 
     if (this.skip != null)
     {
