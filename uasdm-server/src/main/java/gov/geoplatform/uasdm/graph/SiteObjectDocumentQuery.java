@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -63,14 +63,8 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     this.skip = skip;
   }
 
-  public GraphQuery<Document> getQuery()
+  private void addWhereStatements(MdAttributeDAOIF mdAttribute, StringBuilder ql)
   {
-    final MdVertexDAOIF mdGraph = MdVertexDAO.getMdVertexDAO(Document.CLASS);
-    MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
-    MdAttributeDAOIF name = mdGraph.definesAttribute(Document.NAME);
-
-    StringBuilder ql = new StringBuilder();
-    ql.append("SELECT FROM " + mdGraph.getDBClassName());
     ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :s3location");
 
     if (this.folder.equals("image"))
@@ -93,8 +87,41 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
       ql.append(" )");
     }
-    
-    ql.append(" ORDER BY " + name.getColumnName() + " DESC");
+  }
+
+  private void addParameters(final GraphQuery<?> query)
+  {
+    String actualFolder = folder;
+
+    if (folder.equals("image") || folder.equals("data"))
+    {
+      actualFolder = "raw";
+    }
+
+    query.setParameter("s3location", component.getS3location() + actualFolder + "%");
+
+    if (this.folder.equals("image") || this.folder.equals("data"))
+    {
+      query.setParameter("jpeg", "%.JPEG");
+      query.setParameter("jpg", "%.JPG");
+      query.setParameter("png", "%.PNG");
+      query.setParameter("tif", "%.TIF");
+      query.setParameter("tif", "%.TIFF");
+    }
+  }
+
+  public GraphQuery<Document> getQuery()
+  {
+    final MdVertexDAOIF mdGraph = MdVertexDAO.getMdVertexDAO(Document.CLASS);
+    MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
+    MdAttributeDAOIF name = mdGraph.definesAttribute(Document.NAME);
+
+    StringBuilder ql = new StringBuilder();
+    ql.append("SELECT FROM " + mdGraph.getDBClassName());
+
+    addWhereStatements(mdAttribute, ql);
+
+    ql.append(" ORDER BY " + name.getColumnName() + " ASC");
 
     if (this.skip != null)
     {
@@ -106,24 +133,9 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       ql.append(" LIMIT " + this.limit);
     }
 
-    String actualFolder = folder;
-
-    if (folder.equals("image") || folder.equals("data"))
-    {
-      actualFolder = "raw";
-    }
-
     final GraphQuery<Document> query = new GraphQuery<Document>(ql.toString());
-    query.setParameter("s3location", component.getS3location() + actualFolder + "%");
-    
-    if (this.folder.equals("image") || this.folder.equals("data"))
-    {
-      query.setParameter("jpeg", "%.JPEG");
-      query.setParameter("jpg", "%.JPG");
-      query.setParameter("png", "%.PNG");
-      query.setParameter("tif", "%.TIF");
-      query.setParameter("tif", "%.TIFF");
-    }
+
+    this.addParameters(query);
 
     return query;
   }
@@ -132,14 +144,15 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
   {
     final MdVertexDAOIF mdGraph = MdVertexDAO.getMdVertexDAO(Document.CLASS);
     MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
-    String key = component.getS3location() + folder + "%";
 
     StringBuilder ql = new StringBuilder();
     ql.append("SELECT COUNT(*) FROM " + mdGraph.getDBClassName());
-    ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :s3location");
+
+    this.addWhereStatements(mdAttribute, ql);
 
     final GraphQuery<Long> query = new GraphQuery<Long>(ql.toString());
-    query.setParameter("s3location", key);
+
+    this.addParameters(query);
 
     return query;
   }
