@@ -62,9 +62,14 @@ export class ManagementService {
 	view(id: string): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
+		
+		this.eventService.start();
 
 		return this.http
 			.get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>(environment.apiUrl + '/project/view', { params: params })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
 			.toPromise()
 	}
 
@@ -416,9 +421,14 @@ export class ManagementService {
 		params = params.set('pageSize', pageSize.toString());
 		params = params.set('pageNumber', pageNumber.toString());
 		params = params.set('token', token.toString());
+		
+		this.eventService.start();
 
 		return this.http
 			.get<PageResult<TaskGroup>>(environment.apiUrl + '/project/tasks', { params: params })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
 			.toPromise()
 	}
 
