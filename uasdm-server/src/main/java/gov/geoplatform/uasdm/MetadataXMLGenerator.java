@@ -596,7 +596,9 @@ public class MetadataXMLGenerator
       String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
-      collection.createDocumentIfNotExist(key, fileName, new DocumentIF.Metadata());
+      DocumentIF.Metadata meta = new DocumentIF.Metadata();
+      meta.setFileSize(temp.length());
+      collection.createDocumentIfNotExist(key, fileName, meta);
 
       IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 

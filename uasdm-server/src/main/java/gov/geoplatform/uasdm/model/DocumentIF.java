@@ -30,12 +30,14 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
     private String  description;
 
     private String  tool;
-
+    
     private Integer ptEpsg;
 
     private String  projectionName;
 
     private String  orthoCorrectionModel;
+    
+    private Long    fileSize;
 
     public String getDescription()
     {
@@ -86,8 +88,18 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
     {
       this.orthoCorrectionModel = orthoCorrectionModel;
     }
+    
+    public Long getFileSize()
+    {
+      return fileSize;
+    }
 
-    public static Metadata build(String description, String tool, Integer ptEpsg, String projectionName, String orthoCorrectionModel)
+    public void setFileSize(Long fileSize)
+    {
+      this.fileSize = fileSize;
+    }
+
+    public static Metadata build(String description, String tool, Integer ptEpsg, String projectionName, String orthoCorrectionModel, Long fileSize)
     {
       Metadata metadata = new Metadata();
       metadata.setDescription(description);
@@ -95,10 +107,13 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
       metadata.setPtEpsg(ptEpsg);
       metadata.setProjectionName(projectionName);
       metadata.setOrthoCorrectionModel(orthoCorrectionModel);
+      metadata.setFileSize(fileSize);
 
       return metadata;
     }
   }
+  
+  public Long getFileSize();
 
   public String getS3location();
 

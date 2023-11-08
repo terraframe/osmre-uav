@@ -205,4 +205,10 @@ public class Document extends DocumentBase implements DocumentIF
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public Long getFileSize()
+  {
+    return -1L;
+  }
+
 }

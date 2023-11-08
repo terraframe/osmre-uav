@@ -55,6 +55,8 @@ public class SiteObject implements TreeComponent
   public static final String PROJECTION_NAME        = "projectionName";
 
   public static final String ORTHO_CORRECTION_MODEL = "orthoCorrectionModel";
+  
+  public static final String FILE_SIZE              = "fileSize";
 
   private String             id;
 
@@ -81,6 +83,8 @@ public class SiteObject implements TreeComponent
   private String             projectionName;
 
   private String             orthoCorrectionModel;
+  
+  private long               fileSize; // The size of the file in bytes
 
   public String getId()
   {
@@ -211,6 +215,16 @@ public class SiteObject implements TreeComponent
   {
     this.orthoCorrectionModel = orthoCorrectionModel;
   }
+  
+  public long getFileSize()
+  {
+    return fileSize;
+  }
+
+  public void setFileSize(long fileSize)
+  {
+    this.fileSize = fileSize;
+  }
 
   @Override
   public void addChild(TreeComponent child)
@@ -233,6 +247,7 @@ public class SiteObject implements TreeComponent
     json.put(SiteObject.PT_EPSG, this.ptEpsg);
     json.put(SiteObject.PROJECTION_NAME, this.projectionName);
     json.put(SiteObject.ORTHO_CORRECTION_MODEL, this.orthoCorrectionModel);
+    json.put(SiteObject.FILE_SIZE, this.fileSize);
 
     // if (this.type.equals(SiteObject.FOLDER))
     // {
@@ -260,6 +275,7 @@ public class SiteObject implements TreeComponent
     object.setType(SiteObject.OBJECT);
     object.setLastModified(summary.getLastModified());
     object.setExclude(false);
+    object.setFileSize(summary.getSize());
 
     return object;
   }
@@ -282,6 +298,7 @@ public class SiteObject implements TreeComponent
     object.setPtEpsg(document.getPtEpsg());
     object.setProjectionName(document.getProjectionName());
     object.setOrthoCorrectionModel(document.getOrthoCorrectionModel());
+    object.setFileSize(document.getFileSize() == null ? -1L : document.getFileSize());
 
     return object;
   }

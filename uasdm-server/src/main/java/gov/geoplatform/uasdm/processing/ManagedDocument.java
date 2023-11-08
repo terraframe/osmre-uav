@@ -39,7 +39,7 @@ public class ManagedDocument extends S3FileUpload
     private String  projectionName;
     
     private String  orthoCorrectionModel;
-
+    
     public DocumentInfo()
     {
     }
@@ -141,7 +141,7 @@ public class ManagedDocument extends S3FileUpload
 
       String documentName = key.substring(key.lastIndexOf("/") + 1);
       
-      Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getProjectionName(), this.info.getOrthoCorrectionModel());
+      Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getProjectionName(), this.info.getOrthoCorrectionModel(), res.getUnderlyingFile().length());
 
       DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, metadata);
 

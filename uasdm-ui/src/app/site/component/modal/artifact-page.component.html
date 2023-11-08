@@ -13,6 +13,7 @@
         <th>Name</th>
         <th>Processing Software</th>
         <th>Date</th>
+        <th>File Size</th>
         <th>Description</th>
         <th></th>
     </thead>
@@ -43,6 +44,15 @@
             <table>
               <tr *ngFor="let artifact of artifacts[section.folder].items">
                 {{ artifact.lastModified }}
+              </tr>
+            </table>
+          </ng-container>
+        </td>
+        <td>
+          <ng-container *ngIf="artifacts[section.folder] != null">
+            <table>
+              <tr *ngFor="let artifact of artifacts[section.folder].items">
+                {{ byteCountAsHumanReadable(artifact.fileSize) }}
               </tr>
             </table>
           </ng-container>
