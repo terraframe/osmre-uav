@@ -404,10 +404,12 @@ public class Util
   public static DocumentIF putFile(UasComponent component, String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     String key = component.getS3location() + folder + "/" + fileName;
-
+    
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
-    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, new DocumentIF.Metadata());
+    DocumentIF.Metadata meta = new DocumentIF.Metadata();
+    meta.setFileSize(metadata.getContentLength());
+    final DocumentIF document = component.createDocumentIfNotExist(key, fileName, meta);
 
     if (document.isNew())
     {
@@ -428,7 +430,7 @@ public class Util
       {
         Util.uploadFileToS3(tmp, key, task == null ? null : new WorkflowTaskMonitor(task));
 
-        Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getProjectionName(), task.getOrthoCorrectionModel());
+        Metadata metadata = DocumentIF.Metadata.build(task.getDescription(), task.getTool(), task.getPtEpsg(), task.getProjectionName(), task.getOrthoCorrectionModel(), tmp.length());
 
         final UasComponentIF component = imageryComponent.getUasComponent();
         component.createDocumentIfNotExist(key, name, metadata);

@@ -131,6 +131,7 @@ public class Document extends DocumentBase implements DocumentIF
     document.setPtEpsg(metadata.getPtEpsg());
     document.setProjectionName(metadata.getProjectionName());
     document.setOrthoCorrectionModel(metadata.getOrthoCorrectionModel());
+    document.setFileSize(metadata.getFileSize());
     document.apply(uasComponent);
 
     return document;

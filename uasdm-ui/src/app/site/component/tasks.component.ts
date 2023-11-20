@@ -39,7 +39,7 @@ export class TasksComponent implements OnInit {
   showStore: boolean = false;
   tasks: any;
   taskPage: PageResult<TaskGroup> = { count: 0, pageSize: 10, pageNumber: 1, resultSet: [] };
-  errorStatuses = ["Failed", "Processing"];
+  errorStatuses = ["Failed"];
   completeStatuses = ["Complete"];
   visible: {};
 

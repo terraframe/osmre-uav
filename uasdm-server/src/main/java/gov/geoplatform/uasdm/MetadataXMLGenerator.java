@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -596,7 +596,9 @@ public class MetadataXMLGenerator
       String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
-      collection.createDocumentIfNotExist(key, fileName, new DocumentIF.Metadata());
+      DocumentIF.Metadata meta = new DocumentIF.Metadata();
+      meta.setFileSize(temp.length());
+      collection.createDocumentIfNotExist(key, fileName, meta);
 
       IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
 

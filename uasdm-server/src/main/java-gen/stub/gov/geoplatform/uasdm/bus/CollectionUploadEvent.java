@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -288,7 +289,17 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is being processed. Check back later for updates.");
     task.apply();
 
-    task.initiate(infile);
+    try
+    {
+      task.initiate(infile);
+    }
+    catch (Throwable t)
+    {
+      task.appLock();
+      task.setStatus(ODMStatus.FAILED.getLabel());
+      task.setMessage("An error was encountered while processing the imagery. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
+      task.apply();
+    }
   }
 
   private SingleActor getEventUser()
