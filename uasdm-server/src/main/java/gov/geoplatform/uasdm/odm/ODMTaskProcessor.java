@@ -32,7 +32,6 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -44,7 +43,8 @@ import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
-import net.geoprism.email.business.EmailBusinessService;
+import net.geoprism.registry.service.business.EmailBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 import net.lingala.zip4j.exception.ZipException;
 
 public class ODMTaskProcessor
@@ -99,8 +99,10 @@ public class ODMTaskProcessor
         final String subject = "Orthorectification Processing Failed";
         
         final String body = "The orthorectification processing for [" + task.getDetailedComponentLabel() + "] has failed. " + task.getMessage();
+        
+        EmailBusinessServiceIF service = ApplicationContextHolder.getBean(EmailBusinessServiceIF.class);
 
-        new EmailBusinessService().sendEmail(subject, body, new String[] {
+        service.sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()
         });
       }
@@ -110,7 +112,9 @@ public class ODMTaskProcessor
 
         final String body = "The orthorectification processing for [" + task.getDetailedComponentLabel() + "] has completed. Log into the UASDM again to see the results.";
 
-        new EmailBusinessService().sendEmail(subject, body, new String[] {
+        EmailBusinessServiceIF service = ApplicationContextHolder.getBean(EmailBusinessServiceIF.class);
+
+        service.sendEmail(subject, body, new String[] {
             task.getGeoprismUserIF().getEmail()
         });
       }

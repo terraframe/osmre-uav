@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -20,17 +20,16 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.InstanceTestClassListener;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -39,8 +38,8 @@ import gov.geoplatform.uasdm.test.TestDataSet;
 import net.geoprism.GeoprismUser;
 
 @ContextConfiguration(classes = { TestConfig.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-public class ChildrenQueryTest
+@RunWith(SpringInstanceTestClassRunner.class)
+public class ChildrenQueryTest implements InstanceTestClassListener
 {
   private static Area51DataSet testData;
 
@@ -52,15 +51,15 @@ public class ChildrenQueryTest
 
   private Collection           collection;
 
-  @BeforeClass
-  public static void setUpClass()
+  @Override
+  public void beforeClassSetup() throws Exception
   {
     testData = new Area51DataSet();
     testData.setUpSuiteData();
   }
 
-  @AfterClass
-  public static void cleanUpClass()
+  @Override
+  public void afterClassSetup() throws Exception
   {
     if (testData != null)
     {
@@ -115,7 +114,6 @@ public class ChildrenQueryTest
     conditions.put("array", array);
 
     ChildrenQuery query = new ChildrenQuery(this.site, conditions.toString());
-    
 
     System.out.println(query.getStatement());
 
@@ -133,23 +131,22 @@ public class ChildrenQueryTest
     JSONObject bureau = new JSONObject();
     bureau.put("field", Collection.SENSOR);
     bureau.put("value", "BAD");
-    
+
     JSONArray array = new JSONArray();
     array.put(bureau);
-    
+
     JSONObject conditions = new JSONObject();
     conditions.put("array", array);
-    
+
     ChildrenQuery query = new ChildrenQuery(this.mission, conditions.toString());
-    
-    
+
     System.out.println(query.getStatement());
-    
+
     List<UasComponentIF> results = query.getResults();
-    
+
     Assert.assertEquals(0, results.size());
   }
-  
+
   @Test
   @Request
   public void testProjectCondition()
@@ -166,7 +163,6 @@ public class ChildrenQueryTest
     conditions.put("array", array);
 
     ChildrenQuery query = new ChildrenQuery(this.site, conditions.toString());
-    
 
     System.out.println(query.getStatement());
 
@@ -192,7 +188,6 @@ public class ChildrenQueryTest
     conditions.put("array", array);
 
     ChildrenQuery query = new ChildrenQuery(this.mission, conditions.toString());
-    
 
     System.out.println(query.getStatement());
 
@@ -218,7 +213,6 @@ public class ChildrenQueryTest
     conditions.put("array", array);
 
     ChildrenQuery query = new ChildrenQuery(this.mission, conditions.toString());
-    
 
     System.out.println(query.getStatement());
 
@@ -244,7 +238,6 @@ public class ChildrenQueryTest
     conditions.put("array", array);
 
     ChildrenQuery query = new ChildrenQuery(this.site, conditions.toString());
-    
 
     System.out.println(query.getStatement());
 
@@ -260,7 +253,6 @@ public class ChildrenQueryTest
   public void testNoCondition()
   {
     ChildrenQuery query = new ChildrenQuery(this.site, null);
-    
 
     System.out.println(query.getStatement());
 

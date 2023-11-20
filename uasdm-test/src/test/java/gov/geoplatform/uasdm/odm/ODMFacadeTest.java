@@ -40,7 +40,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();
@@ -63,7 +63,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();

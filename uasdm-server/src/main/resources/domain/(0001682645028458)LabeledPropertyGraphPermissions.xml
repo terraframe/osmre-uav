@@ -25,18 +25,9 @@
           </mdBusinessPermission>
           <mdBusinessPermission type="net.geoprism.graph.LabeledPropertyGraphTypeEntry">
             <operation name="ALL" />
-            <mdMethodPermission methodName="publish">
-              <operation name="EXECUTE" />
-            </mdMethodPermission>                        
           </mdBusinessPermission>
           <mdBusinessPermission type="net.geoprism.graph.LabeledPropertyGraphTypeVersion">
             <operation name="ALL" />
-            <mdMethodPermission methodName="publish">
-              <operation name="EXECUTE" />
-            </mdMethodPermission>                        
-            <mdMethodPermission methodName="remove">
-              <operation name="EXECUTE" />
-            </mdMethodPermission>                                    
           </mdBusinessPermission>    
           <mdBusinessPermission type="net.geoprism.graph.GeoObjectTypeSnapshot">
             <operation name="ALL" />
@@ -49,9 +40,6 @@
           </mdRelationshipPermission>
           <mdBusinessPermission type="net.geoprism.graph.LabeledPropertyGraphSynchronization">
             <operation name="ALL" />
-            <mdMethodPermission methodName="execute">
-              <operation name="EXECUTE" />
-            </mdMethodPermission>                                                
           </mdBusinessPermission>                                      
         </grant>
       </role>

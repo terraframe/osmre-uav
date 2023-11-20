@@ -33,7 +33,8 @@ import com.runwaysdk.query.QueryFactory;
 import gov.geoplatform.uasdm.bus.Bureau;
 import net.geoprism.GeoprismUser;
 import net.geoprism.account.AccountBusinessService;
-import net.geoprism.email.business.EmailBusinessService;
+import net.geoprism.registry.service.business.EmailBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class UserInvite extends UserInviteBase
 {
@@ -204,7 +205,9 @@ public class UserInvite extends UserInviteBase
     body = body.replace("${link}", link);
     body = body.replace("${expireTime}", String.valueOf(expireTime));
 
-    new EmailBusinessService().sendEmail(subject, body, new String[] { address });
+    EmailBusinessServiceIF service = ApplicationContextHolder.getBean(EmailBusinessServiceIF.class);
+
+    service.sendEmail(subject, body, new String[] { address });
   }
 
   private static String generateEncryptedToken(String email)

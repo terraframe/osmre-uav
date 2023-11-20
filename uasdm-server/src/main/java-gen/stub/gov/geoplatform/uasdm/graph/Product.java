@@ -76,6 +76,8 @@ import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -771,14 +773,16 @@ public class Product extends ProductBase implements ProductIF
 
   public static List<ProductIF> getProducts(ProductCriteria criteria)
   {
+    LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-    HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
+    HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
 
     SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
-    VertexObject object = version.getObject(criteria.getUid());
+    VertexObject object = service.getObject(version, criteria.getUid());
 
     /*
      * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT

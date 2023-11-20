@@ -41,11 +41,12 @@ import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class SiteQuery
 {
@@ -387,15 +388,17 @@ public class SiteQuery
       JSONObject hierarchy = cObject.getJSONObject("hierarchy");
       String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
       String uid = hierarchy.getString("uid");
+      
+      LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
 
       LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
       LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-      HierarchyTypeSnapshot hierarchyType = version.getHierarchies().get(0);
+      HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
 
       SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
       MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
-      VertexObject object = version.getObject(uid);
+      VertexObject object = service.getObject(version, uid);
 
       boolean hasConditions = buckets.size() > 0 && !buckets.get(0).className.equals(Site.CLASS);
 

@@ -55,8 +55,10 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.graph.StrategyConfiguration;
-import net.geoprism.graph.TreeStrategyConfiguration;
+import net.geoprism.registry.lpg.StrategyConfiguration;
+import net.geoprism.registry.lpg.TreeStrategyConfiguration;
+import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class Site extends SiteBase implements SiteIF
 {
@@ -118,12 +120,14 @@ public class Site extends SiteBase implements SiteIF
 
   public void assignHierarchyParents(LabeledPropertyGraphSynchronization synchronization, Map<String, Object> cache)
   {
+    LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     MdEdge synchronizationEdge = SynchronizationEdge.get(version).getGraphEdge();
 
-    MdVertex graphMdVertex = version.getRootType().getGraphMdVertex();
+    MdVertex graphMdVertex = service.getRootType(version).getGraphMdVertex();
 
-    version.getHierarchies().forEach(hierarchy -> {
+    service.getHierarchies(version).forEach(hierarchy -> {
       // MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
 
       StringBuffer sql = new StringBuffer();
@@ -203,10 +207,11 @@ public class Site extends SiteBase implements SiteIF
 
     if (config instanceof TreeStrategyConfiguration)
     {
+      LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
       String rootType = ( (TreeStrategyConfiguration) config ).getTypeCode();
 
       Queue<GeoObjectTypeSnapshot> queue = new LinkedList<>();
-      queue.add(version.getSnapshot(rootType));
+      queue.add(service.getSnapshot(version, rootType));
 
       while (!queue.isEmpty())
       {

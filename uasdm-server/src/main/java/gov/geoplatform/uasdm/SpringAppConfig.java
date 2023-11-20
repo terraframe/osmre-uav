@@ -27,28 +27,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import net.geoprism.EncodingFilter;
-import net.geoprism.email.business.EmailBusinessService;
-import net.geoprism.email.business.EmailBusinessServiceIF;
-import net.geoprism.email.controller.EmailController;
-import net.geoprism.email.service.EmailService;
-import net.geoprism.email.service.EmailServiceIF;
-import net.geoprism.forgotpassword.business.ForgotPasswordBusinessService;
-import net.geoprism.forgotpassword.business.ForgotPasswordBusinessServiceIF;
-import net.geoprism.forgotpassword.controller.ForgotPasswordController;
-import net.geoprism.forgotpassword.service.ForgotPasswordService;
-import net.geoprism.forgotpassword.service.ForgotPasswordServiceIF;
-import net.geoprism.rbac.RoleBusinessService;
-import net.geoprism.rbac.RoleBusinessServiceIF;
-import net.geoprism.rbac.RoleService;
-import net.geoprism.rbac.RoleServiceIF;
-import net.geoprism.session.LoginBruteForceGuardService;
-import net.geoprism.session.SessionController;
-import net.geoprism.session.SessionFilter;
+import net.geoprism.registry.service.SessionFilter;
 import net.geoprism.spring.JsonExceptionHandler;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "net.geoprism.spring", "net.geoprism.graph", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service", "net.geoprism.account" })
+@ComponentScan(basePackages = { "net.geoprism.registry.controller", "net.geoprism.registry.service", "net.geoprism.registry.spring", "net.geoprism.spring", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service" })
 public class SpringAppConfig extends WebMvcConfigurationSupport
 {
   // @Bean(name = "multipartResolver")
@@ -108,68 +92,9 @@ public class SpringAppConfig extends WebMvcConfigurationSupport
   }
 
   @Bean
-  SessionController sessionController()
-  {
-    return new SessionController();
-  }
-
-  @Bean
   EncodingFilter encodingFilter()
   {
     return new EncodingFilter();
   }
 
-  @Bean
-  ForgotPasswordServiceIF forgotPasswordServiceIF()
-  {
-    return new ForgotPasswordService();
-  }
-
-  @Bean
-  ForgotPasswordBusinessServiceIF forgotPasswordBusinessServiceIF()
-  {
-    return new ForgotPasswordBusinessService();
-  }
-
-  @Bean
-  ForgotPasswordController forgotPasswordController()
-  {
-    return new ForgotPasswordController();
-  }
-
-  @Bean
-  RoleServiceIF roleServiceIF()
-  {
-    return new RoleService();
-  }
-
-  @Bean
-  RoleBusinessServiceIF roleBusinessServiceIF()
-  {
-    return new RoleBusinessService();
-  }
-
-  @Bean
-  EmailServiceIF emailService()
-  {
-    return new EmailService();
-  }
-
-  @Bean
-  EmailBusinessServiceIF emailBusinessService()
-  {
-    return new EmailBusinessService();
-  }
-
-  @Bean
-  EmailController emailController()
-  {
-    return new EmailController();
-  }
-
-  @Bean
-  LoginBruteForceGuardService loginBruteForceGuard()
-  {
-    return new LoginBruteForceGuardService();
-  }
 }

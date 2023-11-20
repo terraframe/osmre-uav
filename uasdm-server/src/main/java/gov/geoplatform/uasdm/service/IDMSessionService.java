@@ -17,7 +17,8 @@ package gov.geoplatform.uasdm.service;
 
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -30,9 +31,10 @@ import com.runwaysdk.session.SessionIF;
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.bus.Bureau;
 import net.geoprism.rbac.RoleView;
-import net.geoprism.session.SessionService;
+import net.geoprism.registry.service.request.SessionService;
 
-@Component
+@Service
+@Primary
 public class IDMSessionService extends SessionService
 {
   // TODO : Don't autowire components here because this service is directly
