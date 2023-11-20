@@ -33,7 +33,6 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
@@ -68,6 +67,7 @@ public class UAV extends UAVBase implements JSONSerializable
   }
 
   @Override
+  @Transaction
   public void delete()
   {
     if (Collection.isUAVReferenced(this))
@@ -77,7 +77,7 @@ public class UAV extends UAVBase implements JSONSerializable
       throw message;
     }
 
-    CollectionReport.handleDelete(this);
+    CollectionReportFacade.handleDelete(this).doIt();
 
     super.delete();
   }

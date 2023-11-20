@@ -147,8 +147,7 @@ public class LabeledPropertyGraphTest implements InstanceTestClassListener
         }
         finally
         {
-
-          synchronization.delete();
+          this.service.delete(synchronization);
         }
       }
     });

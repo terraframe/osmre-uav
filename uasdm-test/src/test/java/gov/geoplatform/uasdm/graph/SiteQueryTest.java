@@ -55,13 +55,13 @@ public class SiteQueryTest implements InstanceTestClassListener
 
   private static LabeledPropertyGraphSynchronization           synchronization;
 
+  private static boolean                                       isSetup = false;
+
   private Site                                                 site;
 
   private Project                                              project;
 
   private Collection                                           collection;
-
-  private boolean                                              isSetup = false;
 
   @Autowired
   private LabeledPropertyGraphSynchronizationBusinessServiceIF service;
@@ -79,7 +79,7 @@ public class SiteQueryTest implements InstanceTestClassListener
     if (synchronization != null)
     {
       TestDataSet.executeRequestAsUser(TestDataSet.USER_ADMIN, () -> {
-        synchronization.delete();
+        this.service.delete(synchronization);
       });
 
       synchronization = null;
@@ -143,7 +143,7 @@ public class SiteQueryTest implements InstanceTestClassListener
             synchronization.setRemoteVersion("TEST");
             synchronization.setVersionNumber(0);
             synchronization.apply();
-            
+
             this.service.execute(synchronization);
           }
         });

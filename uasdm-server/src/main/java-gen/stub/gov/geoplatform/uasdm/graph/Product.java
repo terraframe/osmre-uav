@@ -49,7 +49,6 @@ import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
@@ -140,7 +139,7 @@ public class Product extends ProductBase implements ProductIF
       document.delete(removeFromS3);
     }
 
-    CollectionReport.handleDelete(this);
+    CollectionReportFacade.handleDelete(this).doIt();
 
     new IndexDeleteStacCommand(this).doIt();
 

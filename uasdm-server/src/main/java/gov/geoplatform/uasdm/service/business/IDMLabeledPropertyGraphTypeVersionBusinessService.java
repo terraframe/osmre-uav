@@ -57,12 +57,12 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
 
     IndexService.deleteDocuments(version);
   }
-  
+
   @Override
   public void truncate(LabeledPropertyGraphTypeVersion version)
   {
     super.truncate(version);
-    
+
     IndexService.deleteDocuments(version);
   }
 
@@ -152,5 +152,4 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
 
     return query.getCount() > 0;
   }
-
 }

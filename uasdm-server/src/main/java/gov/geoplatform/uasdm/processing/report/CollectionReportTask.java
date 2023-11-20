@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing.report;
 
@@ -58,77 +58,85 @@ public class CollectionReportTask implements Runnable
   @Request
   public void run()
   {
-    if (this.type.equals(Type.UPDATE))
+    try
     {
-      CollectionReport.update((UasComponentIF) this.component[0]);
+
+      if (this.type.equals(Type.UPDATE))
+      {
+        CollectionReport.update((UasComponentIF) this.component[0]);
+      }
+      else if (this.type.equals(Type.UAV))
+      {
+        CollectionReport.update((UAV) this.component[0]);
+      }
+      else if (this.type.equals(Type.SENSOR))
+      {
+        CollectionReport.update((Sensor) this.component[0]);
+      }
+      else if (this.type.equals(Type.PLATFORM))
+      {
+        CollectionReport.update((Platform) this.component[0]);
+      }
+      else if (this.type.equals(Type.DOCUMENT))
+      {
+        CollectionReport.update((Collection) this.component[0], (DocumentIF) this.component[1]);
+      }
+      else if (this.type.equals(Type.STATUS))
+      {
+        CollectionReport.update((String) this.component[0], (String) this.component[1]);
+      }
+      else if (this.type.equals(Type.PRODUCT))
+      {
+        CollectionReport.update((Product) this.component[0]);
+      }
+      else if (this.type.equals(Type.USER))
+      {
+        CollectionReport.update((GeoprismUser) this.component[0]);
+      }
+      else if (this.type.equals(Type.INCLUDE_SIZE))
+      {
+        CollectionReport.updateIncludeSize((CollectionIF) this.component[0]);
+      }
+      else if (this.type.equals(Type.SIZE))
+      {
+        CollectionReport.updateSize((CollectionIF) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_COLLECTION))
+      {
+        CollectionReport.handleDelete((Collection) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_UAV))
+      {
+        CollectionReport.handleDelete((UAV) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_PRODUCT))
+      {
+        CollectionReport.handleDelete((Product) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_USER))
+      {
+        CollectionReport.handleDelete((GeoprismUser) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_SENSOR))
+      {
+        CollectionReport.handleDelete((Sensor) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_PLATFORM))
+      {
+        CollectionReport.handleDelete((Platform) this.component[0]);
+      }
+      else if (this.type.equals(Type.DELETE_PLATFORM))
+      {
+        CollectionReport.handleDelete((Platform) this.component[0]);
+      }
+      else if (this.type.equals(Type.DOWNLOAD_COUNT))
+      {
+        CollectionReport.updateDownloadCount((CollectionIF) this.component[0]);
+      }
     }
-    else if (this.type.equals(Type.UAV))
+    catch (Exception e)
     {
-      CollectionReport.update((UAV) this.component[0]);
-    }
-    else if (this.type.equals(Type.SENSOR))
-    {
-      CollectionReport.update((Sensor) this.component[0]);
-    }
-    else if (this.type.equals(Type.PLATFORM))
-    {
-      CollectionReport.update((Platform) this.component[0]);
-    }
-    else if (this.type.equals(Type.DOCUMENT))
-    {
-      CollectionReport.update((Collection) this.component[0], (DocumentIF) this.component[1]);
-    }
-    else if (this.type.equals(Type.STATUS))
-    {
-      CollectionReport.update((String) this.component[0], (String) this.component[1]);
-    }
-    else if (this.type.equals(Type.PRODUCT))
-    {
-      CollectionReport.update((Product) this.component[0]);
-    }
-    else if (this.type.equals(Type.USER))
-    {
-      CollectionReport.update((GeoprismUser) this.component[0]);
-    }
-    else if (this.type.equals(Type.INCLUDE_SIZE))
-    {
-      CollectionReport.updateIncludeSize((CollectionIF) this.component[0]);
-    }
-    else if (this.type.equals(Type.SIZE))
-    {
-      CollectionReport.updateSize((CollectionIF) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_COLLECTION))
-    {
-      CollectionReport.handleDelete((Collection) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_UAV))
-    {
-      CollectionReport.handleDelete((UAV) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_PRODUCT))
-    {
-      CollectionReport.handleDelete((Product) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_USER))
-    {
-      CollectionReport.handleDelete((GeoprismUser) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_SENSOR))
-    {
-      CollectionReport.handleDelete((Sensor) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_PLATFORM))
-    {
-      CollectionReport.handleDelete((Platform) this.component[0]);
-    }
-    else if (this.type.equals(Type.DELETE_PLATFORM))
-    {
-      CollectionReport.handleDelete((Platform) this.component[0]);
-    }
-    else if (this.type.equals(Type.DOWNLOAD_COUNT))
-    {
-      CollectionReport.updateDownloadCount((CollectionIF) this.component[0]);
+      // swallow the exception
     }
   }
 }

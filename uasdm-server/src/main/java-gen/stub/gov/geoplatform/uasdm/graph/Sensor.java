@@ -34,12 +34,13 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask.Type;
 
 public class Sensor extends SensorBase implements JSONSerializable
 {
@@ -94,8 +95,8 @@ public class Sensor extends SensorBase implements JSONSerializable
   @Override
   public void delete()
   {
-    CollectionReport.handleDelete(this);
-
+    CollectionReportFacade.handleDelete(this).doIt();
+    
     super.delete();
   }
 

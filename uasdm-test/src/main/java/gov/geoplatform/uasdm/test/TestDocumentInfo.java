@@ -116,7 +116,7 @@ public class TestDocumentInfo
   {
     UasComponent collection = this.component.getServerObject();
 
-    Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null, null);
+    Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null, null, 0L);
 
     return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, metadata);
   }
