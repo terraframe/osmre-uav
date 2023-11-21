@@ -28,6 +28,18 @@ export NODE_OPTIONS="--max_old_space_size=1500"
 export DOCKER_CLIENT_TIMEOUT=120
 export COMPOSE_HTTP_TIMEOUT=120
 
+:
+: ----------------------------------
+:  BUILD
+: ----------------------------------
+:
+  cd $WORKSPACE/uasdm
+  mvn clean install -B
+  
+  # Build a Docker image
+  cd $WORKSPACE/uasdm/src/build/docker/uasdm
+  ./build.sh
+
 # Run Ansible deploy
 cd $WORKSPACE/geoprism-platform/ansible/idm-user-migrate
 
