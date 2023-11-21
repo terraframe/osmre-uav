@@ -43,4 +43,4 @@ export COMPOSE_HTTP_TIMEOUT=120
 # Run Ansible deploy
 cd $WORKSPACE/geoprism-platform/ansible/idm-user-migrate
 
-ansible-playbook -v -i ./inventory/$environment.ini ./migrate.yml --extra-vars ""
+ansible-playbook -v -i ./inventory/$environment.ini ./migrate.yml --extra-vars "docker_image_path=../../uasdm/src/build/docker/uasdm/target/uasdm.dimg.gz"
