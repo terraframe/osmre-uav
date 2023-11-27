@@ -129,7 +129,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
     
     ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-    query.WHERE(query.getRemoteId().EQ(userid));
+    query.WHERE(query.getRemoteId().EQ(username));
     OIterator<? extends ExternalProfile> it = query.getIterator();
 
     try
@@ -179,10 +179,10 @@ public class IDMSessionService extends IDMSessionServiceBase
       }
       else
       {
-        logger.debug("Creating new KeyCloak user with remote id[" + userid + "].");
+        logger.debug("Creating new KeyCloak user with remote id[" + username + "].");
         
         ExternalProfile profile = new ExternalProfile();
-        profile.setRemoteId(userid);
+        profile.setRemoteId(username);
         profile.setDisplayName(username);
         profile.setLastName(lastName);
         profile.setFirstName(firstName);
