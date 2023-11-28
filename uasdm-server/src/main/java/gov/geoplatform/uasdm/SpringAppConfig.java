@@ -32,7 +32,7 @@ import net.geoprism.spring.JsonExceptionHandler;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "net.geoprism.registry.controller", "net.geoprism.registry.service", "net.geoprism.registry.spring", "net.geoprism.spring", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service" })
+@ComponentScan(basePackages = { "net.geoprism.registry.controller", "net.geoprism.registry.service", "net.geoprism.registry.service.business", "net.geoprism.rbac", "net.geoprism.registry.spring", "net.geoprism.spring", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service", "gov.geoplatform.uasdm.service.business" })
 public class SpringAppConfig extends WebMvcConfigurationSupport
 {
   // @Bean(name = "multipartResolver")

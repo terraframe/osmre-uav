@@ -15,126 +15,181 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import org.json.JSONException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
 
 import gov.geoplatform.uasdm.service.LabeledPropertyGraphSynchronizationService;
+import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.spring.JsonObjectDeserializer;
 
-@Controller(url = "labeled-property-graph-synchronization")
-public class LabeledPropertyGraphSynchronizationController
+@RestController
+@Validated
+public class LabeledPropertyGraphSynchronizationController extends RunwaySpringController
 {
+  public static final String API_PATH = "labeled-property-graph-synchronization";
+  
+  public static class SyncBody
+  {
+    @NotNull
+    @JsonDeserialize(using = JsonObjectDeserializer.class)
+    JsonObject sync;
+    
+    public JsonObject getSync()
+    {
+      return sync;
+    }
+    
+    public void setSync(JsonObject sync)
+    {
+      this.sync = sync;
+    }
+  }
+  
+  public static class UpdateRemoteVersionBody
+  {
+    @NotNull String oid;
+    @NotNull String versionId;
+    @NotNull Integer versionNumber;
+    public String getOid()
+    {
+      return oid;
+    }
+    public void setOid(String oid)
+    {
+      this.oid = oid;
+    }
+    public String getVersionId()
+    {
+      return versionId;
+    }
+    public void setVersionId(String versionId)
+    {
+      this.versionId = versionId;
+    }
+    public Integer getVersionNumber()
+    {
+      return versionNumber;
+    }
+    public void setVersionNumber(Integer versionNumber)
+    {
+      this.versionNumber = versionNumber;
+    }
+  }
+  
+  @Autowired
   private LabeledPropertyGraphSynchronizationService service;
 
   public LabeledPropertyGraphSynchronizationController()
   {
-    this.service = new LabeledPropertyGraphSynchronizationService();
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping(API_PATH + "/page")
+  public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
   {
-    JsonObject page = this.service.page(request.getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
+    JsonObject page = this.service.page(getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
 
-    return new RestBodyResponse(page);
+    return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-all")
-  public ResponseIF getAll(ClientRequestIF request) throws JSONException
+  @GetMapping(API_PATH + "/get-all")
+  public ResponseEntity<String> getAll() throws JSONException
   {
-    JsonArray list = this.service.getAll(request.getSessionId());
+    JsonArray list = this.service.getAll(getSessionId());
 
-    return new RestBodyResponse(list);
+    return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "sync") String sync) throws JSONException
+  
+  @GetMapping(API_PATH + "/get")
+  public ResponseEntity<String> get(@NotEmpty @RequestParam String oid) throws JSONException
   {
-    JsonObject object = JsonParser.parseString(sync).getAsJsonObject();
+    JsonObject response = this.service.get(getSessionId(), oid);
 
-    JsonObject response = this.service.apply(request.getSessionId(), object);
-
-    return new RestBodyResponse(response);
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "remove")
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @GetMapping(API_PATH + "/roots")
+  public ResponseEntity<String> roots(@NotEmpty @RequestParam String oid, @NotEmpty @RequestParam Boolean includeRoot) throws JSONException
   {
-    this.service.remove(request.getSessionId(), oid);
+    JsonObject response = this.service.roots(getSessionId(), oid, includeRoot);
 
-    return new RestResponse();
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "execute")
-  public ResponseIF execute(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @GetMapping(API_PATH + "/select")
+  public ResponseEntity<String> select(
+      @NotEmpty @RequestParam String oid,
+      @NotEmpty @RequestParam String parentType,
+      @NotEmpty @RequestParam String parentId,
+      @NotEmpty @RequestParam Boolean includeMetadata) throws JSONException
   {
-    this.service.execute(request.getSessionId(), oid);
+    JsonObject response = this.service.select(getSessionId(), oid, parentType, parentId, includeMetadata);
 
-    return new RestResponse();
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "update-remote-version")
-  public ResponseIF updateRemoteVersion(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "versionId", required = true) String versionId, @RequestParamter(name = "versionNumber", required = true) Integer versionNumber) throws JSONException
+  
+  @GetMapping(API_PATH + "/get-object")
+  public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
   {
-    JsonObject response = this.service.updateRemoteVersion(request.getSessionId(), oid, versionId, versionNumber);
-
-    return new RestBodyResponse(response);
+    JsonObject response = this.service.getObject(getSessionId(), synchronizationId, oid);
+    
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "newInstance")
-  public ResponseIF newInstance(ClientRequestIF request) throws JSONException
+  @PostMapping(API_PATH + "/apply")
+  public ResponseEntity<String> apply(ClientRequestIF request, @Valid @RequestBody SyncBody body) throws JSONException
+  {
+    JsonObject response = this.service.apply(request.getSessionId(), body.sync);
+
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+  }
+
+  @PostMapping(API_PATH + "/remove")
+  public ResponseEntity<Void> remove(ClientRequestIF request, @Valid @RequestBody OidBody body) throws JSONException
+  {
+    this.service.remove(request.getSessionId(), body.getOid());
+
+    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+  }
+
+  @PostMapping(API_PATH + "/execute")
+  public ResponseEntity<Void> execute(ClientRequestIF request, @Valid @RequestBody OidBody body) throws JSONException
+  {
+    this.service.execute(request.getSessionId(), body.getOid());
+
+    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+  }
+
+  @PostMapping(API_PATH + "/update-remote-version")
+  public ResponseEntity<String> updateRemoteVersion(ClientRequestIF request, @Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
+  {
+    JsonObject response = this.service.updateRemoteVersion(request.getSessionId(), body.oid, body.versionId, body.versionNumber);
+
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+  }
+
+  @PostMapping(API_PATH + "/newInstance")
+  public ResponseEntity<String> newInstance(ClientRequestIF request) throws JSONException
   {
     JsonObject response = this.service.newInstance(request.getSessionId());
 
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get")
-  public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JsonObject response = this.service.get(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "roots")
-  public ResponseIF roots(ClientRequestIF request, @RequestParamter(name = "oid", required = true) String oid, @RequestParamter(name = "includeRoot", required = true) Boolean includeRoot) throws JSONException
-  {
-    JsonObject response = this.service.roots(request.getSessionId(), oid, includeRoot);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "select")
-  public ResponseIF select(ClientRequestIF request, 
-      @RequestParamter(name = "oid", required = true) String oid, 
-      @RequestParamter(name = "parentType", required = true) String parentType, 
-      @RequestParamter(name = "parentId", required = true) String parentId,
-      @RequestParamter(name = "includeMetadata", required = true) Boolean includeMetadata) throws JSONException
-  {
-    JsonObject response = this.service.select(request.getSessionId(), oid, parentType, parentId, includeMetadata);
-
-    return new RestBodyResponse(response);
-  }
-  
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-object")
-  public ResponseIF getObject(ClientRequestIF request, 
-      @RequestParamter(name = "synchronizationId", required = true) String synchronizationId, 
-      @RequestParamter(name = "oid", required = true) String oid) throws JSONException
-  {
-    JsonObject response = this.service.getObject(request.getSessionId(), synchronizationId, oid);
-    
-    return new RestBodyResponse(response);
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 }
