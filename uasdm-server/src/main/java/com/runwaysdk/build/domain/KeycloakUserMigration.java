@@ -112,11 +112,9 @@ public class KeycloakUserMigration
     statements.add(Database.buildSQLDeleteStatement("geoprism_user", newId));
     statements.add(Database.buildSQLDeleteStatement("users", newId));
     
-    Database.executeBatch(statements);
-  }
-  
-  private void orientdbMigrateExistingUsers(List<ExternalProfile> newUsers)
-  {
+    // Step 4 : There is type information encoded in the Actor table. We need to change the explicit type information
+    statements.add("UPDATE actor SET type='net.geoprism.account.ExternalProfile' WHERE oid='" + newId + "'");
     
+    Database.executeBatch(statements);
   }
 }
