@@ -20,25 +20,29 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.InstanceTestClassListener;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.model.Page;
-import org.junit.Assert;
 
-public class SensorTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class SensorTest implements InstanceTestClassListener
 {
   private static SensorType type;
 
   private static Sensor sensor;
 
-  @BeforeClass
   @Request
-  public static void classSetup()
+  public void beforeClassSetup() throws Exception
   {
     WaveLength waveLength = (WaveLength) WaveLength.getPage(new JSONObject()).getResults().get(0);
 
@@ -60,9 +64,8 @@ public class SensorTest
     sensor.addSensorHasWaveLengthChild(waveLength).apply();
   }
 
-  @AfterClass
   @Request
-  public static void classTeardown()
+  public void afterClassSetup() throws Exception
   {
     if (sensor != null)
     {

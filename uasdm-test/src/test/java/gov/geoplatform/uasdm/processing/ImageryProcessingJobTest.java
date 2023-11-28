@@ -25,13 +25,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.system.scheduler.AllJobStatus;
 import com.runwaysdk.system.scheduler.JobHistory;
 
+import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
@@ -47,28 +52,11 @@ import gov.geoplatform.uasdm.util.FileTestUtils;
 import gov.geoplatform.uasdm.util.SchedulerTestUtils;
 import net.geoprism.GeoprismUser;
 
-public class ImageryProcessingJobTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class ImageryProcessingJobTest extends Area51DataTest
 {
-  private static Area51DataSet testData;
-
   private static Collection collection;
-
-  @BeforeClass
-  public static void setUpClass()
-  {
-    testData = new Area51DataSet();
-    testData.setUpSuiteData();
-  }
-
-  @AfterClass
-  public static void cleanUpClass()
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
-
-  }
 
   @Before
   @Request

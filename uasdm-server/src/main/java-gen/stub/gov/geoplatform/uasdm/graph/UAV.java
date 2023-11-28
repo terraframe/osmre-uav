@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -39,6 +39,7 @@ import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
+import net.geoprism.registry.model.ServerOrganization;
 
 public class UAV extends UAVBase implements JSONSerializable
 {
@@ -98,6 +99,11 @@ public class UAV extends UAVBase implements JSONSerializable
     return Platform.get(this.getObjectValue(PLATFORM));
   }
 
+  public ServerOrganization getServerOrganization()
+  {
+    return ServerOrganization.getByGraphId((String) this.getObjectValue(ORGANIZATION));
+  }
+
   public List<CollectionIF> getCollections()
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
@@ -123,6 +129,13 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(UAV.DESCRIPTION, this.getDescription());
     object.put(UAV.BUREAU, (String) this.getObjectValue(BUREAU));
 
+    ServerOrganization organization = getServerOrganization();
+
+    if (organization != null)
+    {
+      object.put(UAV.ORGANIZATION, organization.getCode());
+    }
+
     String platform = this.getObjectValue(UAV.PLATFORM);
 
     if (platform != null)
@@ -144,6 +157,7 @@ public class UAV extends UAVBase implements JSONSerializable
     PlatformType platformType = platform.getPlatformType();
     PlatformManufacturer manufacturer = platform.getManufacturer();
     Bureau bureau = this.getBureau();
+    ServerOrganization organization = getServerOrganization();
 
     JSONObject object = new JSONObject();
     object.put(UAV.OID, this.getOid());
@@ -153,6 +167,11 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(Platform.NAME, platform.getName());
     object.put(Platform.PLATFORMTYPE, platformType.getName());
     object.put(Platform.MANUFACTURER, manufacturer.getName());
+
+    if (organization != null)
+    {
+      object.put(UAV.ORGANIZATION, organization.getDisplayLabel().getValue());
+    }
 
     return object;
   }
@@ -181,6 +200,7 @@ public class UAV extends UAVBase implements JSONSerializable
     uav.setFaaNumber(json.getString(UAV.FAANUMBER));
     uav.setDescription(json.has(UAV.DESCRIPTION) ? json.getString(UAV.DESCRIPTION) : null);
     uav.setBureau(Bureau.get(json.getString(UAV.BUREAU)));
+    uav.setOrganization(ServerOrganization.getByCode(json.getString(UAV.ORGANIZATION)).getGraphOrganization());
 
     if (json.has(UAV.PLATFORM))
     {
@@ -229,6 +249,14 @@ public class UAV extends UAVBase implements JSONSerializable
     obj.put(UAV.PLATFORM, platform.getName());
     obj.put(Platform.PLATFORMTYPE, platformType.getName());
     obj.put(UAV.BUREAU, bureau.getDisplayLabel());
+
+    ServerOrganization organization = this.getServerOrganization();
+
+    if (organization != null)
+    {
+      obj.put(UAV.ORGANIZATION, organization.getDisplayLabel().getValue());
+    }
+
     obj.put("sensors", array);
 
     SessionIF session = Session.getCurrentSession();

@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1302217304)
+@com.runwaysdk.business.ClassSignature(hash = -490628951)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,24 +11,26 @@ package gov.geoplatform.uasdm;
 public abstract class UserInviteBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
-  public static java.lang.String BUREAU = "bureau";
-  public static java.lang.String CREATEDATE = "createDate";
-  public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String EMAIL = "email";
-  public static java.lang.String ENTITYDOMAIN = "entityDomain";
-  public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
-  public static java.lang.String LOCKEDBY = "lockedBy";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String ROLEIDS = "roleIds";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String STARTTIME = "startTime";
-  public static java.lang.String TOKEN = "token";
-  public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = -1302217304;
+  public final static java.lang.String BUREAU = "bureau";
+  public final static java.lang.String CREATEDATE = "createDate";
+  public final static java.lang.String CREATEDBY = "createdBy";
+  public final static java.lang.String EMAIL = "email";
+  public final static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public final static java.lang.String KEYNAME = "keyName";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String ORGANIZATION = "organization";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String ROLEIDS = "roleIds";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String SITEMASTER = "siteMaster";
+  public final static java.lang.String STARTTIME = "startTime";
+  public final static java.lang.String TOKEN = "token";
+  public final static java.lang.String TYPE = "type";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -490628951;
   
   public UserInviteBase()
   {
@@ -340,6 +327,58 @@ public abstract class UserInviteBase extends com.runwaysdk.business.Business
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.UserInvite.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
+  }
+  
+  public net.geoprism.registry.Organization getOrganization()
+  {
+    if (getValue(ORGANIZATION).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return net.geoprism.registry.Organization.get(getValue(ORGANIZATION));
+    }
+  }
+  
+  public String getOrganizationOid()
+  {
+    return getValue(ORGANIZATION);
+  }
+  
+  public void validateOrganization()
+  {
+    this.validateAttribute(ORGANIZATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getOrganizationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.UserInvite.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(ORGANIZATION);
+  }
+  
+  public void setOrganization(net.geoprism.registry.Organization value)
+  {
+    if(value == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, value.getOid());
+    }
+  }
+  
+  public void setOrganizationId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, oid);
+    }
   }
   
   public com.runwaysdk.system.Actor getOwner()

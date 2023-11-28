@@ -1,0 +1,32 @@
+<!--
+
+
+
+-->
+<div>
+  <uasdm-header></uasdm-header>
+
+  <div id="app-container" class="container">
+
+    <div *ngIf="sync != null" class="modal-body">
+      <div class="modal-title-container">
+        <h3>GeoPrism Registry Synchronization Profile</h3>
+      </div>
+
+      <form #ngForm="ngForm">
+        <div class="form-group">
+          <label>URL</label>
+          <input [(ngModel)]="sync.url" name="url" type="url" class="form-control" [disabled]="!newInstance" required />
+        </div>
+        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">
+          <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+            [disabled]="!ngForm.valid || !isValid()">Apply</button>
+        </div>
+        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;">
+          <button type="submit" class="btn btn-primary" (click)="handleOnSynchronize()">Synchronize from server</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

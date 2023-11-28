@@ -26,12 +26,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.Pair;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.Area51DataTest;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -48,28 +53,11 @@ import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 import net.geoprism.GeoprismUser;
 
-public class CollectionUploadEventTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class CollectionUploadEventTest extends Area51DataTest
 {
-  private static Area51DataSet testData;
-
   private Collection           collection;
-
-  @BeforeClass
-  public static void setUpClass()
-  {
-    testData = new Area51DataSet();
-    testData.setUpSuiteData();
-  }
-
-  @AfterClass
-  public static void cleanUpClass()
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
-
-  }
 
   @Before
   @Request

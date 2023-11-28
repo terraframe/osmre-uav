@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.runwaysdk.constants.ClientRequestIF;
 
 import gov.geoplatform.uasdm.service.LabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
@@ -154,41 +153,41 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @PostMapping(API_PATH + "/apply")
-  public ResponseEntity<String> apply(ClientRequestIF request, @Valid @RequestBody SyncBody body) throws JSONException
+  public ResponseEntity<String> apply(@Valid @RequestBody SyncBody body) throws JSONException
   {
-    JsonObject response = this.service.apply(request.getSessionId(), body.sync);
+    JsonObject response = this.service.apply(this.getSessionId(), body.sync);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
   @PostMapping(API_PATH + "/remove")
-  public ResponseEntity<Void> remove(ClientRequestIF request, @Valid @RequestBody OidBody body) throws JSONException
+  public ResponseEntity<Void> remove(@Valid @RequestBody OidBody body) throws JSONException
   {
-    this.service.remove(request.getSessionId(), body.getOid());
+    this.service.remove(this.getSessionId(), body.getOid());
 
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
   @PostMapping(API_PATH + "/execute")
-  public ResponseEntity<Void> execute(ClientRequestIF request, @Valid @RequestBody OidBody body) throws JSONException
+  public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body) throws JSONException
   {
-    this.service.execute(request.getSessionId(), body.getOid());
+    this.service.execute(this.getSessionId(), body.getOid());
 
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
   @PostMapping(API_PATH + "/update-remote-version")
-  public ResponseEntity<String> updateRemoteVersion(ClientRequestIF request, @Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
+  public ResponseEntity<String> updateRemoteVersion(@Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
   {
-    JsonObject response = this.service.updateRemoteVersion(request.getSessionId(), body.oid, body.versionId, body.versionNumber);
+    JsonObject response = this.service.updateRemoteVersion(this.getSessionId(), body.oid, body.versionId, body.versionNumber);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
   @PostMapping(API_PATH + "/newInstance")
-  public ResponseEntity<String> newInstance(ClientRequestIF request) throws JSONException
+  public ResponseEntity<String> newInstance() throws JSONException
   {
-    JsonObject response = this.service.newInstance(request.getSessionId());
+    JsonObject response = this.service.newInstance(this.getSessionId());
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }

@@ -35,11 +35,11 @@ import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.Bureau;
-import gov.geoplatform.uasdm.bus.BureauQuery;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
 import net.geoprism.account.AccountBusinessService;
+import net.geoprism.registry.OrganizationQuery;
 
 public class UserInfo extends UserInfoBase
 {
@@ -57,15 +57,17 @@ public class UserInfo extends UserInfoBase
 
     GeoprismUserQuery uQuery = new GeoprismUserQuery(vQuery);
     UserInfoQuery iQuery = new UserInfoQuery(vQuery);
-    BureauQuery bQuery = new BureauQuery(vQuery);
+    OrganizationQuery bQuery = new OrganizationQuery(vQuery);
+    OrganizationHasUserQuery ohuQuery = new OrganizationHasUserQuery(vQuery);
 
     vQuery.SELECT(uQuery.getOid(), uQuery.getUsername(), uQuery.getFirstName(), uQuery.getLastName(), uQuery.getPhoneNumber(), uQuery.getEmail());
-    vQuery.SELECT(bQuery.getName(UserInfo.BUREAU));
+    vQuery.SELECT(bQuery.getDisplayLabel(UserInfo.BUREAU).localize());
 
-    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
     // vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU),
     // bQuery.getOid()));
-    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
+    vQuery.WHERE(new BasicLeftJoinEq(bQuery.getOid(), ohuQuery.parentOid()));
+    vQuery.WHERE(new BasicLeftJoinEq(ohuQuery.childOid(), iQuery.getOid()));
+    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getGeoprismUser(), uQuery.getOid()));
 
     if (criteria.has("filters"))
     {
@@ -80,7 +82,7 @@ public class UserInfo extends UserInfoBase
 
         if (attributeName.equals(UserInfo.BUREAU))
         {
-          attribute = bQuery.getName(UserInfo.BUREAU);
+          attribute = bQuery.getDisplayLabel(UserInfo.BUREAU).localize();
         }
         else
         {
@@ -176,11 +178,11 @@ public class UserInfo extends UserInfoBase
     return page;
   }
 
-  private static void addSort(ValueQuery vQuery, GeoprismUserQuery uQuery, BureauQuery bQuery, String field, SortOrder order)
+  private static void addSort(ValueQuery vQuery, GeoprismUserQuery uQuery, OrganizationQuery bQuery, String field, SortOrder order)
   {
     if (field.equals(UserInfo.BUREAU))
     {
-      vQuery.ORDER_BY(bQuery.getName(UserInfo.BUREAU), order);
+      vQuery.ORDER_BY(bQuery.getDisplayLabel().localize(UserInfo.BUREAU), order);
     }
     else
     {

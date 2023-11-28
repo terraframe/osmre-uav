@@ -23,17 +23,23 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.StacItem.Asset;
 import gov.geoplatform.uasdm.model.StacItem.Properties;
 import gov.geoplatform.uasdm.model.StacLink;
 
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
 public class SiteItemTest
 {
   // private static Area51DataSet testData;

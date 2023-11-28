@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1598800807)
+@com.runwaysdk.business.ClassSignature(hash = 1296069376)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,24 +11,26 @@ package gov.geoplatform.uasdm;
 public abstract class SessionEventLogBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.SessionEventLog";
-  public static java.lang.String BUREAU = "bureau";
-  public static java.lang.String CREATEDATE = "createDate";
-  public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String ENTITYDOMAIN = "entityDomain";
-  public static java.lang.String EVENTDATE = "eventDate";
-  public static java.lang.String EVENTTYPE = "eventType";
-  public static java.lang.String GEOPRISMUSER = "geoprismUser";
-  public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
-  public static java.lang.String LOCKEDBY = "lockedBy";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String TYPE = "type";
-  public static java.lang.String USERNAME = "username";
-  private static final long serialVersionUID = -1598800807;
+  public final static java.lang.String BUREAU = "bureau";
+  public final static java.lang.String CREATEDATE = "createDate";
+  public final static java.lang.String CREATEDBY = "createdBy";
+  public final static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public final static java.lang.String EVENTDATE = "eventDate";
+  public final static java.lang.String EVENTTYPE = "eventType";
+  public final static java.lang.String GEOPRISMUSER = "geoprismUser";
+  public final static java.lang.String KEYNAME = "keyName";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String ORGANIZATION = "organization";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String SITEMASTER = "siteMaster";
+  public final static java.lang.String TYPE = "type";
+  public final static java.lang.String USERNAME = "username";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1296069376;
   
   public SessionEventLogBase()
   {
@@ -420,6 +407,58 @@ public abstract class SessionEventLogBase extends com.runwaysdk.business.Busines
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.SessionEventLog.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
+  }
+  
+  public net.geoprism.registry.Organization getOrganization()
+  {
+    if (getValue(ORGANIZATION).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return net.geoprism.registry.Organization.get(getValue(ORGANIZATION));
+    }
+  }
+  
+  public String getOrganizationOid()
+  {
+    return getValue(ORGANIZATION);
+  }
+  
+  public void validateOrganization()
+  {
+    this.validateAttribute(ORGANIZATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getOrganizationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.SessionEventLog.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(ORGANIZATION);
+  }
+  
+  public void setOrganization(net.geoprism.registry.Organization value)
+  {
+    if(value == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, value.getOid());
+    }
+  }
+  
+  public void setOrganizationId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, oid);
+    }
   }
   
   public com.runwaysdk.system.Actor getOwner()
