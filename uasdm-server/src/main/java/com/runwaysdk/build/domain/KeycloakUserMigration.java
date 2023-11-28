@@ -76,7 +76,14 @@ public class KeycloakUserMigration
       }
     }
     
-    System.out.println("Successfully migrated " + migrated.size() + " users. [" + StringUtils.join(migrated, ", ") + "]");
+    String msg = "Successfully migrated " + migrated.size() + " users.";
+    
+    if (migrated.size() < 30)
+    {
+      msg = msg + " [" + StringUtils.join(migrated, ", ") + "]";
+    }
+    
+    System.out.println(msg);
   }
   
   @Transaction
@@ -92,7 +99,7 @@ public class KeycloakUserMigration
     
     if (!MigrationUtil.updateEntityDAOId(oldUser.businessDAO(), newId))
     {
-      throw new ProgrammingErrorException("Could not migrate MdEmbeddedGraphClass oid.");
+      throw new ProgrammingErrorException("Could not migrate user [" + username + "] with email [" + email + "].");
     }
     
     // Step 2 : Create an entry in the external profile table with this new oid
