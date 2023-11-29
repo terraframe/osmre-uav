@@ -16,8 +16,11 @@
 package gov.geoplatform.uasdm.model;
 
 import gov.geoplatform.uasdm.bus.Bureau;
+import net.geoprism.registry.model.ServerOrganization;
 
 public interface SiteIF extends UasComponentIF
 {
   public Bureau getBureau();
+  
+  public ServerOrganization getServerOrganization();
 }

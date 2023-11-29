@@ -36,7 +36,7 @@
                           <tr *ngFor="let event of res.resultSet | paginate: { itemsPerPage: res.pageSize, currentPage: res.pageNumber, totalItems: res.count }"
                               class="fade-ngRepeat-item">
                               <td class="label-column username-col"> {{ event.username }} </td>
-                              <td class="label-column firstname-col"> {{ event.bureau }} </td>
+                              <td class="label-column firstname-col"> {{ event.organization }} </td>
                               <td class="label-column lastname-col"> {{ event.eventDate | idmdate }} </td>
                               <td class="label-column phone-col"> {{ event.eventType }} </td>
                           </tr>

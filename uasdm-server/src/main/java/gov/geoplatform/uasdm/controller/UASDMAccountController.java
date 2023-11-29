@@ -52,6 +52,7 @@ import net.geoprism.account.GeoprismUserView;
 import net.geoprism.rbac.RoleServiceIF;
 import net.geoprism.rbac.RoleView;
 import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.registry.service.request.OrganizationServiceIF;
 import net.geoprism.spring.JsonArrayDeserializer;
 import net.geoprism.spring.JsonObjectDeserializer;
 
@@ -65,6 +66,9 @@ public class UASDMAccountController extends RunwaySpringController
   
   @Autowired
   protected RoleServiceIF roleService;
+  
+  @Autowired
+  protected OrganizationServiceIF orgService;
   
   public static class InviteBody
   {
@@ -202,7 +206,7 @@ public class UASDMAccountController extends RunwaySpringController
     JSONObject response = new JSONObject();
     response.put("user", user);
     response.put("groups", groups);
-    response.put("bureaus", this.service.getBureaus(this.getClientRequest().getSessionId()));
+    response.put("bureaus", this.orgService.getOrganizations(this.getClientRequest().getSessionId(), null));
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
   }

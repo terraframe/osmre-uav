@@ -1,25 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1617864001)
+@com.runwaysdk.business.ClassSignature(hash = 946101766)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  private static final long serialVersionUID = -1617864001;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 946101766;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -68,6 +54,7 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String MISSIONNAME = "missionName";
   public static java.lang.String ODMPROCESSING = "odmProcessing";
   public static java.lang.String OID = "oid";
+  public static java.lang.String ORGANIZATION = "organization";
   public static java.lang.String ORTHOMOSAIC = "orthomosaic";
   public static java.lang.String OWNER = "owner";
   public static java.lang.String PLATFORM = "platform";
@@ -952,6 +939,21 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getOdmProcessingMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(ODMPROCESSING).getAttributeMdDTO();
+  }
+  
+  public boolean isOrganizationWritable()
+  {
+    return isWritable(ORGANIZATION);
+  }
+  
+  public boolean isOrganizationReadable()
+  {
+    return isReadable(ORGANIZATION);
+  }
+  
+  public boolean isOrganizationModified()
+  {
+    return isModified(ORGANIZATION);
   }
   
   public Boolean getOrthomosaic()

@@ -1,25 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 668863528)
+@com.runwaysdk.business.ClassSignature(hash = -2104034775)
 public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInvite";
-  private static final long serialVersionUID = 668863528;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -2104034775;
   
   protected UserInviteDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -52,6 +38,7 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
   public static java.lang.String OID = "oid";
+  public static java.lang.String ORGANIZATION = "organization";
   public static java.lang.String OWNER = "owner";
   public static java.lang.String ROLEIDS = "roleIds";
   public static java.lang.String SEQ = "seq";
@@ -390,6 +377,21 @@ public abstract class UserInviteDTOBase extends com.runwaysdk.business.BusinessD
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getLockedByMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
+  }
+  
+  public boolean isOrganizationWritable()
+  {
+    return isWritable(ORGANIZATION);
+  }
+  
+  public boolean isOrganizationReadable()
+  {
+    return isReadable(ORGANIZATION);
+  }
+  
+  public boolean isOrganizationModified()
+  {
+    return isModified(ORGANIZATION);
   }
   
   public com.runwaysdk.system.ActorDTO getOwner()

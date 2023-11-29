@@ -54,6 +54,7 @@ import { AdminGuardService, AuthGuard } from './service/guard.service';
 import { HttpBackendClient } from './service/http-backend-client.service';
 
 import { LPGSyncService } from './service/lpg-sync.service';
+import { OrganizationSyncService } from './service/organization-sync.service';
 
 
 @NgModule({
@@ -141,7 +142,8 @@ export class SharedModule {
 				AdminGuardService,
 				AuthGuard,
 				HttpBackendClient,
-				LPGSyncService
+				LPGSyncService,
+				OrganizationSyncService
 			]
 		};
 	}

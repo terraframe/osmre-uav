@@ -29,12 +29,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import org.locationtech.jts.geom.Point;
+import org.springframework.test.context.ContextConfiguration;
 
+import gov.geoplatform.uasdm.Area51DataTest;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -42,10 +47,10 @@ import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
-public class UasComponentTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class UasComponentTest extends Area51DataTest
 {
-  private static Area51DataSet testData;
-
   private Product              product;
 
   private Site                 site;
@@ -61,22 +66,6 @@ public class UasComponentTest
   private Document             source;
 
   private Document             image;
-
-  @BeforeClass
-  public static void setUpClass()
-  {
-    testData = new Area51DataSet();
-    testData.setUpSuiteData();
-  }
-
-  @AfterClass
-  public static void cleanUpClass()
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
-  }
 
   @Before
   @Request

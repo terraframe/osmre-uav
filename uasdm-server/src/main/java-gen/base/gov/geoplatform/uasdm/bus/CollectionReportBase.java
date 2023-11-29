@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -740452033)
+@com.runwaysdk.business.ClassSignature(hash = 423350150)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,56 +11,58 @@ package gov.geoplatform.uasdm.bus;
 public abstract class CollectionReportBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
-  public static java.lang.String ACTOR = "actor";
-  public static java.lang.String ALLSTORAGESIZE = "allStorageSize";
-  public static java.lang.String BUREAU = "bureau";
-  public static java.lang.String BUREAUNAME = "bureauName";
-  public static java.lang.String COLLECTION = "collection";
-  public static java.lang.String COLLECTIONDATE = "collectionDate";
-  public static java.lang.String COLLECTIONNAME = "collectionName";
-  public static java.lang.String CREATEDATE = "createDate";
-  public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String DELETEDATE = "deleteDate";
-  public static java.lang.String DOWNLOADCOUNTS = "downloadCounts";
-  public static java.lang.String ENTITYDOMAIN = "entityDomain";
-  public static java.lang.String EROSARCHIVED = "erosArchived";
-  public static java.lang.String EROSMETADATACOMPLETE = "erosMetadataComplete";
-  public static java.lang.String EXISTS = "exists";
-  public static java.lang.String FAAIDNUMBER = "faaIdNumber";
-  public static java.lang.String GEOMETRY = "geometry";
-  public static java.lang.String HILLSHADE = "hillshade";
-  public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
-  public static java.lang.String LOCKEDBY = "lockedBy";
-  public static java.lang.String MISSION = "mission";
-  public static java.lang.String MISSIONNAME = "missionName";
-  public static java.lang.String ODMPROCESSING = "odmProcessing";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String ORTHOMOSAIC = "orthomosaic";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String PLATFORM = "platform";
-  public static java.lang.String PLATFORMNAME = "platformName";
-  public static java.lang.String POINTCLOUD = "pointCloud";
-  public static java.lang.String PRODUCT = "product";
-  public static java.lang.String PRODUCTSLINK = "productsLink";
-  public static java.lang.String PRODUCTSSHARED = "productsShared";
-  public static java.lang.String PROJECT = "project";
-  public static java.lang.String PROJECTNAME = "projectName";
-  public static java.lang.String RAWIMAGESCOUNT = "rawImagesCount";
-  public static java.lang.String RAWIMAGESLINK = "rawImagesLink";
-  public static java.lang.String SENSOR = "sensor";
-  public static java.lang.String SENSORNAME = "sensorName";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String SERIALNUMBER = "serialNumber";
-  public static java.lang.String SITE = "site";
-  public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String SITENAME = "siteName";
-  public static java.lang.String TYPE = "type";
-  public static java.lang.String UAV = "uav";
-  public static java.lang.String USERNAME = "userName";
-  public static java.lang.String VIDEO = "video";
-  private static final long serialVersionUID = -740452033;
+  public final static java.lang.String ACTOR = "actor";
+  public final static java.lang.String ALLSTORAGESIZE = "allStorageSize";
+  public final static java.lang.String BUREAU = "bureau";
+  public final static java.lang.String BUREAUNAME = "bureauName";
+  public final static java.lang.String COLLECTION = "collection";
+  public final static java.lang.String COLLECTIONDATE = "collectionDate";
+  public final static java.lang.String COLLECTIONNAME = "collectionName";
+  public final static java.lang.String CREATEDATE = "createDate";
+  public final static java.lang.String CREATEDBY = "createdBy";
+  public final static java.lang.String DELETEDATE = "deleteDate";
+  public final static java.lang.String DOWNLOADCOUNTS = "downloadCounts";
+  public final static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public final static java.lang.String EROSARCHIVED = "erosArchived";
+  public final static java.lang.String EROSMETADATACOMPLETE = "erosMetadataComplete";
+  public final static java.lang.String EXISTS = "exists";
+  public final static java.lang.String FAAIDNUMBER = "faaIdNumber";
+  public final static java.lang.String GEOMETRY = "geometry";
+  public final static java.lang.String HILLSHADE = "hillshade";
+  public final static java.lang.String KEYNAME = "keyName";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String MISSION = "mission";
+  public final static java.lang.String MISSIONNAME = "missionName";
+  public final static java.lang.String ODMPROCESSING = "odmProcessing";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String ORGANIZATION = "organization";
+  public final static java.lang.String ORTHOMOSAIC = "orthomosaic";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String PLATFORM = "platform";
+  public final static java.lang.String PLATFORMNAME = "platformName";
+  public final static java.lang.String POINTCLOUD = "pointCloud";
+  public final static java.lang.String PRODUCT = "product";
+  public final static java.lang.String PRODUCTSLINK = "productsLink";
+  public final static java.lang.String PRODUCTSSHARED = "productsShared";
+  public final static java.lang.String PROJECT = "project";
+  public final static java.lang.String PROJECTNAME = "projectName";
+  public final static java.lang.String RAWIMAGESCOUNT = "rawImagesCount";
+  public final static java.lang.String RAWIMAGESLINK = "rawImagesLink";
+  public final static java.lang.String SENSOR = "sensor";
+  public final static java.lang.String SENSORNAME = "sensorName";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String SERIALNUMBER = "serialNumber";
+  public final static java.lang.String SITE = "site";
+  public final static java.lang.String SITEMASTER = "siteMaster";
+  public final static java.lang.String SITENAME = "siteName";
+  public final static java.lang.String TYPE = "type";
+  public final static java.lang.String UAV = "uav";
+  public final static java.lang.String USERNAME = "userName";
+  public final static java.lang.String VIDEO = "video";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 423350150;
   
   public CollectionReportBase()
   {
@@ -844,6 +831,58 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
+  }
+  
+  public net.geoprism.registry.Organization getOrganization()
+  {
+    if (getValue(ORGANIZATION).trim().equals(""))
+    {
+      return null;
+    }
+    else
+    {
+      return net.geoprism.registry.Organization.get(getValue(ORGANIZATION));
+    }
+  }
+  
+  public String getOrganizationOid()
+  {
+    return getValue(ORGANIZATION);
+  }
+  
+  public void validateOrganization()
+  {
+    this.validateAttribute(ORGANIZATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getOrganizationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(ORGANIZATION);
+  }
+  
+  public void setOrganization(net.geoprism.registry.Organization value)
+  {
+    if(value == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, value.getOid());
+    }
+  }
+  
+  public void setOrganizationId(java.lang.String oid)
+  {
+    if(oid == null)
+    {
+      setValue(ORGANIZATION, "");
+    }
+    else
+    {
+      setValue(ORGANIZATION, oid);
+    }
   }
   
   public Boolean getOrthomosaic()

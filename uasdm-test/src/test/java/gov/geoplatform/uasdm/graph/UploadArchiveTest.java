@@ -24,6 +24,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.RoleDAO;
@@ -36,6 +38,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.InstanceTestClassListener;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -46,7 +51,9 @@ import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 import net.geoprism.GeoprismUser;
 
-public class UploadArchiveTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class UploadArchiveTest implements InstanceTestClassListener
 {
   // private static ProjectManagementService service;
   //
@@ -75,9 +82,8 @@ public class UploadArchiveTest
 
   private final static int    sessionLimit = 2;
 
-  @BeforeClass
   @Request
-  public static void classSetUp()
+  public void beforeClassSetup() throws Exception
   {
     RemoteFileFacade.setService(new MockRemoteFileService());
     IndexService.setIndex(new MockIndex());
@@ -147,9 +153,8 @@ public class UploadArchiveTest
     collectionId1 = collection1.getOid();
   }
 
-  @AfterClass
   @Request
-  public static void classTearDown()
+  public void afterClassSetup() throws Exception
   {
     classTearDownTransaction();
   }

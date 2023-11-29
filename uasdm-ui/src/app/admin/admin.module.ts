@@ -36,6 +36,8 @@ import { LPGSyncComponent } from './component/labeled-property-graph-sync/labele
 import { AdminRoutingModule } from './admin-routing.module';
 
 import { SharedModule } from '../shared/shared.module';
+import { OrganizationSyncTableComponent } from './component/organization-sync/organization-sync-table.component';
+import { OrganizationSyncComponent } from './component/organization-sync/organization-sync.component';
 
 @NgModule({
 	imports: [
@@ -65,7 +67,9 @@ import { SharedModule } from '../shared/shared.module';
 		SessionEventComponent,
         SystemConfigurationComponent,
         LPGSyncTableComponent,
-		LPGSyncComponent
+		LPGSyncComponent,
+		OrganizationSyncTableComponent,
+		OrganizationSyncComponent
 	],
 	providers: [
 		SystemLogoService,

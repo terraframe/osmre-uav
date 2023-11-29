@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1617817034)
+@com.runwaysdk.business.ClassSignature(hash = -1441874769)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -531,6 +516,29 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.OID, alias, displayLabel);
 
   }
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization()
+  {
+    return getOrganization(null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION);
+
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION, mdAttributeIF, this, alias, null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel)
+  {
+
+    com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION);
+
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION, mdAttributeIF, this, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
   {
     return getOrthomosaic(null);
@@ -956,6 +964,10 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     {
        return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION)) 
+    {
+       return new net.geoprism.registry.OrganizationQuery.OrganizationQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.OWNER)) 
     {
        return new com.runwaysdk.system.ActorQuery.ActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
@@ -1077,6 +1089,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization();
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias);
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic();
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias);
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel);
@@ -1623,6 +1638,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.OID, alias, displayLabel);
 
   }
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization()
+  {
+    return getOrganization(null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias)
+  {
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION, alias, null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel)
+  {
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION,  alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
   {
     return getOrthomosaic(null);
@@ -2042,6 +2074,10 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     {
        return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION)) 
+    {
+       return new net.geoprism.registry.OrganizationQuery.OrganizationQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.OWNER)) 
     {
        return new com.runwaysdk.system.ActorQuery.ActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
@@ -2140,6 +2176,9 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization();
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias);
+    public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic();
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias);
     public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel);
@@ -2735,6 +2774,23 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.OID, alias, displayLabel);
 
   }
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization()
+  {
+    return getOrganization(null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias)
+  {
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION, alias, null);
+
+  }
+ 
+  public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel)
+  {
+    return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION,  alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
   {
     return getOrthomosaic(null);
@@ -3153,6 +3209,10 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.LOCKEDBY)) 
     {
        return new com.runwaysdk.system.SingleActorQuery.SingleActorQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
+    }
+    else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION)) 
+    {
+       return new net.geoprism.registry.OrganizationQuery.OrganizationQueryReference((com.runwaysdk.dataaccess.MdAttributeRefDAOIF)mdAttributeIF, attributeNamespace, definingTableName, definingTableAlias, referenceMdBusinessIF, referenceTableAlias, rootQuery, tableJoinSet, userDefinedAlias, userDefinedDisplayLabel);
     }
     else if (name.equals(gov.geoplatform.uasdm.bus.CollectionReport.OWNER)) 
     {

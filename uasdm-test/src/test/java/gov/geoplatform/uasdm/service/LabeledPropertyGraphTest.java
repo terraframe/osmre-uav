@@ -32,6 +32,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
+import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.InstanceTestClassListener;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
@@ -49,31 +50,13 @@ import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBus
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)
-public class LabeledPropertyGraphTest implements InstanceTestClassListener
+public class LabeledPropertyGraphTest extends Area51DataTest
 {
-  private static Area51DataSet                                 testData;
-
   @Autowired
   private LabeledPropertyGraphSynchronizationBusinessServiceIF service;
 
   @Autowired
   private LabeledPropertyGraphTypeVersionBusinessServiceIF     vService;
-
-  @Override
-  public void beforeClassSetup() throws Exception
-  {
-    testData = new Area51DataSet();
-    testData.setUpSuiteData();
-  }
-
-  @Override
-  public void afterClassSetup() throws Exception
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
-  }
 
   @Before
   @Request
