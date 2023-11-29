@@ -30,10 +30,13 @@ export class LoginComponent {
   sub: Subscription;
 
   keycloakEnabled: boolean;
+  
+  requireKeycloakLogin: boolean;
 
   constructor(private configuration: ConfigurationService, private service: SessionService, private router: Router, private route: ActivatedRoute, private modalService: BsModalService) {
     this.context = EnvironmentUtil.getApiUrl();
     this.keycloakEnabled = configuration.isKeycloakEnabled();
+    this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
   }
 
   ngOnInit(): void {

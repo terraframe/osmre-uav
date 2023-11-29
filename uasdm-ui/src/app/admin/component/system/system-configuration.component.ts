@@ -11,6 +11,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { EmailComponent } from '@admin/component/email/email.component';
 
 import { AuthService } from '@shared/service/auth.service';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 @Component({
     selector: 'system-configuration',
@@ -24,7 +25,11 @@ export class SystemConfigurationComponent implements OnInit {
 
     private bsModalRef: BsModalRef;
     
-    constructor(private modalService: BsModalService, private authService: AuthService) { }
+    requireKeycloakLogin: boolean;
+    
+    constructor(private configuration: ConfigurationService, private modalService: BsModalService, private authService: AuthService) {
+		this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
+	}
 
     ngOnInit(): void {
         this.userName = this.authService.getUserName();

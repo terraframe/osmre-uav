@@ -1180,6 +1180,7 @@ public class ProjectManagementService
     JSONObject config = new JSONObject();
     config.put("contextPath", contextPath);
     config.put("uasdmKeycloakEnabled", AppProperties.isKeycloakEnabled());
+    config.put("uasdmRequireKeycloakLogin", AppProperties.requireKeycloakLogin());
     config.put("uasAppDisclaimer", AppProperties.getAppDisclaimer());
     config.put("localization", new JSONObject(new LocalizationService().getAllView()));
 

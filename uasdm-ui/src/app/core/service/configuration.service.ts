@@ -39,6 +39,10 @@ export class ConfigurationService {
     isKeycloakEnabled(): boolean {
         return this.getConfiguration().uasdmKeycloakEnabled;
     }
+    
+    isRequireKeycloakLogin(): boolean {
+		return this.getConfiguration().uasdmRequireKeycloakLogin;
+	}
 
     getAppDisclaimer(): string {
         return this.getConfiguration().uasAppDisclaimer;
