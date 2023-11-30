@@ -11,6 +11,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { EmailComponent } from '@admin/component/email/email.component';
 
 import { AuthService } from '@shared/service/auth.service';
+import { Organization } from '@shared/model/organization';
+import { OrganizationService } from '@shared/service/organization.service';
+import { OrganizationHierarchyModalComponent } from '../../../shared/component/organization-field/organization-hierarchy-modal.component';
 
 @Component({
     selector: 'system-configuration',
@@ -23,12 +26,19 @@ export class SystemConfigurationComponent implements OnInit {
     admin: boolean = false;
 
     private bsModalRef: BsModalRef;
+    organizations: Organization[] = [];
     
-    constructor(private modalService: BsModalService, private authService: AuthService) { }
+    constructor(
+        private modalService: BsModalService, 
+		private orgService: OrganizationService,
+        private authService: AuthService) { }
 
     ngOnInit(): void {
         this.userName = this.authService.getUserName();
         this.admin = this.authService.isAdmin();
+        this.orgService.getOrganizations().then(organizations => {
+            this.organizations = organizations;
+        } );
     }
 
     open(): void {
@@ -42,5 +52,14 @@ export class SystemConfigurationComponent implements OnInit {
             this.bsModalRef.hide();
         });
     }
+
+    onManageHierarchy(): void {
+		this.bsModalRef = this.modalService.show(OrganizationHierarchyModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+		});
+        this.bsModalRef.content.init(true, null, null);
+	}
 
 }

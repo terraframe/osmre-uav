@@ -15,179 +15,65 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runwaysdk.dataaccess.ValueObject;
+import com.google.gson.JsonObject;
+import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
+import com.runwaysdk.dataaccess.MdBusinessDAOIF;
+import com.runwaysdk.dataaccess.MdRelationshipDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.database.Database;
+import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
+import com.runwaysdk.dataaccess.metadata.MdRelationshipDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.BasicLeftJoinEq;
-import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.query.Selectable;
-import com.runwaysdk.query.SelectableChar;
-import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.system.SingleActor;
+import com.runwaysdk.system.Users;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
-import net.geoprism.GeoprismUserQuery;
-import net.geoprism.account.AccountBusinessService;
-import net.geoprism.registry.OrganizationQuery;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.service.business.AccountBusinessService;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class UserInfo extends UserInfoBase
 {
-  private static final long serialVersionUID = 984575899;
+  private static final long  serialVersionUID = 984575899;
+
+  public static final String ORGANIZATION     = "organization";
 
   public UserInfo()
   {
     super();
   }
 
-  @SuppressWarnings("unchecked")
-  public static JSONObject page(JSONObject criteria)
+  public List<Organization> getOrganizations()
   {
-    ValueQuery vQuery = new ValueQuery(new QueryFactory());
-
-    GeoprismUserQuery uQuery = new GeoprismUserQuery(vQuery);
-    UserInfoQuery iQuery = new UserInfoQuery(vQuery);
-    OrganizationQuery bQuery = new OrganizationQuery(vQuery);
-    OrganizationHasUserQuery ohuQuery = new OrganizationHasUserQuery(vQuery);
-
-    vQuery.SELECT(uQuery.getOid(), uQuery.getUsername(), uQuery.getFirstName(), uQuery.getLastName(), uQuery.getPhoneNumber(), uQuery.getEmail());
-    vQuery.SELECT(bQuery.getDisplayLabel(UserInfo.BUREAU).localize());
-
-    // vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU),
-    // bQuery.getOid()));
-    vQuery.WHERE(new BasicLeftJoinEq(bQuery.getOid(), ohuQuery.parentOid()));
-    vQuery.WHERE(new BasicLeftJoinEq(ohuQuery.childOid(), iQuery.getOid()));
-    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getGeoprismUser(), uQuery.getOid()));
-
-    if (criteria.has("filters"))
+    try (OIterator<? extends Organization> it = this.getAllOrganization())
     {
-      JSONObject filters = criteria.getJSONObject("filters");
-      Iterator<String> keys = filters.keys();
-
-      while (keys.hasNext())
-      {
-        String attributeName = keys.next();
-
-        Selectable attribute = null;
-
-        if (attributeName.equals(UserInfo.BUREAU))
-        {
-          attribute = bQuery.getDisplayLabel(UserInfo.BUREAU).localize();
-        }
-        else
-        {
-          attribute = uQuery.get(attributeName);
-        }
-
-        if (attribute != null)
-        {
-          JSONObject filter = filters.getJSONObject(attributeName);
-
-          String value = filter.get("value").toString();
-          String mode = filter.get("matchMode").toString();
-
-          if (mode.equals("contains"))
-          {
-            SelectableChar selectable = (SelectableChar) attribute;
-
-            vQuery.WHERE(selectable.LIKEi("%" + value + "%"));
-          }
-          else if (mode.equals("equals"))
-          {
-            vQuery.WHERE(attribute.EQ(value));
-          }
-        }
-      }
+      return it.getAll().stream().map(o -> (Organization) o).collect(Collectors.toList());
     }
-
-    int pageSize = 10;
-    int pageNumber = 1;
-
-    if (criteria.has("first") && criteria.has("rows"))
-    {
-      int first = criteria.getInt("first");
-      pageSize = criteria.getInt("rows");
-      pageNumber = ( first / pageSize ) + 1;
-    }
-
-    if (criteria.has("sortField") && criteria.has("sortOrder"))
-    {
-      String field = criteria.getString("sortField");
-      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-      addSort(vQuery, uQuery, bQuery, field, order);
-    }
-    else if (criteria.has("multiSortMeta"))
-    {
-      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
-
-      for (int i = 0; i < sorts.length(); i++)
-      {
-        JSONObject sort = sorts.getJSONObject(i);
-
-        String field = sort.getString("field");
-        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-        addSort(vQuery, uQuery, bQuery, field, order);
-      }
-    }
-
-    JSONArray results = new JSONArray();
-
-    OIterator<ValueObject> it = vQuery.getIterator(pageSize, pageNumber);
-
-    try
-    {
-      while (it.hasNext())
-      {
-        ValueObject vObject = it.next();
-
-        JSONObject result = new JSONObject();
-        result.put(GeoprismUser.OID, vObject.getValue(GeoprismUser.OID));
-        result.put(GeoprismUser.USERNAME, vObject.getValue(GeoprismUser.USERNAME));
-        result.put(GeoprismUser.FIRSTNAME, vObject.getValue(GeoprismUser.FIRSTNAME));
-        result.put(GeoprismUser.LASTNAME, vObject.getValue(GeoprismUser.LASTNAME));
-        result.put(GeoprismUser.PHONENUMBER, vObject.getValue(GeoprismUser.PHONENUMBER));
-        result.put(GeoprismUser.EMAIL, vObject.getValue(GeoprismUser.EMAIL));
-        result.put(UserInfo.BUREAU, vObject.getValue(UserInfo.BUREAU));
-
-        results.put(result);
-      }
-    }
-    finally
-    {
-      it.close();
-    }
-
-    JSONObject page = new JSONObject();
-    page.put("resultSet", results);
-    page.put("count", vQuery.getCount());
-    page.put("pageNumber", pageNumber);
-    page.put("pageSize", pageSize);
-
-    return page;
   }
 
-  private static void addSort(ValueQuery vQuery, GeoprismUserQuery uQuery, OrganizationQuery bQuery, String field, SortOrder order)
+  public static JSONObject page(JSONObject criteria)
   {
-    if (field.equals(UserInfo.BUREAU))
-    {
-      vQuery.ORDER_BY(bQuery.getDisplayLabel().localize(UserInfo.BUREAU), order);
-    }
-    else
-    {
-      vQuery.ORDER_BY(uQuery.getS(field), order);
-    }
+    return new UserInfoPageQuery(criteria).getPage();
   }
 
   public static UserInfo getUserInfo(String userId)
@@ -238,7 +124,9 @@ public class UserInfo extends UserInfoBase
         setRoleIds.add(array.getString(i));
       }
 
-      new AccountBusinessService().applyUserWithRoles(user, setRoleIds);
+      AccountBusinessService service = ApplicationContextHolder.getBean(AccountBusinessService.class);
+
+      service.applyUserWithRoles(user, setRoleIds);
     }
     else
     {
@@ -282,6 +170,29 @@ public class UserInfo extends UserInfoBase
 
     info.apply();
 
+    // Remove the user from any organization
+    try (OIterator<? extends Organization> it = info.getAllOrganization())
+    {
+      while (it.hasNext())
+      {
+        info.removeOrganization(it.next());
+      }
+    }
+
+    // Assign the user to the new organization
+    if (account.has(UserInfo.ORGANIZATION))
+    {
+      JSONObject org = account.getJSONObject(UserInfo.ORGANIZATION);
+      String code = org.getString(Organization.CODE);
+
+      if (!StringUtils.isBlank(code))
+      {
+        Organization organization = Organization.getByCode(code);
+
+        info.addOrganization(organization).apply();
+      }
+    }
+
     CollectionReportFacade.update(user).doIt();
 
     return serialize(user, info);
@@ -300,7 +211,22 @@ public class UserInfo extends UserInfoBase
 
     if (info != null)
     {
-      result.put(UserInfo.BUREAU, info.getBureauOid());
+      List<Organization> organizations = info.getOrganizations();
+
+      if (organizations.size() > 0)
+      {
+        Organization organization = organizations.get(0);
+        OrganizationDTO dto = organization.toDTO();
+
+        JsonObject object = dto.toJSON();
+        object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+        object.remove(OrganizationDTO.JSON_ENABLED);
+        object.remove(OrganizationDTO.JSON_PARENT_CODE);
+        object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+        result.put(UserInfo.ORGANIZATION, new JSONObject(object.toString()));
+      }
+      // result.put(UserInfo.BUREAU, info.getBureauOid());
       result.put(UserInfo.INFORMATION, info.getInformation());
     }
 

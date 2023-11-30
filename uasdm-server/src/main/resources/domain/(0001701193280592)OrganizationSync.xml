@@ -21,14 +21,21 @@
               <operation name="EXECUTE" />
             </mdMethodPermission>          
           </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.OrganizationHasUser">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
         </grant>
       </role>
-      <role roleName="geoprism.admin.Administrator">
+      <role roleName="geoprism.admin.DashboardBuilder">
         <grant>
           <mdBusinessPermission type="gov.geoplatform.uasdm.OrganizationSynchronization">
             <operation name="READ" />
             <operation name="READ_ALL_ATTRIBUTES" />
           </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.OrganizationHasUser">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdRelationshipPermission>          
         </grant>
       </role>      
     </permissions>    

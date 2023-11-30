@@ -9,7 +9,7 @@
   <div id="app-container" class="container">
 
     <h2>System Configuration</h2>
-    
+
     <accounts></accounts>
 
     <system-logos></system-logos>
@@ -17,15 +17,64 @@
     <h3>System Email</h3>
     <button (click)="open()" class="btn btn-primary" style="margin:0;">Configure Email</button>
     <br><br>
-    
+
     <h3>Session Event Log</h3>
     <session-events></session-events>
-    
+
+    <div class="col-md-12">
+      <h3>
+        Organizations
+
+        <span style="float: right;">
+          <a class="fa fa-sitemap" (click)="onManageHierarchy()" title="View Hierarchy"></a>
+        </span>
+      </h3>
+
+      <div class="content-wrapper">
+        <div class="list-table-wrapper">
+          <table id="manage-organizations-table" class="list-table table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>
+                  Code
+                </th>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Parent
+                </th>
+                <th>
+                  Enabled
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let org of organizations">
+                <td class="label-column">{{org.code}}</td>
+                <td class="label-column">{{org.label.localizedValue}}</td>
+                <td class="label-column">
+                  <ng-container *ngIf="org.parentLabel != null">
+                    {{org.parentLabel.localizedValue}}
+                  </ng-container>
+                </td>
+                <td class="label-column">
+                  {{org.enabled ? 'Yes' : 'No'}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+
     <organization-sync-table></organization-sync-table>
 
     <labeled-property-graph-sync-table></labeled-property-graph-sync-table>
-    
-    <br/>
+
+    <br />
 
   </div>
 </div>

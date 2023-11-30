@@ -42,11 +42,11 @@ export class LPGSyncService implements GenericTableService {
 
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
-
+ 
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get', { params: params })
+            .get<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

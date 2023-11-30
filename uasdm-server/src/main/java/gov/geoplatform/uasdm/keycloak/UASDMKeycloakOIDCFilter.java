@@ -75,7 +75,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
 import gov.geoplatform.uasdm.service.IDMSessionService;
 import net.geoprism.account.LocaleSerializer;
-import net.geoprism.rbac.RoleBusinessService;
+import net.geoprism.registry.service.business.RoleBusinessService;
 
 /**
  * 

@@ -30,7 +30,7 @@ export class AccountsComponent implements OnInit {
 		{ header: 'Last name', field: 'lastName', type: 'TEXT', sortable: true },
 		{ header: 'Phone Number', field: 'phoneNumber', type: 'TEXT', sortable: true },
 		{ header: 'Email Address', field: 'email', type: 'TEXT', sortable: true },
-		{ header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true, filter: true },
+		{ header: 'Organization', field: 'organization', type: 'TEXT', sortable: true, filter: true },
 		{ header: '', type: 'ACTIONS', sortable: false },
 	];
 	refresh: Subject<void>;
@@ -131,7 +131,7 @@ export class AccountsComponent implements OnInit {
 				ignoreBackdropClick: true,
 				'class': 'upload-modal'
 			});
-			this.bsModalRef.content.init(account.groups, account.bureaus);
+			this.bsModalRef.content.init(account.groups);
 		});
 	}
 }

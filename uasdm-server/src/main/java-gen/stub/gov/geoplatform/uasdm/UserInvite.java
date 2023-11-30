@@ -32,8 +32,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import net.geoprism.GeoprismUser;
-import net.geoprism.account.AccountBusinessService;
-import net.geoprism.registry.Organization;
+import net.geoprism.registry.service.business.AccountBusinessService;
 import net.geoprism.registry.service.business.EmailBusinessServiceIF;
 import net.geoprism.spring.ApplicationContextHolder;
 
@@ -151,7 +150,9 @@ public class UserInvite extends UserInviteBase
         roleIds.add(array.getString(i));
       }
 
-      new AccountBusinessService().applyUserWithRoles(user, roleIds);
+      AccountBusinessService service = ApplicationContextHolder.getBean(AccountBusinessService.class);
+
+      service.applyUserWithRoles(user, roleIds);
     }
     else
     {

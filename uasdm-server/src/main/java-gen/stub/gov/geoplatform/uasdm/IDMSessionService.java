@@ -41,8 +41,9 @@ import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.LocaleSerializer;
-import net.geoprism.rbac.RoleBusinessService;
 import net.geoprism.rbac.RoleConstants;
+import net.geoprism.registry.service.business.RoleBusinessService;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {
@@ -151,7 +152,9 @@ public class IDMSessionService extends IDMSessionServiceBase
           
           SingleActorDAOIF dao = (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
           
-          List<Roles> allRoles = new RoleBusinessService().getAllAssignableRoles();
+          RoleBusinessService service = ApplicationContextHolder.getBean(RoleBusinessService.class);
+          
+          List<Roles> allRoles = service.getAllAssignableRoles();
           for (Roles role : allRoles)
           {
             RoleDAO roleDAO = RoleDAO.get(role.getOid()).getBusinessDAO();

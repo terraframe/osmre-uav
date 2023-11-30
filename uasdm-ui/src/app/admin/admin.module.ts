@@ -38,6 +38,8 @@ import { AdminRoutingModule } from './admin-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { OrganizationSyncTableComponent } from './component/organization-sync/organization-sync-table.component';
 import { OrganizationSyncComponent } from './component/organization-sync/organization-sync.component';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 
 @NgModule({
 	imports: [
@@ -51,7 +53,9 @@ import { OrganizationSyncComponent } from './component/organization-sync/organiz
 		TypeaheadModule,
 		AccordionModule,
 		SharedModule,
-		AdminRoutingModule
+		AdminRoutingModule,
+		ContextMenuModule,
+		TreeModule,
 	],
 	declarations: [
 		SystemLogoComponent,
