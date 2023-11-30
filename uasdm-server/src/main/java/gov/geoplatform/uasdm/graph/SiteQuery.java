@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -45,6 +45,8 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 import net.geoprism.spring.ApplicationContextHolder;
 
@@ -230,6 +232,24 @@ public class SiteQuery
             parameters.put(mdAttribute.getColumnName(), value);
           }
         }
+        else if (field.equalsIgnoreCase(Site.ORGANIZATION))
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(field.equalsIgnoreCase(Site.ORGANIZATION) ? Site.CLASS : UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            JSONObject value = condition.getJSONObject("value");
+            String code = value.getString(Organization.CODE);
+            ServerOrganization organization = ServerOrganization.getByCode(code);
+
+            statement.append(isFirst ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName() + "\n");
+
+            parameters.put(mdAttribute.getColumnName(), organization.getGraphOrganization().getRID());
+          }
+        }
         else if (field.equalsIgnoreCase(Collection.SENSOR))
         {
           MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
@@ -341,7 +361,7 @@ public class SiteQuery
     buckets.add(QueryBucket.build(Collection.CLASS, EdgeType.MISSION_HAS_COLLECTION, Collection.COLLECTIONDATE, Collection.SENSOR, Collection.UAV, UAV.PLATFORM, UasComponent.OWNER));
     buckets.add(QueryBucket.build(Mission.CLASS, EdgeType.PROJECT_HAS_MISSION));
     buckets.add(QueryBucket.build(Project.CLASS, EdgeType.SITE_HAS_PROJECT, Project.PROJECTTYPE));
-    buckets.add(QueryBucket.build(Site.CLASS, null, Site.BUREAU, "bounds"));
+    buckets.add(QueryBucket.build(Site.CLASS, null, Site.BUREAU, Site.ORGANIZATION, "bounds"));
 
     JSONArray array = cObject.has("array") ? cObject.getJSONArray("array") : new JSONArray();
 
@@ -388,7 +408,7 @@ public class SiteQuery
       JSONObject hierarchy = cObject.getJSONObject("hierarchy");
       String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
       String uid = hierarchy.getString("uid");
-      
+
       LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
 
       LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);

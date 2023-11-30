@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.service;
 
 import java.util.Set;
 
+import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,6 @@ import com.runwaysdk.session.SessionIF;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.UserInfo;
-import gov.geoplatform.uasdm.bus.Bureau;
 import net.geoprism.rbac.RoleView;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.request.SessionService;
@@ -135,8 +135,15 @@ public class IDMSessionService extends SessionService
             if (organizations.hasNext())
             {
               Organization organization = organizations.next();
-              
-              response.addProperty("bureau", organization.getCode());
+              OrganizationDTO dto = organization.toDTO();
+
+              JsonObject object = dto.toJSON();
+              object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+              object.remove(OrganizationDTO.JSON_ENABLED);
+              object.remove(OrganizationDTO.JSON_PARENT_CODE);
+              object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+              response.add("organization", object);
             }
           }
         }
