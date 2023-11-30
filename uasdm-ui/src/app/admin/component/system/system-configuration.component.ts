@@ -2,8 +2,7 @@
 ///
 ///
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
@@ -11,14 +10,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { EmailComponent } from '@admin/component/email/email.component';
 
 import { AuthService } from '@shared/service/auth.service';
-<<<<<<< HEAD
 import { Organization } from '@shared/model/organization';
 import { OrganizationService } from '@shared/service/organization.service';
 import { OrganizationHierarchyModalComponent } from '../../../shared/component/organization-field/organization-hierarchy-modal.component';
 import { ConfigurationService } from '@core/service/configuration.service';
-=======
-import { ConfigurationService } from '@core/service/configuration.service';
->>>>>>> refs/remotes/origin/graph-repo
 
 @Component({
     selector: 'system-configuration',
