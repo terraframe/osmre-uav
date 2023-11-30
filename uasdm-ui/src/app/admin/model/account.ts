@@ -6,9 +6,8 @@ import { LocalizedValue } from "@shared/model/organization";
 
 export class UserInvite {
 	email: string;
-	bureau: string;
+	organization: { code: string, label: LocalizedValue };
 	groups: Group[];
-	bureaus: { value: string, label: string }[];
 }
 
 export class User {

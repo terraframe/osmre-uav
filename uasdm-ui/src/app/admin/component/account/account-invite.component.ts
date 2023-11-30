@@ -19,10 +19,9 @@ export class AccountInviteComponent {
 
 	constructor(private service: AccountService, public bsModalRef: BsModalRef) { }
 
-	init(groups, bureaus): void {
+	init(groups): void {
 		this.invite = new UserInvite();
 		this.invite.groups = groups;
-		this.invite.bureaus = bureaus;
 	}
 
 	cancel(): void {

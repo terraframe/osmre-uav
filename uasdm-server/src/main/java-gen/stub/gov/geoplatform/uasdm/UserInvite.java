@@ -32,6 +32,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import net.geoprism.GeoprismUser;
+import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
 import net.geoprism.registry.service.business.EmailBusinessServiceIF;
 import net.geoprism.spring.ApplicationContextHolder;
@@ -101,13 +102,14 @@ public class UserInvite extends UserInviteBase
     invite.setToken(UserInvite.generateEncryptedToken(invite.getEmail()));
     invite.setRoleIds(roleIds);
 
-    if (joInvite.has(UserInfo.BUREAU))
+    if (joInvite.has(UserInfo.ORGANIZATION))
     {
-      String bureauId = joInvite.getString(UserInfo.BUREAU);
+      JSONObject organization = joInvite.getJSONObject(UserInfo.ORGANIZATION);
+      String code = organization.getString(Organization.CODE);
 
-      if (!StringUtils.isBlank(bureauId))
+      if (!StringUtils.isBlank(code))
       {
-//        invite.setBureau(Organization.get(bureauId));
+        invite.setOrganization(Organization.getByCode(code));
       }
     }
 
@@ -166,9 +168,14 @@ public class UserInvite extends UserInviteBase
       info = new UserInfo();
       info.setGeoprismUser(user);
     }
-
-    info.setBureau(invite.getBureau());
     info.apply();
+
+    Organization organization = invite.getOrganization();
+
+    if (organization != null)
+    {
+      info.addOrganization(organization).apply();
+    }
 
     invite.delete();
 
