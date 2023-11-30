@@ -137,6 +137,11 @@ public class AppProperties
   {
     return Singleton.getProps().getBoolean("keycloak.enabled", false);
   }
+  
+  public static Boolean requireKeycloakLogin()
+  {
+    return Singleton.getProps().getBoolean("keycloak.requireKeycloakLogin", false);
+  }
 
   public static InputStream getKeycloakConfig()
   {

@@ -5,6 +5,7 @@
 export class Configuration {
   contextPath: string;
   uasdmKeycloakEnabled: boolean;
+  uasdmRequireKeycloakLogin: boolean;
   uasAppDisclaimer: string;
   localization: any;
 }

@@ -29,6 +29,7 @@ import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.bus.Bureau;
 import net.geoprism.rbac.RoleView;
@@ -50,8 +51,13 @@ public class IDMSessionService extends SessionService
   public Set<String> getPublicEndpoints()
   {
     Set<String> endpoints = super.getPublicEndpoints();
+    
+    if (!AppProperties.requireKeycloakLogin())
+    {
+      endpoints.add("api/session/login");
+    }
+    
     endpoints.add("api/session/ologin");
-    endpoints.add("api/session/login");
     endpoints.add("api/session/logout");
     // endpoints.add("api/invite-user/initiate");
     // endpoints.add("api/invite-user/complete");
@@ -94,7 +100,7 @@ public class IDMSessionService extends SessionService
   public JsonElement getLoginResponse(String sessionId, Set<RoleView> roles)
   {
     JsonObject response = super.getLoginResponse(sessionId, roles).getAsJsonObject();
-    this.setBureauInformation(response);
+    this.injectIdmInfo(response);
 
     return response;
   }
@@ -104,12 +110,12 @@ public class IDMSessionService extends SessionService
   public JsonElement getCookieInformation(String sessionId, Set<RoleView> roles)
   {
     JsonObject response = super.getCookieInformation(sessionId, roles).getAsJsonObject();
-    this.setBureauInformation(response);
+    this.injectIdmInfo(response);
 
     return response;
   }
 
-  private void setBureauInformation(JsonObject response)
+  private void injectIdmInfo(JsonObject response)
   {
     // Add the bureau to the response object
     SessionIF session = Session.getCurrentSession();

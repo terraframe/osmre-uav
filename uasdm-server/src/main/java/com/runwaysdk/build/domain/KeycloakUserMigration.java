@@ -67,12 +67,13 @@ public class KeycloakUserMigration
 
       while ( ( line = reader.readNext() ) != null)
       {
-        String username = line[0];
-        String email = line[1];
+        String keycloakUsername = line[0];
+        String idmUsername = line[1];
+        String newEmail = line[2];
         
-        migrateUser(username, email);
+        migrateUser(keycloakUsername, idmUsername, newEmail);
         
-        migrated.add(username);
+        migrated.add(keycloakUsername);
       }
     }
     
@@ -87,25 +88,25 @@ public class KeycloakUserMigration
   }
   
   @Transaction
-  public static void migrateUser(String username, String email)
+  public static void migrateUser(String keycloakUsername, String idmUsername, String newEmail)
   {
     final List<String> statements = new LinkedList<String>();
     
     // Step 1 : Migrate the old user over to an id with the ExternalProfile RootId
     MdEntityDAOIF newMdClass = MdEntityDAO.getMdEntityDAO(ExternalProfile.CLASS);
-    GeoprismUser oldUser = GeoprismUser.getByUsername(username); // TODO : Will the geoprism username be the same as the keycloak username?
+    GeoprismUser oldUser = GeoprismUser.getByUsername(idmUsername);
     
     String newId = IdParser.buildId(ServerIDGenerator.generateId(IDGenerator.nextID()), newMdClass.getRootId());
     
     if (!MigrationUtil.updateEntityDAOId(oldUser.businessDAO(), newId))
     {
-      throw new ProgrammingErrorException("Could not migrate user [" + username + "] with email [" + email + "].");
+      throw new ProgrammingErrorException("Could not migrate user [" + keycloakUsername + "].");
     }
     
     // Step 2 : Create an entry in the external profile table with this new oid
     List<String> columnNames = Arrays.asList("oid", "remote_id", "display_name", "username", "first_name", "last_name", "phone_number", "email");
 
-    List<Object> values = Arrays.asList(newId, username, username, username, oldUser.getFirstName(), oldUser.getLastName(), oldUser.getPhoneNumber(), email);
+    List<Object> values = Arrays.asList(newId, keycloakUsername, keycloakUsername, keycloakUsername, oldUser.getFirstName(), oldUser.getLastName(), oldUser.getPhoneNumber(), newEmail);
 
     List<String> attributeTypes = Arrays.asList(
         MdAttributeCharacterInfo.CLASS, MdAttributeCharacterInfo.CLASS, MdAttributeCharacterInfo.CLASS,
