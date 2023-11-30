@@ -37,6 +37,7 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
 
     @Input() name: string;
     @Input() disabled: boolean = false;
+    @Input() required: boolean = false;
     @Input() customStyles: string = "";
     @Input() classNames: string = "";
     @Input() container: string = null;

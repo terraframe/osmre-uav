@@ -6,6 +6,7 @@ import { PageResult } from '@shared/model/page';
 import { Sensor } from './sensor';
 import { Platform } from './platform';
 import { UAV } from './uav'
+import { LocalizedValue } from '@shared/model/organization';
 
 export const projectTypes: string[] = [
 	"Other",
@@ -398,5 +399,5 @@ export class Filter {
 	platform?: string;
 	owner?: string;
 	projectType?: string;
-	bureau?: string;
+	organization?: { code: string, label: LocalizedValue };
 }

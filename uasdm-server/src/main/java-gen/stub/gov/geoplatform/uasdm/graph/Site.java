@@ -46,6 +46,7 @@ import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.AttributeListType;
+import gov.geoplatform.uasdm.view.AttributeOrganizationType;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
@@ -255,16 +256,15 @@ public class Site extends SiteBase implements SiteIF
   @Override
   public List<AttributeType> attributes()
   {
-    AttributeListType attributeType = (AttributeListType) AttributeType.create(this.getMdAttributeDAO(Site.BUREAU));
-    attributeType.setOptions(Site.getBureauOptions());
+    AttributeOrganizationType attributeType = (AttributeOrganizationType) AttributeType.create(this.getMdAttributeDAO(Site.ORGANIZATION));
 
-    AttributeType otherAttributeType = AttributeType.create(this.getMdAttributeDAO(Site.OTHERBUREAUTXT));
-    otherAttributeType.setCondition(Site.getBureauCondition());
-    otherAttributeType.setRequired(true);
+//    AttributeType otherAttributeType = AttributeType.create(this.getMdAttributeDAO(Site.OTHERBUREAUTXT));
+//    otherAttributeType.setCondition(Site.getBureauCondition());
+//    otherAttributeType.setRequired(true);
 
     List<AttributeType> list = super.attributes();
     list.add(attributeType);
-    list.add(otherAttributeType);
+//    list.add(otherAttributeType);
     list.add(AttributeType.create(this.getMdAttributeDAO(Site.GEOPOINT)));
 
     return list;

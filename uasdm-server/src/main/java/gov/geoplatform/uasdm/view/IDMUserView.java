@@ -15,55 +15,74 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.lang.Nullable;
 
 import com.runwaysdk.query.OIterator;
 
 import gov.geoplatform.uasdm.UserInfo;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.GeoprismUserView;
 import net.geoprism.registry.Organization;
 
 public class IDMUserView extends GeoprismUserView
 {
   @Nullable
-  private String bureau;
+  private String organization;
 
-  public IDMUserView(String displayName, String email, String firstName, String lastName, String phoneNumber, String oid, String bureau)
+  public IDMUserView(String displayName, String email, String firstName, String lastName, String phoneNumber, String oid, String organization)
   {
     super(displayName, email, firstName, lastName, phoneNumber, oid);
-    this.bureau = bureau;
+
+    this.organization = organization;
+  }
+
+  public String getOrganization()
+  {
+    return organization;
+  }
+
+  public void setOrganization(String organization)
+  {
+    this.organization = organization;
   }
 
   public static IDMUserView fromUser(GeoprismUser user, UserInfo info)
   {
     // The admin user doesn't have an associated UserInfo object. So info will
     // be null in that scenario.
-    String bureau = null;
+    String organization = null;
 
     if (info != null)
     {
-      try (OIterator<? extends Organization> organizations = info.getAllOrganization())
+      try (OIterator<? extends Organization> it = info.getAllOrganization())
       {
-        if (organizations.hasNext())
-        {
-          Organization organization = organizations.next();
+        List<String> orgs = it.getAll().stream().map(o -> o.getDisplayLabel().getValue()).collect(Collectors.toList());
 
-          bureau = organization.getDisplayLabel().getValue();
-        }
+        organization = String.join(",", orgs);
       }
     }
 
-    return new IDMUserView(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getPhoneNumber(), user.getOid(), bureau);
+    return new IDMUserView(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getPhoneNumber(), user.getOid(), organization);
   }
 
-  public String getBureau()
+  public static IDMUserView fromUser(ExternalProfile profile, UserInfo info)
   {
-    return bureau;
-  }
+    String organization = null;
 
-  public void setBureau(String bureau)
-  {
-    this.bureau = bureau;
+    if (info != null)
+    {
+      try (OIterator<? extends Organization> it = info.getAllOrganization())
+      {
+        List<String> orgs = it.getAll().stream().map(o -> o.getDisplayLabel().getValue()).collect(Collectors.toList());
+
+        organization = String.join(",", orgs);
+      }
+    }
+
+    return new IDMUserView(profile.getUsername(), profile.getEmail(), profile.getFirstName(), profile.getLastName(), profile.getPhoneNumber(), profile.getOid(), organization);
   }
 }

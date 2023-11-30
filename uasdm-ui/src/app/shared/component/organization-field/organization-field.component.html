@@ -34,6 +34,7 @@
     [ngClass]="{'inline-loading':loading}" [typeaheadOptionsLimit]="7"
     [typeaheadItemTemplate]="customItemTemplate" [typeaheadMinLength]="0" [typeaheadWaitMs]="300"
     [container]="container"
+    [required]="required"
     >
 
   <span class="input-group-addon clickable addon-alert" (click)="onViewTree()">

@@ -376,7 +376,7 @@ public class ElasticSearchIndex implements Index
 
         if (component instanceof SiteIF)
         {
-          document.setBureau( ( (SiteIF) component ).getServerOrganization().getDisplayLabel().getValue());
+          document.setBureau( ( (SiteIF) component ).getServerOrganization().getCode());
         }
 
         client.update(b -> b.index(COMPONENT_INDEX_NAME).id(hit.id()).doc(document), Void.class);
@@ -416,7 +416,7 @@ public class ElasticSearchIndex implements Index
 
       if (component instanceof SiteIF)
       {
-        document.setBureau( ( (SiteIF) component ).getBureau().getName());
+        document.setBureau( ( (SiteIF) component ).getServerOrganization().getCode());
       }
 
       for (UasComponentIF ancestor : ancestors)
