@@ -46,7 +46,7 @@ public class KeycloakUserMigration
     
     for (GeoprismUser user : query.getIterator())
     {
-      if (user.getUsername().equals(("admin"))) { continue; }
+      // if (user.getUsername().equals(("admin"))) { continue; }
       
       migrateUser(user);
       

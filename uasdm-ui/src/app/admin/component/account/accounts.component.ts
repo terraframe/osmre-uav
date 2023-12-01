@@ -15,6 +15,7 @@ import { AccountService } from '../../service/account.service';
 import { AccountComponent } from './account.component';
 import { AccountInviteComponent } from './account-invite.component';
 import { Subject } from 'rxjs';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 @Component({
 	selector: 'accounts',
@@ -39,9 +40,13 @@ export class AccountsComponent implements OnInit {
 	 * Reference to the modal current showing
 	*/
 	private bsModalRef: BsModalRef;
+	
+	requireKeycloakLogin: boolean;
 
 
-	constructor(private router: Router, private service: AccountService, private modalService: BsModalService) { }
+	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService) { 
+		this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
+	}
 
 	ngOnInit(): void {
 		this.config = {
