@@ -10,6 +10,9 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
+@import '@angular/cdk/overlay-prebuilt.css';
+@import './node_modules/@perfectmemory/ngx-contextmenu/src/assets/stylesheets/base.scss';
+
 @import "~primeng/resources/themes/nova-alt/theme.css";
 @import "~primeng/resources/primeng.min.css";
 @import "~primeicons/primeicons.css";
