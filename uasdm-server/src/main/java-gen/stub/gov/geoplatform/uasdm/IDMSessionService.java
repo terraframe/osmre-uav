@@ -15,33 +15,25 @@
  */
 package gov.geoplatform.uasdm;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.business.BusinessFacade;
 import com.runwaysdk.business.rbac.Authenticate;
-import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.SessionFacade;
-import com.runwaysdk.system.Roles;
 
 import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
+import gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.LocaleSerializer;
-import net.geoprism.rbac.RoleBusinessService;
 import net.geoprism.rbac.RoleConstants;
 
 public class IDMSessionService extends IDMSessionServiceBase
@@ -63,6 +55,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     super();
   }
   
+  /*
   private static Set<String> deserializeRoles(String sRoles)
   {
     JsonArray preRoles = JsonParser.parseString(sRoles).getAsJsonArray();
@@ -91,24 +84,27 @@ public class IDMSessionService extends IDMSessionServiceBase
     
     return postRoles;
   }
+  */
   
   @Authenticate
   public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String sRoles, java.lang.String locales)
   {
-    Set<String> roles = deserializeRoles(sRoles);
+    // Set<String> roles = deserializeRoles(sRoles);
     
     JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
     
+    /*
     if (roles.size() == 0)
     {
       KeycloakNoValidRolesException ex = new KeycloakNoValidRolesException();
       ex.setUsername(joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
       throw ex;
     }
+    */
     
     final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
     
-    SingleActorDAOIF profile = IDMSessionService.getActor(joUser, roles);
+    SingleActorDAOIF profile = IDMSessionService.getActor(joUser);
 
     String sessionId = SessionFacade.logIn(profile, LocaleSerializer.deserialize(locales));
     
@@ -119,7 +115,7 @@ public class IDMSessionService extends IDMSessionServiceBase
   }
   
   @Transaction
-  private static synchronized SingleActorDAOIF getActor(JsonObject joUser, Set<String> roles)
+  private static synchronized SingleActorDAOIF getActor(JsonObject joUser)
   {
     final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
     final String userid = joUser.get(KeycloakConstants.USERJSON_USERID).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERID).getAsString();
@@ -129,7 +125,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
     
     ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-    query.WHERE(query.getRemoteId().EQ(username));
+    query.WHERE(query.getEmail().EQ(email));
     OIterator<? extends ExternalProfile> it = query.getIterator();
 
     try
@@ -138,17 +134,18 @@ public class IDMSessionService extends IDMSessionServiceBase
       {
         try
         {
-          logger.debug("Logging in existing KeyCloak user with remote id[" + userid + "].");
+          logger.debug("Logging in existing KeyCloak user with email [" + email + "].");
           
           ExternalProfile profile = it.next();
           profile.lock();
+          profile.setRemoteId(userid);
           profile.setDisplayName(username);
           profile.setLastName(lastName);
           profile.setFirstName(firstName);
           profile.setPhoneNumber(phoneNumber);
-          profile.setEmail(email);
           profile.apply();
           
+          /*
           SingleActorDAOIF dao = (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
           
           List<Roles> allRoles = new RoleBusinessService().getAllAssignableRoles();
@@ -165,6 +162,7 @@ public class IDMSessionService extends IDMSessionServiceBase
               roleDAO.deassignMember(dao);
             }
           }
+          */
 
           return (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
         }
@@ -179,6 +177,11 @@ public class IDMSessionService extends IDMSessionServiceBase
       }
       else
       {
+        UnassignedKeycloakUserException ex = new UnassignedKeycloakUserException();
+        ex.setEmail(email);
+        throw ex;
+        
+        /*
         logger.debug("Creating new KeyCloak user with remote id[" + username + "].");
         
         ExternalProfile profile = new ExternalProfile();
@@ -199,6 +202,7 @@ public class IDMSessionService extends IDMSessionServiceBase
         }
 
         return actor;
+        */
       }
     }
     finally
