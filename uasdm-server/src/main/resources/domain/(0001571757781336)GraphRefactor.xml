@@ -31,7 +31,7 @@
 
       <mdVertex name="gov.geoplatform.uasdm.graph.Site" label="Site" extends="gov.geoplatform.uasdm.graph.UasComponent" >
         <attributes>
-          <reference name="bureau" label="Bureau" required="true" type="gov.geoplatform.uasdm.bus.Bureau" />
+          <reference name="bureau" label="Bureau" required="false" type="gov.geoplatform.uasdm.bus.Bureau" />
           <char name="otherBureauTxt" required="false" label="Bureau Name" size="256" />
         </attributes>
       </mdVertex>

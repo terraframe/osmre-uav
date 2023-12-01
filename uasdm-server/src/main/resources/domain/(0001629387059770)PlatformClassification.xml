@@ -73,7 +73,7 @@
 					<char name="faaNumber" required="true" label="FAA Number" size="10" />
 					<char name="description" label="Description" size="1024" />
 					<graphReference name="platform" type="gov.geoplatform.uasdm.graph.Platform" required="true" label="Platform" />
-					<graphReference name="bureau" type="gov.geoplatform.uasdm.graph.Bureau" required="true" label="Bureau" />
+					<graphReference name="bureau" type="gov.geoplatform.uasdm.graph.Bureau" required="false" label="Bureau" />
 				</attributes>
 			</mdVertex>
 
