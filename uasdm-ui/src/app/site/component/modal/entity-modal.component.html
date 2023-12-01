@@ -24,8 +24,8 @@
       <div *ngIf="evaluate(attribute)" class="form-group">
         <div *ngIf="attribute.type === 'text'">
           <label>{{attribute.label}}</label>
-       	  <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control"
-          	[disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
+          <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control"
+            [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
         <div *ngIf="attribute.type === 'number'">
           <label>{{attribute.label}}</label>
@@ -40,16 +40,22 @@
             <option *ngFor="let option of attribute.options" [value]="option.value">{{option.label}}</option>
           </select>
         </div>
+        <div *ngIf="attribute.type === 'organization'">
+          <label>{{attribute.label}}</label>
+          <organization-field [name]="attribute.name" [(value)]="entity[attribute.name]" [disabled]="attribute.readonly" [required]="attribute.required">
+          </organization-field>
+        </div>
         <div *ngIf="attribute.type === 'text-area'">
           <label>{{attribute.label}}</label>
           <ng-container *ngIf="attribute.name == 'projectType'">
-          	<select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly" [required]="attribute.required">
-          	  <option></option>
-          	  <option *ngFor="let projectType of projectTypes" [value]="projectType">{{projectType}}</option>
-          	</select>
+            <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly"
+              [required]="attribute.required">
+              <option></option>
+              <option *ngFor="let projectType of projectTypes" [value]="projectType">{{projectType}}</option>
+            </select>
           </ng-container>
           <ng-container *ngIf="attribute.name != 'projectType'">
-          	<textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly"
+            <textarea [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly"
               class="form-control" [required]="attribute.required"></textarea>
           </ng-container>
         </div>
@@ -58,8 +64,8 @@
         </div>
         <div *ngIf="attribute.type === 'boolean'">
           <label>{{attribute.label}}</label>
-          <boolean-field [(value)]="entity[attribute.name]" label="" [disabled]="attribute.readonly" style="padding: 0px 10px;"
-            class="form-control">
+          <boolean-field [(value)]="entity[attribute.name]" label="" [disabled]="attribute.readonly"
+            style="padding: 0px 10px;" class="form-control">
           </boolean-field>
         </div>
         <div *ngIf="attribute.type === 'date'">

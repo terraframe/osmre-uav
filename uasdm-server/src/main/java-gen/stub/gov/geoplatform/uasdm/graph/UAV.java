@@ -39,6 +39,7 @@ import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
+import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 
 public class UAV extends UAVBase implements JSONSerializable
@@ -199,8 +200,12 @@ public class UAV extends UAVBase implements JSONSerializable
     uav.setSerialNumber(json.getString(UAV.SERIALNUMBER));
     uav.setFaaNumber(json.getString(UAV.FAANUMBER));
     uav.setDescription(json.has(UAV.DESCRIPTION) ? json.getString(UAV.DESCRIPTION) : null);
-    uav.setBureau(Bureau.get(json.getString(UAV.BUREAU)));
-    uav.setOrganization(ServerOrganization.getByCode(json.getString(UAV.ORGANIZATION)).getGraphOrganization());
+    // uav.setBureau(Bureau.get(json.getString(UAV.BUREAU)));
+
+    JSONObject organization = json.getJSONObject(UAV.ORGANIZATION);
+    String code = organization.getString(Organization.CODE);
+
+    uav.setOrganization(ServerOrganization.getByCode(code).getGraphOrganization());
 
     if (json.has(UAV.PLATFORM))
     {

@@ -15,6 +15,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { TreeModule } from "@circlon/angular-tree-component";
 
 import './rxjs-extensions';
 
@@ -49,7 +50,8 @@ import { ConfigurationService } from '@core/service/configuration.service';
         AccordionModule.forRoot(),
         NgxPaginationModule,
         SharedModule.forRoot(),
-        CollapseModule.forRoot()
+        CollapseModule.forRoot(),
+        TreeModule,
     ],
     declarations: [
         UasdmAppComponent,

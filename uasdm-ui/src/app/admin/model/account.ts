@@ -2,11 +2,12 @@
 ///
 ///
 
+import { LocalizedValue } from "@shared/model/organization";
+
 export class UserInvite {
 	email: string;
-	bureau: string;
+	organization: { code: string, label: LocalizedValue };
 	groups: Group[];
-	bureaus: { value: string, label: string }[];
 }
 
 export class User {
@@ -17,7 +18,7 @@ export class User {
 	lastName: string;
 	email: string;
 	phoneNumber: string;
-	bureau: string;
+	organization: { code: string, label: LocalizedValue };
 	information: string;
 	inactive: boolean;
 	newInstance: boolean;
@@ -37,6 +38,5 @@ export class Group {
 export class Account {
 	user: User;
 	groups: Group[];
-	bureaus: { value: string, label: string }[];
 	changePassword?: boolean;
 }

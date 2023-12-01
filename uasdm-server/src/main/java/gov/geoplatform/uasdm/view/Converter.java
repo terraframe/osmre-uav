@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -22,9 +22,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import org.commongeoregistry.adapter.metadata.OrganizationDTO;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
+import com.google.gson.JsonObject;
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.business.rbac.Operation;
 import com.runwaysdk.session.ReadPermissionException;
@@ -51,6 +54,8 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.model.ServerOrganization;
 
 public abstract class Converter
 {
@@ -88,6 +93,20 @@ public abstract class Converter
         Date date = uasComponent.getObjectValue(attribute.getName());
 
         siteItem.setValue(attribute.getName(), Util.formatIso8601(date, false));
+      }
+      else if (attribute instanceof AttributeOrganizationType)
+      {
+        String oid = uasComponent.getObjectValue(attribute.getName());
+        ServerOrganization organization = ServerOrganization.getByGraphId(oid);
+        OrganizationDTO dto = organization.toDTO();
+
+        JsonObject object = dto.toJSON();
+        object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+        object.remove(OrganizationDTO.JSON_ENABLED);
+        object.remove(OrganizationDTO.JSON_PARENT_CODE);
+        object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+        siteItem.setValue(attribute.getName(), new JSONObject(object.toString()));
       }
       else
       {
@@ -219,7 +238,21 @@ public abstract class Converter
 
     for (AttributeType attribute : attributes)
     {
-      uasComponent.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
+      Object value = siteItem.getValue(attribute.getName());
+
+      if (attribute instanceof AttributeOrganizationType)
+      {
+        JSONObject object = (JSONObject) value;
+        String code = object.getString(Organization.CODE);
+
+        ServerOrganization org = ServerOrganization.getByCode(code);
+
+        uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
+      }
+      else
+      {
+        uasComponent.setValue(attribute.getName(), value);
+      }
     }
 
     Geometry geometry = siteItem.getGeometry();

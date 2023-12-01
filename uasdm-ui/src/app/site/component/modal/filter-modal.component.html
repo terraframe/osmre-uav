@@ -11,13 +11,9 @@
 
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>Bureau</label>
-          <select [(ngModel)]="filter.bureau" name="filter" class="form-control">
-            <option></option>
-            <option *ngFor="let bureau of bureaus" [value]="bureau.value">
-              {{bureau.label}}
-            </option>
-          </select>
+          <label>Organization</label>
+          <organization-field name="organization" [(value)]="filter.organization">
+          </organization-field>
         </div>
       </div>
       <div class="row" style="margin-right: 10px;">

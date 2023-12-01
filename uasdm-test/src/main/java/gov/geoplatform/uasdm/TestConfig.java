@@ -27,10 +27,10 @@ import org.springframework.context.annotation.Configuration;
 
 import gov.geoplatform.uasdm.mock.MockHttpServletRequest;
 import gov.geoplatform.uasdm.mock.MockHttpServletResponse;
-import net.geoprism.rbac.RoleBusinessService;
-import net.geoprism.rbac.RoleBusinessServiceIF;
-import net.geoprism.rbac.RoleService;
-import net.geoprism.rbac.RoleServiceIF;
+import net.geoprism.registry.service.business.RoleBusinessService;
+import net.geoprism.registry.service.business.RoleBusinessServiceIF;
+import net.geoprism.registry.service.request.RoleService;
+import net.geoprism.registry.service.request.RoleServiceIF;
 
 @Configuration
 @ComponentScan(basePackages = { "net.geoprism.registry.service", "net.geoprism.registry.spring", "net.geoprism.spring", "net.geoprism.graph", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service", "net.geoprism.account" })
@@ -46,17 +46,5 @@ public class TestConfig
   HttpServletResponse response()
   {
     return new MockHttpServletResponse();
-  }
-
-  @Bean
-  RoleServiceIF roleServiceIF()
-  {
-    return new RoleService();
-  }
-
-  @Bean
-  RoleBusinessServiceIF roleBusinessServiceIF()
-  {
-    return new RoleBusinessService();
   }
 }

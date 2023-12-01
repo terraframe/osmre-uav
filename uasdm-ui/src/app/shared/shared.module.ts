@@ -55,6 +55,11 @@ import { HttpBackendClient } from './service/http-backend-client.service';
 
 import { LPGSyncService } from './service/lpg-sync.service';
 import { OrganizationSyncService } from './service/organization-sync.service';
+import { OrganizationService } from './service/organization.service';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { OrganizationFieldComponent } from './component/organization-field/organization-field.component';
+import { OrganizationHierarchyModalComponent } from './component/organization-field/organization-hierarchy-modal.component';
 
 
 @NgModule({
@@ -68,6 +73,8 @@ import { OrganizationSyncService } from './service/organization-sync.service';
 		TypeaheadModule,
 		AccordionModule,
 		CollapseModule.forRoot(),
+		ContextMenuModule,
+		TreeModule,
 
         TableModule,
 		SliderModule,
@@ -95,7 +102,9 @@ import { OrganizationSyncService } from './service/organization-sync.service';
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
 		PasswordValidatorDirective,
-		GenericTableComponent
+		GenericTableComponent,
+		OrganizationFieldComponent,
+		OrganizationHierarchyModalComponent
 	],
 	exports: [
 		UasdmHeaderComponent,
@@ -116,7 +125,9 @@ import { OrganizationSyncService } from './service/organization-sync.service';
 		MustMatchDirective,
 		PhoneNumberValidatorDirective,
 		PasswordValidatorDirective,
-		GenericTableComponent
+		GenericTableComponent,
+		OrganizationFieldComponent,
+		OrganizationHierarchyModalComponent
 	],
 	entryComponents: [
 		ErrorModalComponent,
@@ -143,7 +154,8 @@ export class SharedModule {
 				AuthGuard,
 				HttpBackendClient,
 				LPGSyncService,
-				OrganizationSyncService
+				OrganizationSyncService,
+				OrganizationService
 			]
 		};
 	}

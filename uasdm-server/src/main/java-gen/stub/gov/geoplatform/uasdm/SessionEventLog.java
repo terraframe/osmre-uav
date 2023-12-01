@@ -30,6 +30,7 @@ import com.runwaysdk.system.SingleActor;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.service.SessionEventService;
+import net.geoprism.registry.Organization;
 
 public class SessionEventLog extends SessionEventLogBase implements JSONSerializable
 {
@@ -50,7 +51,7 @@ public class SessionEventLog extends SessionEventLogBase implements JSONSerializ
 
     if (!StringUtils.isBlank(this.getOrganizationOid()))
     {
-      object.put(SessionEventLog.ORGANIZATION, this.getOrganization().getCode());
+      object.put(SessionEventLog.ORGANIZATION, this.getOrganization().getDisplayLabel().getValue());
     }
 
     return object;
@@ -74,7 +75,13 @@ public class SessionEventLog extends SessionEventLogBase implements JSONSerializ
 
       if (info != null)
       {
-        log.setBureau(info.getBureau());
+        try (OIterator<? extends Organization> it = info.getAllOrganization())
+        {
+          if (it.hasNext())
+          {
+            log.setOrganization(it.next());
+          }
+        }
       }
     }
 

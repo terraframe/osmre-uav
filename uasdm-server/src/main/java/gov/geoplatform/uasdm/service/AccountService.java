@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.session.Request;
@@ -35,11 +34,7 @@ import gov.geoplatform.uasdm.bus.InvalidPasswordException;
 import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
-import net.geoprism.GeoprismUserDTO;
 import net.geoprism.account.ExternalProfile;
-import net.geoprism.account.ExternalProfileDTO;
-import net.geoprism.account.GeoprismUserView;
-import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 
 @Service
 public class AccountService
@@ -118,16 +113,7 @@ public class AccountService
       }
       else
       {
-        ExternalProfile ep = (ExternalProfile) user;
-
-        UserInfo info = UserInfo.getByUser(user);
-        String bureau = null;
-        if (info != null && info.getBureau() != null)
-        {
-          bureau = info.getBureau().getDisplayLabel();
-        }
-
-        return new IDMUserView(ep.getDisplayName(), ep.getEmail(), ep.getFirstName(), ep.getLastName(), ep.getPhoneNumber(), ep.getOid(), bureau);
+        return IDMUserView.fromUser((ExternalProfile) user, UserInfo.getByUser(user));
       }
     }
 
