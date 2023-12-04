@@ -15,14 +15,8 @@
  */
 package gov.geoplatform.uasdm;
 
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,22 +26,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
-import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
-import com.runwaysdk.dataaccess.MdBusinessDAOIF;
-import com.runwaysdk.dataaccess.MdRelationshipDAOIF;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.dataaccess.database.Database;
-import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
-import com.runwaysdk.dataaccess.metadata.MdRelationshipDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.SingleActor;
-import com.runwaysdk.system.Users;
 
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
 import net.geoprism.spring.ApplicationContextHolder;
@@ -85,11 +73,11 @@ public class UserInfo extends UserInfoBase
 
   public static JSONObject getByUserId(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     UserInfo info = UserInfo.getByUser(user);
 
-    return UserInfo.serialize(user, info);
+    return UserInfo.serialize((GeoprismActorIF) user, info);
   }
 
   @Transaction
@@ -112,7 +100,12 @@ public class UserInfo extends UserInfoBase
   @Transaction
   public static JSONObject applyUserWithRoles(JSONObject account, String roleIds)
   {
-    GeoprismUser user = deserialize(account);
+    GeoprismActorIF user = deserialize(account);
+    
+    if (user instanceof ExternalProfile)
+    {
+      ( (ExternalProfile) user ).setRemoteId(user.getUsername());
+    }
 
     if (roleIds != null)
     {
@@ -133,12 +126,12 @@ public class UserInfo extends UserInfoBase
       user.apply();
     }
 
-    UserInfo info = getByUser(user);
+    UserInfo info = getByUser((SingleActor) user);
 
     if (info == null)
     {
       info = new UserInfo();
-      info.setGeoprismUser(user);
+      info.setGeoprismUser((SingleActor) user);
     }
     else
     {
@@ -198,7 +191,7 @@ public class UserInfo extends UserInfoBase
     return serialize(user, info);
   }
 
-  private static JSONObject serialize(GeoprismUser user, UserInfo info)
+  private static JSONObject serialize(GeoprismActorIF user, UserInfo info)
   {
     JSONObject result = new JSONObject();
     result.put(GeoprismUser.OID, user.getOid());
@@ -208,6 +201,7 @@ public class UserInfo extends UserInfoBase
     result.put(GeoprismUser.PHONENUMBER, user.getPhoneNumber());
     result.put(GeoprismUser.EMAIL, user.getEmail());
     result.put(GeoprismUser.INACTIVE, user.getInactive());
+    result.put("externalProfile", (user instanceof ExternalProfile));
 
     if (info != null)
     {
@@ -235,19 +229,26 @@ public class UserInfo extends UserInfoBase
     return result;
   }
 
-  public static GeoprismUser deserialize(JSONObject account)
+  public static GeoprismActorIF deserialize(JSONObject account)
   {
-    GeoprismUser user = null;
+    GeoprismActorIF user = null;
 
     if (account.has(GeoprismUser.OID))
     {
       String userId = account.getString(GeoprismUser.OID);
 
-      user = GeoprismUser.lock(userId);
+      user = (GeoprismActorIF) SingleActor.lock(userId);
     }
     else
     {
-      user = new GeoprismUser();
+      if (AppProperties.requireKeycloakLogin())
+      {
+        user = new ExternalProfile();
+      }
+      else
+      {
+        user = new GeoprismUser();
+      }
     }
 
     user.setUsername(account.getString(GeoprismUser.USERNAME));
@@ -265,13 +266,13 @@ public class UserInfo extends UserInfoBase
       user.setInactive(account.getBoolean(GeoprismUser.INACTIVE));
     }
 
-    if (account.has(GeoprismUser.PASSWORD))
+    if (account.has(GeoprismUser.PASSWORD) && user instanceof GeoprismUser)
     {
       String password = account.getString(GeoprismUser.PASSWORD);
 
       if (password != null && password.length() > 0)
       {
-        user.setPassword(password);
+        ((GeoprismUser)user).setPassword(password);
       }
     }
 

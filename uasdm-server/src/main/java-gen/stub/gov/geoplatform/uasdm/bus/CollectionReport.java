@@ -61,6 +61,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.registry.model.ServerOrganization;
 
 public class CollectionReport extends CollectionReportBase implements JSONSerializable
@@ -601,7 +602,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void update(GeoprismUser actor)
+  public static void update(GeoprismActorIF actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getActor().EQ(actor.getOid()));

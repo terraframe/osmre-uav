@@ -1,7 +1,7 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
     <create>
-      <mdException name="gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException" message="A user with the email address [{email}] has not been created in IDM. Contact your Geoplatform technical support for help logging in." >
+      <mdException name="gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException" message="A user with the email address [{email}] has not been created in IDM. Contact your technical support for help logging in." >
         <attributes>
           <text name="email"/>
         </attributes>

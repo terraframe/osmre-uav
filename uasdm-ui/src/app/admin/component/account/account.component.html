@@ -17,19 +17,19 @@
       <label>
         <localize key="account.firstname"></localize>
       </label>
-      <input type="text" [(ngModel)]="account.user.firstName" name="firstname" required>
+      <input type="text" [(ngModel)]="account.user.firstName" name="firstname" required [disabled]="account.user.externalProfile">
     </div>
     <div class="form-group">
       <label>
         <localize key="account.lastname"></localize>
       </label>
-      <input type="text" [(ngModel)]="account.user.lastName" name="lastname" required>
+      <input type="text" [(ngModel)]="account.user.lastName" name="lastname" required [disabled]="account.user.externalProfile">
     </div>
     <div class="form-group">
       <label>
         <localize key="account.phonenumber"></localize>
       </label>
-      <input type="text" [(ngModel)]="account.user.phoneNumber" name="phoneNumber" phoneNumber #phoneNumber="ngModel">
+      <input type="text" [(ngModel)]="account.user.phoneNumber" name="phoneNumber" phoneNumber #phoneNumber="ngModel" [disabled]="account.user.externalProfile">
       <div *ngIf="phoneNumber.errors?.phoneNumber" class="inline-error-message">
         Invalid phone number
       </div>
@@ -38,7 +38,7 @@
       <label>
         <localize key="account.email"></localize>
       </label>
-      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email>
+      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email [disabled]="account.user.externalProfile">
       <div *ngIf="aemail.errors?.email && account.user.email && account.user.email.length > 0"
         class="inline-error-message">
         <localize key="account.email.validation"></localize>
@@ -64,13 +64,13 @@
       <label>
         <localize key="account.username"></localize>
       </label>
-      <input type="text" [disabled]="!account.user.newInstance && account.user.username === 'admin'"
+      <input type="text" [disabled]="account.user.externalProfile || (!account.user.newInstance && account.user.username === 'admin')"
         [(ngModel)]="account.user.username" name="username" required>
     </div>
-    <div *ngIf="!account.user.newInstance" class="form-group">
+    <div *ngIf="!account.user.externalProfile && !account.user.newInstance" class="form-group">
       <boolean-field [(value)]="account.changePassword" [label]="'account.changePassword' | localize"></boolean-field>
     </div>
-    <div *ngIf="account.changePassword || account.user.newInstance">
+    <div *ngIf="!account.user.externalProfile && (account.changePassword || account.user.newInstance)">
       <div class="form-group">
         <label>
           <localize key="account.password"></localize>

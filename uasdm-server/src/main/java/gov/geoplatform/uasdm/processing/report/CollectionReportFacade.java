@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportTask.Type;
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.GeoprismActorIF;
 
 public class CollectionReportFacade
 {
@@ -72,7 +73,7 @@ public class CollectionReportFacade
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.PRODUCT, product));
   }
 
-  public static Command update(GeoprismUser actor)
+  public static Command update(GeoprismActorIF actor)
   {
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.USER, actor));
   }

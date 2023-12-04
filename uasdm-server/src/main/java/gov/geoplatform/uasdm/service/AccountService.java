@@ -35,6 +35,7 @@ import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.GeoprismActorIF;
 
 @Service
 public class AccountService
@@ -93,9 +94,9 @@ public class AccountService
       throw new InvalidPasswordException();
     }
 
-    final GeoprismUser user = UserInfo.deserialize(object);
+    final GeoprismActorIF user = UserInfo.deserialize(object);
 
-    UserInvite.complete(token, user);
+    UserInvite.complete(token, (GeoprismUser) user);
   }
 
   @Request(RequestType.SESSION)

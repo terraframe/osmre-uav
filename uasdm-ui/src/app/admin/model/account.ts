@@ -22,6 +22,7 @@ export class User {
 	information: string;
 	inactive: boolean;
 	newInstance: boolean;
+	externalProfile?: boolean;
 }
 
 export class Role {
