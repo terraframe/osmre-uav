@@ -14,6 +14,9 @@ import { Organization } from '@shared/model/organization';
 import { OrganizationService } from '@shared/service/organization.service';
 import { OrganizationHierarchyModalComponent } from '../../../shared/component/organization-field/organization-hierarchy-modal.component';
 import { ConfigurationService } from '@core/service/configuration.service';
+import { PageResult } from '@shared/model/page';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandler } from '@shared/component';
 
 @Component({
     selector: 'system-configuration',
@@ -26,7 +29,12 @@ export class SystemConfigurationComponent implements OnInit {
     admin: boolean = false;
 
     private bsModalRef: BsModalRef;
-    organizations: Organization[] = [];
+    organizations: PageResult<Organization> = {
+        resultSet: [],
+        count: 0,
+        pageNumber: 1,
+        pageSize: 10
+    };
 
     requireKeycloakLogin: boolean;
 
@@ -42,10 +50,16 @@ export class SystemConfigurationComponent implements OnInit {
     ngOnInit(): void {
         this.userName = this.authService.getUserName();
         this.admin = this.authService.isAdmin();
-        this.orgService.getOrganizations().then(organizations => {
-            this.organizations = organizations;
+
+        this.onOrgPageChange(1);
+    }
+
+    onOrgPageChange(pageNumber: number): void {
+        this.orgService.page(pageNumber, this.organizations.pageSize).then(oPage => {
+            this.organizations = oPage;
         });
     }
+
 
     open(): void {
         this.bsModalRef = this.modalService.show(EmailComponent, {

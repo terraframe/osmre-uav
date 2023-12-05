@@ -9,7 +9,7 @@
   <div id="app-container" class="container">
 
     <h2>System Configuration</h2>
-    
+
     <accounts *ngIf="!requireKeycloakLogin"></accounts>
 
     <system-logos></system-logos>
@@ -50,7 +50,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let org of organizations">
+              <tr
+                *ngFor="let org of organizations.resultSet | paginate: { id:'orgs', itemsPerPage: organizations.pageSize, currentPage: organizations.pageNumber, totalItems: organizations.count }">
                 <td class="label-column">{{org.code}}</td>
                 <td class="label-column">{{org.label.localizedValue}}</td>
                 <td class="label-column">
@@ -64,6 +65,8 @@
               </tr>
             </tbody>
           </table>
+          <pagination-controls id="orgs" (pageChange)="onOrgPageChange($event)"></pagination-controls>
+
         </div>
       </div>
 

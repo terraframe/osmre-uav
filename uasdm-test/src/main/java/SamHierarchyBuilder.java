@@ -1,0 +1,177 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class SamHierarchyBuilder
+{
+  private String apiKey;
+
+  private String folderName;
+
+  private String resultPath;
+
+  public SamHierarchyBuilder(String apiKey, String folderName, String resultPath)
+  {
+    super();
+    this.apiKey = apiKey;
+    this.folderName = folderName;
+    this.resultPath = resultPath;
+  }
+
+  public void run() throws Exception
+  {
+    // DOI and USDA organizations
+    List<String> rootIds = Arrays.asList("100010393", "100006809");
+
+    JsonArray roots = new JsonArray();
+
+    for (String rootId : rootIds)
+    {
+      JsonObject root = processFile(rootId);
+
+      if (root != null)
+      {
+        roots.add(root);
+      }
+    }
+
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    try (FileWriter writer = new FileWriter(new File(this.resultPath)))
+    {
+      gson.toJson(roots, writer);
+    }
+  }
+
+  private JsonObject processFile(String rootId) throws FileNotFoundException
+  {
+
+    JsonObject root = null;
+
+    Stack<File> files = new Stack<>();
+    files.push(new File(this.folderName, "hierarchy_" + rootId + ".json"));
+
+    int count = 0;
+
+    while (!files.isEmpty())
+    {
+      File file = files.pop();
+
+      if (file.exists())
+      {
+        JsonObject object = JsonParser.parseReader(new FileReader(file)).getAsJsonObject();
+        JsonArray orgs = object.get("orglist").getAsJsonArray();
+
+        if (count == 0)
+        {
+          long totalRecords = object.get("totalrecords").getAsLong();
+
+          int offset = 100;
+
+          while (totalRecords >= 100)
+          {
+            files.push(new File(this.folderName, "hierarchy_" + rootId + "_" + offset + ".json"));
+
+            totalRecords -= 100;
+            offset += 100;
+          }
+        }
+
+        for (int i = 0; i < orgs.size(); i++)
+        {
+          JsonObject organization = orgs.get(i).getAsJsonObject();
+          String status = organization.get("status").getAsString();
+
+          if (!status.equals("INACTIVE"))
+          {
+            String name = organization.get("fhorgname").getAsString();
+            long orgId = organization.get("fhorgid").getAsLong();
+
+            JsonObject obj = new JsonObject();
+            obj.addProperty("code", Long.toString(orgId));
+            obj.addProperty("enabled", true);
+            obj.add("label", getLocalizedValue(name));
+            obj.add("contactInfo", getLocalizedValue(""));
+            obj.add("children", new JsonArray());
+
+            JsonArray links = organization.get("links").getAsJsonArray();
+
+            for (int j = 0; j < links.size(); j++)
+            {
+              JsonObject link = links.get(j).getAsJsonObject();
+              String rel = link.get("rel").getAsString();
+              String href = link.get("href").getAsString();
+
+              if (rel.equals("nextlevelchildren"))
+              {
+                String[] split = href.split("fhorgid=");
+                String childId = split[1];
+
+                if (!childId.equals(rootId))
+                {
+                  JsonObject child = processFile(childId);
+
+                  if (child != null)
+                  {
+                    obj = child;
+                  }
+                }
+              }
+            }
+
+            if (i == 0 && root == null)
+            {
+              root = obj;
+            }
+            else
+            {
+              JsonArray children = root.get("children").getAsJsonArray();
+              children.add(obj);
+            }
+          }
+        }
+      }
+      else
+      {
+        int offset = count * 100;
+
+        System.err.println("curl \"https://api.sam.gov/prod/federalorganizations/v1/org/hierarchy?fhorgid=" + rootId + "&offset=" + offset + "&limit=100&api_key=" + this.apiKey + "\" | json_pp > hierarchy_" + rootId + ( offset != 0 ? "_" + offset : "" ) + ".json");
+      }
+
+      count++;
+    }
+
+    return root;
+  }
+
+  private JsonObject getLocalizedValue(String name)
+  {
+    JsonObject localeValue = new JsonObject();
+    localeValue.addProperty("locale", "defaultLocale");
+    localeValue.addProperty("value", name);
+
+    JsonArray localeValues = new JsonArray();
+    localeValues.add(localeValue);
+
+    JsonObject label = new JsonObject();
+    label.addProperty("localizedValue", name);
+    label.add("localeValues", localeValues);
+    return label;
+  }
+
+  public static void main(String[] args) throws Exception
+  {
+    new SamHierarchyBuilder(args[0], args[1], args[2]).run();
+  }
+
+}

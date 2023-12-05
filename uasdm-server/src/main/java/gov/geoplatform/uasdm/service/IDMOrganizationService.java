@@ -31,4 +31,10 @@ public class IDMOrganizationService extends OrganizationService implements Organ
     return organizations.stream().map(org -> org.toDTO()).collect(Collectors.toList());
   }
 
+  @Request(RequestType.SESSION)
+  public void patch(String sessionId)
+  {
+    this.service.patch();
+  }
+
 }
