@@ -66,7 +66,7 @@ public class UserInfo extends UserInfoBase
 
   public static UserInfo getUserInfo(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     return UserInfo.getByUser(user);
   }
@@ -83,7 +83,7 @@ public class UserInfo extends UserInfoBase
   @Transaction
   public static void removeByUser(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     UserInfo info = UserInfo.getByUser(user);
 
@@ -92,7 +92,7 @@ public class UserInfo extends UserInfoBase
       info.delete();
     }
 
-    CollectionReportFacade.handleDelete(user).doIt();
+    CollectionReportFacade.handleDelete((GeoprismActorIF) user).doIt();
 
     user.delete();
   }

@@ -74,6 +74,12 @@ export class AccountsComponent implements OnInit {
 
 
 	onRemove(user: User): void {
+		if (user.username == "admin")
+		{
+			alert("You cannot delete the admin user.");
+			return;
+		}
+		
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true,

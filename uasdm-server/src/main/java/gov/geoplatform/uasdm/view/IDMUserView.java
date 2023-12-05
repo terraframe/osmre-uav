@@ -23,8 +23,8 @@ import org.springframework.lang.Nullable;
 import com.runwaysdk.query.OIterator;
 
 import gov.geoplatform.uasdm.UserInfo;
-import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.account.GeoprismUserView;
 import net.geoprism.registry.Organization;
 
@@ -50,7 +50,7 @@ public class IDMUserView extends GeoprismUserView
     this.organization = organization;
   }
 
-  public static IDMUserView fromUser(GeoprismUser user, UserInfo info)
+  public static IDMUserView fromUser(GeoprismActorIF user, UserInfo info)
   {
     // The admin user doesn't have an associated UserInfo object. So info will
     // be null in that scenario.
@@ -67,22 +67,5 @@ public class IDMUserView extends GeoprismUserView
     }
 
     return new IDMUserView(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getPhoneNumber(), user.getOid(), organization);
-  }
-
-  public static IDMUserView fromUser(ExternalProfile profile, UserInfo info)
-  {
-    String organization = null;
-
-    if (info != null)
-    {
-      try (OIterator<? extends Organization> it = info.getAllOrganization())
-      {
-        List<String> orgs = it.getAll().stream().map(o -> o.getDisplayLabel().getValue()).collect(Collectors.toList());
-
-        organization = String.join(",", orgs);
-      }
-    }
-
-    return new IDMUserView(profile.getUsername(), profile.getEmail(), profile.getFirstName(), profile.getLastName(), profile.getPhoneNumber(), profile.getOid(), organization);
   }
 }

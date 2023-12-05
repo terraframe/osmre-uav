@@ -108,14 +108,7 @@ public class AccountService
     {
       SingleActor user = SingleActor.get(session.getUser().getOid());
 
-      if (! ( user instanceof ExternalProfile ))
-      {
-        return IDMUserView.fromUser((GeoprismUser) user, UserInfo.getByUser(user));
-      }
-      else
-      {
-        return IDMUserView.fromUser((ExternalProfile) user, UserInfo.getByUser(user));
-      }
+      return IDMUserView.fromUser((GeoprismActorIF) user, UserInfo.getByUser(user));
     }
 
     return null;

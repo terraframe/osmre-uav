@@ -45,6 +45,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -60,7 +61,6 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import net.geoprism.GeoprismUser;
 import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.registry.model.ServerOrganization;
 
@@ -168,7 +168,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     gov.geoplatform.uasdm.graph.UAV uav = child.getUav();
     Sensor sensor = child.getSensor();
     ServerOrganization organization = site.getServerOrganization();
-    GeoprismUser owner = (GeoprismUser) collection.getOwner();
+    GeoprismActorIF owner = (GeoprismActorIF) collection.getOwner();
 
     Point geometry = site.getGeoPoint();
 
@@ -192,7 +192,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
     if (owner != null)
     {
-      report.setActor(owner);
+      report.setActor((Actor) owner);
       report.setUserName(owner.getUsername());
     }
     else
@@ -771,7 +771,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void handleDelete(GeoprismUser actor)
+  public static void handleDelete(GeoprismActorIF actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getActor().EQ(actor.getOid()));

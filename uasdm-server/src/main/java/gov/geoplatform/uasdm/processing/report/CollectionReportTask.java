@@ -26,7 +26,6 @@ import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import net.geoprism.GeoprismUser;
 import net.geoprism.account.GeoprismActorIF;
 
 public class CollectionReportTask implements Runnable
@@ -116,7 +115,7 @@ public class CollectionReportTask implements Runnable
       }
       else if (this.type.equals(Type.DELETE_USER))
       {
-        CollectionReport.handleDelete((GeoprismUser) this.component[0]);
+        CollectionReport.handleDelete((GeoprismActorIF) this.component[0]);
       }
       else if (this.type.equals(Type.DELETE_SENSOR))
       {
