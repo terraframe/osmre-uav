@@ -23,6 +23,7 @@ import com.runwaysdk.dataaccess.metadata.MdRelationshipDAO;
 import com.runwaysdk.system.Users;
 
 import net.geoprism.GeoprismUser;
+import net.geoprism.account.ExternalProfile;
 import net.geoprism.registry.Organization;
 
 public class UserInfoPageQuery
@@ -37,16 +38,25 @@ public class UserInfoPageQuery
   private void addFromClause(StringBuilder statement)
   {
     MdBusinessDAOIF mdUserInfo = MdBusinessDAO.getMdBusinessDAO(UserInfo.CLASS);
-    MdBusinessDAOIF mdGeoUser = MdBusinessDAO.getMdBusinessDAO(GeoprismUser.CLASS);
-    MdBusinessDAOIF mdUser = MdBusinessDAO.getMdBusinessDAO(Users.CLASS);
     MdBusinessDAOIF mdOrganization = MdBusinessDAO.getMdBusinessDAO(Organization.CLASS);
     MdRelationshipDAOIF mdOrganizationHasUser = MdRelationshipDAO.getMdRelationshipDAO(OrganizationHasUser.CLASS);
 
-    statement.append(" FROM " + mdGeoUser.getTableName() + " AS geo_user" + "\n");
+    if (AppProperties.requireKeycloakLogin())
+    {
+      MdBusinessDAOIF mdUser = MdBusinessDAO.getMdBusinessDAO(ExternalProfile.CLASS);
+      statement.append(" FROM " + mdUser.getTableName() + " AS geo_user" + "\n");
+    }
+    else
+    {
+      MdBusinessDAOIF mdGeoUser = MdBusinessDAO.getMdBusinessDAO(GeoprismUser.CLASS);
+      MdBusinessDAOIF mdUser = MdBusinessDAO.getMdBusinessDAO(Users.CLASS);
+      statement.append(" FROM " + mdGeoUser.getTableName() + " AS geo_user" + "\n");
+      statement.append(" LEFT JOIN " + mdUser.getTableName() + " AS _user ON _user.oid = geo_user.oid" + "\n");
+    }
+    
     statement.append(" LEFT JOIN " + mdUserInfo.getTableName() + " AS user_info ON user_info." + mdUserInfo.definesAttribute(UserInfo.GEOPRISMUSER).getColumnName() + " = geo_user.oid" + "\n");
     statement.append(" LEFT JOIN " + mdOrganizationHasUser.getTableName() + " AS org_user ON org_user.child_oid = user_info.oid" + "\n");
     statement.append(" LEFT JOIN " + mdOrganization.getTableName() + " AS org ON org_user.parent_oid = org.oid" + "\n");
-    statement.append(" LEFT JOIN " + mdUser.getTableName() + " AS _user ON _user.oid = geo_user.oid" + "\n");
   }
 
   @SuppressWarnings("unchecked")

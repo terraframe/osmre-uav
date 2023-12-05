@@ -35,6 +35,7 @@ import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.GeoprismActorIF;
 
 @Service
 public class AccountService
@@ -93,9 +94,9 @@ public class AccountService
       throw new InvalidPasswordException();
     }
 
-    final GeoprismUser user = UserInfo.deserialize(object);
+    final GeoprismActorIF user = UserInfo.deserialize(object);
 
-    UserInvite.complete(token, user);
+    UserInvite.complete(token, (GeoprismUser) user);
   }
 
   @Request(RequestType.SESSION)
@@ -107,14 +108,7 @@ public class AccountService
     {
       SingleActor user = SingleActor.get(session.getUser().getOid());
 
-      if (! ( user instanceof ExternalProfile ))
-      {
-        return IDMUserView.fromUser((GeoprismUser) user, UserInfo.getByUser(user));
-      }
-      else
-      {
-        return IDMUserView.fromUser((ExternalProfile) user, UserInfo.getByUser(user));
-      }
+      return IDMUserView.fromUser((GeoprismActorIF) user, UserInfo.getByUser(user));
     }
 
     return null;
