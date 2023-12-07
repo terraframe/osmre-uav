@@ -14,6 +14,25 @@ import com.google.gson.JsonParser;
 
 public class SamHierarchyBuilder
 {
+  private static class FileEntry
+  {
+    File file;
+
+    int  offset;
+
+    public FileEntry(File file)
+    {
+      this.file = file;
+      this.offset = 0;
+    }
+
+    public FileEntry(File file, int offset)
+    {
+      this.file = file;
+      this.offset = offset;
+    }
+  }
+
   private String apiKey;
 
   private String folderName;
@@ -58,14 +77,15 @@ public class SamHierarchyBuilder
 
     JsonObject root = null;
 
-    Stack<File> files = new Stack<>();
-    files.push(new File(this.folderName, "hierarchy_" + rootId + ".json"));
+    Stack<FileEntry> files = new Stack<>();
+    files.push(new FileEntry(new File(this.folderName, "hierarchy_" + rootId + ".json")));
 
     int count = 0;
 
     while (!files.isEmpty())
     {
-      File file = files.pop();
+      FileEntry entry = files.pop();
+      File file = entry.file;
 
       if (file.exists())
       {
@@ -80,7 +100,7 @@ public class SamHierarchyBuilder
 
           while (totalRecords >= 100)
           {
-            files.push(new File(this.folderName, "hierarchy_" + rootId + "_" + offset + ".json"));
+            files.push(new FileEntry(new File(this.folderName, "hierarchy_" + rootId + "_" + offset + ".json"), offset));
 
             totalRecords -= 100;
             offset += 100;
@@ -143,8 +163,7 @@ public class SamHierarchyBuilder
       }
       else
       {
-        int offset = count * 100;
-
+        int offset = entry.offset;
         System.err.println("curl \"https://api.sam.gov/prod/federalorganizations/v1/org/hierarchy?fhorgid=" + rootId + "&offset=" + offset + "&limit=100&api_key=" + this.apiKey + "\" | json_pp > hierarchy_" + rootId + ( offset != 0 ? "_" + offset : "" ) + ".json");
       }
 
