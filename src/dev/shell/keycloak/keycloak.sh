@@ -47,6 +47,17 @@ docker run --user root --name keycloak -d -p 8021:8443 \
   -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin \
   quay.io/keycloak/keycloak:12.0.2
 
+#docker run --user root --name keycloak -d -p 8021:8443 \
+#  -v $SSL/keystore.ks:/opt/keycloak/ssl/keystore.ks \
+#  -v $RESOURCES/realm-export.json:/opt/keycloak/data/import/myrealm.json \
+#  -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
+#  -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
+#  quay.io/keycloak/keycloak:latest start-dev --import-realm --https-key-store-file=/opt/keycloak/ssl/keystore.ks --https-key-store-password=2v8hVW2rPFncN6m
+
+  
+# -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
+  
+
 #  --entrypoint="/opt/keycloak/ssl/add-cert-to-java-truststore.sh" \
 
 #docker exec -u root keycloak /opt/keycloak/ssl/add-cert-to-java-truststore.sh
@@ -55,4 +66,4 @@ docker run --user root --name keycloak -d -p 8021:8443 \
 #docker exec -u root keycloak bash -c "echo '172.17.0.1 localhost' > /etc/hosts"
 #echo "Backchannel set to ip 172.17.0.1. If backchanneling is not working, it might be because this ip is wrong. You can verify with 'sudo ip addr show docker0'"
 
-echo "Keycloak is now running at https://localhost:8021/. Default admin credentials are admin/admin. A default user has been created as cgrkc/cgrkc, but you will need to log into keycloak and set a password. Additionally, make sure that keycloak.enabled is set to true in your envcfg.properties."
+echo "Keycloak is now running at https://localhost:8021/. Keycloak administrative credentials are set up as admin/admin. A realm called 'myrealm' has been created with a user admin/admin, which is what you will use to login to the IDM. Additionally, make sure that keycloak.enabled is set to true and if you're using an angular dev server set up at port 4200 also set keycloak.ng2dev to true in your envcfg.properties."

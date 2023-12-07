@@ -53,8 +53,12 @@ import com.runwaysdk.request.ServletResponseIF;
 import gov.geoplatform.uasdm.IDMSessionService;
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
 
+/*
+ * Not used, only kept here for historical reference.
+ */
 public class IDMKeycloakAdapter
 {
+  /*
   private static IDMKeycloakAdapter instance;
   
   private static final Logger            logger = LoggerFactory.getLogger(IDMKeycloakAdapter.class);
@@ -224,4 +228,5 @@ public class IDMKeycloakAdapter
     
     return null; // TODO
   }
+  */
 }

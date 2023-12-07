@@ -142,6 +142,11 @@ public class AppProperties
   {
     return Singleton.getProps().getBoolean("keycloak.requireKeycloakLogin", false);
   }
+  
+  public static Boolean IsKeycloakNg2Dev()
+  {
+    return Singleton.getProps().getBoolean("keycloak.ng2dev", false);
+  }
 
   public static InputStream getKeycloakConfig()
   {
