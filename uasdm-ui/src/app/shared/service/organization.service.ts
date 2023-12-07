@@ -91,4 +91,14 @@ export class OrganizationService {
             this.http.get<OrganizationNode>(environment.apiUrl + "/api/organization/get-ancestor-tree", { params: params })
         );
     }
+
+    page(pageNumber: number, pageSize: number): Promise<PageResult<Organization>> {
+        let params: HttpParams = new HttpParams();
+        params = params.set("pageNumber", pageNumber.toString());
+        params = params.set("pageSize", pageSize.toString());
+
+        return firstValueFrom(
+            this.http.get<PageResult<Organization>>(environment.apiUrl + "/api/organization/page", { params: params })
+        );
+    }
 }

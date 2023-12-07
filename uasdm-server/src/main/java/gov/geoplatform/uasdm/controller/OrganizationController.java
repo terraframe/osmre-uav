@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.uasdm.service.IDMOrganizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.registry.model.OrganizationView;
+import net.geoprism.registry.view.Page;
 
 @RestController
 @Validated
@@ -53,7 +55,7 @@ public class OrganizationController extends RunwaySpringController
     }
   }
 
-  public static final String    API_PATH = "organization";
+  public static final String     API_PATH = "organization";
 
   @Autowired
   private IDMOrganizationService service;
@@ -111,5 +113,21 @@ public class OrganizationController extends RunwaySpringController
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
+  }
+
+  @GetMapping(API_PATH + "/patch")
+  public ResponseEntity<Void> patch()
+  {
+    this.service.patch(this.getSessionId());
+
+    return new ResponseEntity<Void>(HttpStatus.OK);
+  }
+  
+  @GetMapping(API_PATH + "/page")
+  public ResponseEntity<String> page(@RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  {
+    Page<OrganizationView> page = this.service.getPage(this.getSessionId(), pageSize, pageNumber);
+
+    return new ResponseEntity<String>(page.toJSON().toString(), HttpStatus.OK);
   }
 }

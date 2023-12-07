@@ -19,7 +19,6 @@ import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 @Primary
 public class IDMOrganizationBusinessService extends OrganizationBusinessService implements OrganizationBusinessServiceIF
 {
-
   public List<ServerOrganization> search(String text)
   {
     OrganizationQuery query = new OrganizationQuery(new QueryFactory());
@@ -30,6 +29,11 @@ public class IDMOrganizationBusinessService extends OrganizationBusinessService 
     {
       return iterator.getAll().stream().map(org -> ServerOrganization.get(org)).collect(Collectors.toList());
     }
+  }
+
+  public void patch()
+  {
+    new OrganizationMigrator().run();
   }
 
 }
