@@ -98,15 +98,19 @@ public abstract class Converter
       {
         String oid = uasComponent.getObjectValue(attribute.getName());
         ServerOrganization organization = ServerOrganization.getByGraphId(oid);
-        OrganizationDTO dto = organization.toDTO();
 
-        JsonObject object = dto.toJSON();
-        object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
-        object.remove(OrganizationDTO.JSON_ENABLED);
-        object.remove(OrganizationDTO.JSON_PARENT_CODE);
-        object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+        if (organization != null)
+        {
+          OrganizationDTO dto = organization.toDTO();
 
-        siteItem.setValue(attribute.getName(), new JSONObject(object.toString()));
+          JsonObject object = dto.toJSON();
+          object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+          object.remove(OrganizationDTO.JSON_ENABLED);
+          object.remove(OrganizationDTO.JSON_PARENT_CODE);
+          object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+          siteItem.setValue(attribute.getName(), new JSONObject(object.toString()));
+        }
       }
       else
       {
