@@ -55,16 +55,14 @@ public class IDMSessionService extends SessionService
     if (!AppProperties.requireKeycloakLogin())
     {
       endpoints.add("api/session/login");
+      endpoints.add("api/forgotpassword/initiate");
+      endpoints.add("api/forgotpassword/complete");
+      endpoints.add("api/uasdm-account/inviteComplete");
+      endpoints.add("api/uasdm-account/newInstance");
     }
     
     endpoints.add("api/session/ologin");
     endpoints.add("api/session/logout");
-    // endpoints.add("api/invite-user/initiate");
-    // endpoints.add("api/invite-user/complete");
-    endpoints.add("api/forgotpassword/initiate");
-    endpoints.add("api/forgotpassword/complete");
-    endpoints.add("api/uasdm-account/inviteComplete");
-    endpoints.add("api/uasdm-account/newInstance");
     endpoints.add("project/management");
     endpoints.add("project/configuration");
     // endpoints.add("websocket-notifier/notify");

@@ -1,6 +1,5 @@
 package com.runwaysdk.build.domain;
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,7 +7,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.opencsv.CSVReader;
 import com.runwaysdk.constants.MdAttributeCharacterInfo;
 import com.runwaysdk.dataaccess.MdEntityDAOIF;
 import com.runwaysdk.dataaccess.MigrationUtil;
@@ -46,7 +44,7 @@ public class KeycloakUserMigration
     
     for (GeoprismUser user : query.getIterator())
     {
-      // if (user.getUsername().equals(("admin"))) { continue; }
+      if (user.getUsername().equals(("admin"))) { continue; }
       
       migrateUser(user);
       
