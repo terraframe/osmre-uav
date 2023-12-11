@@ -64,6 +64,10 @@ public class SamHierarchyBuilder
       }
     }
 
+    // Add custom organizations
+    roots.add(this.createCDC());
+    roots.add(this.createOther());
+
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     try (FileWriter writer = new FileWriter(new File(this.resultPath)))
@@ -117,12 +121,7 @@ public class SamHierarchyBuilder
             String name = organization.get("fhorgname").getAsString();
             long orgId = organization.get("fhorgid").getAsLong();
 
-            JsonObject obj = new JsonObject();
-            obj.addProperty("code", Long.toString(orgId));
-            obj.addProperty("enabled", true);
-            obj.add("label", getLocalizedValue(name));
-            obj.add("contactInfo", getLocalizedValue(""));
-            obj.add("children", new JsonArray());
+            JsonObject obj = createObject(name, orgId);
 
             JsonArray links = organization.get("links").getAsJsonArray();
 
@@ -173,6 +172,22 @@ public class SamHierarchyBuilder
     return root;
   }
 
+  private JsonObject createObject(String name, long orgId)
+  {
+    return createNode(name, Long.toString(orgId));
+  }
+
+  private JsonObject createNode(String name, String code)
+  {
+    JsonObject obj = new JsonObject();
+    obj.addProperty("code", code);
+    obj.addProperty("enabled", true);
+    obj.add("label", getLocalizedValue(name));
+    obj.add("contactInfo", getLocalizedValue(""));
+    obj.add("children", new JsonArray());
+    return obj;
+  }
+
   private JsonObject getLocalizedValue(String name)
   {
     JsonObject localeValue = new JsonObject();
@@ -186,6 +201,19 @@ public class SamHierarchyBuilder
     label.addProperty("localizedValue", name);
     label.add("localeValues", localeValues);
     return label;
+  }
+
+  private JsonObject createCDC()
+  {
+    JsonObject cdc = this.createNode("CDC", "CDC");
+    cdc.get("children").getAsJsonArray().add(this.createNode("LSHTM", "CDC/LSHTM"));
+
+    return cdc;
+  }
+
+  private JsonObject createOther()
+  {
+    return this.createNode("Other", "OTHER");
   }
 
   public static void main(String[] args) throws Exception
