@@ -446,8 +446,14 @@ public class TiTillerProxy
     {
       final BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
       
+      String service = "execute-api"; // For requests which are backed by AWS API Gateway
+      if (endpoint.toString().contains("lambda-url"))
+      {
+        service = "lambda"; // For requests that are utilizing lambda urls (which are not limited by an oppressive 30 second request timeout)
+      }
+      
       // Instantiate the request
-      com.amazonaws.Request<Void> request = new DefaultRequest<Void>("execute-api");
+      com.amazonaws.Request<Void> request = new DefaultRequest<Void>(service);
       request.setHttpMethod(HttpMethodName.GET);
       request.setEndpoint(endpoint);
       request.setResourcePath(resourcePath);

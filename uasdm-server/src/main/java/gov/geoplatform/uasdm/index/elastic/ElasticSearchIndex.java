@@ -77,6 +77,7 @@ import gov.geoplatform.uasdm.view.QuerySiteResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
+import net.geoprism.registry.model.ServerOrganization;
 
 public class ElasticSearchIndex implements Index
 {
@@ -416,7 +417,12 @@ public class ElasticSearchIndex implements Index
 
       if (component instanceof SiteIF)
       {
-        document.setBureau( ( (SiteIF) component ).getServerOrganization().getCode());
+        ServerOrganization org = ( (SiteIF) component ).getServerOrganization();
+        
+        if (org != null)
+        {
+          document.setBureau(org.getCode());
+        }
       }
 
       for (UasComponentIF ancestor : ancestors)
