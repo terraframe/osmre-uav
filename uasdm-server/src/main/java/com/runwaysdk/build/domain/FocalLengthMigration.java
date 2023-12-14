@@ -57,8 +57,11 @@ public class FocalLengthMigration implements Runnable
 
     for (Sensor sensor : sensors)
     {
-      sensor.setRealFocalLength(new BigDecimal(sensor.getFocalLength()));
-      sensor.apply();
+      if (sensor.getFocalLength() != null)
+      {
+        sensor.setRealFocalLength(new BigDecimal(sensor.getFocalLength()));
+        sensor.apply();
+      }
     }
   }
 }
