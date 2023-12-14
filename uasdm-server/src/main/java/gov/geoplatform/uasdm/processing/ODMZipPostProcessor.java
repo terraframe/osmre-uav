@@ -172,17 +172,17 @@ public class ODMZipPostProcessor
       try
       {
 
-        if (this.progressTask.getProcessDem())
+        if (truthy(this.progressTask.getProcessDem()))
         {
           this.collection.removeArtifacts(ImageryComponent.DEM, false);
         }
 
-        if (this.progressTask.getProcessOrtho())
+        if (truthy(this.progressTask.getProcessOrtho()))
         {
           this.collection.removeArtifacts(ImageryComponent.ORTHO, false);
         }
 
-        if (this.progressTask.getProcessPtcloud())
+        if (truthy(this.progressTask.getProcessPtcloud()))
         {
           this.collection.removeArtifacts(ImageryComponent.PTCLOUD, false);
         }
@@ -196,7 +196,7 @@ public class ODMZipPostProcessor
 
   protected void processProduct(Product product, StatusMonitorIF monitor, CloseableFile unzippedParentFolder) throws InterruptedException
   {
-    if (this.progressTask != null && this.progressTask.getProcessDem())
+    if (this.progressTask != null && truthy(this.progressTask.getProcessDem()))
     {
       this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "dtm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
@@ -207,7 +207,7 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.DEM, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
 
-    if (this.progressTask != null && this.progressTask.getProcessOrtho())
+    if (this.progressTask != null && truthy(this.progressTask.getProcessOrtho()))
     {
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto.png"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor, new DocumentInfo().setOrthoCorrectionModel("unknown")));
@@ -216,7 +216,7 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, this.filePrefix, "report.pdf"), this.product, this.collection, monitor));
     }
 
-    if (this.progressTask != null && this.progressTask.getProcessPtcloud())
+    if (this.progressTask != null && truthy(this.progressTask.getProcessPtcloud()))
     {
       EpsgProcessor processor = new EpsgProcessor();
 
@@ -315,6 +315,11 @@ public class ODMZipPostProcessor
     {
       return this.product.downloadAllZip().openNewFile();
     }
+  }
+  
+  private boolean truthy(Boolean b)
+  {
+    return Boolean.TRUE.equals(b); // Prevents against throwing NPE if b is null
   }
 
 }
