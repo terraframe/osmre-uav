@@ -85,7 +85,23 @@
                                     title="Deletes the product and all associated data and public map services.">Delete</a>
                             </li>
                             <li *ngIf="product.published" style="padding: 3px 0 3px 0;">
-                                <a class="fa fa-arrow-alt-circle-down" (click)="handleTogglePublish(product)"
+                                <a (click)="clipboardPublicStacUrl(product)" type="button">
+							      <span [id]="product.id + '-PublicStacUrl'" class="fa fa-link" style="margin:0;"></span>
+							    </a>
+                                <!-- 
+                                <span class="btn-group" dropdown>
+								  <a dropdownToggle type="button" class="dropdown-toggle" style="line-height: 0px !important;" aria-controls="dropdown-basic">
+								    <span class="fa fa-link" style="margin:0;"></span>
+								  </a>
+								  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic"
+								    style="width:100px; min-width:100px; max-width:100px;">
+								    <li role="menuitem"><a class="dropdown-item" href="#">Tilejson</a></li>
+								    <li role="menuitem"><a class="dropdown-item" href="#">Direct</a></li>
+								    <li role="menuitem"><a class="dropdown-item" href="#">STAC</a></li>
+								  </ul>
+								</span>
+								-->
+                                <a class="fa fa-arrow-alt-circle-down" style="width:60px;" (click)="handleTogglePublish(product)"
                                     title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
                             </li>
                             <li *ngIf="!product.published" style="padding: 3px 0 3px 0;">

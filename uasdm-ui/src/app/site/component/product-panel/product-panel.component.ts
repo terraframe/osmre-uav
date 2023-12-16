@@ -90,6 +90,11 @@ export class ProductPanelComponent implements OnDestroy {
 
         this.refreshProducts(changes['selection'].currentValue);
     }
+    
+    clipboardPublicStacUrl(product: Product) {
+		navigator.clipboard.writeText(product.publicStacUrl);
+		document.getElementById(product.id + "-PublicStacUrl").className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
+	}
 
     refresh(): void {
         this.refreshProducts(this.selection);

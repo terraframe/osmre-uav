@@ -53,8 +53,20 @@ public class ProductView
   
   private String         demKey;
   
+  private String         publicStacUrl;
+  
   private List<DocumentIF> mappables;
   
+  public String getPublicStacUrl()
+  {
+    return publicStacUrl;
+  }
+
+  public void setPublicStacUrl(String publicStacUrl)
+  {
+    this.publicStacUrl = publicStacUrl;
+  }
+
   public String getId()
   {
     return id;
@@ -172,6 +184,11 @@ public class ProductView
     object.put("name", this.name);
     object.put("entities", SiteItem.serializeItems(this.components));
     object.put("published", this.published);
+    
+    if (published)
+    {
+      object.put("publicStacUrl", publicStacUrl);
+    }
 
     if (this.imageKey != null)
     {

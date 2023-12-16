@@ -346,6 +346,7 @@ export class Product {
 	demMapped?: boolean;
 	hasPointcloud?: boolean;
 	hasAllZip?: boolean;
+	publicStacUrl?: string;
 }
 
 export class MapLayer {
