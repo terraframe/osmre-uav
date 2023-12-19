@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnDestroy, ViewChild } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -41,6 +41,8 @@ export class ProductPanelComponent implements OnDestroy {
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
 
     @Output() public toggleMapDem = new EventEmitter<Product>();
+    
+    @ViewChild('clipboardPopover') clipboardPopover; 
 
     /* 
      * List of products for the current node
@@ -94,6 +96,12 @@ export class ProductPanelComponent implements OnDestroy {
     clipboardPublicStacUrl(product: Product) {
 		navigator.clipboard.writeText(product.publicStacUrl);
 		document.getElementById(product.id + "-PublicStacUrl").className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
+		this.clipboardPopover.show();
+		
+		setTimeout(() => {
+			document.getElementById(product.id + "-PublicStacUrl").className = "fa fa-link";
+			this.clipboardPopover.hide();
+		}, 6000);
 	}
 
     refresh(): void {

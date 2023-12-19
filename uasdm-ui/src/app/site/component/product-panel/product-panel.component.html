@@ -86,7 +86,8 @@
                             </li>
                             <li *ngIf="product.published" style="padding: 3px 0 3px 0;">
                                 <a (click)="clipboardPublicStacUrl(product)" type="button">
-							      <span [id]="product.id + '-PublicStacUrl'" class="fa fa-link" style="margin:0;"></span>
+							      <span [id]="product.id + '-PublicStacUrl'" class="fa fa-link" style="margin:0;"
+							      	[popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover" placement="top"></span> 
 							    </a>
                                 <!-- 
                                 <span class="btn-group" dropdown>
