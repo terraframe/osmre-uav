@@ -25,11 +25,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.runwaysdk.session.Request;
 
-import net.geoprism.graph.adapter.RegistryConnectorBuilderIF;
-import net.geoprism.graph.adapter.RegistryConnectorIF;
-import net.geoprism.graph.adapter.exception.BadServerUriException;
-import net.geoprism.graph.adapter.exception.HTTPException;
-import net.geoprism.graph.adapter.response.RegistryResponse;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorBuilderIF;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
+import net.geoprism.registry.lpg.adapter.exception.BadServerUriException;
+import net.geoprism.registry.lpg.adapter.exception.HTTPException;
+import net.geoprism.registry.lpg.adapter.response.RegistryResponse;
 
 public class MockRegistryConnectionBuilder implements RegistryConnectorBuilderIF
 {

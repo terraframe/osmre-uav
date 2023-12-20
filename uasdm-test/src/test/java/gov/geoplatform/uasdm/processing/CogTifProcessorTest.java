@@ -20,14 +20,20 @@ import java.io.File;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
 public class CogTifProcessorTest
 {
 

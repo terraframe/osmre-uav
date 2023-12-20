@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 1568337463)
+@com.runwaysdk.business.ClassSignature(hash = 1114062349)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,9 +11,11 @@ package gov.geoplatform.uasdm.graph;
 public abstract class SiteBase extends gov.geoplatform.uasdm.graph.UasComponent
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Site";
-  public static java.lang.String BUREAU = "bureau";
-  public static java.lang.String OTHERBUREAUTXT = "otherBureauTxt";
-  private static final long serialVersionUID = 1568337463;
+  public final static java.lang.String BUREAU = "bureau";
+  public final static java.lang.String ORGANIZATION = "organization";
+  public final static java.lang.String OTHERBUREAUTXT = "otherBureauTxt";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1114062349;
   
   public SiteBase()
   {
@@ -68,6 +55,22 @@ public abstract class SiteBase extends gov.geoplatform.uasdm.graph.UasComponent
     this.setValue(BUREAU, oid);
   }
   
+  public net.geoprism.registry.graph.GraphOrganization getOrganization()
+  {
+    return (net.geoprism.registry.graph.GraphOrganization) this.getObjectValue(ORGANIZATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getOrganizationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Site.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(ORGANIZATION);
+  }
+  
+  public void setOrganization(net.geoprism.registry.graph.GraphOrganization value)
+  {
+    this.setValue(ORGANIZATION, value);
+  }
+  
   public String getOtherBureauTxt()
   {
     return (String) this.getObjectValue(OTHERBUREAUTXT);
@@ -89,14 +92,14 @@ public abstract class SiteBase extends gov.geoplatform.uasdm.graph.UasComponent
     return CLASS;
   }
   
-  public void addSiteHasProjectChild(gov.geoplatform.uasdm.graph.Project project)
+  public com.runwaysdk.business.graph.EdgeObject addSiteHasProjectChild(gov.geoplatform.uasdm.graph.Project project)
   {
-    super.addChild(project, "gov.geoplatform.uasdm.graph.SiteHasProject");
+    return super.addChild(project, "gov.geoplatform.uasdm.graph.SiteHasProject");
   }
   
   public void removeSiteHasProjectChild(gov.geoplatform.uasdm.graph.Project project)
   {
-    super.addChild(project, "gov.geoplatform.uasdm.graph.SiteHasProject");
+    super.removeChild(project, "gov.geoplatform.uasdm.graph.SiteHasProject");
   }
   
   @SuppressWarnings("unchecked")

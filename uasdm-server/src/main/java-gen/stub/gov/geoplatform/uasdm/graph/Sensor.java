@@ -34,12 +34,13 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask;
+import gov.geoplatform.uasdm.processing.report.CollectionReportTask.Type;
 
 public class Sensor extends SensorBase implements JSONSerializable
 {
@@ -94,8 +95,8 @@ public class Sensor extends SensorBase implements JSONSerializable
   @Override
   public void delete()
   {
-    CollectionReport.handleDelete(this);
-
+    CollectionReportFacade.handleDelete(this).doIt();
+    
     super.delete();
   }
 
@@ -117,7 +118,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.SENSORHEIGHT, this.getRealSensorHeight());
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
-    object.put(Sensor.FOCALLENGTH, this.getFocalLength());
+    object.put(Sensor.FOCALLENGTH, this.getRealFocalLength());
 
     if (this.getDateCreated() != null)
     {
@@ -175,7 +176,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.SENSORWIDTH, this.getRealSensorWidth());
     object.put(Sensor.SENSORTYPE, sensorType.getName());
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
-    object.put(Sensor.FOCALLENGTH, this.getFocalLength());
+    object.put(Sensor.FOCALLENGTH, this.getRealFocalLength());
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
@@ -225,7 +226,7 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     if (json.has(Sensor.FOCALLENGTH))
     {
-      sensor.setFocalLength(json.getInt(Sensor.FOCALLENGTH));
+      sensor.setRealFocalLength(new BigDecimal(json.getDouble(Sensor.FOCALLENGTH)));
     }
 
     if (json.has(Sensor.SENSOR_TYPE_OID))

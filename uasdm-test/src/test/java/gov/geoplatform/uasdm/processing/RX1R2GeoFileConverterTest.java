@@ -26,10 +26,14 @@ import java.net.URL;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.resource.CloseableFile;
 
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileInvalidFormatException;
@@ -37,6 +41,8 @@ import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationValidationResults;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
 public class RX1R2GeoFileConverterTest
 {
   @Test

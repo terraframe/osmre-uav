@@ -29,7 +29,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div *ngIf="!requireKeycloakLogin" class="row">
                         <div class="col-md-12">
 
                             <form id="login-form" class="login" #form="ngForm" (ngSubmit)="form.valid && onSubmit()">
@@ -59,7 +59,7 @@
                     
                     <div *ngIf="keycloakEnabled" class="row">
                       <div class="col-md-12 text-center">
-                        <div class="keycloak-or-line-family">
+                        <div *ngIf="!requireKeycloakLogin" class="keycloak-or-line-family">
 	                        <h4 class="keycloak-or-line"></h4>
 	                        <span class="keycloak-or-text">&nbsp;Or&nbsp;</span>
 	                        <h4 class="keycloak-or-line"></h4>

@@ -176,7 +176,7 @@ public class ODMFacade
       throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
     }
     
-    if ( (col.getSensor().getName().toLowerCase().contains("workswell wiris pro") || col.getSensor().getModel().toLowerCase().contains("wiris pro"))
+    if (col != null && (col.getSensor().getName().toLowerCase().contains("workswell wiris pro") || col.getSensor().getModel().toLowerCase().contains("wiris pro"))
         && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
     {
       new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(payload.getFile()));

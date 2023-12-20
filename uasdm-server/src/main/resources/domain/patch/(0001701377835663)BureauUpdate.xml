@@ -1,0 +1,29 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+    
+      <mdBusiness name="gov.geoplatform.uasdm.bus.Site">
+        <attributes>
+          <reference name="bureau" required="false" />
+        </attributes>
+      </mdBusiness>
+
+      <mdVertex name="gov.geoplatform.uasdm.graph.Site">
+        <attributes>
+          <reference name="bureau" required="false" />
+        </attributes>
+      </mdVertex>
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.UAV">
+        <attributes>
+          <graphReference name="bureau" required="false"/>
+        </attributes>
+      </mdVertex>
+      
+      
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>

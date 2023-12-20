@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -77,6 +77,7 @@ import gov.geoplatform.uasdm.view.QuerySiteResult;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
+import net.geoprism.registry.model.ServerOrganization;
 
 public class ElasticSearchIndex implements Index
 {
@@ -358,7 +359,7 @@ public class ElasticSearchIndex implements Index
 
     return null;
   }
-  
+
   @Override
   public void updateComponent(UasComponentIF component, boolean isNameModified)
   {
@@ -376,7 +377,7 @@ public class ElasticSearchIndex implements Index
 
         if (component instanceof SiteIF)
         {
-          document.setBureau( ( (SiteIF) component ).getBureau().getName());
+          document.setBureau( ( (SiteIF) component ).getServerOrganization().getCode());
         }
 
         client.update(b -> b.index(COMPONENT_INDEX_NAME).id(hit.id()).doc(document), Void.class);
@@ -386,7 +387,7 @@ public class ElasticSearchIndex implements Index
         client.updateByQuery(request -> request.index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> {
           b.mustNot(mu -> mu.match(m -> m.field("oid").query(component.getOid())));
           b.must(mu -> mu.match(m -> m.field(component.getSolrIdField()).query(component.getOid())));
-                    
+
           return b;
         })).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
 
@@ -416,7 +417,12 @@ public class ElasticSearchIndex implements Index
 
       if (component instanceof SiteIF)
       {
-        document.setBureau( ( (SiteIF) component ).getBureau().getName());
+        ServerOrganization org = ( (SiteIF) component ).getServerOrganization();
+        
+        if (org != null)
+        {
+          document.setBureau(org.getCode());
+        }
       }
 
       for (UasComponentIF ancestor : ancestors)
@@ -864,7 +870,7 @@ public class ElasticSearchIndex implements Index
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   @Override
   public void deleteDocuments(LabeledPropertyGraphTypeVersion version)
   {
@@ -873,7 +879,7 @@ public class ElasticSearchIndex implements Index
       DeleteByQueryRequest request = new DeleteByQueryRequest.Builder().index(LOCATION_INDEX_NAME).query(q -> {
         return q.bool(b -> b.must(m -> m.queryString(qs -> qs.fields("versionId").query(version.getOid()))));
       }).build();
-      
+
       ElasticsearchClient client = createClient();
       client.deleteByQuery(request);
     }

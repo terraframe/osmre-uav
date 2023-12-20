@@ -20,13 +20,10 @@
       </div>
     </div>
     <div class="form-group">
-      <label>
-        <label>Bureau</label>
-      </label>
-      <select [(ngModel)]="invite.bureau" name="bureau">
-        <option></option>
-        <option *ngFor="let option of invite.bureaus" [value]="option.value">{{option.label}}</option>
-      </select>
+      <label>Organization</label>
+      <organization-field 
+        name="organization" [(value)]="invite.organization" [disabled]="false">
+      </organization-field>
     </div>
 
     <div *ngFor="let group of invite.groups">

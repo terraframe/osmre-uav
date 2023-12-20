@@ -55,6 +55,7 @@ import org.keycloak.adapters.spi.AuthChallenge;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.spi.KeycloakAccount;
 import org.keycloak.adapters.spi.UserSessionManagement;
+import org.keycloak.adapters.spi.HttpFacade.Request;
 import org.keycloak.representations.IDToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
 import gov.geoplatform.uasdm.service.IDMSessionService;
 import net.geoprism.account.LocaleSerializer;
-import net.geoprism.rbac.RoleBusinessService;
+import net.geoprism.registry.service.business.RoleBusinessService;
 
 /**
  * 
@@ -171,7 +172,16 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException
   {
-    HttpServletRequest request = (HttpServletRequest) req;
+    HttpServletRequest request;
+    if (AppProperties.IsKeycloakNg2Dev())
+    {
+      request = new NgDevServletRequestWrapper((HttpServletRequest) req);
+    }
+    else
+    {
+      request = (HttpServletRequest) req;
+    }
+    
     HttpServletResponse response = (HttpServletResponse) res;
 
     if (skip(request))
@@ -212,7 +222,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     nodesRegistrationManagement.tryRegister(deployment);
     OIDCFilterSessionStore tokenStore = new OIDCFilterSessionStore(request, facade, 100000, deployment, idMapper);
     tokenStore.checkCurrentToken();
-
+    
     FilterRequestAuthenticator authenticator = new FilterRequestAuthenticator(deployment, tokenStore, facade, request, 8443);
 //    ((DefaultHttpClient) deployment.getClient()).setParams(null);; // Was required for Keycloak v12.0.2
     AuthOutcome outcome = authenticator.authenticate();
@@ -568,6 +578,26 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     public List<Cookie> getCookies()
     {
       return Collections.unmodifiableList(cookies);
+    }
+
+  }
+  
+  /**
+   * Used for local development so that the keycloak redirect url will be at 4200 instead of 8443.
+   * 
+   * @author rrowlands
+   */
+  public class NgDevServletRequestWrapper extends HttpServletRequestWrapper
+  {
+
+    public NgDevServletRequestWrapper(HttpServletRequest request)
+    {
+      super(request);
+    }
+
+    @Override
+    public StringBuffer getRequestURL() {
+      return new StringBuffer(super.getRequestURL().toString().replace("localhost:8443/uasdm", "localhost:4200/uasdm"));
     }
 
   }

@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
 
+import net.geoprism.registry.Organization;
+
 public class UAVPageQuery extends AbstractGraphPageQuery<UAV, UAVPageView>
 {
   public UAVPageQuery(JSONObject criteria)
@@ -41,6 +43,10 @@ public class UAVPageQuery extends AbstractGraphPageQuery<UAV, UAVPageView>
     if (attributeName.equals(UAV.BUREAU))
     {
       return UAV.BUREAU + "." + Bureau.NAME;
+    }
+    else if (attributeName.equals(UAV.ORGANIZATION))
+    {
+      return UAV.ORGANIZATION + "." + Organization.CODE;
     }
     else if (attributeName.equals(UAV.PLATFORM))
     {

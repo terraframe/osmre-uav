@@ -259,7 +259,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userName = this.service.getCurrentUser();
 
     this.filter = {
-      bureau: this.authService.getBureau()
+      organization: this.authService.getOrganization()
     };
 
     this.service.bureaus().then(bureaus => {
@@ -1724,7 +1724,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       array: []
     };
 
-    conditions.array.push({ field: 'bureau', value: this.filter.bureau });
+    conditions.array.push({ field: 'organization', value: this.filter.organization });
     conditions.array.push({ field: 'collectionDate', value: this.filter.collectionDate });
     conditions.array.push({ field: 'owner', value: this.filter.owner });
     conditions.array.push({ field: 'platform', value: this.filter.platform });
@@ -1732,7 +1732,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     conditions.array.push({ field: 'sensor', value: this.filter.sensor });
     conditions.array.push({ field: 'uav', value: this.filter.uav });
 
-    conditions.array = conditions.array.filter(c => c.value != null && c.value.length > 0);
+    conditions.array = conditions.array.filter(c => {
+      if (c.field === 'organization') {
+        return c.value != null && c.value.code.length > 0
+      }
+
+      return c.value != null && c.value.length > 0
+    });
 
     if (this.current != null && this.current.type === SELECTION_TYPE.LOCATION) {
       conditions.hierarchy = {

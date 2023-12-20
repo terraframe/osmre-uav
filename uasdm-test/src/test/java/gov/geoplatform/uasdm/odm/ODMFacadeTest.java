@@ -22,14 +22,20 @@ import java.net.URISyntaxException;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
 public class ODMFacadeTest
 {
 
@@ -40,7 +46,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();
@@ -63,7 +69,7 @@ public class ODMFacadeTest
 
     final FileResource resource = new FileResource(file);
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test")))
+    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
       CloseableFile directory = result.getFile();
       File[] files = directory.listFiles();

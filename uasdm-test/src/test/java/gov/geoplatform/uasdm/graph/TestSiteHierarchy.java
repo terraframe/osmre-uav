@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.business.BusinessFacade;
 import com.runwaysdk.business.SmartExceptionDTO;
@@ -39,6 +41,9 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.SessionFacade;
 
+import gov.geoplatform.uasdm.InstanceTestClassListener;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.mock.MockIndex;
@@ -51,7 +56,9 @@ import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.TreeComponent;
 import net.geoprism.GeoprismUser;
 
-public class TestSiteHierarchy
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class TestSiteHierarchy implements InstanceTestClassListener
 {
 
   private static ProjectManagementService service;
@@ -81,9 +88,8 @@ public class TestSiteHierarchy
 
   private MockRemoteFileService fService;
 
-  @BeforeClass
   @Request
-  public static void classSetUp()
+  public void beforeClassSetup() throws Exception
   {
     IndexService.setIndex(new MockIndex());
     
@@ -167,9 +173,8 @@ public class TestSiteHierarchy
     // imageryId1 = imagery1.getOid();
   }
 
-  @AfterClass
   @Request
-  public static void classTearDown()
+  public void afterClassSetup() throws Exception
   {
     classTearDownTransaction();
   }

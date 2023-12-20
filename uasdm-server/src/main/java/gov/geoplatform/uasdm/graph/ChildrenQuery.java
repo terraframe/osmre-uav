@@ -43,6 +43,8 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.model.ServerOrganization;
 
 public class ChildrenQuery
 {
@@ -219,6 +221,24 @@ public class ChildrenQuery
             parameters.put(mdAttribute.getColumnName(), value);
           }
         }
+        else if (field.equalsIgnoreCase(Site.ORGANIZATION))
+        {
+          MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(field.equalsIgnoreCase(Site.ORGANIZATION) ? Site.CLASS : UasComponent.CLASS);
+
+          MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(field);
+
+          if (mdAttribute != null)
+          {
+            JSONObject value = condition.getJSONObject("value");
+            String code = value.getString(Organization.CODE);
+            ServerOrganization organization = ServerOrganization.getByCode(code);
+
+            statement.append(isFirst ? " WHERE" : " AND");
+            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName() + "\n");
+
+            parameters.put(mdAttribute.getColumnName(), organization.getGraphOrganization().getRID());
+          }
+        }        
         else if (field.equalsIgnoreCase(Collection.SENSOR))
         {
           MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);

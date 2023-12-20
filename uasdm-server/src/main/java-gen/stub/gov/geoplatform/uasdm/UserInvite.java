@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -30,10 +31,11 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
-import gov.geoplatform.uasdm.bus.Bureau;
 import net.geoprism.GeoprismUser;
-import net.geoprism.account.AccountBusinessService;
-import net.geoprism.email.business.EmailBusinessService;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.service.business.AccountBusinessService;
+import net.geoprism.registry.service.business.EmailBusinessServiceIF;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class UserInvite extends UserInviteBase
 {
@@ -100,13 +102,14 @@ public class UserInvite extends UserInviteBase
     invite.setToken(UserInvite.generateEncryptedToken(invite.getEmail()));
     invite.setRoleIds(roleIds);
 
-    if (joInvite.has(UserInfo.BUREAU))
+    if (joInvite.has(UserInfo.ORGANIZATION))
     {
-      String bureauId = joInvite.getString(UserInfo.BUREAU);
+      JSONObject organization = joInvite.getJSONObject(UserInfo.ORGANIZATION);
+      String code = organization.getString(Organization.CODE);
 
-      if (bureauId != null && bureauId.length() > 0)
+      if (!StringUtils.isBlank(code))
       {
-        invite.setBureau(Bureau.get(bureauId));
+        invite.setOrganization(Organization.getByCode(code));
       }
     }
 
@@ -149,7 +152,9 @@ public class UserInvite extends UserInviteBase
         roleIds.add(array.getString(i));
       }
 
-      new AccountBusinessService().applyUserWithRoles(user, roleIds);
+      AccountBusinessService service = ApplicationContextHolder.getBean(AccountBusinessService.class);
+
+      service.applyUserWithRoles(user, roleIds);
     }
     else
     {
@@ -163,9 +168,14 @@ public class UserInvite extends UserInviteBase
       info = new UserInfo();
       info.setGeoprismUser(user);
     }
-
-    info.setBureau(invite.getBureau());
     info.apply();
+
+    Organization organization = invite.getOrganization();
+
+    if (organization != null)
+    {
+      info.addOrganization(organization).apply();
+    }
 
     invite.delete();
 
@@ -204,7 +214,9 @@ public class UserInvite extends UserInviteBase
     body = body.replace("${link}", link);
     body = body.replace("${expireTime}", String.valueOf(expireTime));
 
-    new EmailBusinessService().sendEmail(subject, body, new String[] { address });
+    EmailBusinessServiceIF service = ApplicationContextHolder.getBean(EmailBusinessServiceIF.class);
+
+    service.sendEmail(subject, body, new String[] { address });
   }
 
   private static String generateEncryptedToken(String email)

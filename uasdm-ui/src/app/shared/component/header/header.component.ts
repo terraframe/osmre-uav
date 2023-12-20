@@ -30,7 +30,7 @@ export class UasdmHeaderComponent {
     admin: boolean = false;
     externalProfile: boolean = false;
     bsModalRef: BsModalRef;
-    notificationCount: number = 0;
+    //notificationCount: number = 0;
 
     @Input() title: string;
 
@@ -50,11 +50,13 @@ export class UasdmHeaderComponent {
         this.admin = this.authService.isAdmin();
         this.externalProfile = this.authService.isExternalProfile();
 
+/*
         this.profileService.tasksCount().then(data => {
 
             this.notificationCount = data.tasksCount
 
         });
+        */
     }
 
     account(): void {

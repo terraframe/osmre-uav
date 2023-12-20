@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
@@ -33,11 +34,10 @@ import gov.geoplatform.uasdm.bus.InvalidPasswordException;
 import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
-import net.geoprism.GeoprismUserDTO;
 import net.geoprism.account.ExternalProfile;
-import net.geoprism.account.ExternalProfileDTO;
-import net.geoprism.account.GeoprismUserView;
+import net.geoprism.account.GeoprismActorIF;
 
+@Service
 public class AccountService
 {
   @Request(RequestType.SESSION)
@@ -94,11 +94,11 @@ public class AccountService
       throw new InvalidPasswordException();
     }
 
-    final GeoprismUser user = UserInfo.deserialize(object);
+    final GeoprismActorIF user = UserInfo.deserialize(object);
 
-    UserInvite.complete(token, user);
+    UserInvite.complete(token, (GeoprismUser) user);
   }
-  
+
   @Request(RequestType.SESSION)
   public IDMUserView getCurrentUser(String sessionId)
   {
@@ -107,24 +107,8 @@ public class AccountService
     if (session != null)
     {
       SingleActor user = SingleActor.get(session.getUser().getOid());
-      
-      if (!(user instanceof ExternalProfile))
-      {
-        return IDMUserView.fromUser((GeoprismUser) user, UserInfo.getByUser(user));
-      }
-      else
-      {
-        ExternalProfile ep = (ExternalProfile) user;
-        
-        UserInfo info = UserInfo.getByUser(user);
-        String bureau = null;
-        if (info != null && info.getBureau() != null)
-        {
-          bureau = info.getBureau().getDisplayLabel();
-        }
-        
-        return new IDMUserView(ep.getDisplayName(), ep.getEmail(), ep.getFirstName(), ep.getLastName(), ep.getPhoneNumber(), ep.getOid(), bureau);
-      }
+
+      return IDMUserView.fromUser((GeoprismActorIF) user, UserInfo.getByUser(user));
     }
 
     return null;

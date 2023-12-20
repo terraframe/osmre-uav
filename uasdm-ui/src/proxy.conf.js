@@ -6,7 +6,7 @@ const PROXY_CONFIG = [
         context: [
             "/websocket-notifier"
         ],
-        target: "wss://localhost:8443/uasdm/",
+        target: "wss://localhost:8443/uasdm/", 
         "changeOrigin": true,       // solves CORS Error in F12, does not seem to work with ws connections
         "logLevel": "debug",        //"info": prints out in console
         "rejectUnauthorzied": true, // must be false if not specify here
@@ -23,7 +23,7 @@ const PROXY_CONFIG = [
             "/api", "/net/geoprism/images/", "/glyphs", "/session", "/project",
             "/logo", "/uav", "/product", "/platform-manufacturer", "/platform",
             "/platform-type", "/sensor", "/wave-length", "/sensor-type",
-            "/file", "/cog", "/stac", "/collection-report", "/labeled-property-graph-synchronization"
+            "/file", "/cog", "/stac", "/collection-report", "/keycloak"
         ],
         target: "https://localhost:8443/uasdm/",
         "changeOrigin": true,       // solves CORS Error in F12

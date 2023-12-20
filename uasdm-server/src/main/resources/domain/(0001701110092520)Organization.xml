@@ -1,0 +1,77 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdRelationship name="gov.geoplatform.uasdm.OrganizationHasUser" label="User Has Organization" generateController="false" exported="false" publish="false">
+        <parent cardinality="*" name="net.geoprism.registry.Organization" method="Organization" />
+        <child cardinality="*" name="gov.geoplatform.uasdm.UserInfo" method="UserInfo" />
+      </mdRelationship>    
+    </create>
+    
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.Site"  >
+        <create>
+          <attributes>
+              <graphReference 
+                name="organization"
+                label="Organization"
+                required="false"
+                type="net.geoprism.registry.graph.GraphOrganization" />
+          </attributes>
+        </create>
+      </mdVertex>      
+      
+      <mdBusiness name="gov.geoplatform.uasdm.UserInvite">
+        <create>
+          <attributes>
+              <reference 
+                name="organization"
+                label="Organization"
+                required="false"
+                type="net.geoprism.registry.Organization" />
+          </attributes>
+        </create>
+      </mdBusiness>          
+      
+      <mdBusiness name="gov.geoplatform.uasdm.SessionEventLog">
+        <create>
+          <attributes>
+              <reference 
+                name="organization"
+                label="Organization"
+                required="false"
+                type="net.geoprism.registry.Organization" />
+          </attributes>
+        </create>
+      </mdBusiness>          
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.UAV">
+        <create>
+          <attributes>
+            <graphReference 
+              name="organization"
+              label="Organization"
+              required="false"
+              type="net.geoprism.registry.graph.GraphOrganization" />
+          </attributes>
+        </create>
+      </mdVertex>
+          
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionReport" label="Collection Report" generateController="false">
+        <create>
+          <attributes>
+              <reference 
+                name="organization"
+                label="Organization"
+                required="false"
+                type="net.geoprism.registry.Organization" />
+          </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      
+    </delete>
+  </undoIt>
+</version>

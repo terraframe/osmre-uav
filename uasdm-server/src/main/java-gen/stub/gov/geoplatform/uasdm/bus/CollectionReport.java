@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -45,6 +45,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.Selectable;
 import com.runwaysdk.query.SelectableChar;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -60,7 +61,8 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import net.geoprism.GeoprismUser;
+import net.geoprism.account.GeoprismActorIF;
+import net.geoprism.registry.model.ServerOrganization;
 
 public class CollectionReport extends CollectionReportBase implements JSONSerializable
 {
@@ -165,8 +167,8 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     gov.geoplatform.uasdm.graph.Collection collection = (gov.geoplatform.uasdm.graph.Collection) child;
     gov.geoplatform.uasdm.graph.UAV uav = child.getUav();
     Sensor sensor = child.getSensor();
-    Bureau bureau = site.getBureau();
-    GeoprismUser owner = (GeoprismUser) collection.getOwner();
+    ServerOrganization organization = site.getServerOrganization();
+    GeoprismActorIF owner = (GeoprismActorIF) collection.getOwner();
 
     Point geometry = site.getGeoPoint();
 
@@ -190,7 +192,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
     if (owner != null)
     {
-      report.setActor(owner);
+      report.setActor((Actor) owner);
       report.setUserName(owner.getUsername());
     }
     else
@@ -198,10 +200,10 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       report.setUserName("N/A");
     }
 
-    if (bureau != null)
+    if (organization != null)
     {
-      report.setBureau(bureau);
-      report.setBureauName(bureau.getName());
+      report.setOrganization(organization.getOrganization());
+      report.setBureauName(organization.getDisplayLabel().getValue());
     }
     else
     {
@@ -600,7 +602,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void update(GeoprismUser actor)
+  public static void update(GeoprismActorIF actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getActor().EQ(actor.getOid()));
@@ -769,7 +771,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void handleDelete(GeoprismUser actor)
+  public static void handleDelete(GeoprismActorIF actor)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getActor().EQ(actor.getOid()));

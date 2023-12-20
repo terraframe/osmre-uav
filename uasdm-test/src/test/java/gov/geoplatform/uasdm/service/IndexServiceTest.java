@@ -25,9 +25,14 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.Area51DataTest;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
@@ -37,10 +42,10 @@ import gov.geoplatform.uasdm.mock.MockIndex.IndexActionType;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import org.junit.Assert;
 
-public class IndexServiceTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class IndexServiceTest extends Area51DataTest
 {
-  private static Area51DataSet testData;
-
   private Product product;
 
   private Collection collection;
@@ -48,22 +53,6 @@ public class IndexServiceTest
   private Document target;
 
   private MockIndex index;
-
-  @BeforeClass
-  public static void setUpClass()
-  {
-    testData = new Area51DataSet();
-    testData.setUpSuiteData();
-  }
-
-  @AfterClass
-  public static void cleanUpClass()
-  {
-    if (testData != null)
-    {
-      testData.tearDownMetadata();
-    }
-  }
 
   @Before
   @Request

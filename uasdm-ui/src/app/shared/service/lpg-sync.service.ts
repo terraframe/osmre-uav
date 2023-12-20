@@ -25,7 +25,7 @@ export class LPGSyncService implements GenericTableService {
         let params: HttpParams = new HttpParams();
 
         return this.http
-            .get<LPGSync[]>(environment.apiUrl + '/labeled-property-graph-synchronization/get-all', { params: params })
+            .get<LPGSync[]>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get-all', { params: params })
             .toPromise();
     }
 
@@ -34,20 +34,19 @@ export class LPGSyncService implements GenericTableService {
         params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<LPGSync>>(environment.apiUrl + '/labeled-property-graph-synchronization/page', { params: params })
+            .get<PageResult<LPGSync>>(environment.apiUrl + '/api/labeled-property-graph-synchronization/page', { params: params })
             .toPromise();
     }
 
     get(oid: string): Promise<LPGSync> {
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
-
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
+ 
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .get<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -63,7 +62,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/newInstance', JSON.stringify({}), { headers: headers })
+            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/newInstance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -79,7 +78,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>(environment.apiUrl + '/labeled-property-graph-synchronization/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<void>(environment.apiUrl + '/api/labeled-property-graph-synchronization/remove', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -95,7 +94,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<void>(environment.apiUrl + '/labeled-property-graph-synchronization/execute', JSON.stringify({ oid: oid }), { headers: headers })
+            .post<void>(environment.apiUrl + '/api/labeled-property-graph-synchronization/execute', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -111,7 +110,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/update-remote-version', JSON.stringify({
+            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/update-remote-version', JSON.stringify({
                 oid: oid,
                 versionId: versionId,
                 versionNumber: versionNumber
@@ -132,7 +131,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/labeled-property-graph-synchronization/apply', JSON.stringify({ sync: sync }), { headers: headers })
+            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/apply', JSON.stringify({ sync: sync }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -189,7 +188,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<{roots: any[], metadata: any[]}>(environment.apiUrl + '/labeled-property-graph-synchronization/roots', { params: params })
+            .get<{roots: any[], metadata: any[]}>(environment.apiUrl + '/api/labeled-property-graph-synchronization/roots', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -212,7 +211,7 @@ export class LPGSyncService implements GenericTableService {
             .get<{
                 children: any[],
                 metadata?: any
-            }>(environment.apiUrl + '/labeled-property-graph-synchronization/select', { params: params })
+            }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/select', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -230,7 +229,7 @@ export class LPGSyncService implements GenericTableService {
             .get<{
                 children: any[],
                 metadata?: any
-            }>(environment.apiUrl + '/labeled-property-graph-synchronization/get-object', { params: params })
+            }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get-object', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

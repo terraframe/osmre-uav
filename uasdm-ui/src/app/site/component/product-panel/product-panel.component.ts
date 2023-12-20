@@ -41,7 +41,7 @@ export class ProductPanelComponent implements OnDestroy {
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
 
     @Output() public toggleMapDem = new EventEmitter<Product>();
-
+    
     /* 
      * List of products for the current node
      */
@@ -90,6 +90,17 @@ export class ProductPanelComponent implements OnDestroy {
 
         this.refreshProducts(changes['selection'].currentValue);
     }
+    
+    clipboardPublicStacUrl(product: Product, clipboardPopover) {
+		navigator.clipboard.writeText(product.publicStacUrl);
+		document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
+		clipboardPopover.show();
+		
+		setTimeout(() => {
+			document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-link";
+			clipboardPopover.hide();
+		}, 6000);
+	}
 
     refresh(): void {
         this.refreshProducts(this.selection);

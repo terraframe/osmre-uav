@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 
 import { CookieService } from 'ngx-cookie-service';
 import { User } from '../model/user';
+import { LocalizedValue } from '@shared/model/organization';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
 			this.user.roles = cookieDataJSON.roles;
 			this.user.externalProfile = cookieDataJSON.externalProfile;
 			this.user.loggedIn = true;
-			this.user.bureau = cookieDataJSON.bureau;
+			this.user.organization = cookieDataJSON.organization;
 		}
 	}
 
@@ -41,7 +42,7 @@ export class AuthService {
 			userName: '',
 			externalProfile: false,
 			roles: [],
-			bureau: null
+			organization: null
 		};
 	}
 
@@ -65,8 +66,8 @@ export class AuthService {
 		return this.isAdmin() || this.user.roles.indexOf("geoprism.admin.DashboardBuilder") !== -1;
 	}
 
-	getBureau(): string {
-        return this.user.bureau;
+	getOrganization(): { code: string, label: LocalizedValue } {
+        return this.user.organization;
     }
 
 }

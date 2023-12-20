@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -23,6 +23,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.RoleDAO;
@@ -35,6 +37,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.InstanceTestClassListener;
+import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
+import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
@@ -43,9 +48,11 @@ import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import net.geoprism.GeoprismUser;
 
-public class WorkflowTaskTest
+@ContextConfiguration(classes = { TestConfig.class })
+@RunWith(SpringInstanceTestClassRunner.class)
+public class WorkflowTaskTest implements InstanceTestClassListener
 {
-  private static String collectionId1;
+  private static String       collectionId1;
 
   /**
    * The test user object
@@ -55,18 +62,17 @@ public class WorkflowTaskTest
   /**
    * The username for the user
    */
-  private final static String USERNAME = "btables";
+  private final static String USERNAME     = "btables";
 
   /**
    * The password for the user
    */
-  private final static String PASSWORD = "1234";
+  private final static String PASSWORD     = "1234";
 
-  private final static int sessionLimit = 2;
+  private final static int    sessionLimit = 2;
 
-  @BeforeClass
   @Request
-  public static void classSetUp()
+  public void beforeClassSetup() throws Exception
   {
     RemoteFileFacade.setService(new MockRemoteFileService());
 
@@ -129,9 +135,8 @@ public class WorkflowTaskTest
     collectionId1 = collection1.getOid();
   }
 
-  @AfterClass
   @Request
-  public static void classTearDown()
+  public void afterClassSetup() throws Exception
   {
     classTearDownTransaction();
   }
@@ -140,7 +145,7 @@ public class WorkflowTaskTest
   public static void classTearDownTransaction()
   {
     new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
-   
+
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Site.CLASS);
 
     final StringBuilder statement = new StringBuilder();

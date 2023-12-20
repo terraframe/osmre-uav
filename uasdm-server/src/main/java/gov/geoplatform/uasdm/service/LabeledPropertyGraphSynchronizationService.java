@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -26,6 +26,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -46,25 +48,38 @@ import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.graph.TreeStrategyConfiguration;
-import net.geoprism.graph.adapter.HTTPConnector;
-import net.geoprism.graph.adapter.RegistryConnectorBuilderIF;
-import net.geoprism.graph.adapter.RegistryConnectorFactory;
-import net.geoprism.graph.adapter.RegistryConnectorIF;
-import net.geoprism.graph.adapter.exception.HTTPException;
+import net.geoprism.registry.lpg.TreeStrategyConfiguration;
+import net.geoprism.registry.lpg.adapter.HTTPConnector;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorBuilderIF;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
+import net.geoprism.registry.lpg.adapter.exception.HTTPException;
+import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessServiceIF;
+import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 
+@Service
 public class LabeledPropertyGraphSynchronizationService
 {
+  @Autowired
+  private LabeledPropertyGraphSynchronizationBusinessServiceIF synchornizationService;
+
+  @Autowired
+  private LabeledPropertyGraphTypeVersionBusinessServiceIF     versionService;
+
+  @Autowired
+  private GeoObjectTypeSnapshotBusinessServiceIF               typeService;
+
   @Request(RequestType.SESSION)
   public JsonArray getAll(String sessionId)
   {
-    return LabeledPropertyGraphSynchronization.getAll();
+    return this.synchornizationService.getAll();
   }
 
   @Request(RequestType.SESSION)
   public JsonObject apply(String sessionId, JsonObject json)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.fromJSON(json);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.fromJSON(json);
     synchronization.apply();
 
     return synchronization.toJSON();
@@ -73,7 +88,7 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
 
     if (synchronization != null)
     {
@@ -114,11 +129,11 @@ public class LabeledPropertyGraphSynchronizationService
 
     try
     {
-      LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+      LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
 
       if (synchronization != null)
       {
-        synchronization.execute();
+        this.synchornizationService.execute(synchronization);
       }
     }
     catch (ProgrammingErrorException e)
@@ -139,7 +154,7 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject get(String sessionId, String oid)
   {
-    return LabeledPropertyGraphSynchronization.get(oid).toJSON();
+    return this.synchornizationService.get(oid).toJSON();
   }
 
   @Request(RequestType.SESSION)
@@ -151,14 +166,15 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject page(String sessionId, JsonObject criteria)
   {
-    return LabeledPropertyGraphSynchronization.page(criteria).toJSON();
+    return this.synchornizationService.page(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JsonObject updateRemoteVersion(String sessionId, String oid, String versionId, Integer versionNumber)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
-    synchronization.updateRemoteVersion(versionId, versionNumber);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
+
+    this.synchornizationService.updateRemoteVersion(synchronization, versionId, versionNumber);
 
     return synchronization.toJSON();
   }
@@ -166,14 +182,14 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     LabeledPropertyGraphType type = version.getGraphType();
     TreeStrategyConfiguration config = (TreeStrategyConfiguration) type.toStrategyConfiguration();
     String typeCode = config.getTypeCode();
     String code = config.getCode();
 
-    GeoObjectTypeSnapshot snapshot = version.getSnapshot(typeCode);
+    GeoObjectTypeSnapshot snapshot = this.versionService.getSnapshot(version, typeCode);
     MdVertex mdVertex = snapshot.getGraphMdVertex();
 
     JsonArray array = new JsonArray();
@@ -186,7 +202,7 @@ public class LabeledPropertyGraphSynchronizationService
     query.setParameter("code", code);
 
     query.getResults().forEach(result -> {
-      GeoObject geoObject = snapshot.toGeoObject(result);
+      GeoObject geoObject = this.typeService.toGeoObject(snapshot, result);
 
       if (includeRoot)
       {
@@ -200,7 +216,7 @@ public class LabeledPropertyGraphSynchronizationService
 
     JsonArray metadata = new JsonArray();
 
-    version.getTypes().stream().filter(t -> !t.getIsAbstract()).forEach(t -> {
+    this.versionService.getTypes(version).stream().filter(t -> !t.getIsAbstract()).forEach(t -> {
       metadata.add(t.toGeoObjectType().toJSON());
     });
 
@@ -215,11 +231,11 @@ public class LabeledPropertyGraphSynchronizationService
   public JsonObject getObject(String sessionId, String synchronizationId, String oid)
   {
     JsonObject object = new JsonObject();
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(synchronizationId);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-    GeoObjectTypeSnapshot type = version.getRootType();
+    GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
-    HierarchyTypeSnapshot hierarchy = version.getHierarchies().get(0);
+    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
     MdEdge mdEdge = hierarchy.getGraphMdEdge();
 
     StringBuffer statement = new StringBuffer();
@@ -233,9 +249,9 @@ public class LabeledPropertyGraphSynchronizationService
 
     MdVertexDAOIF childVertex = (MdVertexDAOIF) result.getMdClass();
 
-    GeoObjectTypeSnapshot childType = GeoObjectTypeSnapshot.get(version, childVertex);
+    GeoObjectTypeSnapshot childType = this.typeService.get(version, childVertex);
 
-    GeoObject geoObject = childType.toGeoObject(result);
+    GeoObject geoObject = this.typeService.toGeoObject(childType, result);
 
     object.add("object", geoObject.toJSON());
     object.add("parents", getParents(version, mdEdge, result));
@@ -266,9 +282,9 @@ public class LabeledPropertyGraphSynchronizationService
     p.forEach(parent -> {
       MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();
 
-      GeoObjectTypeSnapshot parentType = GeoObjectTypeSnapshot.get(version, parentVertex);
+      GeoObjectTypeSnapshot parentType = this.typeService.get(version, parentVertex);
 
-      GeoObject parentObject = parentType.toGeoObject(parent);
+      GeoObject parentObject = this.typeService.toGeoObject(parentType, parent);
 
       parents.add(parentObject.toJSON());
 
@@ -280,9 +296,9 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject select(String sessionId, String oid, String parentType, String parentId, Boolean includeMetadata)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-    GeoObjectTypeSnapshot snapshot = version.getSnapshot(parentType);
+    GeoObjectTypeSnapshot snapshot = this.versionService.getSnapshot(version, parentType);
 
     VertexObject parent = this.getObject(snapshot, parentId);
 
@@ -301,7 +317,9 @@ public class LabeledPropertyGraphSynchronizationService
 
   private VertexObject getObject(LabeledPropertyGraphTypeVersion version, String typeCode, String uid)
   {
-    return getObject(version.getSnapshot(typeCode), uid);
+    GeoObjectTypeSnapshot snapshot = this.versionService.getSnapshot(version, typeCode);
+
+    return getObject(snapshot, uid);
   }
 
   private VertexObject getObject(GeoObjectTypeSnapshot snapshot, String uid)
@@ -320,7 +338,7 @@ public class LabeledPropertyGraphSynchronizationService
 
   private JsonArray children(String oid, String parentType, String parentId)
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
 
     return this.children(version, parentType, parentId);
@@ -337,7 +355,7 @@ public class LabeledPropertyGraphSynchronizationService
   {
     JsonArray array = new JsonArray();
 
-    HierarchyTypeSnapshot hierarchy = version.getHierarchies().get(0);
+    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     List<VertexObject> children = parent.getChildren(mdEdge, VertexObject.class);
@@ -348,7 +366,7 @@ public class LabeledPropertyGraphSynchronizationService
 
       if (!cache.containsKey(childVertex.getOid()))
       {
-        GeoObjectTypeSnapshot childType = GeoObjectTypeSnapshot.get(version, childVertex);
+        GeoObjectTypeSnapshot childType = this.typeService.get(version, childVertex);
         GeoObjectType geoObjectType = childType.toGeoObjectType();
 
         cache.put(childVertex.getOid(), geoObjectType);
@@ -356,7 +374,7 @@ public class LabeledPropertyGraphSynchronizationService
 
       GeoObjectType type = cache.get(childVertex.getOid());
 
-      return GeoObjectTypeSnapshot.toGeoObject(child, type);
+      return this.typeService.toGeoObject(child, type);
     }).sorted((a, b) -> {
       return a.getDisplayLabel().getValue().compareTo(b.getDisplayLabel().getValue());
     }).forEach(geoObject -> {

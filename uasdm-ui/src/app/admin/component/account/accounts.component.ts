@@ -15,6 +15,7 @@ import { AccountService } from '../../service/account.service';
 import { AccountComponent } from './account.component';
 import { AccountInviteComponent } from './account-invite.component';
 import { Subject } from 'rxjs';
+import { ConfigurationService } from '@core/service/configuration.service';
 
 @Component({
 	selector: 'accounts',
@@ -30,7 +31,7 @@ export class AccountsComponent implements OnInit {
 		{ header: 'Last name', field: 'lastName', type: 'TEXT', sortable: true },
 		{ header: 'Phone Number', field: 'phoneNumber', type: 'TEXT', sortable: true },
 		{ header: 'Email Address', field: 'email', type: 'TEXT', sortable: true },
-		{ header: 'Bureau', field: 'bureau', type: 'TEXT', sortable: true, filter: true },
+		{ header: 'Organization', field: 'organization', type: 'TEXT', sortable: true, filter: true },
 		{ header: '', type: 'ACTIONS', sortable: false },
 	];
 	refresh: Subject<void>;
@@ -39,9 +40,13 @@ export class AccountsComponent implements OnInit {
 	 * Reference to the modal current showing
 	*/
 	private bsModalRef: BsModalRef;
+	
+	requireKeycloakLogin: boolean;
 
 
-	constructor(private router: Router, private service: AccountService, private modalService: BsModalService) { }
+	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService) { 
+		this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
+	}
 
 	ngOnInit(): void {
 		this.config = {
@@ -69,6 +74,12 @@ export class AccountsComponent implements OnInit {
 
 
 	onRemove(user: User): void {
+		if (user.username == "admin")
+		{
+			alert("You cannot delete the admin user.");
+			return;
+		}
+		
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true,
@@ -131,7 +142,7 @@ export class AccountsComponent implements OnInit {
 				ignoreBackdropClick: true,
 				'class': 'upload-modal'
 			});
-			this.bsModalRef.content.init(account.groups, account.bureaus);
+			this.bsModalRef.content.init(account.groups);
 		});
 	}
 }

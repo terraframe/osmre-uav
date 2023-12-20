@@ -24,8 +24,8 @@ import com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDateDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDecDAOIF;
+import com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF;
-import com.runwaysdk.dataaccess.MdAttributeNumberDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeTextDAOIF;
 import com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF;
@@ -137,7 +137,11 @@ public class AttributeType
   {
     AttributeType attributeType = new AttributeType();
 
-    if (mdAttribute instanceof MdAttributeReferenceDAOIF)
+    if (mdAttribute instanceof MdAttributeGraphReferenceDAOIF)
+    {
+      attributeType = new AttributeOrganizationType();
+    }
+    else if (mdAttribute instanceof MdAttributeReferenceDAOIF)
     {
       attributeType = new AttributeListType();
     }

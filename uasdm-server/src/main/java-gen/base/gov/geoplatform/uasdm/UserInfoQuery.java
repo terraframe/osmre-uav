@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1076387958)
+@com.runwaysdk.business.ClassSignature(hash = 1566375257)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -414,6 +399,122 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
   }
 
 
+  public com.runwaysdk.query.Condition organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.getBusinessQuery().isChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.getBusinessQuery().isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.getBusinessQuery().isChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.getBusinessQuery().isChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.getBusinessQuery().isChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.getBusinessQuery().isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.getBusinessQuery().isChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.getBusinessQuery().isChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.getBusinessQuery().isNotChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.getBusinessQuery().isNotChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.getBusinessQuery().isNotChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.getBusinessQuery().isNotChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.getBusinessQuery().isNotChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+
 /**
  * Interface that masks all type unsafe query methods and defines all type safe methods.
  * This type is used when a join is performed on this class as a reference.
@@ -470,6 +571,30 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     public com.runwaysdk.query.BasicCondition EQ(gov.geoplatform.uasdm.UserInfo userInfo);
 
     public com.runwaysdk.query.BasicCondition NE(gov.geoplatform.uasdm.UserInfo userInfo);
+
+
+  public com.runwaysdk.query.Condition organization();
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery);
+
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization();
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery);
+
+
+  public com.runwaysdk.query.Condition NOT_IN_organization();
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery);
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery);
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization();
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery);
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery);
 
   }
 
@@ -756,6 +881,122 @@ public  class UserInfoQuery extends com.runwaysdk.query.GeneratedBusinessQuery
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.UserInfo.TYPE, alias, displayLabel);
 
   }
+
+  public com.runwaysdk.query.Condition organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.isChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.isChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.isChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.isChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.isChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.isChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.isChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition NOT_IN_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.isNotChildIn(relationshipQuery);
+  }
+
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization()
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+
+    return this.isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.isNotChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    return this.isNotChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.isNotChildIn(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery)
+  {
+    com.runwaysdk.query.QueryFactory queryFactory = this.getQueryFactory();
+    com.runwaysdk.business.RelationshipQuery relationshipQuery = queryFactory.relationshipQuery(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+    relationshipQuery.AND(relationshipQuery.hasParent(organizationQuery));
+
+    return this.isNotChildIn_SUBSELECT(relationshipQuery);
+  }
+
+  public com.runwaysdk.query.Condition NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.isNotChildIn(organizationHasUserQuery);
+  }
+
+  public com.runwaysdk.query.Condition SUBSELECT_NOT_IN_organization(net.geoprism.registry.OrganizationQuery organizationQuery, gov.geoplatform.uasdm.OrganizationHasUserQuery organizationHasUserQuery)
+  {
+    organizationHasUserQuery.AND(organizationHasUserQuery.hasParent(organizationQuery));
+    return this.isNotChildIn_SUBSELECT(organizationHasUserQuery);
+  }
+
   protected com.runwaysdk.query.AttributeReference referenceFactory( com.runwaysdk.dataaccess.MdAttributeRefDAOIF mdAttributeIF, String attributeNamespace, String definingTableName, String definingTableAlias,  com.runwaysdk.dataaccess.MdBusinessDAOIF referenceMdBusinessIF, String referenceTableAlias, com.runwaysdk.query.ComponentQuery rootQuery, java.util.Set<com.runwaysdk.query.Join> tableJoinSet, String userDefinedAlias, String userDefinedDisplayLabel)
   {
     String name = mdAttributeIF.definesAttribute();

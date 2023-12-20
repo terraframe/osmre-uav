@@ -16,6 +16,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
 import { ProductPanelComponent } from './component/product-panel/product-panel.component';
@@ -84,6 +85,7 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		CollapseModule.forRoot(),
 		SharedModule,
 		SiteRoutingModule,
+		PopoverModule.forRoot(),
 		NgxFileDropModule
 	],
 	declarations: [

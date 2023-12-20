@@ -19,6 +19,7 @@ import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
 import { SystemConfigurationComponent } from './component/system/system-configuration.component';
 import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
+import { OrganizationSyncComponent } from './component/organization-sync/organization-sync.component';
 
 const routes: Routes = [
     {
@@ -73,6 +74,11 @@ const routes: Routes = [
         path: 'lpg-sync/:oid',
         canActivate: [AdminGuardService],
         component: LPGSyncComponent,
+    },
+    {
+        path: 'organization-sync/:oid',
+        canActivate: [AdminGuardService],
+        component: OrganizationSyncComponent,
     },
     {
         path: 'system-info',

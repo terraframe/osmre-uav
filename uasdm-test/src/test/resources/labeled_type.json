@@ -26,6 +26,7 @@
     "typeCode": "USATestDataCountry"
   },
   "graphType": "single",
-  "validOn": "2020-04-04"
+  "validOn": "2020-04-04",
+  "organization": "OSMRE"
 }
 

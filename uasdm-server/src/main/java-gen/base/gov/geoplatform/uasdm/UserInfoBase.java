@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 707567905)
+@com.runwaysdk.business.ClassSignature(hash = 1509816610)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,22 +11,23 @@ package gov.geoplatform.uasdm;
 public abstract class UserInfoBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.UserInfo";
-  public static java.lang.String BUREAU = "bureau";
-  public static java.lang.String CREATEDATE = "createDate";
-  public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String ENTITYDOMAIN = "entityDomain";
-  public static java.lang.String GEOPRISMUSER = "geoprismUser";
-  public static java.lang.String INFORMATION = "information";
-  public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
-  public static java.lang.String LOCKEDBY = "lockedBy";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 707567905;
+  public final static java.lang.String BUREAU = "bureau";
+  public final static java.lang.String CREATEDATE = "createDate";
+  public final static java.lang.String CREATEDBY = "createdBy";
+  public final static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public final static java.lang.String GEOPRISMUSER = "geoprismUser";
+  public final static java.lang.String INFORMATION = "information";
+  public final static java.lang.String KEYNAME = "keyName";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String SITEMASTER = "siteMaster";
+  public final static java.lang.String TYPE = "type";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1509816610;
   
   public UserInfoBase()
   {
@@ -502,6 +488,34 @@ public abstract class UserInfoBase extends com.runwaysdk.business.Business
     UserInfoQuery query = new UserInfoQuery(new com.runwaysdk.query.QueryFactory());
     com.runwaysdk.business.Entity.getAllInstances(query, sortAttribute, ascending, pageSize, pageNumber);
     return query;
+  }
+  
+  public gov.geoplatform.uasdm.OrganizationHasUser addOrganization(net.geoprism.registry.Organization organization)
+  {
+    return (gov.geoplatform.uasdm.OrganizationHasUser) addParent(organization, gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+  }
+  
+  public void removeOrganization(net.geoprism.registry.Organization organization)
+  {
+    removeAllParents(organization, gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public com.runwaysdk.query.OIterator<? extends net.geoprism.registry.Organization> getAllOrganization()
+  {
+    return (com.runwaysdk.query.OIterator<? extends net.geoprism.registry.Organization>) getParents(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.OrganizationHasUser> getAllOrganizationRel()
+  {
+    return (com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.OrganizationHasUser>) getParentRelationships(gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.OrganizationHasUser> getOrganizationRel(net.geoprism.registry.Organization organization)
+  {
+    return (com.runwaysdk.query.OIterator<? extends gov.geoplatform.uasdm.OrganizationHasUser>) getRelationshipsWithParent(organization, gov.geoplatform.uasdm.OrganizationHasUser.CLASS);
   }
   
   public static UserInfo get(String oid)

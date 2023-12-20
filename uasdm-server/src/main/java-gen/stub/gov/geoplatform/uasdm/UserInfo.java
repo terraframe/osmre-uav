@@ -1,214 +1,89 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runwaysdk.dataaccess.ValueObject;
+import com.google.gson.JsonObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
-import com.runwaysdk.query.BasicLeftJoinEq;
-import com.runwaysdk.query.LeftJoinEq;
 import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.query.Selectable;
-import com.runwaysdk.query.SelectableChar;
-import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.Bureau;
-import gov.geoplatform.uasdm.bus.BureauQuery;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
-import net.geoprism.GeoprismUserQuery;
-import net.geoprism.account.AccountBusinessService;
+import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.GeoprismActorIF;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.service.business.AccountBusinessService;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class UserInfo extends UserInfoBase
 {
-  private static final long serialVersionUID = 984575899;
+  private static final long  serialVersionUID = 984575899;
+
+  public static final String ORGANIZATION     = "organization";
 
   public UserInfo()
   {
     super();
   }
 
-  @SuppressWarnings("unchecked")
-  public static JSONObject page(JSONObject criteria)
+  public List<Organization> getOrganizations()
   {
-    ValueQuery vQuery = new ValueQuery(new QueryFactory());
-
-    GeoprismUserQuery uQuery = new GeoprismUserQuery(vQuery);
-    UserInfoQuery iQuery = new UserInfoQuery(vQuery);
-    BureauQuery bQuery = new BureauQuery(vQuery);
-
-    vQuery.SELECT(uQuery.getOid(), uQuery.getUsername(), uQuery.getFirstName(), uQuery.getLastName(), uQuery.getPhoneNumber(), uQuery.getEmail());
-    vQuery.SELECT(bQuery.getName(UserInfo.BUREAU));
-
-    vQuery.WHERE(new LeftJoinEq(uQuery.getOid(), iQuery.getGeoprismUser()));
-    // vQuery.WHERE(new InnerJoinEq(iQuery.getBureau(UserInfo.BUREAU),
-    // bQuery.getOid()));
-    vQuery.WHERE(new BasicLeftJoinEq(iQuery.getBureau(UserInfo.BUREAU), bQuery.getOid()));
-
-    if (criteria.has("filters"))
+    try (OIterator<? extends Organization> it = this.getAllOrganization())
     {
-      JSONObject filters = criteria.getJSONObject("filters");
-      Iterator<String> keys = filters.keys();
-
-      while (keys.hasNext())
-      {
-        String attributeName = keys.next();
-
-        Selectable attribute = null;
-
-        if (attributeName.equals(UserInfo.BUREAU))
-        {
-          attribute = bQuery.getName(UserInfo.BUREAU);
-        }
-        else
-        {
-          attribute = uQuery.get(attributeName);
-        }
-
-        if (attribute != null)
-        {
-          JSONObject filter = filters.getJSONObject(attributeName);
-
-          String value = filter.get("value").toString();
-          String mode = filter.get("matchMode").toString();
-
-          if (mode.equals("contains"))
-          {
-            SelectableChar selectable = (SelectableChar) attribute;
-
-            vQuery.WHERE(selectable.LIKEi("%" + value + "%"));
-          }
-          else if (mode.equals("equals"))
-          {
-            vQuery.WHERE(attribute.EQ(value));
-          }
-        }
-      }
+      return it.getAll().stream().map(o -> (Organization) o).collect(Collectors.toList());
     }
-
-    int pageSize = 10;
-    int pageNumber = 1;
-
-    if (criteria.has("first") && criteria.has("rows"))
-    {
-      int first = criteria.getInt("first");
-      pageSize = criteria.getInt("rows");
-      pageNumber = ( first / pageSize ) + 1;
-    }
-
-    if (criteria.has("sortField") && criteria.has("sortOrder"))
-    {
-      String field = criteria.getString("sortField");
-      SortOrder order = criteria.getInt("sortOrder") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-      addSort(vQuery, uQuery, bQuery, field, order);
-    }
-    else if (criteria.has("multiSortMeta"))
-    {
-      JSONArray sorts = criteria.getJSONArray("multiSortMeta");
-
-      for (int i = 0; i < sorts.length(); i++)
-      {
-        JSONObject sort = sorts.getJSONObject(i);
-
-        String field = sort.getString("field");
-        SortOrder order = sort.getInt("order") == 1 ? SortOrder.ASC : SortOrder.DESC;
-
-        addSort(vQuery, uQuery, bQuery, field, order);
-      }
-    }
-
-    JSONArray results = new JSONArray();
-
-    OIterator<ValueObject> it = vQuery.getIterator(pageSize, pageNumber);
-
-    try
-    {
-      while (it.hasNext())
-      {
-        ValueObject vObject = it.next();
-
-        JSONObject result = new JSONObject();
-        result.put(GeoprismUser.OID, vObject.getValue(GeoprismUser.OID));
-        result.put(GeoprismUser.USERNAME, vObject.getValue(GeoprismUser.USERNAME));
-        result.put(GeoprismUser.FIRSTNAME, vObject.getValue(GeoprismUser.FIRSTNAME));
-        result.put(GeoprismUser.LASTNAME, vObject.getValue(GeoprismUser.LASTNAME));
-        result.put(GeoprismUser.PHONENUMBER, vObject.getValue(GeoprismUser.PHONENUMBER));
-        result.put(GeoprismUser.EMAIL, vObject.getValue(GeoprismUser.EMAIL));
-        result.put(UserInfo.BUREAU, vObject.getValue(UserInfo.BUREAU));
-
-        results.put(result);
-      }
-    }
-    finally
-    {
-      it.close();
-    }
-
-    JSONObject page = new JSONObject();
-    page.put("resultSet", results);
-    page.put("count", vQuery.getCount());
-    page.put("pageNumber", pageNumber);
-    page.put("pageSize", pageSize);
-
-    return page;
   }
 
-  private static void addSort(ValueQuery vQuery, GeoprismUserQuery uQuery, BureauQuery bQuery, String field, SortOrder order)
+  public static JSONObject page(JSONObject criteria)
   {
-    if (field.equals(UserInfo.BUREAU))
-    {
-      vQuery.ORDER_BY(bQuery.getName(UserInfo.BUREAU), order);
-    }
-    else
-    {
-      vQuery.ORDER_BY(uQuery.getS(field), order);
-    }
+    return new UserInfoPageQuery(criteria).getPage();
   }
 
   public static UserInfo getUserInfo(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     return UserInfo.getByUser(user);
   }
 
   public static JSONObject getByUserId(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     UserInfo info = UserInfo.getByUser(user);
 
-    return UserInfo.serialize(user, info);
+    return UserInfo.serialize((GeoprismActorIF) user, info);
   }
 
   @Transaction
   public static void removeByUser(String userId)
   {
-    GeoprismUser user = GeoprismUser.get(userId);
+    SingleActor user = SingleActor.get(userId);
 
     UserInfo info = UserInfo.getByUser(user);
 
@@ -217,7 +92,7 @@ public class UserInfo extends UserInfoBase
       info.delete();
     }
 
-    CollectionReport.handleDelete(user);
+    CollectionReportFacade.handleDelete((GeoprismActorIF) user).doIt();
 
     user.delete();
   }
@@ -225,7 +100,12 @@ public class UserInfo extends UserInfoBase
   @Transaction
   public static JSONObject applyUserWithRoles(JSONObject account, String roleIds)
   {
-    GeoprismUser user = deserialize(account);
+    GeoprismActorIF user = deserialize(account);
+    
+    if (user instanceof ExternalProfile)
+    {
+      ( (ExternalProfile) user ).setRemoteId(user.getUsername());
+    }
 
     if (roleIds != null)
     {
@@ -237,19 +117,21 @@ public class UserInfo extends UserInfoBase
         setRoleIds.add(array.getString(i));
       }
 
-      new AccountBusinessService().applyUserWithRoles(user, setRoleIds);
+      AccountBusinessService service = ApplicationContextHolder.getBean(AccountBusinessService.class);
+
+      service.applyUserWithRoles(user, setRoleIds);
     }
     else
     {
       user.apply();
     }
 
-    UserInfo info = getByUser(user);
+    UserInfo info = getByUser((SingleActor) user);
 
     if (info == null)
     {
       info = new UserInfo();
-      info.setGeoprismUser(user);
+      info.setGeoprismUser((SingleActor) user);
     }
     else
     {
@@ -281,12 +163,35 @@ public class UserInfo extends UserInfoBase
 
     info.apply();
 
+    // Remove the user from any organization
+    try (OIterator<? extends Organization> it = info.getAllOrganization())
+    {
+      while (it.hasNext())
+      {
+        info.removeOrganization(it.next());
+      }
+    }
+
+    // Assign the user to the new organization
+    if (account.has(UserInfo.ORGANIZATION))
+    {
+      JSONObject org = account.getJSONObject(UserInfo.ORGANIZATION);
+      String code = org.getString(Organization.CODE);
+
+      if (!StringUtils.isBlank(code))
+      {
+        Organization organization = Organization.getByCode(code);
+
+        info.addOrganization(organization).apply();
+      }
+    }
+
     CollectionReportFacade.update(user).doIt();
 
     return serialize(user, info);
   }
 
-  private static JSONObject serialize(GeoprismUser user, UserInfo info)
+  private static JSONObject serialize(GeoprismActorIF user, UserInfo info)
   {
     JSONObject result = new JSONObject();
     result.put(GeoprismUser.OID, user.getOid());
@@ -296,10 +201,26 @@ public class UserInfo extends UserInfoBase
     result.put(GeoprismUser.PHONENUMBER, user.getPhoneNumber());
     result.put(GeoprismUser.EMAIL, user.getEmail());
     result.put(GeoprismUser.INACTIVE, user.getInactive());
+    result.put("externalProfile", (user instanceof ExternalProfile));
 
     if (info != null)
     {
-      result.put(UserInfo.BUREAU, info.getBureauOid());
+      List<Organization> organizations = info.getOrganizations();
+
+      if (organizations.size() > 0)
+      {
+        Organization organization = organizations.get(0);
+        OrganizationDTO dto = organization.toDTO();
+
+        JsonObject object = dto.toJSON();
+        object.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+        object.remove(OrganizationDTO.JSON_ENABLED);
+        object.remove(OrganizationDTO.JSON_PARENT_CODE);
+        object.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+        result.put(UserInfo.ORGANIZATION, new JSONObject(object.toString()));
+      }
+      // result.put(UserInfo.BUREAU, info.getBureauOid());
       result.put(UserInfo.INFORMATION, info.getInformation());
     }
 
@@ -308,19 +229,26 @@ public class UserInfo extends UserInfoBase
     return result;
   }
 
-  public static GeoprismUser deserialize(JSONObject account)
+  public static GeoprismActorIF deserialize(JSONObject account)
   {
-    GeoprismUser user = null;
+    GeoprismActorIF user = null;
 
     if (account.has(GeoprismUser.OID))
     {
       String userId = account.getString(GeoprismUser.OID);
 
-      user = GeoprismUser.lock(userId);
+      user = (GeoprismActorIF) SingleActor.lock(userId);
     }
     else
     {
-      user = new GeoprismUser();
+      if (AppProperties.requireKeycloakLogin())
+      {
+        user = new ExternalProfile();
+      }
+      else
+      {
+        user = new GeoprismUser();
+      }
     }
 
     user.setUsername(account.getString(GeoprismUser.USERNAME));
@@ -338,13 +266,13 @@ public class UserInfo extends UserInfoBase
       user.setInactive(account.getBoolean(GeoprismUser.INACTIVE));
     }
 
-    if (account.has(GeoprismUser.PASSWORD))
+    if (account.has(GeoprismUser.PASSWORD) && user instanceof GeoprismUser)
     {
       String password = account.getString(GeoprismUser.PASSWORD);
 
       if (password != null && password.length() > 0)
       {
-        user.setPassword(password);
+        ((GeoprismUser)user).setPassword(password);
       }
     }
 

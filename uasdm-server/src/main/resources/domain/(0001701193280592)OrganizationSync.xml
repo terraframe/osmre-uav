@@ -1,0 +1,48 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.OrganizationSynchronization" table="org_sync" label="Org Synchronization" generateController="false" publish="true">
+        <attributes>
+          <text name="url" label="URL" required="true" />
+        </attributes>
+        <mdMethod name="execute" label="publish" static="false" returnType="void">
+        </mdMethod>                        
+      </mdBusiness>    
+    </create>
+    <permissions>
+      <method methodName="execute" type="gov.geoplatform.uasdm.OrganizationSynchronization">
+        <assignedRole roleName="Administrator" />
+      </method>        
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.OrganizationSynchronization">
+            <operation name="ALL" />
+            <mdMethodPermission methodName="execute">
+              <operation name="EXECUTE" />
+            </mdMethodPermission>          
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.OrganizationHasUser">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.OrganizationSynchronization">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.OrganizationHasUser">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdRelationshipPermission>          
+        </grant>
+      </role>      
+    </permissions>    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.OrganizationSynchronization" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </undoIt>
+</version>
