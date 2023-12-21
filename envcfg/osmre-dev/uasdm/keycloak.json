@@ -1,6 +1,6 @@
 {
   "realm": "myrealm",
-  "auth-server-url": "https://localhost:8021/auth/",
+  "auth-server-url": "https://localhost:8021/",
   "ssl-required": "external",
   "resource": "idm",
   "public-client": true,

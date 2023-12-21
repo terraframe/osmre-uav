@@ -35,24 +35,24 @@ cp $SSL/dev.crt $SSL/keycloak/dev.crt && chmod 777 $SSL/keycloak/dev.crt
 
 docker rm -f $(docker ps -a -q --filter="name=keycloak") || true
 
-docker run --user root --name keycloak -d -p 8021:8443 \
-  -v $SSL/dev.crt:/opt/keycloak/ssl/dev.crt \
-  -v $RESOURCES/realm-export.json:/opt/keycloak/realm-export.json \
-  -v $SSL/keycloak/dev.crt:/etc/x509/https/tls.crt \
-  -v $SSL/keycloak/dev.key.nopass:/etc/x509/https/tls.key \
-  -v $RESOURCES/add-cert-to-java-truststore.sh:/opt/keycloak/ssl/add-cert-to-java-truststore.sh \
-  --entrypoint="/opt/keycloak/ssl/add-cert-to-java-truststore.sh" \
-  -e X509_CA_BUNDLE=/etc/x509/https/tls.crt \
-  -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
-  -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin \
-  quay.io/keycloak/keycloak:12.0.2
-
 #docker run --user root --name keycloak -d -p 8021:8443 \
-#  -v $SSL/keystore.ks:/opt/keycloak/ssl/keystore.ks \
-#  -v $RESOURCES/realm-export.json:/opt/keycloak/data/import/myrealm.json \
+#  -v $SSL/dev.crt:/opt/keycloak/ssl/dev.crt \
+#  -v $RESOURCES/realm-export.json:/opt/keycloak/realm-export.json \
+#  -v $SSL/keycloak/dev.crt:/etc/x509/https/tls.crt \
+#  -v $SSL/keycloak/dev.key.nopass:/etc/x509/https/tls.key \
+#  -v $RESOURCES/add-cert-to-java-truststore.sh:/opt/keycloak/ssl/add-cert-to-java-truststore.sh \
+#  --entrypoint="/opt/keycloak/ssl/add-cert-to-java-truststore.sh" \
+#  -e X509_CA_BUNDLE=/etc/x509/https/tls.crt \
 #  -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
-#  -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
-#  quay.io/keycloak/keycloak:latest start-dev --import-realm --https-key-store-file=/opt/keycloak/ssl/keystore.ks --https-key-store-password=2v8hVW2rPFncN6m
+#  -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin \
+#  quay.io/keycloak/keycloak:12.0.2
+
+docker run --user root --name keycloak -d -p 8021:8443 \
+  -v $SSL/keystore.ks:/opt/keycloak/ssl/keystore.ks \
+  -v $RESOURCES/realm-export.json:/opt/keycloak/data/import/myrealm.json \
+  -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
+  -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak:18.0.2 start-dev --import-realm --https-key-store-file=/opt/keycloak/ssl/keystore.ks --https-key-store-password=2v8hVW2rPFncN6m
 
   
 # -e KEYCLOAK_IMPORT=/opt/keycloak/realm-export.json \
