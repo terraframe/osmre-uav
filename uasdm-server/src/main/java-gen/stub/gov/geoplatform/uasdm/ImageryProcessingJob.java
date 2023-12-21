@@ -397,7 +397,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     if (isDirectory)
     {
-      task.createAction("We will be processing all files located in the directory [" + path + "] inside the uploaded archive.", TaskActionType.INFO.getType());
+      task.createAction("We will be processing all files located in the directory [" + path + "] inside the uploaded archive.", TaskActionType.INFO);
       return true;
     }
 
@@ -405,7 +405,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       if (!isValidName)
       {
-        task.createAction("The filename [" + filename + "] contains special characters which will be replaced with an underscore.", TaskActionType.ERROR.getType());
+        task.createAction("The filename [" + filename + "] contains special characters which will be replaced with an underscore.", TaskActionType.ERROR);
 
         return true; // The file will be renamed later so it's valid. But we do want to let them know we're renaming it.
       }
@@ -416,7 +416,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         if (! ( (ext.equals("tif") || ext.equals("tiff")) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
         {
-          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR.getType());
+          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
           return false;
         }
       }
@@ -424,7 +424,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
         {
-          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR.getType());
+          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
           return false;
         }
       }

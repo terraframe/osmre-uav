@@ -164,7 +164,7 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(UAV.OID, this.getOid());
     object.put(UAV.SERIALNUMBER, this.getSerialNumber());
     object.put(UAV.FAANUMBER, this.getFaaNumber());
-    object.put(UAV.BUREAU, bureau.getName());
+    if (bureau != null) { object.put(UAV.BUREAU, bureau.getName()); }
     object.put(Platform.NAME, platform.getName());
     object.put(Platform.PLATFORMTYPE, platformType.getName());
     object.put(Platform.MANUFACTURER, manufacturer.getName());
@@ -253,7 +253,7 @@ public class UAV extends UAVBase implements JSONSerializable
     obj.put(UAV.FAANUMBER, this.getFaaNumber());
     obj.put(UAV.PLATFORM, platform.getName());
     obj.put(Platform.PLATFORMTYPE, platformType.getName());
-    obj.put(UAV.BUREAU, bureau.getDisplayLabel());
+    if (bureau != null) { obj.put(UAV.BUREAU, bureau.getDisplayLabel()); }
 
     ServerOrganization organization = this.getServerOrganization();
 

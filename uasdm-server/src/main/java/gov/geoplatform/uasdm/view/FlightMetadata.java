@@ -1106,7 +1106,7 @@ public class FlightMetadata
 
     private String  pixelSizeHeight;
 
-    private Integer focalLength;
+    private String focalLength;
 
     public String getName()
     {
@@ -1208,12 +1208,12 @@ public class FlightMetadata
       this.pixelSizeHeight = pixelSizeHeight;
     }
 
-    public Integer getFocalLength()
+    public String getFocalLength()
     {
       return focalLength;
     }
 
-    public void setFocalLength(Integer focalLength)
+    public void setFocalLength(String focalLength)
     {
       this.focalLength = focalLength;
     }
@@ -1234,7 +1234,7 @@ public class FlightMetadata
 
       if (item.hasAttribute("focalLength"))
       {
-        metadata.setFocalLength(Integer.parseInt(item.getAttribute("focalLength")));
+        metadata.setFocalLength(item.getAttribute("focalLength"));
       }
 
       return metadata;
@@ -1506,7 +1506,7 @@ public class FlightMetadata
 
     if (jSensor.has("focalLength"))
     {
-      metadata.getSensor().setFocalLength(jSensor.getInt("focalLength"));
+      metadata.getSensor().setFocalLength(jSensor.get("focalLength").toString());
     }
 
     Artifact[] artifacts = collection.getArtifactObjects();

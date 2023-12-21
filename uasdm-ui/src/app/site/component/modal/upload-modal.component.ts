@@ -162,6 +162,9 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		if (elem != null && this.uploader == null && this.uploadTarget != null) {
 
 			const extensions = [];
+			
+			extensions.push('zip');
+			extensions.push('tar.gz');
 
 			if (this.uploadTarget === 'ortho') {
 				extensions.push('tif')
@@ -172,10 +175,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 			else if (this.uploadTarget === 'ptcloud') {
 				extensions.push('laz')
 				extensions.push('las')
-			}
-			else {
-				extensions.push('zip');
-				extensions.push('tar.gz');
 			}
 
 			const uiOptions: UIOptions = {

@@ -197,11 +197,12 @@
         <div class="" [hidden]="!uploadVisible">
 
           <div class="well">
-            <h4>All files uploaded must</h4>
+            <h4>All uploaded files</h4>
             <ul>
-              <li>be compressed into a .zip or .tar.gz format </li>
-              <li>not contain spaces or special characters such as <,>, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or
-                  apostrophes in any file name</li>
+              <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
+              <li *ngIf="uploadTarget !== 'raw'">Can optionally be compressed into a .zip or .tar.gz format.</li>
+              <li>Containing spaces or special characters such as <,>, -, +, =, !, @, #, $, %, ^, &, *, ?,/,\ or
+                  apostrophes will be replaced with underscores</li>
             </ul>
 
             <h4>
@@ -230,25 +231,25 @@
               </tbody>
               <tbody *ngIf="uploadTarget === 'ptcloud'">
                 <tr>
-                  <td></td>
+                  <td>Pointcloud</td>
                   <td>laz, las</td>
                 </tr>
               </tbody>
               <tbody *ngIf="uploadTarget === 'dem'">
                 <tr>
-                  <td></td>
+                  <td>Digital Elevation Model (DEM)</td>
                   <td>tif</td>
                 </tr>
               </tbody>
               <tbody *ngIf="uploadTarget === 'ortho'">
                 <tr>
-                  <td></td>
+                  <td>Orthomosaic</td>
                   <td>tif, png</td>
                 </tr>
               </tbody>
               <tbody *ngIf="uploadTarget === 'video'">
                 <tr>
-                  <td></td>
+                  <td>Video</td>
                   <td>mp4</td>
                 </tr>
               </tbody>
