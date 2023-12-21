@@ -251,7 +251,7 @@ public class UserInfo extends UserInfoBase
       }
     }
     
-    if ( (account.has("externalProfile") && account.getBoolean("externalProfile")) || AppProperties.requireKeycloakLogin() )
+    if (user instanceof ExternalProfile)
     {
       if (user.isNew())
       {
