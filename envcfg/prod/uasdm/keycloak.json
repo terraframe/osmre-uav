@@ -1,6 +1,6 @@
 {
   "realm": "IDM",
-  "auth-server-url": "https://auth.geoplatform.gov/auth/",
+  "auth-server-url": "https://kauth.geoplatform.gov/",
   "ssl-required": "external",
   "resource": "idm-prod",
   "public-client": true,
