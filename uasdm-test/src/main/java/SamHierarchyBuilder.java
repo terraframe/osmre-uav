@@ -49,10 +49,73 @@ public class SamHierarchyBuilder
 
   public void run() throws Exception
   {
-    // DOI and USDA organizations
-    List<String> rootIds = Arrays.asList("100010393", "100006809");
+    JsonObject government = this.createNode("Government", "Government");
 
     JsonArray roots = new JsonArray();
+    roots.add(government);
+    roots.add(this.createEducation());
+    roots.add(this.createNode("Private Sector", "Private-Sector"));
+
+    // File folder = new File(this.folderName);
+    // File[] files = folder.listFiles((file, fileName) ->
+    // fileName.startsWith("root"));
+    //
+    // for (File file : files)
+    // {
+    // JsonObject object = JsonParser.parseReader(new
+    // FileReader(file)).getAsJsonObject();
+    // JsonArray orgs = object.get("orglist").getAsJsonArray();
+    //
+    // for (int i = 0; i < orgs.size(); i++)
+    // {
+    // JsonObject organization = orgs.get(i).getAsJsonObject();
+    //
+    // String status = organization.get("status").getAsString();
+    //
+    // String orgType = organization.get("fhorgtype").getAsString();
+    //
+    // if (!status.equalsIgnoreCase("INACTIVE") &&
+    // !orgType.equalsIgnoreCase("office"))
+    // {
+    // Long orgId = organization.get("fhorgid").getAsLong();
+    // String name = organization.get("fhorgname").getAsString();
+    //
+    // JsonArray links = organization.get("links").getAsJsonArray();
+    //
+    // boolean hasChildren = false;
+    //
+    // for (int j = 0; j < links.size(); j++)
+    // {
+    // JsonObject link = links.get(j).getAsJsonObject();
+    // String rel = link.get("rel").getAsString();
+    //
+    // if (rel.equals("nextlevelchildren"))
+    // {
+    // hasChildren = true;
+    // }
+    // }
+    //
+    // if (hasChildren)
+    // {
+    // JsonObject root = processFile(orgId.toString());
+    //
+    // if (root != null)
+    // {
+    // government.get("children").getAsJsonArray().add(root);
+    // }
+    // }
+    // else
+    // {
+    // JsonObject obj = createObject(name, orgId);
+    //
+    // government.get("children").getAsJsonArray().add(obj);
+    // }
+    // }
+    // }
+    // }
+
+    // DOI and USDA organizations
+    List<String> rootIds = Arrays.asList("100010393", "100006809", "100035122", "100004222");
 
     for (String rootId : rootIds)
     {
@@ -60,13 +123,9 @@ public class SamHierarchyBuilder
 
       if (root != null)
       {
-        roots.add(root);
+        government.get("children").getAsJsonArray().add(root);
       }
     }
-
-    // Add custom organizations
-    roots.add(this.createCDC());
-    roots.add(this.createOther());
 
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -78,6 +137,7 @@ public class SamHierarchyBuilder
 
   private JsonObject processFile(String rootId) throws FileNotFoundException
   {
+    long oasId = 100169579;
 
     JsonObject root = null;
 
@@ -115,11 +175,12 @@ public class SamHierarchyBuilder
         {
           JsonObject organization = orgs.get(i).getAsJsonObject();
           String status = organization.get("status").getAsString();
+          String orgType = organization.get("fhorgtype").getAsString();
+          long orgId = organization.get("fhorgid").getAsLong();
 
-          if (!status.equals("INACTIVE"))
+          if (orgId == oasId || (!status.equalsIgnoreCase("INACTIVE") && !orgType.equalsIgnoreCase("office")) )
           {
             String name = organization.get("fhorgname").getAsString();
-            long orgId = organization.get("fhorgid").getAsLong();
 
             JsonObject obj = createObject(name, orgId);
 
@@ -136,7 +197,7 @@ public class SamHierarchyBuilder
                 String[] split = href.split("fhorgid=");
                 String childId = split[1];
 
-                if (!childId.equals(rootId))
+                if (!childId.equals(rootId) && childId.equals(Long.valueOf(oasId).toString()))
                 {
                   JsonObject child = processFile(childId);
 
@@ -203,9 +264,9 @@ public class SamHierarchyBuilder
     return label;
   }
 
-  private JsonObject createCDC()
+  private JsonObject createEducation()
   {
-    JsonObject cdc = this.createNode("CDC", "CDC");
+    JsonObject cdc = this.createNode("Education", "Education");
     cdc.get("children").getAsJsonArray().add(this.createNode("LSHTM", "CDC/LSHTM"));
 
     return cdc;
