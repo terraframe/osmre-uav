@@ -250,30 +250,41 @@ public class UserInfo extends UserInfoBase
         user = new GeoprismUser();
       }
     }
-
-    user.setUsername(account.getString(GeoprismUser.USERNAME));
-    user.setFirstName(account.getString(GeoprismUser.FIRSTNAME));
-    user.setLastName(account.getString(GeoprismUser.LASTNAME));
-    user.setEmail(account.getString(GeoprismUser.EMAIL));
-
-    if (account.has(GeoprismUser.PHONENUMBER))
+    
+    if ( (account.has("externalProfile") && account.getBoolean("externalProfile")) || AppProperties.requireKeycloakLogin() )
     {
-      user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
+      if (user.isNew())
+      {
+        user.setEmail(account.getString(GeoprismUser.EMAIL));
+        user.setUsername(account.getString(GeoprismUser.EMAIL));
+      }
     }
-
+    else
+    {
+      user.setUsername(account.getString(GeoprismUser.USERNAME));
+      user.setFirstName(account.getString(GeoprismUser.FIRSTNAME));
+      user.setLastName(account.getString(GeoprismUser.LASTNAME));
+      user.setEmail(account.getString(GeoprismUser.EMAIL));
+  
+      if (account.has(GeoprismUser.PHONENUMBER))
+      {
+        user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
+      }
+  
+      if (account.has(GeoprismUser.PASSWORD) && user instanceof GeoprismUser)
+      {
+        String password = account.getString(GeoprismUser.PASSWORD);
+  
+        if (password != null && password.length() > 0)
+        {
+          ((GeoprismUser)user).setPassword(password);
+        }
+      }
+    }
+    
     if (account.has(GeoprismUser.INACTIVE))
     {
       user.setInactive(account.getBoolean(GeoprismUser.INACTIVE));
-    }
-
-    if (account.has(GeoprismUser.PASSWORD) && user instanceof GeoprismUser)
-    {
-      String password = account.getString(GeoprismUser.PASSWORD);
-
-      if (password != null && password.length() > 0)
-      {
-        ((GeoprismUser)user).setPassword(password);
-      }
     }
 
     return user;

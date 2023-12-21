@@ -33,10 +33,9 @@ import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
+import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.account.LocaleSerializer;
 import net.geoprism.rbac.RoleConstants;
-import net.geoprism.registry.service.business.RoleBusinessService;
-import net.geoprism.spring.ApplicationContextHolder;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {
@@ -106,9 +105,15 @@ public class IDMSessionService extends IDMSessionServiceBase
     
     final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
     
-    SingleActorDAOIF profile = IDMSessionService.getActor(joUser);
+    ExternalProfile profile = IDMSessionService.getProfile(joUser);
+    
+    if (Boolean.TRUE.equals(((GeoprismActorIF)profile).getInactive()))
+    {
+      net.geoprism.account.InactiveUserException ex = new net.geoprism.account.InactiveUserException("User [" + ((GeoprismActorIF)profile).getUsername() + "] is inactive");
+      throw ex;
+    }
 
-    String sessionId = SessionFacade.logIn(profile, LocaleSerializer.deserialize(locales));
+    String sessionId = SessionFacade.logIn(((SingleActorDAOIF)BusinessFacade.getEntityDAO(profile)), LocaleSerializer.deserialize(locales));
     
     JsonObject json = new JsonObject();
     json.addProperty("sessionId", sessionId);
@@ -117,7 +122,7 @@ public class IDMSessionService extends IDMSessionServiceBase
   }
   
   @Transaction
-  private static synchronized SingleActorDAOIF getActor(JsonObject joUser)
+  private static synchronized ExternalProfile getProfile(JsonObject joUser)
   {
     final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
     final String userid = joUser.get(KeycloakConstants.USERJSON_USERID).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERID).getAsString();
@@ -168,7 +173,7 @@ public class IDMSessionService extends IDMSessionServiceBase
           }
           */
 
-          return (SingleActorDAOIF) BusinessFacade.getEntityDAO(profile);
+          return profile;
         }
         catch (Throwable t)
         {

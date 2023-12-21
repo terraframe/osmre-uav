@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.UserInviteDTO;
 import gov.geoplatform.uasdm.service.AccountService;
 import net.geoprism.account.GeoprismUserView;
@@ -196,6 +197,11 @@ public class UASDMAccountController extends RunwaySpringController
     
     JSONObject user = new JSONObject();
     user.put("newInstance", true);
+    
+    if (AppProperties.requireKeycloakLogin())
+    {
+      user.put("externalProfile", true);
+    }
 
     JSONArray groups = this.createRoleMap(roles);
 

@@ -13,19 +13,19 @@
       </h3>
     </div>
     <hr>
-    <div class="form-group">
+    <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
       <label>
         <localize key="account.firstname"></localize>
       </label>
       <input type="text" [(ngModel)]="account.user.firstName" name="firstname" required [disabled]="account.user.externalProfile">
     </div>
-    <div class="form-group">
+    <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
       <label>
         <localize key="account.lastname"></localize>
       </label>
       <input type="text" [(ngModel)]="account.user.lastName" name="lastname" required [disabled]="account.user.externalProfile">
     </div>
-    <div class="form-group">
+    <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
       <label>
         <localize key="account.phonenumber"></localize>
       </label>
@@ -38,7 +38,7 @@
       <label>
         <localize key="account.email"></localize>
       </label>
-      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email [disabled]="account.user.externalProfile">
+      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email [disabled]="account.user.externalProfile && !account.user.newInstance">
       <div *ngIf="aemail.errors?.email && account.user.email && account.user.email.length > 0"
         class="inline-error-message">
         <localize key="account.email.validation"></localize>
@@ -60,7 +60,7 @@
       </h3>
     </div>
     <hr>
-    <div class="form-group">
+    <div *ngIf="!(account.user.externalProfile)" class="form-group">
       <label>
         <localize key="account.username"></localize>
       </label>
