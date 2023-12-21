@@ -43,6 +43,7 @@ import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
@@ -54,26 +55,35 @@ import net.geoprism.registry.lpg.adapter.RegistryConnectorBuilderIF;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
 import net.geoprism.registry.lpg.adapter.exception.HTTPException;
+import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
-import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 
 @Service
 public class LabeledPropertyGraphSynchronizationService
 {
   @Autowired
-  private LabeledPropertyGraphSynchronizationBusinessServiceIF synchornizationService;
+  private IDMLabeledPropertyGraphSynchronizationBusinessService synchornizationService;
 
   @Autowired
-  private LabeledPropertyGraphTypeVersionBusinessServiceIF     versionService;
+  private LabeledPropertyGraphTypeVersionBusinessServiceIF      versionService;
 
   @Autowired
-  private GeoObjectTypeSnapshotBusinessServiceIF               typeService;
+  private GeoObjectTypeSnapshotBusinessServiceIF                typeService;
 
   @Request(RequestType.SESSION)
   public JsonArray getAll(String sessionId)
   {
     return this.synchornizationService.getAll();
+  }
+
+  @Request(RequestType.SESSION)
+  public JsonArray getForOrganization(String sessionId, String orginzationCode)
+  {
+    ServerOrganization organization = ServerOrganization.getByCode(orginzationCode);
+
+    return this.synchornizationService.getForOrganization(organization);
   }
 
   @Request(RequestType.SESSION)
@@ -210,7 +220,7 @@ public class LabeledPropertyGraphSynchronizationService
       }
       else
       {
-        array.addAll(this.children(oid, code, geoObject.getUid()));
+        array.addAll(this.children(oid, geoObject.getType().getCode(), geoObject.getUid()));
       }
     });
 
