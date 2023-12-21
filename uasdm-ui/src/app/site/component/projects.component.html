@@ -215,6 +215,13 @@
 
             <!-- IF at Site level -->
             <ng-container *ngIf="current == null || current.type === 1">
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Organization</label>
+                  <organization-field name="organization" [(value)]="organization" (valueChange)="onOrganizationChange()">
+                  </organization-field>
+                </div>
+              </div>
               <div class="row" *ngIf="syncs != null && syncs.length > 0">
                 <div class="col-md-12">
                   <label>Hierarchy</label>
@@ -324,7 +331,8 @@
                   </div>
 
                   <ng-container *ngIf="current == null">
-                    <ng-container [ngTemplateOutlet]="locations" *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
+                    <ng-container [ngTemplateOutlet]="locations"
+                      *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
                     </ng-container>
 
                     <ng-container *ngIf="hierarchy.oid == null || hierarchy.oid.length === 0">

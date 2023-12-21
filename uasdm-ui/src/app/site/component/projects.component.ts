@@ -45,6 +45,7 @@ import { WebSockets } from "@core/utility/web-sockets";
 import { LPGSync } from "@shared/model/lpg";
 import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
+import { LocalizedValue } from "@shared/model/organization";
 
 
 const enum PANEL_TYPE {
@@ -171,13 +172,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   filter: Filter = {};
   hasFilter: boolean = false;
-  bureaus: { value: string, label: string }[] = [];
+  // bureaus: { value: string, label: string }[] = [];
   bounds: LngLatBounds = null;
   sort: string = "name";
 
   stacLayers: StacLayer[] = [];
 
   stacLayer: StacLayer = null;
+
+  organization?: { code: string, label: LocalizedValue };
 
   /*
   * Fields for hierarchy layers
@@ -257,16 +260,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.admin = this.authService.isAdmin();
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
+    this.organization = this.authService.getOrganization();
 
-    this.filter = {
-      organization: this.authService.getOrganization()
-    };
 
-    this.service.bureaus().then(bureaus => {
-      this.bureaus = bureaus;
-    });
-
-    this.syncService.getAll().then(syncs => this.syncs = syncs);
+    // this.service.bureaus().then(bureaus => {
+    //   this.bureaus = bureaus;
+    // });
 
     this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 
@@ -1518,6 +1517,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  onOrganizationChange(): void {
+
+    // Reset the hierarchy
+    this.hierarchy = {
+      oid: null,
+      visible: true,
+      label: ''
+    }
+
+    this.syncs = [];
+
+    // Get the list of synchronizations
+    if (this.organization != null && this.organization.code.length > 0) {
+      this.syncService.getForOrganization(this.organization.code).then(syncs => {
+        this.syncs = syncs;
+      })
+    }
+
+    // Refresh the sites with the filtered organization
+    this.refreshSites();
+  }
+
   onHierarchyChange(): void {
     if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
 
@@ -1697,7 +1718,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       backdrop: true,
       ignoreBackdropClick: true,
     });
-    this.bsModalRef.content.init(this.filter, this.bureaus);
+    this.bsModalRef.content.init(this.filter);
 
     (<FilterModalComponent>this.bsModalRef.content).onFilterChange.subscribe(filter => {
       this.filter = filter;
@@ -1724,7 +1745,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       array: []
     };
 
-    conditions.array.push({ field: 'organization', value: this.filter.organization });
+    conditions.array.push({ field: 'organization', value: this.organization });
     conditions.array.push({ field: 'collectionDate', value: this.filter.collectionDate });
     conditions.array.push({ field: 'owner', value: this.filter.owner });
     conditions.array.push({ field: 'platform', value: this.filter.platform });

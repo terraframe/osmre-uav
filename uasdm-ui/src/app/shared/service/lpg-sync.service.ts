@@ -29,6 +29,16 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
+    getForOrganization(organizationCode: string): Promise<LPGSync[]> {
+        let params: HttpParams = new HttpParams();
+        params = params.set('organizationCode', organizationCode);
+
+        return this.http
+            .get<LPGSync[]>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get-for-organization', { params: params })
+            .toPromise();
+    }
+
+
     page(criteria: Object): Promise<PageResult<LPGSync>> {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));

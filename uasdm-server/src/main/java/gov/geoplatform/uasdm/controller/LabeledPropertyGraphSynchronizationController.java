@@ -116,6 +116,14 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
   
+  @GetMapping(API_PATH + "/get-for-organization")
+  public ResponseEntity<String> getForOrganization(@NotEmpty @RequestParam String organizationCode) throws JSONException
+  {
+    JsonArray list = this.service.getForOrganization(getSessionId(), organizationCode);
+    
+    return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
+  }
+  
   @GetMapping(API_PATH + "/get")
   public ResponseEntity<String> get(@NotEmpty @RequestParam String oid) throws JSONException
   {
