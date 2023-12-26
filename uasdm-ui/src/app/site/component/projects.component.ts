@@ -1536,6 +1536,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Refresh the sites with the filtered organization
+    this.onHierarchyChange();
     this.refreshSites();
   }
 

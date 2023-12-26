@@ -408,62 +408,66 @@ public class SiteQuery
     if (cObject.has("hierarchy") && !cObject.isNull("hierarchy"))
     {
       JSONObject hierarchy = cObject.getJSONObject("hierarchy");
-      String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
-      String uid = hierarchy.getString("uid");
 
-      LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
-
-      LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
-      LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-      HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
-
-      SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
-      MdEdge siteEdge = synchronizationEdge.getGraphEdge();
-
-      VertexObject object = service.getObject(version, uid);
-
-      boolean hasConditions = buckets.size() > 0 && !buckets.get(0).className.equals(Site.CLASS);
-
-      if (hasConditions)
+      if (!hierarchy.isNull(LabeledPropertyGraphSynchronization.OID) && !hierarchy.isNull("uid"))
       {
-        statement.append("SELECT EXPAND(");
-        int first = buckets.size() - 1;
+        String oid = hierarchy.getString(LabeledPropertyGraphSynchronization.OID);
+        String uid = hierarchy.getString("uid");
 
-        boolean isFirst = true;
+        LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
 
-        for (int i = first; i >= 0; i--)
+        LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
+        LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+        HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
+
+        SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
+        MdEdge siteEdge = synchronizationEdge.getGraphEdge();
+
+        VertexObject object = service.getObject(version, uid);
+
+        boolean hasConditions = buckets.size() > 0 && !buckets.get(0).className.equals(Site.CLASS);
+
+        if (hasConditions)
         {
-          String edgeName = buckets.get(i).edgeName;
+          statement.append("SELECT EXPAND(");
+          int first = buckets.size() - 1;
 
-          if (edgeName != null)
+          boolean isFirst = true;
+
+          for (int i = first; i >= 0; i--)
           {
-            if (!isFirst)
+            String edgeName = buckets.get(i).edgeName;
+
+            if (edgeName != null)
             {
-              statement.append(".");
+              if (!isFirst)
+              {
+                statement.append(".");
+              }
+
+              statement.append("OUT('" + edgeName + "')");
+
+              isFirst = false;
             }
-
-            statement.append("OUT('" + edgeName + "')");
-
-            isFirst = false;
           }
+
+          statement.append(")\n");
+          statement.append(" FROM (\n");
         }
 
-        statement.append(")\n");
-        statement.append(" FROM (\n");
+        statement.append("SELECT FROM (\n");
+        statement.append(" TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid\n");
+        statement.append(") WHERE @class = 'site0'\n");
+
+        if (hasConditions)
+        {
+          statement.append(")\n");
+        }
+
+        parameters.put("rid", object.getRID());
+
+        return true;
       }
-
-      statement.append("SELECT FROM (\n");
-      statement.append(" TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid\n");
-      statement.append(") WHERE @class = 'site0'\n");
-
-      if (hasConditions)
-      {
-        statement.append(")\n");
-      }
-
-      parameters.put("rid", object.getRID());
-
-      return true;
     }
 
     String className = buckets.size() > 0 ? buckets.get(0).className : Site.CLASS;
