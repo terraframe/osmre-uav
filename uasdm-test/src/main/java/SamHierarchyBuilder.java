@@ -55,6 +55,7 @@ public class SamHierarchyBuilder
     roots.add(government);
     roots.add(this.createEducation());
     roots.add(this.createNode("Private Sector", "Private-Sector"));
+    roots.add(this.createNode("Unspecified", "Unspecified"));
 
     // File folder = new File(this.folderName);
     // File[] files = folder.listFiles((file, fileName) ->
@@ -138,6 +139,7 @@ public class SamHierarchyBuilder
   private JsonObject processFile(String rootId) throws FileNotFoundException
   {
     long oasId = 100169579;
+    String officeId = "100045573";
 
     JsonObject root = null;
 
@@ -197,7 +199,8 @@ public class SamHierarchyBuilder
                 String[] split = href.split("fhorgid=");
                 String childId = split[1];
 
-                if (!childId.equals(rootId) && childId.equals(Long.valueOf(oasId).toString()))
+//                if (!childId.equals(rootId) && childId.equals(Long.valueOf(oasId).toString()))
+                if (!childId.equals(rootId) &&  (childId.equals(Long.valueOf(oasId).toString()) || childId.equals(officeId.toString())))
                 {
                   JsonObject child = processFile(childId);
 
