@@ -89,8 +89,7 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject apply(String sessionId, JsonObject json)
   {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.fromJSON(json);
-    synchronization.apply();
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.apply(json);
 
     return synchronization.toJSON();
   }
@@ -102,7 +101,7 @@ public class LabeledPropertyGraphSynchronizationService
 
     if (synchronization != null)
     {
-      synchronization.delete();
+      this.synchornizationService.delete(synchronization);
     }
   }
 
