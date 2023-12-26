@@ -1725,7 +1725,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const conditions = this.getConditions();
 
-      this.hasFilter = conditions.array.length > 0 && conditions.array[0].field !== 'bounds';
+      this.hasFilter = conditions.array.map(condition => condition.field !== 'bounds' && condition.field !== 'organization').reduce((a, b) => a || b);
 
       if (this.current == null || this.current.type === SELECTION_TYPE.LOCATION) {
         this.refreshSites();

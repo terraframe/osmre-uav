@@ -234,7 +234,9 @@ public class ChildrenQuery
             ServerOrganization organization = ServerOrganization.getByCode(code);
 
             statement.append(isFirst ? " WHERE" : " AND");
-            statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName() + "\n");
+            statement.append(" " + mdAttribute.getColumnName() + " IN (" + "\n");
+            statement.append(" TRAVERSE OUT('organization_hierarchy') from :" + mdAttribute.getColumnName() + "\n");
+            statement.append(")\n");
 
             parameters.put(mdAttribute.getColumnName(), organization.getGraphOrganization().getRID());
           }
