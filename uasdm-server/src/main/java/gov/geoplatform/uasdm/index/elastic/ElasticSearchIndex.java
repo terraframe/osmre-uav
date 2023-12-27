@@ -297,7 +297,7 @@ public class ElasticSearchIndex implements Index
         document.populate(ancestor.getSolrIdField(), ancestor.getOid());
         document.populate(ancestor.getSolrNameField(), ancestor.getName());
       }
-
+      
       client.index(i -> i.index(COMPONENT_INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
 
     }
@@ -377,7 +377,7 @@ public class ElasticSearchIndex implements Index
 
         if (component instanceof SiteIF)
         {
-          document.setBureau( ( (SiteIF) component ).getServerOrganization().getCode());
+          document.setBureau( ( (SiteIF) component ).getServerOrganization().getDisplayLabel().getValue());
         }
 
         client.update(b -> b.index(COMPONENT_INDEX_NAME).id(hit.id()).doc(document), Void.class);
@@ -421,7 +421,7 @@ public class ElasticSearchIndex implements Index
         
         if (org != null)
         {
-          document.setBureau(org.getCode());
+          document.setBureau(org.getDisplayLabel().getValue());
         }
       }
 

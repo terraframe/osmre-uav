@@ -290,7 +290,7 @@ public class Site extends SiteBase implements SiteIF
 
   protected boolean needsUpdate()
   {
-    return this.isModified(Site.BUREAU);
+    return this.isModified(Site.BUREAU) || this.isModified(Site.ORGANIZATION);
   }
 
   @Request
