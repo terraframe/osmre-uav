@@ -16,8 +16,6 @@
 package gov.geoplatform.uasdm.view;
 
 import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -185,6 +183,22 @@ public abstract class Converter
           uasComponent.setValue(attribute.getName(), null);
         }
       }
+      else if ( ( attribute instanceof AttributeOrganizationType ))
+      {
+        JSONObject object = (JSONObject) siteItem.getValue(attribute.getName());
+
+        if (object != null && object.has(OrganizationDTO.JSON_CODE))
+        {
+          String code = object.getString(OrganizationDTO.JSON_CODE);
+          ServerOrganization organization = ServerOrganization.getByCode(code);
+
+          uasComponent.setValue(attribute.getName(), organization.getGraphOrganization());
+        }
+        else
+        {
+          uasComponent.setValue(attribute.getName(), null);
+        }        
+      }      
       else if ( ( attribute instanceof AttributeNumberType ))
       {
         Number number = (Number) siteItem.getValue(attribute.getName());
@@ -385,7 +399,7 @@ public abstract class Converter
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
-    
+
     List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
     view.setMappables(mappables);
 
@@ -410,15 +424,17 @@ public abstract class Converter
     {
       view.setDemKey( ( (Document) dem.get() ).getS3location());
     }
-    
+
     if (product.isPublished())
     {
       // "https://osmre-uas-dev-public.s3.amazonaws.com/-stac-/2c8712a5-d051-4249-a9bc-fedd3795ce74.json"
-      
+
       String bucket = "https://" + AppProperties.getPublicBucketName() + ".s3.amazonaws.com/";
-      
+
       view.setPublicStacUrl(bucket + S3RemoteFileService.STAC_BUCKET + "/" + product.getOid() + ".json");
-      // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name()));
+      // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" +
+      // URLEncoder.encode(mappable.getS3location(),
+      // StandardCharsets.UTF_8.name()));
     }
 
     if (mappables.size() > 0)
