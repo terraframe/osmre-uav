@@ -21,6 +21,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 
@@ -32,7 +33,14 @@ public class FocalLengthMigration implements Runnable
 
   public static void main(String[] args)
   {
-    new FocalLengthMigration().run();
+    try
+    {
+      new FocalLengthMigration().run();
+    }
+    finally
+    {
+      CacheShutdown.shutdown();
+    }
   }
 
   public static void start()

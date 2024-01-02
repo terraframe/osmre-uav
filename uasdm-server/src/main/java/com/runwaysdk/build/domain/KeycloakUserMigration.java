@@ -11,6 +11,7 @@ import com.runwaysdk.constants.MdAttributeCharacterInfo;
 import com.runwaysdk.dataaccess.MdEntityDAOIF;
 import com.runwaysdk.dataaccess.MigrationUtil;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.database.ServerIDGenerator;
 import com.runwaysdk.dataaccess.metadata.MdEntityDAO;
@@ -28,7 +29,14 @@ public class KeycloakUserMigration
 {
   public static void main(String[] args) throws Exception
   {
-    new KeycloakUserMigration().migrate();
+    try
+    {
+      new KeycloakUserMigration().migrate();
+    }
+    finally
+    {
+      CacheShutdown.shutdown();
+    }
   }
   
   public KeycloakUserMigration()
