@@ -6,3 +6,4 @@
 /session
 /bin/
 /${project.basedir}/
+/org-tree-doi.json
