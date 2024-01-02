@@ -35,13 +35,6 @@ public class PixelSizeMigration implements Runnable
     new PixelSizeMigration().run();
   }
 
-  public static void start()
-  {
-    Thread t = new Thread(new PixelSizeMigration(), "PixelSizeMigration");
-    t.setDaemon(true);
-    t.start();
-  }
-
   @Request
   public void run()
   {
