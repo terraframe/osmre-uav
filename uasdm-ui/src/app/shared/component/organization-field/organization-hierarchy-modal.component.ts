@@ -123,7 +123,9 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 
 		if (value != null) {
 			this.service.getAncestorTree(this.rootCode, value.code, PAGE_SIZE).then(ancestor => {
-				this.nodes = [this.build(null, ancestor)];
+				const node = this.build(null, ancestor);
+
+				this.nodes = [node];
 
 				window.setTimeout(() => {
 					const node: TreeNode = this.tree.treeModel.getNodeById(value.code);
@@ -132,6 +134,10 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 						node.setActiveAndVisible();
 					}
 				}, 100);
+
+				this.getChildren(null).then(nodes => {
+					this.nodes = this.nodes.concat(nodes.filter(n => n.code !== node.code));
+				});
 			});
 		}
 		else if (this.rootCode != null) {
