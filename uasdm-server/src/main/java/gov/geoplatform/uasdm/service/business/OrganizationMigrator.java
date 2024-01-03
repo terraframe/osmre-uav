@@ -83,6 +83,7 @@ public class OrganizationMigrator
 
           report.appLock();
           report.setOrganization(organization.getOrganization());
+          report.setBureauName(organization.getDisplayLabel().getValue());
           report.apply();
         }
       }
