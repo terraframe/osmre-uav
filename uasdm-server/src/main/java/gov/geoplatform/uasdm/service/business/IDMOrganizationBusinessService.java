@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
@@ -31,6 +32,7 @@ public class IDMOrganizationBusinessService extends OrganizationBusinessService 
     }
   }
 
+  @Transaction
   public void patch()
   {
     new OrganizationMigrator().run();
