@@ -6,20 +6,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.SessionEventLog;
+import gov.geoplatform.uasdm.SessionEventLogQuery;
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInfoQuery;
 import gov.geoplatform.uasdm.UserInvite;
 import gov.geoplatform.uasdm.UserInviteQuery;
 import gov.geoplatform.uasdm.bus.Bureau;
+import gov.geoplatform.uasdm.bus.CollectionReport;
+import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.graph.Site;
 import net.geoprism.registry.Organization;
-import net.geoprism.registry.graph.GraphOrganization;
 import net.geoprism.registry.model.ServerOrganization;
 
 public class OrganizationMigrator
@@ -55,6 +60,58 @@ public class OrganizationMigrator
     this.updateSites();
     this.updateUserInfos();
     this.updateUserInvites();
+    this.updateCollectionReports();
+    this.updateSessionEventLog();
+  }
+
+  private void updateCollectionReports()
+  {
+    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
+    query.WHERE(query.getOrganization().EQ((String) null));
+
+    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        CollectionReport report = iterator.next();
+
+        Bureau bureau = report.getBureau();
+
+        if (bureau != null)
+        {
+          ServerOrganization organization = this.getOrganization(bureau);
+
+          report.appLock();
+          report.setOrganization(organization.getOrganization());
+          report.apply();
+        }
+      }
+    }
+  }
+
+  private void updateSessionEventLog()
+  {
+    SessionEventLogQuery query = new SessionEventLogQuery(new QueryFactory());
+    query.WHERE(query.getOrganization().EQ((String) null));
+
+    try (OIterator<? extends SessionEventLog> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        SessionEventLog log = iterator.next();
+
+        Bureau bureau = log.getBureau();
+
+        if (bureau != null)
+        {
+          ServerOrganization organization = this.getOrganization(bureau);
+
+          log.appLock();
+          log.setOrganization(organization.getOrganization());
+          log.apply();
+        }
+      }
+    }
   }
 
   private void updateSites()
@@ -63,7 +120,7 @@ public class OrganizationMigrator
 
     for (Site site : sites)
     {
-      if (site.getOrganization() == null)
+      if (StringUtils.isBlank(site.getObjectValue(Site.ORGANIZATION)))
       {
         Bureau bureau = site.getBureau();
 
@@ -86,7 +143,7 @@ public class OrganizationMigrator
       while (iterator.hasNext())
       {
         UserInfo info = iterator.next();
-        
+
         try (OIterator<? extends Organization> it = info.getAllOrganization())
         {
           List<? extends Organization> orgs = it.getAll();
@@ -110,24 +167,23 @@ public class OrganizationMigrator
   private void updateUserInvites()
   {
     UserInviteQuery query = new UserInviteQuery(new QueryFactory());
+    query.WHERE(query.getOrganization().EQ((String) null));
+
     try (OIterator<? extends UserInvite> iterator = query.getIterator())
     {
       while (iterator.hasNext())
       {
         UserInvite info = iterator.next();
 
-        if (info.getOrganization() == null)
+        Bureau invite = info.getBureau();
+
+        if (invite != null)
         {
-          Bureau bureau = info.getBureau();
+          ServerOrganization organization = this.getOrganization(invite);
 
-          if (bureau != null)
-          {
-            ServerOrganization organization = this.getOrganization(bureau);
-
-            info.appLock();
-            info.setOrganization(organization.getOrganization());
-            info.apply();
-          }
+          info.appLock();
+          info.setOrganization(organization.getOrganization());
+          info.apply();
         }
       }
     }
