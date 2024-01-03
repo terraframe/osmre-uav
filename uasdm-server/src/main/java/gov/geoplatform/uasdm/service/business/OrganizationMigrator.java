@@ -18,6 +18,8 @@ import gov.geoplatform.uasdm.UserInvite;
 import gov.geoplatform.uasdm.UserInviteQuery;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.graph.Site;
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.graph.GraphOrganization;
 import net.geoprism.registry.model.ServerOrganization;
 
 public class OrganizationMigrator
@@ -61,14 +63,17 @@ public class OrganizationMigrator
 
     for (Site site : sites)
     {
-      Bureau bureau = site.getBureau();
-
-      if (bureau != null)
+      if (site.getOrganization() == null)
       {
-        ServerOrganization organization = this.getOrganization(bureau);
+        Bureau bureau = site.getBureau();
 
-        site.setOrganization(organization.getGraphOrganization());
-        site.apply();
+        if (bureau != null)
+        {
+          ServerOrganization organization = this.getOrganization(bureau);
+
+          site.setOrganization(organization.getGraphOrganization());
+          site.apply();
+        }
       }
     }
   }
@@ -81,14 +86,22 @@ public class OrganizationMigrator
       while (iterator.hasNext())
       {
         UserInfo info = iterator.next();
-
-        Bureau bureau = info.getBureau();
-
-        if (bureau != null)
+        
+        try (OIterator<? extends Organization> it = info.getAllOrganization())
         {
-          ServerOrganization organization = this.getOrganization(bureau);
+          List<? extends Organization> orgs = it.getAll();
 
-          info.addOrganization(organization.getOrganization()).apply();
+          if (orgs.size() == 0)
+          {
+            Bureau bureau = info.getBureau();
+
+            if (bureau != null)
+            {
+              ServerOrganization organization = this.getOrganization(bureau);
+
+              info.addOrganization(organization.getOrganization()).apply();
+            }
+          }
         }
       }
     }
@@ -103,15 +116,18 @@ public class OrganizationMigrator
       {
         UserInvite info = iterator.next();
 
-        Bureau bureau = info.getBureau();
-
-        if (bureau != null)
+        if (info.getOrganization() == null)
         {
-          ServerOrganization organization = this.getOrganization(bureau);
+          Bureau bureau = info.getBureau();
 
-          info.appLock();
-          info.setOrganization(organization.getOrganization());
-          info.apply();
+          if (bureau != null)
+          {
+            ServerOrganization organization = this.getOrganization(bureau);
+
+            info.appLock();
+            info.setOrganization(organization.getOrganization());
+            info.apply();
+          }
         }
       }
     }
