@@ -59,7 +59,7 @@ public class OrganizationMigrator
 
     this.updateSites();
     this.updateUserInfos();
-    this.updateUserInvites();
+//    this.updateUserInvites();
     this.updateCollectionReports();
     this.updateSessionEventLog();
   }
