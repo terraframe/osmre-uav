@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { BasicConfirmModalComponent, ErrorHandler, NotificationModalComponent } from '@shared/component';
@@ -12,13 +12,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
+import { WebSockets } from '@core/utility/web-sockets';
+import { EventService } from '@shared/service/event.service';
 
 @Component({
     selector: 'labeled-property-graph-sync',
     templateUrl: './labeled-property-graph-sync.component.html',
     styleUrls: []
 })
-export class LPGSyncComponent implements OnInit {
+export class LPGSyncComponent implements OnInit, OnDestroy {
 
     isAdmin: boolean = false;
 
@@ -34,8 +37,11 @@ export class LPGSyncComponent implements OnInit {
     entries: LabeledPropertyGraphTypeEntry[] = null;
     versions: LabeledPropertyGraphTypeVersion[] = null;
 
+    notifier: WebSocketSubject<any>;
+
     constructor(
         private service: LPGSyncService,
+        private eventService: EventService,
         private authService: AuthService,
         private modalService: BsModalService,
         private route: ActivatedRoute,
@@ -58,7 +64,44 @@ export class LPGSyncComponent implements OnInit {
             this.service.get(oid).then((sync: LPGSync) => {
                 this.sync = sync;
                 this.original = JSON.parse(JSON.stringify(this.sync));
+
+                this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
+                this.notifier.subscribe(message => {
+                    if (message.type === "SYNCHRONIZATION_JOB_CHANGE") {
+                        this.handleJobUpdate(message.content);
+                    }
+                });
+
+                // Check if there is a job already in progress
+                this.handleJobUpdate({ oid: sync.oid });
             });
+
+
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.notifier != null) {
+            this.notifier.complete();
+        }
+    }
+
+    handleJobUpdate(content: { oid: string }): void {
+        if (content.oid === this.sync.oid) {
+            this.service.getStatus(this.sync.oid).then(response => {
+
+                if (response.status === 'NEW' || response.status === 'QUEUED' || response.status === 'RUNNING') {
+                    // Start the spinner
+                    this.eventService.start();
+                }
+                else {
+                    this.eventService.complete();
+
+                    if (response.error != null) {
+                        this.message = ErrorHandler.getMessageFromError(response.error);
+                    }
+                }
+            })
         }
     }
 
@@ -91,7 +134,7 @@ export class LPGSyncComponent implements OnInit {
             }).catch(e => {
                 ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + e.status + ']' }, this.modalService);
             })
-    }
+        }
     }
 
     handleEntryChange(): void {
@@ -107,7 +150,7 @@ export class LPGSyncComponent implements OnInit {
             }).catch(e => {
                 ErrorHandler.showErrorAsDialog({ message: 'Unable to communicate with the remote server. Please check that the URL corresponds to a valid GPR server. The server responsed with the error code [' + e.status + ']' }, this.modalService);
             })
-    }
+        }
     }
 
     handleVersionChange(): void {
@@ -153,14 +196,14 @@ export class LPGSyncComponent implements OnInit {
         this.message = null;
 
         this.service.execute(this.sync.oid).then(data => {
-            const bsModalRef = this.modalService.show(NotificationModalComponent, {
-                animated: true,
-                backdrop: true,
-                ignoreBackdropClick: true,
-            });
-            bsModalRef.content.messageTitle = "";
-            bsModalRef.content.message = "Finished synchronizing with the remote server."
-            bsModalRef.content.submitText = "OK";
+            // const bsModalRef = this.modalService.show(NotificationModalComponent, {
+            //     animated: true,
+            //     backdrop: true,
+            //     ignoreBackdropClick: true,
+            // });
+            // bsModalRef.content.messageTitle = "";
+            // bsModalRef.content.message = "Finished synchronizing with the remote server."
+            // bsModalRef.content.submitText = "OK";
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });

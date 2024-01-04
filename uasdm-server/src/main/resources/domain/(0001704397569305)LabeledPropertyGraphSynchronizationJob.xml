@@ -1,0 +1,34 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob" extends="com.runwaysdk.system.scheduler.ExecutableJob" exported="false" publish="false">
+        <attributes>
+          <reference name="synchronization" type="net.geoprism.graph.LabeledPropertyGraphSynchronization" required="true" label="Synchronization" />                
+        </attributes>
+      </mdBusiness>
+        
+    </create>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob">
+            <operation name="READ" />
+            <operation name="READ_ALL_ATTRIBUTES" />
+          </mdBusinessPermission>
+        </grant>
+      </role>      
+    </permissions>    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+    </delete>
+  </undoIt>
+</version>

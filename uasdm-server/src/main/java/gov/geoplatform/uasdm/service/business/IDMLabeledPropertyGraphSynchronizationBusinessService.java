@@ -7,16 +7,18 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.SelectableReference;
 
+import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
+import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
 import gov.geoplatform.uasdm.graph.Site;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeQuery;
-import net.geoprism.registry.OrganizationQuery;
 import net.geoprism.registry.graph.GraphOrganization;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessService;
@@ -37,6 +39,21 @@ public class IDMLabeledPropertyGraphSynchronizationBusinessService extends Label
     {
       site.assignHierarchyParents(synchronization);
     }
+  }
+
+  @Override
+  @Transaction
+  public void delete(LabeledPropertyGraphSynchronization synchronization)
+  {
+    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(new QueryFactory());
+    query.WHERE(query.getSynchronization().EQ(synchronization));
+
+    try (OIterator<? extends LabeledPropertyGraphSynchronizationJob> it = query.getIterator())
+    {
+      it.getAll().forEach(job -> job.delete());
+    }
+
+    super.delete(synchronization);
   }
 
   public JsonArray getForOrganization(ServerOrganization organization)

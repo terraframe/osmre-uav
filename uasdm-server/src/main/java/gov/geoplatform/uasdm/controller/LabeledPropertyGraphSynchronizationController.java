@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -44,55 +44,66 @@ import net.geoprism.spring.JsonObjectDeserializer;
 public class LabeledPropertyGraphSynchronizationController extends RunwaySpringController
 {
   public static final String API_PATH = "labeled-property-graph-synchronization";
-  
+
   public static class SyncBody
   {
     @NotNull
     @JsonDeserialize(using = JsonObjectDeserializer.class)
     JsonObject sync;
-    
+
     public JsonObject getSync()
     {
       return sync;
     }
-    
+
     public void setSync(JsonObject sync)
     {
       this.sync = sync;
     }
   }
-  
+
   public static class UpdateRemoteVersionBody
   {
-    @NotNull String oid;
-    @NotNull String versionId;
-    @NotNull Integer versionNumber;
+    @NotNull
+    String  oid;
+
+    @NotNull
+    String  versionId;
+
+    @NotNull
+    Integer versionNumber;
+
     public String getOid()
     {
       return oid;
     }
+
     public void setOid(String oid)
     {
       this.oid = oid;
     }
+
     public String getVersionId()
     {
       return versionId;
     }
+
     public void setVersionId(String versionId)
     {
       this.versionId = versionId;
     }
+
     public Integer getVersionNumber()
     {
       return versionNumber;
     }
+
     public void setVersionNumber(Integer versionNumber)
     {
       this.versionNumber = versionNumber;
     }
   }
-  
+
   @Autowired
   private LabeledPropertyGraphSynchronizationService service;
 
@@ -115,15 +126,15 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
-  
+
   @GetMapping(API_PATH + "/get-for-organization")
   public ResponseEntity<String> getForOrganization(@NotEmpty @RequestParam String organizationCode) throws JSONException
   {
     JsonArray list = this.service.getForOrganization(getSessionId(), organizationCode);
-    
+
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
-  
+
   @GetMapping(API_PATH + "/get")
   public ResponseEntity<String> get(@NotEmpty @RequestParam String oid) throws JSONException
   {
@@ -141,22 +152,18 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @GetMapping(API_PATH + "/select")
-  public ResponseEntity<String> select(
-      @NotEmpty @RequestParam String oid,
-      @NotEmpty @RequestParam String parentType,
-      @NotEmpty @RequestParam String parentId,
-      @NotEmpty @RequestParam Boolean includeMetadata) throws JSONException
+  public ResponseEntity<String> select(@NotEmpty @RequestParam String oid, @NotEmpty @RequestParam String parentType, @NotEmpty @RequestParam String parentId, @NotEmpty @RequestParam Boolean includeMetadata) throws JSONException
   {
     JsonObject response = this.service.select(getSessionId(), oid, parentType, parentId, includeMetadata);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
-  
+
   @GetMapping(API_PATH + "/get-object")
   public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
   {
     JsonObject response = this.service.getObject(getSessionId(), synchronizationId, oid);
-    
+
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
@@ -182,6 +189,14 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     this.service.execute(this.getSessionId(), body.getOid());
 
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+  }
+
+  @GetMapping(API_PATH + "/get-status")
+  public ResponseEntity<String> getStatus(@NotEmpty @RequestParam String oid)
+  {
+    JsonObject response = this.service.getStatus(getSessionId(), oid);
+
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
   @PostMapping(API_PATH + "/update-remote-version")

@@ -19,11 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +27,27 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
+import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
+import com.runwaysdk.system.scheduler.AllJobStatus;
+import com.runwaysdk.system.scheduler.JobHistory;
+import com.runwaysdk.system.scheduler.JobHistoryQuery;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
+import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
 import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
@@ -50,15 +55,9 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
-import net.geoprism.registry.lpg.adapter.HTTPConnector;
-import net.geoprism.registry.lpg.adapter.RegistryConnectorBuilderIF;
-import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
-import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
-import net.geoprism.registry.lpg.adapter.exception.HTTPException;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
-import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 
 @Service
 public class LabeledPropertyGraphSynchronizationService
@@ -108,56 +107,63 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public void execute(String sessionId, String oid)
   {
-    // TODO Decide how to handle self-signed HTTPS certs
-    RegistryConnectorFactory.setBuilder(new RegistryConnectorBuilderIF()
+    QueryFactory factory = new QueryFactory();
+
+    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
+    query.WHERE(query.getSynchronization().EQ(oid));
+
+    JobHistoryQuery q = new JobHistoryQuery(factory);
+    q.WHERE(q.getStatus().containsAny(AllJobStatus.NEW, AllJobStatus.QUEUED, AllJobStatus.RUNNING));
+    q.AND(q.job(query));
+
+    if (q.getCount() > 0)
+    {
+      throw new GenericException("This version has already been queued for publishing");
+    }
+
+    SingleActorDAOIF currentUser = Session.getCurrentSession().getUser();
+
+    LabeledPropertyGraphSynchronizationJob job = new LabeledPropertyGraphSynchronizationJob();
+    job.setRunAsUserId(currentUser.getOid());
+    job.setSynchronizationId(oid);
+    job.apply();
+
+    job.start();
+  }
+
+  @Request(RequestType.SESSION)
+  public JsonObject getStatus(String sessionId, String oid)
+  {
+    JsonObject response = new JsonObject();
+    response.addProperty("status", "NON_EXISTENT");
+
+    QueryFactory factory = new QueryFactory();
+
+    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
+    query.WHERE(query.getSynchronization().EQ(oid));
+
+    JobHistoryQuery q = new JobHistoryQuery(factory);
+    q.WHERE(q.job(query));
+    q.ORDER_BY_DESC(q.getCreateDate());
+
+    try (OIterator<? extends JobHistory> iterator = q.getIterator())
     {
 
-      @Override
-      public RegistryConnectorIF build(String url)
+      if (iterator.hasNext())
       {
+        JobHistory job = iterator.next();
+        response.addProperty("status", job.getStatus().get(0).getEnumName());
 
-        return new HTTPConnector(url)
+        String error = job.getErrorJson();
+
+        if (!StringUtils.isBlank(error))
         {
-          @Override
-          public synchronized void initialize()
-          {
-            try
-            {
-
-              CloseableHttpClient httpClient = HttpClients.custom().setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build()).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
-              this.setClient(httpClient);
-            }
-            catch (Exception e)
-            {
-              throw new RuntimeException(e);
-            }
-          }
-        };
-      }
-    });
-
-    try
-    {
-      LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
-
-      if (synchronization != null)
-      {
-        this.synchornizationService.execute(synchronization);
+          response.add("error", JsonParser.parseString(error));
+        }
       }
     }
-    catch (ProgrammingErrorException e)
-    {
-      if (e.getCause() != null && e.getCause() instanceof HTTPException)
-      {
-        GenericException exception = new GenericException(e);
-        exception.setUserMessage("Unable to communicate with the remote server. Please ensure the remote server is available and try again.");
-        throw exception;
-      }
-      else
-      {
-        throw e;
-      }
-    }
+
+    return response;
   }
 
   @Request(RequestType.SESSION)
@@ -392,5 +398,4 @@ public class LabeledPropertyGraphSynchronizationService
 
     return array;
   }
-
 }

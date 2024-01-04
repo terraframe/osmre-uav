@@ -52,7 +52,7 @@ export class LPGSyncService implements GenericTableService {
 
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
- 
+
         this.eventService.start();
 
         return this.http
@@ -62,6 +62,23 @@ export class LPGSyncService implements GenericTableService {
             }))
             .toPromise();
     }
+
+    getStatus(oid: string): Promise<{ status: string, error?: any }> {
+
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
+
+        this.eventService.start();
+
+        return this.http
+            .get<{ status: string, error?: any }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/get-status', { params: params })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
+            .toPromise();
+    }
+
+
 
     newInstance(): Promise<LPGSync> {
 
@@ -190,7 +207,7 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
-    roots(oid: string): Promise<{roots: any[], metadata: any[]}> {
+    roots(oid: string): Promise<{ roots: any[], metadata: any[] }> {
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
         params = params.set('includeRoot', false);
@@ -198,7 +215,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<{roots: any[], metadata: any[]}>(environment.apiUrl + '/api/labeled-property-graph-synchronization/roots', { params: params })
+            .get<{ roots: any[], metadata: any[] }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/roots', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
