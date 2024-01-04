@@ -10,7 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
@@ -24,6 +28,7 @@ import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
 import gov.geoplatform.uasdm.graph.Site;
+import gov.geoplatform.uasdm.graph.UAV;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 
@@ -58,8 +63,9 @@ public class OrganizationMigrator
     }
 
     this.updateSites();
+    this.updateUavs();
     this.updateUserInfos();
-//    this.updateUserInvites();
+    // this.updateUserInvites();
     this.updateCollectionReports();
     this.updateSessionEventLog();
   }
@@ -136,6 +142,30 @@ public class OrganizationMigrator
     }
   }
 
+  private void updateUavs()
+  {
+    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
+    MdAttributeDAOIF mdBureau = mdClass.definesAttribute(UAV.BUREAU);
+    MdAttributeDAOIF mdOrganization = mdClass.definesAttribute(UAV.ORGANIZATION);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdClass.getDBClassName());
+    statement.append(" WHERE " + mdBureau.getColumnName() + " IS NOT NULL");
+    statement.append(" AND " + mdOrganization.getColumnName() + " IS NULL");
+
+    GraphQuery<UAV> query = new GraphQuery<UAV>(statement.toString());
+
+    List<UAV> uavs = query.getResults();
+
+    for (UAV uav : uavs)
+    {
+      ServerOrganization organization = this.getOrganization(uav.getBureau().getName());
+
+      uav.setOrganization(organization.getGraphOrganization());
+      uav.apply();
+    }
+  }
+
   private void updateUserInfos()
   {
     UserInfoQuery query = new UserInfoQuery(new QueryFactory());
@@ -192,17 +222,20 @@ public class OrganizationMigrator
 
   private ServerOrganization getOrganization(Bureau bureau)
   {
-    String key = bureau.getName();
+    return getOrganization(bureau.getName());
+  }
 
-    if (!cache.containsKey(key))
+  private ServerOrganization getOrganization(String name)
+  {
+    if (!cache.containsKey(name))
     {
-      String code = this.mapping.get(key);
+      String code = this.mapping.get(name);
 
       ServerOrganization organization = ServerOrganization.getByCode(code, true);
-      cache.put(key, organization);
+      cache.put(name, organization);
     }
 
-    ServerOrganization organization = cache.get(key);
+    ServerOrganization organization = cache.get(name);
     return organization;
   }
 

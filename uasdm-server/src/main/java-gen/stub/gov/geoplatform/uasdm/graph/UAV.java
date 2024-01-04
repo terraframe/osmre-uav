@@ -20,9 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collector;
 
+import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
@@ -134,7 +136,15 @@ public class UAV extends UAVBase implements JSONSerializable
 
     if (organization != null)
     {
-      object.put(UAV.ORGANIZATION, organization.getCode());
+      OrganizationDTO dto = organization.toDTO();
+
+      JsonObject oObject = dto.toJSON();
+      oObject.remove(OrganizationDTO.JSON_LOCALIZED_CONTACT_INFO);
+      oObject.remove(OrganizationDTO.JSON_ENABLED);
+      oObject.remove(OrganizationDTO.JSON_PARENT_CODE);
+      oObject.remove(OrganizationDTO.JSON_PARENT_LABEL);
+
+      object.put(UAV.ORGANIZATION, new JSONObject(oObject.toString()));
     }
 
     String platform = this.getObjectValue(UAV.PLATFORM);
@@ -164,7 +174,10 @@ public class UAV extends UAVBase implements JSONSerializable
     object.put(UAV.OID, this.getOid());
     object.put(UAV.SERIALNUMBER, this.getSerialNumber());
     object.put(UAV.FAANUMBER, this.getFaaNumber());
-    if (bureau != null) { object.put(UAV.BUREAU, bureau.getName()); }
+    if (bureau != null)
+    {
+      object.put(UAV.BUREAU, bureau.getName());
+    }
     object.put(Platform.NAME, platform.getName());
     object.put(Platform.PLATFORMTYPE, platformType.getName());
     object.put(Platform.MANUFACTURER, manufacturer.getName());
@@ -253,7 +266,10 @@ public class UAV extends UAVBase implements JSONSerializable
     obj.put(UAV.FAANUMBER, this.getFaaNumber());
     obj.put(UAV.PLATFORM, platform.getName());
     obj.put(Platform.PLATFORMTYPE, platformType.getName());
-    if (bureau != null) { obj.put(UAV.BUREAU, bureau.getDisplayLabel()); }
+    if (bureau != null)
+    {
+      obj.put(UAV.BUREAU, bureau.getDisplayLabel());
+    }
 
     ServerOrganization organization = this.getServerOrganization();
 

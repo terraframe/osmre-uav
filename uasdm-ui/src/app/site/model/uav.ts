@@ -2,18 +2,20 @@
 ///
 ///
 
+import { LocalizedValue } from "@shared/model/organization";
+
 export class UAV {
     oid: string;
     serialNumber: string;
     faaNumber: string;
     description?: string;
-    bureau: string;
+    organization?: { code: string, label: LocalizedValue };
     platform: string;
 }
 
 export class MetadataOptions {
     oid: string;
-    bureau: string;
+    organization?: { code: string, label: LocalizedValue };
     platform: string;
     platformType: string;
     serialNumber: string;

@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -46,7 +47,7 @@ public class UAVPageQuery extends AbstractGraphPageQuery<UAV, UAVPageView>
     }
     else if (attributeName.equals(UAV.ORGANIZATION))
     {
-      return UAV.ORGANIZATION + "." + Organization.CODE;
+      return UAV.ORGANIZATION + "." + Organization.DISPLAYLABEL + "." + LocalizedValue.DEFAULT_LOCALE;
     }
     else if (attributeName.equals(UAV.PLATFORM))
     {

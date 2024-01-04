@@ -16,15 +16,18 @@ import org.json.JSONObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.MdRelationshipDAOIF;
+import com.runwaysdk.dataaccess.MdStructDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.metadata.MdRelationshipDAO;
+import com.runwaysdk.dataaccess.metadata.MdStructDAO;
 import com.runwaysdk.system.Users;
 
 import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.registry.Organization;
+import net.geoprism.registry.OrganizationDisplayLabel;
 
 public class UserInfoPageQuery
 {
@@ -40,6 +43,7 @@ public class UserInfoPageQuery
     MdBusinessDAOIF mdUserInfo = MdBusinessDAO.getMdBusinessDAO(UserInfo.CLASS);
     MdBusinessDAOIF mdOrganization = MdBusinessDAO.getMdBusinessDAO(Organization.CLASS);
     MdRelationshipDAOIF mdOrganizationHasUser = MdRelationshipDAO.getMdRelationshipDAO(OrganizationHasUser.CLASS);
+    MdStructDAOIF mdDisplayLabel = MdStructDAO.getMdStructDAO(OrganizationDisplayLabel.CLASS);
 
     if (AppProperties.requireKeycloakLogin())
     {
@@ -57,6 +61,7 @@ public class UserInfoPageQuery
     statement.append(" LEFT JOIN " + mdUserInfo.getTableName() + " AS user_info ON user_info." + mdUserInfo.definesAttribute(UserInfo.GEOPRISMUSER).getColumnName() + " = geo_user.oid" + "\n");
     statement.append(" LEFT JOIN " + mdOrganizationHasUser.getTableName() + " AS org_user ON org_user.child_oid = user_info.oid" + "\n");
     statement.append(" LEFT JOIN " + mdOrganization.getTableName() + " AS org ON org_user.parent_oid = org.oid" + "\n");
+    statement.append(" LEFT JOIN " + mdDisplayLabel.getTableName() + " AS olabel ON org.display_label = olabel.oid" + "\n");
   }
 
   @SuppressWarnings("unchecked")
@@ -85,7 +90,7 @@ public class UserInfoPageQuery
 
         if (attributeName.equals(UserInfo.ORGANIZATION))
         {
-          statement.append(" " + clause + " " + "UPPER(org.code) LIKE '%" + value.toUpperCase() + "%'" + "\n");
+          statement.append(" " + clause + " " + "UPPER(olabel.default_locale) LIKE '%" + value.toUpperCase() + "%'" + "\n");
 
           parameters.put(parameterName, value);
         }
@@ -138,7 +143,7 @@ public class UserInfoPageQuery
   {
     MdBusinessDAOIF mdGeoUser = MdBusinessDAO.getMdBusinessDAO(GeoprismUser.CLASS);
     MdBusinessDAOIF mdUser = MdBusinessDAO.getMdBusinessDAO(Users.CLASS);
-    MdBusinessDAOIF mdOrganization = MdBusinessDAO.getMdBusinessDAO(Organization.CLASS);
+    MdStructDAOIF mdDisplayLabel = MdStructDAO.getMdStructDAO(OrganizationDisplayLabel.CLASS);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT geo_user.oid AS oid");
@@ -147,7 +152,7 @@ public class UserInfoPageQuery
     statement.append(", " + mdGeoUser.definesAttribute(GeoprismUser.LASTNAME).getColumnName() + " AS lastName");
     statement.append(", " + mdGeoUser.definesAttribute(GeoprismUser.PHONENUMBER).getColumnName() + " AS phoneNumber");
     statement.append(", " + mdGeoUser.definesAttribute(GeoprismUser.EMAIL).getColumnName() + " AS email");
-    statement.append(", ARRAY_AGG (" + mdOrganization.definesAttribute(Organization.CODE).getColumnName() + ") AS organization" + "\n");
+    statement.append(", ARRAY_AGG ( olabel." + mdDisplayLabel.definesAttribute(OrganizationDisplayLabel.DEFAULTLOCALE).getColumnName() + ") AS organization" + "\n");
 
     this.addFromClause(statement);
     this.addCriteria(statement);

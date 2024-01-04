@@ -15,12 +15,9 @@
  */
 package gov.geoplatform.uasdm.graph;
 
-import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.model.JSONSerializable;
-import net.geoprism.registry.Organization;
-import net.geoprism.registry.conversion.LocalizedValueConverter;
 import net.geoprism.registry.model.ServerOrganization;
 
 public class UAVPageView implements JSONSerializable
@@ -49,7 +46,6 @@ public class UAVPageView implements JSONSerializable
     object.put(UAV.SERIALNUMBER, this.uav.getSerialNumber());
     object.put(UAV.FAANUMBER, this.uav.getFaaNumber());
     object.put(UAV.DESCRIPTION, this.uav.getDescription());
-    object.put(UAV.BUREAU, this.uav.getBureau().getDisplayLabel());
     object.put(UAV.ORGANIZATION, organization.getDisplayLabel().getValue());
     object.put(UAV.PLATFORM, this.uav.getPlatform().getName());
 

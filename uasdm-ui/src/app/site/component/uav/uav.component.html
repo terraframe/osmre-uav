@@ -27,8 +27,8 @@
       <form #ngForm="ngForm">
         <div class="form-group">
           <label>Platform</label>
-          <select *ngIf="mode !== 'READ'" [(ngModel)]="uav.platform" name="platform" type="input"
-            class="form-control" required>
+          <select *ngIf="mode !== 'READ'" [(ngModel)]="uav.platform" name="platform" type="input" class="form-control"
+            required>
             <option></option>
             <option *ngFor="let platform of platforms" [value]="platform.oid">{{platform.name}}</option>
           </select>
@@ -36,7 +36,7 @@
             <div *ngFor="let platform of platforms | filter:'oid':uav.platform">
               <a [routerLink]="['/site/platform', platform.oid]">{{platform.name}}</a>
             </div>
-          </ng-container>          
+          </ng-container>
         </div>
         <div class="form-group">
           <label>Serial Number</label>
@@ -54,14 +54,9 @@
             class="form-control" placeholder="Description"></textarea>
         </div>
         <div class="form-group">
-          <label>Bureau</label>
-          <select [(ngModel)]="uav.bureau" [disabled]="mode === 'READ'" name="bureau" type="input" class="form-control"
-            required>
-            <option></option>
-            <option *ngFor="let bureau of bureaus" [value]="bureau.value">
-              {{bureau.label}}
-            </option>
-          </select>
+          <label>Organization</label>
+          <organization-field name="organization" [(value)]="uav.organization" [disabled]="mode === 'READ'">
+          </organization-field>
         </div>
         <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">
           <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
