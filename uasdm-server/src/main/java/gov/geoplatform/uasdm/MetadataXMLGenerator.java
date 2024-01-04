@@ -181,7 +181,11 @@ public class MetadataXMLGenerator
         metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
       }
 
-      metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
+      if (sensor.getRealFocalLength() != null)
+      {
+        metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
+      }
+      
     }
 
     return metadata;
