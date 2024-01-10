@@ -61,6 +61,13 @@ public class IDMSessionService extends SessionService
       endpoints.add("api/uasdm-account/newInstance");
     }
     
+    // Public tile service endpoints
+    if (AppProperties.getExposePublicTileEndpoints())
+    {
+      endpoints.add("api/cog/tilejson.json");
+      endpoints.add("api/cog/tiles");
+    }
+    
     endpoints.add("api/session/ologin");
     endpoints.add("api/session/logout");
     endpoints.add("project/management");

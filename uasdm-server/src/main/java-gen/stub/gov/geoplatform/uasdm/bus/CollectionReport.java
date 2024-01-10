@@ -119,7 +119,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
             try
             {
-              sUrl = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
+              sUrl = "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
             }
             catch (UnsupportedEncodingException e)
             {

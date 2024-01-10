@@ -69,6 +69,11 @@ public class AppProperties
     return Singleton.getProps().getString("titiler.url");
   }
   
+  public static Boolean getExposePublicTileEndpoints()
+  {
+    return Singleton.getProps().getBoolean("titiler.public.expose", true);
+  }
+  
   public static String getBucketName()
   {
     return Singleton.getProps().getString("bucket.name");

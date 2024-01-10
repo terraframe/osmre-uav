@@ -205,7 +205,7 @@ public class ProductView
       
       try
       {
-        url = "cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
+        url = "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
       }
       catch (UnsupportedEncodingException e)
       {

@@ -13,39 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.cog;
+package gov.geoplatform.uasdm.controller;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.ServletRequestIF;
 
-import gov.geoplatform.uasdm.controller.ProjectManagementController;
+import gov.geoplatform.uasdm.cog.CogTileException;
+import gov.geoplatform.uasdm.service.CloudOptimizedGeoTiffService;
+import net.geoprism.registry.controller.RunwaySpringController;
 
-@Controller(url = "cog")
-public class CloudOptimizedGeoTiffController
+@Controller
+@Validated
+public class CloudOptimizedGeoTiffController extends RunwaySpringController
 {
   private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
 
+  public static final String API_PATH = "cog";
+  
+  @Autowired
   private CloudOptimizedGeoTiffService service;
   
   public CloudOptimizedGeoTiffController()
   {
-    this.service = new CloudOptimizedGeoTiffService();
   }
   
   /**
@@ -60,12 +67,12 @@ public class CloudOptimizedGeoTiffController
    * @param path
    * @return
    */
-  @Endpoint(url = "tilejson.json", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF tilejson(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "path") String path)
+  @GetMapping(API_PATH + "/tilejson.json")
+  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true) String path)
   {
-    JSONObject tilejson = this.service.tilejson(request.getSessionId(), sRequest.getContextPath(), path);
+    JSONObject tilejson = this.service.tilejson(getSessionId(), request.getContextPath(), path);
     
-    return new RestBodyResponse(tilejson);
+    return new ResponseEntity<String>(tilejson.toString(), HttpStatus.OK);
   }
   
   /**
@@ -85,10 +92,10 @@ public class CloudOptimizedGeoTiffController
    * @return
    */
   public static final String TILES_REGEX = "tiles\\/(.+\\/)?(\\d+)\\/(\\d+)\\/(\\d+)(@\\d+x)?(\\.[^?\\n\\r]+)?";
-  @Endpoint(url = TILES_REGEX, method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF tiles(ClientRequestIF request, ServletRequestIF servletRequest, @RequestParamter(name = "path") String path)
+  @GetMapping(API_PATH + "/tiles/**")
+  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true) String path)
   {
-    String url = servletRequest.getRequestURI();
+    String url = request.getRequestURI();
     
     Pattern pattern = Pattern.compile("\\/cog\\/" + TILES_REGEX, Pattern.CASE_INSENSITIVE);
     
@@ -133,8 +140,8 @@ public class CloudOptimizedGeoTiffController
       }
       
       String fullUri;
-      StringBuilder requestURL = new StringBuilder(servletRequest.getRequestURL().toString());
-      String queryString = servletRequest.getQueryString();
+      StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
+      String queryString = request.getQueryString();
 
       if (queryString == null) {
         fullUri = requestURL.toString();
@@ -143,7 +150,7 @@ public class CloudOptimizedGeoTiffController
       }
       MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(fullUri).build().getQueryParams();
       
-      return this.service.tiles(request.getSessionId(), path, matrixSetId, x, y, z, scale, format, queryParams);
+      return this.service.tiles(getSessionId(), path, matrixSetId, x, y, z, scale, format, queryParams);
     }
     else
     {
