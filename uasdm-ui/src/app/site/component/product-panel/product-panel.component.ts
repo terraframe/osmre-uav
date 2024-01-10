@@ -291,6 +291,7 @@ export class ProductPanelComponent implements OnDestroy {
 
             product.published = p.published;
             product.layers = p.layers;
+            product.publicStacUrl = p.publicStacUrl;
 
             if (mapIt) {
                 this.toggleMapOrtho.emit(product);
