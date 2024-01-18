@@ -2,6 +2,23 @@
 # Release Notes
 
 
+## [0.20.0](https://github.com/terraframe/osmre-uav/releases/tag/0.20.0) (2024-01-18)
+
+### Features
+
+ - **products** url link for public collections  ([#294](https://github.com/terraframe/osmre-uav/issues/294)) ([0955e](https://github.com/terraframe/osmre-uav/commit/0955edc1e0c7987cb2aae2f1f841820965be1079))
+ - **tile-service** ability to hit public tile service without logging in  ([c5e4f](https://github.com/terraframe/osmre-uav/commit/c5e4fddbb9f093eeabbb811882682d6b85aa4f14))
+
+### Bug Fixes
+
+   - **site-viewer** elevation not rendering on map explorer  ([#286](https://github.com/terraframe/osmre-uav/issues/286)) ([23499](https://github.com/terraframe/osmre-uav/commit/234990045a4f42b173c07e9826381e7fca75bfb4))
+   - **sensor** cant edit sensor metadata  ([#289](https://github.com/terraframe/osmre-uav/issues/289)) ([ed010](https://github.com/terraframe/osmre-uav/commit/ed010e9890273d42176c0ca343cd92ef2fc7e285))
+   - **upload** manual upload instructions are wrong  ([#293](https://github.com/terraframe/osmre-uav/issues/293)) ([68ef9](https://github.com/terraframe/osmre-uav/commit/68ef9c56201a6e7991068ab0bf93940d623fb367))
+   - **processing** null pointer exception thrown when uploading data   ([12ce4](https://github.com/terraframe/osmre-uav/commit/12ce481638fba056b40c5ba03cb6cce441ed2b6f))
+   - remove action counter from hamburger   ([4b9a0](https://github.com/terraframe/osmre-uav/commit/4b9a0efbd82fbf2c145c193c917a71d23f28e566))
+
+
+
 ## [0.19.0](https://github.com/terraframe/osmre-uav/releases/tag/0.19.0) (2023-11-09)
 
 ### Features
