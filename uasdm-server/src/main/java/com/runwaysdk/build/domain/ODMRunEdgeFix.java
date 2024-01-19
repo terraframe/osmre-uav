@@ -33,6 +33,7 @@ import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.service.IndexService;
 
 public class ODMRunEdgeFix implements Runnable
 {
@@ -54,6 +55,8 @@ public class ODMRunEdgeFix implements Runnable
   public void run()
   {
     transaction();
+    
+    IndexService.shutdown();
   }
 
   @Transaction
