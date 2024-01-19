@@ -15,9 +15,8 @@
  */
 package gov.geoplatform.uasdm.processing.report;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,24 +27,33 @@ public class QueuedCollectionReportProcessor implements Runnable, CollectionRepo
   
   private static Thread   workerThread;
   
-  private static BlockingQueue<CollectionReportTask> queue = new ArrayBlockingQueue<CollectionReportTask>(1000);
+  private static Queue<CollectionReportTask> queue = new ArrayDeque<CollectionReportTask>(1000);
 
   private static Boolean  runThread = true;
   
-  public QueuedCollectionReportProcessor()
+  private static QueuedCollectionReportProcessor INSTANCE;
+  
+  public synchronized static QueuedCollectionReportProcessor getInstance()
   {
-    startWorkerThread(this);
+    if (INSTANCE == null)
+    {
+      INSTANCE = new QueuedCollectionReportProcessor();
+      
+      startup();
+    }
+    
+    return INSTANCE;
   }
 
-  public synchronized static void startWorkerThread(QueuedCollectionReportProcessor processor)
+  public synchronized static void startup()
   {
     if (workerThread != null)
     {
       return;
     }
 
-    workerThread = new Thread(processor, "QueuedCollectionReportProcessor");
-    workerThread.setDaemon(true);
+    workerThread = new Thread(INSTANCE, "QueuedCollectionReportProcessor");
+    workerThread.setDaemon(false);
     workerThread.start();
 
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
@@ -56,6 +64,11 @@ public class QueuedCollectionReportProcessor implements Runnable, CollectionRepo
         runThread = false;
       }
     }, "QueuedCollectionReportProcessor"));
+  }
+  
+  public static void shutdown()
+  {
+    runThread = false;
   }
 
   @Override
@@ -72,7 +85,7 @@ public class QueuedCollectionReportProcessor implements Runnable, CollectionRepo
       {
         Thread.sleep(1000);
         
-        CollectionReportTask crt = queue.poll(4000, TimeUnit.MILLISECONDS);
+        CollectionReportTask crt = queue.poll();
         
         if (crt != null)
         {

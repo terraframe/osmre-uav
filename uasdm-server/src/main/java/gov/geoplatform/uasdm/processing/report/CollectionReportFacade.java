@@ -30,13 +30,13 @@ import net.geoprism.account.GeoprismActorIF;
 
 public class CollectionReportFacade
 {
-  private static CollectionReportProcessor processor = new QueuedCollectionReportProcessor();
+  private static CollectionReportProcessor processor = QueuedCollectionReportProcessor.getInstance();
 
   public static void process(CollectionReportTask task)
   {
     processor.process(task);
   }
-
+ 
   public static Command update(UasComponentIF component)
   {
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.UPDATE, component));
