@@ -19,10 +19,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueuedCollectionReportProcessor implements Runnable, CollectionReportProcessor
 {
+  public static final Logger logger = LoggerFactory.getLogger(QueuedCollectionReportProcessor.class);
+  
   private static Thread   workerThread;
   
   private static BlockingQueue<CollectionReportTask> queue = new ArrayBlockingQueue<CollectionReportTask>(1000);
@@ -76,10 +79,15 @@ public class QueuedCollectionReportProcessor implements Runnable, CollectionRepo
           crt.run();
         }
       }
+      catch (InterruptedException ex)
+      {
+        Thread.currentThread().interrupt();
+        return;
+      }
       catch (Exception e)
       {
         String errMsg = e.getMessage();
-        throw new ProgrammingErrorException(errMsg);
+        logger.error(errMsg, e);
       }
     }
   }
