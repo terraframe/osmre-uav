@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.index;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import gov.geoplatform.uasdm.processing.report.QueuedCollectionReportProcessor;
 import gov.geoplatform.uasdm.service.IndexService;
 
 public class IndexContextListener implements ServletContextListener
@@ -30,5 +31,6 @@ public class IndexContextListener implements ServletContextListener
   @Override
   public void contextDestroyed(ServletContextEvent sce) { 
     IndexService.shutdown();
+    QueuedCollectionReportProcessor.shutdown();
   } 
 }
