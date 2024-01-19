@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -137,7 +137,14 @@ public class ODMZipPostProcessor
       final ODMRun odmRun = ODMRun.getForTask(processingTask.getOid());
 
       product.getProductHasDocumentChildDocuments().forEach(doc -> {
-        odmRun.addODMRunOutputChild(doc).apply();
+
+        // If a document already has an ODM run then it wasn't created in the
+        // current run but a previous run. As such we do not want to assign it
+        // as be generating from the current run
+        if (doc.getGeneratingODMRun() == null)
+        {
+          odmRun.addODMRunOutputChild(doc).apply();
+        }
 
         if (doc.getName().equals("report.pdf"))
         {
@@ -316,7 +323,7 @@ public class ODMZipPostProcessor
       return this.product.downloadAllZip().openNewFile();
     }
   }
-  
+
   private boolean truthy(Boolean b)
   {
     return Boolean.TRUE.equals(b); // Prevents against throwing NPE if b is null

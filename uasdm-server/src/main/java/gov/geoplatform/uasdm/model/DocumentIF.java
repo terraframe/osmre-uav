@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.ComponentIF;
 
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public interface DocumentIF extends ComponentIF, JSONSerializable
@@ -150,5 +151,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
   public RemoteFileObject download();
 
   public boolean isMappable();
+
+  public ODMRun getGeneratingODMRun();
 
 }

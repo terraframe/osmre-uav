@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -50,7 +50,7 @@ public class Document extends DocumentBase implements DocumentIF
   public void apply(UasComponentIF component)
   {
     final boolean isNew = this.isNew();
-    
+
     this.setLastModified(new Date());
 
     this.apply();
@@ -73,9 +73,9 @@ public class Document extends DocumentBase implements DocumentIF
     if (removeFromS3 && !this.getS3location().trim().equals(""))
     {
       new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getBucketName(), this.getComponent()).doIt();
-      
+
       Optional<Product> product = this.getProductHasDocumentParentProducts().stream().findFirst();
-      
+
       if (product.isPresent() && product.get().getPublished())
       {
         new RemoteFileDeleteCommand(this.getS3location(), AppProperties.getPublicBucketName(), this.getComponent()).doIt();
@@ -84,15 +84,15 @@ public class Document extends DocumentBase implements DocumentIF
 
     super.delete();
   }
-  
+
   @Override
   public boolean isMappable()
   {
     final String s3 = this.getS3location();
-    
+
     return s3.matches(Product.MAPPABLE_ORTHO_REGEX) || s3.matches(Product.MAPPABLE_DEM_REGEX);
   }
-  
+
   public RemoteFileObject download()
   {
     return RemoteFileFacade.download(this.getS3location());
@@ -171,5 +171,11 @@ public class Document extends DocumentBase implements DocumentIF
   public String toString()
   {
     return this.getS3location();
+  }
+
+  @Override
+  public ODMRun getGeneratingODMRun()
+  {
+    return ODMRun.getGeneratingRun(this);
   }
 }
