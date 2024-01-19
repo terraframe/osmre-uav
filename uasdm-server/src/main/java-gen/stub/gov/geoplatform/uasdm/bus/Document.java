@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -24,6 +24,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -40,12 +41,11 @@ public class Document extends DocumentBase implements DocumentIF
   {
     super();
   }
-  
+
   @Override
   public boolean isMappable()
   {
-    return this.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION)
-        || this.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION);
+    return this.getS3location().endsWith(ImageryComponent.ORTHO + "/odm_orthophoto" + CogTifProcessor.COG_EXTENSION) || this.getS3location().endsWith(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION);
   }
 
   @Override
@@ -81,11 +81,11 @@ public class Document extends DocumentBase implements DocumentIF
   {
     return this.getS3location();
   }
-  
+
   @Override
   public void setExclude(Boolean exclude)
   {
-    // Do nothing   
+    // Do nothing
   }
 
   public void addGeneratedProduct(ProductIF product)
@@ -103,31 +103,31 @@ public class Document extends DocumentBase implements DocumentIF
   {
     return this.getLastUpdateDate();
   }
-  
+
   @Override
   public String getDescription()
   {
     return null;
   }
-  
+
   @Override
   public String getTool()
   {
     return null;
   }
-  
+
   @Override
   public String getProjectionName()
   {
     return null;
   }
-  
+
   @Override
   public Integer getPtEpsg()
   {
     return null;
   }
-  
+
   @Override
   public String getOrthoCorrectionModel()
   {
@@ -209,6 +209,12 @@ public class Document extends DocumentBase implements DocumentIF
   public Long getFileSize()
   {
     return -1L;
+  }
+
+  @Override
+  public ODMRun getGeneratingODMRun()
+  {
+    throw new UnsupportedOperationException();
   }
 
 }

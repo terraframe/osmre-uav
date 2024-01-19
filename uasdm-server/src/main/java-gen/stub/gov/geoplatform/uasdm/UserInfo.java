@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -101,7 +101,7 @@ public class UserInfo extends UserInfoBase
   public static JSONObject applyUserWithRoles(JSONObject account, String roleIds)
   {
     GeoprismActorIF user = deserialize(account);
-    
+
     if (user instanceof ExternalProfile)
     {
       ( (ExternalProfile) user ).setRemoteId(user.getUsername());
@@ -173,7 +173,12 @@ public class UserInfo extends UserInfoBase
     }
 
     // Assign the user to the new organization
-    if (account.has(UserInfo.ORGANIZATION))
+    try (OIterator<? extends OrganizationHasUser> it = info.getAllOrganizationRel())
+    {
+      it.forEach(rel -> rel.delete());
+    }
+
+    if (account.has(UserInfo.ORGANIZATION) && !account.isNull(UserInfo.ORGANIZATION))
     {
       JSONObject org = account.getJSONObject(UserInfo.ORGANIZATION);
       String code = org.getString(Organization.CODE);
@@ -201,7 +206,7 @@ public class UserInfo extends UserInfoBase
     result.put(GeoprismUser.PHONENUMBER, user.getPhoneNumber());
     result.put(GeoprismUser.EMAIL, user.getEmail());
     result.put(GeoprismUser.INACTIVE, user.getInactive());
-    result.put("externalProfile", (user instanceof ExternalProfile));
+    result.put("externalProfile", ( user instanceof ExternalProfile ));
 
     if (info != null)
     {
@@ -250,7 +255,7 @@ public class UserInfo extends UserInfoBase
         user = new GeoprismUser();
       }
     }
-    
+
     if (user instanceof ExternalProfile)
     {
       if (user.isNew())
@@ -265,23 +270,23 @@ public class UserInfo extends UserInfoBase
       user.setFirstName(account.getString(GeoprismUser.FIRSTNAME));
       user.setLastName(account.getString(GeoprismUser.LASTNAME));
       user.setEmail(account.getString(GeoprismUser.EMAIL));
-  
+
       if (account.has(GeoprismUser.PHONENUMBER))
       {
         user.setPhoneNumber(account.getString(GeoprismUser.PHONENUMBER));
       }
-  
+
       if (account.has(GeoprismUser.PASSWORD) && user instanceof GeoprismUser)
       {
         String password = account.getString(GeoprismUser.PASSWORD);
-  
+
         if (password != null && password.length() > 0)
         {
-          ((GeoprismUser)user).setPassword(password);
+          ( (GeoprismUser) user ).setPassword(password);
         }
       }
     }
-    
+
     if (account.has(GeoprismUser.INACTIVE))
     {
       user.setInactive(account.getBoolean(GeoprismUser.INACTIVE));

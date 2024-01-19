@@ -17,6 +17,7 @@
 -->
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+  <!-- 
     <create>
       <mdBusiness name="gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob" extends="com.runwaysdk.system.scheduler.ExecutableJob" exported="false">
         <attributes>
@@ -42,6 +43,7 @@
         </grant>
       </role>      
     </permissions>    
+   -->
   </doIt>
   <undoIt>
     <delete>
