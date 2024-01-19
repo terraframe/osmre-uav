@@ -50,9 +50,24 @@ public class PixelSizeMigration implements Runnable
 
     for (Sensor sensor : sensors)
     {
-      sensor.setRealPixelSizeHeight(new BigDecimal(sensor.getPixelSizeHeight()));
-      sensor.setRealPixelSizeWidth(new BigDecimal(sensor.getPixelSizeWidth()));
-      sensor.apply();
+      boolean changed = false;
+      
+      if (sensor.getPixelSizeHeight() != null)
+      {
+        sensor.setRealPixelSizeHeight(new BigDecimal(sensor.getPixelSizeHeight()));
+        changed = true;
+      }
+      
+      if (sensor.getPixelSizeWidth() != null)
+      {
+        sensor.setRealPixelSizeWidth(new BigDecimal(sensor.getPixelSizeWidth()));
+        changed = true;
+      }
+      
+      if (changed)
+      {
+        sensor.apply();
+      }
     }
   }
 }

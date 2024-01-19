@@ -17,61 +17,70 @@ package gov.geoplatform.uasdm.processing.report;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
-public class QueuedCollectionReportProcessor implements CollectionReportProcessor
+public class QueuedCollectionReportProcessor implements Runnable, CollectionReportProcessor
 {
-  private static final Logger                 logger = LoggerFactory.getLogger(QueuedCollectionReportProcessor.class);
+  private static Thread   workerThread;
+  
+  private static BlockingQueue<CollectionReportTask> queue = new ArrayBlockingQueue<CollectionReportTask>(1000);
 
-  private ExecutorService                     executor;
-
-  private ExecutorService                     scheduler;
-
-  private BlockingQueue<CollectionReportTask> queue;
-
+  private static Boolean  runThread = true;
+  
   public QueuedCollectionReportProcessor()
   {
-    this.scheduler = Executors.newFixedThreadPool(1, new ThreadFactory()
+    startWorkerThread(this);
+  }
+
+  public synchronized static void startWorkerThread(QueuedCollectionReportProcessor processor)
+  {
+    if (workerThread != null)
+    {
+      return;
+    }
+
+    workerThread = new Thread(processor, "QueuedCollectionReportProcessor");
+    workerThread.setDaemon(true);
+    workerThread.start();
+
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
     {
       @Override
-      public Thread newThread(Runnable r)
+      public void run()
       {
-        Thread thread = Executors.defaultThreadFactory().newThread(r);
-        thread.setName("report-queue");
-        thread.setDaemon(true);
-
-        return thread;
+        runThread = false;
       }
-    });
-
-    this.executor = Executors.newFixedThreadPool(1);
-
-    this.queue = new ArrayBlockingQueue<CollectionReportTask>(1000);
-
-    this.scheduler.execute(() -> {
-      while (true)
-      {
-        try
-        {
-          executor.execute(queue.take());
-        }
-        catch (Throwable e)
-        {
-          logger.error("Error processing the report task", e);
-        }
-      }
-    });
+    }, "QueuedCollectionReportProcessor"));
   }
 
   @Override
   public void process(CollectionReportTask task)
   {
-    this.queue.offer(task);
+    queue.offer(task);
   }
 
+  public void run()
+  {
+    while (runThread)
+    {
+      try
+      {
+        Thread.sleep(1000);
+        
+        CollectionReportTask crt = queue.poll(4000, TimeUnit.MILLISECONDS);
+        
+        if (crt != null)
+        {
+          crt.run();
+        }
+      }
+      catch (Exception e)
+      {
+        String errMsg = e.getMessage();
+        throw new ProgrammingErrorException(errMsg);
+      }
+    }
+  }
 }
