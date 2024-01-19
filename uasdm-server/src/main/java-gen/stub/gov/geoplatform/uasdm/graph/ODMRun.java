@@ -88,7 +88,7 @@ public class ODMRun extends ODMRunBase
     final GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement.toString());
     query.setParameter("rid", artifact.getRID());
 
-    return query.getSingleResult();
+    return query.getResults().stream().sorted((a, b) -> a.getRunStart().compareTo(b.getRunStart())).findFirst().orElse(null);
   }
   
   /**
