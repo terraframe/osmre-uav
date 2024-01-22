@@ -2,6 +2,12 @@
 # Release Notes
 
 
+## [0.20.1](https://github.com/terraframe/osmre-uav/releases/tag/0.20.1) (2024-01-22)
+
+
+
+
+
 ## [0.20.0](https://github.com/terraframe/osmre-uav/releases/tag/0.20.0) (2024-01-18)
 
 ### Features
