@@ -42,7 +42,7 @@
         </div>
         <div *ngIf="attribute.type === 'organization'">
           <label>{{attribute.label}}</label>
-          <organization-field [name]="attribute.name" [(value)]="entity[attribute.name]" [disabled]="attribute.readonly" [required]="attribute.required">
+          <organization-field [name]="attribute.name" [(value)]="entity[attribute.name]" [disabled]="attribute.readonly" [required]="true">
           </organization-field>
         </div>
         <div *ngIf="attribute.type === 'text-area'">

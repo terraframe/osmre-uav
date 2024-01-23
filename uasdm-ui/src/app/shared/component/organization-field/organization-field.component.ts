@@ -9,11 +9,13 @@ import { Observable, Observer, Subscription } from "rxjs";
 import { LocalizedValue, Organization } from "@shared/model/organization";
 import { OrganizationService } from "@shared/service/organization.service";
 import { OrganizationHierarchyModalComponent } from "./organization-hierarchy-modal.component";
+import { ControlContainer, NgForm } from "@angular/forms";
 
 @Component({
     selector: "organization-field",
     templateUrl: "./organization-field.component.html",
-    styleUrls: []
+    styleUrls: [],
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],    
 })
 export class OrganizationFieldComponent implements OnInit, OnDestroy {
 
