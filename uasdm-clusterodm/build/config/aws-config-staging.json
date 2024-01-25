@@ -32,9 +32,8 @@
 
     "spot": false,
     "imageSizeMapping": [
-        {"maxImages": 20, "slug": "t3a.small", "spotPrice": 0.02, "storage": 60},
-        {"maxImages": 50, "slug": "t3a.medium", "spotPrice": 0.04, "storage": 100},
-		{"maxImages": 120, "slug": "m5.large", "spotPrice": 0.1, "storage": 160},
+        {"maxImages": 30, "slug": "t3a.medium", "spotPrice": 0.04, "storage": 100},
+		{"maxImages": 80, "slug": "m5.large", "spotPrice": 0.1, "storage": 160},
 		{"maxImages": 200, "slug": "m5.xlarge", "spotPrice": 0.2, "storage": 320},
 		{"maxImages": 800, "slug": "m5.2xlarge", "spotPrice": 0.4, "storage": 640},
 		{"maxImages": 2000, "slug": "r5.2xlarge", "spotPrice": 0.6, "storage": 1200},
