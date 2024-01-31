@@ -39,7 +39,7 @@ public class AnalyticsController extends RunwaySpringController
   public ResponseEntity<ByteArrayResource> generate(HttpServletRequest request, @RequestParam(required = false) String date) throws IOException, ParseException
   {
     Date _date = null;
-    if (date != null)
+    if (date != null && !date.trim().equals(""))
     {
       SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
       df.setTimeZone(TimeZone.getTimeZone("UTC"));

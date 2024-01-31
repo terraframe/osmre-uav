@@ -7,10 +7,14 @@ import { environment } from 'src/environments/environment';
 })
 export class AnalyticsComponent {
 
+    date: any;
+
 	constructor() { }
 	
 	generate(): void {
-		window.location.href = environment.apiUrl + "/api/analytics/generate";
+		var dateArg = this.date ? "?date=" + this.date : "";
+		
+		window.location.href = environment.apiUrl + "/api/analytics/generate" + dateArg;
 	}
 
 }

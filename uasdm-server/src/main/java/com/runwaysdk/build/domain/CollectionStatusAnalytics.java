@@ -45,11 +45,14 @@ public class CollectionStatusAnalytics
     
     query.WHERE(query.getStatus().EQ("Failed"));
     
+    int count = 0;
+    
     try (OIterator<? extends CollectionStatus> it = query.getIterator())
     {
       while (it.hasNext())
       {
         CollectionStatus cs = it.next();
+        cs.appLock();
         
         String componentId = cs.getComponent();
         
@@ -58,8 +61,15 @@ public class CollectionStatusAnalytics
         Collection col = (Collection)uas;
         
         Sensor sensor = col.getSensor();
-        cs.setSensorName(sensor.getName());
-        cs.setSensorType(sensor.getSensorType().getName());
+        if (sensor != null)
+        {
+          cs.setSensorName(sensor.getName());
+          cs.setSensorType(sensor.getSensorType().getName());
+          count++;
+        }
+        
+        cs.setCollectionName(col.getName());
+        cs.setCollectionS3Path(col.getS3location());
         
         cs.setCollectionSize((long) col.getDocuments().size());
         
@@ -73,8 +83,12 @@ public class CollectionStatusAnalytics
         }
         
         cs.setFailReason(getFailureReason(cs));
+        
+        cs.apply();
       }
     }
+    
+    System.out.println("Found " + count + " collections without sensors");
   }
   
   public static String getFailureReason(CollectionStatus cs)

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -2095890489)
+@com.runwaysdk.business.ClassSignature(hash = 1490978551)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,40 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public String getClassType()
   {
     return gov.geoplatform.uasdm.CollectionStatus.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getCollectionName()
+  {
+    return getCollectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
+  {
+    return getCollectionS3Path(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableLong getCollectionSize()
   {
@@ -471,6 +505,12 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionStatusQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
+    public com.runwaysdk.query.SelectableChar getCollectionName();
+    public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
+    public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path();
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias);
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getCollectionSize();
     public com.runwaysdk.query.SelectableLong getCollectionSize(String alias);
     public com.runwaysdk.query.SelectableLong getCollectionSize(String alias, String displayLabel);
@@ -566,6 +606,40 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
       return this.NE(collectionStatus.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getCollectionName()
+  {
+    return getCollectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
+  {
+    return getCollectionS3Path(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableLong getCollectionSize()
   {
     return getCollectionSize(null);
@@ -946,6 +1020,12 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionStatusQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
+    public com.runwaysdk.query.SelectableChar getCollectionName();
+    public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
+    public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path();
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias);
+    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getCollectionSize();
     public com.runwaysdk.query.SelectableLong getCollectionSize(String alias);
     public com.runwaysdk.query.SelectableLong getCollectionSize(String alias, String displayLabel);
@@ -1089,6 +1169,40 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getCollectionName()
+  {
+    return getCollectionName(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
+  {
+    return getCollectionS3Path(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableLong getCollectionSize()
   {

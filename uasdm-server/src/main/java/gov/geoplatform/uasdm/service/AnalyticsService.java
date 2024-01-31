@@ -1,18 +1,23 @@
 package gov.geoplatform.uasdm.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
+import com.opencsv.CSVWriter;
+import com.runwaysdk.dataaccess.ValueObject;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.CollectionStatusQuery;
-import gov.geoplatform.uasdm.bus.CollectionQuery;
 
 @Service
 public class AnalyticsService
@@ -24,24 +29,54 @@ public class AnalyticsService
     final ValueQuery vq = new ValueQuery(qf);
     
     CollectionStatusQuery csq = new CollectionStatusQuery(qf);
-    // AbstractWorkflowTaskQuery tq = new AbstractWorkflowTaskQuery(new QueryFactory());
-    
-    CollectionQuery cq = new CollectionQuery(qf);
-    vq.WHERE(cq.getOid().EQ(csq.getComponent()));
     
     vq.WHERE(csq.getStatus().EQ("Failed"));
     
     if (since != null)
     {
-      vq.WHERE(csq.getLastUpdateDate().GE(since));
+      vq.WHERE(csq.getLastModificationDate().GE(since));
     }
     
-    vq.SELECT(cq.getName("colName"));
-    vq.SELECT(cq.getS3location("s3Path"));
-    vq.SELECT(null);
+    vq.SELECT(csq.getCollectionName("colName"));
+    vq.SELECT(csq.getCollectionS3Path("s3Path"));
+    vq.SELECT(csq.getLastModificationDate("lastUpdate"));
+    vq.SELECT(csq.getSensorName("sensorName"));
+    vq.SELECT(csq.getSensorType("sensorType"));
+    vq.SELECT(csq.getFailReason("failReason"));
+    vq.SELECT(csq.getCollectionSize("colSize"));
+    vq.SELECT(csq.getOdmConfig("odmConfig"));
     
-    vq.getIterator();
+    vq.ORDER_BY(csq.getLastModificationDate("lastUpdate"), SortOrder.DESC);
     
-    return new ByteArrayInputStream("test 123".getBytes());
+    StringWriter sw = new StringWriter();
+    try (CSVWriter csv = new CSVWriter(sw))
+    {
+      csv.writeNext(new String[] {"collectionName", "collectionSize", "failReason", "lastUpdate", "collectionS3Path", "sensorName", "sensorType", "odmConfig"});
+      
+      try (OIterator<ValueObject> it = vq.getIterator())
+      {
+        for (ValueObject vo : it)
+        {
+          csv.writeNext(new String[] {
+              vo.getValue("colName"),
+              vo.getValue("colSize"),
+              vo.getValue("failReason"),
+              vo.getValue("lastUpdate"),
+              vo.getValue("s3Path"),
+              vo.getValue("sensorName"),
+              vo.getValue("sensorType"),
+              vo.getValue("odmConfig")
+          });
+        }
+      }
+      
+      csv.flush();
+      
+      return new ByteArrayInputStream(sw.toString().getBytes());
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 }
