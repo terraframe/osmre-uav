@@ -1,25 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -1104473677)
+@com.runwaysdk.business.ClassSignature(hash = 1101265040)
 public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.CollectionStatus";
-  private static final long serialVersionUID = -1104473677;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1101265040;
   
   protected CollectionStatusDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -42,21 +28,63 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return CLASS;
   }
   
+  public static java.lang.String COLLECTIONSIZE = "collectionSize";
   public static java.lang.String COMPONENT = "component";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public static java.lang.String FAILREASON = "failReason";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTMODIFICATIONDATE = "lastModificationDate";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String ODMCONFIG = "odmConfig";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String SENSORNAME = "sensorName";
+  public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String STATUS = "status";
   public static java.lang.String TYPE = "type";
+  public Long getCollectionSize()
+  {
+    return com.runwaysdk.constants.MdAttributeLongUtil.getTypeSafeValue(getValue(COLLECTIONSIZE));
+  }
+  
+  public void setCollectionSize(Long value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONSIZE, "");
+    }
+    else
+    {
+      setValue(COLLECTIONSIZE, java.lang.Long.toString(value));
+    }
+  }
+  
+  public boolean isCollectionSizeWritable()
+  {
+    return isWritable(COLLECTIONSIZE);
+  }
+  
+  public boolean isCollectionSizeReadable()
+  {
+    return isReadable(COLLECTIONSIZE);
+  }
+  
+  public boolean isCollectionSizeModified()
+  {
+    return isModified(COLLECTIONSIZE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getCollectionSizeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(COLLECTIONSIZE).getAttributeMdDTO();
+  }
+  
   public String getComponent()
   {
     return getValue(COMPONENT);
@@ -203,6 +231,43 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getEntityDomainMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(ENTITYDOMAIN).getAttributeMdDTO();
+  }
+  
+  public String getFailReason()
+  {
+    return getValue(FAILREASON);
+  }
+  
+  public void setFailReason(String value)
+  {
+    if(value == null)
+    {
+      setValue(FAILREASON, "");
+    }
+    else
+    {
+      setValue(FAILREASON, value);
+    }
+  }
+  
+  public boolean isFailReasonWritable()
+  {
+    return isWritable(FAILREASON);
+  }
+  
+  public boolean isFailReasonReadable()
+  {
+    return isReadable(FAILREASON);
+  }
+  
+  public boolean isFailReasonModified()
+  {
+    return isModified(FAILREASON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getFailReasonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(FAILREASON).getAttributeMdDTO();
   }
   
   public String getKeyName()
@@ -378,6 +443,43 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
   }
   
+  public String getOdmConfig()
+  {
+    return getValue(ODMCONFIG);
+  }
+  
+  public void setOdmConfig(String value)
+  {
+    if(value == null)
+    {
+      setValue(ODMCONFIG, "");
+    }
+    else
+    {
+      setValue(ODMCONFIG, value);
+    }
+  }
+  
+  public boolean isOdmConfigWritable()
+  {
+    return isWritable(ODMCONFIG);
+  }
+  
+  public boolean isOdmConfigReadable()
+  {
+    return isReadable(ODMCONFIG);
+  }
+  
+  public boolean isOdmConfigModified()
+  {
+    return isModified(ODMCONFIG);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getOdmConfigMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(ODMCONFIG).getAttributeMdDTO();
+  }
+  
   public com.runwaysdk.system.ActorDTO getOwner()
   {
     if(getValue(OWNER) == null || getValue(OWNER).trim().equals(""))
@@ -425,6 +527,80 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getSensorName()
+  {
+    return getValue(SENSORNAME);
+  }
+  
+  public void setSensorName(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORNAME, "");
+    }
+    else
+    {
+      setValue(SENSORNAME, value);
+    }
+  }
+  
+  public boolean isSensorNameWritable()
+  {
+    return isWritable(SENSORNAME);
+  }
+  
+  public boolean isSensorNameReadable()
+  {
+    return isReadable(SENSORNAME);
+  }
+  
+  public boolean isSensorNameModified()
+  {
+    return isModified(SENSORNAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getSensorNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(SENSORNAME).getAttributeMdDTO();
+  }
+  
+  public String getSensorType()
+  {
+    return getValue(SENSORTYPE);
+  }
+  
+  public void setSensorType(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORTYPE, "");
+    }
+    else
+    {
+      setValue(SENSORTYPE, value);
+    }
+  }
+  
+  public boolean isSensorTypeWritable()
+  {
+    return isWritable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeReadable()
+  {
+    return isReadable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeModified()
+  {
+    return isModified(SENSORTYPE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getSensorTypeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(SENSORTYPE).getAttributeMdDTO();
   }
   
   public Long getSeq()

@@ -1,0 +1,23 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.CollectionStatus">
+        <create>
+	        <attributes>
+	            <text name="sensorName"/>
+	            <text name="sensorType"/>
+	            <long name="collectionSize"/>
+	            <text name="odmConfig"/>
+	            <text name="failReason"/>
+	        </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      
+    </delete>
+  </undoIt>
+</version>

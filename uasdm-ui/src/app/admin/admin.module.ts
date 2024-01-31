@@ -29,6 +29,7 @@ import { SystemLogosComponent } from './component/logo/system-logos.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
 import { SystemConfigurationComponent } from './component/system/system-configuration.component';
+import { AnalyticsComponent } from './component/analytics/analytics.component';
 
 import { LPGSyncTableComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync-table.component';
 import { LPGSyncComponent } from './component/labeled-property-graph-sync/labeled-property-graph-sync.component';
@@ -64,6 +65,7 @@ import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 		AccountInviteComponent,
 		AccountInviteCompleteComponent,
 		AccountComponent,
+		AnalyticsComponent,
 		SystemLogoComponent,
 		SystemLogosComponent,
 		EmailComponent,
