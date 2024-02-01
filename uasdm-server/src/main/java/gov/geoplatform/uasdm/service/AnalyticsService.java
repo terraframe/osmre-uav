@@ -17,7 +17,7 @@ import com.runwaysdk.query.ValueQuery;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.CollectionStatusQuery;
+import gov.geoplatform.uasdm.bus.ErrorReportQuery;
 
 @Service
 public class AnalyticsService
@@ -28,30 +28,31 @@ public class AnalyticsService
     final QueryFactory qf = new QueryFactory();
     final ValueQuery vq = new ValueQuery(qf);
     
-    CollectionStatusQuery csq = new CollectionStatusQuery(qf);
-    
-    vq.WHERE(csq.getStatus().EQ("Failed"));
+    ErrorReportQuery erq = new ErrorReportQuery(qf);
     
     if (since != null)
     {
-      vq.WHERE(csq.getLastModificationDate().GE(since));
+      vq.WHERE(erq.getErrorDate().GE(since));
     }
     
-    vq.SELECT(csq.getCollectionName("colName"));
-    vq.SELECT(csq.getCollectionS3Path("s3Path"));
-    vq.SELECT(csq.getLastModificationDate("lastUpdate"));
-    vq.SELECT(csq.getSensorName("sensorName"));
-    vq.SELECT(csq.getSensorType("sensorType"));
-    vq.SELECT(csq.getFailReason("failReason"));
-    vq.SELECT(csq.getCollectionSize("colSize"));
-    vq.SELECT(csq.getOdmConfig("odmConfig"));
+    vq.SELECT(erq.getCollectionName("colName"));
+    vq.SELECT(erq.getCollectionS3Path("s3Path"));
+    vq.SELECT(erq.getErrorDate("errorDate"));
+    vq.SELECT(erq.getSensorName("sensorName"));
+    vq.SELECT(erq.getSensorType("sensorType"));
+    vq.SELECT(erq.getFailReason("failReason"));
+    vq.SELECT(erq.getCollectionSize("colSize"));
+    vq.SELECT(erq.getOdmConfig("odmConfig"));
+    vq.SELECT(erq.getCollectionPocName("pocName"));
+    vq.SELECT(erq.getUavSerialNumber("uavSerial"));
+    vq.SELECT(erq.getUavFaaId("uavFAA"));
     
-    vq.ORDER_BY(csq.getLastModificationDate("lastUpdate"), SortOrder.DESC);
+    vq.ORDER_BY(erq.getErrorDate("errorDate"), SortOrder.DESC);
     
     StringWriter sw = new StringWriter();
     try (CSVWriter csv = new CSVWriter(sw))
     {
-      csv.writeNext(new String[] {"collectionName", "collectionSize", "failReason", "lastUpdate", "collectionS3Path", "sensorName", "sensorType", "odmConfig"});
+      csv.writeNext(new String[] {"collectionName", "collectionSize", "failReason", "errorDate", "pocName", "collectionS3Path", "uavSerial", "uavFAA", "sensorName", "sensorType", "odmConfig"});
       
       try (OIterator<ValueObject> it = vq.getIterator())
       {
@@ -61,8 +62,11 @@ public class AnalyticsService
               vo.getValue("colName"),
               vo.getValue("colSize"),
               vo.getValue("failReason"),
-              vo.getValue("lastUpdate"),
+              vo.getValue("errorDate"),
+              vo.getValue("pocName"),
               vo.getValue("s3Path"),
+              vo.getValue("uavSerial"),
+              vo.getValue("uavFAA"),
               vo.getValue("sensorName"),
               vo.getValue("sensorType"),
               vo.getValue("odmConfig")

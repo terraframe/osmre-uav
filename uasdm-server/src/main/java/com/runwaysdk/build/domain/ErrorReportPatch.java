@@ -17,21 +17,23 @@ package com.runwaysdk.build.domain;
 
 import java.util.List;
 
+import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.CollectionStatus;
-import gov.geoplatform.uasdm.CollectionStatusQuery;
+import gov.geoplatform.uasdm.bus.ErrorReport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.model.ComponentFacade;
-import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.model.CollectionIF;
 
-public class CollectionStatusAnalytics
+public class ErrorReportPatch
 {
   public static void main(String[] args) throws InterruptedException
   {
@@ -41,37 +43,28 @@ public class CollectionStatusAnalytics
   @Request
   public static void doIt() throws InterruptedException
   {
-    CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
-    
-    query.WHERE(query.getStatus().EQ("Failed"));
-    
     int count = 0;
     
-    try (OIterator<? extends CollectionStatus> it = query.getIterator())
+    for (Collection col : getCollectionQuery().getResults())
     {
-      while (it.hasNext())
+      WorkflowTask task = getFailureTask(col);
+      
+      if (task != null)
       {
-        CollectionStatus cs = it.next();
-        cs.appLock();
-        
-        String componentId = cs.getComponent();
-        
-        UasComponentIF uas = ComponentFacade.getComponent(componentId);
-        if (!(uas instanceof Collection)) { continue; }
-        Collection col = (Collection)uas;
+        ErrorReport er = new ErrorReport();
         
         Sensor sensor = col.getSensor();
         if (sensor != null)
         {
-          cs.setSensorName(sensor.getName());
-          cs.setSensorType(sensor.getSensorType().getName());
+          er.setSensorName(sensor.getName());
+          er.setSensorType(sensor.getSensorType().getName());
           count++;
         }
         
-        cs.setCollectionName(col.getName());
-        cs.setCollectionS3Path(col.getS3location());
+        er.setCollectionName(col.getName());
+        er.setCollectionS3Path(col.getS3location());
         
-        cs.setCollectionSize((long) col.getDocuments().size());
+        er.setCollectionSize((long) col.getDocuments().size());
         
         List<ODMRun> odmRuns = ODMRun.getByComponentOrdered(col.getOid());
         
@@ -79,23 +72,42 @@ public class CollectionStatusAnalytics
         {
           ODMRun odmRun = odmRuns.get(odmRuns.size()-1);
           
-          cs.setOdmConfig(odmRun.getConfig());
+          er.setOdmConfig(odmRun.getConfig());
         }
         
-        cs.setFailReason(getFailureReason(cs));
+        er.setFailReason(task.getMessage());
         
-        cs.apply();
+        er.setErrorDate(task.getLastUpdateDate());
+        
+        /*
+         * <text name="flightOperator"/>
+            <text name="uavSerialNumber"/>
+            <text name="uavFaaId"/>
+         */
+        er.setCollectionPocName(col.getPocName());
+        
+        UAV uav = col.getUav();
+        
+        if (uav != null)
+        {
+          er.setUavFaaId(uav.getFaaNumber());
+          er.setUavSerialNumber(uav.getSerialNumber());
+        }
+        
+        er.apply();
+        
+        count++;
       }
     }
     
-    System.out.println("Found " + count + " collections without sensors");
+    System.out.println("Successfully created " + count + " error reports.");
   }
   
-  public static String getFailureReason(CollectionStatus cs)
+  public static WorkflowTask getFailureTask(CollectionIF col)
   {
     WorkflowTaskQuery wtq = new WorkflowTaskQuery(new QueryFactory());
     
-    wtq.WHERE(wtq.getComponent().EQ(cs.getComponent()));
+    wtq.WHERE(wtq.getComponent().EQ(col.getOid()));
     
     try (OIterator<? extends WorkflowTask> it = wtq.getIterator())
     {
@@ -103,11 +115,23 @@ public class CollectionStatusAnalytics
       {
         if (CollectionStatus.getStatus(task) == "Failed")
         {
-          return task.getMessage();
+          return task;
         }
       }
     }
     
-    return "";
+    return null;
+  }
+  
+  private static GraphQuery<Collection> getCollectionQuery()
+  {
+    final String collection0 = MdVertexDAO.getMdVertexDAO(Collection.CLASS).getDBClassName();
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("SELECT * FROM " + collection0);
+    
+    final GraphQuery<Collection> query = new GraphQuery<Collection>(builder.toString());
+
+    return query;
   }
 }

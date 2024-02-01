@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = -293451575)
+@com.runwaysdk.business.ClassSignature(hash = -766068710)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm;
 public class CollectionStatusQueryDTO extends com.runwaysdk.business.BusinessQueryDTO
 {
 @SuppressWarnings("unused")
-private static final long serialVersionUID = -293451575;
+private static final long serialVersionUID = -766068710;
 
   protected CollectionStatusQueryDTO(String type)
   {

@@ -1,13 +1,13 @@
-package gov.geoplatform.uasdm;
+package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1650855875)
-public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.BusinessDTO
+@com.runwaysdk.business.ClassSignature(hash = 1257854298)
+public abstract class ErrorReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
-  public final static String CLASS = "gov.geoplatform.uasdm.CollectionStatus";
+  public final static String CLASS = "gov.geoplatform.uasdm.bus.ErrorReport";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1650855875;
+  private static final long serialVersionUID = 1257854298;
   
-  protected CollectionStatusDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected ErrorReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(clientRequest);
   }
@@ -18,7 +18,7 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   * @param businessDTO The BusinessDTO to duplicate
   * @param clientRequest The clientRequest this DTO should use to communicate with the server.
   */
-  protected CollectionStatusDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
+  protected ErrorReportDTOBase(com.runwaysdk.business.BusinessDTO businessDTO, com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
     super(businessDTO, clientRequest);
   }
@@ -29,22 +29,28 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   }
   
   public static java.lang.String COLLECTIONNAME = "collectionName";
+  public static java.lang.String COLLECTIONPOCNAME = "collectionPocName";
   public static java.lang.String COLLECTIONS3PATH = "collectionS3Path";
-  public static java.lang.String COMPONENT = "component";
+  public static java.lang.String COLLECTIONSIZE = "collectionSize";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
   public static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public static java.lang.String ERRORDATE = "errorDate";
+  public static java.lang.String FAILREASON = "failReason";
   public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTMODIFICATIONDATE = "lastModificationDate";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
+  public static java.lang.String ODMCONFIG = "odmConfig";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String SENSORNAME = "sensorName";
+  public static java.lang.String SENSORTYPE = "sensorType";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String STATUS = "status";
   public static java.lang.String TYPE = "type";
+  public static java.lang.String UAVFAAID = "uavFaaId";
+  public static java.lang.String UAVSERIALNUMBER = "uavSerialNumber";
   public String getCollectionName()
   {
     return getValue(COLLECTIONNAME);
@@ -80,6 +86,43 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getCollectionNameMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(COLLECTIONNAME).getAttributeMdDTO();
+  }
+  
+  public String getCollectionPocName()
+  {
+    return getValue(COLLECTIONPOCNAME);
+  }
+  
+  public void setCollectionPocName(String value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONPOCNAME, "");
+    }
+    else
+    {
+      setValue(COLLECTIONPOCNAME, value);
+    }
+  }
+  
+  public boolean isCollectionPocNameWritable()
+  {
+    return isWritable(COLLECTIONPOCNAME);
+  }
+  
+  public boolean isCollectionPocNameReadable()
+  {
+    return isReadable(COLLECTIONPOCNAME);
+  }
+  
+  public boolean isCollectionPocNameModified()
+  {
+    return isModified(COLLECTIONPOCNAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getCollectionPocNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(COLLECTIONPOCNAME).getAttributeMdDTO();
   }
   
   public String getCollectionS3Path()
@@ -119,41 +162,41 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(COLLECTIONS3PATH).getAttributeMdDTO();
   }
   
-  public String getComponent()
+  public Long getCollectionSize()
   {
-    return getValue(COMPONENT);
+    return com.runwaysdk.constants.MdAttributeLongUtil.getTypeSafeValue(getValue(COLLECTIONSIZE));
   }
   
-  public void setComponent(String value)
+  public void setCollectionSize(Long value)
   {
     if(value == null)
     {
-      setValue(COMPONENT, "");
+      setValue(COLLECTIONSIZE, "");
     }
     else
     {
-      setValue(COMPONENT, value);
+      setValue(COLLECTIONSIZE, java.lang.Long.toString(value));
     }
   }
   
-  public boolean isComponentWritable()
+  public boolean isCollectionSizeWritable()
   {
-    return isWritable(COMPONENT);
+    return isWritable(COLLECTIONSIZE);
   }
   
-  public boolean isComponentReadable()
+  public boolean isCollectionSizeReadable()
   {
-    return isReadable(COMPONENT);
+    return isReadable(COLLECTIONSIZE);
   }
   
-  public boolean isComponentModified()
+  public boolean isCollectionSizeModified()
   {
-    return isModified(COMPONENT);
+    return isModified(COLLECTIONSIZE);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeUUIDMdDTO getComponentMd()
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getCollectionSizeMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeUUIDMdDTO) getAttributeDTO(COMPONENT).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(COLLECTIONSIZE).getAttributeMdDTO();
   }
   
   public java.util.Date getCreateDate()
@@ -267,6 +310,80 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(ENTITYDOMAIN).getAttributeMdDTO();
   }
   
+  public java.util.Date getErrorDate()
+  {
+    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(ERRORDATE));
+  }
+  
+  public void setErrorDate(java.util.Date value)
+  {
+    if(value == null)
+    {
+      setValue(ERRORDATE, "");
+    }
+    else
+    {
+      setValue(ERRORDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
+    }
+  }
+  
+  public boolean isErrorDateWritable()
+  {
+    return isWritable(ERRORDATE);
+  }
+  
+  public boolean isErrorDateReadable()
+  {
+    return isReadable(ERRORDATE);
+  }
+  
+  public boolean isErrorDateModified()
+  {
+    return isModified(ERRORDATE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO getErrorDateMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO) getAttributeDTO(ERRORDATE).getAttributeMdDTO();
+  }
+  
+  public String getFailReason()
+  {
+    return getValue(FAILREASON);
+  }
+  
+  public void setFailReason(String value)
+  {
+    if(value == null)
+    {
+      setValue(FAILREASON, "");
+    }
+    else
+    {
+      setValue(FAILREASON, value);
+    }
+  }
+  
+  public boolean isFailReasonWritable()
+  {
+    return isWritable(FAILREASON);
+  }
+  
+  public boolean isFailReasonReadable()
+  {
+    return isReadable(FAILREASON);
+  }
+  
+  public boolean isFailReasonModified()
+  {
+    return isModified(FAILREASON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getFailReasonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(FAILREASON).getAttributeMdDTO();
+  }
+  
   public String getKeyName()
   {
     return getValue(KEYNAME);
@@ -302,43 +419,6 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getKeyNameMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(KEYNAME).getAttributeMdDTO();
-  }
-  
-  public java.util.Date getLastModificationDate()
-  {
-    return com.runwaysdk.constants.MdAttributeDateTimeUtil.getTypeSafeValue(getValue(LASTMODIFICATIONDATE));
-  }
-  
-  public void setLastModificationDate(java.util.Date value)
-  {
-    if(value == null)
-    {
-      setValue(LASTMODIFICATIONDATE, "");
-    }
-    else
-    {
-      setValue(LASTMODIFICATIONDATE, new java.text.SimpleDateFormat(com.runwaysdk.constants.Constants.DATETIME_FORMAT).format(value));
-    }
-  }
-  
-  public boolean isLastModificationDateWritable()
-  {
-    return isWritable(LASTMODIFICATIONDATE);
-  }
-  
-  public boolean isLastModificationDateReadable()
-  {
-    return isReadable(LASTMODIFICATIONDATE);
-  }
-  
-  public boolean isLastModificationDateModified()
-  {
-    return isModified(LASTMODIFICATIONDATE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO getLastModificationDateMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeDateTimeMdDTO) getAttributeDTO(LASTMODIFICATIONDATE).getAttributeMdDTO();
   }
   
   public java.util.Date getLastUpdateDate()
@@ -440,6 +520,43 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(LOCKEDBY).getAttributeMdDTO();
   }
   
+  public String getOdmConfig()
+  {
+    return getValue(ODMCONFIG);
+  }
+  
+  public void setOdmConfig(String value)
+  {
+    if(value == null)
+    {
+      setValue(ODMCONFIG, "");
+    }
+    else
+    {
+      setValue(ODMCONFIG, value);
+    }
+  }
+  
+  public boolean isOdmConfigWritable()
+  {
+    return isWritable(ODMCONFIG);
+  }
+  
+  public boolean isOdmConfigReadable()
+  {
+    return isReadable(ODMCONFIG);
+  }
+  
+  public boolean isOdmConfigModified()
+  {
+    return isModified(ODMCONFIG);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getOdmConfigMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(ODMCONFIG).getAttributeMdDTO();
+  }
+  
   public com.runwaysdk.system.ActorDTO getOwner()
   {
     if(getValue(OWNER) == null || getValue(OWNER).trim().equals(""))
@@ -487,6 +604,80 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getSensorName()
+  {
+    return getValue(SENSORNAME);
+  }
+  
+  public void setSensorName(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORNAME, "");
+    }
+    else
+    {
+      setValue(SENSORNAME, value);
+    }
+  }
+  
+  public boolean isSensorNameWritable()
+  {
+    return isWritable(SENSORNAME);
+  }
+  
+  public boolean isSensorNameReadable()
+  {
+    return isReadable(SENSORNAME);
+  }
+  
+  public boolean isSensorNameModified()
+  {
+    return isModified(SENSORNAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getSensorNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(SENSORNAME).getAttributeMdDTO();
+  }
+  
+  public String getSensorType()
+  {
+    return getValue(SENSORTYPE);
+  }
+  
+  public void setSensorType(String value)
+  {
+    if(value == null)
+    {
+      setValue(SENSORTYPE, "");
+    }
+    else
+    {
+      setValue(SENSORTYPE, value);
+    }
+  }
+  
+  public boolean isSensorTypeWritable()
+  {
+    return isWritable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeReadable()
+  {
+    return isReadable(SENSORTYPE);
+  }
+  
+  public boolean isSensorTypeModified()
+  {
+    return isModified(SENSORTYPE);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getSensorTypeMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(SENSORTYPE).getAttributeMdDTO();
   }
   
   public Long getSeq()
@@ -539,48 +730,85 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(SITEMASTER).getAttributeMdDTO();
   }
   
-  public String getStatus()
+  public String getUavFaaId()
   {
-    return getValue(STATUS);
+    return getValue(UAVFAAID);
   }
   
-  public void setStatus(String value)
+  public void setUavFaaId(String value)
   {
     if(value == null)
     {
-      setValue(STATUS, "");
+      setValue(UAVFAAID, "");
     }
     else
     {
-      setValue(STATUS, value);
+      setValue(UAVFAAID, value);
     }
   }
   
-  public boolean isStatusWritable()
+  public boolean isUavFaaIdWritable()
   {
-    return isWritable(STATUS);
+    return isWritable(UAVFAAID);
   }
   
-  public boolean isStatusReadable()
+  public boolean isUavFaaIdReadable()
   {
-    return isReadable(STATUS);
+    return isReadable(UAVFAAID);
   }
   
-  public boolean isStatusModified()
+  public boolean isUavFaaIdModified()
   {
-    return isModified(STATUS);
+    return isModified(UAVFAAID);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getStatusMd()
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getUavFaaIdMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(STATUS).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(UAVFAAID).getAttributeMdDTO();
   }
   
-  public static gov.geoplatform.uasdm.CollectionStatusDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
+  public String getUavSerialNumber()
+  {
+    return getValue(UAVSERIALNUMBER);
+  }
+  
+  public void setUavSerialNumber(String value)
+  {
+    if(value == null)
+    {
+      setValue(UAVSERIALNUMBER, "");
+    }
+    else
+    {
+      setValue(UAVSERIALNUMBER, value);
+    }
+  }
+  
+  public boolean isUavSerialNumberWritable()
+  {
+    return isWritable(UAVSERIALNUMBER);
+  }
+  
+  public boolean isUavSerialNumberReadable()
+  {
+    return isReadable(UAVSERIALNUMBER);
+  }
+  
+  public boolean isUavSerialNumberModified()
+  {
+    return isModified(UAVSERIALNUMBER);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getUavSerialNumberMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(UAVSERIALNUMBER).getAttributeMdDTO();
+  }
+  
+  public static gov.geoplatform.uasdm.bus.ErrorReportDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)
   {
     com.runwaysdk.business.EntityDTO dto = (com.runwaysdk.business.EntityDTO)clientRequest.get(oid);
     
-    return (gov.geoplatform.uasdm.CollectionStatusDTO) dto;
+    return (gov.geoplatform.uasdm.bus.ErrorReportDTO) dto;
   }
   
   public void apply()
@@ -599,9 +827,9 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     getRequest().delete(this.getOid());
   }
   
-  public static gov.geoplatform.uasdm.CollectionStatusQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
+  public static gov.geoplatform.uasdm.bus.ErrorReportQueryDTO getAllInstances(com.runwaysdk.constants.ClientRequestIF clientRequest, String sortAttribute, Boolean ascending, Integer pageSize, Integer pageNumber)
   {
-    return (gov.geoplatform.uasdm.CollectionStatusQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.CollectionStatusDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
+    return (gov.geoplatform.uasdm.bus.ErrorReportQueryDTO) clientRequest.getAllInstances(gov.geoplatform.uasdm.bus.ErrorReportDTO.CLASS, sortAttribute, ascending, pageSize, pageNumber);
   }
   
   public void lock()
@@ -609,12 +837,12 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     getRequest().lock(this);
   }
   
-  public static gov.geoplatform.uasdm.CollectionStatusDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.ErrorReportDTO lock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.CollectionStatusDTO.CLASS, "lock", _declaredTypes);
-    return (gov.geoplatform.uasdm.CollectionStatusDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.ErrorReportDTO.CLASS, "lock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.ErrorReportDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
   public void unlock()
@@ -622,12 +850,12 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     getRequest().unlock(this);
   }
   
-  public static gov.geoplatform.uasdm.CollectionStatusDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
+  public static gov.geoplatform.uasdm.bus.ErrorReportDTO unlock(com.runwaysdk.constants.ClientRequestIF clientRequest, java.lang.String oid)
   {
     String[] _declaredTypes = new String[]{"java.lang.String"};
     Object[] _parameters = new Object[]{oid};
-    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.CollectionStatusDTO.CLASS, "unlock", _declaredTypes);
-    return (gov.geoplatform.uasdm.CollectionStatusDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
+    com.runwaysdk.business.MethodMetaData _metadata = new com.runwaysdk.business.MethodMetaData(gov.geoplatform.uasdm.bus.ErrorReportDTO.CLASS, "unlock", _declaredTypes);
+    return (gov.geoplatform.uasdm.bus.ErrorReportDTO) clientRequest.invokeMethod(_metadata, null, _parameters);
   }
   
 }

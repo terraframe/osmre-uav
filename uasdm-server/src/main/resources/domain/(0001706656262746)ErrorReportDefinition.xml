@@ -1,0 +1,28 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.ErrorReport">
+        <attributes>
+        	<text name="collectionName"/>
+        	<text name="collectionS3Path"/>
+        	<text name="sensorType"/>
+        	<text name="sensorName"/>
+            <text name="collectionPocName"/>
+            <text name="uavSerialNumber"/>
+            <text name="uavFaaId"/>
+            <long name="collectionSize"/>
+            <text name="odmConfig"/>
+            <text name="failReason"/>
+            <dateTime name="errorDate"/>
+        </attributes>
+      </mdBusiness>
+    </create>
+    <update>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.ErrorReport" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+    </delete>
+  </undoIt>
+</version>
