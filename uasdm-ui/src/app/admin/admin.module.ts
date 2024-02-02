@@ -26,6 +26,7 @@ import { AccountInviteCompleteComponent } from './component/account/account-invi
 import { AccountComponent } from './component/account/account.component';
 import { SystemLogoComponent } from './component/logo/system-logo.component';
 import { SystemLogosComponent } from './component/logo/system-logos.component';
+import { UserImportComponent } from './component/account/user-import.component';
 import { EmailComponent } from './component/email/email.component';
 import { SystemInfoComponent } from './component/system/system-info.component';
 import { SystemConfigurationComponent } from './component/system/system-configuration.component';
@@ -58,14 +59,13 @@ import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 		TreeModule,
 	],
 	declarations: [
-		SystemLogoComponent,
-		SystemLogosComponent,
 		AccountsComponent,
 		AccountInviteComponent,
 		AccountInviteCompleteComponent,
 		AccountComponent,
 		SystemLogoComponent,
 		SystemLogosComponent,
+		UserImportComponent,
 		EmailComponent,
 		SystemInfoComponent,
 		SessionEventComponent,

@@ -15,12 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -31,12 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
@@ -172,6 +177,22 @@ public class UASDMAccountController extends RunwaySpringController
       this.roleIds = roleIds;
     }
   }
+  
+  public static final class UploadUsersBody
+  {
+    @NotNull(message = "file requires a value")
+    private MultipartFile file;
+
+    public MultipartFile getFile()
+    {
+      return file;
+    }
+
+    public void setFile(MultipartFile file)
+    {
+      this.file = file;
+    }
+  }
 
   public UASDMAccountController()
   {
@@ -182,6 +203,12 @@ public class UASDMAccountController extends RunwaySpringController
   public GeoprismUserView get() throws JSONException
   {
     return this.service.getCurrentUser(getSessionId());
+  }
+  
+  @PostMapping(API_PATH + "/uploadUsers")
+  public void uploadUsers(@Valid @ModelAttribute UploadUsersBody body) throws IOException
+  {
+    this.service.uploadUsers(getSessionId(), body.getFile().getInputStream(), body.getFile().getName());
   }
 
   @PostMapping(API_PATH + "/inviteUser")

@@ -16,6 +16,8 @@ import { AccountComponent } from './account.component';
 import { AccountInviteComponent } from './account-invite.component';
 import { Subject } from 'rxjs';
 import { ConfigurationService } from '@core/service/configuration.service';
+import { UserImportComponent } from './user-import.component';
+import { AuthService } from '@shared/service/auth.service';
 
 @Component({
 	selector: 'accounts',
@@ -35,6 +37,8 @@ export class AccountsComponent implements OnInit {
 		{ header: '', type: 'ACTIONS', sortable: false },
 	];
 	refresh: Subject<void>;
+	
+	isAdmin: boolean = false;
 
 	/*
 	 * Reference to the modal current showing
@@ -44,8 +48,9 @@ export class AccountsComponent implements OnInit {
 	requireKeycloakLogin: boolean;
 
 
-	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService) { 
+	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService, private authService: AuthService) { 
 		this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
+		this.isAdmin = authService.isAdmin();
 	}
 
 	ngOnInit(): void {
@@ -144,5 +149,17 @@ export class AccountsComponent implements OnInit {
 			});
 			this.bsModalRef.content.init(account.groups);
 		});
+	}
+	
+	uploadUsers(): void {
+		let bsModalRef = this.modalService.show(UserImportComponent, {
+	      animated: true,
+	      backdrop: true,
+	      ignoreBackdropClick: true,
+	    });
+	
+	    bsModalRef.content.onSuccess.subscribe(data => {
+	      window.location.reload();
+	    });
 	}
 }

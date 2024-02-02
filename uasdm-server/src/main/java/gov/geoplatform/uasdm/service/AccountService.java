@@ -15,12 +15,14 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.runwaysdk.resource.StreamResource;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
@@ -29,12 +31,12 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.UserInfo;
 import gov.geoplatform.uasdm.UserInvite;
+import gov.geoplatform.uasdm.account.CSVUserImporter;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.InvalidPasswordException;
 import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;
-import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.GeoprismActorIF;
 
 @Service
@@ -76,6 +78,12 @@ public class AccountService
     }
 
     return UserInfo.applyUserWithRoles(account, roleIds);
+  }
+  
+  @Request(RequestType.SESSION)
+  public void uploadUsers(String sessionId, InputStream is, String fileName)
+  {
+    new CSVUserImporter(new StreamResource(is, fileName)).doImport();
   }
 
   @Request(RequestType.SESSION)

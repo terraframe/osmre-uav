@@ -1,0 +1,31 @@
+    <div>
+      <form #form="ngForm" class="modal-form" (ngSubmit)="form.valid && onSubmit()">
+        
+        <div *ngIf="message != null" class="alert alert-danger" role="alert">{{message}}</div>
+        
+        <fieldset>
+          <div>     
+                <div class="drop-box-container" ng2FileDrop [ngClass]="{'drop-active': dropActive}" (fileOver)="fileOver($event)" [uploader]="uploader" (click)=fileInput.click()>
+                  <div class="drop-box">
+                    <div class="inner-drop-box">
+                      <i class="fa fa-cloud-upload">
+                        <p class="upload-text">Upload a CSV File</p>
+                      </i>
+                    </div>
+                  </div>
+                  <input type="file" #uploadEl ng2FileSelect #fileInput [uploader]="uploader" id="uploader-input" style="display:none" />
+                </div>
+                
+          </div>
+          
+          <div class="row">             
+            <div class="col-md-12">
+              <div class="btn-holder text-right" style="margin-top: 20px;">
+                <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />              
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+

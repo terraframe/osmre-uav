@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -35,14 +36,13 @@ import net.geoprism.spring.JsonExceptionHandler;
 @ComponentScan(basePackages = { "net.geoprism.registry.controller", "net.geoprism.registry.service", "net.geoprism.registry.service.business", "net.geoprism.rbac", "net.geoprism.registry.spring", "net.geoprism.spring", "gov.geoplatform.uasdm.controller", "gov.geoplatform.uasdm.service", "gov.geoplatform.uasdm.service.business" })
 public class SpringAppConfig extends WebMvcConfigurationSupport
 {
-  // @Bean(name = "multipartResolver")
-  // public CommonsMultipartResolver multipartResolver()
-  // {
-  // CommonsMultipartResolver multipartResolver = new
-  // CommonsMultipartResolver();
-  // multipartResolver.setMaxUploadSize(-1);
-  // return multipartResolver;
-  // }
+  @Bean(name = "multipartResolver")
+  public CommonsMultipartResolver multipartResolver()
+  {
+    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+    multipartResolver.setMaxUploadSize(-1);
+    return multipartResolver;
+  }
 
   // @Bean
   // @Override
