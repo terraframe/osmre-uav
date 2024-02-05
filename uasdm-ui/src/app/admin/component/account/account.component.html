@@ -38,7 +38,7 @@
       <label>
         <localize key="account.email"></localize>
       </label>
-      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email [disabled]="account.user.externalProfile && !account.user.newInstance">
+      <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email>
       <div *ngIf="aemail.errors?.email && account.user.email && account.user.email.length > 0"
         class="inline-error-message">
         <localize key="account.email.validation"></localize>

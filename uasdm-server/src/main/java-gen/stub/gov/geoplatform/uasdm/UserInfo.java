@@ -258,9 +258,13 @@ public class UserInfo extends UserInfoBase
 
     if (user instanceof ExternalProfile)
     {
-      if (user.isNew())
+      if (account.has(GeoprismUser.EMAIL))
       {
         user.setEmail(account.getString(GeoprismUser.EMAIL));
+      }
+      
+      if (user.isNew())
+      {
         user.setUsername(account.getString(GeoprismUser.EMAIL));
       }
     }
