@@ -132,7 +132,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
     
     ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-    query.WHERE(query.getEmail().EQ(email));
+    query.WHERE(query.getEmail().EQi(email));
     OIterator<? extends ExternalProfile> it = query.getIterator();
 
     try
