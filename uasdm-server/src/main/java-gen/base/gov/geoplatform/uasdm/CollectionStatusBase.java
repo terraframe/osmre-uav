@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1202111283)
+@com.runwaysdk.business.ClassSignature(hash = 1244520771)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,26 +11,85 @@ package gov.geoplatform.uasdm;
 public abstract class CollectionStatusBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.CollectionStatus";
-  public static java.lang.String COMPONENT = "component";
-  public static java.lang.String CREATEDATE = "createDate";
-  public static java.lang.String CREATEDBY = "createdBy";
-  public static java.lang.String ENTITYDOMAIN = "entityDomain";
-  public static java.lang.String KEYNAME = "keyName";
-  public static java.lang.String LASTMODIFICATIONDATE = "lastModificationDate";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
-  public static java.lang.String LOCKEDBY = "lockedBy";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String SEQ = "seq";
-  public static java.lang.String SITEMASTER = "siteMaster";
-  public static java.lang.String STATUS = "status";
-  public static java.lang.String TYPE = "type";
-  private static final long serialVersionUID = 1202111283;
+  public final static java.lang.String COLLECTIONNAME = "collectionName";
+  public final static java.lang.String COLLECTIONS3PATH = "collectionS3Path";
+  public final static java.lang.String COMPONENT = "component";
+  public final static java.lang.String CREATEDATE = "createDate";
+  public final static java.lang.String CREATEDBY = "createdBy";
+  public final static java.lang.String ENTITYDOMAIN = "entityDomain";
+  public final static java.lang.String KEYNAME = "keyName";
+  public final static java.lang.String LASTMODIFICATIONDATE = "lastModificationDate";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String SITEMASTER = "siteMaster";
+  public final static java.lang.String STATUS = "status";
+  public final static java.lang.String TYPE = "type";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1244520771;
   
   public CollectionStatusBase()
   {
     super();
+  }
+  
+  public String getCollectionName()
+  {
+    return getValue(COLLECTIONNAME);
+  }
+  
+  public void validateCollectionName()
+  {
+    this.validateAttribute(COLLECTIONNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getCollectionNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.CollectionStatus.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(COLLECTIONNAME);
+  }
+  
+  public void setCollectionName(String value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONNAME, "");
+    }
+    else
+    {
+      setValue(COLLECTIONNAME, value);
+    }
+  }
+  
+  public String getCollectionS3Path()
+  {
+    return getValue(COLLECTIONS3PATH);
+  }
+  
+  public void validateCollectionS3Path()
+  {
+    this.validateAttribute(COLLECTIONS3PATH);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getCollectionS3PathMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.CollectionStatus.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(COLLECTIONS3PATH);
+  }
+  
+  public void setCollectionS3Path(String value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONS3PATH, "");
+    }
+    else
+    {
+      setValue(COLLECTIONS3PATH, value);
+    }
   }
   
   public String getComponent()

@@ -52,6 +52,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import net.geoprism.GeoprismUser;
 import net.geoprism.rbac.RoleConstants;
 
@@ -69,9 +70,25 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   @Override
   public void apply()
   {
+    boolean isNew = this.isNew();
+    boolean isStatusModified = this.isModified(STATUS);
+    
     super.apply();
 
     CollectionStatus.updateStatus(this);
+    
+    boolean isFailed = ODMStatus.FAILED.getLabel().equals(this.getNormalizedStatus());
+    if (isFailed && (isNew || isStatusModified))
+    {
+      UasComponentIF component = this.getComponentInstance();
+      
+      if (component instanceof CollectionIF)
+      {
+        ErrorReport er = new ErrorReport();
+        er.Populate((CollectionIF) component, this);
+        er.apply();
+      }
+    }
   }
   
   @Override

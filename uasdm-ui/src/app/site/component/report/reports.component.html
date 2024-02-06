@@ -1,23 +1,19 @@
-<!--
-
-
-
--->
 <div>
 	<uasdm-header></uasdm-header>
-
-	<div id="app-container" class="container-fluid">
-
-		<h2>Report</h2>
-
-		<div class="row">
-            <input class="btn btn-primary pull-right" style="margin-bottom:10px;margin-right:10px;" type="submit" value="Export CSV" (click)="onExportCSV()">
-        </div>
-
-        <div class="row">
-			<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
-        </div>
-
-
+	
+	<div style="padding-left:10px;">
+		<error-report *ngIf="admin"></error-report>
+	
+		<div id="app-container" class="container-fluid">
+			<h2>Report</h2>
+	
+			<div class="row">
+	            <input class="btn btn-primary pull-right" style="margin-bottom:10px;margin-right:10px;" type="submit" value="Export CSV" (click)="onExportCSV()">
+	        </div>
+	
+	        <div class="row">
+				<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
+	        </div>
+		</div>
 	</div>
 </div>

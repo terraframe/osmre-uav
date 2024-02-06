@@ -9,6 +9,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { ProductModalComponent } from '../modal/product-modal.component';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '@shared/service/auth.service';
 
 
 
@@ -19,6 +20,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ReportsComponent implements OnInit {
     message: string = null;
+    admin: boolean = false;
 
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
@@ -75,7 +77,7 @@ export class ReportsComponent implements OnInit {
         },
     ];
 
-    constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService) {
+    constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService, private authService: AuthService) {
     }
 
     ngOnInit(): void {
@@ -86,6 +88,7 @@ export class ReportsComponent implements OnInit {
             create: false,
             label: 'row'
         }
+        this.admin = this.authService.isAdmin();
     }
 
     onExportCSV(): void {

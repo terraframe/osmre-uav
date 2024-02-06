@@ -178,7 +178,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     return getStatus(componentTasks.getFirst());
   }
 
-  private static String getStatus(WorkflowTask task)
+  public static String getStatus(WorkflowTask task)
   {
     String taskStatus = task.getNormalizedStatus();
 
