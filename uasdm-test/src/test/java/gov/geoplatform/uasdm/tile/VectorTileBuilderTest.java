@@ -11,6 +11,8 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.registry.tile.PublisherUtil;
+import net.geoprism.registry.tile.VectorTileBuilder;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)

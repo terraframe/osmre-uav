@@ -15,8 +15,6 @@
  */
 package gov.geoplatform.uasdm.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +22,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
@@ -37,7 +34,6 @@ import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -59,17 +55,17 @@ import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.registry.LPGTileCache;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
-import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.registry.service.request.LabeledPropertyGraphSynchronizationService;
 
 @Service
-public class LabeledPropertyGraphSynchronizationService
+@Primary
+public class IDMLabeledPropertyGraphSynchronizationService extends LabeledPropertyGraphSynchronizationService
 {
   @Autowired
-  private IDMLabeledPropertyGraphSynchronizationBusinessService synchornizationService;
+  private IDMLabeledPropertyGraphSynchronizationBusinessService synchronizationService;
 
   @Autowired
   private LabeledPropertyGraphTypeVersionBusinessServiceIF      versionService;
@@ -78,133 +74,10 @@ public class LabeledPropertyGraphSynchronizationService
   private GeoObjectTypeSnapshotBusinessServiceIF                typeService;
 
   @Request(RequestType.SESSION)
-  public JsonArray getAll(String sessionId)
-  {
-    return this.synchornizationService.getAll();
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonArray getForOrganization(String sessionId, String orginzationCode)
-  {
-    ServerOrganization organization = ServerOrganization.getByCode(orginzationCode);
-
-    return this.synchornizationService.getForOrganization(organization);
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject apply(String sessionId, JsonObject json)
-  {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.apply(json);
-
-    return synchronization.toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public void remove(String sessionId, String oid)
-  {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
-
-    if (synchronization != null)
-    {
-      this.synchornizationService.delete(synchronization);
-    }
-  }
-
-  @Request(RequestType.SESSION)
-  public void execute(String sessionId, String oid)
-  {
-    QueryFactory factory = new QueryFactory();
-
-    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
-    query.WHERE(query.getSynchronization().EQ(oid));
-
-    JobHistoryQuery q = new JobHistoryQuery(factory);
-    q.WHERE(q.getStatus().containsAny(AllJobStatus.NEW, AllJobStatus.QUEUED, AllJobStatus.RUNNING));
-    q.AND(q.job(query));
-
-    if (q.getCount() > 0)
-    {
-      throw new GenericException("This version has already been queued for publishing");
-    }
-
-    SingleActorDAOIF currentUser = Session.getCurrentSession().getUser();
-
-    LabeledPropertyGraphSynchronizationJob job = new LabeledPropertyGraphSynchronizationJob();
-    job.setRunAsUserId(currentUser.getOid());
-    job.setSynchronizationId(oid);
-    job.apply();
-
-    job.start();
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject getStatus(String sessionId, String oid)
-  {
-    JsonObject response = new JsonObject();
-    response.addProperty("status", "NON_EXISTENT");
-
-    QueryFactory factory = new QueryFactory();
-
-    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
-    query.WHERE(query.getSynchronization().EQ(oid));
-
-    JobHistoryQuery q = new JobHistoryQuery(factory);
-    q.WHERE(q.job(query));
-    q.ORDER_BY_DESC(q.getCreateDate());
-
-    try (OIterator<? extends JobHistory> iterator = q.getIterator())
-    {
-
-      if (iterator.hasNext())
-      {
-        JobHistory job = iterator.next();
-        response.addProperty("status", job.getStatus().get(0).getEnumName());
-
-        String error = job.getErrorJson();
-
-        if (!StringUtils.isBlank(error))
-        {
-          response.add("error", JsonParser.parseString(error));
-        }
-      }
-    }
-
-    return response;
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject get(String sessionId, String oid)
-  {
-    return this.synchornizationService.get(oid).toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject newInstance(String sessionId)
-  {
-    return new LabeledPropertyGraphSynchronization().toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject page(String sessionId, JsonObject criteria)
-  {
-    return this.synchornizationService.page(criteria).toJSON();
-  }
-
-  @Request(RequestType.SESSION)
-  public JsonObject updateRemoteVersion(String sessionId, String oid, String versionId, Integer versionNumber)
-  {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
-
-    this.synchornizationService.updateRemoteVersion(synchronization, versionId, versionNumber);
-
-    return synchronization.toJSON();
-  }
-
-  @Request(RequestType.SESSION)
   public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
     GeoObject parent = null;
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchronizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     LabeledPropertyGraphType type = version.getGraphType();
     TreeStrategyConfiguration config = (TreeStrategyConfiguration) type.toStrategyConfiguration();
@@ -274,7 +147,7 @@ public class LabeledPropertyGraphSynchronizationService
   public JsonObject getObject(String sessionId, String synchronizationId, String oid)
   {
     JsonObject object = new JsonObject();
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(synchronizationId);
+    LabeledPropertyGraphSynchronization synchronization = this.synchronizationService.get(synchronizationId);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
@@ -338,37 +211,9 @@ public class LabeledPropertyGraphSynchronizationService
   }
 
   @Request(RequestType.SESSION)
-  public void createTiles(String sessionId, String oid)
-  {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
-
-    this.synchornizationService.createTiles(synchronization);
-  }
-
-  @Request(RequestType.SESSION)
-  public InputStream getTile(String sessionId, JSONObject object)
-  {
-    try
-    {
-      byte[] bytes = LPGTileCache.getTile(object);
-
-      if (bytes != null)
-      {
-        return new ByteArrayInputStream(bytes);
-      }
-
-      return new ByteArrayInputStream(new byte[] {});
-    }
-    catch (JSONException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-  }
-
-  @Request(RequestType.SESSION)
   public JsonObject select(String sessionId, String oid, String parentType, String parentId, Boolean includeMetadata)
   {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchronizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot snapshot = this.versionService.getSnapshot(version, parentType);
 
@@ -452,7 +297,7 @@ public class LabeledPropertyGraphSynchronizationService
 
   private JsonArray children(String oid, String parentType, String parentId)
   {
-    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
+    LabeledPropertyGraphSynchronization synchronization = this.synchronizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
 
     return this.children(version, parentType, parentId);
@@ -522,4 +367,65 @@ public class LabeledPropertyGraphSynchronizationService
     return array;
   }
 
+  @Request(RequestType.SESSION)
+  public void execute(String sessionId, String oid)
+  {
+    QueryFactory factory = new QueryFactory();
+
+    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
+    query.WHERE(query.getSynchronization().EQ(oid));
+
+    JobHistoryQuery q = new JobHistoryQuery(factory);
+    q.WHERE(q.getStatus().containsAny(AllJobStatus.NEW, AllJobStatus.QUEUED, AllJobStatus.RUNNING));
+    q.AND(q.job(query));
+
+    if (q.getCount() > 0)
+    {
+      throw new GenericException("This version has already been queued for publishing");
+    }
+
+    SingleActorDAOIF currentUser = Session.getCurrentSession().getUser();
+
+    LabeledPropertyGraphSynchronizationJob job = new LabeledPropertyGraphSynchronizationJob();
+    job.setRunAsUserId(currentUser.getOid());
+    job.setSynchronizationId(oid);
+    job.apply();
+
+    job.start();
+  }
+
+  @Request(RequestType.SESSION)
+  public JsonObject getStatus(String sessionId, String oid)
+  {
+    JsonObject response = new JsonObject();
+    response.addProperty("status", "NON_EXISTENT");
+
+    QueryFactory factory = new QueryFactory();
+
+    LabeledPropertyGraphSynchronizationJobQuery query = new LabeledPropertyGraphSynchronizationJobQuery(factory);
+    query.WHERE(query.getSynchronization().EQ(oid));
+
+    JobHistoryQuery q = new JobHistoryQuery(factory);
+    q.WHERE(q.job(query));
+    q.ORDER_BY_DESC(q.getCreateDate());
+
+    try (OIterator<? extends JobHistory> iterator = q.getIterator())
+    {
+
+      if (iterator.hasNext())
+      {
+        JobHistory job = iterator.next();
+        response.addProperty("status", job.getStatus().get(0).getEnumName());
+
+        String error = job.getErrorJson();
+
+        if (!StringUtils.isBlank(error))
+        {
+          response.add("error", JsonParser.parseString(error));
+        }
+      }
+    }
+
+    return response;
+  }
 }

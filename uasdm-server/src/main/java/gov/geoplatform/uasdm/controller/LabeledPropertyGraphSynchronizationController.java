@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -38,7 +38,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import gov.geoplatform.uasdm.service.LabeledPropertyGraphSynchronizationService;
+import gov.geoplatform.uasdm.service.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.spring.JsonObjectDeserializer;
 
@@ -108,7 +108,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @Autowired
-  private LabeledPropertyGraphSynchronizationService service;
+  private IDMLabeledPropertyGraphSynchronizationService service;
 
   public LabeledPropertyGraphSynchronizationController()
   {
@@ -163,23 +163,20 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @GetMapping(API_PATH + "/tile")
-  public ResponseEntity<InputStreamResource> tile(
-      @RequestParam Integer x, 
-      @RequestParam Integer y, 
-      @RequestParam Integer z, 
-      @NotEmpty @RequestParam String config) throws JSONException
+  public ResponseEntity<InputStreamResource> tile(@RequestParam Integer x, @RequestParam Integer y, @RequestParam Integer z, @NotEmpty @RequestParam String config) throws JSONException
   {
     JSONObject object = new JSONObject(config);
     object.put("x", x);
     object.put("y", y);
     object.put("z", z);
-    
+
     HttpHeaders headers = new HttpHeaders();
     headers.set(HttpHeaders.CONTENT_TYPE, "application/x-protobuf");
 
     InputStreamResource isr = new InputStreamResource(this.service.getTile(this.getSessionId(), object));
-    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);    }
-  
+    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);
+  }
+
   @GetMapping(API_PATH + "/get-object")
   public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
   {
@@ -211,12 +208,12 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
-  
+
   @PostMapping(API_PATH + "/create-tiles")
   public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
   {
     this.service.createTiles(getSessionId(), body.getOid());
-    
+
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
@@ -227,7 +224,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
-  
+
   @PostMapping(API_PATH + "/update-remote-version")
   public ResponseEntity<String> updateRemoteVersion(@Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
   {
