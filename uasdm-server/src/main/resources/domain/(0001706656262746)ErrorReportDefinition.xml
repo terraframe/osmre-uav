@@ -13,12 +13,29 @@
             <long name="collectionSize"/>
             <text name="odmConfig"/>
             <text name="failReason"/>
+            <uuid name="collectionId"/>
             <dateTime name="errorDate"/>
         </attributes>
       </mdBusiness>
     </create>
     <update>
     </update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.ErrorReport">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.bus.ErrorReport">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
   </doIt>
   <undoIt>
     <delete>

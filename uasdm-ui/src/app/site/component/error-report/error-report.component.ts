@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'analytics',
-	templateUrl: './analytics.component.html'
+	selector: 'error-report',
+	templateUrl: './error-report.component.html'
 })
-export class AnalyticsComponent {
+export class ErrorReportComponent {
 
     date: any;
 

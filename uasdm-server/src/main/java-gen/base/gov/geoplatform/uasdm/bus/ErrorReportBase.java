@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 441583322)
+@com.runwaysdk.business.ClassSignature(hash = 1621968157)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,6 +11,7 @@ package gov.geoplatform.uasdm.bus;
 public abstract class ErrorReportBase extends com.runwaysdk.business.Business
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.ErrorReport";
+  public final static java.lang.String COLLECTIONID = "collectionId";
   public final static java.lang.String COLLECTIONNAME = "collectionName";
   public final static java.lang.String COLLECTIONPOCNAME = "collectionPocName";
   public final static java.lang.String COLLECTIONS3PATH = "collectionS3Path";
@@ -35,11 +36,39 @@ public abstract class ErrorReportBase extends com.runwaysdk.business.Business
   public final static java.lang.String UAVFAAID = "uavFaaId";
   public final static java.lang.String UAVSERIALNUMBER = "uavSerialNumber";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 441583322;
+  private static final long serialVersionUID = 1621968157;
   
   public ErrorReportBase()
   {
     super();
+  }
+  
+  public String getCollectionId()
+  {
+    return getValue(COLLECTIONID);
+  }
+  
+  public void validateCollectionId()
+  {
+    this.validateAttribute(COLLECTIONID);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF getCollectionIdMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.ErrorReport.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(COLLECTIONID);
+  }
+  
+  public void setCollectionId(String value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONID, "");
+    }
+    else
+    {
+      setValue(COLLECTIONID, value);
+    }
   }
   
   public String getCollectionName()

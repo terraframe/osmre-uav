@@ -15,8 +15,6 @@
  */
 package com.runwaysdk.build.domain;
 
-import java.util.List;
-
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.query.OIterator;
@@ -28,9 +26,6 @@ import gov.geoplatform.uasdm.bus.ErrorReport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 
 public class ErrorReportPatch
@@ -52,48 +47,7 @@ public class ErrorReportPatch
       if (task != null)
       {
         ErrorReport er = new ErrorReport();
-        
-        Sensor sensor = col.getSensor();
-        if (sensor != null)
-        {
-          er.setSensorName(sensor.getName());
-          er.setSensorType(sensor.getSensorType().getName());
-          count++;
-        }
-        
-        er.setCollectionName(col.getName());
-        er.setCollectionS3Path(col.getS3location());
-        
-        er.setCollectionSize((long) col.getDocuments().size());
-        
-        List<ODMRun> odmRuns = ODMRun.getByComponentOrdered(col.getOid());
-        
-        if (odmRuns.size() > 0)
-        {
-          ODMRun odmRun = odmRuns.get(odmRuns.size()-1);
-          
-          er.setOdmConfig(odmRun.getConfig());
-        }
-        
-        er.setFailReason(task.getMessage());
-        
-        er.setErrorDate(task.getLastUpdateDate());
-        
-        /*
-         * <text name="flightOperator"/>
-            <text name="uavSerialNumber"/>
-            <text name="uavFaaId"/>
-         */
-        er.setCollectionPocName(col.getPocName());
-        
-        UAV uav = col.getUav();
-        
-        if (uav != null)
-        {
-          er.setUavFaaId(uav.getFaaNumber());
-          er.setUavSerialNumber(uav.getSerialNumber());
-        }
-        
+        er.Populate(col, task);
         er.apply();
         
         count++;

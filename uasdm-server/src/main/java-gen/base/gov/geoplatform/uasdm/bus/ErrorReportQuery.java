@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1380563843)
+@com.runwaysdk.business.ClassSignature(hash = -620312698)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,23 @@ public  class ErrorReportQuery extends com.runwaysdk.query.GeneratedBusinessQuer
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.ErrorReport.CLASS;
+  }
+  public com.runwaysdk.query.SelectableUUID getCollectionId()
+  {
+    return getCollectionId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getCollectionName()
   {
@@ -522,6 +539,9 @@ public  class ErrorReportQuery extends com.runwaysdk.query.GeneratedBusinessQuer
   public interface ErrorReportQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
+    public com.runwaysdk.query.SelectableUUID getCollectionId();
+    public com.runwaysdk.query.SelectableUUID getCollectionId(String alias);
+    public com.runwaysdk.query.SelectableUUID getCollectionId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getCollectionName();
     public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
     public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
@@ -626,6 +646,23 @@ public  class ErrorReportQuery extends com.runwaysdk.query.GeneratedBusinessQuer
       return this.NE(errorReport.getOid());
     }
 
+  public com.runwaysdk.query.SelectableUUID getCollectionId()
+  {
+    return getCollectionId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getCollectionName()
   {
     return getCollectionName(null);
@@ -1057,6 +1094,9 @@ public  class ErrorReportQuery extends com.runwaysdk.query.GeneratedBusinessQuer
   public interface ErrorReportQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
+    public com.runwaysdk.query.SelectableUUID getCollectionId();
+    public com.runwaysdk.query.SelectableUUID getCollectionId(String alias);
+    public com.runwaysdk.query.SelectableUUID getCollectionId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getCollectionName();
     public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
     public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
@@ -1209,6 +1249,23 @@ public  class ErrorReportQuery extends com.runwaysdk.query.GeneratedBusinessQuer
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableUUID getCollectionId()
+  {
+    return getCollectionId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getCollectionId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.ErrorReport.COLLECTIONID, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getCollectionName()
   {

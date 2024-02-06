@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1257854298)
+@com.runwaysdk.business.ClassSignature(hash = 162329501)
 public abstract class ErrorReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.ErrorReport";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1257854298;
+  private static final long serialVersionUID = 162329501;
   
   protected ErrorReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -28,6 +28,7 @@ public abstract class ErrorReportDTOBase extends com.runwaysdk.business.Business
     return CLASS;
   }
   
+  public static java.lang.String COLLECTIONID = "collectionId";
   public static java.lang.String COLLECTIONNAME = "collectionName";
   public static java.lang.String COLLECTIONPOCNAME = "collectionPocName";
   public static java.lang.String COLLECTIONS3PATH = "collectionS3Path";
@@ -51,6 +52,43 @@ public abstract class ErrorReportDTOBase extends com.runwaysdk.business.Business
   public static java.lang.String TYPE = "type";
   public static java.lang.String UAVFAAID = "uavFaaId";
   public static java.lang.String UAVSERIALNUMBER = "uavSerialNumber";
+  public String getCollectionId()
+  {
+    return getValue(COLLECTIONID);
+  }
+  
+  public void setCollectionId(String value)
+  {
+    if(value == null)
+    {
+      setValue(COLLECTIONID, "");
+    }
+    else
+    {
+      setValue(COLLECTIONID, value);
+    }
+  }
+  
+  public boolean isCollectionIdWritable()
+  {
+    return isWritable(COLLECTIONID);
+  }
+  
+  public boolean isCollectionIdReadable()
+  {
+    return isReadable(COLLECTIONID);
+  }
+  
+  public boolean isCollectionIdModified()
+  {
+    return isModified(COLLECTIONID);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeUUIDMdDTO getCollectionIdMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeUUIDMdDTO) getAttributeDTO(COLLECTIONID).getAttributeMdDTO();
+  }
+  
   public String getCollectionName()
   {
     return getValue(COLLECTIONNAME);
