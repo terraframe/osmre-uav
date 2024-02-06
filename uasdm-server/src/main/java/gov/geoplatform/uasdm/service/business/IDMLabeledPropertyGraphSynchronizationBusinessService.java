@@ -1,22 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service.business;
 
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +27,19 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.SelectableReference;
+import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
 import gov.geoplatform.uasdm.graph.Site;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.GeoObjectTypeSnapshotQuery;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeQuery;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.LPGTileCache;
 import net.geoprism.registry.graph.GraphOrganization;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessService;
@@ -44,8 +50,10 @@ import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizatio
 public class IDMLabeledPropertyGraphSynchronizationBusinessService extends LabeledPropertyGraphSynchronizationBusinessService implements LabeledPropertyGraphSynchronizationBusinessServiceIF
 {
   @Override
-  public void executeNoAuth(LabeledPropertyGraphSynchronization synchronization)
+  public void executeNoAuth(final LabeledPropertyGraphSynchronization synchronization)
   {
+    LPGTileCache.deleteTiles(synchronization);
+
     super.executeNoAuth(synchronization);
 
     List<Site> sites = Site.getAll();
@@ -54,6 +62,29 @@ public class IDMLabeledPropertyGraphSynchronizationBusinessService extends Label
     {
       site.assignHierarchyParents(synchronization);
     }
+
+    // Pre-populate tiles
+    Thread t = new Thread(new Runnable()
+    {
+      @Override
+      @Request
+      public void run()
+      {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+
+        try
+        {
+          Thread.sleep(5000L);
+        }
+        catch (InterruptedException e)
+        {
+        }
+
+        createTiles(synchronization);
+      }
+    }, "Tile-Populator");
+    t.setDaemon(true);
+    t.start();
   }
 
   @Override
@@ -68,7 +99,10 @@ public class IDMLabeledPropertyGraphSynchronizationBusinessService extends Label
       it.getAll().forEach(job -> job.delete());
     }
 
+    LPGTileCache.deleteTiles(synchronization);
+
     super.delete(synchronization);
+
   }
 
   public JsonArray getForOrganization(ServerOrganization organization)
@@ -102,5 +136,47 @@ public class IDMLabeledPropertyGraphSynchronizationBusinessService extends Label
 
     return array;
 
+  }
+
+  public void createTiles(LabeledPropertyGraphSynchronization synchronization)
+  {
+    final LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+
+    GeoObjectTypeSnapshotQuery query = new GeoObjectTypeSnapshotQuery(new QueryFactory());
+    query.WHERE(query.getVersion().EQ(version));
+
+    try (OIterator<? extends GeoObjectTypeSnapshot> it = query.getIterator())
+    {
+      while (it.hasNext())
+      {
+        GeoObjectTypeSnapshot snapshot = it.next();
+
+        if (!snapshot.getIsAbstract())
+        {
+          for (int z = 0; z < 4; z++)
+          {
+            int tiles = (int) Math.pow(2, z);
+
+            for (int x = 0; x < tiles; x++)
+            {
+
+              for (int y = 0; y < tiles; y++)
+              {
+                JSONObject config = new JSONObject();
+                config.put("oid", synchronization.getOid());
+                config.put("typeCode", snapshot.getCode());
+                config.put("x", x);
+                config.put("y", y);
+                config.put("z", z);
+
+                System.out.println("Creating tile: " + synchronization.getOid() + ", " + snapshot.getCode() + ", " + x + ", " + y + ", " + z);
+
+                LPGTileCache.getTile(config);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

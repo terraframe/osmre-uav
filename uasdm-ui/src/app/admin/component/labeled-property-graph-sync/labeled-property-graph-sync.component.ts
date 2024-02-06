@@ -196,18 +196,22 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
         this.message = null;
 
         this.service.execute(this.sync.oid).then(data => {
-            // const bsModalRef = this.modalService.show(NotificationModalComponent, {
-            //     animated: true,
-            //     backdrop: true,
-            //     ignoreBackdropClick: true,
-            // });
-            // bsModalRef.content.messageTitle = "";
-            // bsModalRef.content.message = "Finished synchronizing with the remote server."
-            // bsModalRef.content.submitText = "OK";
+            this.handleJobUpdate({ oid: this.sync.oid });
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });
     }
+
+    handleCreateTiles(): void {
+        this.message = null;
+
+        this.service.createTiles(this.sync.oid).then(data => {
+            this.handleJobUpdate({ oid: this.sync.oid });
+        }).catch((err: HttpErrorResponse) => {
+            this.error(err);
+        });
+    }
+
 
     handleOnCheckVersion(): void {
         this.service.getVersions(this.sync.url, this.sync.remoteEntry).then((v: LabeledPropertyGraphTypeVersion[]) => {

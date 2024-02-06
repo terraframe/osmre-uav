@@ -382,7 +382,8 @@ export class ProductDetail extends Product {
 
 export enum SELECTION_TYPE {
 	SITE = 0,
-	LOCATION = 1
+	LOCATION = 1,
+	ROOT = 2
 }
 
 export class ViewerSelection {

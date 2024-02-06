@@ -128,6 +128,23 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
+    createTiles(oid: string): Promise<void> {
+
+        let headers = new HttpHeaders({
+            'Content-Type': 'application/json'
+        });
+
+        this.eventService.start();
+
+        return this.http
+            .post<void>(environment.apiUrl + '/api/labeled-property-graph-synchronization/create-tiles', JSON.stringify({ oid: oid }), { headers: headers })
+            .pipe(finalize(() => {
+                this.eventService.complete();
+            }))
+            .toPromise();
+    }
+
+
     updateRemoteVersion(oid: string, versionId: string, versionNumber: number): Promise<LPGSync> {
 
         let headers = new HttpHeaders({
@@ -207,7 +224,7 @@ export class LPGSyncService implements GenericTableService {
             .toPromise();
     }
 
-    roots(oid: string): Promise<{ roots: any[], metadata: any[] }> {
+    roots(oid: string): Promise<{ roots: any[], metadata: any[], parent: string }> {
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
         params = params.set('includeRoot', false);
@@ -215,16 +232,17 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<{ roots: any[], metadata: any[] }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/roots', { params: params })
+            .get<{ roots: any[], metadata: any[], parent: string }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/roots', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
             .toPromise();
     }
 
-    select(oid: string, parentType: string, parentId: string, includeMetadata: boolean): Promise<{
+    select(oid: string, parentType: string, parentId: string, includeMetadata: boolean,): Promise<{
         children: any[],
-        metadata?: any
+        metadata?: any,
+        envelope?: any
     }> {
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
@@ -237,7 +255,8 @@ export class LPGSyncService implements GenericTableService {
         return this.http
             .get<{
                 children: any[],
-                metadata?: any
+                metadata?: any,
+                envelope?: any
             }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/select', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();

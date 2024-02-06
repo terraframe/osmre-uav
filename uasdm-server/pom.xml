@@ -327,6 +327,11 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.7.30</version>
     </dependency>
+    <dependency>
+      <groupId>com.wdtinc</groupId>
+      <artifactId>mapbox-vector-tile</artifactId>
+      <version>3.1.2-TF</version>
+    </dependency>    
   </dependencies>
 
   <!-- These profiles allow for Maven execution of Runway-SDK's Java Tools, 

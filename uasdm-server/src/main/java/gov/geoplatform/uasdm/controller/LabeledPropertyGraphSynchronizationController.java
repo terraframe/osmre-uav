@@ -20,7 +20,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -159,6 +162,24 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
+  @GetMapping(API_PATH + "/tile")
+  public ResponseEntity<InputStreamResource> tile(
+      @RequestParam Integer x, 
+      @RequestParam Integer y, 
+      @RequestParam Integer z, 
+      @NotEmpty @RequestParam String config) throws JSONException
+  {
+    JSONObject object = new JSONObject(config);
+    object.put("x", x);
+    object.put("y", y);
+    object.put("z", z);
+    
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-protobuf");
+
+    InputStreamResource isr = new InputStreamResource(this.service.getTile(this.getSessionId(), object));
+    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);    }
+  
   @GetMapping(API_PATH + "/get-object")
   public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
   {
@@ -184,11 +205,19 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @PostMapping(API_PATH + "/execute")
-  public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body) throws JSONException
+  public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body)
   {
     this.service.execute(this.getSessionId(), body.getOid());
 
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+  }
+  
+  @PostMapping(API_PATH + "/create-tiles")
+  public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
+  {
+    this.service.createTiles(getSessionId(), body.getOid());
+    
+    return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
   @GetMapping(API_PATH + "/get-status")
@@ -198,7 +227,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
-
+  
   @PostMapping(API_PATH + "/update-remote-version")
   public ResponseEntity<String> updateRemoteVersion(@Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
   {

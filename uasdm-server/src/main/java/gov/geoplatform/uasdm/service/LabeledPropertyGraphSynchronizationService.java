@@ -1,20 +1,22 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +37,7 @@ import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -54,6 +59,7 @@ import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.LPGTileCache;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
@@ -197,6 +203,7 @@ public class LabeledPropertyGraphSynchronizationService
   @Request(RequestType.SESSION)
   public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
+    GeoObject parent = null;
     LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     LabeledPropertyGraphType type = version.getGraphType();
@@ -210,24 +217,40 @@ public class LabeledPropertyGraphSynchronizationService
     JsonArray array = new JsonArray();
 
     StringBuffer sql = new StringBuffer();
-    sql.append("SELECT FROM " + mdVertex.getDbClassName());
+    sql.append("SELECT");
+    sql.append(" @rid,");
+    sql.append(" @version,");
+    sql.append(" @class,");
+    sql.append(" uuid,");
+    sql.append(" code,");
+    sql.append(" oid,");
+    sql.append(" lastUpdateDate,");
+    sql.append(" displayLabel,");
+    sql.append(" invalid,");
+    sql.append(" exists,");
+    sql.append(" createDate,");
+    sql.append(" seq");
+    sql.append(" FROM " + mdVertex.getDbClassName());
     sql.append(" WHERE code = :code");
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
     query.setParameter("code", code);
 
-    query.getResults().forEach(result -> {
-      GeoObject geoObject = this.typeService.toGeoObject(snapshot, result);
+    List<VertexObject> results = query.getResults();
+
+    for (VertexObject result : results)
+    {
+      parent = this.typeService.toGeoObject(snapshot, result);
 
       if (includeRoot)
       {
-        array.add(geoObject.toJSON());
+        array.add(parent.toJSON());
       }
       else
       {
-        array.addAll(this.children(oid, geoObject.getType().getCode(), geoObject.getUid()));
+        array.addAll(this.children(oid, parent.getType().getCode(), parent.getUid()));
       }
-    });
+    }
 
     JsonArray metadata = new JsonArray();
 
@@ -238,6 +261,11 @@ public class LabeledPropertyGraphSynchronizationService
     JsonObject response = new JsonObject();
     response.add("roots", array);
     response.add("metadata", metadata);
+
+    if (parent != null)
+    {
+      response.addProperty("parent", parent.getUid());
+    }
 
     return response;
   }
@@ -267,6 +295,7 @@ public class LabeledPropertyGraphSynchronizationService
     GeoObjectTypeSnapshot childType = this.typeService.get(version, childVertex);
 
     GeoObject geoObject = this.typeService.toGeoObject(childType, result);
+    geoObject.setGeometry(null);
 
     object.add("object", geoObject.toJSON());
     object.add("parents", getParents(version, mdEdge, result));
@@ -309,6 +338,34 @@ public class LabeledPropertyGraphSynchronizationService
   }
 
   @Request(RequestType.SESSION)
+  public void createTiles(String sessionId, String oid)
+  {
+    LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
+
+    this.synchornizationService.createTiles(synchronization);
+  }
+
+  @Request(RequestType.SESSION)
+  public InputStream getTile(String sessionId, JSONObject object)
+  {
+    try
+    {
+      byte[] bytes = LPGTileCache.getTile(object);
+
+      if (bytes != null)
+      {
+        return new ByteArrayInputStream(bytes);
+      }
+
+      return new ByteArrayInputStream(new byte[] {});
+    }
+    catch (JSONException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Request(RequestType.SESSION)
   public JsonObject select(String sessionId, String oid, String parentType, String parentId, Boolean includeMetadata)
   {
     LabeledPropertyGraphSynchronization synchronization = this.synchornizationService.get(oid);
@@ -321,6 +378,13 @@ public class LabeledPropertyGraphSynchronizationService
 
     JsonObject object = new JsonObject();
     object.add("children", children);
+
+    String envelope = this.getEnvelope(snapshot, parentId);
+
+    if (!StringUtils.isBlank(envelope))
+    {
+      object.add("envelope", JsonParser.parseString(envelope));
+    }
 
     if (includeMetadata)
     {
@@ -342,13 +406,48 @@ public class LabeledPropertyGraphSynchronizationService
     MdVertex mdVertex = snapshot.getGraphMdVertex();
 
     StringBuffer sql = new StringBuffer();
-    sql.append("SELECT FROM " + mdVertex.getDbClassName());
+    sql.append("SELECT");
+    sql.append(" @rid,");
+    sql.append(" @version,");
+    sql.append(" @class,");
+    sql.append(" uuid,");
+    sql.append(" code,");
+    sql.append(" oid,");
+    sql.append(" lastUpdateDate,");
+    sql.append(" displayLabel,");
+    sql.append(" invalid,");
+    sql.append(" exists,");
+    sql.append(" createDate,");
+    sql.append(" seq");
+    sql.append(" FROM " + mdVertex.getDbClassName());
     sql.append(" WHERE uuid = :uuid");
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
     query.setParameter("uuid", uid);
 
     return query.getSingleResult();
+  }
+
+  private String getEnvelope(GeoObjectTypeSnapshot snapshot, String uid)
+  {
+    MdVertex mdVertex = snapshot.getGraphMdVertex();
+
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT ST_AsGeoJSON(ST_Envelope(geometry)) AS envelope");
+    sql.append(" FROM " + mdVertex.getDbClassName());
+    sql.append(" WHERE uuid = :uuid");
+
+    GraphQuery<String> query = new GraphQuery<String>(sql.toString());
+    query.setParameter("uuid", uid);
+
+    String result = query.getSingleResult();
+
+    if (result != null)
+    {
+      return result;
+    }
+
+    return null;
   }
 
   private JsonArray children(String oid, String parentType, String parentId)
@@ -373,7 +472,31 @@ public class LabeledPropertyGraphSynchronizationService
     HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
-    List<VertexObject> children = parent.getChildren(mdEdge, VertexObject.class);
+    // List<VertexObject> children = parent.getChildren(mdEdge,
+    // VertexObject.class);
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT");
+    sql.append(" @rid,");
+    sql.append(" @version,");
+    sql.append(" @class,");
+    sql.append(" uuid,");
+    sql.append(" code,");
+    sql.append(" oid,");
+    sql.append(" lastUpdateDate,");
+    sql.append(" displayLabel,");
+    sql.append(" invalid,");
+    sql.append(" exists,");
+    sql.append(" createDate,");
+    sql.append(" seq");
+    sql.append(" FROM (");
+    sql.append("   SELECT EXPAND(out('" + mdEdge.getDBClassName() + "')) FROM :rid");
+    sql.append(" )");
+
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
+    query.setParameter("rid", parent.getRID());
+
+    List<VertexObject> children = query.getResults();
+
     HashMap<String, GeoObjectType> cache = new HashMap<String, GeoObjectType>();
 
     children.stream().map(child -> {
@@ -398,4 +521,5 @@ public class LabeledPropertyGraphSynchronizationService
 
     return array;
   }
+
 }
