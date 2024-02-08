@@ -112,18 +112,16 @@ public class UserInfo extends UserInfoBase
     {
       ( (ExternalProfile) user ).setRemoteId(user.getUsername());
       
-      if (user.isNew())
+      ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
+      query.WHERE(query.getEmail().EQi(user.getEmail()));
+      query.WHERE(query.getOid().NE(user.getOid()));
+      if (query.getCount() > 0)
       {
-        ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-        query.WHERE(query.getEmail().EQi(user.getEmail()));
-        if (query.getCount() > 0)
-        {
-          List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
-          attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
-          List<String> valueList = new ArrayList<String>();
-          valueList.add(user.getEmail());
-          throw new DuplicateDataException("A user with the email [" + user.getEmail() + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
-        }
+        List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
+        attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
+        List<String> valueList = new ArrayList<String>();
+        valueList.add(user.getEmail());
+        throw new DuplicateDataException("A user with the email [" + user.getEmail() + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
       }
     }
 
