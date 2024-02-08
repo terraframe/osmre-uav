@@ -17,12 +17,18 @@ package gov.geoplatform.uasdm.account;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.opencsv.CSVReader;
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.dataaccess.DuplicateDataException;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.metadata.MdAttributeDAO;
+import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationResource;
@@ -31,6 +37,7 @@ import com.runwaysdk.system.Roles;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.UserInfo;
+import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.registry.Organization;
@@ -109,12 +116,20 @@ public class CSVUserImporter
           String email = line[iEmail];
           
           ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
-          query.WHERE(query.getEmail().EQ(email));
-          if (query.getCount() > 0) { throw new RuntimeException("A user with the email [" + email + "] already exists. This importer does not support updates at this time."); }
+          query.WHERE(query.getEmail().EQi(email));
+          if (query.getCount() > 0)
+          {
+            List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
+            attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
+            List<String> valueList = new ArrayList<String>();
+            valueList.add(email);
+            throw new DuplicateDataException("A user with the email [" + email + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
+          }
           
           ExternalProfile ep = new ExternalProfile();
           ep.setRemoteId(email);
           ep.setEmail(email);
+          ep.setUsername(email);
           
           if (iFirstName != -1) { ep.setFirstName(line[iFirstName]); }
           if (iLastName != -1) { ep.setLastName(line[iLastName]); }

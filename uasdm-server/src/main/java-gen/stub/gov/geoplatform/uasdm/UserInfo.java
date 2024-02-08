@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
+import com.runwaysdk.dataaccess.DuplicateDataException;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
+import com.runwaysdk.dataaccess.metadata.MdAttributeDAO;
+import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -35,6 +40,7 @@ import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import net.geoprism.GeoprismUser;
 import net.geoprism.account.ExternalProfile;
+import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
@@ -105,6 +111,20 @@ public class UserInfo extends UserInfoBase
     if (user instanceof ExternalProfile)
     {
       ( (ExternalProfile) user ).setRemoteId(user.getUsername());
+      
+      if (user.isNew())
+      {
+        ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
+        query.WHERE(query.getEmail().EQi(user.getEmail()));
+        if (query.getCount() > 0)
+        {
+          List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
+          attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
+          List<String> valueList = new ArrayList<String>();
+          valueList.add(user.getEmail());
+          throw new DuplicateDataException("A user with the email [" + user.getEmail() + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
+        }
+      }
     }
 
     if (roleIds != null)
