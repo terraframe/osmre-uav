@@ -2,6 +2,21 @@
 # Release Notes
 
 
+## [1.0.1](https://github.com/terraframe/osmre-uav/releases/tag/1.0.1) (2024-02-08)
+
+### Features
+
+ - **report** system error report for collection processing   ([48844](https://github.com/terraframe/osmre-uav/commit/48844e379e042610c03e29df3a638f28ddde8efb))
+ - **account** ability to import users into the system using a csv file   ([42bd1](https://github.com/terraframe/osmre-uav/commit/42bd1f553c126f51426fd54841008bb8b04d9557))
+
+### Bug Fixes
+
+   - **account** email is not case sensitive and a uniqueness constraint for users  ([14c16](https://github.com/terraframe/osmre-uav/commit/14c1655b8e3d0a8c6edc06a51bbbf645e3efd134))
+   - **keycloak** allow admins to edit emails of existing users   ([7e827](https://github.com/terraframe/osmre-uav/commit/7e827f6a73b8e51a783eff929b084ff900310600))
+   - **keycloak** ignore case when matching email   ([d0df9](https://github.com/terraframe/osmre-uav/commit/d0df97c5c545329b35fba5830501ffafac5a35d2))
+
+
+
 
 
 ## [0.20.1](https://github.com/terraframe/osmre-uav/releases/tag/0.20.1) (2024-01-22)
