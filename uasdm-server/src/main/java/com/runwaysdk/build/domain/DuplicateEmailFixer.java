@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +54,8 @@ import net.geoprism.account.ExternalProfileQuery;
 
 public class DuplicateEmailFixer
 {
+  private static Random rand = new Random();
+  
   public static void main(String[] args)
   {
     mainInReq();
@@ -145,12 +148,28 @@ public class DuplicateEmailFixer
     System.out.println("Migrated " + migrated + " users");
   }
   
-  @Transaction
   private static void migrateUser(String duplicateEmail, String authoritativeEmail)
   {
     ExternalProfile u1 = getUserByEmail(authoritativeEmail);
     ExternalProfile u2 = getUserByEmail(duplicateEmail);
     
+    try
+    {
+      migrateUser(u1, u2);
+    }
+    catch(Throwable t)
+    {
+      t.printStackTrace();
+      
+      u2.appLock();
+      u2.setEmail(u2.getEmail() + ((Integer)(rand.nextInt(900)+10)).toString());
+      u2.apply();
+    }
+  }
+  
+  @Transaction
+  private static void migrateUser(ExternalProfile u1, ExternalProfile u2)
+  {
     migrateAllReferences(BusinessDAO.get(u2.getOid()), u1.getOid());
     
     u2.delete();
