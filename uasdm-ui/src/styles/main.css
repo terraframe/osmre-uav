@@ -2303,6 +2303,11 @@ button.btn:active,
     box-shadow: none;
 }
 
+.btn-info, 
+.btn.btn-info {    
+    margin-left: 5px;
+}
+
 /* Primary Buttons */
 input[type=button].btn.btn-primary, 
 input[type=submit].btn.btn-primary,

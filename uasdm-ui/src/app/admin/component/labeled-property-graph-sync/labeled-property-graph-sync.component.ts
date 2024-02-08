@@ -205,11 +205,13 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
     handleCreateTiles(): void {
         this.message = null;
 
-        this.service.createTiles(this.sync.oid).then(data => {
-            this.handleJobUpdate({ oid: this.sync.oid });
-        }).catch((err: HttpErrorResponse) => {
-            this.error(err);
-        });
+        if (this.sync.version != null) {
+            this.service.createTiles(this.sync.version).then(data => {
+                this.handleJobUpdate({ oid: this.sync.oid });
+            }).catch((err: HttpErrorResponse) => {
+                this.error(err);
+            });
+        }
     }
 
 

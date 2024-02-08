@@ -191,11 +191,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   hierarchy: {
     oid: string,
     visible: boolean,
-    label: string
+    label: string,
+    version: string
   } = {
       oid: null,
       visible: true,
-      label: ""
+      label: "",
+      version: null
     };
 
   // map of the child type metadata
@@ -1462,7 +1464,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Add a new vector source and layer
     const config = {
-      oid: this.hierarchy.oid,
+      oid: this.hierarchy.version,
       typeCode: type.code
     };
 
@@ -1531,7 +1533,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hierarchy = {
       oid: null,
       visible: true,
-      label: ''
+      label: '',
+      version: null
     }
 
     this.syncs = [];
@@ -1573,7 +1576,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onHierarchyChange(): void {
+    this.hierarchy.version = null;
+
     if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
+      const sync = this.syncs.find(sync => sync.oid === this.hierarchy.oid);
+
+      this.hierarchy.version = sync.version;
+
       // Remove existing hierarchy layers
       this.clearHierarchyLayers();
 

@@ -40,6 +40,8 @@ import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.service.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionService;
+import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
 import net.geoprism.spring.JsonObjectDeserializer;
 
 @RestController
@@ -110,9 +112,8 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   @Autowired
   private IDMLabeledPropertyGraphSynchronizationService service;
 
-  public LabeledPropertyGraphSynchronizationController()
-  {
-  }
+  @Autowired
+  private LabeledPropertyGraphTypeVersionServiceIF      vService;
 
   @GetMapping(API_PATH + "/page")
   public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
@@ -162,21 +163,6 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/tile")
-  public ResponseEntity<InputStreamResource> tile(@RequestParam Integer x, @RequestParam Integer y, @RequestParam Integer z, @NotEmpty @RequestParam String config) throws JSONException
-  {
-    JSONObject object = new JSONObject(config);
-    object.put("x", x);
-    object.put("y", y);
-    object.put("z", z);
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-protobuf");
-
-    InputStreamResource isr = new InputStreamResource(this.service.getTile(this.getSessionId(), object));
-    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);
-  }
-
   @GetMapping(API_PATH + "/get-object")
   public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
   {
@@ -209,14 +195,6 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @PostMapping(API_PATH + "/create-tiles")
-  public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
-  {
-    this.service.createTiles(getSessionId(), body.getOid());
-
-    return new ResponseEntity<Void>(HttpStatus.OK);
-  }
-
   @GetMapping(API_PATH + "/get-status")
   public ResponseEntity<String> getStatus(@NotEmpty @RequestParam String oid)
   {
@@ -240,4 +218,28 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
+
+  @GetMapping(API_PATH + "/tile")
+  public ResponseEntity<InputStreamResource> tile(@RequestParam Integer x, @RequestParam Integer y, @RequestParam Integer z, @NotEmpty @RequestParam String config) throws JSONException
+  {
+    JSONObject object = new JSONObject(config);
+    object.put("x", x);
+    object.put("y", y);
+    object.put("z", z);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-protobuf");
+
+    InputStreamResource isr = new InputStreamResource(this.vService.getTile(this.getSessionId(), object));
+    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);
+  }
+
+  @PostMapping(API_PATH + "/create-tiles")
+  public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
+  {
+    this.vService.createTiles(getSessionId(), body.getOid());
+
+    return new ResponseEntity<Void>(HttpStatus.OK);
+  }
+
 }

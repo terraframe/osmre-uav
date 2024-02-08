@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
@@ -34,6 +35,7 @@ import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.graph.VertexObjectDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -106,7 +108,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" FROM " + mdVertex.getDbClassName());
     sql.append(" WHERE code = :code");
 
-    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString(), new TreeMap<>(), VertexObjectDAO.class);
     query.setParameter("code", code);
 
     List<VertexObject> results = query.getResults();
@@ -267,7 +269,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" FROM " + mdVertex.getDbClassName());
     sql.append(" WHERE uuid = :uuid");
 
-    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString(), new TreeMap<>(), VertexObjectDAO.class);
     query.setParameter("uuid", uid);
 
     return query.getSingleResult();
@@ -337,7 +339,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append("   SELECT EXPAND(out('" + mdEdge.getDBClassName() + "')) FROM :rid");
     sql.append(" )");
 
-    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString());
+    GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString(), new TreeMap<>(), VertexObjectDAO.class);
     query.setParameter("rid", parent.getRID());
 
     List<VertexObject> children = query.getResults();
