@@ -217,6 +217,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Content of the location panel
   content: string = "";
+  
+  tilesLoaded: boolean = false;
 
   constructor(
     private configuration: ConfigurationService,
@@ -264,11 +266,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
-
-
-    // this.service.bureaus().then(bureaus => {
-    //   this.bureaus = bureaus;
-    // });
 
     this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 
@@ -373,8 +370,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.map.on("load", () => {
       this.initMap();
-    });
 
+      this.map.on('data', () => {
+        this.tilesLoaded = this.map.areTilesLoaded();
+      });
+    });
   }
 
   initMap(): void {

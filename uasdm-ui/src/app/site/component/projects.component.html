@@ -40,6 +40,11 @@
             <i *ngIf="content === type.code" class="fa fa-caret-down"></i>
             <i *ngIf="content !== type.code" class="fa fa-caret-right"></i>
           </h3>
+
+          <span *ngIf="!tilesLoaded">            
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading tiles
+          </span>
         </a>
         <div [collapse]="content !== type.code">
           <hr>
@@ -289,7 +294,7 @@
                     <div class="col-md-12">
 
                       <h3 *ngIf="current.type === 1">
-                        {{current.data.properties.displayLabel.localizedValue}}
+                        {{current.data.properties.displayLabel.localizedValue}} 
                       </h3>
                       <h3 *ngIf="current.type === 0">
                         {{current.metadata.label}} {{current.data.name}}
@@ -353,7 +358,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -463,8 +467,7 @@
                   </boolean-field>
                   <span style="padding-top: 2px;">
                     <label style="padding-left: 5px;">{{hierarchy.label}}</label>
-                  </span>
-
+                  </span>                  
                 </div>
 
               </ng-container>
