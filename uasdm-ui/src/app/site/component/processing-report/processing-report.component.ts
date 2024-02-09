@@ -6,10 +6,10 @@ import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'error-report',
-	templateUrl: './error-report.component.html'
+	selector: 'processing-report',
+	templateUrl: './processing-report.component.html'
 })
-export class ErrorReportComponent {
+export class ProcessingReportComponent {
 
     date: any;
 
@@ -18,7 +18,7 @@ export class ErrorReportComponent {
 	generate(): void {
 		var dateArg = this.date ? "?date=" + this.date : "";
 		
-		window.location.href = environment.apiUrl + "/api/analytics/generate" + dateArg;
+		window.location.href = environment.apiUrl + "/api/processing-report/generate" + dateArg;
 	}
 
 }

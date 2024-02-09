@@ -39,7 +39,7 @@ import { PlatformComponent } from './component/platform/platform.component';
 import { ClassificationsComponent } from './component/classification/classifications.component';
 import { ClassificationComponent } from './component/classification/classification.component';
 import { EquipmentComponent } from './component/equipment/equipment.component';
-import { ErrorReportComponent } from './component/error-report/error-report.component';
+import { ProcessingReportComponent } from './component/processing-report/processing-report.component';
 
 import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
 import { OnlyNumber } from './directive/number-only.directive';
@@ -106,7 +106,7 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		FilterModalComponent,
 		ProjectsComponent,
 		UploadComponent,
-		ErrorReportComponent,
+		ProcessingReportComponent,
 		TasksComponent,
 		ForbiddenNameDirective,
 		OnlyNumber,
