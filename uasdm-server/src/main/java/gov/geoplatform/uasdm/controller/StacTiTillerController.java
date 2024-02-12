@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.cog;
+package gov.geoplatform.uasdm.controller;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +31,9 @@ import com.runwaysdk.mvc.RequestParamter;
 import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.ServletRequestIF;
+
+import gov.geoplatform.uasdm.cog.CogTileException;
+import gov.geoplatform.uasdm.cog.StacTiTilerService;
 
 @Controller(url = "stac")
 public class StacTiTillerController

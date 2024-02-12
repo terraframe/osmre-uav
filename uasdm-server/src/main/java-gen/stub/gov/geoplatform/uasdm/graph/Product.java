@@ -72,6 +72,7 @@ import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.configuration.GeoprismProperties;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
@@ -680,7 +681,8 @@ public class Product extends ProductBase implements ProductIF
       for (DocumentIF document : documents)
       {
         String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-        final String location = "s3://" + bucketName + "/" + document.getS3location();
+//        final String location = "s3://" + bucketName + "/" + document.getS3location();
+        final String location = GeoprismProperties.getRemoteServerUrl() +"api/proxy/file?path=" + document.getS3location();
 
         if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
         {
