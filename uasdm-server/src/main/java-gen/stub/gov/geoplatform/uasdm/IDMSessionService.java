@@ -36,6 +36,7 @@ import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.account.LocaleSerializer;
 import net.geoprism.rbac.RoleConstants;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {
@@ -90,35 +91,44 @@ public class IDMSessionService extends IDMSessionServiceBase
   @Authenticate
   public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String sRoles, java.lang.String locales)
   {
-    // Set<String> roles = deserializeRoles(sRoles);
-    
-    JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
-    
-    /*
-    if (roles.size() == 0)
-    {
-      KeycloakNoValidRolesException ex = new KeycloakNoValidRolesException();
-      ex.setUsername(joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
-      throw ex;
-    }
-    */
-    
+    final JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
     final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
     
-    ExternalProfile profile = IDMSessionService.getProfile(joUser);
-    
-    if (Boolean.TRUE.equals(((GeoprismActorIF)profile).getInactive()))
+    try
     {
-      net.geoprism.account.InactiveUserException ex = new net.geoprism.account.InactiveUserException("User [" + ((GeoprismActorIF)profile).getUsername() + "] is inactive");
-      throw ex;
-    }
-
-    String sessionId = SessionFacade.logIn(((SingleActorDAOIF)BusinessFacade.getEntityDAO(profile)), LocaleSerializer.deserialize(locales));
+        // Set<String> roles = deserializeRoles(sRoles);
+        
+        /*
+        if (roles.size() == 0)
+        {
+          KeycloakNoValidRolesException ex = new KeycloakNoValidRolesException();
+          ex.setUsername(joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
+          throw ex;
+        }
+        */
+        
+        ExternalProfile profile = IDMSessionService.getProfile(joUser);
+        
+        if (Boolean.TRUE.equals(((GeoprismActorIF)profile).getInactive()))
+        {
+          net.geoprism.account.InactiveUserException ex = new net.geoprism.account.InactiveUserException("User [" + ((GeoprismActorIF)profile).getUsername() + "] is inactive");
+          throw ex;
+        }
     
-    JsonObject json = new JsonObject();
-    json.addProperty("sessionId", sessionId);
-    json.addProperty("username", username);
-    return json.toString();
+        String sessionId = SessionFacade.logIn(((SingleActorDAOIF)BusinessFacade.getEntityDAO(profile)), LocaleSerializer.deserialize(locales));
+        
+        ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginSuccess(username, sessionId);
+        
+        JsonObject json = new JsonObject();
+        json.addProperty("sessionId", sessionId);
+        json.addProperty("username", username);
+        return json.toString();
+    }
+    catch (RuntimeException e)
+    {
+      ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginFailure(username);
+      throw e;
+    }
   }
   
   @Transaction
