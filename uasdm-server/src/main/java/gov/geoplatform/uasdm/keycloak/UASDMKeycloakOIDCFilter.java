@@ -404,7 +404,17 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     WebClientSession existCS = (WebClientSession) session.getAttribute(ClientConstants.CLIENTSESSION);
     if (existCS != null && session.getAttribute(ClientConstants.CLIENTREQUEST) != null && session.getAttribute(ClientConstants.CLIENTREQUEST) instanceof ClientRequestIF)
     {
-      return false;
+      if (req.getRequestURI().endsWith("keycloak/loginRedirect"))
+      {
+        ClientRequestIF clientRequest = (ClientRequestIF) session.getAttribute(ClientConstants.CLIENTREQUEST);
+        JsonArray roles = JsonParser.parseString( ( RoleBusinessService.getCurrentRoles(clientRequest.getSessionId()) )).getAsJsonArray();
+        this.loggedInCookieResponse(req, resp, userJson, roles, clientRequest, enumLocales);
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
 
     WebClientSession anonClientSession = WebClientSession.createAnonymousSession(locales);
@@ -459,7 +469,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
 
     JsonArray roleDisplayLabels = JsonParser.parseString( ( RoleBusinessService.getCurrentRoleDisplayLabels(clientRequest.getSessionId()) )).getAsJsonArray();
 
-    jo.addProperty("loggedIn", clientRequest.isLoggedIn());
+    jo.addProperty("loggedIn", true);
     jo.add("roles", roles);
     jo.add("roleDisplayLabels", roleDisplayLabels);
     jo.addProperty("userName", userJson.get(KeycloakConstants.USERJSON_USERNAME).getAsString());
@@ -481,8 +491,14 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     cookie.setPath(path);
 
     resp.addCookie(cookie);
-
+    
     String contextPath = req.getContextPath();
+    
+    if (AppProperties.IsKeycloakNg2Dev())
+    {
+      contextPath = "";
+    }
+
     if (contextPath.equals("") || contextPath.length() == 0)
     {
       contextPath = "/";
@@ -491,6 +507,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
     {
       contextPath = contextPath + "/";
     }
+    
     resp.sendRedirect(contextPath);
   }
 
@@ -597,7 +614,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
 
     @Override
     public StringBuffer getRequestURL() {
-      return new StringBuffer(super.getRequestURL().toString().replace("localhost:8443/uasdm", "localhost:4200/uasdm"));
+      return new StringBuffer(super.getRequestURL().toString().replace("localhost:8443/uasdm", "localhost:4200"));
     }
 
   }
