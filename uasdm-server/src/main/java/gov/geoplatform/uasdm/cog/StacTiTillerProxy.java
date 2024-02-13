@@ -1,22 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.cog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -25,10 +27,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -63,8 +80,8 @@ public class StacTiTillerProxy extends TiTillerProxy
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
-    
-    passThroughParams(queryParams, parameters, new String[] {"asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"});
+
+    passThroughParams(queryParams, parameters, new String[] { "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
 
     try
     {
@@ -82,9 +99,10 @@ public class StacTiTillerProxy extends TiTillerProxy
   public JSONObject tilejson(String contextPath)
   {
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-    
+
     // Update the download count
-    // We know that the filename of the stac json is the product id. So parse out that id, fetch the product, and increment the count
+    // We know that the filename of the stac json is the product id. So parse
+    // out that id, fetch the product, and increment the count
     String key = new AmazonS3URI(this.url).getKey();
     String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length() + 1, key.length() - 5);
     Product product = Product.get(productId);
@@ -94,18 +112,18 @@ public class StacTiTillerProxy extends TiTillerProxy
       if (component instanceof Collection)
       {
         CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
-        
+
         addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
       }
     }
-    
+
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
-    
+
     // These are the min and max zooms which Mapbox will allow
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
-    
+
     try
     {
       // We have to get the tilejson file from titiler and replace their urls
@@ -131,42 +149,97 @@ public class StacTiTillerProxy extends TiTillerProxy
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   protected void addMultispectralRGBParamsForStac(Product product, Collection collection, Map<String, List<String>> parameters)
   {
-    if ((collection).isMultiSpectral()
-        && assets.length() > 0 && assets.contains("odm_orthophoto"))
+    if ( ( collection ).isMultiSpectral() && assets.length() > 0 && assets.contains("odm_orthophoto"))
     {
       DocumentIF document = product.getMappableOrtho().get();
-      
+
       TitilerCogInfo info = this.getCogInfo(document);
       if (info != null)
       {
         int redIdx = info.getColorinterp().indexOf("red");
         int greenIdx = info.getColorinterp().indexOf("green");
         int blueIdx = info.getColorinterp().indexOf("blue");
-        
+
         if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
         {
           redIdx++;
           greenIdx++;
           blueIdx++;
-          
+
           parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
-          
+
           TitilerCogStatistics stats = this.getCogStatistics(document);
           TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
           TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
           TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
-          
+
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
 
-          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
-          
+          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
+          // could be negative. But it's happening on my sample data and it
+          // doesn't render properly if it is.
+
           parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
         }
       }
+    }
+  }
+
+  public String wmts(String contextPath)
+  {
+    Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+
+    String key = new AmazonS3URI(this.url).getKey();
+
+    parameters.put("url", Arrays.asList(this.url));
+    parameters.put("assets", Arrays.asList(this.assets));
+
+    try
+    {
+      // We have to get the XML file from titiler and replace their urls
+      // with our urls, since it can only be accessed through us by proxy.
+      String sTileXML = IOUtils.toString(authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/stac/WMTSCapabilities.xml", parameters), StandardCharsets.UTF_8.name());
+
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new InputSource(new StringReader(sTileXML)));
+
+      String[] tagNames = new String[] { "ows:Get", "ServiceMetadataURL", "ResourceURL" };
+
+      for (String tagName : tagNames)
+      {
+        NodeList elements = document.getElementsByTagName(tagName);
+
+        for (int i = 0; i < elements.getLength(); i++)
+        {
+          String attributeName = tagName.equals("ResourceURL") ? "template" : "xlink:href";
+
+          Element element = (Element) elements.item(i);
+          String path = element.getAttribute(attributeName);
+          String replacedPath = path.replace(AppProperties.getTitilerUrl(), contextPath);
+
+          element.setAttribute(attributeName, replacedPath);
+        }
+      }
+
+      StringWriter sw = new StringWriter();
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer transformer = tf.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+      transformer.transform(new DOMSource(document), new StreamResult(sw));
+      return sw.toString();
+    }
+    catch (IOException | URISyntaxException | TransformerException | ParserConfigurationException | SAXException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
   }
 

@@ -681,8 +681,8 @@ public class Product extends ProductBase implements ProductIF
       for (DocumentIF document : documents)
       {
         String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-//        final String location = "s3://" + bucketName + "/" + document.getS3location();
-        final String location = GeoprismProperties.getRemoteServerUrl() +"api/proxy/file?path=" + document.getS3location();
+        final String location = "s3://" + bucketName + "/" + document.getS3location();
+//        final String location = GeoprismProperties.getRemoteServerUrl() +"api/proxy/file?path=" + document.getS3location();
 
         if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
         {
@@ -723,9 +723,9 @@ public class Product extends ProductBase implements ProductIF
 
       // Add the self link
       String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-//      String url = "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
+      String url = "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
       
-      String url = GeoprismProperties.getRemoteServerUrl() + "api/proxy/file?path=" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
+//      String url = GeoprismProperties.getRemoteServerUrl() + "api/proxy/file?path=" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
 
 
       item.addLink(StacLink.build(url, "self", "application/json"));

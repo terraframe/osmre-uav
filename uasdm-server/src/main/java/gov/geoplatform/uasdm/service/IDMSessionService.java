@@ -66,9 +66,10 @@ public class IDMSessionService extends SessionService
     {
       endpoints.add("api/cog/tilejson.json");
       endpoints.add("api/cog/tiles");
-      endpoints.add("api/stac/tilejson.json");
-      endpoints.add("api/stac/tiles");
-      endpoints.add("api/proxy/file");
+      
+      endpoints.add("stac/tilejson.json");
+      endpoints.add("stac/WMTSCapabilities.xml");
+      endpoints.add("stac/tiles");
     }
     
     endpoints.add("api/session/ologin");
