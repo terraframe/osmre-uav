@@ -61,6 +61,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import net.geoprism.configuration.GeoprismProperties;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
@@ -220,7 +221,7 @@ public class StacTiTillerProxy extends TiTillerProxy
 
           Element element = (Element) elements.item(i);
           String path = element.getAttribute(attributeName);
-          String replacedPath = path.replace(AppProperties.getTitilerUrl(), contextPath);
+          String replacedPath = path.replace(AppProperties.getTitilerUrl(), GeoprismProperties.getRemoteServerUrl() + contextPath);
 
           element.setAttribute(attributeName, replacedPath);
         }
