@@ -291,7 +291,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 			const configuration = {
 				includeGeoLocationFile: data.includeGeoLocationFile,
-				outFileNamePrefix: data.outFileName,
+				outFileNamePrefix: data.outFileNamePrefix,
 				resolution: data.resolution,
 				videoResolution: data.videoResolution,
 				matcherNeighbors: data.matcherNeighbors,

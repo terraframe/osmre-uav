@@ -418,7 +418,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (allZipExists)
     {
-      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this);
+      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
 
       uploader.processAllZip();
     }

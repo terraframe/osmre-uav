@@ -408,9 +408,9 @@ public class ODMProcessConfiguration
   {
     ODMProcessConfiguration configuration = new ODMProcessConfiguration();
 
-    if (!StringUtils.isEmpty(parser.getCustomParams().get("outFileName")))
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(OUT_FILE_NAME_PREFIX)))
     {
-      String outFileNamePrefix = parser.getCustomParams().get("outFileName");
+      String outFileNamePrefix = parser.getCustomParams().get(OUT_FILE_NAME_PREFIX);
       configuration.setOutFileNamePrefix(outFileNamePrefix);
     }
 
