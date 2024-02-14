@@ -119,11 +119,13 @@ public class CSVUserImporter
           query.WHERE(query.getEmail().EQi(email));
           if (query.getCount() > 0)
           {
-            List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
-            attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
-            List<String> valueList = new ArrayList<String>();
-            valueList.add(email);
-            throw new DuplicateDataException("A user with the email [" + email + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
+//            List<MdAttributeDAOIF> attrList = new ArrayList<MdAttributeDAOIF>();
+//            attrList.add(MdAttributeDAO.getByKey(ExternalProfile.CLASS + "." + ExternalProfile.EMAIL));
+//            List<String> valueList = new ArrayList<String>();
+//            valueList.add(email);
+//            throw new DuplicateDataException("A user with the email [" + email + "] already exists.", MdClassDAO.getMdClassDAO(ExternalProfile.CLASS), attrList, valueList);
+            
+            continue;
           }
           
           ExternalProfile ep = new ExternalProfile();
