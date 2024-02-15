@@ -92,7 +92,7 @@ public class IDMSessionService extends IDMSessionServiceBase
   public static java.lang.String keycloakLogin(java.lang.String userJson, java.lang.String sRoles, java.lang.String locales)
   {
     final JsonObject joUser = JsonParser.parseString(userJson).getAsJsonObject();
-    final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
+    final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? "null" : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
     
     try
     {
@@ -117,16 +117,16 @@ public class IDMSessionService extends IDMSessionServiceBase
     
         String sessionId = SessionFacade.logIn(((SingleActorDAOIF)BusinessFacade.getEntityDAO(profile)), LocaleSerializer.deserialize(locales));
         
-        ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginSuccess(username, sessionId);
+        ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginSuccess(profile.getEmail(), sessionId);
         
         JsonObject json = new JsonObject();
         json.addProperty("sessionId", sessionId);
-        json.addProperty("username", username);
+        json.addProperty("username", profile.getUsername());
         return json.toString();
     }
     catch (RuntimeException e)
     {
-      ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginFailure(username);
+      ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginFailure(email);
       throw e;
     }
   }
