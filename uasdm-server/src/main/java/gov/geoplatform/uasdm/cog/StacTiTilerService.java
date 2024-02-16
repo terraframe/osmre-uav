@@ -27,7 +27,6 @@ import com.runwaysdk.web.json.JSONRunwayExceptionDTO;
 
 public class StacTiTilerService
 {
-  @Request(RequestType.SESSION)
   public ResponseIF tiles(String sessionId, String matrixSetId, Integer x, Integer y, Integer z, Integer scale, String format, String url, String assets, MultiValueMap<String, String> queryParams)
   {
     try
