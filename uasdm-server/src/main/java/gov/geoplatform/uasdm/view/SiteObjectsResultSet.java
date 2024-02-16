@@ -15,10 +15,16 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.amazonaws.HttpMethod;
+
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class SiteObjectsResultSet
 {
@@ -95,8 +101,13 @@ public class SiteObjectsResultSet
   {
     this.folder = folder;
   }
-
+  
   public JSONObject toJSON()
+  {
+    return toJSON(false);
+  }
+
+  public JSONObject toJSON(boolean presign)
   {
     JSONObject json = new JSONObject();
 
@@ -107,10 +118,31 @@ public class SiteObjectsResultSet
     List<TreeComponent> items = new LinkedList<TreeComponent>();
     items.addAll(objects);
     json.put("results", SiteItem.serialize(items));
+    
+    if (presign)
+    {
+      this.presign(json.getJSONArray("results"));
+    }
 
     json.put("folder", folder);
 
     return json;
+  }
+  
+  private void presign(JSONArray ja)
+  {
+    for (int i = 0; i < ja.length(); ++i)
+    {
+      JSONObject jo = ja.getJSONObject(i);
+      
+      if (jo.has(SiteObject.KEY))
+      {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR, 24);
+        String presigned = RemoteFileFacade.presignUrl(jo.getString(SiteObject.KEY), cal.getTime(), HttpMethod.GET).toString();
+        jo.put(SiteObject.PRESIGNED_DOWNLOAD, presigned);
+      }
+    }
   }
 
 }

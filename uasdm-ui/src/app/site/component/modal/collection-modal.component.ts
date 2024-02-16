@@ -143,8 +143,18 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	getThumbnail(image: any): void {
-		if (image != null) {
+	getThumbnail(image: SiteEntity): void {
+		if (image == null) { return; }
+		
+		if (image.presignedDownload != null && image.presignedDownload.length > 0) {
+		
+			this.service.downloadPresigned(image.presignedDownload, false).subscribe(blob => {
+				this.createImageFromBlob(blob, image);
+			}, error => {
+				console.log(error);
+			});
+		
+		} else {
 
 			let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
 			let fileName: string = /[^/]*$/.exec(image.key)[0];
@@ -201,7 +211,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		
 		this.loading = true;
 
-		this.service.getObjects(component, folder, pageNumber, pageSize).then(resultSet => {
+		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
 			this.page = resultSet;
 
 			this.canReprocessImagery = this.page.results.length > 1 ? true : false;

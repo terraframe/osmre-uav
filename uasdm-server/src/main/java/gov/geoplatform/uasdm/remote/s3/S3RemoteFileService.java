@@ -22,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
@@ -122,6 +125,15 @@ public class S3RemoteFileService implements RemoteFileService
     S3Object object = client.getObject(request);
 
     return new S3ObjectWrapper(object);
+  }
+  
+  @Override
+  public URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  {
+    AmazonS3 client = S3ClientFactory.createClient();
+    String bucketName = AppProperties.getBucketName();
+    
+    return client.generatePresignedUrl(bucketName, key, expiration, httpMethod);
   }
 
   @Override
