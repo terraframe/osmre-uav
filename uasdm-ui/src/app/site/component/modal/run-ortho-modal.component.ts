@@ -26,7 +26,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         processDem: false,
         processOrtho: false,
         includeGeoLocationFile: false,
-        outFileName: '',
+        outFileNamePrefix: '',
         resolution: 5,
         videoResolution: 4000,
         matcherNeighbors: 0,

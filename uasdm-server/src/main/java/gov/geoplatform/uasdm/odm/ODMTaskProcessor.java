@@ -171,8 +171,8 @@ public class ODMTaskProcessor
   {
     ImageryComponent ic = uploadTask.getImageryComponent();
     CollectionIF collection = (CollectionIF) ic.getUasComponent();
-
-    ODMZipPostProcessor processor = new ODMZipPostProcessor(collection, uploadTask, null);
+    
+    ODMZipPostProcessor processor = new ODMZipPostProcessor(collection, uploadTask, null, uploadTask.getProcessingTask().getConfiguration());
 
     try
     {

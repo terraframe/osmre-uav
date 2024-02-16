@@ -79,9 +79,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   private static final long   serialVersionUID = -339555201;
 
-  // 0.9.8 supports tif and tiff, but we're on 0.9.1 right now.
-  // https://github.com/OpenDroneMap/ODM/blob/master/opendm/context.py
-
   public ImageryProcessingJob()
   {
     super();
