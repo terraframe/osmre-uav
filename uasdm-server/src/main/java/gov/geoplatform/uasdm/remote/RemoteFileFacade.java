@@ -19,8 +19,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
+import com.amazonaws.HttpMethod;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
@@ -58,6 +61,11 @@ public class RemoteFileFacade
   public static RemoteFileObject proxy(String url)
   {
     return service.proxy(url);
+  }
+  
+  public static URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  {
+    return service.presignUrl(key, expiration, httpMethod);
   }
 
   public static RemoteFileObject download(String key)

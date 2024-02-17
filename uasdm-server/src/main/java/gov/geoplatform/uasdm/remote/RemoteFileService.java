@@ -19,7 +19,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.List;
+
+import com.amazonaws.HttpMethod;
 
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.graph.Product;
@@ -76,6 +80,8 @@ public interface RemoteFileService
   public RemoteFileObject getStacItem(ProductIF product);
 
   public RemoteFileObject proxy(String url);
+  
+  public URL presignUrl(String key, Date expiration, HttpMethod httpMethod);
 
   public BBoxView getBoundingBox(Product product, DocumentIF mappable);
 

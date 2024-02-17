@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.HttpMethod;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ServletMethod;
@@ -49,6 +51,7 @@ import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
@@ -410,6 +413,14 @@ public class ProjectManagementController
     List<TreeComponent> children = this.service.items(request.getSessionId(), id, key, conditions);
 
     JSONArray response = SiteItem.serialize(children);
+
+    return new RestBodyResponse(response);
+  }
+  
+  @Endpoint(url = "objects-presigned", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF objectsPresigned(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Long pageNumber, @RequestParamter(name = "pageSize") Long pageSize)
+  {
+    String response = this.service.getObjectsPresigned(request.getSessionId(), id, key, pageNumber, pageSize);
 
     return new RestBodyResponse(response);
   }
