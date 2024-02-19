@@ -91,9 +91,7 @@ public class CloudOptimizedGeoTiffBusinessService
   @Request(RequestType.SESSION)
   private void validateAccess(String sessionId, String path)
   {
-    DocumentIF document = Document.find(path);
-
-    if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid()) && !isPublished(document))
+    if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid()))
     {
       throw new UnauthorizedAccessException();
     }
