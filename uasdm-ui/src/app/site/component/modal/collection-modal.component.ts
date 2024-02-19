@@ -66,7 +66,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	showOrthoRerunMessage: boolean = false;
 	canReprocessImagery: boolean = false;
 
-	constPageSize: number = 50;
+	constPageSize: number = 25;
 
 	page: SiteObjectsResultSet = new SiteObjectsResultSet();
 
@@ -146,9 +146,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	getThumbnail(image: SiteEntity): void {
 		if (image == null) { return; }
 		
-		if (image.presignedDownload != null && image.presignedDownload.length > 0) {
+		if (image.presignedThumbnailDownload != null && image.presignedThumbnailDownload.length > 0) {
 		
-			this.service.downloadPresigned(image.presignedDownload, false).subscribe(blob => {
+			this.service.downloadPresigned(image.presignedThumbnailDownload, false).subscribe(blob => {
 				this.createImageFromBlob(blob, image);
 			}, error => {
 				console.log(error);

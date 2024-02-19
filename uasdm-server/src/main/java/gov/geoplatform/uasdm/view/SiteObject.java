@@ -48,7 +48,7 @@ public class SiteObject implements TreeComponent
 
   public static final String LAST_MODIFIED_KEY      = "lastModified";
   
-  public static final String PRESIGNED_DOWNLOAD     = "presignedDownload";
+  public static final String PRESIGNED_THUMBNAIL_DOWNLOAD = "presignedThumbnailDownload";
 
   public static final String EXCLUDE                = "exclude";
 
