@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -107,7 +108,7 @@ public class SiteObjectsResultSet
     return toJSON(false);
   }
 
-  public JSONObject toJSON(boolean presign)
+  public JSONObject toJSON(boolean presignThumbnails)
   {
     JSONObject json = new JSONObject();
 
@@ -119,9 +120,9 @@ public class SiteObjectsResultSet
     items.addAll(objects);
     json.put("results", SiteItem.serialize(items));
     
-    if (presign)
+    if (presignThumbnails)
     {
-      this.presign(json.getJSONArray("results"));
+      this.presignThumbnails(json.getJSONArray("results"));
     }
 
     json.put("folder", folder);
@@ -129,7 +130,7 @@ public class SiteObjectsResultSet
     return json;
   }
   
-  private void presign(JSONArray ja)
+  private void presignThumbnails(JSONArray ja)
   {
     for (int i = 0; i < ja.length(); ++i)
     {
@@ -139,10 +140,18 @@ public class SiteObjectsResultSet
       {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR, 24);
-        String presigned = RemoteFileFacade.presignUrl(jo.getString(SiteObject.KEY), cal.getTime(), HttpMethod.GET).toString();
-        jo.put(SiteObject.PRESIGNED_DOWNLOAD, presigned);
+        String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), cal.getTime(), HttpMethod.GET).toString();
+        jo.put(SiteObject.PRESIGNED_THUMBNAIL_DOWNLOAD, presigned);
       }
     }
+  }
+  
+  private String getThumbnailPath(String key)
+  {
+    String rootPath = key.substring(0, key.lastIndexOf("/"));
+    String fileName = FilenameUtils.getBaseName(key);
+    
+    return rootPath + "/thumbnails/" + fileName + ".png";
   }
 
 }

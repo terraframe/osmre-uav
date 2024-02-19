@@ -124,7 +124,7 @@ export class SiteEntity {
 	percentSideLap?: number;
 	areaCovered?: number;
 	weatherConditions?: string;
-	presignedDownload?: string;
+	presignedThumbnailDownload?: string;
 
 	// Document metadata fields
 	description?: string;
