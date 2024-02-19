@@ -111,18 +111,18 @@ public class CollectionConverter extends Converter
     Sensor sensor = collection.getSensor();
     if (sensor != null)
     {
-      siteItem.setSensor(sensor);
+      siteItem.setSensor(sensor.toJSON());
     }
 
     UAV uav = collection.getUav();
     if (uav != null)
     {
-      siteItem.setUav(uav);
+      siteItem.setUav(uav.toJSON());
 
       Platform platform = uav.getPlatform();
       if (platform != null)
       {
-        siteItem.setPlatform(platform);
+        siteItem.setPlatform(platform.toJSON());
       }
     }
 

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -30,88 +30,85 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
-import gov.geoplatform.uasdm.graph.Platform;
-import gov.geoplatform.uasdm.graph.Sensor;
-
 public class SiteItem implements TreeComponent
 {
-  public static String                    ID                  = "id";
+  public static String        ID                  = "id";
 
-  public static String                    TYPE                = "type";
+  public static String        TYPE                = "type";
 
-  public static String                    TYPE_LABEL          = "typeLabel";
+  public static String        TYPE_LABEL          = "typeLabel";
 
-  public static String                    OWNER_NAME          = "ownerName";
+  public static String        OWNER_NAME          = "ownerName";
 
-  public static String                    OWNER_PHONE         = "ownerPhone";
+  public static String        OWNER_PHONE         = "ownerPhone";
 
-  public static String                    OWNER_EMAIL         = "ownerEmail";
+  public static String        OWNER_EMAIL         = "ownerEmail";
 
-  public static String                    PRIVILEGE_TYPE      = "privilegeType";
+  public static String        PRIVILEGE_TYPE      = "privilegeType";
 
-  public static String                    NUMBER_OF_CHILDREN  = "numberOfChildren";
+  public static String        NUMBER_OF_CHILDREN  = "numberOfChildren";
 
-  public static String                    METADATA_UPLOADED   = "metadataUploaded";
+  public static String        METADATA_UPLOADED   = "metadataUploaded";
 
-  public static String                    CHILDREN            = "children";
+  public static String        CHILDREN            = "children";
 
-  public static String                    GEOMETRY            = "geometry";
+  public static String        GEOMETRY            = "geometry";
 
-  public static String                    UAV                 = "uav";
+  public static String        UAV                 = "uav";
 
-  public static String                    PILOT_NAME          = "pilotName";
+  public static String        PILOT_NAME          = "pilotName";
 
-  public static String                    PLATFORM            = "platform";
+  public static String        PLATFORM            = "platform";
 
-  public static String                    SENSOR              = "sensor";
+  public static String        SENSOR              = "sensor";
 
-  public static String                    COLLECTION_DATE     = "collectionDate";
+  public static String        COLLECTION_DATE     = "collectionDate";
 
-  public static String                    COLLECTION_END_DATE = "collectionEndDate";
+  public static String        COLLECTION_END_DATE = "collectionEndDate";
 
-  public static String                    DATE_TIME           = "dateTime";
+  public static String        DATE_TIME           = "dateTime";
 
-  private String                          id;
+  private String              id;
 
-  private String                          type;
+  private String              type;
 
-  private String                          typeLabel;
+  private String              typeLabel;
 
-  private String                          ownerName;
+  private String              ownerName;
 
-  private String                          ownerPhone;
+  private String              ownerPhone;
 
-  private String                          ownerEmail;
+  private String              ownerEmail;
 
-  private String                          privilegeType;
+  private String              privilegeType;
 
-  private Boolean                         metadataUploaded;
+  private Boolean             metadataUploaded;
 
-  private Geometry                        geometry;
+  private Geometry            geometry;
 
-  private Integer                         numberOfChildren;
+  private Integer             numberOfChildren;
 
-  private String                          pilotName;
+  private String              pilotName;
 
-  private String                          collectionDate;
+  private String              collectionDate;
 
-  private String                          collectionEndDate;
+  private String              collectionEndDate;
 
-  private String                          dateTime;
+  private String              dateTime;
 
-  private gov.geoplatform.uasdm.graph.UAV uav;
+  private JSONObject          uav;
 
-  private Platform                        platform;
+  private JSONObject          platform;
 
-  private Sensor                          sensor;
+  private JSONObject          sensor;
 
-  private boolean                         hasAllZip           = false;
+  private boolean             hasAllZip           = false;
 
-  private List<TreeComponent>             children;
+  private List<TreeComponent> children;
 
-  private Map<String, Object>             values;
+  private Map<String, Object> values;
 
-  private List<AttributeType>             attributes;
+  private List<AttributeType> attributes;
 
   public SiteItem()
   {
@@ -284,10 +281,7 @@ public class SiteItem implements TreeComponent
 
     if (this.getType().equals("Collection"))
     {
-      gov.geoplatform.uasdm.graph.UAV uav = this.getUav();
       String pilotName = this.getPilotName();
-      Sensor sensor = this.getSensor();
-      Platform platform = this.getPlatform();
       String collectionDate = this.getCollectionDate();
       String collectionEndDate = this.getCollectionEndDate();
       String dateTime = this.getDateTime();
@@ -299,17 +293,17 @@ public class SiteItem implements TreeComponent
 
       if (uav != null)
       {
-        obj.put(UAV, uav.toJSON());
+        obj.put(UAV, this.uav);
       }
 
       if (sensor != null)
       {
-        obj.put("sensor", sensor.toJSON());
+        obj.put("sensor", this.sensor);
       }
 
       if (platform != null)
       {
-        obj.put("platform", platform.toJSON());
+        obj.put("platform", this.platform);
       }
 
     }
@@ -459,13 +453,13 @@ public class SiteItem implements TreeComponent
 
     return list;
   }
-
-  public gov.geoplatform.uasdm.graph.UAV getUav()
+  
+  public JSONObject getUav()
   {
     return uav;
   }
-
-  public void setUav(gov.geoplatform.uasdm.graph.UAV uav)
+  
+  public void setUav(JSONObject uav)
   {
     this.uav = uav;
   }
@@ -489,12 +483,12 @@ public class SiteItem implements TreeComponent
   {
     this.collectionDate = collectionDate;
   }
-  
+
   public String getCollectionEndDate()
   {
     return collectionEndDate;
   }
-  
+
   public void setCollectionEndDate(String collectionEndDate)
   {
     this.collectionEndDate = collectionEndDate;
@@ -509,24 +503,24 @@ public class SiteItem implements TreeComponent
   {
     this.dateTime = dateTime;
   }
-
-  public Platform getPlatform()
-  {
-    return platform;
-  }
-
-  public void setPlatform(Platform platform)
-  {
-    this.platform = platform;
-  }
-
-  public Sensor getSensor()
+  
+  public JSONObject getSensor()
   {
     return sensor;
   }
-
-  public void setSensor(Sensor sensor)
+  
+  public void setSensor(JSONObject sensor)
   {
     this.sensor = sensor;
+  }
+  
+  public JSONObject getPlatform()
+  {
+    return platform;
+  }
+  
+  public void setPlatform(JSONObject platform)
+  {
+    this.platform = platform;
   }
 }
