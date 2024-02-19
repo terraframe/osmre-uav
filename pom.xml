@@ -20,7 +20,7 @@
 
   <groupId>gov.osmre.uasdm</groupId>
   <artifactId>uasdm</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3</version>
   <packaging>pom</packaging>
 
   <name>UASDM</name>
@@ -57,7 +57,7 @@
     <connection>scm:git:ssh://git@github.com/terraframe/osmre-uav</connection>
     <developerConnection>scm:git:ssh://git@github.com/terraframe/osmre-uav</developerConnection>
     <url>scm:git:ssh://git@github.com/terraframe/osmre-uav</url>
-    <tag>0.15.3</tag>
+    <tag>1.0.3</tag>
   </scm>
 
   <dependencies>
