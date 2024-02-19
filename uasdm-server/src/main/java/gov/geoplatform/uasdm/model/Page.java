@@ -157,16 +157,25 @@ public class Page<T extends JSONSerializable>
   
   private void presignThumbnails(JSONArray ja)
   {
+    if (ja == null) { return; }
+    
     for (int i = 0; i < ja.length(); ++i)
     {
-      JSONObject jo = ja.getJSONObject(i);
-      
-      if (jo.has(SiteObject.KEY))
+      try
       {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.HOUR, 24);
-        String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), cal.getTime(), HttpMethod.GET).toString();
-        jo.put(SiteObject.PRESIGNED_THUMBNAIL_DOWNLOAD, presigned);
+        JSONObject jo = ja.getJSONObject(i);
+        
+        if (jo.has(SiteObject.KEY))
+        {
+          Calendar cal = Calendar.getInstance();
+          cal.add(Calendar.HOUR, 24);
+          String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), cal.getTime(), HttpMethod.GET).toString();
+          jo.put(SiteObject.PRESIGNED_THUMBNAIL_DOWNLOAD, presigned);
+        }
+      }
+      catch(RuntimeException e)
+      {
+        // Do nothing. This object doesn't have to exist.
       }
     }
   }
