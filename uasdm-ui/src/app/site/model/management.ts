@@ -322,6 +322,7 @@ export class ProductDocument {
 	id: string;
 	name: string;
 	key: string;
+	presignedThumbnailDownload?: string;
 }
 
 export class ProductCriteria {

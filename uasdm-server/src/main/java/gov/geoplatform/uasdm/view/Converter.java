@@ -497,6 +497,8 @@ public abstract class Converter
     }
 
     view.setDateTime(product.getLastUpdateDate());
+    
+    page.setPresignThumnails(true);
     view.setPage(page);
 
     return view;
