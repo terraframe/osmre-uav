@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.json.JSONObject;
@@ -197,8 +198,8 @@ public abstract class Converter
         else
         {
           uasComponent.setValue(attribute.getName(), null);
-        }        
-      }      
+        }
+      }
       else if ( ( attribute instanceof AttributeNumberType ))
       {
         Number number = (Number) siteItem.getValue(attribute.getName());
@@ -401,7 +402,7 @@ public abstract class Converter
     view.setPublished(product.isPublished());
 
     List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
-    view.setMappables(mappables);
+    view.setMappables(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
 
     if (product.getImageKey() == null || product.getImageKey().length() == 0)
     {
@@ -497,9 +498,11 @@ public abstract class Converter
     }
 
     view.setDateTime(product.getLastUpdateDate());
-    
+
     page.setPresignThumnails(true);
-    view.setPage(page);
+    view.setPage(new Page<JSONWrapper>(page.getCount(), page.getPageNumber(), page.getPageSize(), page.getResults().stream().map(r -> {
+      return new JSONWrapper(r.toJSON());
+    }).collect(Collectors.toList())));
 
     return view;
   }
