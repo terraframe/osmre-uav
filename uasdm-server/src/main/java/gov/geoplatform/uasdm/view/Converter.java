@@ -265,12 +265,19 @@ public abstract class Converter
 
       if (attribute instanceof AttributeOrganizationType)
       {
-        JSONObject object = (JSONObject) value;
-        String code = object.getString(Organization.CODE);
+        if (value != null)
+        {
+          JSONObject object = (JSONObject) value;
+          String code = object.getString(Organization.CODE);
 
-        ServerOrganization org = ServerOrganization.getByCode(code);
+          ServerOrganization org = ServerOrganization.getByCode(code);
 
-        uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
+          uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
+        }
+        else if (attribute.getRequired())
+        {
+          throw new GenericException("The field [" + attribute.getLabel() + "] is required");
+        }
       }
       else
       {
@@ -467,7 +474,9 @@ public abstract class Converter
 
     populate(view, product, components);
 
-    Page<DocumentIF> page = product.getGeneratedFromDocuments(pageNumber, pageSize);
+    Page<JSONWrapper> page = product.getGeneratedFromDocuments(pageNumber, pageSize).map(r -> {
+      return new JSONWrapper(r.toJSON());
+    });
 
     // Get metadata
     CollectionIF collection = (CollectionIF) product.getComponent();
@@ -500,9 +509,8 @@ public abstract class Converter
     view.setDateTime(product.getLastUpdateDate());
 
     page.setPresignThumnails(true);
-    view.setPage(new Page<JSONWrapper>(page.getCount(), page.getPageNumber(), page.getPageSize(), page.getResults().stream().map(r -> {
-      return new JSONWrapper(r.toJSON());
-    }).collect(Collectors.toList())));
+
+    view.setPage(page);
 
     return view;
   }

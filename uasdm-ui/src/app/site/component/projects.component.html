@@ -296,7 +296,7 @@
                       </h3>
 
                       <tabset *ngIf="current.type === 1" class="nav-full-width">
-                        <tab heading="Overview">
+                        <tab heading="Overview" (selectTab)="activeTab = 'Overview'">
                           <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
                             <label>
                               {{attribute.label.localizedValue}}
@@ -312,23 +312,23 @@
                           <ng-container [ngTemplateOutlet]="locations">
                           </ng-container>
                         </tab>
-                        <tab heading="Sites">
+                        <tab heading="Sites" (selectTab)="activeTab = 'Sites'">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
                         </tab>
-                        <tab heading="Products">
-                          <product-panel [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                        <tab heading="Products" (selectTab)="activeTab = 'Products'">
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
 
                       <tabset *ngIf="current.type !== 1" class="nav-full-width">
-                        <tab [heading]="current.metadata.childLabel">
+                        <tab [heading]="current.metadata.childLabel" (selectTab)="activeTab = current.metadata.childLabel">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
                         </tab>
-                        <tab heading="Products">
-                          <product-panel [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                        <tab heading="Products"  (selectTab)="activeTab = 'Products'">
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
