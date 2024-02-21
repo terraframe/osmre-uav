@@ -37,6 +37,11 @@ const routes: Routes = [
         component: ProjectsComponent
     },
     {
+        path: 'viewer/:action/:oid',
+        canActivate: [AuthGuard],
+        component: ProjectsComponent
+    },
+    {
         path: 'upload',
         component: UploadComponent,
         canDeactivate: [CanDeactivateGuardService]
