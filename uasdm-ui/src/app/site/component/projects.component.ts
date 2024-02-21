@@ -1,6 +1,3 @@
-///
-///
-///
 
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
@@ -30,7 +27,7 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from "angular-animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { UIOptions } from "fine-uploader";
 import { FineUploaderBasic } from "fine-uploader/lib/core";
@@ -223,6 +220,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private modalService: BsModalService,
     private metadataService: MetadataService,
     private route: ActivatedRoute,
+    private router: Router,
     private cookieService: CookieService,
     private syncService: LPGSyncService
   ) {
@@ -275,11 +273,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    const oid = this.route.snapshot.params["oid"];
-    const action = this.route.snapshot.params["action"];
+    const oid = this.route.snapshot.queryParams["oid"];
+    const action = this.route.snapshot.queryParams["action"];
 
-    if (oid != null && action != null && action === "collection") {
-      this.handleViewSite(oid);
+    if (oid != null && action != null && action === "component") {
+      this.handleViewSite(oid, true);
     }
 
     let uiOptions: UIOptions = {
@@ -383,8 +381,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.addLayers();
 
-
-    this.refreshMapPoints(true);
+	const action = this.route.snapshot.queryParams["action"];
+    this.refreshMapPoints(action != "component");
 
     // Add zoom and rotation controls to the map.
     this.map.addControl(new NavigationControl(), "bottom-right");
@@ -1023,7 +1021,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleViewSite(id: string): void {
+  handleViewSite(id: string, flyTo: boolean = false): void {
+    this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { "action": "component", "oid": id },
+        queryParamsHandling: "merge",
+        replaceUrl: true
+    });
+	  
     this.service.view(id).then(response => {
       const node = response.item;
       const breadcrumbs = response.breadcrumbs;
@@ -1062,6 +1067,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.select(node, parent, null);
       }
+      
+	    if (flyTo)
+	    {
+			this.map.easeTo({
+		        center: this.breadcrumbs[0].data.geometry.coordinates,
+		        zoom: 8
+		      });
+		}
     });
 
   }
@@ -1232,7 +1245,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       //                return this.service.getItems( node.data.id, node.data.name );
     }
     else {
+		this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { "action": "component", "oid": node.id },
+            queryParamsHandling: "merge",
+            replaceUrl: true
+        });
+		
       this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
+		  
+		  
         this.current = {
           type: SELECTION_TYPE.SITE,
           data: node,
@@ -1320,38 +1342,48 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    else if (breadcrumb.type === SELECTION_TYPE.SITE) {
-      const node: SiteEntity = breadcrumb.data;
-
-      if (node.geometry != null && node.geometry.type === "Point") {
-        //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
-
-        this.map.easeTo({
-          center: node.geometry.coordinates,
-          zoom: 8
+    else
+    {
+		this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { "action": "component", "oid": breadcrumb.data.id },
+            queryParamsHandling: "merge",
+            replaceUrl: true
         });
-      }
-
-      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
-        var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.SITE && i.data.id === node.id);
-
-        this.current = breadcrumb;
-        this.breadcrumbs.splice(indexOf + 1);
-        this.setNodes(nodes);
-      });
-    }
-    else if (breadcrumb.type === SELECTION_TYPE.LOCATION) {
-      const row: any = breadcrumb.data;
-
-      var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.LOCATION && i.data.properties.uid === row.properties.uid);
-
-      this.breadcrumbs.splice(indexOf);
-
-      this.current = null;
-      this.children = [];
-
-      this.handleHierarchyClick(row);
-    }
+		
+	    if (breadcrumb.type === SELECTION_TYPE.SITE) {
+	      const node: SiteEntity = breadcrumb.data;
+	
+	      if (node.geometry != null && node.geometry.type === "Point") {
+	        //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+	
+	        this.map.easeTo({
+	          center: node.geometry.coordinates,
+	          zoom: 8
+	        });
+	      }
+	
+	      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
+	        var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.SITE && i.data.id === node.id);
+	
+	        this.current = breadcrumb;
+	        this.breadcrumbs.splice(indexOf + 1);
+	        this.setNodes(nodes);
+	      });
+	    }
+	    else if (breadcrumb.type === SELECTION_TYPE.LOCATION) {
+	      const row: any = breadcrumb.data;
+	
+	      var indexOf = this.breadcrumbs.findIndex(i => i.type === SELECTION_TYPE.LOCATION && i.data.properties.uid === row.properties.uid);
+	
+	      this.breadcrumbs.splice(indexOf);
+	
+	      this.current = null;
+	      this.children = [];
+	
+	      this.handleHierarchyClick(row);
+	    }
+	 }
   }
 
   expand(node: SiteEntity) {
