@@ -204,12 +204,12 @@ public class ProjectManagementService
   public List<TreeComponent> getChildren(String sessionId, String parentid)
   {
     LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
-    
+
     UasComponentIF uasComponent = ComponentFacade.getComponent(parentid);
-    
+
     final List<UasComponentIF> i = uasComponent.getChildren();
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
-    
+
     return children;
   }
 
@@ -556,7 +556,10 @@ public class ProjectManagementService
 
     try
     {
-      uasComponent.delete();
+      if (uasComponent != null)
+      {
+        uasComponent.delete();
+      }
     }
     catch (ProgrammingErrorException e)
     {
@@ -760,16 +763,16 @@ public class ProjectManagementService
             }
           });
         }
-        
+
         if (object.getString("folder").equals(ImageryComponent.ORTHO))
         {
           String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
-          
+
           new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
             return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
           }).forEach(document -> {
             String name = document.getName().toUpperCase();
-            
+
             if (name.endsWith(".TIF"))
             {
               document.setOrthoCorrectionModel(orthoCorrectionModel);
@@ -808,13 +811,14 @@ public class ProjectManagementService
 
     new MetadataXMLGenerator().generateAndUpload(collection, metadata);
   }
-  
+
   public String getObjectsPresigned(String sessionId, String id, String key, Long pageNumber, Long pageSize)
   {
-    // Don't presign the urls inside of a request since we don't want to eat up a db connection longer than we have to
+    // Don't presign the urls inside of a request since we don't want to eat up
+    // a db connection longer than we have to
     return getObjectsPresignedReq(sessionId, id, key, pageNumber, pageSize).toJSON(true).toString();
   }
-  
+
   @Request
   public SiteObjectsResultSet getObjectsPresignedReq(String sessionId, String id, String key, Long pageNumber, Long pageSize)
   {
@@ -990,7 +994,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> items(String sessionId, String id, String key, String conditions )
+  public List<TreeComponent> items(String sessionId, String id, String key, String conditions)
   {
     return this.items(id, key, conditions);
   }

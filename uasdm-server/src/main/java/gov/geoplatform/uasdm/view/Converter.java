@@ -265,12 +265,19 @@ public abstract class Converter
 
       if (attribute instanceof AttributeOrganizationType)
       {
-        JSONObject object = (JSONObject) value;
-        String code = object.getString(Organization.CODE);
+        if (value != null)
+        {
+          JSONObject object = (JSONObject) value;
+          String code = object.getString(Organization.CODE);
 
-        ServerOrganization org = ServerOrganization.getByCode(code);
+          ServerOrganization org = ServerOrganization.getByCode(code);
 
-        uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
+          uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
+        }
+        else if (attribute.getRequired())
+        {
+          throw new GenericException("The field [" + attribute.getLabel() + "] is required");
+        }
       }
       else
       {

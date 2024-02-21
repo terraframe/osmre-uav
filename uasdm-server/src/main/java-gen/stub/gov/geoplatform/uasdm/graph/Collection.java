@@ -571,7 +571,15 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public Integer getNumberOfChildren()
   {
-    return this.getDocuments().size();
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
+    
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT out('" + mdEdge.getDBClassName() +"').size() FROM :rid");
+    
+    GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+    
+    return query.getSingleResult();
   }
 
   public UasComponentIF getUasComponent()
