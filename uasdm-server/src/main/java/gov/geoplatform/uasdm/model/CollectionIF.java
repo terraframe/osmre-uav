@@ -95,4 +95,8 @@ public interface CollectionIF extends UasComponentIF
   public BigDecimal getAreaCovered();
 
   public String getWeatherConditions();
+  
+  public Boolean getHasAllZip();
+  
+  public void setHasAllZip(Boolean b);
 }

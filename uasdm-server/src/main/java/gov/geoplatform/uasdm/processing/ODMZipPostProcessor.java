@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -60,21 +60,21 @@ import net.lingala.zip4j.ZipFile;
  */
 public class ODMZipPostProcessor
 {
-  private static final Logger logger   = LoggerFactory.getLogger(ODMZipPostProcessor.class);
+  private static final Logger       logger   = LoggerFactory.getLogger(ODMZipPostProcessor.class);
 
-  public static final String  DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
+  public static final String        DEM_GDAL = Product.ODM_ALL_DIR + "/gdal";
 
-  public static final String  POTREE   = Product.ODM_ALL_DIR + "/entwine_pointcloud";
+  public static final String        POTREE   = Product.ODM_ALL_DIR + "/entwine_pointcloud";
 
-  protected ODMUploadTaskIF   progressTask;
+  protected ODMUploadTaskIF         progressTask;
 
-  protected CollectionIF      collection;
+  protected CollectionIF            collection;
 
   protected ODMProcessConfiguration odmConfig;
 
-  protected CloseableFile     allZip;
+  protected CloseableFile           allZip;
 
-  protected Product           product;
+  protected Product                 product;
 
   public ODMZipPostProcessor(CollectionIF collection, ODMUploadTaskIF progressTask, Product product, ODMProcessConfiguration odmConfig)
   {
@@ -110,6 +110,10 @@ public class ODMZipPostProcessor
         this.processProduct(product, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask), unzippedParentFolder);
 
         this.uploadAllZip(allZip);
+
+        this.collection.appLock();
+        this.collection.setHasAllZip(true);
+        this.collection.apply();
       }
     }
 
@@ -247,9 +251,9 @@ public class ODMZipPostProcessor
   public String buildS3Path(String folder, String filename)
   {
     String path = folder + "/";
-    
+
     String prefix = odmConfig == null ? null : odmConfig.getOutFileNamePrefix();
-    
+
     if (prefix != null && prefix.length() > 0)
     {
       path = path + prefix + "_";

@@ -101,16 +101,22 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
-
+  
   @Override
-  public void apply()
+  public void apply(boolean regenerateMetadata)
   {
     if (this.getCollectionEndDate() == null)
     {
       this.setCollectionEndDate(this.getCollectionDate());
     }
 
-    super.apply();
+    super.apply(regenerateMetadata);
+  }
+
+  @Override
+  public void apply()
+  {
+    this.apply(true);
   }
 
   @Override
@@ -306,18 +312,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
   }
 
-  public boolean hasAllZip()
+  private boolean calculateHasAllZip()
   {
-    /*
-     * List<Product> products = this.getProducts();
-     * 
-     * if (products.size() == 0) { return Optional.empty(); }
-     * 
-     * return products.get(0).getAllZipDocument();
-     */
-
     Optional<ODMRun> odmRun = ODMRun.getByComponentOrdered(this.getOid()).stream().findFirst();
-
+    
     if (odmRun.isPresent())
     {
       return odmRun.get().getODMRunOutputChildDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
@@ -326,6 +324,23 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     {
       return getAllZip() != null;
     }
+  }
+  
+  @Override
+  public Boolean getHasAllZip()
+  {
+    Boolean hasAllZip = super.getHasAllZip();
+    
+    if (hasAllZip == null)
+    {
+      hasAllZip = calculateHasAllZip();
+      
+      this.appLock();
+      this.setHasAllZip(hasAllZip);
+      this.apply(false);
+    }
+    
+    return hasAllZip;
   }
 
   /**

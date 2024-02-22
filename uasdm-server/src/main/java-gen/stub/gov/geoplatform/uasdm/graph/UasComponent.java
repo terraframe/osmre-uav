@@ -217,9 +217,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
   }
 
-  @Override
   @Transaction
-  public void apply()
+  public void apply(boolean regenerateMetadata)
   {
     boolean isNameModified = this.isModified(UasComponent.NAME);
     boolean needsUpdate = this.needsUpdate();
@@ -250,7 +249,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
       // Site data is not included in the XML metadata spec and as
       // such we do not need to update when there is a change.
-      if (! ( ( this instanceof SiteIF ) ))
+      if (regenerateMetadata && ! ( ( this instanceof SiteIF ) ))
       {
         this.getDerivedCollections().forEach(collection -> {
           new GenerateMetadataCommand(collection).doIt();
@@ -259,6 +258,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
       CollectionReportFacade.update(this).doIt();
     }
+  }
+  
+  @Override
+  @Transaction
+  public void apply()
+  {
+    this.apply(true);
   }
 
   public String generateFolderName(UasComponentIF parent)

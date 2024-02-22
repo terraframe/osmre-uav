@@ -428,7 +428,7 @@ public class Product extends ProductBase implements ProductIF
   {
     // return this.getDocuments().stream().filter(doc ->
     // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    return ( (Collection) this.getComponent() ).hasAllZip();
+    return ( (Collection) this.getComponent() ).getHasAllZip();
   }
 
   public SiteObject getAllZip()
