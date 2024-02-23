@@ -167,7 +167,7 @@ public class ODMZipPostProcessor
       odmRun.apply();
     }
 
-    product.updateBoundingBox();
+    product.updateBoundingBox(true);
 
     IndexService.createStacItems(product);
 

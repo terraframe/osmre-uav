@@ -447,11 +447,6 @@ public abstract class Converter
 
     if (mappables.size() > 0)
     {
-      if ( ( product.getBoundingBox() == null || product.getBoundingBox().length() == 0 ))
-      {
-        product.updateBoundingBox();
-      }
-
       String bbox = product.getBoundingBox();
 
       if (bbox != null)

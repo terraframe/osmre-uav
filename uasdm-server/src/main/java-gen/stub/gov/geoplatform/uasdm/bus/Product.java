@@ -180,7 +180,7 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public void updateBoundingBox()
+  public void updateBoundingBox(boolean newProduct)
   {
     UasComponent component = this.getComponent();
 
