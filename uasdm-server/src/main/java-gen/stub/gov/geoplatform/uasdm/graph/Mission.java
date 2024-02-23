@@ -51,7 +51,8 @@ public class Mission extends MissionBase implements MissionIF
   {
     Collection collection = new Collection();
     collection.addPrivilegeType(AllPrivilegeType.AGENCY);
-
+    collection.setHasAllZip(false);
+    
     return collection;
   }
 

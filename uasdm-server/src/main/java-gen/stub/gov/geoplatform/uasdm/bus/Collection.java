@@ -91,6 +91,18 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return null;
   }
+  
+  @Override
+  public Boolean getHasAllZip()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public void setHasAllZip(Boolean b)
+  {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public String getPocEmail()

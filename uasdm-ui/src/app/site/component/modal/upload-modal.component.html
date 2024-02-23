@@ -318,13 +318,13 @@
               <div class="panel-body" style="padding:10px;">
                 <div style="padding:10px;">
                   <div class="form-group">
-                    <label for="outFileName">Output Product Name Prefix</label>
-                    <input [(ngModel)]="values.outFileName" name="outFileName" type="input" class="form-control"
+                    <label for="outFileNamePrefix">Output Product Name Prefix</label>
+                    <input [(ngModel)]="values.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
                       placeholder="Output product name prefix..." />
                   </div>
 
                   <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-                    <label for="outFileName">Orthophoto and DEM Resolution (cm)</label>
+                    <label for="outFileNamePrefix">Orthophoto and DEM Resolution (cm)</label>
                     <input [(ngModel)]="values.resolution" name="resolution" type="number" class="form-control"
                       placeholder="5" />
                   </div>

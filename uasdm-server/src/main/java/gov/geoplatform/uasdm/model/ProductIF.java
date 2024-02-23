@@ -35,7 +35,7 @@ public interface ProductIF extends ComponentIF
 
   public String getBoundingBox();
 
-  public void updateBoundingBox();
+  public void updateBoundingBox(boolean newProduct);
 
   public void clear();
 

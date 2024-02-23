@@ -2,6 +2,23 @@
 # Release Notes
 
 
+## [1.0.3](https://github.com/terraframe/osmre-uav/releases/tag/1.0.3) (2024-02-19)
+
+
+
+
+
+## [1.0.2](https://github.com/terraframe/osmre-uav/releases/tag/1.0.2) (2024-02-15)
+
+
+### Bug Fixes
+
+   - **keycloak** fix 404 login issue on keycloak/loginRedirect  ([#315](https://github.com/terraframe/osmre-uav/issues/315)) ([621eb](https://github.com/terraframe/osmre-uav/commit/621eb8ef90ce48a5f831227f036f0c5b0affe8aa))
+   - **processing** output file name prefix configuration option does nothing (refs #317) ([#317](https://github.com/terraframe/osmre-uav/issues/317)) ([947d3](https://github.com/terraframe/osmre-uav/commit/947d3e81a3951f92a5efc99a5a9aba7ab77319ee))
+   - **keycloak** login events no longer being recorded in session log   ([a0900](https://github.com/terraframe/osmre-uav/commit/a09009727609cf2b512d23a6ee56807f268e4661))
+
+
+
 ## [1.0.1](https://github.com/terraframe/osmre-uav/releases/tag/1.0.1) (2024-02-08)
 
 ### Features

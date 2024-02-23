@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,11 +24,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.runwaysdk.ComponentIF;
 
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class SiteObject implements TreeComponent
 {
@@ -43,6 +47,8 @@ public class SiteObject implements TreeComponent
   public static final String IMAGE_KEY              = "imageKey";
 
   public static final String LAST_MODIFIED_KEY      = "lastModified";
+  
+  public static final String PRESIGNED_THUMBNAIL_DOWNLOAD = "presignedThumbnailDownload";
 
   public static final String EXCLUDE                = "exclude";
 
@@ -258,7 +264,7 @@ public class SiteObject implements TreeComponent
     {
       json.put(SiteObject.IMAGE_KEY, this.imageKey);
     }
-
+    
     return json;
   }
 

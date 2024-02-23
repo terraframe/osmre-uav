@@ -26,6 +26,7 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.service.business.CloudOptimizedGeoTiffBusinessService;
 import gov.geoplatform.uasdm.tile.TileServiceAuthenticator;
 import gov.geoplatform.uasdm.tile.TileServiceAuthenticator.TileJsonRequest;
 import gov.geoplatform.uasdm.tile.TileServiceAuthenticator.TilesRequest;
@@ -36,7 +37,10 @@ public class CloudOptimizedGeoTiffService
   @Autowired
   protected ApplicationContext applicationContext;
   
-  @Request(RequestType.SESSION)
+  @Autowired
+  protected CloudOptimizedGeoTiffBusinessService service;
+  
+//  @Request(RequestType.SESSION)
   public ResponseEntity<?> tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
   {
     TilesRequest req = new TilesRequest();
@@ -50,10 +54,12 @@ public class CloudOptimizedGeoTiffService
     req.format = format;
     req.queryParams = queryParams;
     
-    TileServiceAuthenticator authenticator = new TileServiceAuthenticator(applicationContext, req);
-    authenticator.authenticate();
+    return service.tiles(sessionId, path, matrixSetId, x, y, z, scale, format, queryParams);
     
-    return (ResponseEntity<?>) authenticator.GetResponse();
+//    TileServiceAuthenticator authenticator = new TileServiceAuthenticator(applicationContext, req);
+//    authenticator.authenticate();
+//    
+//    return (ResponseEntity<?>) authenticator.GetResponse();
   }
 
   @Request(RequestType.SESSION)

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.HttpMethod;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
@@ -202,12 +204,12 @@ public class ProjectManagementService
   public List<TreeComponent> getChildren(String sessionId, String parentid)
   {
     LinkedList<TreeComponent> children = new LinkedList<TreeComponent>();
-    
+
     UasComponentIF uasComponent = ComponentFacade.getComponent(parentid);
-    
+
     final List<UasComponentIF> i = uasComponent.getChildren();
     i.forEach(c -> children.add(Converter.toSiteItem(c, false)));
-    
+
     return children;
   }
 
@@ -554,7 +556,10 @@ public class ProjectManagementService
 
     try
     {
-      uasComponent.delete();
+      if (uasComponent != null)
+      {
+        uasComponent.delete();
+      }
     }
     catch (ProgrammingErrorException e)
     {
@@ -758,16 +763,16 @@ public class ProjectManagementService
             }
           });
         }
-        
+
         if (object.getString("folder").equals(ImageryComponent.ORTHO))
         {
           String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
-          
+
           new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
             return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
           }).forEach(document -> {
             String name = document.getName().toUpperCase();
-            
+
             if (name.endsWith(".TIF"))
             {
               document.setOrthoCorrectionModel(orthoCorrectionModel);
@@ -805,6 +810,19 @@ public class ProjectManagementService
     FlightMetadata metadata = FlightMetadata.parse(collection, new JSONObject(json));
 
     new MetadataXMLGenerator().generateAndUpload(collection, metadata);
+  }
+
+  public String getObjectsPresigned(String sessionId, String id, String key, Long pageNumber, Long pageSize)
+  {
+    // Don't presign the urls inside of a request since we don't want to eat up
+    // a db connection longer than we have to
+    return getObjectsPresignedReq(sessionId, id, key, pageNumber, pageSize).toJSON(true).toString();
+  }
+
+  @Request
+  public SiteObjectsResultSet getObjectsPresignedReq(String sessionId, String id, String key, Long pageNumber, Long pageSize)
+  {
+    return this.getObjects(id, key, pageNumber, pageSize);
   }
 
   @Request(RequestType.SESSION)
@@ -976,7 +994,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> items(String sessionId, String id, String key, String conditions )
+  public List<TreeComponent> items(String sessionId, String id, String key, String conditions)
   {
     return this.items(id, key, conditions);
   }

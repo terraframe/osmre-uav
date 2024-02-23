@@ -28,7 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -337,7 +339,8 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public void updateBoundingBox()
+  @Override
+  public void updateBoundingBox(boolean newProduct)
   {
     UasComponent component = this.getComponent();
 
@@ -368,14 +371,63 @@ public class Product extends ProductBase implements ProductIF
         collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
 
         collection.apply();
-
       }
     }
-
-    if (component instanceof Collection)
+    else
     {
-      new GenerateMetadataCommand((Collection) component).doIt();
+      int failCount = newProduct ? 0 : getBoundingBoxFailureCount();
+      
+      JSONObject jo = new JSONObject();
+      jo.put("FailureCount", failCount + 1);
+      this.setBoundingBox(jo.toString());
+      this.apply();
     }
+  }
+  
+  /**
+   * @return -1 if the bounding box is valid. Zero if it has never been calculated. A number less than 4 or equal to 4 if it's been attempted and failed before.
+   */
+  public int getBoundingBoxFailureCount()
+  {
+    try
+    {
+      String bbox = super.getBoundingBox();
+      if (bbox == null || bbox.length() == 0) { return 0; }
+      
+      if (bbox.startsWith("["))
+      {
+        JSONArray ja = new JSONArray(bbox);
+        if (ja.length() == 4) { return -1; } // A valid bounding box
+      }
+      
+      JSONObject jo = new JSONObject(bbox);
+      if (!jo.has("FailureCount")) { return 0; }
+      
+      return jo.getInt("FailureCount");
+    }
+    catch(Throwable t)
+    {
+      return 0;
+    }
+  }
+  
+  @Override
+  public String getBoundingBox()
+  {
+    int fc = getBoundingBoxFailureCount();
+    
+    if (fc >= 0 && fc < 4)
+    {
+      updateBoundingBox(false);
+      fc = getBoundingBoxFailureCount();
+    }
+    
+    if (fc != -1)
+    {
+      return null;
+    }
+    
+    return super.getBoundingBox();
   }
 
   public Envelope getEnvelope()
@@ -419,7 +471,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (allZipExists)
     {
-      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this);
+      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
 
       uploader.processAllZip();
     }
@@ -429,7 +481,7 @@ public class Product extends ProductBase implements ProductIF
   {
     // return this.getDocuments().stream().filter(doc ->
     // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    return ( (Collection) this.getComponent() ).hasAllZip();
+    return ( (Collection) this.getComponent() ).getHasAllZip();
   }
 
   public SiteObject getAllZip()

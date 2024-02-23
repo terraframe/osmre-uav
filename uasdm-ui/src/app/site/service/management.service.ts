@@ -39,7 +39,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getObjects(id: string, key: string, pageNumber: number, pageSize: number): Promise<SiteObjectsResultSet> {
+	getObjects(id: string, key: string, pageNumber: number, pageSize: number, presigned: boolean = false): Promise<SiteObjectsResultSet> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
 
@@ -53,9 +53,11 @@ export class ManagementService {
 		if (pageSize != null) {
 			params = params.set('pageSize', pageSize.toString());
 		}
+		
+		let method = presigned ? "objects-presigned" : "objects";
 
 		return this.http
-			.get<SiteObjectsResultSet>(environment.apiUrl + '/project/objects', { params: params })
+			.get<SiteObjectsResultSet>(environment.apiUrl + '/project/' + method, { params: params })
 			.toPromise()
 	}
 
@@ -474,6 +476,22 @@ export class ManagementService {
 
 		return this.http.get<PageResult<Message>>(environment.apiUrl + '/project/get-messages', { params: params })
 			.toPromise();
+	}
+	
+	downloadPresigned(url: string, useSpinner: boolean): Observable<Blob> {
+
+		let params: HttpParams = new HttpParams();
+
+		if (useSpinner) {
+			this.eventService.start();
+		}
+
+		return this.noErrorHttpClient.get<Blob>(url, { params: params, responseType: 'blob' as 'json' })
+			.pipe(finalize(() => {
+				if (useSpinner) {
+					this.eventService.complete();
+				}
+			}))
 	}
 
 	download(id: string, key: string, useSpinner: boolean): Observable<Blob> {

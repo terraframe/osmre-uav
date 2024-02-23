@@ -57,7 +57,7 @@ export class ProductModalComponent implements OnInit {
 		}
 
 		this.product.page.resultSet.forEach(pDocument => {
-			this.getThumbnail(pDocument.id, pDocument.key);
+			this.getThumbnail(pDocument.id, pDocument.key, pDocument.presignedThumbnailDownload);
 		});
 	}
 
@@ -73,19 +73,30 @@ export class ProductModalComponent implements OnInit {
 		}
 	}
 
-	getThumbnail(id: string, key: string): void {
+	getThumbnail(id: string, key: string, presignedThumbnailDownload: string = null): void {
 
-		const component: string = this.product.entities[this.product.entities.length - 1].id;
-		const rootPath: string = key.substr(0, key.lastIndexOf("/"));
-		const fileName: string = /[^/]*$/.exec(key)[0];
-		const lastPeriod: number = fileName.lastIndexOf(".");
-		const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
-
-		this.service.download(component, thumbKey, false).subscribe(blob => {
-			this.createImageFromBlob(blob, id);
-		}, error => {
-			console.log(error);
-		});
+		if (presignedThumbnailDownload != null)
+		{
+			this.service.downloadPresigned(presignedThumbnailDownload, false).subscribe(blob => {
+				this.createImageFromBlob(blob, id);
+			}, error => {
+				console.log(error);
+			});
+		}
+		else
+		{
+			const component: string = this.product.entities[this.product.entities.length - 1].id;
+			const rootPath: string = key.substr(0, key.lastIndexOf("/"));
+			const fileName: string = /[^/]*$/.exec(key)[0];
+			const lastPeriod: number = fileName.lastIndexOf(".");
+			const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
+	
+			this.service.download(component, thumbKey, false).subscribe(blob => {
+				this.createImageFromBlob(blob, id);
+			}, error => {
+				console.log(error);
+			});
+		}
 	}
 
 	onPageChange(pageNumber: number): void {

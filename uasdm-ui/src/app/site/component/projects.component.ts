@@ -215,6 +215,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   // Content of the location panel
   content: string = "";
 
+  activeTab: string = "";
+
   constructor(
     private configuration: ConfigurationService,
     private service: ManagementService,

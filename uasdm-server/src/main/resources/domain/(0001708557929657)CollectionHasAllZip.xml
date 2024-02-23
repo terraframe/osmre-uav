@@ -1,0 +1,19 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.Collection">
+        <create>
+          <attributes>
+	          <boolean name="hasAllZip" label="Has All Zip" positiveLabel="Has All Zip " negativeLabel="Does Not Have All Zip " required="false" description="Flag indicating whether an all zip exists for the collection." />
+	        </attributes>
+        </create>
+      </mdVertex>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.Collection.hasAllZip" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
+    </delete>
+  </undoIt>
+</version>

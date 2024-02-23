@@ -42,6 +42,7 @@ import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
 import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
@@ -216,9 +217,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
   }
 
-  @Override
   @Transaction
-  public void apply()
+  public void apply(boolean regenerateMetadata)
   {
     boolean isNameModified = this.isModified(UasComponent.NAME);
     boolean needsUpdate = this.needsUpdate();
@@ -249,7 +249,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
       // Site data is not included in the XML metadata spec and as
       // such we do not need to update when there is a change.
-      if (! ( ( this instanceof SiteIF ) ))
+      if (regenerateMetadata && ! ( ( this instanceof SiteIF ) ))
       {
         this.getDerivedCollections().forEach(collection -> {
           new GenerateMetadataCommand(collection).doIt();
@@ -258,6 +258,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
       CollectionReportFacade.update(this).doIt();
     }
+  }
+  
+  @Override
+  @Transaction
+  public void apply()
+  {
+    this.apply(true);
   }
 
   public String generateFolderName(UasComponentIF parent)
@@ -737,7 +744,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public Integer getNumberOfChildren()
   {
-    return this.getChildren().size();
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() +"').size() FROM :rid");
+    
+    GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+    
+    return query.getSingleResult();
   }
 
   public List<DocumentIF> getDocuments()

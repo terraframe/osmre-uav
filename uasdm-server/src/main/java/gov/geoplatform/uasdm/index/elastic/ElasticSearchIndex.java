@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -53,6 +53,7 @@ import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery.Builder;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -297,7 +298,7 @@ public class ElasticSearchIndex implements Index
         document.populate(ancestor.getSolrIdField(), ancestor.getOid());
         document.populate(ancestor.getSolrNameField(), ancestor.getName());
       }
-      
+
       client.index(i -> i.index(COMPONENT_INDEX_NAME).id(existing != null ? existing.id() : UUID.randomUUID().toString()).document(document));
 
     }
@@ -418,7 +419,7 @@ public class ElasticSearchIndex implements Index
       if (component instanceof SiteIF)
       {
         ServerOrganization org = ( (SiteIF) component ).getServerOrganization();
-        
+
         if (org != null)
         {
           document.setBureau(org.getDisplayLabel().getValue());
@@ -449,7 +450,22 @@ public class ElasticSearchIndex implements Index
       {
         ElasticsearchClient client = createClient();
 
-        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME).query(q -> q.queryString(m -> m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label").query("*" + ClientUtils.escapeQueryChars(text) + "*"))), ElasticDocument.class);
+        String[] tokens = text.trim().split("\\s");
+
+        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME).query(q -> {
+          return q.bool(b -> b.must(mu -> {
+
+            for (String token : tokens)
+            {
+              mu.queryString(m -> {
+                Builder fields = m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label");
+                return fields.query("*" + token + "*");
+              });
+            }
+
+            return mu;
+          }));
+        }), ElasticDocument.class);
 
         for (Hit<ElasticDocument> hit : search.hits().hits())
         {

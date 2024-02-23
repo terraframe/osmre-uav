@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -25,38 +25,36 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 
 public class ProductView
 {
-  private String         id;
+  private String             id;
 
-  private String         name;
+  private String             name;
 
-  private List<SiteItem> components;
+  private List<SiteItem>     components;
 
-  private String         imageKey;
+  private String             imageKey;
 
-  private boolean        published;
+  private boolean            published;
 
-  private String         boundingBox;
-  
-  private boolean        hasPointcloud;
-  
-  private boolean        hasAllZip;
-  
-  private String         orthoKey;
-  
-  private String         demKey;
-  
-  private String         publicStacUrl;
-  
-  private List<DocumentIF> mappables;
-  
+  private String             boundingBox;
+
+  private boolean            hasPointcloud;
+
+  private boolean            hasAllZip;
+
+  private String             orthoKey;
+
+  private String             demKey;
+
+  private String             publicStacUrl;
+
+  private List<DocumentView> mappables;
+
   public String getPublicStacUrl()
   {
     return publicStacUrl;
@@ -116,7 +114,7 @@ public class ProductView
   {
     this.hasPointcloud = hasPointcloud;
   }
-  
+
   public boolean isHasAllZip()
   {
     return hasAllZip;
@@ -136,7 +134,7 @@ public class ProductView
   {
     this.boundingBox = boundingBox;
   }
-  
+
   public String getOrthoKey()
   {
     return orthoKey;
@@ -166,17 +164,17 @@ public class ProductView
   {
     this.published = published;
   }
-  
-  public List<DocumentIF> getMappables()
+
+  public List<DocumentView> getMappables()
   {
     return mappables;
   }
 
-  public void setMappables(List<DocumentIF> mappables)
+  public void setMappables(List<DocumentView> mappables)
   {
     this.mappables = mappables;
   }
-  
+
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
@@ -184,7 +182,7 @@ public class ProductView
     object.put("name", this.name);
     object.put("entities", SiteItem.serializeItems(this.components));
     object.put("published", this.published);
-    
+
     if (published)
     {
       object.put("publicStacUrl", publicStacUrl);
@@ -194,57 +192,57 @@ public class ProductView
     {
       object.put("imageKey", this.imageKey);
     }
-    
+
     JSONArray jaLayers = new JSONArray();
-    
-    for (DocumentIF mappable : this.mappables)
+
+    for (DocumentView mappable : this.mappables)
     {
       JSONObject layer = new JSONObject();
-      
+
       String url;
-      
+
       try
       {
-        url = "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
+        url = "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getKey(), StandardCharsets.UTF_8.name());
       }
       catch (UnsupportedEncodingException e)
       {
         throw new ProgrammingErrorException(e);
       }
-      
-      layer.put("key", mappable.getS3location());
-      
+
+      layer.put("key", mappable.getKey());
+
       layer.put("url", url);
-      
+
       layer.put("public", this.published);
-      
-      if (mappable.getS3location().contains(ImageryComponent.ORTHO + "/"))
+
+      if (mappable.getKey().contains(ImageryComponent.ORTHO + "/"))
       {
         layer.put("classification", LayerClassification.ORTHO.name());
       }
-      else if (mappable.getS3location().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
+      else if (mappable.getKey().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
       {
         layer.put("classification", LayerClassification.DEM_DSM.name());
       }
-      
+
       jaLayers.put(layer);
     }
-    
+
     object.put("orthoKey", this.orthoKey);
-    
+
     object.put("demKey", this.demKey);
-    
+
     object.put("layers", jaLayers);
-    
+
     if (this.boundingBox != null && this.boundingBox.length() > 0)
     {
       object.put("boundingBox", new JSONArray(this.boundingBox));
     }
-    
+
     object.put("hasPointcloud", this.hasPointcloud);
-    
+
     object.put("hasAllZip", this.hasAllZip);
-    
+
     return object;
   }
 

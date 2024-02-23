@@ -120,7 +120,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       }
     }
 
-    product.updateBoundingBox();
+    product.updateBoundingBox(true);
 
     new ReIndexStacItemCommand(product).doIt();
 

@@ -124,6 +124,7 @@ export class SiteEntity {
 	percentSideLap?: number;
 	areaCovered?: number;
 	weatherConditions?: string;
+	presignedThumbnailDownload?: string;
 
 	// Document metadata fields
 	description?: string;
@@ -157,7 +158,7 @@ export class ODMRunConfig {
 	processDem: boolean;
 	processOrtho: boolean;
 	includeGeoLocationFile: boolean;
-	outFileName: string;
+	outFileNamePrefix: string;
 	resolution: number;
 	videoResolution: number;
 	matcherNeighbors: number;
@@ -220,7 +221,7 @@ export class Selection {
 export class UploadForm {
 	create?: boolean;
 	name?: string;
-	outFileName?: string;
+	outFileNamePrefix?: string;
 	uasComponentOid?: string;
 	site?: string;
 	project?: string;
@@ -321,6 +322,7 @@ export class ProductDocument {
 	id: string;
 	name: string;
 	key: string;
+	presignedThumbnailDownload?: string;
 }
 
 export class ProductCriteria {

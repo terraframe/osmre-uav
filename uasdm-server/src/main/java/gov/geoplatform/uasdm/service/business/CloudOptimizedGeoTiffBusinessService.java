@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.service.business;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -27,12 +28,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import com.runwaysdk.business.rbac.UserDAOIF;
-import com.runwaysdk.mvc.ErrorRestResponse;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.web.json.JSONRunwayExceptionDTO;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.cog.CogTileException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.Document;
@@ -44,37 +45,55 @@ import net.geoprism.security.UnauthorizedAccessException;
 public class CloudOptimizedGeoTiffBusinessService
 {
   private TiTillerProxy proxy = new TiTillerProxy();
-  
-  @Request(RequestType.SESSION)
+
+  // @Request(RequestType.SESSION)
   public ResponseEntity<?> tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
   {
     try
     {
-      DocumentIF document = Document.find(path);
-      
-      if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid())
-          && !isPublished(document))
+      String url = null;
+
+      List<String> urls = queryParams.get("url");
+
+      if (urls.size() > 0)
       {
-        throw new UnauthorizedAccessException();
+        url = URLDecoder.decode(urls.get(0), "UTF-8");
       }
-      
-      InputStream inputStream = proxy.tiles(document, matrixSetId, x, y, z, scale, format, queryParams);
+
+      if (url == null || !url.startsWith("s3://" + AppProperties.getPublicBucketName()))
+      {
+        validateAccess(sessionId, path);
+      }
+
+      InputStream inputStream = proxy.tiles(path, matrixSetId, x, y, z, scale, format, queryParams);
       InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
-      
+
       HttpHeaders httpHeaders = new HttpHeaders();
       httpHeaders.set("Content-Type", "image/" + format);
       // httpHeaders.setContentLength(contentLengthOfStream);
-      
+
       return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
     }
     catch (Throwable t)
     {
-      CogTileException cte = (t instanceof CogTileException) ? (CogTileException) t : new CogTileException(t);
-      
-      // We don't want this exception to be thrown into Runway's request handling aspects because they will log the exception.
-      // And since this service throws so dang many errors I'm worried it will flood the logs.
-      //return new ErrorRestResponse(new JSONRunwayExceptionDTO(cte).getJSON());
+      CogTileException cte = ( t instanceof CogTileException ) ? (CogTileException) t : new CogTileException(t);
+
+      // We don't want this exception to be thrown into Runway's request
+      // handling aspects because they will log the exception.
+      // And since this service throws so dang many errors I'm worried it will
+      // flood the logs.
+      // return new ErrorRestResponse(new
+      // JSONRunwayExceptionDTO(cte).getJSON());
       return new ResponseEntity<String>(new JSONRunwayExceptionDTO(cte).getJSON().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Request(RequestType.SESSION)
+  private void validateAccess(String sessionId, String path)
+  {
+    if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid()))
+    {
+      throw new UnauthorizedAccessException();
     }
   }
 
@@ -82,14 +101,16 @@ public class CloudOptimizedGeoTiffBusinessService
   public JSONObject tilejson(String sessionId, String contextPath, String path)
   {
     DocumentIF document = Document.find(path);
-    
-    if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid())
-        && !isPublished(document))
+    boolean isPublished = isPublished(document);
+
+    if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid()) && !isPublished)
     {
       throw new UnauthorizedAccessException();
     }
-    
-    // Little bit of a hack, but we need the proxy to add api to the replaced paths, since we're fed through a spring controller. Other controllers might not...
+
+    // Little bit of a hack, but we need the proxy to add api to the replaced
+    // paths, since we're fed through a spring controller. Other controllers
+    // might not...
     if (contextPath.endsWith("/"))
     {
       contextPath = contextPath + "api";
@@ -98,16 +119,18 @@ public class CloudOptimizedGeoTiffBusinessService
     {
       contextPath = contextPath + "/api";
     }
-    
-    return proxy.tilejson(document, contextPath);
+
+    return proxy.tilejson(document, contextPath, isPublished);
   }
-  
+
   private boolean isPublished(DocumentIF document)
   {
-    Document doc = (Document)document;
+    Document doc = (Document) document;
     List<Product> prods = doc.getProductHasDocumentParentProducts();
-    
-    if (prods.size() > 0) return prods.get(0).isPublished();
-    else return false;
+
+    if (prods.size() > 0)
+      return prods.get(0).isPublished();
+    else
+      return false;
   }
 }

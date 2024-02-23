@@ -15,10 +15,17 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.amazonaws.HttpMethod;
+
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class SiteObjectsResultSet
 {
@@ -95,8 +102,13 @@ public class SiteObjectsResultSet
   {
     this.folder = folder;
   }
-
+  
   public JSONObject toJSON()
+  {
+    return toJSON(false);
+  }
+
+  public JSONObject toJSON(boolean presignThumbnails)
   {
     JSONObject json = new JSONObject();
 
@@ -107,10 +119,48 @@ public class SiteObjectsResultSet
     List<TreeComponent> items = new LinkedList<TreeComponent>();
     items.addAll(objects);
     json.put("results", SiteItem.serialize(items));
+    
+    if (presignThumbnails)
+    {
+      this.presignThumbnails(json.getJSONArray("results"));
+    }
 
     json.put("folder", folder);
 
     return json;
+  }
+  
+  private void presignThumbnails(JSONArray ja)
+  {
+    if (ja == null) { return; }
+    
+    for (int i = 0; i < ja.length(); ++i)
+    {
+      try
+      {
+        JSONObject jo = ja.getJSONObject(i);
+        
+        if (jo.has(SiteObject.KEY))
+        {
+          Calendar cal = Calendar.getInstance();
+          cal.add(Calendar.HOUR, 24);
+          String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), cal.getTime(), HttpMethod.GET).toString();
+          jo.put(SiteObject.PRESIGNED_THUMBNAIL_DOWNLOAD, presigned);
+        }
+      }
+      catch(RuntimeException e)
+      {
+        // Do nothing. This object doesn't have to exist.
+      }
+    }
+  }
+  
+  private String getThumbnailPath(String key)
+  {
+    String rootPath = key.substring(0, key.lastIndexOf("/"));
+    String fileName = FilenameUtils.getBaseName(key);
+    
+    return rootPath + "/thumbnails/" + fileName + ".png";
   }
 
 }

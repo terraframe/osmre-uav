@@ -67,17 +67,20 @@ import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class TiTillerProxy
 {
-  
+
   /**
    * -90 to 90 for latitude and -180 to 180 for longitude
    */
   public static class BBoxView
   {
     double minLat;
+
     double maxLat;
+
     double minLong;
+
     double maxLong;
-    
+
     public BBoxView(double minLong, double minLat, double maxLong, double maxLat)
     {
       this.minLat = minLat;
@@ -85,7 +88,7 @@ public class TiTillerProxy
       this.minLong = minLong;
       this.maxLong = maxLong;
     }
-    
+
     public double getMinLat()
     {
       return minLat;
@@ -127,10 +130,11 @@ public class TiTillerProxy
     }
 
     /**
-     * Perhaps Geoserver was returning bounding boxes of this format way back in the day? I dunno but
-     * Mapbox expects [[long, lat], [long, lat]], and our front-end converts from this obscure format
-     * to what Mapbox needs. Without patching a bunch of data though we're stuck with this internal format
-     * on product.boundingBox.
+     * Perhaps Geoserver was returning bounding boxes of this format way back in
+     * the day? I dunno but Mapbox expects [[long, lat], [long, lat]], and our
+     * front-end converts from this obscure format to what Mapbox needs. Without
+     * patching a bunch of data though we're stuck with this internal format on
+     * product.boundingBox.
      */
     public JSONArray toJSON()
     {
@@ -142,58 +146,58 @@ public class TiTillerProxy
       return ja;
     }
   }
-  
+
   public TitilerCogStatistics getCogStatistics(DocumentIF document)
   {
     try
     {
       InputStream stream = null;
-      
+
       String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-      
+
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
-      
+
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/statistics", parameters);
-      
+
       return new TitilerCogStatistics(IOUtils.toString(stream, "UTF-8"));
     }
-    catch(URISyntaxException | IOException e)
+    catch (URISyntaxException | IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   public TitilerCogInfo getCogInfo(DocumentIF document)
   {
     try
     {
       InputStream stream = null;
-      
+
       String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-      
+
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
-      
+
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/info", parameters);
-      
+
       ObjectMapper mapper = new ObjectMapper();
       return mapper.readValue(stream, TitilerCogInfo.class);
     }
-    catch(URISyntaxException | IOException e)
+    catch (URISyntaxException | IOException e)
     {
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   public InputStream getCogPreview(ProductIF product, DocumentIF document, CogPreviewParams params)
   {
     try
     {
       InputStream stream = null;
-      
+
       String tifUrl;
-      
+
       if (product.isPublished())
       {
         tifUrl = "s3://" + AppProperties.getPublicBucketName() + "/" + document.getS3location();
@@ -202,32 +206,32 @@ public class TiTillerProxy
       {
         tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
       }
-      
+
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
-      
+
       params.addParameters(parameters);
-      
+
       addMultispectralRGBParams(document, parameters);
-      
+
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/preview", parameters);
-      
+
       return stream;
     }
-    catch(URISyntaxException e)
+    catch (URISyntaxException e)
     {
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   public BBoxView getBoundingBox(ProductIF product, DocumentIF document)
   {
     try
     {
       InputStream bboxStream = null;
-      
+
       String tifUrl;
-      
+
       if (product.isPublished())
       {
         tifUrl = "s3://" + AppProperties.getPublicBucketName() + "/" + document.getS3location();
@@ -236,38 +240,38 @@ public class TiTillerProxy
       {
         tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
       }
-      
+
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
       parameters.put("url", Arrays.asList(tifUrl));
-      
+
       bboxStream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/bounds", parameters);
-      
+
       String sBbox = IOUtils.toString(bboxStream, StandardCharsets.UTF_8.name());
-      
+
       // {"bounds":[-111.12441929215683,39.32065294027042,-111.12343879151011,39.32106566894064]}
       JSONArray jaBbox = new JSONObject(sBbox).getJSONArray("bounds");
-      
+
       return new BBoxView(jaBbox.getDouble(0), jaBbox.getDouble(1), jaBbox.getDouble(2), jaBbox.getDouble(3));
     }
-    catch(IOException | URISyntaxException e)
+    catch (IOException | URISyntaxException e)
     {
       throw new ProgrammingErrorException(e);
     }
   }
-  
-  public InputStream tiles(DocumentIF document, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
+
+  public InputStream tiles(String path, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams)
   {
-    final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-    
+    final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + path;
+
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(layerS3Uri));
-    
-    passThroughParams(queryParams, parameters, new String[] {"bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"});
-    
+
+    passThroughParams(queryParams, parameters, new String[] { "bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
+
     try
     {
       InputStream isTile = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tiles/" + matrixSetId + "/" + z + "/" + x + "/" + y + "@" + scale + "x", parameters);
-      
+
       return isTile;
     }
     catch (URISyntaxException e)
@@ -283,7 +287,7 @@ public class TiTillerProxy
       if (ArrayUtils.contains(passThroughParams, entry.getKey()))
       {
         List<String> encoded = entry.getValue();
-        
+
         List<String> decoded = new ArrayList<String>();
         for (String val : encoded)
         {
@@ -296,47 +300,50 @@ public class TiTillerProxy
             throw new ProgrammingErrorException(e);
           }
         }
-        
+
         parameters.put(entry.getKey(), decoded);
       }
     }
   }
-  
-  public JSONObject tilejson(DocumentIF document, String contextPath)
+
+  public JSONObject tilejson(DocumentIF document, String contextPath, boolean isPublished)
   {
     UasComponentIF component = document.getComponent();
     if (component instanceof CollectionIF)
     {
       CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
     }
-    
-    final String layerS3Uri = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-    
+
+    String bucket = isPublished ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+
+    final String layerS3Uri = "s3://" + bucket + "/" + document.getS3location();
+
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(layerS3Uri));
-    
+
     // These are the min and max zooms which Mapbox will allow
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
-    
+
     addMultispectralRGBParams(document, parameters);
-    
+
     try
     {
-      // We have to get the tilejson file from titiler and replace their urls with our urls, since it can only be accessed through us by proxy.
+      // We have to get the tilejson file from titiler and replace their urls
+      // with our urls, since it can only be accessed through us by proxy.
       String sTileJson = IOUtils.toString(authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/tilejson.json", parameters), StandardCharsets.UTF_8.name());
-      
+
       JSONObject joTileJson = new JSONObject(sTileJson);
-      
+
       JSONArray jaTiles = joTileJson.getJSONArray("tiles");
       for (int i = 0; i < jaTiles.length(); ++i)
       {
         String sTile = jaTiles.getString(i);
-        
+
         String replacedPath = sTile.replace(AppProperties.getTitilerUrl(), contextPath);
-        
+
         String pathEncoded = URLEncoder.encode(document.getS3location(), StandardCharsets.UTF_8.name());
-        
+
         if (replacedPath.contains("?"))
         {
           replacedPath = replacedPath + "&path=" + pathEncoded;
@@ -345,10 +352,10 @@ public class TiTillerProxy
         {
           replacedPath = replacedPath + "?path=" + pathEncoded;
         }
-        
+
         jaTiles.put(i, replacedPath);
       }
-      
+
       return joTileJson;
     }
     catch (IOException | URISyntaxException e)
@@ -359,8 +366,7 @@ public class TiTillerProxy
 
   protected void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
   {
-    if (((gov.geoplatform.uasdm.graph.Collection)document.getComponent()).isMultiSpectral()
-        && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+    if ( ( (gov.geoplatform.uasdm.graph.Collection) document.getComponent() ).isMultiSpectral() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
     {
       TitilerCogInfo info = this.getCogInfo(document);
       if (info != null)
@@ -368,56 +374,61 @@ public class TiTillerProxy
         int redIdx = info.getColorinterp().indexOf("red");
         int greenIdx = info.getColorinterp().indexOf("green");
         int blueIdx = info.getColorinterp().indexOf("blue");
-        
+
         if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
         {
           redIdx++;
           greenIdx++;
           blueIdx++;
-          
-          parameters.put("bidx", Arrays.asList(new String[] {String.valueOf(redIdx),String.valueOf(greenIdx),String.valueOf(blueIdx)}));
-          
+
+          parameters.put("bidx", Arrays.asList(new String[] { String.valueOf(redIdx), String.valueOf(greenIdx), String.valueOf(blueIdx) }));
+
           TitilerCogStatistics stats = this.getCogStatistics(document);
           TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
           TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
           TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
-          
+
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
 
-//          min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
-          
+          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
+          // could be negative. But it's happening on my sample data and it
+          // doesn't render properly if it is.
+
           parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
         }
       }
     }
   }
-  
+
   /**
-   * Invokes a HTTPS endpoint hosted by AWS API Gateway with authentication provided by AWS IAM access key credentials.
+   * Invokes a HTTPS endpoint hosted by AWS API Gateway with authentication
+   * provided by AWS IAM access key credentials.
    * 
-   * Special thanks to:
-   * - Piotr Filipowicz @ https://inspeerity.com/blog/how-to-call-aws-api-gateway-from-the-java-code
-   * - amihaiemil @ https://stackoverflow.com/questions/35985931/how-to-generate-signature-in-aws-from-java
+   * Special thanks to: - Piotr Filipowicz @
+   * https://inspeerity.com/blog/how-to-call-aws-api-gateway-from-the-java-code
+   * - amihaiemil @
+   * https://stackoverflow.com/questions/35985931/how-to-generate-signature-in-aws-from-java
    * 
    * @param uri
    * @return String The body of the response
-   * @throws AmazonServiceException If something goes wrong while invoking the remote endpoint.
+   * @throws AmazonServiceException
+   *           If something goes wrong while invoking the remote endpoint.
    */
   public InputStream authenticatedInvokeURL(URI endpoint, String resourcePath, Map<String, List<String>> parameters)
   {
     if (endpoint.toString().contains("titiler.xyz"))
     {
       // Titiler testing endpoint. Does not require authentication.
-      
+
       try
       {
         String url = endpoint.toString() + resourcePath;
-        
+
         url += "?";
-        
+
         List<String> encodedParams = new ArrayList<>();
-        
+
         for (Entry<String, List<String>> entry : parameters.entrySet())
         {
           for (String value : entry.getValue())
@@ -432,9 +443,9 @@ public class TiTillerProxy
             }
           }
         }
-        
+
         url += StringUtils.join(encodedParams, "&");
-        
+
         return new URL(url).openStream();
       }
       catch (IOException e)
@@ -445,64 +456,69 @@ public class TiTillerProxy
     else
     {
       final BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
-      
-      String service = "execute-api"; // For requests which are backed by AWS API Gateway
+
+      String service = "execute-api"; // For requests which are backed by AWS
+                                      // API Gateway
       if (endpoint.toString().contains("lambda-url"))
       {
-        service = "lambda"; // For requests that are utilizing lambda urls (which are not limited by an oppressive 30 second request timeout)
+        service = "lambda"; // For requests that are utilizing lambda urls
+                            // (which are not limited by an oppressive 30 second
+                            // request timeout)
       }
-      
+
       // Instantiate the request
       com.amazonaws.Request<Void> request = new DefaultRequest<Void>(service);
       request.setHttpMethod(HttpMethodName.GET);
       request.setEndpoint(endpoint);
       request.setResourcePath(resourcePath);
       request.setParameters(parameters);
-  
+
       // Sign it...
       AWS4Signer signer = new AWS4Signer();
       signer.setRegionName(AppProperties.getBucketRegion());
       signer.setServiceName(request.getServiceName());
       signer.sign(request, awsCreds);
-  
+
       // Execute it and get the response...
-      Response<InputStream> rsp = new AmazonHttpClient(new ClientConfiguration())
-          .requestExecutionBuilder()
-          .executionContext(new ExecutionContext(true))
-          .request(request)
-          .errorResponseHandler(new HttpResponseHandler<SdkBaseException>() {
-              @Override
-              public SdkBaseException handle(HttpResponse response) throws Exception {
-                  String msg = response.getStatusText();
-                  
-                  if (response.getContent() != null)
-                  {
-                    msg = msg + ": " + IOUtils.toString(response.getContent(), "UTF-8");
-                  }
-                
-                  AmazonServiceException ase = new AmazonServiceException(msg);
-                  ase.setStatusCode(response.getStatusCode());
-                  return ase;
-              }
-              @Override
-              public boolean needsConnectionLeftOpen() {
-                  return false;
-              }
-          })
-          .execute(new HttpResponseHandler<InputStream>() {
-            @Override
-            public InputStream handle(HttpResponse response) throws Exception {
-                return response.getContent();
-            }
-            @Override
-            public boolean needsConnectionLeftOpen() {
-                return true;
-            }
-          });
-      
+      Response<InputStream> rsp = new AmazonHttpClient(new ClientConfiguration()).requestExecutionBuilder().executionContext(new ExecutionContext(true)).request(request).errorResponseHandler(new HttpResponseHandler<SdkBaseException>()
+      {
+        @Override
+        public SdkBaseException handle(HttpResponse response) throws Exception
+        {
+          String msg = response.getStatusText();
+
+          if (response.getContent() != null)
+          {
+            msg = msg + ": " + IOUtils.toString(response.getContent(), "UTF-8");
+          }
+
+          AmazonServiceException ase = new AmazonServiceException(msg);
+          ase.setStatusCode(response.getStatusCode());
+          return ase;
+        }
+
+        @Override
+        public boolean needsConnectionLeftOpen()
+        {
+          return false;
+        }
+      }).execute(new HttpResponseHandler<InputStream>()
+      {
+        @Override
+        public InputStream handle(HttpResponse response) throws Exception
+        {
+          return response.getContent();
+        }
+
+        @Override
+        public boolean needsConnectionLeftOpen()
+        {
+          return true;
+        }
+      });
+
       return rsp.getHttpResponse().getContent();
     }
   }
-  
 
 }
