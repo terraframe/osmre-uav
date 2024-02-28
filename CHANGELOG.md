@@ -2,6 +2,15 @@
 # Release Notes
 
 
+## [1.0.4](https://github.com/terraframe/osmre-uav/releases/tag/1.0.4) (2024-02-28)
+
+### Features
+
+ - **collections** improve speed of opening collection modal and product viewer by at least 2x  ([fcd89](https://github.com/terraframe/osmre-uav/commit/fcd89aa40241c40524b3cee64d4880b805e1450e))
+
+
+
+
 ## [1.0.3](https://github.com/terraframe/osmre-uav/releases/tag/1.0.3) (2024-02-19)
 
 
