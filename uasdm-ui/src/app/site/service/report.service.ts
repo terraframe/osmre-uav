@@ -25,7 +25,7 @@ export class ReportService implements GenericTableService {
         params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<Report>>(environment.apiUrl + '/collection-report/page', { params: params })
+            .get<PageResult<Report>>(environment.apiUrl + '/api/collection-report/page', { params: params })
             .toPromise();
     }
 }

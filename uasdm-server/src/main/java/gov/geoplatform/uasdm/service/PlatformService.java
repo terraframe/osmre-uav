@@ -20,12 +20,14 @@ import java.util.stream.Collector;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.graph.Platform;
 
+@Service
 public class PlatformService
 {
   @Request(RequestType.SESSION)

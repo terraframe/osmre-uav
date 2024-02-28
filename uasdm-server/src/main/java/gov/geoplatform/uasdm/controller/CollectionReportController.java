@@ -15,44 +15,57 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import java.io.InputStream;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.InputStreamResponse;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import gov.geoplatform.uasdm.service.CollectionReportService;
+import net.geoprism.registry.controller.RunwaySpringController;
 
-@Controller(url = "collection-report")
-public class CollectionReportController
+@Controller
+@Validated
+public class CollectionReportController extends RunwaySpringController
 {
+  public static final String API_PATH = "collection-report";
+  
+  @Autowired
   private CollectionReportService service;
 
   public CollectionReportController()
   {
-    this.service = new CollectionReportService();
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping(API_PATH + "/page")
+  public ResponseEntity<String> page(@RequestParam(required = true) String criteria) throws JSONException
   {
-    JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
+    JSONObject page = this.service.page(getSessionId(), new JSONObject(criteria));
 
-    return new RestBodyResponse(page);
+    return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "export-csv")
-  public ResponseIF exportCSV(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping(API_PATH + "/export-csv")
+  public ResponseEntity<InputStreamResource> exportCSV(@RequestParam(required = false) String criteria) throws JSONException
   {
     JSONObject json = criteria != null ? new JSONObject(criteria) : null;
 
-    return new InputStreamResponse(this.service.exportCSV(request.getSessionId(), json), "text/csv", "report.csv");
+    InputStream inputStream = this.service.exportCSV(getSessionId(), json);
+    InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Content-Type", "text/csv");
+    httpHeaders.set("Content-disposition", "attachment; filename=report.csv");
+    // httpHeaders.setContentLength(contentLengthOfStream);
+    
+    return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
   }
 }

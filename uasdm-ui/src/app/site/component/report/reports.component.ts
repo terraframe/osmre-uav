@@ -92,7 +92,7 @@ export class ReportsComponent implements OnInit {
     }
 
     onExportCSV(): void {
-        window.open(environment.apiUrl + '/collection-report/export-csv', '_blank');
+        window.open(environment.apiUrl + '/api/collection-report/export-csv', '_blank');
     }
 
     onClick(event: TableEvent): void {

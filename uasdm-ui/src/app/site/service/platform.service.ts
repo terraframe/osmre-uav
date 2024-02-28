@@ -28,7 +28,7 @@ export class PlatformService implements GenericTableService {
         params = params.set('criteria', JSON.stringify(criteria));
 
         return this.http
-            .get<PageResult<Platform>>(environment.apiUrl + '/platform/page', { params: params })
+            .get<PageResult<Platform>>(environment.apiUrl + '/api/platform/page', { params: params })
             .toPromise();
     }
 
@@ -38,7 +38,7 @@ export class PlatformService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/platform/get-all', { params: params })
+            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/api/platform/get-all', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -47,15 +47,13 @@ export class PlatformService implements GenericTableService {
 
 
     get(oid: string): Promise<Platform> {
-
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+        let params: HttpParams = new HttpParams();
+        params = params.append('oid', oid);
 
         this.eventService.start();
 
         return this.http
-            .post<Platform>(environment.apiUrl + '/platform/get', JSON.stringify({ oid: oid }), { headers: headers })
+            .get<Platform>(environment.apiUrl + '/api/platform/get', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -63,15 +61,12 @@ export class PlatformService implements GenericTableService {
     }
 
     newInstance(): Promise<Platform> {
-
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		let params: HttpParams = new HttpParams();
 
         this.eventService.start();
 
         return this.http
-            .post<Platform>(environment.apiUrl + '/platform/newInstance', JSON.stringify({}), { headers: headers })
+            .get<Platform>(environment.apiUrl + '/api/platform/newInstance', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -79,15 +74,13 @@ export class PlatformService implements GenericTableService {
     }
 
     remove(oid: string): Promise<void> {
-
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+		let params: HttpParams = new HttpParams();
+        params = params.append('oid', oid);
 
         this.eventService.start();
 
         return this.http
-            .post<void>(environment.apiUrl + '/platform/remove', JSON.stringify({ oid: oid }), { headers: headers })
+            .get<void>(environment.apiUrl + '/api/platform/remove', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -103,7 +96,7 @@ export class PlatformService implements GenericTableService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Platform>(environment.apiUrl + '/platform/apply', JSON.stringify({ platform: platform }), { headers: headers })
+            .post<Platform>(environment.apiUrl + '/api/platform/apply', JSON.stringify({ platform: JSON.stringify(platform) }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -115,7 +108,7 @@ export class PlatformService implements GenericTableService {
         params = params.append('text', text);
 
         return this.http
-            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/platform/search', { params: params })
+            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/api/platform/search', { params: params })
             .toPromise();
     }
 

@@ -16,22 +16,24 @@
 package gov.geoplatform.uasdm.controller;
 
 import org.json.JSONException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.JsonObject;
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
 
 import gov.geoplatform.uasdm.service.ErosService;
+import net.geoprism.registry.controller.RunwaySpringController;
 
-@Controller(url = "eros")
-public class ErosController
+@Controller
+@Validated
+public class ErosController extends RunwaySpringController
 {
+  public static final String API_PATH = "eros";
+  
   private ErosService service;
 
   public ErosController()
@@ -39,11 +41,11 @@ public class ErosController
     this.service = new ErosService();
   }
   
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "push")
-  public ResponseIF push(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId) throws JSONException
+  @PostMapping(API_PATH + "/push")
+  public ResponseEntity<String> push(@RequestParam String collectionId) throws JSONException
   {
-    JsonObject response = this.service.push(request.getSessionId(), collectionId);
+    JsonObject response = this.service.push(getSessionId(), collectionId);
 
-    return new RestBodyResponse(response);
+    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 }

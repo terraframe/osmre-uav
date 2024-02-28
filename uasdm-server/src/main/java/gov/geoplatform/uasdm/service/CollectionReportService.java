@@ -18,12 +18,14 @@ package gov.geoplatform.uasdm.service;
 import java.io.InputStream;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
 import gov.geoplatform.uasdm.bus.CollectionReport;
 
+@Service
 public class CollectionReportService
 {
   @Request(RequestType.SESSION)
