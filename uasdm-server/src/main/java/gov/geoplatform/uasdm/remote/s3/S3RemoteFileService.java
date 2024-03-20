@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -39,14 +40,21 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
+import com.amazonaws.services.s3.model.CopyPartRequest;
+import com.amazonaws.services.s3.model.CopyPartResult;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
+import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PartETag;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -207,9 +215,82 @@ public class S3RemoteFileService implements RemoteFileService
   {
     AmazonS3 client = S3ClientFactory.createClient();
 
-    CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
+    try
+    {
+      // Get the object size
+      GetObjectMetadataRequest metadataRequest = new GetObjectMetadataRequest(sourceBucket, sourceKey);
+      ObjectMetadata metadataResult = client.getObjectMetadata(metadataRequest);
+      long sizeInBytes = metadataResult.getContentLength();
+      
+      if (sizeInBytes < (5l * 1024l * 1024l * 1024l))
+      {
+        CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
 
-    client.copyObject(request);
+        client.copyObject(request);
+      }
+      else
+      {
+        // Initiate the multipart upload.
+        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(destBucket,destKey);
+        InitiateMultipartUploadResult initResult = client.initiateMultipartUpload(initRequest);
+
+        // Copy the object using 5 MB parts.
+        long partSize = 5 * 1024 * 1024;
+        long bytePosition = 0;
+        int partNum = 1;
+        List<CopyPartResult> copyResponses = new ArrayList<CopyPartResult>();
+        while (bytePosition < sizeInBytes)
+        {
+            // The last part might be smaller than partSize, so check to make sure
+            // that lastByte isn't beyond the end of the object.
+            long lastByte = Math.min(bytePosition + partSize - 1, sizeInBytes - 1);
+
+            // Copy this part.
+            CopyPartRequest copyRequest = new CopyPartRequest()
+                    .withSourceBucketName(sourceBucket)
+                    .withSourceKey(sourceKey)
+                    .withDestinationBucketName(destBucket)
+                    .withDestinationKey(destKey)
+                    .withUploadId(initResult.getUploadId())
+                    .withFirstByte(bytePosition)
+                    .withLastByte(lastByte)
+                    .withPartNumber(partNum++);
+            copyResponses.add(client.copyPart(copyRequest));
+            bytePosition += partSize;
+        }
+
+        // Complete the upload request to concatenate all uploaded parts and make the
+        // copied object available.
+        CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(
+                destBucket,
+                destKey,
+                initResult.getUploadId(),
+                getETags(copyResponses));
+        client.completeMultipartUpload(completeRequest);
+      }
+    }
+    catch (AmazonServiceException e)
+    {
+        // The call was transmitted successfully, but Amazon S3 couldn't process
+        // it, so it returned an error response.
+        e.printStackTrace();
+    }
+    catch (SdkClientException e)
+    {
+        // Amazon S3 couldn't be contacted for a response, or the client
+        // couldn't parse the response from Amazon S3.
+        e.printStackTrace();
+    }
+  }
+  
+  // This is a helper function to construct a list of ETags.
+  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/CopyingObjectsMPUapi.html
+  private static List<PartETag> getETags(List<CopyPartResult> responses) {
+      List<PartETag> etags = new ArrayList<PartETag>();
+      for (CopyPartResult response : responses) {
+          etags.add(new PartETag(response.getPartNumber(), response.getETag()));
+      }
+      return etags;
   }
 
   @Override
