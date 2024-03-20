@@ -2,6 +2,18 @@
 # Release Notes
 
 
+## [1.0.5](https://github.com/terraframe/osmre-uav/releases/tag/1.0.5) (2024-03-20)
+
+### Features
+
+ - **collections** improve speed of opening collection modal and product viewer by at least 2x  ([fcd89](https://github.com/terraframe/osmre-uav/commit/fcd89aa40241c40524b3cee64d4880b805e1450e))
+
+### Bug Fixes
+
+   - publish throwing error with files larger than 5GB   ([5ff2a](https://github.com/terraframe/osmre-uav/commit/5ff2a09b93f470c17295fa2dc827c8a4d4370db5))
+
+
+
 ## [1.0.4](https://github.com/terraframe/osmre-uav/releases/tag/1.0.4) (2024-02-28)
 
 ### Features
