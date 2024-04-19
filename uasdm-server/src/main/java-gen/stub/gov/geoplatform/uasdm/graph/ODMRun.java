@@ -47,7 +47,13 @@ public class ODMRun extends ODMRunBase
   @Override
   public Document getReport()
   {
-    return Document.get(this.getObjectValue("report"));
+    return Document.get(this.getObjectValue(REPORT));
+  }
+  
+  @Override
+  public UasComponent getComponent()
+  {
+    return UasComponent.get(this.getObjectValue(COMPONENT));
   }
   
   public ODMProcessConfiguration getConfiguration()
@@ -118,19 +124,17 @@ public class ODMRun extends ODMRunBase
    */
   public static ODMRun createAndApplyFor(ODMProcessingTask task)
   {
+    UasComponent component = (UasComponent) task.getComponentInstance();
+    
     ODMRun odmRun = new ODMRun();
     odmRun.setWorkflowTask(task);
     odmRun.setConfig(task.getConfigurationJson());
     odmRun.setRunStart(new Date());
+    odmRun.setComponent(component);
     odmRun.apply();
     
-    ImageryComponent component = task.getImageryComponent();
-    if (component instanceof UasComponentIF)
-    {
-      List<DocumentIF> documents = ( (UasComponentIF) component ).getDocuments();
-      
-      documents.forEach(doc -> odmRun.addODMRunInputParent((Document) doc).apply());
-    }
+    List<DocumentIF> documents = component.getDocuments();
+    documents.forEach(doc -> odmRun.addODMRunInputParent((Document) doc).apply());
     
     return odmRun;
   }
