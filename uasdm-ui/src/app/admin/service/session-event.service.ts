@@ -28,7 +28,7 @@ export class SessionEventService {
 		this.eventService.start();
 
 		return this.http
-			.get<PageResult<SessionEvent>>(environment.apiUrl + '/session-event/page', { params: params })
+			.get<PageResult<SessionEvent>>(environment.apiUrl + '/api/session-event/page', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

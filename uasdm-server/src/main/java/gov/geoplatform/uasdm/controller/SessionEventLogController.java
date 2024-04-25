@@ -15,35 +15,54 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.InputStream;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
+import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import gov.geoplatform.uasdm.service.SessionEventService;
+import net.geoprism.registry.controller.RunwaySpringController;
 
-@Controller(url = "session-event")
-public class SessionEventLogController
+@RestController
+@Validated
+public class SessionEventLogController extends RunwaySpringController
 {
+  public static final String API_PATH = "session-event";
+  
+  @Autowired
   private SessionEventService service;
 
   public SessionEventLogController()
   {
-    this.service = new SessionEventService();
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize) throws JSONException
+  @GetMapping(API_PATH + "/page")
+  public ResponseEntity<?> page(HttpServletRequest request, @RequestParam(required = true) Integer pageNumber, @RequestParam(required = true) Integer pageSize)
   {
-    JSONObject page = this.service.page(request.getSessionId(), pageNumber, pageSize);
+    JSONObject page = this.service.page(getSessionId(), pageNumber, pageSize);
 
-    return new RestBodyResponse(page);
+    return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
+  }
+  
+  @GetMapping(API_PATH + "/export")
+  public ResponseEntity<?> export(HttpServletRequest request)
+  {
+    InputStream is = this.service.export(getSessionId());
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Content-Type", "application/zip");
+    httpHeaders.set("Content-Disposition", "attachment; filename=\"idm-session-log.zip\"");
+    
+    return new ResponseEntity<InputStreamResource>(new InputStreamResource(is), httpHeaders, HttpStatus.OK);
   }
 }

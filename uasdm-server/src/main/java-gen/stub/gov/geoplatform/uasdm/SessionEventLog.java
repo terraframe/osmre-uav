@@ -56,7 +56,7 @@ public class SessionEventLog extends SessionEventLogBase implements JSONSerializ
 
     return object;
   }
-
+  
   @Authenticate
   public static void log(String eventType, String username, String userId)
   {

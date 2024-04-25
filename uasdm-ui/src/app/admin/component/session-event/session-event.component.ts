@@ -9,6 +9,8 @@ import { PageResult } from '@shared/model/page';
 import { SessionEvent } from '../../model/session-event';
 import { SessionEventService } from '../../service/session-event.service';
 
+import { environment } from 'src/environments/environment';
+
 @Component({
 	selector: 'session-events',
 	templateUrl: './session-event.component.html',
@@ -37,5 +39,9 @@ export class SessionEventComponent implements OnInit {
 
 			this.p = pageNumber;
 		});
+	}
+	
+	onExport(): void {
+		window.location.href = environment.apiUrl + "/api/session-event/export";
 	}
 }

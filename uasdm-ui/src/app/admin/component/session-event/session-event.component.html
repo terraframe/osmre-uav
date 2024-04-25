@@ -45,6 +45,10 @@
                   <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="10"></pagination-controls>
               </div>
             </div>
+            <button type="submit" (click)="onExport()"
+                class="btn btn-primary" role="button">
+                Export Session Log
+            </button>
         </div>
 <!--     </div> -->
 </div>
