@@ -18,6 +18,7 @@ import { Subject } from 'rxjs';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { UserImportComponent } from './user-import.component';
 import { AuthService } from '@shared/service/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'accounts',
@@ -161,5 +162,9 @@ export class AccountsComponent implements OnInit {
 	    bsModalRef.content.onSuccess.subscribe(data => {
 	      window.location.reload();
 	    });
+	}
+	
+	exportUsers(): void {
+		window.location.href = environment.apiUrl + "/api/uasdm-account/export";
 	}
 }

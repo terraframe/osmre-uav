@@ -188,7 +188,10 @@ public class UserInfoPageQuery
       limit = criteria.getInt("rows");
     }
 
-    statement.append(" LIMIT " + limit + " OFFSET " + first + "\n");
+    if (limit != -1)
+    {
+      statement.append(" LIMIT " + limit + " OFFSET " + first + "\n");
+    }
 
     JSONArray jsonResults = new JSONArray();
 

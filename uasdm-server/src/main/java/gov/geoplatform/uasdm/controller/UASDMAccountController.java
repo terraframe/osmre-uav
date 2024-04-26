@@ -16,12 +16,14 @@
 package gov.geoplatform.uasdm.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -30,10 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -64,6 +67,7 @@ public class UASDMAccountController extends RunwaySpringController
 {
   public static final String API_PATH = "uasdm-account";
   
+  @Autowired
   protected AccountService service;
   
   @Autowired
@@ -196,7 +200,6 @@ public class UASDMAccountController extends RunwaySpringController
 
   public UASDMAccountController()
   {
-    this.service = new AccountService();
   }
   
   @GetMapping(API_PATH + "/get")
@@ -296,6 +299,18 @@ public class UASDMAccountController extends RunwaySpringController
     JSONObject response = this.service.page(this.getClientRequest().getSessionId(), new JSONObject(criteria));
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+  }
+  
+  @GetMapping(API_PATH + "/export")
+  public ResponseEntity<?> export(HttpServletRequest request)
+  {
+    InputStream is = this.service.export(getSessionId());
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Content-Type", "application/zip");
+    httpHeaders.set("Content-Disposition", "attachment; filename=\"idm-users.zip\"");
+    
+    return new ResponseEntity<InputStreamResource>(new InputStreamResource(is), httpHeaders, HttpStatus.OK);
   }
 
   @PostMapping(API_PATH + "/edit")
