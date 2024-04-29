@@ -31,6 +31,7 @@ import com.runwaysdk.session.SessionFacade;
 
 import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException;
+import gov.geoplatform.uasdm.service.SessionEventService.EventType;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;
@@ -117,7 +118,8 @@ public class IDMSessionService extends IDMSessionServiceBase
     
         String sessionId = SessionFacade.logIn(((SingleActorDAOIF)BusinessFacade.getEntityDAO(profile)), LocaleSerializer.deserialize(locales));
         
-        ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginSuccess(profile.getEmail(), sessionId);
+//        ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginSuccess(profile.getEmail(), sessionId);
+        SessionEventLog.log(EventType.LOGIN_SUCCESS.name(), profile.getEmail(), profile.getOid());
         
         JsonObject json = new JsonObject();
         json.addProperty("sessionId", sessionId);
