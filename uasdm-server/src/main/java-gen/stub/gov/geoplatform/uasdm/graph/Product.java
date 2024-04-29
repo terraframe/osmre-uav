@@ -47,10 +47,13 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
+import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
@@ -77,6 +80,7 @@ import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 import net.geoprism.spring.ApplicationContextHolder;
 
@@ -134,6 +138,17 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
+    final SessionIF session = Session.getCurrentSession();
+    
+    if (session != null && ! ( session.userHasRole(RoleConstants.ADMIN) || this.getComponent().getOwnerOid().equals(session.getUser().getOid()) ))
+    {
+      final UasComponentDeleteException ex = new UasComponentDeleteException();
+      ex.setTypeLabel(this.getClassDisplayLabel());
+      ex.setComponentName(this.getName());
+
+      throw ex;
+    }
+    
     List<DocumentIF> documents = this.getDocuments();
 
     for (DocumentIF document : documents)
