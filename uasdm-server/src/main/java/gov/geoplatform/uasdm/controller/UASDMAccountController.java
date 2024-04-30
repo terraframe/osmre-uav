@@ -225,6 +225,9 @@ public class UASDMAccountController extends RunwaySpringController
   {
     List<RoleView> roles = this.roleService.getAllAssignableRoles(this.getSessionId());
     
+    final String defaultRole = "geoprism.admin.DashboardBuilder"; // IDM's fieldworker role
+    roles.stream().forEach(role -> role.setAssigned(role.getRoleName().equals(defaultRole)));
+    
     JSONObject user = new JSONObject();
     user.put("newInstance", true);
     
@@ -232,7 +235,7 @@ public class UASDMAccountController extends RunwaySpringController
     {
       user.put("externalProfile", true);
     }
-
+    
     JSONArray groups = this.createRoleMap(roles);
 
     JSONObject response = new JSONObject();
