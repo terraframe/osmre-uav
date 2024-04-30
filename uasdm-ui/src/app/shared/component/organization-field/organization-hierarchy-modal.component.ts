@@ -72,9 +72,6 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 			mouse: {
 				click: (tree: TreeComponent, node: TreeNode, $event: any) => {
 					this.treeNodeOnClick(node, $event);
-				},
-				contextMenu: (tree: any, node: TreeNode, $event: any) => {
-					this.handleOnMenu(node, $event);
 				}
 			}
 		},
@@ -227,6 +224,8 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 
 	treeNodeOnClick(treeNode: TreeNode, $event: any): void {
 		const node: PaginatedTreeNode<Organization> = treeNode != null ? treeNode.data : null;
+		
+		this.onSelect(treeNode);
 
 		if (node != null && node.type === TreeNodeType.LINK) {
 			if (treeNode.parent != null) {
@@ -255,28 +254,11 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	handleOnMenu(node: TreeNode, $event: any): void {
-		if (!this.disabled) {
-			this.contextMenuService.show(this.nodeMenuComponent, {
-				value: node,
-				x: $event.x,
-				y: $event.y
-			});
-			$event.preventDefault();
-			$event.stopPropagation();
-		}
-	}
-
-
 	onSelect(treeNode: TreeNode): void {
-		console.log(treeNode);
-
 		const node: PaginatedTreeNode<Organization> = treeNode != null ? treeNode.data : null;
 
 		if (node.type === TreeNodeType.OBJECT) {
 			this.select.next(node.object);
-
-			this.bsModalRef.hide();
 		}
 	}
 
