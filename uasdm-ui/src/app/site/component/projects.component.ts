@@ -1270,6 +1270,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.breadcrumbs.splice(indexOf);
 
+      this.clearHierarchyLayers();
+
       this.current = null;
       this.children = [];
 
