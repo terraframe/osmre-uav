@@ -2,6 +2,21 @@
 # Release Notes
 
 
+## [1.1.0](https://github.com/terraframe/osmre-uav/releases/tag/1.1.0) (2024-05-07)
+
+### Features
+
+ - change default role when creating a new user to field worker   ([152fc](https://github.com/terraframe/osmre-uav/commit/152fc0b1eecfee0a5b35258d29ca5591edff1711))
+ - change project types to more meaningful ones   ([ddd2a](https://github.com/terraframe/osmre-uav/commit/ddd2a25126feef6af4eab8536292577ff8acee39))
+
+### Bug Fixes
+
+   - **org-tree** select org on left click   ([d4a86](https://github.com/terraframe/osmre-uav/commit/d4a86c544b75face217bd854527861573b8972a7))
+   - bureau not showing in session log anymore   ([82b46](https://github.com/terraframe/osmre-uav/commit/82b469941233201a312c50904b4accdd97b3d6d7))
+   - prevent people from deleting products they dont own   ([153ce](https://github.com/terraframe/osmre-uav/commit/153ce0555e291e0472a4520d43f2f8ed90f3ea36))
+
+
+
 ## [1.0.5](https://github.com/terraframe/osmre-uav/releases/tag/1.0.5) (2024-03-20)
 
 ### Features
