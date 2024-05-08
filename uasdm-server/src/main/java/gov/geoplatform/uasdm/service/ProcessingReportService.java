@@ -213,7 +213,7 @@ public class ProcessingReportService
           List<UasComponentIF> ancestors = col.getAncestors();
           result.organizationName = ((Site) ancestors.get(ancestors.size() - 1)).getServerOrganization().getDisplayLabel().getValue();
         }
-        catch (DataNotFoundException ex) {}
+        catch (Exception ex) {}
       }
       
       String workflowOid = (String) map.get("workflowTask");
@@ -225,7 +225,7 @@ public class ProcessingReportService
           result.taskMessage = task.getMessage();
           result.processingStatus = task.getNormalizedStatus();
         }
-        catch (DataNotFoundException ex) {}
+        catch (Exception ex) {}
       }
       
       String uavOid = (String) map.get("component.uav.oid");
@@ -237,7 +237,7 @@ public class ProcessingReportService
           result.uavSerial = uav.getSerialNumber();
           result.uavFAA = uav.getFaaNumber();
         }
-        catch (DataNotFoundException ex) {}
+        catch (Exception ex) {}
       }
       
       String sensorOid = (String) map.get("component.collectionSensor.oid");
@@ -249,7 +249,7 @@ public class ProcessingReportService
           result.sensorName = sensor.getName();
           result.sensorType = sensor.getType();
         }
-        catch (DataNotFoundException ex) {}
+        catch (Exception ex) {}
       }
       
       result.odmConfig = (String) map.get("config");
