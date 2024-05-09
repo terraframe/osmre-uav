@@ -322,20 +322,21 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
 
                       <tabset *ngIf="current.type === 0" class="nav-full-width">
-                        <tab [heading]="current.metadata.childLabel">
-                      <tabset *ngIf="current.type !== 1" class="nav-full-width">
-                        <tab [heading]="current.metadata.childLabel" (selectTab)="activeTab = current.metadata.childLabel">
+                        <tab [heading]="current.metadata.childLabel"
+                          (selectTab)="activeTab = current.metadata.childLabel">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
                         </tab>
-                        <tab heading="Products"  (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                        <tab heading="Products" (selectTab)="activeTab = 'Products'">
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>

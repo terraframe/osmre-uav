@@ -206,7 +206,7 @@ public class ProcessingReportService
     
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
-    query.getRawResults().forEach(map -> {
+    query.getResults().forEach(map -> {
       ErrorReportRecord result = new ErrorReportRecord();
       result.collectionName = (String) map.get("component.name");
       result.s3Path = (String) map.get("component.s3location");
