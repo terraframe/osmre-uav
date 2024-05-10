@@ -38,9 +38,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import gov.geoplatform.uasdm.service.IDMLabeledPropertyGraphSynchronizationService;
+import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
-import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionService;
 import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
 import net.geoprism.spring.JsonObjectDeserializer;
 

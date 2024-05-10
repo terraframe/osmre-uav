@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.service.business;
 
+import gov.geoplatform.uasdm.LPGGeometry;
+import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -57,6 +59,9 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
   @Autowired
   private LabeledPropertyGraphTypeVersionBusinessServiceIF versionService;
 
+  @Autowired
+  private GeoObjectTypeSnapshotBusinessServiceIF gTypeService;
+
   @Override
   @Transaction
   public void delete(LabeledPropertyGraphTypeVersion version)
@@ -71,6 +76,7 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
     super.delete(version);
 
     IndexService.deleteDocuments(version);
+    LPGGeometry.delete(version);
   }
 
   @Override
@@ -79,6 +85,8 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
     super.truncate(version);
 
     IndexService.deleteDocuments(version);
+
+    LPGGeometry.delete(version);
   }
 
   @Override
@@ -115,6 +123,10 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
       edge.setGraphEdgeId(mdEdgeDAO.getOid());
       edge.apply();
     }
+
+    // Create tables for every geo object type
+
+
 
     return version;
   }

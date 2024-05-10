@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import java.util.Set;
 
+import gov.geoplatform.uasdm.service.SessionEventService;
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

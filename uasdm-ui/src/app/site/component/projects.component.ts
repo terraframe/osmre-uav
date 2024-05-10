@@ -1512,7 +1512,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "text-halo-width": 2
       },
       "layout": {
-        "text-field": ["get", "displayLabel"],
+        "text-field": ["get", "label"],
         "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-offset": [0, 0.6],
         "text-anchor": "top",
