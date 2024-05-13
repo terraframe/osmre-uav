@@ -51,6 +51,9 @@ $(aws ecr get-login --no-include-email --region us-east-1)
 
 docker pull 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest
 
+## Update the image tag to point to the new image you just pulled
+docker image tag 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:latest 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:devdeploy
+
 
 ### If Fresh Install: Create data directories
 sudo mkdir -p /data/odm-cluster/dev/config

@@ -13,6 +13,7 @@ export class Sensor {
     sensorTypeOid: string;
     sensorType: SensorType;
     hasGeologger: boolean;
+    highResolution: boolean;
     wavelengths: string[];
     pixelSizeWidth: number;
     pixelSizeHeight: number;
