@@ -84,63 +84,16 @@ public class LPGGeometry extends LPGGeometryBase {
         }
     }
 
-
-    public static class CacheCallable implements Callable<byte[]> {
-        private final ThreadTransactionState state;
-
-        private final String versionId;
-
-        private final String typeCode;
-
-        private final int x;
-
-        private final int y;
-
-        private final int zoom;
+    public static class CacheCallable extends LPGTileCache.TileCallable implements Callable<byte[]> {
 
         public CacheCallable(ThreadTransactionState state, String versionId, String typeCode, int x, int y, int zoom) {
-            super();
-            this.state = state;
-            this.versionId = versionId;
-            this.typeCode = typeCode;
-            this.x = x;
-            this.y = y;
-            this.zoom = zoom;
+            super(state, versionId, typeCode, x, y, zoom);
         }
 
         @Override
-        public byte[] call() throws Exception {
-            return this.call(this.state);
-        }
-
-        @Request(RequestType.THREAD)
-        public byte[] call(ThreadTransactionState state) {
-            try {
-                PostgisVectorTileBuilder builder = new PostgisVectorTileBuilder(this.versionId, this.typeCode);
-                byte[] tile = builder.write(zoom, x, y);
-
-                if (tile.length < MdAttributeBlobDAO.getMaxLength()) {
-                    this.populateTile(state, tile);
-                }
-
-                return tile;
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                return null;
-            }
-        }
-
-        @Transaction(TransactionType.THREAD)
-        private void populateTile(ThreadTransactionState state, byte[] tile) {
-            LPGTileCache cache = new LPGTileCache();
-            cache.setVersionId(this.versionId);
-            cache.setTypeCode(this.typeCode);
-            cache.setX(this.x);
-            cache.setY(this.y);
-            cache.setZ(this.zoom);
-            cache.setTile(tile);
-            cache.apply();
+        protected byte[] generateTile() {
+            PostgisVectorTileBuilder builder = new PostgisVectorTileBuilder(this.getVersionId(), this.getTypeCode());
+            return builder.write(this.getZoom(), this.getX(), this.getY());
         }
     }
 

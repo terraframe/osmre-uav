@@ -42,54 +42,9 @@ import net.geoprism.registry.service.request.JsonGraphVersionPublisherServiceIF;
 @Primary
 public class IDMJsonGraphVersionPublisherService extends JsonGraphVersionPublisherService implements JsonGraphVersionPublisherServiceIF
 {
-  private static class HierarchySnapshotCacheObject
-  {
-    private HierarchyTypeSnapshot snapshot;
-
-    private MdEdge mdEdge;
-
-    public HierarchySnapshotCacheObject(HierarchyTypeSnapshot snapshot)
-    {
-      this.snapshot = snapshot;
-      this.mdEdge = snapshot.getGraphMdEdge();
-    }
-  }
-
-  @Autowired
-  private HierarchyTypeSnapshotBusinessServiceIF hierarchyService;
-
   @Override
-  public void publishEdges(State state, JsonArray edges)
-  {
-    for (int i = 0; i < edges.size(); i++)
-    {
-      JsonObject object = edges.get(i).getAsJsonObject();
-      String parentUid = object.get("startNode").getAsString();
-      String parentType = object.get("startType").getAsString();
-      String childUid = object.get("endNode").getAsString();
-      String childType = object.get("endType").getAsString();
-      String typeCode = object.get("type").getAsString();
-
-      String key = "hierarchy-" + typeCode;
-
-      if (!state.cache.containsKey(key))
-      {
-        HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(state.version, typeCode);
-
-        state.cache.put(key, new HierarchySnapshotCacheObject(hierarchy));
-      }
-
-      HierarchySnapshotCacheObject cachedObject = (HierarchySnapshotCacheObject) state.cache.get(key);
-
-      VertexObject parent = this.service.getVertex(state.version, parentUid, parentType);
-      VertexObject child = this.service.getVertex(state.version, childUid, childType);
-
-      publish(state, parent, child, cachedObject);
-    }
-  }
-
-  private static void publish(State state, VertexObject parent, VertexObject child, HierarchySnapshotCacheObject cachedObject) {
-    parent.addChild(child, cachedObject.mdEdge.definesType()).apply();
+  public void publish(State state, VertexObject parent, VertexObject child, MdEdge mdEdge) {
+    parent.addChild(child, mdEdge.definesType()).apply();
 
     // Update the child in LPGGeometry table for fast creation of tiles
     LPGGeometryQuery query = new LPGGeometryQuery(new QueryFactory());
@@ -113,7 +68,6 @@ public class IDMJsonGraphVersionPublisherService extends JsonGraphVersionPublish
 
     // Index the object in elastic search for full text look up
     IndexService.createDocument(state.synchronization, object);
-
 
     // Create the child in LPGGeometry table for fast creation of tiles
     LPGGeometry geometry = new LPGGeometry();
