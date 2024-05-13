@@ -346,6 +346,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         };
       })
     }
+
+
+
   }
 
 
@@ -376,6 +379,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.map.on('data', () => {
         this.tilesLoaded = this.map.areTilesLoaded();
       });
+
+      if(this.organization != null) {
+        this.onOrganizationChange();
+      }  
     });
   }
 
