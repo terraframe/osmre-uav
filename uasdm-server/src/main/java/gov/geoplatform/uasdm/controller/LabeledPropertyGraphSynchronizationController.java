@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -20,7 +20,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -35,8 +38,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import gov.geoplatform.uasdm.service.LabeledPropertyGraphSynchronizationService;
+import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
+import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
 import net.geoprism.spring.JsonObjectDeserializer;
 
 @RestController
@@ -105,11 +109,10 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @Autowired
-  private LabeledPropertyGraphSynchronizationService service;
+  private IDMLabeledPropertyGraphSynchronizationService service;
 
-  public LabeledPropertyGraphSynchronizationController()
-  {
-  }
+  @Autowired
+  private LabeledPropertyGraphTypeVersionServiceIF      vService;
 
   @GetMapping(API_PATH + "/page")
   public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
@@ -184,7 +187,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
   }
 
   @PostMapping(API_PATH + "/execute")
-  public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body) throws JSONException
+  public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body)
   {
     this.service.execute(this.getSessionId(), body.getOid());
 
@@ -214,4 +217,28 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
+
+  @GetMapping(API_PATH + "/tile")
+  public ResponseEntity<InputStreamResource> tile(@RequestParam Integer x, @RequestParam Integer y, @RequestParam Integer z, @NotEmpty @RequestParam String config) throws JSONException
+  {
+    JSONObject object = new JSONObject(config);
+    object.put("x", x);
+    object.put("y", y);
+    object.put("z", z);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-protobuf");
+
+    InputStreamResource isr = new InputStreamResource(this.vService.getTile(this.getSessionId(), object));
+    return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);
+  }
+
+  @PostMapping(API_PATH + "/create-tiles")
+  public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
+  {
+    this.vService.createTiles(getSessionId(), body.getOid());
+
+    return new ResponseEntity<Void>(HttpStatus.OK);
+  }
+
 }

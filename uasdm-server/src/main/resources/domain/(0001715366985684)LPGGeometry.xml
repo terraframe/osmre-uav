@@ -1,0 +1,44 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.uasdm.LPGGeometry" table="lpg_geometry" label="LPG Geometry" >
+        <attributes>
+          <reference name="version" label="Version" type="net.geoprism.graph.LabeledPropertyGraphTypeVersion" column="version"  required="true"/>
+          <text name="typeCode" label="typeCode" required="true" column="type_code"/>
+          <uuid name="locationOid" label="Location Oid" required="true" column="location_oid"/>
+          <text name="locationCode" label="Location Code" required="true" column="location_code"/>
+          <text name="locationLabel" label="Location Label" required="true" column="location_label"/>
+          <text name="locationUuid" label="Location UUID" required="true" column="location_uuid"/>
+          <text name="parent" label="Parent" required="false"/>
+          <shape name="geometry" label="Geometry" required="false" srid="4326" dimension="2" />
+        </attributes>
+      </mdBusiness>
+
+      <mdIndex type="gov.geoplatform.uasdm.LPGGeometry" label="Geometry Version Type" active="true" unique="false">
+        <attribute name="version" indexOrder="0"/>
+        <attribute name="typeCode" indexOrder="1"/>
+      </mdIndex>
+
+      <mdIndex type="gov.geoplatform.uasdm.LPGGeometry" label="Geometry Version Object" active="true" unique="true">
+        <attribute name="version" indexOrder="0"/>
+        <attribute name="typeCode" indexOrder="1"/>
+        <attribute name="locationOid" indexOrder="2"/>
+      </mdIndex>
+
+    </create>
+    <permissions>
+      <role roleName="PUBLIC">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.LPGGeometry">
+            <operation name="ALL"/>
+          </mdBusinessPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object type="com.runwaysdk.system.metadata.MdBusiness" key="gov.geoplatform.uasdm.LPGGeometry" />
+    </delete>
+  </undoIt>
+</version>

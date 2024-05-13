@@ -12,6 +12,7 @@ export class LPGSync {
     forDate: string;
     remoteVersion: string;
     versionNumber: number;
+    version: string;
 }
 
 export class LabeledPropertyGraphTypeVersion {

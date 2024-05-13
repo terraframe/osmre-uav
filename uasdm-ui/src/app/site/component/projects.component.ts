@@ -191,16 +191,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   hierarchy: {
     oid: string,
     visible: boolean,
-    label: string
+    label: string,
+    version: string
   } = {
       oid: null,
       visible: true,
-      label: ""
+      label: "",
+      version: null
     };
 
+  // map of the child type metadata
   childMap: { [key: string]: any[] } = {};
 
-  // list of geojson objects of the children locations
+  // list of geojson (not including the geometries) objects of the children locations
   children: any[] = [];
 
   // Cache of all of the selected metadata types. Used to prevent needing multiple trips to the server
@@ -214,6 +217,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Content of the location panel
   content: string = "";
+  
+  tilesLoaded: boolean = false;
 
   activeTab: string = "";
 
@@ -263,11 +268,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
-
-
-    // this.service.bureaus().then(bureaus => {
-    //   this.bureaus = bureaus;
-    // });
 
     this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
 
@@ -372,8 +372,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.map.on("load", () => {
       this.initMap();
-    });
 
+      this.map.on('data', () => {
+        this.tilesLoaded = this.map.areTilesLoaded();
+      });
+    });
   }
 
   initMap(): void {
@@ -485,86 +488,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addLayers(): void {
-
-    // Add the hierarchy layer first, so that the sites layer is underneath it
-    this.map.addSource("parent", {
-      type: "geojson",
-      data: {
-        "type": "FeatureCollection",
-        "features": []
-      }
-    });
-
-    // Add the parent hierarchy polygon layer
-    this.map.addLayer({
-      "id": "parent-polygon",
-      "source": "parent",
-      "type": "fill",
-      "paint": {
-        "fill-color": "grey",
-        "fill-opacity": 0.75,
-        "fill-outline-color": "black"
-      }
-    });
-
-    // Add the parent hierarchy label layer
-    this.map.addLayer({
-      "id": "parent-label",
-      "source": "parent",
-      "type": "symbol",
-      "paint": {
-        "text-color": "black",
-        "text-halo-color": "#fff",
-        "text-halo-width": 2
-      },
-      "layout": {
-        "text-field": ["get", "localizedValue", ["get", "displayLabel"]],
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        "text-offset": [0, 0.6],
-        "text-anchor": "top",
-        "text-size": 12,
-      }
-    });
-
-
-    this.map.addSource("hierarchy", {
-      type: "geojson",
-      data: {
-        "type": "FeatureCollection",
-        "features": []
-      }
-    });
-
-    // Add the hierarchy polygon layer
-    this.map.addLayer({
-      "id": "hierarchy-polygon",
-      "source": "hierarchy",
-      "type": "fill",
-      "paint": {
-        "fill-color": "#00ffff",
-        "fill-opacity": 0.5,
-        "fill-outline-color": "black"
-      }
-    });
-
-    // Add the hierarchy label layer
-    this.map.addLayer({
-      "id": "hierarchy-label",
-      "source": "hierarchy",
-      "type": "symbol",
-      "paint": {
-        "text-color": "black",
-        "text-halo-color": "#fff",
-        "text-halo-width": 2
-      },
-      "layout": {
-        "text-field": ["get", "localizedValue", ["get", "displayLabel"]],
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        "text-offset": [0, 0.6],
-        "text-anchor": "top",
-        "text-size": 12,
-      }
-    });
 
 
     // Add the site layers
@@ -1349,6 +1272,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.breadcrumbs.splice(indexOf);
 
+      this.clearHierarchyLayers();
+
       this.current = null;
       this.children = [];
 
@@ -1504,19 +1429,106 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onContentChange(type: any): void {
 
+    try {
+
+      if (this.map.getLayer(type.code + "-polygon") != null) {
+        this.map.removeLayer(type.code + "-polygon");
+        this.map.removeLayer(type.code + "-label");
+
+        this.map.removeSource(type.code + "-source");
+      }
+    }
+    catch (e) {
+      // Ignore errors
+    }
+
     if (this.content !== type.code) {
       this.content = type.code;
       this.children = this.childMap[this.content];
+
+      // Add a new vector source and layer
+      const config = {
+        oid: this.hierarchy.oid,
+        typeCode: type.code
+      };
+
+      this.createHierarchyLayer(type, "#00ffff", 0.5, "parent");
     }
     else {
       this.content = "";
       this.children = [];
     }
 
-    (this.map.getSource("hierarchy") as any).setData({
-      "type": "FeatureCollection",
-      "features": this.children
+  }
+
+  createHierarchyLayer(type: any, color: string, opacity: number, attribute: string): void {
+
+    let protocol = window.location.protocol;
+    let host = window.location.host;
+
+    // Add a new vector source and layer
+    const config = {
+      oid: this.hierarchy.version,
+      typeCode: type.code
+    };
+
+    this.map.addSource(type.code + "-source", {
+      type: "vector",
+      tiles: [
+        protocol + "//" + host + EnvironmentUtil.getApiUrl() + "/api/labeled-property-graph-synchronization/tile?x={x}&y={y}&z={z}&config=" + encodeURIComponent(JSON.stringify(config))
+      ],
+      promoteId: "uuid"
     });
+
+    // Add the hierarchy polygon layer
+    this.map.addLayer({
+      "id": type.code + "-polygon",
+      "source": type.code + "-source",
+      "type": "fill",
+      "paint": {
+        "fill-color": color,
+        "fill-opacity": opacity,
+        "fill-outline-color": "black"
+      },
+      "source-layer": "context",
+      "filter": [
+        "all",
+        [
+          "==",
+          this.current.data.properties.uuid,
+          ["get", attribute]
+        ]
+      ],
+    }, 'points');
+
+    // Add the hierarchy label layer
+    this.map.addLayer({
+      "id": type.code + "-label",
+      "source": type.code + "-source",
+      "type": "symbol",
+      "paint": {
+        "text-color": "black",
+        "text-halo-color": "#fff",
+        "text-halo-width": 2
+      },
+      "layout": {
+        "text-field": ["get", "label"],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top",
+        "text-size": 12,
+      },
+      "source-layer": "context",
+      "filter": [
+        "all",
+        [
+          "==",
+          this.current.data.properties.uuid,
+          ["get", attribute]
+        ]
+      ],
+    }, 'points');
+
   }
 
   onOrganizationChange(): void {
@@ -1525,7 +1537,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hierarchy = {
       oid: null,
       visible: true,
-      label: ''
+      label: '',
+      version: null
     }
 
     this.syncs = [];
@@ -1542,13 +1555,50 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshSites();
   }
 
+  clearHierarchyLayers(): void {
+
+    const removeType = (type) => {
+
+      try {
+        this.map.removeLayer(type.code + "-polygon");
+        this.map.removeLayer(type.code + "-label");
+
+        this.map.removeSource(type.code + "-source");
+      }
+      catch (e) {
+        // Ignore errors
+      }
+    }
+
+    if (this.current != null && this.current.metadata != null) {
+      removeType(this.current.metadata);
+    }
+
+    this.types.forEach(type => {
+      removeType(type);
+    });
+  }
+
   onHierarchyChange(): void {
+    this.hierarchy.version = null;
+
     if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
+      const sync = this.syncs.find(sync => sync.oid === this.hierarchy.oid);
+
+      this.hierarchy.version = sync.version;
+
+      // Remove existing hierarchy layers
+      this.clearHierarchyLayers();
 
       this.syncService.roots(this.hierarchy.oid).then(resp => {
         this.hierarchy.label = this.syncs.filter(s => s.oid === this.hierarchy.oid).map(s => s.displayLabel.localizedValue).reduce((a, b) => a);
 
-        this.current = null;
+        this.current = {
+          type: SELECTION_TYPE.ROOT,
+          data: { properties: { uuid: resp.parent } },
+          metadata: null,
+          hierarchy: this.hierarchy.oid
+        };
 
         // Pre populate the cache
         this.metadataCache = {};
@@ -1567,14 +1617,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.processLocations(resp.roots);
 
-        // Clear the parent layer
-        (this.map.getSource("parent") as any).setData({
-          "type": "FeatureCollection",
-          "features": []
-        });
+        // // Clear the parent layer
+        // (this.map.getSource("parent") as any).setData({
+        //   "type": "FeatureCollection",
+        //   "features": []
+        // });
 
       });
     } else {
+      this.clearHierarchyLayers();
+
       this.content = "";
       this.current = null;
 
@@ -1582,16 +1634,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.children = [];
       this.breadcrumbs = [];
 
-      // Clear the parent layer
-      (this.map.getSource("parent") as any).setData({
-        "type": "FeatureCollection",
-        "features": []
-      });
 
-      (this.map.getSource("hierarchy") as any).setData({
-        "type": "FeatureCollection",
-        "features": []
-      });
+      // // Clear the parent layer
+      // (this.map.getSource("parent") as any).setData({
+      //   "type": "FeatureCollection",
+      //   "features": []
+      // });
+
+      // (this.map.getSource("hierarchy") as any).setData({
+      //   "type": "FeatureCollection",
+      //   "features": []
+      // });
     }
   }
 
@@ -1613,11 +1666,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleHierarchyClick(row: any): void {
     if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
+      this.clearHierarchyLayers();
 
       const includeMetadata = (this.metadataCache[row.properties.type] == null);
 
       this.syncService.select(this.hierarchy.oid, row.properties.type, row.properties.uid, includeMetadata).then(result => {
-
 
         if (result.metadata != null) {
           const metadata = result.metadata;
@@ -1640,23 +1693,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.breadcrumbs.push(this.current);
 
+        // Add the parent layer
+        const type = this.current.metadata;
+
+        if (type != null) {
+          this.createHierarchyLayer(type, "grey", 0.75, "uid");
+        }
+
         this.processLocations(result.children);
 
-        const collection = {
-          "type": "FeatureCollection",
-          "features": [row]
-        };
-
-        // Set the parent layer
-        (this.map.getSource("parent") as any).setData(collection);
-
         // Zoom to the layer
-        const env = envelope(collection);
-        const bounds = bbox(env) as [number, number, number, number];
+        if (result.envelope != null) {
+          const env = envelope(result.envelope);
+          const bounds = bbox(env) as [number, number, number, number];
 
-        this.map.fitBounds(bounds, {
-          padding: 20
-        });
+          this.map.fitBounds(bounds, {
+            padding: 20
+          });
+        }
       });
     }
   }
@@ -1683,14 +1737,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.types.size > 0) {
       const type = this.types.values().next().value;
 
-      this.content = type.code;
-      this.children = this.childMap[this.content];
+      this.onContentChange(type);
     }
-
-    (this.map.getSource("hierarchy") as any).setData({
-      "type": "FeatureCollection",
-      "features": this.children
-    });
   }
 
 

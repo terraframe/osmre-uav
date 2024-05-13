@@ -40,6 +40,11 @@
             <i *ngIf="content === type.code" class="fa fa-caret-down"></i>
             <i *ngIf="content !== type.code" class="fa fa-caret-right"></i>
           </h3>
+
+          <span *ngIf="!tilesLoaded">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading tiles
+          </span>
         </a>
         <div [collapse]="content !== type.code">
           <hr>
@@ -214,7 +219,7 @@
           <div class="col-md-12">
 
             <!-- IF at Site level -->
-            <ng-container *ngIf="current == null || current.type === 1">
+            <ng-container *ngIf="current == null || current.type !== 0">
               <div class="row">
                 <div class="col-md-12">
                   <label>Organization</label>
@@ -285,7 +290,7 @@
 
               <div class="row" style="margin-left: 10px;">
                 <div class="col-md-12">
-                  <div class="row" *ngIf="current != null" style="margin-right: 10px;">
+                  <div class="row" *ngIf="current != null && current.type !== 2" style="margin-right: 10px;">
                     <div class="col-md-12">
 
                       <h3 *ngIf="current.type === 1">
@@ -317,18 +322,21 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
 
-                      <tabset *ngIf="current.type !== 1" class="nav-full-width">
-                        <tab [heading]="current.metadata.childLabel" (selectTab)="activeTab = current.metadata.childLabel">
+                      <tabset *ngIf="current.type === 0" class="nav-full-width">
+                        <tab [heading]="current.metadata.childLabel"
+                          (selectTab)="activeTab = current.metadata.childLabel">
                           <ng-container [ngTemplateOutlet]="sites">
                           </ng-container>
                         </tab>
-                        <tab heading="Products"  (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" (toggleMapOrtho)="handleMapOrtho($event)"
+                        <tab heading="Products" (selectTab)="activeTab = 'Products'">
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -336,7 +344,7 @@
                     </div>
                   </div>
 
-                  <ng-container *ngIf="current == null">
+                  <ng-container *ngIf="current == null || current.type === 2">
                     <ng-container [ngTemplateOutlet]="locations"
                       *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
                     </ng-container>
@@ -353,7 +361,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -364,7 +371,7 @@
               <button (click)="handleCreateCollection()" class="btn btn-primary">Create Collection</button>
             </div>
           </div>
-          <div class="row" *ngIf="current == null || current.type === 1" style="background:white;">
+          <div class="row" *ngIf="current == null || current.type !== 0" style="background:white;">
             <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
               <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
             </div>
@@ -464,7 +471,6 @@
                   <span style="padding-top: 2px;">
                     <label style="padding-left: 5px;">{{hierarchy.label}}</label>
                   </span>
-
                 </div>
 
               </ng-container>

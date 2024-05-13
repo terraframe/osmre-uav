@@ -55,7 +55,6 @@ import org.keycloak.adapters.spi.AuthChallenge;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.spi.KeycloakAccount;
 import org.keycloak.adapters.spi.UserSessionManagement;
-import org.keycloak.adapters.spi.HttpFacade.Request;
 import org.keycloak.representations.IDToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,7 @@ import com.runwaysdk.web.WebClientSession;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.IDMSessionServiceDTO;
-import gov.geoplatform.uasdm.service.IDMSessionService;
+import gov.geoplatform.uasdm.service.request.IDMSessionService;
 import net.geoprism.account.LocaleSerializer;
 import net.geoprism.registry.service.business.RoleBusinessService;
 

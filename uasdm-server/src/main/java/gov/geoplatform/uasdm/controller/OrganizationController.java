@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import gov.geoplatform.uasdm.service.IDMOrganizationService;
+import gov.geoplatform.uasdm.service.request.IDMOrganizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.model.OrganizationView;
 import net.geoprism.registry.view.Page;

@@ -128,7 +128,7 @@ public class IDMSessionService extends IDMSessionServiceBase
     }
     catch (RuntimeException e)
     {
-      ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.IDMSessionService.class).onLoginFailure(email);
+      ApplicationContextHolder.getBean(gov.geoplatform.uasdm.service.request.IDMSessionService.class).onLoginFailure(email);
       throw e;
     }
   }
