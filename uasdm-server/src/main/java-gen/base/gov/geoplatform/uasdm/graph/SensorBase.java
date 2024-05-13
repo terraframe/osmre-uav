@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1532582776)
+@com.runwaysdk.business.ClassSignature(hash = 887480747)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -31,6 +16,7 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String DESCRIPTION = "description";
   public final static java.lang.String FOCALLENGTH = "focalLength";
   public final static java.lang.String HASGEOLOGGER = "hasGeologger";
+  public final static java.lang.String HIGHRESOLUTION = "highResolution";
   public final static java.lang.String MODEL = "model";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
@@ -46,7 +32,7 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String SENSORWIDTH = "sensorWidth";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1532582776;
+  private static final long serialVersionUID = 887480747;
   
   public SensorBase()
   {
@@ -131,6 +117,22 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setHasGeologger(Boolean value)
   {
     this.setValue(HASGEOLOGGER, value);
+  }
+  
+  public Boolean getHighResolution()
+  {
+    return (Boolean) this.getObjectValue(HIGHRESOLUTION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getHighResolutionMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(HIGHRESOLUTION);
+  }
+  
+  public void setHighResolution(Boolean value)
+  {
+    this.setValue(HIGHRESOLUTION, value);
   }
   
   public String getModel()

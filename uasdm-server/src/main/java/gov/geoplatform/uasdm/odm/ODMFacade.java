@@ -137,9 +137,9 @@ public class ODMFacade
     return service.taskNew(images, isMultispectral, configuration, col, task);
   }
 
-  public static NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
+  public static NewResponse taskNewInit(Collection collection, int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
-    return service.taskNewInit(imagesCount, isMultispectral, configuration);
+    return service.taskNewInit(collection, imagesCount, isMultispectral, configuration);
   }
 
   public static ODMResponse taskNewUpload(String uuid, ApplicationResource image)

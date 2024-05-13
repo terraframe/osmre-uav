@@ -42,6 +42,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 
 public class ODMService implements ODMServiceIF
@@ -145,7 +146,7 @@ public class ODMService implements ODMServiceIF
           GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload, task);
         }
         
-        HttpNewResponse resp = this.taskNewInit(payload.getImageCount(), isMultispectral, configuration);
+        HttpNewResponse resp = this.taskNewInit(col, payload.getImageCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())
         {
@@ -182,7 +183,7 @@ public class ODMService implements ODMServiceIF
   }
 
   @Override
-  public HttpNewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
+  public HttpNewResponse taskNewInit(Collection col, int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     initialize();
 
@@ -224,26 +225,36 @@ public class ODMService implements ODMServiceIF
     cog.put("name", "cog");
     cog.put("value", "true");
     arr.put(cog);
+    
+    // Even though the default is false, I caught ODM Web setting this value to true for most of their presets.
+    // Looking at their docs, it seems to me like we pretty much always want this enabled.
+    // https://docs.opendronemap.org/arguments/auto-boundary/
+    JSONObject autoBoundary = new JSONObject();
+    autoBoundary.put("name", "auto-boundary");
+    autoBoundary.put("value", "true");
+    arr.put(autoBoundary);
 
-    // Another one of our custom parameters, which only exists on our custom
-    // build of NodeODM.
-    /*
-    JSONObject joImagesCount = new JSONObject();
-    joImagesCount.put("name", "imagesCount");
-    joImagesCount.put("value", imagesCount);
-    arr.put(joImagesCount);
-    */
-
-    if (configuration.getResolution() != null)
+    ////////////////
+    // resolution //
+    ////////////////
     {
+      float resolution = 5.0f; // ODM default is 5.0
+      if (Boolean.TRUE.equals(col.getSensor().getHighResolution()))
+      {
+        resolution = 2.0f; // high resolution sensor default is 2.0
+      }
+      if (configuration.getResolution() != null)
+      {
+        resolution = configuration.getResolution().floatValue(); // user can override it
+      }
       JSONObject demResolution = new JSONObject();
       demResolution.put("name", "dem-resolution");
-      demResolution.put("value", configuration.getResolution().floatValue());
+      demResolution.put("value", resolution);
       arr.put(demResolution);
-
+  
       JSONObject orthoResolution = new JSONObject();
       orthoResolution.put("name", "orthophoto-resolution");
-      orthoResolution.put("value", configuration.getResolution().floatValue());
+      orthoResolution.put("value", resolution);
       arr.put(orthoResolution);
     }
 
@@ -263,12 +274,23 @@ public class ODMService implements ODMServiceIF
       arr.put(param);
     }
 
-    if (configuration.getPcQuality() != null)
+    ////////////////
+    // pc-quality //
+    ////////////////
     {
-      JSONObject param = new JSONObject();
-      param.put("name", "pc-quality");
-      param.put("value", configuration.getPcQuality().getCode());
-      arr.put(param);
+      Quality pcQuality = Quality.MEDIUM; // ODM default is medium
+      if (Boolean.TRUE.equals(col.getSensor().getHighResolution()))
+      {
+        pcQuality = Quality.HIGH; // high resolution sensor default is high
+      }
+      if (configuration.getPcQuality() != null)
+      {
+        pcQuality = configuration.getPcQuality(); // user can override it
+      }
+      JSONObject jsonPcQuality = new JSONObject();
+      jsonPcQuality.put("name", "pc-quality");
+      jsonPcQuality.put("value", pcQuality.getCode());
+      arr.put(jsonPcQuality);
     }
 
     if (configuration.getFeatureQuality() != null)
