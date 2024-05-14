@@ -101,7 +101,7 @@
 					<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
 						placeholder="File name..." />
 				</div>	
-	
+
 		        <div *ngIf="config.processOrtho && config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
 		            <p>File format:</p>
 		            <pre>
@@ -120,6 +120,39 @@
 		                </code>        
 		            </pre>
 		        </div>
+
+		        <div *ngIf="config.processOrtho || config.processDem" class="form-group">
+		            <boolean-field [(value)]="config.includeGroundControlPointFile"
+		                label="Use ground control point file when processing (if uploaded)"></boolean-field>
+		        </div>
+
+				<div class="form-group" *ngIf="config.processOrtho && config.includeGroundControlPointFile">
+					<label for="groundControlPointFileName">Ground control point file name</label>
+					<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input" class="form-control"
+						placeholder="File name..." />
+				</div>	
+
+				<div *ngIf="config.processOrtho && config.includeGroundControlPointFile">
+		            <p>File format:</p>
+		            <pre>
+		                <code>
+						projection
+						geo_x geo_y geo_z im_x im_y image_name [gcp_name] [extra1] [extra2]
+						...						
+		                </code>
+		            </pre>
+		            <p>Example:</p>
+		            <pre>
+		                <code>
+						+proj=utm +zone=10 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+						544256.7 5320919.9 5 3044 2622 IMG_0525.jpg
+						544157.7 5320899.2 5 4193 1552 IMG_0585.jpg
+						544033.4 5320876.0 5 1606 2763 IMG_0690.jpg							
+		                </code>        
+		            </pre>
+		        </div>
+
+
 		    </div>
 	    </div>
 

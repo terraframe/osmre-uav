@@ -134,6 +134,17 @@
 					placeholder="File name..." />
 			</div>
 
+			<div class="form-group">
+	            <boolean-field [(value)]="config.includeGroundControlPointFile"
+	                label="Use ground control point file when processing (if uploaded)" [disabled]="true"></boolean-field>
+	        </div>
+
+			<div class="form-group" *ngIf="config.includeGroundControlPointFile">
+				<label for="groundControlPointFileName">Ground control point file name</label>
+				<input [(ngModel)]="config.groundControlPointFileName" [disabled]="true" name="groundControlPointFileName" type="input" class="form-control"
+					placeholder="File name..." />
+			</div>
+
 
 	    </div>
 	</div>

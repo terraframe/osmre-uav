@@ -67,7 +67,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		featureQuality: "HIGH",
 		radiometricCalibration: "NONE",
 		geoLocationFormat: "RX1R2",
-		geoLocationFileName: "PIX4D.CSV"
+		geoLocationFileName: "PIX4D.CSV",
+		groundControlPointFileName: "gcp_list.txt"
 	} as UploadForm;
 
 	/*

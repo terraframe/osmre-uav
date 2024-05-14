@@ -61,7 +61,9 @@ public class ODMFacade
     private Set<String>   imageNames = new HashSet<String>();
     
     private String        geoLocationFile;
-    
+
+    private String        groundControlPointFile;
+
     public ODMProcessingPayload(CloseableFile file)
     {
       this.file = file;
@@ -75,6 +77,14 @@ public class ODMFacade
     public String getGeoLocationFile()
     {
       return geoLocationFile;
+    }
+
+    public String getGroundControlPointFile() {
+      return groundControlPointFile;
+    }
+
+    public void setGroundControlPointFile(String groundControlPointFile) {
+      this.groundControlPointFile = groundControlPointFile;
     }
 
     public CloseableFile getFile()
@@ -227,6 +237,17 @@ public class ODMFacade
 
             payload.setGeoLocationFile(IOUtils.toString(tarIn, "UTF-8"));
           }
+          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
+          {
+            File file = new File(parent, entry.getName());
+
+            try (FileOutputStream fos = new FileOutputStream(file))
+            {
+              IOUtils.copy(tarIn, fos);
+            }
+
+            payload.setGroundControlPointFile(IOUtils.toString(tarIn, "UTF-8"));
+          }
           else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {
             File file = new File(parent, entry.getName());
@@ -291,6 +312,20 @@ public class ODMFacade
             }
 
             payload.setGeoLocationFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
+          }
+          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
+          {
+            File file = new File(parent, "gcp_list.txt");
+
+            try (FileOutputStream fos = new FileOutputStream(file))
+            {
+              try (InputStream zis = zipFile.getInputStream(entry))
+              {
+                IOUtils.copy(zis, fos);
+              }
+            }
+
+            payload.setGroundControlPointFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
           }
           else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
           {

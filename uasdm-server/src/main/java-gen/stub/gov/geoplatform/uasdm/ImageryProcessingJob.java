@@ -266,6 +266,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 {
                   filename = "geo.txt";
                 }
+
+                if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
+                {
+                  filename = "gcp_list.txt";
+                }
                 
                 if (filenameSet.contains(filename)) {
                   task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
@@ -319,6 +324,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
                   {
                     filename = "geo.txt";
+                  }
+
+                  if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
+                  {
+                    filename = "gcp_list.txt";
                   }
                   
                   if (filenameSet.contains(filename)) {
@@ -411,7 +421,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (isMultispectral)
       {
-        if (! ( (ext.equals("tif") || ext.equals("tiff")) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
+        if (! ( (ext.equals("tif") || ext.equals("tiff"))
+                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
+                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() )))
         {
           task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
           return false;
@@ -419,7 +431,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else
       {
-        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) ))
+        if (! ( extensions.contains(ext)
+                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
+                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
         {
           task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
           return false;
