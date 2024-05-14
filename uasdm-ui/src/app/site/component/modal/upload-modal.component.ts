@@ -16,7 +16,7 @@ import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRunConfig } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -379,6 +379,13 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		
 		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
 		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
+		
+		this.service.getDefaultODMRunConfig(this.component.id).then((config: ODMRunConfig) => {
+			this.values.pcQuality = config.pcQuality;
+			this.values.resolution = config.resolution;
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
 	}
 
 	close(): void {
