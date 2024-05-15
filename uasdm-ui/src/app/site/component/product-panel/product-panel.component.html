@@ -102,13 +102,17 @@
 								  </ul>
 								</span>
 								-->
-                                <a class="fa fa-arrow-alt-circle-down" style="width:60px;" (click)="handleTogglePublish(product)"
+                                <a *ngIf="!product.locked" class="fa fa-arrow-alt-circle-down" style="width:60px;" (click)="handleTogglePublish(product)"
                                     title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
                             </li>
-                            <li *ngIf="!product.published" style="padding: 3px 0 3px 0;">
+                            <li *ngIf="!product.locked && !product.published" style="padding: 3px 0 3px 0;">
                                 <a class="fa fa-arrow-alt-circle-up" (click)="handleTogglePublish(product)"
                                     title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
                             </li>
+                            <li *ngIf="isAdmin" style="padding: 3px 0 3px 0;">
+                                <a class="fa" [ngClass]="{'fa-lock': product.locked, 'fa-lock-open': !product.locked}" (click)="handleToggleLock(product)"
+                                    title="Lock or unlock the product">{{product.locked ? 'Unlock' : 'Lock'}}</a>
+                            </li>                            
                         </ul>
                     </div>
                 </div>

@@ -16,17 +16,14 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
+import gov.geoplatform.uasdm.GenericException;
+import net.geoprism.GeoprismUser;
+import net.geoprism.registry.service.request.RoleServiceIF;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -590,9 +587,48 @@ public class Product extends ProductBase implements ProductIF
   }
 
   @Override
+  public boolean isLocked() {
+    return this.getLocked() != null && this.getLocked();
+  }
+
+  @Override
+  @Transaction
+  public void toggleLock()
+  {
+    SessionIF session = Session.getCurrentSession();
+
+    if(session != null) {
+      Map<String, String> roles = session.getUserRoles();
+
+      SingleActorDAOIF user = session.getUser();
+
+      String ownerOid = this.getComponent().getOwnerOid();
+
+      if(user.getOid().equals(ownerOid) || roles.containsKey("geoprism.admin.Administrator")) {
+        this.setLocked(!this.isLocked());
+        this.setLockedById(user.getOid());
+        this.apply();
+
+        return;
+      }
+    }
+
+    GenericException ex = new GenericException();
+    ex.setUserMessage("Only the owner can lock a product");
+    throw ex;
+  }
+
+
+  @Override
   @Transaction
   public void togglePublished()
   {
+    if(this.isLocked()) {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("The product has been locked and can not be changed.");
+      throw ex;
+    }
+
     IndexService.removeStacItems(this);
 
     try

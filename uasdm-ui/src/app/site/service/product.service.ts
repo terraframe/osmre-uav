@@ -73,4 +73,21 @@ export class ProductService {
 			}))
 			.toPromise()
 	}
+
+	toggleLock(id: string): Promise<ProductDetail> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return this.http
+			.post<ProductDetail>(environment.apiUrl + '/product/toggle-lock', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
 }

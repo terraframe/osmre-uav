@@ -23,6 +23,8 @@ import {
 import { environment } from 'src/environments/environment';
 import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { AuthService } from '@shared/service/auth.service';
+import { ErrorHandler } from '@shared/component';
 
 @Component({
     selector: 'product-panel',
@@ -41,7 +43,7 @@ export class ProductPanelComponent implements OnDestroy {
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
 
     @Output() public toggleMapDem = new EventEmitter<Product>();
-    
+
     /* 
      * List of products for the current node
      */
@@ -69,10 +71,17 @@ export class ProductPanelComponent implements OnDestroy {
     requestId: number = 0;
 
     context: string;
+    isAdmin: boolean = false;
 
 
-    constructor(private configuration: ConfigurationService, private pService: ProductService, private mService: ManagementService, private modalService: BsModalService) {
+    constructor(private configuration: ConfigurationService,
+        private pService: ProductService,
+        private mService: ManagementService,
+        private modalService: BsModalService,
+        private authService: AuthService) {
+
         this.context = EnvironmentUtil.getApiUrl();
+        this.isAdmin = this.authService.isAdmin();
     }
 
     ngOnDestroy(): void {
@@ -90,17 +99,17 @@ export class ProductPanelComponent implements OnDestroy {
 
         this.refreshProducts(changes['selection'].currentValue);
     }
-    
+
     clipboardPublicStacUrl(product: Product, clipboardPopover) {
-		navigator.clipboard.writeText(product.publicStacUrl);
-		document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
-		clipboardPopover.show();
-		
-		setTimeout(() => {
-			document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-link";
-			clipboardPopover.hide();
-		}, 6000);
-	}
+        navigator.clipboard.writeText(product.publicStacUrl);
+        document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
+        clipboardPopover.show();
+
+        setTimeout(() => {
+            document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-link";
+            clipboardPopover.hide();
+        }, 6000);
+    }
 
     refresh(): void {
         this.refreshProducts(this.selection);
@@ -301,4 +310,11 @@ export class ProductPanelComponent implements OnDestroy {
             }
         });
     }
+
+    handleToggleLock(product: Product): void {
+        this.pService.toggleLock(product.id).then(() => {
+            product.locked = !product.locked;
+        });
+    }
+
 }

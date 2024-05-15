@@ -41,6 +41,8 @@ public class ProductView
 
   private boolean            published;
 
+  private boolean            locked;
+
   private String             boundingBox;
 
   private boolean            hasPointcloud;
@@ -175,6 +177,14 @@ public class ProductView
     this.mappables = mappables;
   }
 
+  public boolean isLocked() {
+    return locked;
+  }
+
+  public void setLocked(boolean locked) {
+    this.locked = locked;
+  }
+
   public JSONObject toJSON()
   {
     JSONObject object = new JSONObject();
@@ -182,6 +192,7 @@ public class ProductView
     object.put("name", this.name);
     object.put("entities", SiteItem.serializeItems(this.components));
     object.put("published", this.published);
+    object.put("locked", this.locked);
 
     if (published)
     {

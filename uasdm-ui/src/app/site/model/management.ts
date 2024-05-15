@@ -323,6 +323,7 @@ export class Product {
 	hasPointcloud?: boolean;
 	hasAllZip?: boolean;
 	publicStacUrl?: string;
+	locked?: boolean
 }
 
 export class MapLayer {

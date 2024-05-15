@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1915085003)
+@com.runwaysdk.business.ClassSignature(hash = -1623021264)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,13 +11,16 @@ package gov.geoplatform.uasdm.graph;
 public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.Product";
-  public static java.lang.String BOUNDINGBOX = "boundingBox";
-  public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
-  public static java.lang.String NAME = "name";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String PUBLISHED = "published";
-  public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -1915085003;
+  public final static java.lang.String BOUNDINGBOX = "boundingBox";
+  public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
+  public final static java.lang.String LOCKED = "locked";
+  public final static java.lang.String LOCKEDBY = "lockedBy";
+  public final static java.lang.String NAME = "name";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String PUBLISHED = "published";
+  public final static java.lang.String SEQ = "seq";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1623021264;
   
   public ProductBase()
   {
@@ -69,6 +57,55 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   public void setLastUpdateDate(java.util.Date value)
   {
     this.setValue(LASTUPDATEDATE, value);
+  }
+  
+  public Boolean getLocked()
+  {
+    return (Boolean) this.getObjectValue(LOCKED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getLockedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(LOCKED);
+  }
+  
+  public void setLocked(Boolean value)
+  {
+    this.setValue(LOCKED, value);
+  }
+  
+  public com.runwaysdk.system.SingleActor getLockedBy()
+  {
+    if (this.getObjectValue(LOCKEDBY) == null)
+    {
+      return null;
+    }
+    else
+    {
+      return com.runwaysdk.system.SingleActor.get( (String) this.getObjectValue(LOCKEDBY));
+    }
+  }
+  
+  public String getLockedByOid()
+  {
+    return (String) this.getObjectValue(LOCKEDBY);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF getLockedByMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeReferenceDAOIF)mdClassIF.definesAttribute(LOCKEDBY);
+  }
+  
+  public void setLockedBy(com.runwaysdk.system.SingleActor value)
+  {
+    this.setValue(LOCKEDBY, value.getOid());
+  }
+  
+  public void setLockedById(java.lang.String oid)
+  {
+    this.setValue(LOCKEDBY, oid);
   }
   
   public String getName()
