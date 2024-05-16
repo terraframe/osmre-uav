@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.geoplatform.uasdm.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -55,10 +56,6 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.ImageryProcessingJob;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
@@ -461,6 +458,14 @@ public class ProjectManagementService
     {
       ProcessingInProgressException ex = new ProcessingInProgressException();
       throw ex;
+    }
+
+    Product product = Product.find(collection);
+
+    if(product != null && product.isLocked()) {
+      GenericException exception = new GenericException();
+      exception.setUserMessage("The collection can not be processed because its product is locked.");
+      throw exception;
     }
 
     ODMProcessingTask task = new ODMProcessingTask();

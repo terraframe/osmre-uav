@@ -57,13 +57,13 @@
       
       <div class="row">
         <div class="col-md-12">
-          <label>Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy"}}
+          <label>Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM dd, yyyy"}}
+          <label>Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
