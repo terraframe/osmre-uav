@@ -74,7 +74,7 @@ export class ProductService {
 			.toPromise()
 	}
 
-	toggleLock(id: string): Promise<ProductDetail> {
+	toggleLock(id: string): Promise<void> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.post<ProductDetail>(environment.apiUrl + '/product/toggle-lock', JSON.stringify({ id: id }), { headers: headers })
+			.post<void>(environment.apiUrl + '/product/toggle-lock', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
