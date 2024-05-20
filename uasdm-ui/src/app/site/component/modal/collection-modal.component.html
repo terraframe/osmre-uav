@@ -38,13 +38,13 @@
 
       <div class="row">
         <div class="col-md-12">
-          <label>Collection Date: </label> &nbsp; {{entity.collectionDate | idmdate : "MMM dd, yyyy"}}
+          <label>Collection Date: </label> &nbsp; {{entity.collectionDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Collection End Date: </label> &nbsp; {{entity.collectionEndDate | idmdate : "MMM dd, yyyy"}}
+          <label>Collection End Date: </label> &nbsp; {{entity.collectionEndDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
@@ -152,7 +152,7 @@
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
               <div class="image-list-container">
-                
+
                 <ul class="list-group row">
                   <li
                     *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
@@ -188,10 +188,11 @@
                 <tr *ngFor="let item of page.results">
                   <td>{{item.name}}</td>
                   <td style="text-align:right;">
-                    <artifact-upload *ngIf="item.name == 'geo.txt'" [componentId]="entity.id" [folder]="'raw'" [replaceName]="'geo.txt'" [label]="'Reupload'">
+                    <artifact-upload *ngIf="item.name == 'geo.txt'" [componentId]="entity.id" [folder]="'raw'"
+                      [replaceName]="'geo.txt'" [label]="'Reupload'">
                     </artifact-upload>
-                    <button type="button" class="btn btn-primary"
-                      (click)="handleDownloadFile(item)" style="margin: 5px 0;">
+                    <button type="button" class="btn btn-primary" (click)="handleDownloadFile(item)"
+                      style="margin: 5px 0;">
                       Download
                     </button>
                   </td>

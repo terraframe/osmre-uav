@@ -83,6 +83,14 @@ public class ProductController
     return new RestBodyResponse(view.toJSON());
   }
 
+  @Endpoint(url = "toggle-lock", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF toggleLock(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    service.toggleLock(request.getSessionId(), id);
+
+    return new RestResponse();
+  }
+
   @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
   {

@@ -26,6 +26,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import gov.geoplatform.uasdm.*;
+import gov.geoplatform.uasdm.graph.Product;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -42,10 +44,6 @@ import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.SingleActor;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -196,6 +194,14 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
+
+    gov.geoplatform.uasdm.graph.Product product = Product.find(component);
+
+    if(product != null && product.isLocked()) {
+      GenericException exception = new GenericException();
+      exception.setUserMessage("The collection can not be processed because its product is locked.");
+      throw exception;
+    }
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(uploadTask.getUploadId());

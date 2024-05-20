@@ -56,7 +56,11 @@ public interface ProductIF extends ComponentIF
   public boolean isPublished();
 
   public void togglePublished();
-  
+
+  public boolean isLocked();
+
+  public void toggleLock();
+
   public List<DocumentIF> getDocuments();
 
   public StacItem toStacItem();

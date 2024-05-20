@@ -83,6 +83,10 @@ public class ODMProcessConfiguration
   
   public static final String RADIOMETRIC_CALIBRATION   = "radiometricCalibration";
 
+  public static final String INCLUDE_GROUND_CONTROL_POINT_FILE = "includeGroundControlPointFile";
+
+  public static final String GROUND_CONTROL_POINT_FILE_NAME    = "GroundControlPointFileName";
+
   private boolean            includeGeoLocationFile;
 
   private FileFormat         geoLocationFormat;
@@ -90,6 +94,10 @@ public class ODMProcessConfiguration
   private String             geoLocationFileName;
 
   private String             outFileNamePrefix;
+
+  private boolean            includeGroundControlPointFile;
+
+  private String             groundControlPointFileName;
 
   private BigDecimal         resolution;
 
@@ -148,6 +156,7 @@ public class ODMProcessConfiguration
    */
   private RadiometricCalibration radiometricCalibration;
 
+
   public ODMProcessConfiguration()
   {
     this("");
@@ -166,6 +175,8 @@ public class ODMProcessConfiguration
     this.geoLocationFormat = FileFormat.RX1R2;
     this.geoLocationFileName = "geo.txt";
     this.radiometricCalibration = RadiometricCalibration.NONE;
+    this.includeGroundControlPointFile = false;
+    this.groundControlPointFileName = "gcp_list.txt";
   }
   
   public RadiometricCalibration getRadiometricCalibration()
@@ -216,6 +227,22 @@ public class ODMProcessConfiguration
   public void setGeoLocationFileName(String geoLocationFileName)
   {
     this.geoLocationFileName = geoLocationFileName;
+  }
+
+  public boolean isIncludeGroundControlPointFile() {
+    return includeGroundControlPointFile;
+  }
+
+  public void setIncludeGroundControlPointFile(boolean includeGroundControlPointFile) {
+    this.includeGroundControlPointFile = includeGroundControlPointFile;
+  }
+
+  public String getGroundControlPointFileName() {
+    return groundControlPointFileName;
+  }
+
+  public void setGroundControlPointFileName(String groundControlPointFileName) {
+    this.groundControlPointFileName = groundControlPointFileName;
   }
 
   public String getOutFileNamePrefix()
@@ -291,6 +318,8 @@ public class ODMProcessConfiguration
     object.addProperty(PC_QUALITY, this.pcQuality.name());
     object.addProperty(FEATURE_QUALITY, this.featureQuality.name());
     object.addProperty(RADIOMETRIC_CALIBRATION, this.radiometricCalibration.name());
+    object.addProperty(INCLUDE_GROUND_CONTROL_POINT_FILE, this.includeGroundControlPointFile);
+    object.addProperty(GROUND_CONTROL_POINT_FILE_NAME, this.groundControlPointFileName);
 
     return object;
   }
@@ -328,6 +357,26 @@ public class ODMProcessConfiguration
       if (!element.isJsonNull())
       {
         configuration.setGeoLocationFileName(object.get(GEO_LOCATION_FILE_NAME).getAsString());
+      }
+    }
+
+    if (object.has(INCLUDE_GROUND_CONTROL_POINT_FILE))
+    {
+      JsonElement element = object.get(INCLUDE_GROUND_CONTROL_POINT_FILE);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setIncludeGroundControlPointFile(object.get(INCLUDE_GROUND_CONTROL_POINT_FILE).getAsBoolean());
+      }
+    }
+
+    if (object.has(GROUND_CONTROL_POINT_FILE_NAME))
+    {
+      JsonElement element = object.get(GROUND_CONTROL_POINT_FILE_NAME);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setGroundControlPointFileName(object.get(GROUND_CONTROL_POINT_FILE_NAME).getAsString());
       }
     }
 
@@ -430,6 +479,18 @@ public class ODMProcessConfiguration
     {
       String geoLocationFileName = parser.getCustomParams().get(GEO_LOCATION_FILE_NAME);
       configuration.setGeoLocationFileName(geoLocationFileName);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(INCLUDE_GROUND_CONTROL_POINT_FILE)))
+    {
+      Boolean includeGroundControlPointFile = Boolean.valueOf(parser.getCustomParams().get(INCLUDE_GROUND_CONTROL_POINT_FILE));
+      configuration.setIncludeGroundControlPointFile(includeGroundControlPointFile);
+    }
+
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(GROUND_CONTROL_POINT_FILE_NAME)))
+    {
+      String groundControlPointFileName = parser.getCustomParams().get(GROUND_CONTROL_POINT_FILE_NAME);
+      configuration.setGeoLocationFileName(groundControlPointFileName);
     }
 
     if (!StringUtils.isEmpty(parser.getCustomParams().get(RESOLUTION)))

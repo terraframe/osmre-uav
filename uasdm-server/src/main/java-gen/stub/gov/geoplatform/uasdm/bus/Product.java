@@ -219,7 +219,17 @@ public class Product extends ProductBase implements ProductIF
   {
     throw new UnsupportedOperationException();
   }
-  
+
+  @Override
+  public boolean isLocked() {
+    return false;
+  }
+
+  @Override
+  public void toggleLock() {
+
+  }
+
   @Override
   public StacItem toStacItem()
   {

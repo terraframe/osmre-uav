@@ -129,6 +129,14 @@ public class ProductService
     return Converter.toView(product, components);
   }
 
+
+  @Request(RequestType.SESSION)
+  public void toggleLock(String sessionId, String id)
+  {
+    ProductIF product = ComponentFacade.getProduct(id);
+    product.toggleLock();
+  }
+
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadAllZip(String sessionId, String id)
   {

@@ -6,14 +6,14 @@
 <ng-container>
     <div class="row">
         <div class="col-sm-12">
-        	<div style="padding:10px 15px;">
-	            <label>
-	                <label>Order available products</label>
-	            </label>
-	            <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
-	                <option></option>
-	                <option *ngFor="let option of fields" [value]="option.value">{{option.label}}</option>
-	            </select>
+            <div style="padding:10px 15px;">
+                <label>
+                    <label>Order available products</label>
+                </label>
+                <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
+                    <option></option>
+                    <option *ngFor="let option of fields" [value]="option.value">{{option.label}}</option>
+                </select>
             </div>
         </div>
     </div>
@@ -43,73 +43,87 @@
                         </li>
                     </ul>
 
-                    <div class="card-left" style="width:calc(100% - 7.2em); padding:0px;">
-
-                        <!-- <img src="https://via.placeholder.com/150x75" class="img-responsive"> -->
-
-                        <div *ngIf="thumbnails[product.id] != null">
-                            <a class="thumbnail" (click)="previewImage(product)">
-                                <img class="" [src]="thumbnails[product.id] | safeHtml"
-                                    (error)="getDefaultImgURL($event)" alt="Image">
-                            </a>
-                        </div>
+                    <div *ngIf="thumbnails[product.id] != null">
+                        <a class="thumbnail" (click)="previewImage(product)">
+                            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)"
+                                alt="Image">
+                        </a>
                     </div>
-                    <div class="card-right" style="padding:0px; width: 7.2em;">
-                        <ul style="list-style: none;padding: 0;">
-                            <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                <a class="fa fa-globe" [style]="hasOrthoLayer(product) ? '' : 'cursor:not-allowed;'"
-                                    aria-hidden="true" (click)="handleMapIt(product)"
-                                    title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
-                                <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave]
-                                    class="fas fa-check"
-                                    style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
-                            </li>
-                            <li style="padding: 3px 0 3px 0; min-width:7.2em;">
-                                <a class="fa fa-industry" [style]="hasDemLayer(product) ? '' : 'cursor:not-allowed;'"
-                                    aria-hidden="true" (click)="handleMapDem(product)"
-                                    title="View the DEM hillshade.">Hillshade</a>
-                                <i *ngIf="product.demMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check"
-                                    style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
-                            </li>
-                            <li style="padding: 3px 0 3px 0;">
-                                <a class="fa fa-cube" [style]="product.hasPointcloud ? '' : 'cursor:not-allowed;'"
-                                    aria-hidden="true" (click)="handlePointcloud(product)"
-                                    title="View the 3D pointcloud for this product using the Potree viewer.">3D</a>
-                            </li>
-                            <li style="padding: 3px 0 3px 0;">
-                                <a class="fa fa-info-circle" (click)="handleGetInfo(product)"
-                                    title="View more information about this product, including raw data.">Get Info</a>
-                            </li>
-                            <li style="padding: 3px 0 3px 0;">
-                                <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)"
-                                    title="Deletes the product and all associated data and public map services.">Delete</a>
-                            </li>
-                            <li *ngIf="product.published" style="padding: 3px 0 3px 0;">
-                                <a (click)="clipboardPublicStacUrl(product, clipboardPopover)" type="button">
-							      <span [id]="'PublicStacUrl-' + product.id" class="fa fa-link" style="margin:0;"
-							      	[popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover" placement="top"></span> 
-							    </a>
-                                <!-- 
-                                <span class="btn-group" dropdown>
-								  <a dropdownToggle type="button" class="dropdown-toggle" style="line-height: 0px !important;" aria-controls="dropdown-basic">
-								    <span class="fa fa-link" style="margin:0;"></span>
-								  </a>
-								  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic"
-								    style="width:100px; min-width:100px; max-width:100px;">
-								    <li role="menuitem"><a class="dropdown-item" href="#">Tilejson</a></li>
-								    <li role="menuitem"><a class="dropdown-item" href="#">Direct</a></li>
-								    <li role="menuitem"><a class="dropdown-item" href="#">STAC</a></li>
-								  </ul>
-								</span>
-								-->
-                                <a class="fa fa-arrow-alt-circle-down" style="width:60px;" (click)="handleTogglePublish(product)"
-                                    title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
-                            </li>
-                            <li *ngIf="!product.published" style="padding: 3px 0 3px 0;">
-                                <a class="fa fa-arrow-alt-circle-up" (click)="handleTogglePublish(product)"
-                                    title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
-                            </li>
-                        </ul>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <a class="fa fa-globe" [style]="hasOrthoLayer(product) ? '' : 'cursor:not-allowed;'"
+                                aria-hidden="true" (click)="handleMapIt(product)"
+                                title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
+                            <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check"
+                                style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="fa fa-industry" [style]="hasDemLayer(product) ? '' : 'cursor:not-allowed;'"
+                                aria-hidden="true" (click)="handleMapDem(product)"
+                                title="View the DEM hillshade.">Hillshade</a>
+                            <i *ngIf="product.demMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check"
+                                style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="fa fa-cube " [style]="product.hasPointcloud ? '' : 'cursor:not-allowed;'"
+                                aria-hidden="true" (click)="handlePointcloud(product)"
+                                title="View the 3D pointcloud for this product using the Potree viewer.">3D</a>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <a class="fa fa-info-circle" (click)="handleGetInfo(product)"
+                                title="View more information about this product, including raw data.">Get Info</a>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)"
+                                title="Deletes the product and all associated data and public map services.">Delete</a>
+                        </div>
+
+                        <div *ngIf="isAdmin" class="col-sm-4">
+                            <a class="fa" [ngClass]="{'fa-lock': product.locked, 'fa-lock-open': !product.locked}"
+                                (click)="handleToggleLock(product)" title="Lock or unlock the product">{{product.locked
+                                ? 'Unlock' : 'Lock'}}</a>
+                        </div>
+                        <div class="col-sm-4" *ngIf="!product.locked && !product.published">
+
+                            <a class="fa fa-arrow-alt-circle-up" style="--fa-border-padding: 0 0 0 5px;"
+                                (click)="handleTogglePublish(product)"
+                                title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
+                        </div>
+                        <div class="col-sm-4" *ngIf="!product.locked && product.published">
+
+                            <a class="fa fa-arrow-alt-circle-down" style="width:60px;"
+                                (click)="handleTogglePublish(product)"
+                                title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
+
+
+                        </div>
+                        <div class="col-sm-4" *ngIf="product.published">
+
+                            <a class="fa" (click)="clipboardPublicStacUrl(product, clipboardPopover)">
+                                <span class="fa fa-link" [id]="'PublicStacUrl-' + product.id" style="margin:0;"
+                                    [popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover"
+                                    placement="top"></span>
+                                    Share
+                            </a>
+
+                            <!-- 
+                                    <span class="btn-group" dropdown>
+                                      <a dropdownToggle type="button" class="dropdown-toggle" style="line-height: 0px !important;" aria-controls="dropdown-basic">
+                                        <span class="fa fa-link" style="margin:0;"></span>
+                                      </a>
+                                      <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic"
+                                        style="width:100px; min-width:100px; max-width:100px;">
+                                        <li role="menuitem"><a class="dropdown-item" href="#">Tilejson</a></li>
+                                        <li role="menuitem"><a class="dropdown-item" href="#">Direct</a></li>
+                                        <li role="menuitem"><a class="dropdown-item" href="#">STAC</a></li>
+                                      </ul>
+                                    </span>
+                                    -->
+
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -145,7 +147,16 @@ public class ODMService implements ODMServiceIF
         {
           GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload, task);
         }
-        
+
+        if (configuration.isIncludeGroundControlPointFile() && StringUtils.isEmpty(payload.getGroundControlPointFile()))
+        {
+          throw new GenericException("Ground control point file is required");
+        }
+        else if (configuration.isIncludeGroundControlPointFile())
+        {
+          GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, payload, task);
+        }
+
         HttpNewResponse resp = this.taskNewInit(col, payload.getImageCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())

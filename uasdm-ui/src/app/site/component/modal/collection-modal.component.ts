@@ -310,7 +310,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 				featureQuality: data.featureQuality,
 				radiometricCalibration: data.radiometricCalibration,
 				geoLocationFormat: data.geoLocationFormat,
-				geoLocationFileName: data.geoLocationFileName
+				geoLocationFileName: data.geoLocationFileName,
+				includeGroundControlPointFile: data.includeGroundControlPointFile,
+				groundControlPointFileName: data.groundControlPointFileName
+
 			};
 
 			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {

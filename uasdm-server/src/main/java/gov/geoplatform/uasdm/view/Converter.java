@@ -407,6 +407,7 @@ public abstract class Converter
     view.setId(product.getOid());
     view.setName(product.getName());
     view.setPublished(product.isPublished());
+    view.setLocked(product.isLocked());
 
     List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
     view.setMappables(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));

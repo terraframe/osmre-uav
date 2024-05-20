@@ -54,7 +54,7 @@ public class CollectionConverter extends Converter
 
     CollectionIF collection = (CollectionIF) uasComponent;
 
-    if (collection.getPrivilegeType().size() > 0)
+    if (!collection.getPrivilegeType().isEmpty())
     {
       AllPrivilegeType privilegeType = collection.getPrivilegeType().get(0);
       siteItem.setPrivilegeType(privilegeType.name());
@@ -94,7 +94,7 @@ public class CollectionConverter extends Converter
       }
       
       List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
-      if (tasks.size() > 0)
+      if (!tasks.isEmpty())
       {
         WorkflowTask lastTask = tasks.get(tasks.size() - 1);
         siteItem.setDateTime(Util.formatIso8601(lastTask.getLastUpdateDate(), false));

@@ -26,6 +26,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         processDem: false,
         processOrtho: false,
         includeGeoLocationFile: false,
+        includeGroundControlPointFile: false,
         outFileNamePrefix: '',
         resolution: 5,
         videoResolution: 4000,
@@ -34,7 +35,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         pcQuality: "MEDIUM",
         featureQuality: "HIGH",
         radiometricCalibration: "NONE",
-        geoLocationFormat: "RX1R2"
+        geoLocationFormat: "RX1R2",
     };
 
     isAdvancedSettingsCollapsed = true;

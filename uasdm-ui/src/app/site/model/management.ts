@@ -128,6 +128,7 @@ export class ODMRunConfig {
 	processDem: boolean;
 	processOrtho: boolean;
 	includeGeoLocationFile: boolean;
+	includeGroundControlPointFile: boolean;
 	outFileNamePrefix: string;
 	resolution: number;
 	videoResolution: number;
@@ -138,6 +139,7 @@ export class ODMRunConfig {
 	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
+	groundControlPointFileName?: string;
 }
 
 export class CollectionHierarchy {
@@ -207,6 +209,7 @@ export class UploadForm {
 	processDem?: boolean;
 	processPtcloud?: boolean;
 	includeGeoLocationFile?: boolean;
+	includeGroundControlPointFile?: boolean;
 	resolution?: number;
 	videoResolution?: number;
 	matcherNeighbors?: number;
@@ -216,6 +219,7 @@ export class UploadForm {
 	radiometricCalibration?: string;
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
+	groundControlPointFileName?: string;
 
 	// Document metadata fields
 	tool?: string;
@@ -319,6 +323,7 @@ export class Product {
 	hasPointcloud?: boolean;
 	hasAllZip?: boolean;
 	publicStacUrl?: string;
+	locked?: boolean
 }
 
 export class MapLayer {
