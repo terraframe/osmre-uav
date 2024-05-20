@@ -56,7 +56,7 @@ public class ODMMessageConverter
   
   private boolean isMessageImportant(String msg)
   {
-    return msg != null && msg.length() > 0 && !msg.matches("Cannot process dataset.");
+    return msg != null && msg.length() > 0 && !msg.toLowerCase().contains("cannot process dataset");
   }
   
   private String convertMessage(String msg)
