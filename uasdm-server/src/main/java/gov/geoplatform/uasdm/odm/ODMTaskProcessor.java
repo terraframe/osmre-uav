@@ -15,11 +15,7 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.slf4j.Logger;
@@ -266,7 +262,7 @@ public class ODMTaskProcessor
       {
         task.appLock();
         task.setStatus(ODMStatus.FAILED.getLabel());
-        task.setMessage(resp.getError());
+        new ODMMessageConverter().process(task, resp.getError());
         task.apply();
 
         result.setStatus(TaskStatus.ERROR);
@@ -482,7 +478,7 @@ public class ODMTaskProcessor
 
       task.writeODMtoS3(output);
 
-      processODMOutputAndCreateTasks(output, task);
+      new ODMMessageConverter().process(task, task.getMessage(), output);
       
       ODMRun run = ODMRun.getForTask(task.getOid());
       if (run != null)
@@ -490,78 +486,6 @@ public class ODMTaskProcessor
         run.setOutput(sb.toString());
         run.apply();
       }
-    }
-  }
-
-  /**
-   * Read through the ODM output and attempt to identify issues that may have
-   * occurred.
-   */
-  private void processODMOutputAndCreateTasks(JSONArray output, ODMProcessingTaskIF task)
-  {
-    Set<String> actions = new HashSet<String>();
-
-    String sOutput = output.toString();
-
-    for (int i = 0; i < output.length(); ++i)
-    {
-      String line = output.getString(i);
-
-      if (line.contains("MICA-CODE:1"))
-      {
-        actions.add("Unable to find image panel. This may effect image color quality. Did you include a panel with naming convention IMG_0000_*.tif? Refer to the multispectral documentation for more information.");
-      }
-      else if (line.contains("MICA-CODE:2"))
-      {
-        actions.add("Alignment image not found. Did you include an alignment image with naming convention IMG_0001_*.tif? Refer to the multispectral documentation for more information.");
-      }
-      else if (line.contains("MICA-CODE:3"))
-      {
-        Pattern pattern = Pattern.compile(".*Image \\[(.*)\\] does not match the naming convention\\. Are you.*\\(MICA-CODE:3\\).*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(line);
-        boolean matchFound = matcher.find();
-        if (matchFound)
-        {
-          actions.add("Image [" + matcher.group(1) + "] does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
-        }
-        else
-        {
-          actions.add("Image does not match the naming convention. Are you following the proper naming convention for your images? Refer to the multispectral documentation for more information.");
-        }
-      }
-      else if (line.contains("MICA-CODE:4"))
-      {
-        actions.add("Image alignment has failed. Take the time to look through your image collection and weed out any bad images, i.e. pictures of the camera inside the case, or pictures which are entirely black, etc. Also make sure that if your collection includes panel images, that they are named as IMG_0000_*.tif. You can also try using a different alignment image (by renaming a better image set to IMG_0001_*.tif). Finally, make sure this collection is of a single flight and that there were no 'shock' events. Refer to the multispectral documentation for more information.");
-      }
-      else if (line.contains("OSError: Panels not detected in all images")) // Micasense
-      {
-        actions.add("Your upload includes images with naming convention IMG_0000_*.tif, however those images do not appear to be of a panel. Make sure that IMG_0000_*.tif, if included, is of a panel, and that there are no other panels anywhere else in your images. Refer to the multispectral documentation for more information.");
-      }
-      else if (line.contains("[Errno 2] No such file or directory: '/var/www/data/0182028a-c14f-40fe-bd6f-e98362ec48c7/opensfm/reconstruction.json'") // 0.9.1
-                                                                                                                                                      // output
-          || line.contains("The program could not process this dataset using the current settings. Check that the images have enough overlap") // 0.9.8
-                                                                                                                                               // output
-          || ( line.contains("IndexError: list index out of range") && output.getString(i - 1).contains("reconstruction = data[0]") && sOutput.contains("Traceback (most recent call last):") ) // 0.9.1
-      )
-      {
-        actions.add("ODM failed to produce a reconstruction from the image matches. Check that the images have enough overlap, that there are enough recognizable features and that the images are in focus. (more info: https://github.com/OpenDroneMap/ODM/issues/524)");
-      }
-      else if (line.contains("Not enough supported images in") // 0.9.1
-          || ( line.contains("numpy.AxisError: axis 1 is out of bounds for array of dimension 0") // 2.4.7
-          ))
-      {
-        actions.add("Couldn't find enough usable images. The orthomosaic image data must contain at least two images with extensions '.jpg','.jpeg','.png'");
-      }
-      else if (line.contains("bad_alloc")) // Comes from ODM (and/or
-                                           // sub-libraries)
-      {
-        actions.add("ODM ran out of memory during processing. Please contact your technical support.");
-      }
-    }
-
-    for (String action : actions)
-    {
-      task.createAction(action, "error");
     }
   }
 
