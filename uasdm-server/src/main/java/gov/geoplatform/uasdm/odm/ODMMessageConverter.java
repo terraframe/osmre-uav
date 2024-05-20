@@ -12,7 +12,7 @@ import com.runwaysdk.session.Session;
 
 public class ODMMessageConverter
 {
-  public static String OUT_OF_MEMORY = "ODM ran out of memory during processing. Please contact your technical support.";
+  public static String OUT_OF_MEMORY = "ODM ran out of memory during processing. Please contact your technical support. You can also try turning down the quality settings and re-processing.";
   
   private Set<String> messages = new HashSet<String>();
   
@@ -37,7 +37,7 @@ public class ODMMessageConverter
       }
       else
       {
-        task.setMessage(msg);
+        task.setMessage(convertMessage(msg));
       }
     }
     else
@@ -62,9 +62,9 @@ public class ODMMessageConverter
   private String convertMessage(String msg)
   {
     // We're doing a little bit of guessing with these error messages. Typically when a host becomes unreachable it's because the server crashed due to OOM
-    if (msg.matches("Invalid route for .+ no task table entry.")
+    if (msg.toLowerCase().contains("invalid route for")
         || msg.toLowerCase().contains("not enough memory")
-        || msg.toLowerCase().matches("error.* connecting .* localhost.*")
+        || msg.toLowerCase().matches(".*error.* connecting .* localhost.*")
         || msg.toLowerCase().contains("proxy redirect error"))
     {
       return OUT_OF_MEMORY;
