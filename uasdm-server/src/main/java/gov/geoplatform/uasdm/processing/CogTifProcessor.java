@@ -17,6 +17,9 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -91,12 +94,18 @@ public class CogTifProcessor extends ManagedDocument
       try
       {
         // https://www.cogeo.org/developers-guide.html
-        if (!new SystemProcessExecutor(this.monitor).execute(new String[] {
-            // for GDAL versions below 3.1
-            //"gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
-            
-            "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW"
-          }))
+        
+        // for GDAL versions below 3.1
+        //"gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co", "COPY_SRC_OVERVIEWS=YES"
+        List<String> args = new LinkedList<>(Arrays.asList("gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW"));
+        
+        // If the tif is bigger than 4GB we must include the BIGTIFF flag
+        if(overview.length() > (1024 * 1024 * 1024 * 4) ) {
+          args.add("-co");
+          args.add("BIGTIFF=YES");
+        }        
+        
+        if (!new SystemProcessExecutor(this.monitor).execute(args.toArray(new String[args.size()])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);
