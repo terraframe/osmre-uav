@@ -20,10 +20,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.amazonaws.HttpMethod;
 
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.graph.Product;
@@ -265,5 +268,11 @@ public class MockRemoteFileService implements RemoteFileService
     }
 
     return new MockRemoteFileObject();
+  }
+  
+  @Override
+  public URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  {
+    return null;
   }
 }

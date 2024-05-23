@@ -764,6 +764,10 @@ ngx-file-drop button {
   font-size: 14px;
 }
 
+.product-icon::before {
+  padding-right: 5px;
+}
+
 
 // Tree styling
 // .node-content-wrapper,

@@ -135,6 +135,12 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
+    if(this.isLocked()) {
+      GenericException exception = new GenericException();
+      exception.setUserMessage("Product can not be deleted because it is locked.");
+      throw exception;
+    }
+
     final SessionIF session = Session.getCurrentSession();
     
     if (session != null && ! ( session.userHasRole(RoleConstants.ADMIN) || this.getComponent().getOwnerOid().equals(session.getUser().getOid()) ))

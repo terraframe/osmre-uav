@@ -70,7 +70,9 @@ import org.json.simple.JSONArray;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.ValueObject;
+import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.ValueQuery;
@@ -86,7 +88,10 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -150,17 +155,36 @@ public class Sandbox
     // JSONObject criteria = new JSONObject();
     // criteria.put("must", must);
 
-    JSONObject criteria = new JSONObject("{\"should\":[{\"field\":\"bounds\",\"id\":\"4642708e-ea82-4591-8a11-ff7039925118\",\"label\":\"Bounds\",\"value\":{\"_sw\":{\"lng\":-127.25881772939388,\"lat\":20.357148832341863},\"_ne\":{\"lng\":-64.67488227060727,\"lat\":52.711281241966475}}}],\"must\":[{\"field\":\"site\",\"id\":\"51956c50-c514-4694-97dd-e5723dbbb344\",\"label\":\"Site\",\"value\":\"abc\"}]}\n");
-
-    Page<StacItem> items = IndexService.getItems(criteria, 30, 1);
-
-    System.out.println(items.toJSON().toString());
-
-    // testElasticSearch();
-
-    IndexService.shutdown();
+//    JSONObject criteria = new JSONObject("{\"should\":[{\"field\":\"bounds\",\"id\":\"4642708e-ea82-4591-8a11-ff7039925118\",\"label\":\"Bounds\",\"value\":{\"_sw\":{\"lng\":-127.25881772939388,\"lat\":20.357148832341863},\"_ne\":{\"lng\":-64.67488227060727,\"lat\":52.711281241966475}}}],\"must\":[{\"field\":\"site\",\"id\":\"51956c50-c514-4694-97dd-e5723dbbb344\",\"label\":\"Site\",\"value\":\"abc\"}]}\n");
+//
+//    Page<StacItem> items = IndexService.getItems(criteria, 30, 1);
+//
+//    System.out.println(items.toJSON().toString());
+//
+//    // testElasticSearch();
+//
+//    IndexService.shutdown();
+    
+    
+    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
+    statement += " WHERE saved = :saved";
+    
+    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
+    query.setParameter("saved", true);
+    
+    List<ODMRun> results = query.getResults();
+    
+    System.out.println("Results size: " + results.size());
+    
+    for(ODMRun run : results) {
+      UasComponent component = run.getComponent();
+      
+      int items = RemoteFileFacade.getItemCount(component.getS3location() + Collection.ODM + "/" + run.getOid());
+      
+      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+    }
   }
-
+//
   public static void testTika() throws Exception
   {
     BodyContentHandler handler = new BodyContentHandler();

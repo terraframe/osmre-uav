@@ -140,6 +140,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       logger.error("Error while uploading file", ex);
 
       task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());      
       task.createAction("Error while uploading file " + RunwayException.localizeThrowable(ex, Locale.US), TaskActionType.ERROR.getType());
       task.apply();
 

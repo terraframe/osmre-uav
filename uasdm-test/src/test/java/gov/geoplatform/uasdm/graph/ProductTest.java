@@ -197,7 +197,7 @@ public class ProductTest extends Area51DataTest
   @Request
   public void testUpdateBoundingBox()
   {
-    product.updateBoundingBox();
+    product.updateBoundingBox(true);
 
     Assert.assertNotNull(product.getBoundingBox());
     Assert.assertEquals("[-180,180,-90,90]", product.getBoundingBox());
@@ -207,7 +207,7 @@ public class ProductTest extends Area51DataTest
   @Request
   public void testGetEnvelope()
   {
-    product.updateBoundingBox();
+    product.updateBoundingBox(true);
     Envelope envelope = product.getEnvelope();
 
     Assert.assertNotNull(envelope);

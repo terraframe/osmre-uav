@@ -51,49 +51,46 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
-                            <a class="fa fa-globe" [style]="hasOrthoLayer(product) ? '' : 'cursor:not-allowed;'"
+                            <a class="fa product-icon" [ngClass]="{'fa-check' : product.orthoMapped, 'fa-globe' : !product.orthoMapped}" [style]="hasOrthoLayer(product) ? '' : 'cursor:not-allowed;'"
                                 aria-hidden="true" (click)="handleMapIt(product)"
                                 title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
-                            <i *ngIf="product.orthoMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check"
-                                style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </div>
                         <div class="col-sm-4">
-                            <a class="fa fa-industry" [style]="hasDemLayer(product) ? '' : 'cursor:not-allowed;'"
+                            <a class="fa product-icon" [ngClass]="{'fa-check' : product.demMapped, 'fa-industry' : !product.demMapped}" [style]="hasDemLayer(product) ? '' : 'cursor:not-allowed;'"
                                 aria-hidden="true" (click)="handleMapDem(product)"
                                 title="View the DEM hillshade.">Hillshade</a>
-                            <i *ngIf="product.demMapped" [@bounceInOnEnter] [@bounceOutOnLeave] class="fas fa-check"
-                                style="color: #007276;float: right;vertical-align: middle;line-height: 20px;"></i>
                         </div>
                         <div class="col-sm-4">
-                            <a class="fa fa-cube " [style]="product.hasPointcloud ? '' : 'cursor:not-allowed;'"
+                            <a class="fa fa-cube product-icon" [style]="product.hasPointcloud ? '' : 'cursor:not-allowed;'"
                                 aria-hidden="true" (click)="handlePointcloud(product)"
                                 title="View the 3D pointcloud for this product using the Potree viewer.">3D</a>
                         </div>
 
                         <div class="col-sm-4">
-                            <a class="fa fa-info-circle" (click)="handleGetInfo(product)"
+                            <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(product)"
                                 title="View more information about this product, including raw data.">Get Info</a>
                         </div>
 
-                        <div class="col-sm-4">
-                            <a class="fa fa-trash-alt" (click)="handleDelete(product, $event)"
-                                title="Deletes the product and all associated data and public map services.">Delete</a>
-                        </div>
-
                         <div *ngIf="isAdmin" class="col-sm-4">
-                            <a class="fa" [ngClass]="{'fa-lock': product.locked, 'fa-lock-open': !product.locked}"
+                            <a class="fa product-icon" [ngClass]="{'fa-lock': product.locked, 'fa-lock-open': !product.locked}"
                                 (click)="handleToggleLock(product)" title="Lock or unlock the product">{{product.locked
                                 ? 'Unlock' : 'Lock'}}</a>
                         </div>
+
+                        <div class="col-sm-4" *ngIf="!product.locked && !product.published">
+                            <a class="fa fa-trash-alt product-icon" (click)="handleDelete(product, $event)"
+                                title="Deletes the product and all associated data and public map services.">Delete</a>
+                        </div>
+
                         <div class="col-sm-4" *ngIf="!product.locked && !product.published">
 
-                            <a class="fa fa-arrow-alt-circle-up" style="--fa-border-padding: 0 0 0 5px;"
+                            <a class="fa fa-arrow-alt-circle-up product-icon" style="--fa-border-padding: 0 0 0 5px;"
                                 (click)="handleTogglePublish(product)"
                                 title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
                         </div>
                         <div class="col-sm-4" *ngIf="!product.locked && product.published">
 
-                            <a class="fa fa-arrow-alt-circle-down" style="width:60px;"
+                            <a class="fa fa-arrow-alt-circle-down product-icon" style="width:60px;"
                                 (click)="handleTogglePublish(product)"
                                 title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
 
@@ -102,7 +99,7 @@
                         <div class="col-sm-4" *ngIf="product.published">
 
                             <a class="fa" (click)="clipboardPublicStacUrl(product, clipboardPopover)">
-                                <span class="fa fa-link" [id]="'PublicStacUrl-' + product.id" style="margin:0;"
+                                <span class="fa fa-link product-icon" [id]="'PublicStacUrl-' + product.id" style="margin:0;"
                                     [popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover"
                                     placement="top"></span>
                                     Share

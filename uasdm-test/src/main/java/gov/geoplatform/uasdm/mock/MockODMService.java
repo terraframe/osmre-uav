@@ -34,6 +34,7 @@ import gov.geoplatform.uasdm.util.FileTestUtils;
 
 public class MockODMService implements ODMServiceIF
 {
+  
 
   @Override
   public TaskOutputResponse taskOutput(String uuid)
@@ -65,9 +66,8 @@ public class MockODMService implements ODMServiceIF
   {
     return new MockNewResponse();
   }
-
-  @Override
-  public NewResponse taskNewInit(int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
+  
+  public NewResponse taskNewInit(Collection col, int imagesCount, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     return new MockNewResponse();
   }

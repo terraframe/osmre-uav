@@ -631,7 +631,7 @@ public class MetadataXMLGenerator
   {
     try
     {
-      File temp = File.createTempFile("metadata", "xml", AppProperties.getTempDirectory());
+      File temp = File.createTempFile("metadata", ".xml", AppProperties.getTempDirectory());
 
       try (FileOutputStream fos = new FileOutputStream(temp))
       {
