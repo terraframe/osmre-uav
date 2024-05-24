@@ -70,30 +70,21 @@ docker push 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterodm:$SERVE
 
 docker rm -f uasdm-nodeodm-dev
 docker rm -f uasdm-clusterodm-dev
-docker run -d -p 3001:3000 --restart always -v /data/odm/dev/micasense:/opt/micasense -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/dev/micasense --name uasdm-nodeodm-dev 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:devdeploy
-
-## Sans Micasense ##
-docker run -d -p 3001:3000 --restart always -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp --name uasdm-nodeodm-dev opendronemap/nodeodm:3.1.4
+docker run -d -p 3001:3000 --restart always -v /data/odm/dev/data/data:/var/www/data -v /data/odm/dev/data/tmp:/var/www/tmp --name uasdm-nodeodm-dev opendronemap/nodeodm:3.5.0
 
 
 ##### These commands are specific to the STAGING container!! ####
 
 docker rm -f uasdm-nodeodm-staging
 docker rm -f uasdm-clusterodm-staging
-docker run -d -p 3002:3000 --restart always -v /data/odm/staging/micasense:/opt/micasense -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/staging/micasense --name uasdm-nodeodm-staging 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:staging
-
-## Sans Micasense ##
-docker run -d -p 3002:3000 --restart always -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp --name uasdm-nodeodm-staging opendronemap/nodeodm:3.1.4
+docker run -d -p 3002:3000 --restart always -v /data/odm/staging/data/data:/var/www/data -v /data/odm/staging/data/tmp:/var/www/tmp --name uasdm-nodeodm-staging opendronemap/nodeodm:3.5.0
 
 
 ##### These commands are specific to the PROD container!! ####
 
 docker rm -f uasdm-nodeodm-prod
 docker rm -f uasdm-clusterodm-prod
-docker run -d -p 3000:3000 --restart always -v /data/odm/prod/micasense:/opt/micasense -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=/data/odm/prod/micasense --name uasdm-nodeodm-prod 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm:prod
-
-## Sans Micasense ##
-docker run -d -p 3000:3000 --restart always -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp --name uasdm-nodeodm-prod opendronemap/nodeodm:3.1.4
+docker run -d -p 3000:3000 --restart always -v /data/odm/prod/data/data:/var/www/data -v /data/odm/prod/data/tmp:/var/www/tmp --name uasdm-nodeodm-prod opendronemap/nodeodm:3.5.0
 
 
 ### Clean up the space again afterwards

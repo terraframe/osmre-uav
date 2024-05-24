@@ -44,5 +44,5 @@
     ],
 
     "addSwap": 1,
-    "dockerImage": "opendronemap/nodeodm:3.1.4"
+    "dockerImage": "opendronemap/nodeodm:3.5.0"
 }
