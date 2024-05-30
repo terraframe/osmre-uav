@@ -521,7 +521,9 @@ public class RemoteFileFacadeTest extends Area51DataTest
   public void testPutStacItem()
   {
     StacItem item = product.toStacItem();
-
+    
+    this.service.clear();
+    
     RemoteFileFacade.putStacItem(item);
 
     List<RemoteFileAction> actions = service.getActions();

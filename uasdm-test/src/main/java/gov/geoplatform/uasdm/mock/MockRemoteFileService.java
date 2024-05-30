@@ -78,6 +78,10 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   private List<RemoteFileAction> actions = new LinkedList<RemoteFileAction>();
+  
+  public void clear() {
+    this.actions.clear();
+  }
 
   @Override
   public void download(String key, File destination) throws IOException, FileNotFoundException

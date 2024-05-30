@@ -15,8 +15,9 @@
  */
 package gov.geoplatform.uasdm.test;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.SensorType;
@@ -31,7 +32,7 @@ public class TestSensorInfo
   
   protected String model;
   
-  protected SensorType type;
+  protected String sensorTypeName;
   
   protected Integer pixelSizeWidth;
   
@@ -41,24 +42,20 @@ public class TestSensorInfo
   
   protected Integer sensorHeight;
   
-  protected List<WaveLength> wavelengths;
+  protected List<String> wavelengthNames;
   
-  public TestSensorInfo(String name, String description, String model, SensorType type, Integer pixelSizeWidth, Integer pixelSizeHeight, Integer sensorWidth, Integer sensorHeight, WaveLength... wavelengths)
+  public TestSensorInfo(String name, String description, String model, String sensorTypeName, Integer pixelSizeWidth, Integer pixelSizeHeight, Integer sensorWidth, Integer sensorHeight, String... wavelengthNames)
   {
     this.name = name;
     this.description = description;
     this.model = model;
-    this.type = type;
+    this.sensorTypeName = sensorTypeName;
     this.pixelSizeWidth = pixelSizeWidth;
     this.pixelSizeHeight = pixelSizeHeight;
     this.sensorWidth = sensorWidth;
     this.sensorHeight = sensorHeight;
     
-    this.wavelengths = new LinkedList<WaveLength>();
-    for (WaveLength wavelength : wavelengths)
-    {
-      this.wavelengths.add(wavelength);
-    }
+    this.wavelengthNames = Arrays.asList(wavelengthNames);
   }
 
   public String getName()
@@ -93,12 +90,7 @@ public class TestSensorInfo
 
   public SensorType getType()
   {
-    return type;
-  }
-
-  public void setType(SensorType type)
-  {
-    this.type = type;
+    return SensorType.getByName(this.sensorTypeName);
   }
 
   public Integer getPixelSizeWidth()
@@ -143,14 +135,9 @@ public class TestSensorInfo
 
   public List<WaveLength> getWavelengths()
   {
-    return wavelengths;
+    return this.wavelengthNames.stream().map(name -> WaveLength.getByName(name)).collect(Collectors.toList());
   }
 
-  public void setWavelengths(List<WaveLength> wavelengths)
-  {
-    this.wavelengths = wavelengths;
-  }
-  
   public void populate(Sensor sensor)
   {
     sensor.setName(this.getName());
@@ -162,7 +149,7 @@ public class TestSensorInfo
     sensor.setSensorWidth(this.getSensorWidth());
     sensor.setSensorHeight(this.getSensorHeight());
     
-    for (WaveLength wl : this.wavelengths)
+    for (WaveLength wl : this.getWavelengths())
     {
       sensor.addSensorHasWaveLengthChild(wl);
     }

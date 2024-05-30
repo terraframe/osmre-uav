@@ -18,7 +18,6 @@ package gov.geoplatform.uasdm.test;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.PlatformManufacturer;
 import gov.geoplatform.uasdm.graph.PlatformType;
-import gov.geoplatform.uasdm.graph.UAV;
 
 public class TestPlatformInfo
 {
@@ -27,18 +26,18 @@ public class TestPlatformInfo
   
   protected String description;
   
-  protected PlatformType type;
+  protected String platformTypeName;
   
-  protected PlatformManufacturer manufacturer;
+  protected String manufacturerName;
   
   protected TestSensorInfo sensor;
   
-  public TestPlatformInfo(String name, String description, PlatformType type, PlatformManufacturer manufacturer, TestSensorInfo sensor)
+  public TestPlatformInfo(String name, String description, String platformTypeName, String manufacturerName, TestSensorInfo sensor)
   {
     this.name = name;
     this.description = description;
-    this.type = type;
-    this.manufacturer = manufacturer;
+    this.platformTypeName = platformTypeName;
+    this.manufacturerName = manufacturerName;
     this.sensor = sensor;
   }
 
@@ -64,22 +63,12 @@ public class TestPlatformInfo
 
   public PlatformType getType()
   {
-    return type;
-  }
-
-  public void setType(PlatformType type)
-  {
-    this.type = type;
+    return PlatformType.getByName(this.platformTypeName);
   }
 
   public PlatformManufacturer getManufacturer()
   {
-    return manufacturer;
-  }
-
-  public void setManufacturer(PlatformManufacturer manufacturer)
-  {
-    this.manufacturer = manufacturer;
+    return PlatformManufacturer.getByName(this.manufacturerName);
   }
 
   public TestSensorInfo getSensor()

@@ -36,9 +36,9 @@ public class Area51DataSet extends TestDataSet
 
   public static final TestOrganizationInfo ORGANIZATION          = new TestOrganizationInfo("OSMRE", "OSMRE");
 
-  public static final TestSensorInfo       SENSOR                = new TestSensorInfo("RGB", "RGB", "rgb-123", SensorType.getByName(SensorType.LASER), 10, 10, 10, 10, WaveLength.getByName(WaveLength.NATURAL_COLOR_RGB));
+  public static final TestSensorInfo       SENSOR                = new TestSensorInfo("RGB", "RGB", "rgb-123", SensorType.LASER, 10, 10, 10, 10, WaveLength.NATURAL_COLOR_RGB);
 
-  public static final TestPlatformInfo     PLATFORM              = new TestPlatformInfo("RGB_Platform", "RGB Platform", PlatformType.getByName(PlatformType.FIXED_WING), PlatformManufacturer.getByName(PlatformManufacturer.DJI), SENSOR);
+  public static final TestPlatformInfo     PLATFORM              = new TestPlatformInfo("RGB_Platform", "RGB Platform", PlatformType.FIXED_WING, PlatformManufacturer.DJI, SENSOR);
 
   public static final TestUavInfo          UAV                   = new TestUavInfo(PLATFORM, "123", "321", "aliens", ORGANIZATION);
 

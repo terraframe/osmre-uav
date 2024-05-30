@@ -18,15 +18,15 @@ package gov.geoplatform.uasdm.tile;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.locationtech.jts.geom.Envelope;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.LPGGeometry.PostgisVectorTileBuilder;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
-import net.geoprism.graph.LabeledPropertyGraphSynchronization;
-import net.geoprism.registry.tile.PublisherUtil;
+import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)
@@ -36,14 +36,16 @@ public class VectorTileBuilderTest
   @Request
   public void testBuildTile()
   {
-    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get("de832d05-7448-436a-a378-2ca88d0005c0");
+    LabeledPropertyGraphSynchronizationQuery query = new LabeledPropertyGraphSynchronizationQuery(new QueryFactory());
+    query.getIterator().getAll().forEach(synchronization -> {
+      
+      String versionOid = synchronization.getVersionOid();
 
-    Envelope envelope = PublisherUtil.getEnvelope(14, 24, 6);
-    Envelope bounds = PublisherUtil.getTileBounds(envelope);
+      PostgisVectorTileBuilder builder = new PostgisVectorTileBuilder(versionOid, "Region");
+      byte[] tile = builder.write(6, 14, 24);
 
-//    VectorTileBuilder builder = new VectorTileBuilder(synchronization, "Region");
-//    byte[] tile = builder.writeVectorTiles(envelope, bounds);
-//
-//    Assert.assertTrue(tile.length > 0);
+      Assert.assertTrue(tile.length > 0);      
+    });
+        
   }
 }
