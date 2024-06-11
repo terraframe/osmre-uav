@@ -322,7 +322,9 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                          <product-panel *ngIf="activeTab === 'Products'" 
+                            [selection]="current"
+                            [organization]="organization"
                             (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
@@ -335,7 +337,9 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                          <product-panel *ngIf="activeTab === 'Products'" 
+                            [selection]="current"
+                            [organization]="organization"
                             (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>

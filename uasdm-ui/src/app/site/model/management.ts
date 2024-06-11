@@ -303,6 +303,7 @@ export class ProductCriteria {
 	type: SELECTION_TYPE;
 	id?: string;
 	hierarchy?: string;
+	organization?: string;
 	uid?: string;
 	sortField: string;
 	sortOrder: string;
