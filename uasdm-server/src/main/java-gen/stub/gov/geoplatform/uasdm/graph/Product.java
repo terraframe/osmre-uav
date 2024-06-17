@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -135,14 +135,15 @@ public class Product extends ProductBase implements ProductIF
   @Transaction
   public void delete(boolean removeFromS3)
   {
-    if(this.isLocked()) {
+    if (this.isLocked())
+    {
       GenericException exception = new GenericException();
       exception.setUserMessage("Product can not be deleted because it is locked.");
       throw exception;
     }
 
     final SessionIF session = Session.getCurrentSession();
-    
+
     if (session != null && ! ( session.userHasRole(RoleConstants.ADMIN) || this.getComponent().getOwnerOid().equals(session.getUser().getOid()) ))
     {
       final UasComponentDeleteException ex = new UasComponentDeleteException();
@@ -151,7 +152,7 @@ public class Product extends ProductBase implements ProductIF
 
       throw ex;
     }
-    
+
     List<DocumentIF> documents = this.getDocuments();
 
     for (DocumentIF document : documents)
@@ -393,57 +394,68 @@ public class Product extends ProductBase implements ProductIF
     else
     {
       int failCount = newProduct ? 0 : getBoundingBoxFailureCount();
-      
+
       JSONObject jo = new JSONObject();
       jo.put("FailureCount", failCount + 1);
       this.setBoundingBox(jo.toString());
       this.apply();
     }
   }
-  
+
   /**
-   * @return -1 if the bounding box is valid. Zero if it has never been calculated. A number less than 4 or equal to 4 if it's been attempted and failed before.
+   * @return -1 if the bounding box is valid. Zero if it has never been
+   *         calculated. A number less than 4 or equal to 4 if it's been
+   *         attempted and failed before.
    */
   public int getBoundingBoxFailureCount()
   {
     try
     {
       String bbox = super.getBoundingBox();
-      if (bbox == null || bbox.length() == 0) { return 0; }
-      
+      if (bbox == null || bbox.length() == 0)
+      {
+        return 0;
+      }
+
       if (bbox.startsWith("["))
       {
         JSONArray ja = new JSONArray(bbox);
-        if (ja.length() == 4) { return -1; } // A valid bounding box
+        if (ja.length() == 4)
+        {
+          return -1;
+        } // A valid bounding box
       }
-      
+
       JSONObject jo = new JSONObject(bbox);
-      if (!jo.has("FailureCount")) { return 0; }
-      
+      if (!jo.has("FailureCount"))
+      {
+        return 0;
+      }
+
       return jo.getInt("FailureCount");
     }
-    catch(Throwable t)
+    catch (Throwable t)
     {
       return 0;
     }
   }
-  
+
   @Override
   public String getBoundingBox()
   {
     int fc = getBoundingBoxFailureCount();
-    
+
     if (fc >= 0 && fc < 4)
     {
       updateBoundingBox(false);
       fc = getBoundingBoxFailureCount();
     }
-    
+
     if (fc != -1)
     {
       return null;
     }
-    
+
     return super.getBoundingBox();
   }
 
@@ -593,7 +605,8 @@ public class Product extends ProductBase implements ProductIF
   }
 
   @Override
-  public boolean isLocked() {
+  public boolean isLocked()
+  {
     return this.getLocked() != null && this.getLocked();
   }
 
@@ -603,14 +616,16 @@ public class Product extends ProductBase implements ProductIF
   {
     SessionIF session = Session.getCurrentSession();
 
-    if(session != null) {
+    if (session != null)
+    {
       Map<String, String> roles = session.getUserRoles();
 
       SingleActorDAOIF user = session.getUser();
 
       String ownerOid = this.getComponent().getOwnerOid();
 
-      if(user.getOid().equals(ownerOid) || roles.containsKey("geoprism.admin.Administrator")) {
+      if (user.getOid().equals(ownerOid) || roles.containsKey("geoprism.admin.Administrator"))
+      {
         this.setLocked(!this.isLocked());
         this.setLockedById(user.getOid());
         this.apply();
@@ -624,12 +639,12 @@ public class Product extends ProductBase implements ProductIF
     throw ex;
   }
 
-
   @Override
   @Transaction
   public void togglePublished()
   {
-    if(this.isLocked()) {
+    if (this.isLocked())
+    {
       GenericException ex = new GenericException();
       ex.setUserMessage("The product has been locked and can not be changed.");
       throw ex;
@@ -739,7 +754,7 @@ public class Product extends ProductBase implements ProductIF
       {
         dateTime = ( (Collection) component ).getCollectionEndDate();
       }
-      
+
       if (dateTime == null)
       {
         dateTime = this.getLastUpdateDate();
@@ -910,6 +925,12 @@ public class Product extends ProductBase implements ProductIF
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
     statement.append("      ) WHERE @class = 'site0' \n");
+
+    if (!StringUtils.isEmpty(criteria.getOrganization()))
+    {
+      statement.append("      AND organization.code = :organization \n");
+    }
+
     statement.append("    )\n");
     statement.append("  )");
 
@@ -939,6 +960,11 @@ public class Product extends ProductBase implements ProductIF
 
     final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", object.getRID());
+
+    if (!StringUtils.isEmpty(criteria.getOrganization()))
+    {
+      query.setParameter("organization", criteria.getOrganization());
+    }
 
     return query.getResults();
   }

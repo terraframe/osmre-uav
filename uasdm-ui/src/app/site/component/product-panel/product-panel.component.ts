@@ -25,6 +25,7 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { AuthService } from '@shared/service/auth.service';
 import { ErrorHandler } from '@shared/component';
+import { LocalizedValue } from '@shared/model/organization';
 
 @Component({
     selector: 'product-panel',
@@ -39,6 +40,9 @@ import { ErrorHandler } from '@shared/component';
 export class ProductPanelComponent implements OnDestroy {
 
     @Input() selection: ViewerSelection;
+
+    @Input() organization?: { code: string, label: LocalizedValue };
+
 
     @Output() public toggleMapOrtho = new EventEmitter<Product>();
 
@@ -136,6 +140,7 @@ export class ProductPanelComponent implements OnDestroy {
         if (criteria.type === SELECTION_TYPE.LOCATION) {
             criteria.uid = selection.data.properties.uid;
             criteria.hierarchy = selection.hierarchy;
+            criteria.organization = this.organization.code
         }
 
         this.pService.getProducts(criteria).then(products => {

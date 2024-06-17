@@ -42,7 +42,7 @@ public class LPGGeometry extends LPGGeometryBase {
         Database.executeStatement("DELETE FROM lpg_geometry WHERE version = '" + version + "'");
     }
 
-    private static class PostgisVectorTileBuilder {
+    public static class PostgisVectorTileBuilder {
         private final String versionId;
         private final String typeCode;
 

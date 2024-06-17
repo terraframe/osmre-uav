@@ -29,6 +29,8 @@ public class ProductCriteria
 
   private String              hierarchy;
 
+  private String              organization;
+
   private String              uid;
 
   private String              sortField;
@@ -68,6 +70,16 @@ public class ProductCriteria
   public void setHierarchy(String hierarchy)
   {
     this.hierarchy = hierarchy;
+  }
+  
+  public String getOrganization()
+  {
+    return organization;
+  }
+  
+  public void setOrganization(String organization)
+  {
+    this.organization = organization;
   }
 
   public String getUid()
@@ -138,6 +150,12 @@ public class ProductCriteria
     {
       criteria.setSortOrder(object.getString("sortOrder"));
     }
+    
+    if (object.has("organization"))
+    {
+      criteria.setOrganization(object.getString("organization"));
+    }
+
 
     return criteria;
   }
