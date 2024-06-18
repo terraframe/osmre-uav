@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,6 +61,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.CollectionProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -301,19 +303,19 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public JSONObject getArtifacts()
+  public JSONArray getArtifacts()
   {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Artifact[] getArtifactObjects()
+  public Artifact[] getArtifactObjects(ProductIF product)
   {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void removeArtifacts(String folder, boolean updateMetadata)
+  public void removeArtifacts(ProductIF product, String folder, boolean updateMetadata)
   {
     throw new UnsupportedOperationException();
   }
@@ -326,6 +328,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
     return RemoteFileFacade.getSiteObjects(this, folder, objects, pageNumber, pageSize);
+  }
+
+  @Override
+  public Optional<ProductIF> getProduct(String productName)
+  {
+    return Optional.empty();
   }
 
   @Transaction
@@ -551,7 +559,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public ProductIF createProductIfNotExist()
+  public ProductIF createProductIfNotExist(String productName)
   {
     return Product.createIfNotExist(this);
   }
@@ -570,12 +578,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  public DocumentIF putFile(String folder, String fileName, ProductIF product, RemoteFileMetadata metadata, InputStream stream)
   {
     throw new UnsupportedOperationException();
   }
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
   {
     throw new UnsupportedOperationException();
   }
@@ -654,42 +662,30 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
+  public List<CollectionProductDTO> getDerivedProducts(String sortField, String sortOrder)
   {
-    List<ProductIF> list = new LinkedList<ProductIF>();
+    throw new UnsupportedOperationException();
+  }
 
-    ProductQuery query = new ProductQuery(new QueryFactory());
-    query.ORDER_BY_ASC(query.getName());
+  @Override
+  public String getS3location(ProductIF product, String folder)
+  {
+    return this.getS3location();
+  }
 
-    try (OIterator<? extends Product> iterator = query.getIterator())
-    {
-      while (iterator.hasNext())
-      {
-        Product product = iterator.next();
-        UasComponent component = product.getComponent();
+  @Override
+  public void setPrimaryProduct(ProductIF product)
+  {
+  }
 
-        List<UasComponentIF> components = component.getAncestors();
-        Collections.reverse(components);
+  @Override
+  public Optional<ProductIF> getPrimaryProduct()
+  {
+    return Optional.empty();
+  }
 
-        components.add(component);
-
-        boolean valid = false;
-
-        for (UasComponentIF com : components)
-        {
-          if (com.getOid().equals(this.getOid()))
-          {
-            valid = true;
-          }
-        }
-
-        if (valid)
-        {
-          list.add(product);
-        }
-      }
-    }
-
-    return list;
+  @Override
+  public void removeProduct(String productName)
+  {
   }
 }

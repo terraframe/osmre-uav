@@ -10,7 +10,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 import { ProductModalComponent } from '../modal/product-modal.component';
 
-import { Product, ProductCriteria, SELECTION_TYPE, ViewerSelection } from '@site/model/management';
+import { CollectionProductView, Product, ProductCriteria, SELECTION_TYPE, ViewerSelection } from '@site/model/management';
 import { ProductService } from '@site/service/product.service';
 import { ManagementService } from '@site/service/management.service';
 
@@ -51,7 +51,7 @@ export class ProductPanelComponent implements OnDestroy {
     /* 
      * List of products for the current node
      */
-    products: Product[] = [];
+    views: CollectionProductView[] = [];
 
     thumbnails: any = {};
 
@@ -89,14 +89,18 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.products.forEach(product => {
-            if (product.orthoMapped) {
-                this.handleMapIt(product);
-            }
-            if (product.demMapped) {
-                this.handleMapDem(product);
-            }
+        this.views.forEach(view => {
+
+            view.products.forEach(product => {
+                if (product.orthoMapped) {
+                    this.handleMapIt(product);
+                }
+                if (product.demMapped) {
+                    this.handleMapDem(product);
+                }
+            });
         });
+
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -120,7 +124,7 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     refreshProducts(selection: ViewerSelection): void {
-        this.products = [];
+        this.views = [];
         this.thumbnails = {};
 
         this.loading = true;
@@ -143,17 +147,26 @@ export class ProductPanelComponent implements OnDestroy {
             criteria.organization = this.organization.code
         }
 
-        this.pService.getProducts(criteria).then(products => {
+        this.pService.getProducts(criteria).then(views => {
             if (original === this.requestId) {
 
-                this.products = products;
+                this.views = views;
                 this.loading = false;
 
-                this.products.forEach(product => {
-                    this.getThumbnail(product);
+                this.views.forEach(view => {
+                    view.product = view.products[0];
+                    view.productId = view.product.id;
+
+                    this.getThumbnail(view.product);
                 });
             }
         });
+    }
+
+    setCurrent(view: CollectionProductView): void {
+        view.product = view.products.find(p => p.id === view.productId);
+
+        this.getThumbnail(view.product);
     }
 
     createImageFromBlob(image: Blob, product: Product) {
@@ -219,6 +232,8 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     handleMapIt(product: Product): void {
+        console.log('Mapping', product);
+
         if (this.hasOrthoLayer(product)) {
             this.toggleMapOrtho.emit(product);
         }
@@ -238,7 +253,7 @@ export class ProductPanelComponent implements OnDestroy {
         }
     }
 
-    handleDelete(product: Product, event: any): void {
+    handleDelete(view: CollectionProductView, event: any): void {
 
         event.stopPropagation();
 
@@ -247,19 +262,28 @@ export class ProductPanelComponent implements OnDestroy {
             backdrop: true,
             ignoreBackdropClick: true,
         });
-        this.bsModalRef.content.message = 'Are you sure you want to delete [' + product.name + ']?';
-        this.bsModalRef.content.data = product;
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + view.product.name + ']?';
+        this.bsModalRef.content.data = view.product;
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';
 
         (<BasicConfirmModalComponent>this.bsModalRef.content).onConfirm.subscribe(data => {
-            this.remove(data);
+            this.remove(view);
         });
     }
 
-    remove(product: Product): void {
-        this.pService.remove(product.id).then(response => {
-            this.products = this.products.filter((n: any) => n.id !== product.id);
+    remove(view: CollectionProductView): void {
+        const productId = view.product.id;
+
+        this.pService.remove(productId).then(response => {
+            view.products = view.products.filter((n: Product) => n.id !== productId);
+
+            if (view.products.length > 0) {
+                view.product = view.products[0];
+            }
+            else {
+                this.views = this.views.filter((n: CollectionProductView) => n.componentId !== view.componentId);
+            }
         });
     }
 

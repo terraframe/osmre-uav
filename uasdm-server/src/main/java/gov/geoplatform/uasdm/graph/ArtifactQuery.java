@@ -1,22 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
@@ -24,6 +25,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -31,14 +33,24 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
 {
   private UasComponentIF component;
 
-  private Long skip;
+  private ProductIF      product;
 
-  private Long limit;
+  private Long           skip;
 
-  public ArtifactQuery(UasComponentIF component)
+  private Long           limit;
+
+  public ArtifactQuery(UasComponentIF component, ProductIF product)
   {
     super();
     this.component = component;
+    this.product = product;
+  }
+
+  public ArtifactQuery(UasComponentIF component, Optional<ProductIF> product)
+  {
+    super();
+    this.component = component;
+    this.product = product.orElse(null);
   }
 
   public Long getLimit()
@@ -83,9 +95,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     }
 
     final GraphQuery<Document> query = new GraphQuery<Document>(ql.toString());
-    query.setParameter("dem", component.getS3location() + ImageryComponent.DEM + "%");
-    query.setParameter("ortho", component.getS3location() + ImageryComponent.ORTHO + "%");
-    query.setParameter("ptcloud", component.getS3location() + ImageryComponent.PTCLOUD + "%");
+    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "/" + "%");
+    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO)  + "/"+ "%");
+    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "/" + "%");
 
     return query;
   }
@@ -103,9 +115,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
 
     final GraphQuery<Long> query = new GraphQuery<Long>(ql.toString());
-    query.setParameter("dem", component.getS3location() + ImageryComponent.DEM + "%");
-    query.setParameter("ortho", component.getS3location() + ImageryComponent.ORTHO + "%");
-    query.setParameter("ptcloud", component.getS3location() + ImageryComponent.PTCLOUD + "%");
+    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "/" + "%");
+    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO) + "/" + "%");
+    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "/" + "%");
 
     return query.getSingleResult();
   }
@@ -126,6 +138,11 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
 
   public List<Document> getDocuments()
   {
-    return this.getQuery().getResults();
+    if (this.product != null)
+    {
+      return this.getQuery().getResults();
+    }
+
+    return new LinkedList<>();
   }
 }

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -45,12 +45,12 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
@@ -219,25 +219,25 @@ public class Util
     return mimeType != null && mimeType.startsWith("video");
   }
 
-  public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
     String extension = archive.getNameExtension();
 
     if (extension.equalsIgnoreCase("zip"))
     {
-      return uploadZipArchive(task, archive, imageryComponent, uploadTarget);
+      return uploadZipArchive(task, archive, imageryComponent, uploadTarget, product);
     }
     else if (extension.equalsIgnoreCase("gz"))
     {
-      return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget);
+      return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget, product);
     }
     else
     {
-      return uploadFile(task, archive, imageryComponent, uploadTarget);
+      return uploadFile(task, archive, imageryComponent, uploadTarget, product);
     }
   }
 
-  public static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
     List<UasComponentIF> ancestors = imageryComponent.getAncestors();
     List<String> filenames = new LinkedList<String>();
@@ -282,7 +282,7 @@ public class Util
               throw new UnsupportedOperationException("Unknown upload target [" + uploadTarget + "]");
             }
 
-            boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
+            boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), filename, tmp, imageryComponent);
 
             if (success)
             {
@@ -302,7 +302,7 @@ public class Util
     return filenames;
   }
 
-  public static List<String> uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static List<String> uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
     List<UasComponentIF> ancestors = imageryComponent.getAncestors();
     List<String> filenames = new LinkedList<String>();
@@ -353,7 +353,7 @@ public class Util
                 folder = ImageryComponent.VIDEO;
               }
 
-              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), filename, tmp, imageryComponent);
+              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), filename, tmp, imageryComponent);
 
               if (success)
               {
@@ -374,7 +374,7 @@ public class Util
     return filenames;
   }
 
-  public static List<String> uploadFile(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget)
+  public static List<String> uploadFile(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
     List<UasComponentIF> ancestors = imageryComponent.getAncestors();
     List<String> filenames = new LinkedList<String>();
@@ -389,7 +389,7 @@ public class Util
         folder = ImageryComponent.VIDEO;
       }
 
-      boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(folder), archive.getName(), file, imageryComponent);
+      boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), archive.getName(), file, imageryComponent);
 
       if (success)
       {
@@ -401,10 +401,10 @@ public class Util
   }
 
   @Transaction
-  public static DocumentIF putFile(UasComponent component, String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  public static DocumentIF putFile(UasComponent component, String folder, ProductIF product, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
-    String key = component.getS3location() + folder + "/" + fileName;
-    
+    String key = product != null ? component.getS3location(product, folder) + "/" + fileName : component.getS3location() + folder + "/" + fileName;
+
     RemoteFileFacade.uploadFile(key, metadata, stream);
 
     DocumentIF.Metadata meta = new DocumentIF.Metadata();

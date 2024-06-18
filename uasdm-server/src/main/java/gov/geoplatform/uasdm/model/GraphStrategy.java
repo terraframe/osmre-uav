@@ -30,6 +30,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.view.CollectionProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 
 public class GraphStrategy implements ComponentStrategy
@@ -87,7 +88,7 @@ public class GraphStrategy implements ComponentStrategy
   }
 
   @Override
-  public List<ProductIF> getProducts(ProductCriteria criteria)
+  public List<CollectionProductDTO> getProducts(ProductCriteria criteria)
   {
     return Product.getProducts(criteria);
   }

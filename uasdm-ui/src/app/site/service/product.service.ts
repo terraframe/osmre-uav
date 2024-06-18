@@ -9,7 +9,7 @@ import { finalize } from 'rxjs/operators';
 
 import { EventService } from '@shared/service/event.service';
 
-import { Product, ProductCriteria, ProductDetail } from '../model/management';
+import { CollectionProductView, Product, ProductCriteria, ProductDetail } from '../model/management';
 import { environment } from 'src/environments/environment';
 
 
@@ -19,11 +19,11 @@ export class ProductService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
 
-	getProducts(criteria: ProductCriteria): Promise<Product[]> {
+	getProducts(criteria: ProductCriteria): Promise<CollectionProductView[]> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('criteria', JSON.stringify(criteria));
 
-		return this.http.get<Product[]>(environment.apiUrl + '/product/get-all', { params: params }).toPromise();
+		return this.http.get<CollectionProductView[]>(environment.apiUrl + '/product/get-all', { params: params }).toPromise();
 	}
 
 	getDetail(id: string, pageNumber: number, pageSize: number): Promise<ProductDetail> {
@@ -89,5 +89,27 @@ export class ProductService {
 			}))
 			.toPromise()
 	}
+
+	create(id: string, productName: string): Promise<Product> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		const params = {
+			collectionId: id,
+			productName: productName
+		};
+
+		return this.http
+			.post<Product>(environment.apiUrl + '/product/create', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
 
 }

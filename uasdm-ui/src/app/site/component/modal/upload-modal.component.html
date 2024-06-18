@@ -302,9 +302,30 @@
     <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'raw'" style="margin-top: 20px;">
       <div class="col-md-2"></div>
       <div class="col-md-8">
-
-        <artifact-page *ngIf="component != null" [edit]="true" [entity]="component" [config]="config"
-          (onError)="error($event)"></artifact-page>
+        <table style="width: 100%;">
+          <thead>
+            <th colspan="6">Type</th>
+            <th></th>
+          </thead>
+          <tr class="artifact-row">
+            <td colspan="6">Ptcloud</td>
+            <td>
+              <boolean-field [(value)]="config.processPtcloud" label="Generate"></boolean-field>
+            </td>
+          </tr>
+          <tr class="artifact-row">
+            <td colspan="6">DEM</td>
+            <td>
+              <boolean-field [(value)]="config.processDem" label="Generate"></boolean-field>
+            </td>
+          </tr>
+          <tr class="artifact-row">
+            <td colspan="6">Ortho</td>
+            <td>
+              <boolean-field [(value)]="config.processOrtho" label="Generate"></boolean-field>
+            </td>
+          </tr>
+        </table>
 
         <ng-container *ngIf="processUpload">
           <div *ngIf="config.processOrtho || config.processDem" class="form-group">

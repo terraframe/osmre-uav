@@ -51,6 +51,8 @@ public interface RequestParserIF
   JSONArray getSelections();
 
   String getUploadTarget();
+  
+  String getProductName();
 
   String getDescription();
 

@@ -68,6 +68,7 @@ import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.compon
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 import { FilterModalComponent } from './component/modal/filter-modal.component';
+import { CreateProductGroupModalComponent } from './component/modal/create-product-group-modal.component';
 
 @NgModule({
 	imports: [
@@ -124,7 +125,8 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		ReportsComponent,
         EquipmentComponent,
 		LayerPanelComponent,
-		ArtifactUploadComponent
+		ArtifactUploadComponent,
+		CreateProductGroupModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -148,7 +150,8 @@ import { FilterModalComponent } from './component/modal/filter-modal.component';
 		ImagePreviewModalComponent,
 		MetadataModalComponent,
 		CollectionModalComponent,
-		ProductModalComponent
+		ProductModalComponent,
+		CreateProductGroupModalComponent
 	]
 })
 export class SiteModule { }

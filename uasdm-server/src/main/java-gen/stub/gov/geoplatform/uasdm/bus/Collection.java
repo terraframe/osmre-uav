@@ -41,6 +41,7 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -306,9 +307,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
   {
-    return Util.uploadArchive(task, archive, this, uploadTarget);
+    return Util.uploadArchive(task, archive, this, uploadTarget, product);
   }
 
   @Override

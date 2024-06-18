@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -21,9 +21,11 @@ import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -55,6 +58,7 @@ import com.runwaysdk.system.metadata.MdBusiness;
 
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
@@ -84,6 +88,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.CollectionProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -136,6 +141,17 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public abstract String getSolrNameField();
 
   protected abstract String buildProductExpandClause();
+
+  @Override
+  public String getS3location(ProductIF product, String folder)
+  {
+    if (product == null || StringUtils.isBlank(folder) || folder.equals(ImageryComponent.RAW))
+    {
+      return this.getS3location() + folder;
+    }
+
+    return this.getS3location() + product.getS3location() + folder;
+  }
 
   /**
    * Creates the object and builds the relationship with the parent.
@@ -242,8 +258,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       {
         new IndexUpdateDocumentCommand(this, isNameModified).doIt();
 
-        this.getDerivedProducts(null, null).forEach(product -> {
-          new ReIndexStacItemCommand(product).doIt();
+        this.getDerivedProducts(null, null).forEach(view -> {
+          new ReIndexStacItemCommand(view.getPrimary()).doIt();
         });
       }
 
@@ -259,7 +275,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       CollectionReportFacade.update(this).doIt();
     }
   }
-  
+
   @Override
   @Transaction
   public void apply()
@@ -428,29 +444,36 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public JSONObject getArtifacts()
+  public JSONArray getArtifacts()
   {
-    Artifact[] artifacts = getArtifactObjects();
+    JSONArray response = new JSONArray();
 
-    JSONObject response = new JSONObject();
+    List<Product> products = this.getProducts();
 
-    for (Artifact artifact : artifacts)
+    for (Product product : products)
     {
-      response.put(artifact.getFolder(), artifact.toJSON());
+      Artifact[] artifacts = getArtifactObjects(product);
+
+      JSONObject map = new JSONObject();
+      map.put("productName", product.getProductName());
+      map.put("primary", product.isPrimary());
+
+      for (Artifact artifact : artifacts)
+      {
+        map.put(artifact.getFolder(), artifact.toJSON());
+      }
+
+      response.put(map);
     }
 
     return response;
   }
 
-  public Artifact[] getArtifactObjects()
+  public Artifact[] getArtifactObjects(ProductIF product)
   {
-    List<SiteObject> objects = new ArtifactQuery(this).getSiteObjects();
+    Artifact[] artifacts = new Artifact[] { new Artifact(ImageryComponent.DEM, ".TIF", ".TIFF"), new Artifact(ImageryComponent.ORTHO, ".TIF", ".TIFF"), new Artifact(ImageryComponent.PTCLOUD, ".LAZ", ".LAS") };
 
-    Artifact[] artifacts = new Artifact[] { 
-        new Artifact(ImageryComponent.DEM, ".TIF", ".TIFF"), 
-        new Artifact(ImageryComponent.ORTHO, ".TIF", ".TIFF"), 
-        new Artifact(ImageryComponent.PTCLOUD, ".LAZ", ".LAS") 
-        };
+    List<SiteObject> objects = new ArtifactQuery(this, product).getSiteObjects();
 
     for (SiteObject object : objects)
     {
@@ -459,27 +482,28 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
         artifact.process(object);
       }
     }
+
     return artifacts;
   }
 
   @Override
   @Transaction
-  public void removeArtifacts(String folder, boolean updateMetadata)
+  public void removeArtifacts(ProductIF product, String folder, boolean updateMetadata)
   {
     if (folder.equalsIgnoreCase(ImageryComponent.RAW) || folder.equalsIgnoreCase(ImageryComponent.VIDEO))
     {
       return;
     }
 
-    List<Document> documents = new SiteObjectDocumentQuery(this, folder).getDocuments();
+    List<Document> documents = new SiteObjectDocumentQuery(this, product, folder).getDocuments();
 
     if (folder.equals(ImageryComponent.PTCLOUD))
     {
-      documents.addAll(new SiteObjectDocumentQuery(this, ODMZipPostProcessor.POTREE).getDocuments());
+      documents.addAll(new SiteObjectDocumentQuery(this, product, ODMZipPostProcessor.POTREE).getDocuments());
     }
     else if (folder.equals(ImageryComponent.DEM))
     {
-      documents.addAll(new SiteObjectDocumentQuery(this, ODMZipPostProcessor.DEM_GDAL).getDocuments());
+      documents.addAll(new SiteObjectDocumentQuery(this, product, ODMZipPostProcessor.DEM_GDAL).getDocuments());
     }
 
     for (Document document : documents)
@@ -487,18 +511,15 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       document.delete(true);
     }
 
-    if (new ArtifactQuery(this).getDocuments().size() == 0)
+    if (new ArtifactQuery(this, product).getDocuments().size() == 0)
     {
-      this.getProducts().forEach(product -> {
-        product.delete();
-      });
+      // TODO: How to handle this with versions
+      // product.delete();
     }
-    else
+    else if (product.isPrimary())
     {
       // Re-index the products
-      this.getProducts().forEach(product -> {
-        new ReIndexStacItemCommand(product).doIt();
-      });
+      new ReIndexStacItemCommand(product).doIt();
     }
 
     if (updateMetadata && this instanceof Collection)
@@ -514,7 +535,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected SiteObjectsResultSet getSiteObjects(String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    SiteObjectDocumentQueryIF query = folder.equals("artifacts") ? new ArtifactQuery(this) : new SiteObjectDocumentQuery(this, folder);
+    // TODO: Handle different products
+    SiteObjectDocumentQueryIF query = folder.equals("artifacts") ? new ArtifactQuery(this, this.getPrimaryProduct()) : new SiteObjectDocumentQuery(this, null, folder);
 
     if (pageNumber != null && pageSize != null)
     {
@@ -618,7 +640,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public static JSONObject features(String conditions) throws IOException
   {
     SiteQuery query = new SiteQuery(conditions);
-    
+
     final List<UasComponentIF> sites = query.getResults();
 
     StringWriter sWriter = new StringWriter();
@@ -732,12 +754,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public DocumentIF putFile(String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  public DocumentIF putFile(String folder, String fileName, ProductIF product, RemoteFileMetadata metadata, InputStream stream)
   {
-    return Util.putFile(this, folder, fileName, metadata, stream);
+    return Util.putFile(this, folder, product, fileName, metadata, stream);
   }
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
   {
     throw new UnsupportedOperationException();
   }
@@ -745,11 +767,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public Integer getNumberOfChildren()
   {
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() +"').size() FROM :rid");
-    
+    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() + "').size() FROM :rid");
+
     GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
     query.setParameter("rid", this.getRID());
-    
+
     return query.getSingleResult();
   }
 
@@ -761,6 +783,84 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public List<Product> getProducts()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
+  }
+
+  @Override
+  public Optional<ProductIF> getPrimaryProduct()
+  {
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND( ");
+    statement.append(" OUT('" + mdEdge.getDBClassName() + "')[primary = :primary]");
+    statement.append(")");
+    statement.append(" FROM :rid ");
+
+    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+    query.setParameter("rid", this.getRID());
+    query.setParameter("primary", true);
+
+    return Optional.ofNullable(query.getSingleResult());
+  }
+
+  @Override
+  @Transaction
+  public void setPrimaryProduct(ProductIF product)
+  {
+    this.getPrimaryProduct().ifPresent(current -> {
+      ( (Product) current ).setPrimary(false);
+      ( (Product) current ).apply();
+    });
+
+    ( (Product) product ).setPrimary(true);
+    ( (Product) product ).apply();
+
+    // Re-index the products
+    new ReIndexStacItemCommand(product).doIt();
+
+    if (this instanceof Collection)
+    {
+      new GenerateMetadataCommand((Collection) this).doIt();
+    }
+  }
+
+  @Override
+  public Optional<ProductIF> getProduct(String productName)
+  {
+    if (!StringUtils.isBlank(productName))
+    {
+      MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+
+      StringBuilder statement = new StringBuilder();
+      statement.append("SELECT EXPAND( ");
+      statement.append(" OUT('" + mdEdge.getDBClassName() + "')[productName = :productName]");
+      statement.append(")");
+      statement.append(" FROM :rid ");
+
+      final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+      query.setParameter("rid", this.getRID());
+      query.setParameter("productName", productName);
+
+      return Optional.ofNullable(query.getSingleResult());
+    }
+
+    return Optional.ofNullable(null);
+  }
+
+  @Override
+  @Transaction
+  public void removeProduct(String productName)
+  {
+    this.getProduct(productName).ifPresent(product -> {
+      if (product.isPrimary())
+      {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("Cannot delete the primary product.");
+        throw ex;
+      }
+
+      product.delete();
+    });
   }
 
   public List<CollectionIF> getDerivedCollections()
@@ -778,15 +878,17 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public List<ProductIF> getDerivedProducts(String sortField, String sortOrder)
+  public List<CollectionProductDTO> getDerivedProducts(String sortField, String sortOrder)
   {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
 
     String expand = this.buildProductExpandClause();
 
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND( " + Collection.expandClause() + ") FROM (");
+    statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
     statement.append("  SELECT FROM (");
     statement.append("    SELECT EXPAND(" + expand + ")");
     statement.append("    FROM :rid ");
@@ -811,15 +913,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     statement.append(")");
 
-    if (sortField.equals(Product.LASTUPDATEDATE))
-    {
-      statement.append("  ORDER BY " + sortField + " " + sortOrder);
-    }
+    // if (sortField.equals(Product.LASTUPDATEDATE))
+    // {
+    // statement.append(" ORDER BY " + sortField + " " + sortOrder);
+    // }
 
-    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
     query.setParameter("rid", this.getRID());
+    query.setParameter("primary", true);
 
-    return query.getResults();
+    return CollectionProductDTO.process(query.getResults());
   }
 
   public void addComponent(UasComponentIF parent)
@@ -838,7 +941,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return this.getChildren(this.getChildMdEdge(), UasComponentIF.class);
   }
-  
+
   @Override
   public List<UasComponentIF> getChildrenWithConditions(String conditions)
   {
@@ -918,9 +1021,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public ProductIF createProductIfNotExist()
+  public ProductIF createProductIfNotExist(String productName)
   {
-    return Product.createIfNotExist(this);
+    return Product.createIfNotExist(this, productName);
   }
-
 }

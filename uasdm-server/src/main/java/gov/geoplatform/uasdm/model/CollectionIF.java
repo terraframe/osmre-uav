@@ -98,5 +98,5 @@ public interface CollectionIF extends UasComponentIF
   
   public Boolean getHasAllZip();
   
-  public void setHasAllZip(Boolean b);
+  public void setHasAllZip(Boolean b);  
 }

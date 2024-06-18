@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1623021264)
+@com.runwaysdk.business.ClassSignature(hash = -401805993)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -32,10 +17,12 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   public final static java.lang.String LOCKEDBY = "lockedBy";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
+  public final static java.lang.String PRIMARY = "primary";
+  public final static java.lang.String PRODUCTNAME = "productName";
   public final static java.lang.String PUBLISHED = "published";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1623021264;
+  private static final long serialVersionUID = -401805993;
   
   public ProductBase()
   {
@@ -148,6 +135,38 @@ public abstract class ProductBase extends com.runwaysdk.business.graph.VertexObj
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
+  }
+  
+  public Boolean getPrimary()
+  {
+    return (Boolean) this.getObjectValue(PRIMARY);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getPrimaryMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PRIMARY);
+  }
+  
+  public void setPrimary(Boolean value)
+  {
+    this.setValue(PRIMARY, value);
+  }
+  
+  public String getProductName()
+  {
+    return (String) this.getObjectValue(PRODUCTNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getProductNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Product.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(PRODUCTNAME);
+  }
+  
+  public void setProductName(String value)
+  {
+    this.setValue(PRODUCTNAME, value);
   }
   
   public Boolean getPublished()

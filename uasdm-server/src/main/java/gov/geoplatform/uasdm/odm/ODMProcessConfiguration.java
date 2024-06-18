@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -42,7 +42,7 @@ public class ODMProcessConfiguration
       return code;
     }
   }
-  
+
   public static enum RadiometricCalibration {
     NONE("none"), CAMERA("camera"), CAMERA_SUN("camera+sun");
 
@@ -63,43 +63,45 @@ public class ODMProcessConfiguration
     ODM, RX1R2;
   }
 
-  public static final String INCLUDE_GEO_LOCATION_FILE = "includeGeoLocationFile";
+  public static final String     INCLUDE_GEO_LOCATION_FILE         = "includeGeoLocationFile";
 
-  public static final String GEO_LOCATION_FORMAT       = "geoLocationFormat";
+  public static final String     GEO_LOCATION_FORMAT               = "geoLocationFormat";
 
-  public static final String GEO_LOCATION_FILE_NAME    = "geoLocationFileName";
+  public static final String     GEO_LOCATION_FILE_NAME            = "geoLocationFileName";
 
-  public static final String OUT_FILE_NAME_PREFIX      = "outFileNamePrefix";
+  public static final String     OUT_FILE_NAME_PREFIX              = "outFileNamePrefix";
 
-  public static final String RESOLUTION                = "resolution";
+  public static final String     RESOLUTION                        = "resolution";
 
-  public static final String MATCHING_NEIGHBORS        = "matcherNeighbors";
+  public static final String     MATCHING_NEIGHBORS                = "matcherNeighbors";
 
-  public static final String MIN_NUM_FEATURES          = "minNumFeatures";
+  public static final String     MIN_NUM_FEATURES                  = "minNumFeatures";
 
-  public static final String PC_QUALITY                = "pcQuality";
-  
-  public static final String FEATURE_QUALITY           = "featureQuality";
-  
-  public static final String RADIOMETRIC_CALIBRATION   = "radiometricCalibration";
+  public static final String     PC_QUALITY                        = "pcQuality";
 
-  public static final String INCLUDE_GROUND_CONTROL_POINT_FILE = "includeGroundControlPointFile";
+  public static final String     FEATURE_QUALITY                   = "featureQuality";
 
-  public static final String GROUND_CONTROL_POINT_FILE_NAME    = "GroundControlPointFileName";
+  public static final String     RADIOMETRIC_CALIBRATION           = "radiometricCalibration";
 
-  private boolean            includeGeoLocationFile;
+  public static final String     INCLUDE_GROUND_CONTROL_POINT_FILE = "includeGroundControlPointFile";
 
-  private FileFormat         geoLocationFormat;
+  public static final String     GROUND_CONTROL_POINT_FILE_NAME    = "GroundControlPointFileName";
 
-  private String             geoLocationFileName;
+  public static final String     PRODUCT_NAME                      = "productName";
 
-  private String             outFileNamePrefix;
+  private boolean                includeGeoLocationFile;
 
-  private boolean            includeGroundControlPointFile;
+  private FileFormat             geoLocationFormat;
 
-  private String             groundControlPointFileName;
+  private String                 geoLocationFileName;
 
-  private BigDecimal         resolution;
+  private String                 outFileNamePrefix;
+
+  private boolean                includeGroundControlPointFile;
+
+  private String                 groundControlPointFileName;
+
+  private BigDecimal             resolution;
 
   /*
    * video-resolution <positive integer>
@@ -107,7 +109,7 @@ public class ODMProcessConfiguration
    * The maximum output resolution of extracted video frames in pixels. Default:
    * 4000
    */
-  private Integer            videoResolution;
+  private Integer                videoResolution;
 
   /*
    * matcher-neighbors <positive integer>
@@ -115,7 +117,7 @@ public class ODMProcessConfiguration
    * Perform image matching with the nearest images based on GPS exif data. Set
    * to 0 to match by triangulation. Default: 0
    */
-  private Integer            matcherNeighbors;
+  private Integer                matcherNeighbors;
 
   /*
    * min-num-features <integer>
@@ -125,7 +127,7 @@ public class ODMProcessConfiguration
    * reconstruction of areas with little overlap or insufficient features. More
    * features also slow down processing. Default: 10000
    */
-  private Integer            minNumFeatures;
+  private Integer                minNumFeatures;
 
   /*
    * pc-quality <ultra | high | medium | low | lowest>
@@ -136,26 +138,36 @@ public class ODMProcessConfiguration
    * 
    * Default: medium
    */
-  private Quality            pcQuality;
-  
+  private Quality                pcQuality;
+
   /*
    * feature-quality <ultra | high | medium | low | lowest>
    * 
-   * Set feature extraction quality. Higher quality generates better features, but requires more memory and takes longer.
+   * Set feature extraction quality. Higher quality generates better features,
+   * but requires more memory and takes longer.
    * 
    * Default: high
    */
-  private Quality            featureQuality;
-  
+  private Quality                featureQuality;
+
   /*
    * radiometric-calibration <none | camera | camera+sun>
    * 
-   * Set the radiometric calibration to perform on images. When processing multispectral and thermal images you should set this option to obtain reflectance/temperature values (otherwise you will get digital number values). [camera] applies black level, vignetting, row gradient gain/exposure compensation (if appropriate EXIF tags are found) and computes absolute temperature values. [camera+sun] is experimental, applies all the corrections of [camera], plus compensates for spectral radiance registered via a downwelling light sensor (DLS) taking in consideration the angle of the sun.
+   * Set the radiometric calibration to perform on images. When processing
+   * multispectral and thermal images you should set this option to obtain
+   * reflectance/temperature values (otherwise you will get digital number
+   * values). [camera] applies black level, vignetting, row gradient
+   * gain/exposure compensation (if appropriate EXIF tags are found) and
+   * computes absolute temperature values. [camera+sun] is experimental, applies
+   * all the corrections of [camera], plus compensates for spectral radiance
+   * registered via a downwelling light sensor (DLS) taking in consideration the
+   * angle of the sun.
    * 
    * default: none
    */
   private RadiometricCalibration radiometricCalibration;
 
+  private String                 productName;
 
   public ODMProcessConfiguration()
   {
@@ -177,8 +189,19 @@ public class ODMProcessConfiguration
     this.radiometricCalibration = RadiometricCalibration.NONE;
     this.includeGroundControlPointFile = false;
     this.groundControlPointFileName = "gcp_list.txt";
+    this.productName = Long.valueOf(System.currentTimeMillis()).toString();
   }
-  
+
+  public String getProductName()
+  {
+    return productName;
+  }
+
+  public void setProductName(String productName)
+  {
+    this.productName = productName;
+  }
+
   public RadiometricCalibration getRadiometricCalibration()
   {
     return radiometricCalibration;
@@ -229,19 +252,23 @@ public class ODMProcessConfiguration
     this.geoLocationFileName = geoLocationFileName;
   }
 
-  public boolean isIncludeGroundControlPointFile() {
+  public boolean isIncludeGroundControlPointFile()
+  {
     return includeGroundControlPointFile;
   }
 
-  public void setIncludeGroundControlPointFile(boolean includeGroundControlPointFile) {
+  public void setIncludeGroundControlPointFile(boolean includeGroundControlPointFile)
+  {
     this.includeGroundControlPointFile = includeGroundControlPointFile;
   }
 
-  public String getGroundControlPointFileName() {
+  public String getGroundControlPointFileName()
+  {
     return groundControlPointFileName;
   }
 
-  public void setGroundControlPointFileName(String groundControlPointFileName) {
+  public void setGroundControlPointFileName(String groundControlPointFileName)
+  {
     this.groundControlPointFileName = groundControlPointFileName;
   }
 
@@ -320,6 +347,7 @@ public class ODMProcessConfiguration
     object.addProperty(RADIOMETRIC_CALIBRATION, this.radiometricCalibration.name());
     object.addProperty(INCLUDE_GROUND_CONTROL_POINT_FILE, this.includeGroundControlPointFile);
     object.addProperty(GROUND_CONTROL_POINT_FILE_NAME, this.groundControlPointFileName);
+    object.addProperty(PRODUCT_NAME, this.productName);
 
     return object;
   }
@@ -329,6 +357,16 @@ public class ODMProcessConfiguration
     JsonObject object = JsonParser.parseString(jsonString).getAsJsonObject();
 
     ODMProcessConfiguration configuration = new ODMProcessConfiguration();
+
+    if (object.has(PRODUCT_NAME))
+    {
+      JsonElement element = object.get(PRODUCT_NAME);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProductName(object.get(PRODUCT_NAME).getAsString());
+      }
+    }
 
     if (object.has(INCLUDE_GEO_LOCATION_FILE))
     {
@@ -429,7 +467,7 @@ public class ODMProcessConfiguration
         configuration.setPcQuality(Quality.valueOf(object.get(PC_QUALITY).getAsString()));
       }
     }
-    
+
     if (object.has(FEATURE_QUALITY))
     {
       JsonElement element = object.get(FEATURE_QUALITY);
@@ -439,7 +477,7 @@ public class ODMProcessConfiguration
         configuration.setFeatureQuality(Quality.valueOf(object.get(FEATURE_QUALITY).getAsString()));
       }
     }
-    
+
     if (object.has(RADIOMETRIC_CALIBRATION))
     {
       JsonElement element = object.get(RADIOMETRIC_CALIBRATION);
@@ -516,19 +554,24 @@ public class ODMProcessConfiguration
       Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(PC_QUALITY));
       configuration.setPcQuality(pcQuality);
     }
-    
+
     if (!StringUtils.isEmpty(parser.getCustomParams().get(FEATURE_QUALITY)))
     {
       Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(FEATURE_QUALITY));
       configuration.setFeatureQuality(pcQuality);
     }
-    
+
     if (!StringUtils.isEmpty(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION)))
     {
       RadiometricCalibration rc = RadiometricCalibration.valueOf(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION));
       configuration.setRadiometricCalibration(rc);
     }
 
+    if (!StringUtils.isEmpty(parser.getCustomParams().get(PRODUCT_NAME)))
+    {
+      configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
+    }
+    
     return configuration;
   }
 }

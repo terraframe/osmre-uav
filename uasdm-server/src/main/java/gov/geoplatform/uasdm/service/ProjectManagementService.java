@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import gov.geoplatform.uasdm.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -56,6 +55,10 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.ImageryProcessingJob;
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
@@ -79,6 +82,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -460,13 +464,15 @@ public class ProjectManagementService
       throw ex;
     }
 
-    Product product = Product.find(collection);
-
-    if(product != null && product.isLocked()) {
-      GenericException exception = new GenericException();
-      exception.setUserMessage("The collection can not be processed because its product is locked.");
-      throw exception;
-    }
+    // TODO: No longer valid with multiple product approach?
+    // Product product = Product.find(collection, productName);
+    //
+    // if(product != null && product.isLocked()) {
+    // GenericException exception = new GenericException();
+    // exception.setUserMessage("The collection can not be processed because its
+    // product is locked.");
+    // throw exception;
+    // }
 
     ODMProcessingTask task = new ODMProcessingTask();
     task.setUploadId(id);
@@ -754,17 +760,20 @@ public class ProjectManagementService
           Integer ptEpsg = object.has(Document.PTEPSG) ? object.getInt(Document.PTEPSG) : null;
           String projectName = object.has(Document.PROJECTIONNAME) ? object.getString(Document.PROJECTIONNAME) : null;
 
-          new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
-            return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
-          }).forEach(document -> {
-            String name = document.getName().toUpperCase();
+          collection.getPrimaryProduct().ifPresent(product -> {
 
-            if (name.endsWith(".LAZ") || name.endsWith(".LAS"))
-            {
-              document.setPtEpsg(ptEpsg);
-              document.setProjectionName(projectName);
-              document.apply();
-            }
+            new ArtifactQuery(collection, product).getDocuments().stream().filter(document -> {
+              return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
+            }).forEach(document -> {
+              String name = document.getName().toUpperCase();
+
+              if (name.endsWith(".LAZ") || name.endsWith(".LAS"))
+              {
+                document.setPtEpsg(ptEpsg);
+                document.setProjectionName(projectName);
+                document.apply();
+              }
+            });
           });
         }
 
@@ -772,16 +781,19 @@ public class ProjectManagementService
         {
           String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
 
-          new ArtifactQuery(collection).getDocuments().stream().filter(document -> {
-            return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
-          }).forEach(document -> {
-            String name = document.getName().toUpperCase();
+          collection.getPrimaryProduct().ifPresent(product -> {
 
-            if (name.endsWith(".TIF"))
-            {
-              document.setOrthoCorrectionModel(orthoCorrectionModel);
-              document.apply();
-            }
+            new ArtifactQuery(collection, product).getDocuments().stream().filter(document -> {
+              return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
+            }).forEach(document -> {
+              String name = document.getName().toUpperCase();
+
+              if (name.endsWith(".TIF"))
+              {
+                document.setOrthoCorrectionModel(orthoCorrectionModel);
+                document.apply();
+              }
+            });
           });
         }
       }
@@ -843,7 +855,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject getArtifacts(String sessionId, String id)
+  public JSONArray getArtifacts(String sessionId, String id)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
@@ -851,13 +863,47 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject removeArtifacts(String sessionId, String id, String folder)
+  public JSONArray removeArtifacts(String sessionId, String id, String productName, String folder)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    component.removeArtifacts(folder, true);
+    component.getProduct(productName).ifPresent(product -> component.removeArtifacts(product, folder, true));
+
+    JSONObject data = new JSONObject();
+    data.put("collection", id);
+
+    NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.PRODUCT_GROUP_CHANGE, data));
 
     return component.getArtifacts();
+  }
+
+  @Request(RequestType.SESSION)
+  public void removeProduct(String sessionId, String id, String productName)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    component.removeProduct(productName);
+
+    JSONObject data = new JSONObject();
+    data.put("collection", id);
+
+    NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.PRODUCT_GROUP_CHANGE, data));
+  }
+
+  @Request(RequestType.SESSION)
+  public void setPrimaryProduct(String sessionId, String id, String productName)
+  {
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    component.getProduct(productName).ifPresent(product -> {
+      component.setPrimaryProduct(product);
+
+      JSONObject data = new JSONObject();
+      data.put("collection", id);
+
+      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.PRODUCT_GROUP_CHANGE, data));
+    });
+
   }
 
   public RemoteFileObject download(String sessionId, String id, String key, boolean incrementDownloadCount)
@@ -1128,7 +1174,10 @@ public class ProjectManagementService
           response.put("weatherConditions", collection.getWeatherConditions());
         }
 
-        JSONArray artifacts = Arrays.stream(collection.getArtifactObjects()).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+        JSONArray artifacts = collection.getPrimaryProduct().map(product -> {
+          return Arrays.stream(collection.getArtifactObjects(product)).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+        }).orElseGet(() -> new JSONArray());
+
         response.put("artifacts", artifacts);
       }
     }
@@ -1158,10 +1207,12 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject putFile(String sessionId, String id, String folder, String fileName, RemoteFileMetadata metadata, InputStream stream)
+  public JSONObject putFile(String sessionId, String id, String folder, String productName, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
-    DocumentIF doc = component.putFile(folder, fileName, metadata, stream);
+    ProductIF product = component.getProduct(productName).get();
+
+    DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
     return doc.toJSON();
   }
@@ -1241,7 +1292,7 @@ public class ProjectManagementService
         config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
         config.setGeoLocationFormat(FileFormat.RX1R2);
       }
-      
+
       if (Boolean.TRUE.equals(collection.getSensor().getHighResolution()))
       {
         config.setResolution(new BigDecimal(2.0f));

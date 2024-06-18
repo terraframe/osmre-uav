@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.json.JSONArray;
+
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.ServletMethod;
 import com.runwaysdk.mvc.Controller;
@@ -59,9 +61,9 @@ public class ProductController
   @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws IOException
   {
-    List<ProductView> products = service.getProducts(request.getSessionId(), ProductCriteria.deserialize(criteria));
+    JSONArray response = service.getProducts(request.getSessionId(), ProductCriteria.deserialize(criteria));
 
-    return new RestBodyResponse(ProductView.serialize(products));
+    return new RestBodyResponse(response);
   }
 
   @Endpoint(url = "detail", method = ServletMethod.GET, error = ErrorSerialization.JSON)
@@ -98,4 +100,14 @@ public class ProductController
 
     return new RestResponse();
   }
+  
+  @Endpoint(url = "create", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF create(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "productName") String productName) throws IOException
+  {
+    ProductView view = service.create(request.getSessionId(), collectionId, productName);
+
+    return new RestBodyResponse(view.toJSON());
+  }
+
+
 }

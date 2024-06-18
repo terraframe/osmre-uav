@@ -112,16 +112,20 @@ public class MetadataXMLGenerator
     metadata.getMission().populate(mission);
 
     metadata.getCollection().populate(collection);
+    
+    collection.getPrimaryProduct().ifPresent(product -> {
+      Artifact[] artifacts = collection.getArtifactObjects(product);
 
-    Artifact[] artifacts = collection.getArtifactObjects();
-
-    for (Artifact artifact : artifacts)
-    {
-      if (artifact.hasObjects())
+      for (Artifact artifact : artifacts)
       {
-        metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+        if (artifact.hasObjects())
+        {
+          metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+        }
       }
-    }
+    });
+
+
 
     UAV uav = collection.getUav();
     Platform platform = uav.getPlatform();

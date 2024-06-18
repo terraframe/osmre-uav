@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'run-ortho-modal',
     templateUrl: './run-ortho-modal.component.html',
-    styleUrls: []
+    styleUrls: ['./artifact-page.component.css']
 })
 export class RunOrthoModalComponent implements OnInit, OnDestroy {
 

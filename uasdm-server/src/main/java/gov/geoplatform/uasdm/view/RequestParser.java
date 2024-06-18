@@ -67,6 +67,8 @@ public class RequestParser implements RequestParserIF
 
   private static String       UPLOAD_TARGET          = "uploadTarget";
 
+  private static String       PRODUCT_NAME           = "productName";
+  
   private static String       DESCRIPTION            = "description";
 
   private static String       TOOL                   = "tool";
@@ -103,6 +105,8 @@ public class RequestParser implements RequestParserIF
 
   private String              uploadTarget;
 
+  private String              productName;
+  
   private String              description;
 
   private String              tool;
@@ -246,6 +250,12 @@ public class RequestParser implements RequestParserIF
   }
 
   @Override
+  public String getProductName()
+  {
+    return productName;
+  }
+  
+  @Override
   public String getDescription()
   {
     return description;
@@ -366,6 +376,11 @@ public class RequestParser implements RequestParserIF
       requestParser.uploadTarget = multipartUploadParser.getParams().get(UPLOAD_TARGET);
     }
 
+    if (requestParser.productName == null)
+    {
+      requestParser.productName = multipartUploadParser.getParams().get(PRODUCT_NAME);
+    }
+    
     if (requestParser.description == null)
     {
       requestParser.description = multipartUploadParser.getParams().get(DESCRIPTION);
@@ -471,6 +486,11 @@ public class RequestParser implements RequestParserIF
       requestParser.uploadTarget = req.getParameter(UPLOAD_TARGET);
     }
 
+    if (requestParser.productName == null)
+    {
+      requestParser.productName = req.getParameter(PRODUCT_NAME);
+    }
+    
     if (requestParser.description == null)
     {
       requestParser.description = req.getParameter(DESCRIPTION);
@@ -561,10 +581,13 @@ public class RequestParser implements RequestParserIF
       {
         requestParser.processPtcloud = Boolean.valueOf(value);
       }
-
       else if (key.equals(UPLOAD_TARGET))
       {
         requestParser.uploadTarget = value;
+      }
+      else if (key.equals(PRODUCT_NAME))
+      {
+        requestParser.productName = value;
       }
       else if (key.equals(DESCRIPTION))
       {

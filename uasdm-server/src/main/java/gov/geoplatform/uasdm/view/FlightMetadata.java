@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -19,14 +19,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -335,22 +338,22 @@ public class FlightMetadata
     {
       this.processingRun = processingRun;
     }
-    
+
     public Integer getPtEpsg()
     {
       return ptEpsg;
     }
-    
+
     public void setPtEpsg(Integer ptEpsg)
     {
       this.ptEpsg = ptEpsg;
     }
-    
+
     public String getProjectionName()
     {
       return projectionName;
     }
-    
+
     public void setProjectionName(String projectionName)
     {
       this.projectionName = projectionName;
@@ -425,7 +428,7 @@ public class FlightMetadata
         {
           metadata.setPtEpsg(Integer.parseInt(item.getAttribute("ptCloudEpsgNumber")));
         }
-        
+
         if (item.hasAttribute("ptCloudProjectionName"))
         {
           metadata.setProjectionName(item.getAttribute("ptCloudProjectionName"));
@@ -1086,25 +1089,25 @@ public class FlightMetadata
 
   public static class SensorMetadata
   {
-    private String  name;
+    private String name;
 
-    private String  type;
+    private String type;
 
-    private String  model;
+    private String model;
 
-    private String  wavelength;
+    private String wavelength;
 
-    private String  imageWidth;
+    private String imageWidth;
 
-    private String  imageHeight;
+    private String imageHeight;
 
-    private String  sensorWidth;
+    private String sensorWidth;
 
-    private String  sensorHeight;
+    private String sensorHeight;
 
-    private String  pixelSizeWidth;
+    private String pixelSizeWidth;
 
-    private String  pixelSizeHeight;
+    private String pixelSizeHeight;
 
     private String focalLength;
 
@@ -1509,15 +1512,17 @@ public class FlightMetadata
       metadata.getSensor().setFocalLength(jSensor.get("focalLength").toString());
     }
 
-    Artifact[] artifacts = collection.getArtifactObjects();
+    collection.getPrimaryProduct().ifPresent(product -> {
+      Artifact[] artifacts = collection.getArtifactObjects(product);
 
-    for (Artifact artifact : artifacts)
-    {
-      if (artifact.hasObjects())
+      for (Artifact artifact : artifacts)
       {
-        metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+        if (artifact.hasObjects())
+        {
+          metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+        }
       }
-    }
+    });
 
     return metadata;
   }

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -34,21 +34,23 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
  */
 public interface ImageryComponent
 {
-  public static final String RAW     = "raw";
+  public static final String RAW      = "raw";
 
-  public static final String VIDEO   = "video";
+  public static final String VIDEO    = "video";
 
-  public static final String PTCLOUD = "ptcloud";
+  public static final String PRODUCTS = "products";
 
-  public static final String DEM     = "dem";
+  public static final String PTCLOUD  = "ptcloud";
 
-  public static final String ORTHO   = "ortho";
+  public static final String DEM      = "dem";
 
-  public static final String GEOREF  = "georef";
+  public static final String ORTHO    = "ortho";
+
+  public static final String GEOREF   = "georef";
 
   public String getOid();
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget);
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product);
 
   public Logger getLog();
 
@@ -62,16 +64,19 @@ public interface ImageryComponent
 
   public String getS3location();
 
+  public String getS3location(ProductIF product, String folder);
+
   public String getName();
 
   /**
    * If the @param uploadTarget is null or blank, then return the raw key.
    * 
    * @param uploadTarget
-   * 
+   * @param productName
+   *          TODO
    * @return S3 upload key or the raw upload key
    */
-  public default String buildUploadKey(String uploadTarget)
+  public default String buildUploadKey(ProductIF product, String uploadTarget)
   {
     if (uploadTarget != null && !uploadTarget.trim().equals(""))
     {

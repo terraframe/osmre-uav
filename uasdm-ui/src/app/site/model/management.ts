@@ -110,6 +110,8 @@ export class CollectionArtifact {
 }
 
 export class CollectionArtifacts {
+	productName?: string;
+	primary?: boolean;
 	dem?: CollectionArtifact;
 	ortho?: CollectionArtifact;
 	ptcloud?: CollectionArtifact;
@@ -203,6 +205,7 @@ export class UploadForm {
 	selections?: string;
 
 	// Processing configuration fields
+	productName?: string;
 	uploadTarget?: string;
 	processUpload?: boolean;
 	processOrtho?: boolean;
@@ -312,6 +315,7 @@ export class ProductCriteria {
 export class Product {
 	id: string;
 	name: string;
+	productName: string;
 	entities: SiteEntity[];
 	published: boolean;
 	imageKey?: string;
@@ -325,7 +329,19 @@ export class Product {
 	hasAllZip?: boolean;
 	publicStacUrl?: string;
 	locked?: boolean
+	primary?: boolean;
 }
+
+
+
+export class CollectionProductView {
+	componentId: string;
+	products: Product[];
+
+	productId?: string;
+	product?: Product;
+}
+
 
 export class MapLayer {
 	workspace?: string;

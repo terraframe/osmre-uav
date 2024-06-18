@@ -30,6 +30,7 @@ import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
+import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 
 @Component({
 	selector: 'collection-modal',
@@ -329,6 +330,18 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		});
 
 	}
+
+	handleCreateProductGroup(): void {
+
+		const confirmModalRef = this.modalService.show(CreateProductGroupModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'confirmation-modal'
+		});
+		confirmModalRef.content.init(this.entity);
+	}
+
 
 	handleDownload(): void {
 

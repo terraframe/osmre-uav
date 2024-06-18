@@ -46,6 +46,12 @@ public class Product extends ProductBase implements ProductIF
   {
     super();
   }
+  
+  @Override
+  public String getProductName()
+  {
+    return null;
+  }
 
   public String getImageKey()
   {
@@ -256,5 +262,17 @@ public class Product extends ProductBase implements ProductIF
   public List<DocumentIF> getDocuments()
   {
     throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public String getS3location()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public boolean isPrimary()
+  {
+    return false;
   }
 }

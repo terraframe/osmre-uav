@@ -102,7 +102,7 @@ export class AccessibleSupportModalComponent implements OnInit {
 
                 fileEntry.file((file: File) => {
 
-                    this.service.upload(this.folder.component, this.folder.name, file).then(() => {
+                    this.service.upload(this.folder.component, null, this.folder.name, file).then(() => {
                         // Refresh the table
                         this.refresh();
                     });

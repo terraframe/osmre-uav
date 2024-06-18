@@ -20,7 +20,7 @@
 
     <div class="list-group">
 
-        <div *ngIf="products.length < 1" [@fadeInOnEnter] style="padding: 10px;text-align: center;color: grey;">
+        <div *ngIf="views.length < 1" [@fadeInOnEnter] style="padding: 10px;text-align: center;color: grey;">
             <h4>
                 <span *ngIf="loading">
                     <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
@@ -30,79 +30,95 @@
             </h4>
         </div>
 
-        <div *ngFor="let product of products" class="list-group-item">
+        <div *ngFor="let view of views" class="list-group-item">
             <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
                 <div class="card-body">
                     <h5 class="card-title" style="color:#a0a0a0">
-                        {{product.name}}
+                        {{view.product.name}}
                     </h5>
 
                     <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
-                        <li *ngFor="let entity of product.entities">
+                        <li *ngFor="let entity of view.product.entities">
                             <span> {{entity.name}} </span>
                         </li>
                     </ul>
 
-                    <div *ngIf="thumbnails[product.id] != null">
-                        <a class="thumbnail" (click)="previewImage(product)">
-                            <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)"
-                                alt="Image">
+                    <div style="padding:10px 15px;">
+                        <label>
+                            <label>Versions</label>
+                        </label>
+                        <select [(ngModel)]="view.productId" name="productId" (change)="setCurrent(view)">
+                            <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}</option>
+                        </select>
+                    </div>       
+
+
+                    <div *ngIf="thumbnails[view.product.id] != null">
+                        <a class="thumbnail" (click)="previewImage(view.product)">
+                            <img class="" [src]="thumbnails[view.product.id] | safeHtml"
+                                (error)="getDefaultImgURL($event)" alt="Image">
                         </a>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
-                            <a class="fa product-icon" [ngClass]="{'fa-check' : product.orthoMapped, 'fa-globe' : !product.orthoMapped}" [style]="hasOrthoLayer(product) ? '' : 'cursor:not-allowed;'"
-                                aria-hidden="true" (click)="handleMapIt(product)"
+                            <a class="fa product-icon"
+                                [ngClass]="{'fa-check' : view.product.orthoMapped, 'fa-globe' : !view.product.orthoMapped}"
+                                [style]="hasOrthoLayer(view.product) ? '' : 'cursor:not-allowed;'" aria-hidden="true"
+                                (click)="handleMapIt(view.product)"
                                 title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
                         </div>
                         <div class="col-sm-4">
-                            <a class="fa product-icon" [ngClass]="{'fa-check' : product.demMapped, 'fa-industry' : !product.demMapped}" [style]="hasDemLayer(product) ? '' : 'cursor:not-allowed;'"
-                                aria-hidden="true" (click)="handleMapDem(product)"
-                                title="View the DEM hillshade.">Hillshade</a>
+                            <a class="fa product-icon"
+                                [ngClass]="{'fa-check' : view.product.demMapped, 'fa-industry' : !view.product.demMapped}"
+                                [style]="hasDemLayer(view.product) ? '' : 'cursor:not-allowed;'" aria-hidden="true"
+                                (click)="handleMapDem(view.product)" title="View the DEM hillshade.">Hillshade</a>
                         </div>
                         <div class="col-sm-4">
-                            <a class="fa fa-cube product-icon" [style]="product.hasPointcloud ? '' : 'cursor:not-allowed;'"
-                                aria-hidden="true" (click)="handlePointcloud(product)"
+                            <a class="fa fa-cube product-icon"
+                                [style]="view.product.hasPointcloud ? '' : 'cursor:not-allowed;'" aria-hidden="true"
+                                (click)="handlePointcloud(view.product)"
                                 title="View the 3D pointcloud for this product using the Potree viewer.">3D</a>
                         </div>
 
                         <div class="col-sm-4">
-                            <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(product)"
+                            <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(view.product)"
                                 title="View more information about this product, including raw data.">Get Info</a>
                         </div>
 
                         <div *ngIf="isAdmin" class="col-sm-4">
-                            <a class="fa product-icon" [ngClass]="{'fa-lock': product.locked, 'fa-lock-open': !product.locked}"
-                                (click)="handleToggleLock(product)" title="Lock or unlock the product">{{product.locked
-                                ? 'Unlock' : 'Lock'}}</a>
+                            <a class="fa product-icon"
+                                [ngClass]="{'fa-lock': view.product.locked, 'fa-lock-open': !view.product.locked}"
+                                (click)="handleToggleLock(view.product)" title="Lock or unlock the product">
+                                {{view.product.locked ? 'Unlock' : 'Lock'}}
+                            </a>
                         </div>
 
-                        <div class="col-sm-4" *ngIf="!product.locked && !product.published">
-                            <a class="fa fa-trash-alt product-icon" (click)="handleDelete(product, $event)"
+                        <div class="col-sm-4" *ngIf="!view.product.locked && !view.product.published">
+                            <a class="fa fa-trash-alt product-icon" (click)="handleDelete(view, $event)"
                                 title="Deletes the product and all associated data and public map services.">Delete</a>
                         </div>
 
-                        <div class="col-sm-4" *ngIf="!product.locked && !product.published">
+                        <div class="col-sm-4" *ngIf="!view.product.locked && !view.product.published">
 
                             <a class="fa fa-arrow-alt-circle-up product-icon" style="--fa-border-padding: 0 0 0 5px;"
-                                (click)="handleTogglePublish(product)"
+                                (click)="handleTogglePublish(view.product)"
                                 title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
                         </div>
-                        <div class="col-sm-4" *ngIf="!product.locked && product.published">
+                        <div class="col-sm-4" *ngIf="!view.product.locked && view.product.published">
 
                             <a class="fa fa-arrow-alt-circle-down product-icon" style="width:60px;"
-                                (click)="handleTogglePublish(product)"
+                                (click)="handleTogglePublish(view.product)"
                                 title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
 
 
                         </div>
-                        <div class="col-sm-4" *ngIf="product.published">
+                        <div class="col-sm-4" *ngIf="view.product.published">
 
-                            <a class="fa" (click)="clipboardPublicStacUrl(product, clipboardPopover)">
-                                <span class="fa fa-link product-icon" [id]="'PublicStacUrl-' + product.id" style="margin:0;"
-                                    [popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover"
-                                    placement="top"></span>
-                                    Share
+                            <a class="fa" (click)="clipboardPublicStacUrl(view.product, clipboardPopover)">
+                                <span class="fa fa-link product-icon" [id]="'PublicStacUrl-' + view.product.id"
+                                    style="margin:0;" [popover]="'Copied to clipboard!'" triggers=""
+                                    #clipboardPopover="bs-popover" placement="top"></span>
+                                Share
                             </a>
 
                             <!-- 

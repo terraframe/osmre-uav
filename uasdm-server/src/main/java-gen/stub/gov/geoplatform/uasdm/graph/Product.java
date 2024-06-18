@@ -16,14 +16,18 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.runwaysdk.business.rbac.SingleActorDAOIF;
-import gov.geoplatform.uasdm.GenericException;
-import net.geoprism.GeoprismUser;
-import net.geoprism.registry.service.request.RoleServiceIF;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -36,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -49,10 +54,10 @@ import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -72,6 +77,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.view.CollectionProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
@@ -124,6 +130,12 @@ public class Product extends ProductBase implements ProductIF
     }
 
     CollectionReportFacade.update(this).doIt();
+  }
+  
+  @Override
+  public boolean isPrimary()
+  {
+    return this.getPrimary();
   }
 
   @Override
@@ -227,14 +239,15 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public static Product createIfNotExist(UasComponentIF uasComponent)
+  public static Product createIfNotExist(UasComponentIF uasComponent, String productName)
   {
-    Product product = find(uasComponent);
+    Product product = find(uasComponent, productName);
 
     if (product == null)
     {
       product = new Product();
       product.setName(uasComponent.getName());
+      product.setProductName(productName);
       product.setPublished(false);
     }
 
@@ -244,16 +257,17 @@ public class Product extends ProductBase implements ProductIF
     return product;
   }
 
-  public static Product find(UasComponentIF component)
+  public static Product find(UasComponentIF component, String productName)
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
+    statement.append("SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "')[productName = :productName])\n");
     statement.append("FROM :rid \n");
 
     final GraphQuery<Product> query = new GraphQuery<Product>(statement.toString());
     query.setParameter("rid", ( (UasComponent) component ).getRID());
+    query.setParameter("productName", productName);
 
     return query.getSingleResult();
   }
@@ -894,7 +908,7 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public static List<ProductIF> getProducts(ProductCriteria criteria)
+  public static List<CollectionProductDTO> getProducts(ProductCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
 
@@ -918,8 +932,10 @@ public class Product extends ProductBase implements ProductIF
     String sortField = criteria.getSortField();
     String sortOrder = criteria.getSortOrder();
 
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT EXPAND(OUT('component_has_product')) FROM (\n");
+    statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
     statement.append("  SELECT FROM (\n");
     statement.append("    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
     statement.append("      SELECT FROM (\n");
@@ -953,12 +969,12 @@ public class Product extends ProductBase implements ProductIF
 
     statement.append(")\n");
 
-    if (sortField.equals(Product.LASTUPDATEDATE))
-    {
-      statement.append("  ORDER BY " + sortField + " " + sortOrder);
-    }
+//    if (sortField.equals(Product.LASTUPDATEDATE))
+//    {
+//      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+//    }
 
-    final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
     query.setParameter("rid", object.getRID());
 
     if (!StringUtils.isEmpty(criteria.getOrganization()))
@@ -966,6 +982,11 @@ public class Product extends ProductBase implements ProductIF
       query.setParameter("organization", criteria.getOrganization());
     }
 
-    return query.getResults();
+    return CollectionProductDTO.process(query.getResults());
+  }
+
+  public String getS3location()
+  {
+    return ImageryComponent.PRODUCTS + "/" + this.getProductName() + "/";
   }
 }

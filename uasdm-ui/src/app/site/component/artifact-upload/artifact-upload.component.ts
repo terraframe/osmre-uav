@@ -15,6 +15,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 })
 export class ArtifactUploadComponent {
   @Input() componentId: string;
+  @Input() productName: string;
   @Input() folder: string;
   
   // Optional. If specified, we will tell the user they are reuploading to a file that already exists.
@@ -34,7 +35,7 @@ export class ArtifactUploadComponent {
     const file:File = event.target.files[0];
 
     if (file) {
-	  this.managementService.upload(this.componentId, this.folder, file, this.replaceName).then(() => {
+	  this.managementService.upload(this.componentId, this.productName, this.folder, file, this.replaceName).then(() => {
         this.uploadStatus = "success";
       }).catch(er => {
 		this.uploadStatus = "error";

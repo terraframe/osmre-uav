@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +28,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.HttpMethod;
 import com.runwaysdk.constants.ClientRequestIF;
 import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ServletMethod;
@@ -51,7 +49,6 @@ import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
@@ -66,11 +63,11 @@ import gov.geoplatform.uasdm.view.TreeComponent;
 @Controller(url = "project")
 public class ProjectManagementController
 {
-  public static final String JSP_DIR = "/WEB-INF/";
+  public static final String       JSP_DIR   = "/WEB-INF/";
 
-  public static final String INDEX_JSP = "gov/osmre/uasdm/index.jsp";
+  public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
 
-  private static final Logger logger = LoggerFactory.getLogger(ProjectManagementController.class);
+  private static final Logger      logger    = LoggerFactory.getLogger(ProjectManagementController.class);
 
   private ProjectManagementService service;
 
@@ -84,15 +81,15 @@ public class ProjectManagementController
   {
     return new ViewResponse("/index.html");
   }
-  
+
   @Endpoint(method = ServletMethod.GET, url = "configuration")
   public ResponseIF configuration(ServletRequestIF request, ClientRequestIF cRequest, @RequestParamter(name = "id") String id)
-  { 
+  {
     JSONObject configuration = this.service.configuration(cRequest.getSessionId(), request.getContextPath());
 
     return new RestBodyResponse(configuration);
   }
-  
+
   @Endpoint(url = "get-default-odm-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getDefaultODMRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
   {
@@ -100,13 +97,13 @@ public class ProjectManagementController
 
     return new RestBodyResponse(config);
   }
-  
+
   @Endpoint(url = "get-odm-run-by-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
   {
     return new RestBodyResponse(service.getODMRunByTask(request.getSessionId(), taskId));
   }
-  
+
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
@@ -242,7 +239,6 @@ public class ProjectManagementController
 
     return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
   }
-  
 
   @Endpoint(url = "download-report", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF downloadReport(ClientRequestIF request, final @RequestParamter(name = "colId") String colId, final @RequestParamter(name = "folder") String folder)
@@ -252,14 +248,8 @@ public class ProjectManagementController
     return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, folder));
   }
 
-
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, 
-      @RequestParamter(name = "id") String id, 
-      @RequestParamter(name = "processPtcloud") Boolean processPtcloud, 
-      @RequestParamter(name = "processDem") Boolean processDem, 
-      @RequestParamter(name = "processOrtho") Boolean processOrtho,
-      @RequestParamter(name = "configuration") String configuration)
+  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "processPtcloud") Boolean processPtcloud, @RequestParamter(name = "processDem") Boolean processDem, @RequestParamter(name = "processOrtho") Boolean processOrtho, @RequestParamter(name = "configuration") String configuration)
   {
     this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho, configuration);
 
@@ -318,7 +308,7 @@ public class ProjectManagementController
 
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "remove-upload-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF removeUploadTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
   {
@@ -416,7 +406,7 @@ public class ProjectManagementController
 
     return new RestBodyResponse(response);
   }
-  
+
   @Endpoint(url = "objects-presigned", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF objectsPresigned(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Long pageNumber, @RequestParamter(name = "pageSize") Long pageSize)
   {
@@ -436,19 +426,35 @@ public class ProjectManagementController
   @Endpoint(url = "get-artifacts", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {
-    JSONObject response = this.service.getArtifacts(request.getSessionId(), id);
+    JSONArray response = this.service.getArtifacts(request.getSessionId(), id);
 
     return new RestBodyResponse(response);
   }
 
-  @Endpoint(url = "remove-artifacts", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF removeArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder)
+  @Endpoint(url = "remove-artifacts", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF removeArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName, @RequestParamter(name = "folder") String folder)
   {
-    JSONObject response = this.service.removeArtifacts(request.getSessionId(), id, folder);
+    JSONArray response = this.service.removeArtifacts(request.getSessionId(), id, productName, folder);
 
     return new RestBodyResponse(response);
   }
 
+  @Endpoint(url = "remove-product", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF removeProduct(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName)
+  {
+    this.service.removeProduct(request.getSessionId(), id, productName);
+
+    return new RestResponse();
+  }
+
+  @Endpoint(url = "set-primary-product", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF setPrimaryProduct(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName)
+  {
+    this.service.setPrimaryProduct(request.getSessionId(), id, productName);
+    
+    return new RestResponse();
+  }
+  
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {
@@ -471,7 +477,7 @@ public class ProjectManagementController
 
     return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key, true));
   }
-  
+
   @Endpoint(url = "downloadProductPreview", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF downloadProductPreview(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "productId") String productId, @RequestParamter(name = "artifactName") String artifactName)
   {
@@ -501,14 +507,14 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF upload(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder, @RequestParamter(name = "file") MultipartFileParameter file) throws IOException
+  public ResponseIF upload(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder, @RequestParamter(name = "productName") String productName, @RequestParamter(name = "file") MultipartFileParameter file) throws IOException
   {
     try (InputStream stream = file.getInputStream())
     {
       final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
       final String fileName = file.getFilename();
 
-      JSONObject response = this.service.putFile(request.getSessionId(), id, folder, fileName, metadata, stream);
+      JSONObject response = this.service.putFile(request.getSessionId(), id, folder, productName, fileName, metadata, stream);
 
       return new RestBodyResponse(response);
     }

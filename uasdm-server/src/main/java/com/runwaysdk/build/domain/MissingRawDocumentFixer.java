@@ -93,8 +93,8 @@ public class MissingRawDocumentFixer implements Runnable
       logger.error("Created for Collection [" + col.getName() + "] documents [" + StringUtils.join(createdDocuments, ", ") + "].");
 
       // Assume that all RAW documents were used to create the product
-      Product product = Product.find(col);
-      if (product != null)
+      List<Product> products = col.getProducts();
+      for (Product product: products)
       {
         List<String> addedDocuments = new ArrayList<String>();
         

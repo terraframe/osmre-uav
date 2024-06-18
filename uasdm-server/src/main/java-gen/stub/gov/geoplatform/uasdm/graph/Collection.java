@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,6 +53,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.CannotDeleteProcessingCollection;
 import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -69,6 +71,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
@@ -101,7 +104,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
-  
+
   @Override
   public void apply(boolean regenerateMetadata)
   {
@@ -315,7 +318,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   private boolean calculateHasAllZip()
   {
     Optional<ODMRun> odmRun = ODMRun.getByComponentOrdered(this.getOid()).stream().findFirst();
-    
+
     if (odmRun.isPresent())
     {
       return odmRun.get().getODMRunOutputChildDocuments().stream().filter(doc -> doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny().isPresent();
@@ -325,21 +328,21 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       return getAllZip() != null;
     }
   }
-  
+
   @Override
   public Boolean getHasAllZip()
   {
     Boolean hasAllZip = super.getHasAllZip();
-    
+
     if (hasAllZip == null)
     {
       hasAllZip = calculateHasAllZip();
-      
+
       this.appLock();
       this.setHasAllZip(hasAllZip);
       this.apply(false);
     }
-    
+
     return hasAllZip;
   }
 
@@ -509,9 +512,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
   {
-    return Util.uploadArchive(task, archive, this, uploadTarget);
+    return Util.uploadArchive(task, archive, this, uploadTarget, product);
   }
 
   @Override
@@ -587,13 +590,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Integer getNumberOfChildren()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
-    
+
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT out('" + mdEdge.getDBClassName() +"').size() FROM :rid");
-    
+    statement.append("SELECT out('" + mdEdge.getDBClassName() + "').size() FROM :rid");
+
     GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
     query.setParameter("rid", this.getRID());
-    
+
     return query.getSingleResult();
   }
 
@@ -696,6 +699,31 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     CollectionReportFacade.update(this, document).doIt();
 
     return document;
+  }
+
+  /**
+   * If the @param uploadTarget is null or blank, then return the raw key.
+   * 
+   * @param uploadTarget
+   * 
+   * @return S3 upload key or the raw upload key
+   */
+  @Override
+  public String buildUploadKey(ProductIF product, String uploadTarget)
+  {
+    if (!StringUtils.isBlank(uploadTarget) && !uploadTarget.equals(ImageryComponent.RAW))
+    {
+      if (product != null)
+      {
+        return this.getS3location(product, uploadTarget) + "/";
+      }
+
+      throw new UnsupportedOperationException("Cannot manually upload files to a non raw directory if there is not a product");
+    }
+    else
+    {
+      return this.buildRawKey();
+    }
   }
 
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)

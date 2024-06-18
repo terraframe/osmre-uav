@@ -78,14 +78,12 @@ public class S3FileUpload implements Processor
   
   protected String getS3Key()
   {
-    if (this.s3Path.contains(this.collection.getS3location()))
+    if (this.s3Path.startsWith(this.collection.getS3location()))
     {
       return this.s3Path;
     }
     
-    String key = this.collection.getS3location() + this.s3Path;
-    
-    return key;
+    return this.collection.getS3location(product, s3Path);
   }
   
   protected void uploadFile(ApplicationFileResource res)

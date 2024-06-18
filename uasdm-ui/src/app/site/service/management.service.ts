@@ -53,7 +53,7 @@ export class ManagementService {
 		if (pageSize != null) {
 			params = params.set('pageSize', pageSize.toString());
 		}
-		
+
 		let method = presigned ? "objects-presigned" : "objects";
 
 		return this.http
@@ -64,7 +64,7 @@ export class ManagementService {
 	view(id: string): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
-		
+
 		this.eventService.start();
 
 		return this.http
@@ -98,22 +98,23 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getArtifacts(id: string): Promise<CollectionArtifacts> {
+	getArtifacts(id: string): Promise<CollectionArtifacts[]> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
 
 		return this.http
-			.get<CollectionArtifacts>(environment.apiUrl + '/project/get-artifacts', { params: params })
+			.get<CollectionArtifacts[]>(environment.apiUrl + '/project/get-artifacts', { params: params })
 			.toPromise()
 	}
 
-	removeArtifacts(id: string, folder: string): Promise<CollectionArtifacts> {
+	removeArtifacts(id: string, productName: string, folder: string): Promise<CollectionArtifacts> {
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
 		});
 
 		const params = {
 			id: id,
+			productName: productName,
 			folder: folder
 		};
 
@@ -121,6 +122,46 @@ export class ManagementService {
 
 		return this.http
 			.post<CollectionArtifacts>(environment.apiUrl + '/project/remove-artifacts', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
+	removeProduct(id: string, productName: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			id: id,
+			productName: productName,
+		};
+
+		this.eventService.start();
+
+		return this.http
+			.post<void>(environment.apiUrl + '/project/remove-product', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise()
+	}
+
+	setPrimaryProduct(id: string, productName: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			id: id,
+			productName: productName,
+		};
+
+		this.eventService.start();
+
+		return this.http
+			.post<void>(environment.apiUrl + '/project/set-primary-product', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -394,7 +435,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	upload(id: string, folder: string, file: File, fileName: string = null): Promise<Document> {
+	upload(id: string, productName: string, folder: string, file: File, fileName: string = null): Promise<Document> {
 
 		this.eventService.start();
 
@@ -407,6 +448,10 @@ export class ManagementService {
 		}
 		formData.append('id', id);
 		formData.append('folder', folder);
+
+		if (productName != null) {
+			formData.append('productName', productName);
+		}
 
 		return this.http.post<Document>(environment.apiUrl + '/project/upload', formData)
 			.pipe(finalize(() => {
@@ -423,7 +468,7 @@ export class ManagementService {
 		params = params.set('pageSize', pageSize.toString());
 		params = params.set('pageNumber', pageNumber.toString());
 		params = params.set('token', token.toString());
-		
+
 		this.eventService.start();
 
 		return this.http
@@ -477,7 +522,7 @@ export class ManagementService {
 		return this.http.get<PageResult<Message>>(environment.apiUrl + '/project/get-messages', { params: params })
 			.toPromise();
 	}
-	
+
 	downloadPresigned(url: string, useSpinner: boolean): Observable<Blob> {
 
 		let params: HttpParams = new HttpParams();

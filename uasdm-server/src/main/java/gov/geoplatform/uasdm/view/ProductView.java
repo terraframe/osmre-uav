@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -34,6 +34,10 @@ public class ProductView
   private String             id;
 
   private String             name;
+
+  private String             productName;
+
+  private boolean            primary;
 
   private List<SiteItem>     components;
 
@@ -85,6 +89,26 @@ public class ProductView
   public void setName(String name)
   {
     this.name = name;
+  }
+  
+  public String getProductName()
+  {
+    return productName;
+  }
+  
+  public void setProductName(String productName)
+  {
+    this.productName = productName;
+  }
+  
+  public boolean isPrimary()
+  {
+    return primary;
+  }
+  
+  public void setPrimary(boolean primary)
+  {
+    this.primary = primary;
   }
 
   public List<SiteItem> getComponents()
@@ -177,11 +201,13 @@ public class ProductView
     this.mappables = mappables;
   }
 
-  public boolean isLocked() {
+  public boolean isLocked()
+  {
     return locked;
   }
 
-  public void setLocked(boolean locked) {
+  public void setLocked(boolean locked)
+  {
     this.locked = locked;
   }
 
@@ -190,9 +216,11 @@ public class ProductView
     JSONObject object = new JSONObject();
     object.put("id", this.id);
     object.put("name", this.name);
+    object.put("productName", this.productName);
     object.put("entities", SiteItem.serializeItems(this.components));
     object.put("published", this.published);
     object.put("locked", this.locked);
+    object.put("primary", this.primary);
 
     if (published)
     {

@@ -4,17 +4,17 @@
 
 -->
 <div>
-    <div class="modal-body">
-        <div *ngIf="message != null" class="error-container">
-            <div class="label-holder">
-                <strong>Error</strong>
-            </div>
-            <div class="holder">
-                <div>
-                    <p class="error-message">{{message}}</p>
-                </div>
-            </div>
-        </div>
+	<div class="modal-body">
+		<div *ngIf="message != null" class="error-container">
+			<div class="label-holder">
+				<strong>Error</strong>
+			</div>
+			<div class="holder">
+				<div>
+					<p class="error-message">{{message}}</p>
+				</div>
+			</div>
+		</div>
 
 		<div *ngIf="config.processOrtho || config.processDem" class="form-group">
 			<boolean-field [(value)]="config.includeGeoLocationFile"
@@ -33,7 +33,7 @@
 			<label for="geoLocationFileName">Geo location file name</label>
 			<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
 				placeholder="File name..." />
-		</div>	
+		</div>
 
 		<div *ngIf="config.processOrtho && config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
 			<p>File format:</p>
@@ -61,9 +61,9 @@
 
 		<div class="form-group" *ngIf="config.processOrtho && config.includeGroundControlPointFile">
 			<label for="groundControlPointFileName">Ground control point file name</label>
-			<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input" class="form-control"
-				placeholder="File name..." />
-		</div>	
+			<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input"
+				class="form-control" placeholder="File name..." />
+		</div>
 
 		<div *ngIf="config.processOrtho && config.includeGroundControlPointFile">
 			<p>File format:</p>
@@ -85,92 +85,116 @@
 			</pre>
 		</div>
 
-		<button type="button" class="btn btn-default" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
-		        [attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
+		<button type="button" class="btn btn-default"
+			(click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
+			[attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
 		</button>
-        <div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" style="padding:10px;">
-            <div style="padding:10px;">
-		        <div class="form-group">
-		            <label for="outFileNamePrefix">Output Product Name Prefix</label>
-		            <input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
-		                placeholder="Output product name prefix..." />
-		        </div>
-		
-		        <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-		            <label for="resolution">Orthophoto and DEM Resolution (cm)</label>
-		            <input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control" placeholder="5"
-		                step="1" min="0" />
-		        </div>
-		
-		<!--         TODO: Determine if this should be removed because IDM doesn't currently process video. -->
-		<!--         <div class="form-group"> -->
-		<!--             <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label> -->
-		<!--             <input [(ngModel)]="config.videoResolution" name="videoResolution" type="number" class="form-control" -->
-		<!--                 placeholder="4000" step="1" min="0" /> -->
-		<!--         </div> -->
-		
-		        <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-		            <label for="matcherNeighbors">Matcher Nieghbors</label>
-		            <input [(ngModel)]="config.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
-		                placeholder="0" step="1" min="0" />
-		        </div>
-		
-		        <div *ngIf="config.processOrtho || config.processDem" class="form-group">
-		            <label for="minNumFeatures">Minimum number of features to extract per image</label>
-		            <input [(ngModel)]="config.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
-		                placeholder="10000" step="1" min="0" />
-		        </div>
-		
-		        <div *ngIf="config.processPtcloud" class="form-group">
-		            <label for="pcQuality">Generated point cloud quality</label>
-		            <select [(ngModel)]="config.pcQuality" name="pcQuality" class="form-control" >
-		                <option value="ULTRA">ULTRA</option>
-		                <option value="HIGH">HIGH</option>
-		                <option value="MEDIUM">MEDIUM</option>
-		                <option value="LOW">LOW</option>
-		                <option value="LOWEST">LOWEST</option>
-		            </select>
-		        </div>
-		        
-		        <div *ngIf="config.processOrtho" class="form-group">
-		            <label for="featureQuality">Generated feature quality</label>
-		            <select [(ngModel)]="config.featureQuality" name="featureQuality" class="form-control" >
-		                <option value="ULTRA">ULTRA</option>
-		                <option value="HIGH">HIGH</option>
-		                <option value="MEDIUM">MEDIUM</option>
-		                <option value="LOW">LOW</option>
-		                <option value="LOWEST">LOWEST</option>
-		            </select>
-		        </div>
-		        
-		        <div *ngIf="config.radiometricCalibration" class="form-group">
-		            <label for="radiometricCalibration">Radiometric calibration</label>
-		            <select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration" class="form-control" >
-		                <option value="NONE">NONE</option>
-		                <option value="CAMERA">CAMERA</option>
-		                <option value="CAMERA_SUN">CAMERA+SUN</option>
-		            </select>
-		        </div>
-		
+		<div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" style="padding:10px;">
+			<div style="padding:10px;">
+				<div class="form-group">
+					<label for="outFileNamePrefix">Output Product Name Prefix</label>
+					<input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input"
+						class="form-control" placeholder="Output product name prefix..." />
+				</div>
+
+				<div *ngIf="config.processOrtho || config.processDem" class="form-group">
+					<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
+					<input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control"
+						placeholder="5" step="1" min="0" />
+				</div>
+
+				<!--         TODO: Determine if this should be removed because IDM doesn't currently process video. -->
+				<!--         <div class="form-group"> -->
+				<!--             <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label> -->
+				<!--             <input [(ngModel)]="config.videoResolution" name="videoResolution" type="number" class="form-control" -->
+				<!--                 placeholder="4000" step="1" min="0" /> -->
+				<!--         </div> -->
+
+				<div *ngIf="config.processOrtho || config.processDem" class="form-group">
+					<label for="matcherNeighbors">Matcher Nieghbors</label>
+					<input [(ngModel)]="config.matcherNeighbors" name="matcherNeighbors" type="number"
+						class="form-control" placeholder="0" step="1" min="0" />
+				</div>
+
+				<div *ngIf="config.processOrtho || config.processDem" class="form-group">
+					<label for="minNumFeatures">Minimum number of features to extract per image</label>
+					<input [(ngModel)]="config.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
+						placeholder="10000" step="1" min="0" />
+				</div>
+
+				<div *ngIf="config.processPtcloud" class="form-group">
+					<label for="pcQuality">Generated point cloud quality</label>
+					<select [(ngModel)]="config.pcQuality" name="pcQuality" class="form-control">
+						<option value="ULTRA">ULTRA</option>
+						<option value="HIGH">HIGH</option>
+						<option value="MEDIUM">MEDIUM</option>
+						<option value="LOW">LOW</option>
+						<option value="LOWEST">LOWEST</option>
+					</select>
+				</div>
+
+				<div *ngIf="config.processOrtho" class="form-group">
+					<label for="featureQuality">Generated feature quality</label>
+					<select [(ngModel)]="config.featureQuality" name="featureQuality" class="form-control">
+						<option value="ULTRA">ULTRA</option>
+						<option value="HIGH">HIGH</option>
+						<option value="MEDIUM">MEDIUM</option>
+						<option value="LOW">LOW</option>
+						<option value="LOWEST">LOWEST</option>
+					</select>
+				</div>
+
+				<div *ngIf="config.radiometricCalibration" class="form-group">
+					<label for="radiometricCalibration">Radiometric calibration</label>
+					<select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration"
+						class="form-control">
+						<option value="NONE">NONE</option>
+						<option value="CAMERA">CAMERA</option>
+						<option value="CAMERA_SUN">CAMERA+SUN</option>
+					</select>
+				</div>
 
 
-		    </div>
-	    </div>
 
-        <hr />
+			</div>
+		</div>
 
-        <h3>Run ortho to process the following products: </h3>
+		<hr />
 
-        <artifact-page *ngIf="entity != null" [edit]="true" [entity]="entity" [config]="config"
-            (onError)="error($event)"></artifact-page>
+		<h3>Run ortho to process the following products: </h3>
 
-    </div>
-    <div class="modal-footer">
-        <div class="btn-holder" style="text-align: right;">
-            <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
-                aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
-            <button type="button" (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
-                style="padding: 4px 18px;">Submit</button>
-        </div>
-    </div>
+		<table style="width: 100%;">
+			<thead>
+				<th colspan="6">Type</th>
+				<th></th>
+			</thead>
+			<tr class="artifact-row">
+				<td colspan="6">Ptcloud</td>
+				<td>
+					<boolean-field [(value)]="config.processPtcloud" label="Generate"></boolean-field>
+				</td>
+			</tr>
+			<tr class="artifact-row">
+				<td colspan="6">DEM</td>
+				<td>
+					<boolean-field [(value)]="config.processDem" label="Generate"></boolean-field>
+				</td>
+			</tr>
+			<tr class="artifact-row">
+				<td colspan="6">Ortho</td>
+				<td>
+					<boolean-field [(value)]="config.processOrtho" label="Generate"></boolean-field>
+				</td>
+			</tr>
+		</table>
+
+	</div>
+	<div class="modal-footer">
+		<div class="btn-holder" style="text-align: right;">
+			<button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
+				aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
+			<button type="button" (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
+				style="padding: 4px 18px;">Submit</button>
+		</div>
+	</div>
 </div>

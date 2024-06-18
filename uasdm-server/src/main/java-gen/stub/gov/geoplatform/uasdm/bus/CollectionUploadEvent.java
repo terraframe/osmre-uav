@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -49,6 +50,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
@@ -88,9 +90,20 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     UasComponentIF component = task.getComponentInstance();
 
+    ProductIF product = null;
+
     if (!uploadTarget.equals(ImageryComponent.RAW))
     {
-      component.removeArtifacts(uploadTarget, true);
+      Optional<ProductIF> optional = component.getProduct(configuration.getProductName());
+
+      // Delete the existing artifact if it exists
+      optional.ifPresent(p -> {
+        component.removeArtifacts(p, uploadTarget, true);
+      });
+
+      // If the product doesn't exist, then create it
+      product = optional.orElseGet(() -> component.createProductIfNotExist(configuration.getProductName()));
+
     }
 
     List<String> uploadedFiles = new LinkedList<String>();
@@ -99,7 +112,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     {
       if (DevProperties.uploadRaw())
       {
-        // TODO : processUpload is currently always set to true in upload-modal.component.ts
+        // TODO : processUpload is currently always set to true in
+        // upload-modal.component.ts
         if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
         {
           boolean isCog = new CogTifValidator().isValidCog(infile);
@@ -132,7 +146,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           }
         }
 
-        uploadedFiles = component.uploadArchive(task, infile, uploadTarget);
+        uploadedFiles = component.uploadArchive(task, infile, uploadTarget, product);
       }
     }
     catch (IOException ex)
@@ -140,7 +154,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       logger.error("Error while uploading file", ex);
 
       task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());      
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.createAction("Error while uploading file " + RunwayException.localizeThrowable(ex, Locale.US), TaskActionType.ERROR.getType());
       task.apply();
 
@@ -173,7 +187,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
     {
-      this.startOrthoProcessing(task, infile);
+      this.startOrthoProcessing(task, infile, configuration.getProductName());
     }
 
     if (uploadedFiles.size() > 0)
@@ -196,9 +210,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
-    gov.geoplatform.uasdm.graph.Product product = Product.find(component);
+    gov.geoplatform.uasdm.graph.Product product = Product.find(component, configuration.getProductName());
 
-    if(product != null && product.isLocked()) {
+    if (product != null && product.isLocked())
+    {
       GenericException exception = new GenericException();
       exception.setUserMessage("The collection can not be processed because its product is locked.");
       throw exception;
@@ -254,17 +269,19 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           collection.setImageWidth(width);
           collection.apply();
 
-//          // Update the metadata
-//          FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
-//
-//          if (metadata != null)
-//          {
-//            metadata.getSensor().setImageWidth(Integer.toString(width));
-//            metadata.getSensor().setImageHeight(Integer.toString(height));
-//
-//            MetadataXMLGenerator generator = new MetadataXMLGenerator();
-//            generator.generateAndUpload(collection, metadata);
-//          }
+          // // Update the metadata
+          // FlightMetadata metadata = FlightMetadata.get(collection,
+          // Collection.RAW, collection.getFolderName() +
+          // MetadataXMLGenerator.FILENAME);
+          //
+          // if (metadata != null)
+          // {
+          // metadata.getSensor().setImageWidth(Integer.toString(width));
+          // metadata.getSensor().setImageHeight(Integer.toString(height));
+          //
+          // MetadataXMLGenerator generator = new MetadataXMLGenerator();
+          // generator.generateAndUpload(collection, metadata);
+          // }
 
         }
       }
@@ -279,7 +296,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile)
+  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
@@ -294,6 +311,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setUploadTarget(uploadTask.getUploadTarget());
     task.setTaskLabel("Ortho processesing task for collection [" + component.getName() + "]");
     task.setMessage("The ortho uploaded to ['" + component.getName() + "'] is being processed. Check back later for updates.");
+    task.setProductName(productName);
+
+    component.getProduct(productName).ifPresent(product -> task.setProductName(product.getProductName()));
+
     task.apply();
 
     try

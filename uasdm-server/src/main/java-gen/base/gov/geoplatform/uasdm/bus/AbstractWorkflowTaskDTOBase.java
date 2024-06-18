@@ -1,26 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1611138145)
+@com.runwaysdk.business.ClassSignature(hash = 1043334615)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1611138145;
+  private static final long serialVersionUID = 1043334615;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -56,6 +41,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String OID = "oid";
   public static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PRODUCTNAME = "productName";
   public static java.lang.String PROJECTIONNAME = "projectionName";
   public static java.lang.String PTEPSG = "ptEpsg";
   public static java.lang.String SEQ = "seq";
@@ -518,6 +504,43 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getProductName()
+  {
+    return getValue(PRODUCTNAME);
+  }
+  
+  public void setProductName(String value)
+  {
+    if(value == null)
+    {
+      setValue(PRODUCTNAME, "");
+    }
+    else
+    {
+      setValue(PRODUCTNAME, value);
+    }
+  }
+  
+  public boolean isProductNameWritable()
+  {
+    return isWritable(PRODUCTNAME);
+  }
+  
+  public boolean isProductNameReadable()
+  {
+    return isReadable(PRODUCTNAME);
+  }
+  
+  public boolean isProductNameModified()
+  {
+    return isModified(PRODUCTNAME);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getProductNameMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(PRODUCTNAME).getAttributeMdDTO();
   }
   
   public String getProjectionName()

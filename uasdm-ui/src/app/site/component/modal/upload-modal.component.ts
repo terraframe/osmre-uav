@@ -39,7 +39,7 @@ export class Page {
 @Component({
 	selector: 'upload-modal',
 	templateUrl: './upload-modal.component.html',
-	styleUrls: ['./upload-modal.component.css'],
+	styleUrls: ['./upload-modal.component.css', './artifact-page.component.css'],
 	animations: [
 		fadeInOnEnterAnimation(),
 		fadeOutOnLeaveAnimation()
@@ -51,7 +51,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	importedValues: boolean = false;
 
 	message: string = "";
-	
+
 	isAdvancedSettingsCollapsed = true;
 
 	/* 
@@ -68,7 +68,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		radiometricCalibration: "NONE",
 		geoLocationFormat: "RX1R2",
 		geoLocationFileName: "PIX4D.CSV",
-		groundControlPointFileName: "gcp_list.txt"
+		groundControlPointFileName: "gcp_list.txt",
+		productName: null
 	} as UploadForm;
 
 	/*
@@ -90,7 +91,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	differ: any;
 	showFileSelectPanel: boolean = false;
 	taskFinishedNotifications: any[] = [];
-
 
 	/*
 	 * Flag indicating if the upload should be processed by ODM
@@ -163,7 +163,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		if (elem != null && this.uploader == null && this.uploadTarget != null) {
 
 			const extensions = [];
-			
+
 			extensions.push('zip');
 			extensions.push('tar.gz');
 
@@ -326,7 +326,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.onUploadComplete = new Subject();
 		this.onUploadCancel = new Subject();
-		
+
 		// this.service.getMetadataOptions(null).then((options) => {
 		// 	this.sensors = options.sensors;
 		// 	this.platforms = options.platforms;
@@ -354,9 +354,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	init(component: SiteEntity, uploadTarget: string): void {
+	init(component: SiteEntity, uploadTarget: string, productName?: string): void {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
+		
+		if (productName != null) {
+			this.values.productName = productName;
+		}
+
 		// this.processUpload = this.uploadTarget === 'raw';
 
 		this.hierarchy = this.metadataService.getHierarchy();
@@ -376,10 +381,10 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		if (this.existingTask) {
 			this.page = this.pages[this.pages.length - 1];
 		}
-		
+
 		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
 		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
-		
+
 		this.service.getDefaultODMRunConfig(this.component.id).then((config: ODMRunConfig) => {
 			this.values.pcQuality = config.pcQuality;
 			this.values.resolution = config.resolution;
@@ -485,7 +490,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleNextPage(): void {
-		
+
 		if ((this.page.index + 1) < this.pages.length) {
 
 			const nextPage = this.pages[this.page.index + 1];
@@ -579,6 +584,10 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 				this.values.processDem = this.config.processDem;
 				this.values.processOrtho = this.config.processOrtho;
 				this.values.processPtcloud = this.config.processPtcloud;
+
+				if(this.values.productName == null) {
+					delete this.values.productName;
+				}
 
 				this.uploader.setParams(this.values);
 				this.uploader.uploadStoredFiles();
