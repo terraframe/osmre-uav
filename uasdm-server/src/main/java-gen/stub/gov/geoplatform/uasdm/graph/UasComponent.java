@@ -258,8 +258,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       {
         new IndexUpdateDocumentCommand(this, isNameModified).doIt();
 
+        // Re-index all of the derived products below this component
         this.getDerivedProducts(null, null).forEach(view -> {
-          new ReIndexStacItemCommand(view.getPrimary()).doIt();
+          view.getProducts().forEach(prod -> new ReIndexStacItemCommand(view.getPrimary()).doIt());
         });
       }
 
@@ -516,11 +517,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       // TODO: How to handle this with versions
       // product.delete();
     }
-    else if (product.isPrimary())
-    {
-      // Re-index the products
-      new ReIndexStacItemCommand(product).doIt();
-    }
+
+    // Re-index the products
+    new ReIndexStacItemCommand(product).doIt();
 
     if (updateMetadata && this instanceof Collection)
     {
@@ -815,9 +814,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     ( (Product) product ).setPrimary(true);
     ( (Product) product ).apply();
 
-    // Re-index the products
-    new ReIndexStacItemCommand(product).doIt();
-
+    // TODO: IS THIS CORRECT
     if (this instanceof Collection)
     {
       new GenerateMetadataCommand((Collection) this).doIt();

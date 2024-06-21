@@ -7,127 +7,141 @@
 
   <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
-  <table *ngIf="groups != null" style="width: 100%;">
-    <thead>
-      <th>Type</th>
-      <th>Name</th>
-      <th>Processing Software</th>
-      <th>Date</th>
-      <th>File Size</th>
-      <th>Description</th>
-      <th></th>
-    </thead>
-    <ng-container *ngFor="let group of groups">
-      <tr class="artifact-row">
-        <td colspan="6">
+  <div class="list-group" *ngIf="groups != null">
+    <div class="list-group-item" *ngFor="let group of groups">
+      <div class="row">
+        <div class="col-sm-4">
           <h3>
             {{group.productName}}
           </h3>
-        </td>
-        <td class="no-edit-actions">
+        </div>
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4 no-edit-actions">
           <span class="action-col">
-            <button *ngIf="!group.primary" type="button" class="btn btn-danger" [disabled]="processRunning" (click)="handleRemoveGroup(group.productName)">
+            <button *ngIf="!group.primary" type="button" class="btn btn-danger" [disabled]="processRunning"
+              (click)="handleRemoveGroup(group.productName)">
               Delete Group
             </button>
           </span>
           <span class="action-col">
-            <button *ngIf="!group.primary" type="button" class="btn btn-primary" [disabled]="processRunning" (click)="handleSetPrimary(group.productName)">
+            <button *ngIf="!group.primary" type="button" class="btn btn-primary" [disabled]="processRunning"
+              (click)="handleSetPrimary(group.productName)">
               Make Primary
             </button>
-          </span>          
-        </td>
-      </tr>
-      <ng-container *ngFor="let section of sections; let i = index">
-        <tr class="artifact-row">
-          <td>{{section.label}}</td>
-          <td>
-            <ng-container *ngIf="group[section.folder] != null">
-              <table>
-                <tr *ngFor="let artifact of group[section.folder].items">
-                  <a (click)="handleDownloadFile(artifact)">{{ artifact.name }}</a>
-                </tr>
-              </table>
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="group[section.folder] != null">
-              <table>
-                <tr *ngFor="let artifact of group[section.folder].items">
-                  <label *ngIf="!group[section.folder].report || artifact.tool !== 'ODM'">
-                    {{ artifact.tool}}
-                  </label>
-                  <a *ngIf="group[section.folder].report && artifact.tool === 'ODM'" (click)="showODMRun(artifact)">
-                    {{ artifact.tool }}
-                  </a>
-                </tr>
-              </table>
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="group[section.folder] != null">
-              <table>
-                <tr *ngFor="let artifact of group[section.folder].items">
-                  {{ artifact.lastModified }}
-                </tr>
-              </table>
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="group[section.folder] != null">
-              <table>
-                <tr *ngFor="let artifact of group[section.folder].items">
-                  {{ byteCountAsHumanReadable(artifact.fileSize) }}
-                </tr>
-              </table>
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="group[section.folder] != null">
-              <table>
-                <tr *ngFor="let artifact of group[section.folder].items">
-                  {{ artifact.description }}
-                </tr>
-              </table>
-            </ng-container>
-          </td>
-          <td *ngIf="!edit" class="no-edit-actions">
-            <span class="action-col">
-              <button *ngIf="group[section.folder] != null && group[section.folder].items.length > 0" type="button"
-                class="btn btn-warning" [disabled]="processRunning" (click)="handleRemove(group.productName, section)">
-                Remove
-              </button>
-              <button *ngIf="group[section.folder] == null || group[section.folder].items.length == 0" type="button"
-                class="btn btn-primary" [disabled]="processRunning"
-                (click)="handleUpload(group.productName, section.folder)">
-                Upload
-              </button>
-            </span>
+          </span>
+        </div>
+      </div>
 
-            <span class="action-col" *ngIf="group[section.folder] != null" style="width:9em;">
-              <artifact-upload [componentId]="entity.id" [productName]="group.productName" [folder]="section.folder"
-                [replaceName]="'report.pdf'" [accept]="'.pdf'"
-                [label]="group[section.folder].report ? 'Reupload report' : 'Upload report'">
-              </artifact-upload>
-              <button style="width:100%;" *ngIf="group[section.folder].report" type="button" class="btn btn-secondary"
-                [disabled]="processRunning" (click)="handleDownloadReport(group.productName, section)">
-                Download report
-              </button>
-            </span>
-          </td>
-          <td *ngIf="edit">
-            <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
-              [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'">
-            </boolean-field>
-            <boolean-field *ngIf="section.folder === 'dem'" [(value)]="config.processDem"
-              [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
-            <boolean-field *ngIf="section.folder === 'ortho'" [(value)]="config.processOrtho"
-              [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
-          </td>
+      <div class="row">
+        <div class="col-sm-12">
 
-        </tr>
-      </ng-container>
+          <table style="width: 100%;">
+            <thead>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Processing Software</th>
+              <th>Date</th>
+              <th>File Size</th>
+              <th>Description</th>
+              <th></th>
+            </thead>
+            <ng-container *ngFor="let section of sections; let i = index">
+              <tr class="artifact-row">
+                <td>{{section.label}}</td>
+                <td>
+                  <ng-container *ngIf="group[section.folder] != null">
+                    <table>
+                      <tr *ngFor="let artifact of group[section.folder].items">
+                        <a (click)="handleDownloadFile(artifact)">{{ artifact.name }}</a>
+                      </tr>
+                    </table>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf="group[section.folder] != null">
+                    <table>
+                      <tr *ngFor="let artifact of group[section.folder].items">
+                        <label *ngIf="!group[section.folder].report || artifact.tool !== 'ODM'">
+                          {{ artifact.tool}}
+                        </label>
+                        <a *ngIf="group[section.folder].report && artifact.tool === 'ODM'"
+                          (click)="showODMRun(artifact)">
+                          {{ artifact.tool }}
+                        </a>
+                      </tr>
+                    </table>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf="group[section.folder] != null">
+                    <table>
+                      <tr *ngFor="let artifact of group[section.folder].items">
+                        {{ artifact.lastModified }}
+                      </tr>
+                    </table>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf="group[section.folder] != null">
+                    <table>
+                      <tr *ngFor="let artifact of group[section.folder].items">
+                        {{ byteCountAsHumanReadable(artifact.fileSize) }}
+                      </tr>
+                    </table>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf="group[section.folder] != null">
+                    <table>
+                      <tr *ngFor="let artifact of group[section.folder].items">
+                        {{ artifact.description }}
+                      </tr>
+                    </table>
+                  </ng-container>
+                </td>
+                <td *ngIf="!edit" class="no-edit-actions">
+                  <span class="action-col">
+                    <button *ngIf="group[section.folder] != null && group[section.folder].items.length > 0"
+                      type="button" class="btn btn-warning" [disabled]="processRunning"
+                      (click)="handleRemove(group.productName, section)">
+                      Remove
+                    </button>
+                    <button *ngIf="group[section.folder] == null || group[section.folder].items.length == 0"
+                      type="button" class="btn btn-primary" [disabled]="processRunning"
+                      (click)="handleUpload(group.productName, section.folder)">
+                      Upload
+                    </button>
+                  </span>
 
-    </ng-container>
+                  <span class="action-col" *ngIf="group[section.folder] != null" style="width:9em;">
+                    <artifact-upload [componentId]="entity.id" [productName]="group.productName"
+                      [folder]="section.folder" [replaceName]="'report.pdf'" [accept]="'.pdf'"
+                      [label]="group[section.folder].report ? 'Reupload report' : 'Upload report'">
+                    </artifact-upload>
+                    <button style="width:100%;" *ngIf="group[section.folder].report" type="button"
+                      class="btn btn-secondary" [disabled]="processRunning"
+                      (click)="handleDownloadReport(group.productName, section)">
+                      Download report
+                    </button>
+                  </span>
+                </td>
+                <td *ngIf="edit">
+                  <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
+                    [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'">
+                  </boolean-field>
+                  <boolean-field *ngIf="section.folder === 'dem'" [(value)]="config.processDem"
+                    [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
+                  <boolean-field *ngIf="section.folder === 'ortho'" [(value)]="config.processOrtho"
+                    [label]="(group[section.folder] != null && group[section.folder].items.length > 0) ? 'Overwrite' : 'Generate'"></boolean-field>
+                </td>
 
-  </table>
+              </tr>
+            </ng-container>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
