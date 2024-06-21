@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
+import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -56,6 +57,7 @@ import com.runwaysdk.system.metadata.MdEdge;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
+import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
@@ -122,6 +124,16 @@ public class Product extends ProductBase implements ProductIF
   {
     final boolean isNew = this.isNew();
 
+    if (!UasComponentIF.isValidName(this.getProductName()))
+    {
+      MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
+      MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Product.PRODUCTNAME);
+
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
+      ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
+      throw ex;
+    }
+
     this.apply();
 
     if (isNew)
@@ -131,7 +143,7 @@ public class Product extends ProductBase implements ProductIF
 
     CollectionReportFacade.update(this).doIt();
   }
-  
+
   @Override
   public boolean isPrimary()
   {
@@ -969,10 +981,10 @@ public class Product extends ProductBase implements ProductIF
 
     statement.append(")\n");
 
-//    if (sortField.equals(Product.LASTUPDATEDATE))
-//    {
-//      statement.append("  ORDER BY " + sortField + " " + sortOrder);
-//    }
+    // if (sortField.equals(Product.LASTUPDATEDATE))
+    // {
+    // statement.append(" ORDER BY " + sortField + " " + sortOrder);
+    // }
 
     final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
     query.setParameter("rid", object.getRID());

@@ -126,6 +126,7 @@ export class ODMRun {
 }
 
 export class ODMRunConfig {
+	productName: string;
 	processPtcloud: boolean;
 	processDem: boolean;
 	processOrtho: boolean;

@@ -313,8 +313,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 				geoLocationFormat: data.geoLocationFormat,
 				geoLocationFileName: data.geoLocationFileName,
 				includeGroundControlPointFile: data.includeGroundControlPointFile,
-				groundControlPointFileName: data.groundControlPointFileName
-
+				groundControlPointFileName: data.groundControlPointFileName,
+				productName: data.productName
 			};
 
 			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {

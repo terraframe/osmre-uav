@@ -36,6 +36,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         featureQuality: "HIGH",
         radiometricCalibration: "NONE",
         geoLocationFormat: "RX1R2",
+        productName: null
     };
 
     isAdvancedSettingsCollapsed = true;
@@ -53,6 +54,8 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         
         this.service.getDefaultODMRunConfig(this.entity.id).then((config: ODMRunConfig) => {
 			this.config = config;
+            this.config.productName = null;
+
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});

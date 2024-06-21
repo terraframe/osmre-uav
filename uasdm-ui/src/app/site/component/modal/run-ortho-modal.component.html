@@ -3,7 +3,7 @@
 
 
 -->
-<div>
+<form #myForm="ngForm">
 	<div class="modal-body">
 		<div *ngIf="message != null" class="error-container">
 			<div class="label-holder">
@@ -14,6 +14,12 @@
 					<p class="error-message">{{message}}</p>
 				</div>
 			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="productName">Product name</label>
+			<input [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
+				placeholder="Product name" required forbiddenName />
 		</div>
 
 		<div *ngIf="config.processOrtho || config.processDem" class="form-group">
@@ -193,8 +199,8 @@
 		<div class="btn-holder" style="text-align: right;">
 			<button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
 				aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
-			<button type="button" (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
-				style="padding: 4px 18px;">Submit</button>
+			<button type="button" [disabled]="myForm.invalid" (click)="confirm()" class="btn btn-primary" role="button"
+				aria-disabled="false" style="padding: 4px 18px;">Submit</button>
 		</div>
 	</div>
-</div>
+</form>

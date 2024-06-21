@@ -3,7 +3,7 @@
 
 
 -->
-<div>
+<form #myForm="ngForm">
   <div class="modal-body" tabindex="-1" role="dialog">
 
 
@@ -302,6 +302,15 @@
     <div [@fadeInOnEnter] class="row" *ngIf="uploadTarget === 'raw'" style="margin-top: 20px;">
       <div class="col-md-2"></div>
       <div class="col-md-8">
+
+        <ng-container *ngIf="processUpload">
+          <div class="form-group">
+            <label for="productName">Product name</label>
+            <input [(ngModel)]="values.productName" name="productName" type="input" class="form-control"
+              placeholder="Product name" required forbiddenName />
+          </div>
+        </ng-container>
+
         <table style="width: 100%;">
           <thead>
             <th colspan="6">Type</th>
@@ -345,8 +354,8 @@
             title="Enter the path of the geo location file inside your uploaded zip. This file will be renamed to 'geo.txt' upon upload and used to provide location data for your images."
             class="form-group" *ngIf="values.includeGeoLocationFile">
             <label for="geoLocationFileName">Geo location file name</label>
-            <input [(ngModel)]="values.geoLocationFileName" name="geoLocationFileName" type="input"
-              class="form-control" placeholder="File name..." />
+            <input [(ngModel)]="values.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
+              placeholder="File name..." />
           </div>
 
           <div *ngIf="values.includeGeoLocationFile && values.geoLocationFormat === 'ODM'">
@@ -375,8 +384,8 @@
 
           <div class="form-group" *ngIf="values.includeGroundControlPointFile">
             <label for="groundControlPointFileName">Ground control point file name</label>
-            <input [(ngModel)]="values.groundControlPointFileName" name="groundControlPointFileName"
-              type="input" class="form-control" placeholder="File name..." />
+            <input [(ngModel)]="values.groundControlPointFileName" name="groundControlPointFileName" type="input"
+              class="form-control" placeholder="File name..." />
           </div>
 
           <div *ngIf="values.includeGroundControlPointFile">
@@ -502,7 +511,7 @@
           </button>
 
           <button *ngIf="page.index === (pages.length - 1)" type="button btn btn-primary"
-            [disabled]="!isPageValid(page) || disabled" class="btn btn-primary" (click)="handleUpload()">
+            [disabled]="myForm.invalid || !isPageValid(page) || disabled" class="btn btn-primary" (click)="handleUpload()">
             <i class="icon-upload icon-white"></i>
             Upload
           </button>
@@ -511,4 +520,4 @@
     </div>
   </div>
 
-</div>
+</form>
