@@ -65,6 +65,11 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         this.onConfirm = new Subject();
     }
 
+    isValid(): boolean {
+        return this.config.processPtcloud || this.config.processDem || this.config.processOrtho;
+    }
+
+
     ngOnDestroy(): void {
         this.onConfirm.unsubscribe();
     }

@@ -466,6 +466,11 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
+  public String getBoundingBoxInternal()
+  {
+    return super.getBoundingBox();
+  }
+
   @Override
   public String getBoundingBox()
   {
