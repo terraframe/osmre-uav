@@ -1,107 +1,115 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing.report;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueuedCollectionReportProcessor implements Runnable, CollectionReportProcessor
+public class QueuedCollectionReportProcessor implements CollectionReportProcessor
 {
-  public static final Logger logger = LoggerFactory.getLogger(QueuedCollectionReportProcessor.class);
-  
-  private static Thread   workerThread;
-  
-  private static Queue<CollectionReportTask> queue = new ArrayDeque<CollectionReportTask>(1000);
+  private static final Logger                 logger = LoggerFactory.getLogger(QueuedCollectionReportProcessor.class);
 
-  private static Boolean  runThread = true;
-  
-  private static QueuedCollectionReportProcessor INSTANCE;
-  
-  public synchronized static QueuedCollectionReportProcessor getInstance()
+  private ExecutorService                     executor;
+
+  private ExecutorService                     scheduler;
+
+  private BlockingQueue<CollectionReportTask> queue;
+
+  public QueuedCollectionReportProcessor()
   {
-    if (INSTANCE == null)
+    this.scheduler = Executors.newFixedThreadPool(1, new ThreadFactory()
     {
-      INSTANCE = new QueuedCollectionReportProcessor();
-      
-      startup();
-    }
-    
-    return INSTANCE;
-  }
+      @Override
+      public Thread newThread(Runnable r)
+      {
+        Thread thread = Executors.defaultThreadFactory().newThread(r);
+        thread.setName("report-queue");
+        thread.setDaemon(true);
 
-  public synchronized static void startup()
-  {
-    if (workerThread != null)
-    {
-      return;
-    }
+        return thread;
+      }
+    });
+    this.executor = Executors.newFixedThreadPool(1);
+    this.queue = new ArrayBlockingQueue<CollectionReportTask>(1000);
 
-    workerThread = new Thread(INSTANCE, "QueuedCollectionReportProcessor");
-    workerThread.setDaemon(false);
-    workerThread.start();
+    this.scheduler.execute(() -> {
+      while (true)
+      {
+        try
+        {
+          CollectionReportTask task = queue.take();
+
+          executor.execute(task);
+        }
+        catch (Throwable e)
+        {
+          logger.error("Error processing the report task", e);
+        }
+      }
+    });
 
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
     {
       @Override
       public void run()
       {
-        runThread = false;
+        QueuedCollectionReportProcessor.this.shutdown();
       }
-    }, "QueuedCollectionReportProcessor"));
-  }
-  
-  public static void shutdown()
-  {
-    runThread = false;
+    }, "report-processor-shutdown"));
   }
 
   @Override
   public void process(CollectionReportTask task)
   {
-    queue.offer(task);
+    this.queue.offer(task);
   }
 
-  public void run()
+  @Override
+  public void shutdown()
   {
-    while (runThread)
+    executor.shutdown(); // Disable new tasks from being submitted
+    try
     {
-      try
+      // Wait a while for existing tasks to terminate
+      if (!executor.awaitTermination(60, TimeUnit.SECONDS))
       {
-        Thread.sleep(1000);
-        
-        CollectionReportTask crt = queue.poll();
-        
-        if (crt != null)
+        // Cancel currently executing tasks
+        executor.shutdownNow();
+
+        // Wait a while for tasks to respond to being cancelled
+        if (!executor.awaitTermination(60, TimeUnit.SECONDS))
         {
-          crt.run();
+          System.err.println("Pool did not terminate");
         }
       }
-      catch (InterruptedException ex)
-      {
-        Thread.currentThread().interrupt();
-        return;
-      }
-      catch (Exception e)
-      {
-        String errMsg = e.getMessage();
-        logger.error(errMsg, e);
-      }
+    }
+    catch (InterruptedException ie)
+    {
+      // (Re-)Cancel if current thread also interrupted
+      executor.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
     }
   }
+
 }

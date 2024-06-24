@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
-import com.runwaysdk.dataaccess.cache.ObjectCache;
 import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -22,8 +21,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.processing.report.QueuedCollectionReportProcessor;
+import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 
@@ -58,7 +56,7 @@ public class MultipleProductPatch implements Runnable
         }
         finally
         {
-          QueuedCollectionReportProcessor.shutdown();
+          CollectionReportFacade.shutdown();
         }
       }
       finally
