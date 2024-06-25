@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -288,6 +288,19 @@ public class Platform extends PlatformBase implements JSONSerializable
 
   public static JSONArray getAll()
   {
+    List<Platform> results = getAllPlatforms();
+
+    return results.stream().map(w -> {
+      JSONObject obj = new JSONObject();
+      obj.put(Platform.OID, w.getOid());
+      obj.put(Platform.NAME, w.getName());
+
+      return obj;
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+  }
+
+  public static List<Platform> getAllPlatforms()
+  {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Platform.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Platform.NAME);
 
@@ -297,15 +310,7 @@ public class Platform extends PlatformBase implements JSONSerializable
 
     final GraphQuery<Platform> query = new GraphQuery<Platform>(statement.toString());
 
-    List<Platform> results = query.getResults();
-
-    return results.stream().map(w -> {
-      JSONObject obj = new JSONObject();
-      obj.put(Platform.OID, w.getOid());
-      obj.put(Platform.NAME, w.getName());
-
-      return obj;
-    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+    return query.getResults();
   }
 
   public static boolean isPlatformTypeReferenced(PlatformType type)
