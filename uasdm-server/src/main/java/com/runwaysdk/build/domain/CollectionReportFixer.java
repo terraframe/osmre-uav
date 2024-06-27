@@ -29,6 +29,7 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 
@@ -69,6 +70,10 @@ public class CollectionReportFixer implements Runnable
       if (reports.size() == 0)
       {
         CollectionReport.create(col);
+      }
+      else
+      {
+        CollectionReport.update(col, (DocumentIF) null);
       }
 
       CollectionReport.updateSize(col);

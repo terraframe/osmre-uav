@@ -314,13 +314,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   @Transaction
   public static void update(gov.geoplatform.uasdm.graph.Collection collection)
   {
-    List<DocumentIF> documents = collection.getDocuments();
-    List<DocumentIF> rawDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.RAW + "/")).collect(Collectors.toList());
-    List<DocumentIF> videoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.VIDEO + "/")).collect(Collectors.toList());
-    List<DocumentIF> orthoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.ORTHO + "/")).collect(Collectors.toList());
-    List<DocumentIF> pointCloudDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.PTCLOUD + "/")).collect(Collectors.toList());
-    List<DocumentIF> demDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.DEM + "/")).collect(Collectors.toList());
-
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
 
@@ -336,11 +329,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
           report.setCollectionName(collection.getName());
           report.setCollectionDate(collection.getCollectionDate());
           report.setErosMetadataComplete(collection.getMetadataUploaded());
-          report.setRawImagesCount(rawDocuments.size());
-          report.setVideo(videoDocuments.size() > 0);
-          report.setOrthomosaic(orthoDocuments.size() > 0);
-          report.setPointCloud(pointCloudDocuments.size() > 0);
-          report.setHillshade(demDocuments.size() > 0);
           report.apply();
         }
         finally
