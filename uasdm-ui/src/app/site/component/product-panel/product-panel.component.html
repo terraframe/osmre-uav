@@ -93,7 +93,7 @@
                             </a>
                         </div>
 
-                        <div class="col-sm-4" *ngIf="!view.product.locked && !view.product.published">
+                        <div class="col-sm-4" *ngIf="view.product.removable && !view.product.locked && !view.product.published">
                             <a class="fa fa-trash-alt product-icon" (click)="handleDelete(view, $event)"
                                 title="Deletes the product and all associated data and public map services.">Delete</a>
                         </div>

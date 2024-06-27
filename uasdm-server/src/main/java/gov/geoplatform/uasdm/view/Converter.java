@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -44,6 +44,7 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -57,6 +58,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 
@@ -397,7 +399,9 @@ public abstract class Converter
       list.add(Converter.toSiteItem(component, false));
     }
 
-    final String s3Loc = components.size() > 0 ? components.get(components.size() - 1).getS3location() : "";
+    UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
+
+    final String s3Loc = component != null ? component.getS3location() : "";
     boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
@@ -410,6 +414,17 @@ public abstract class Converter
     view.setPublished(product.isPublished());
     view.setLocked(product.isLocked());
     view.setPrimary(product.isPrimary());
+
+    final SessionIF session = Session.getCurrentSession();
+
+    if (session != null && ( session.userHasRole(RoleConstants.ADMIN) || component != null && component.getOwnerOid().equals(session.getUser().getOid()) ))
+    {
+      view.setRemovable(true);
+    }
+    else
+    {
+      view.setRemovable(false);
+    }
 
     List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
     view.setMappables(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));

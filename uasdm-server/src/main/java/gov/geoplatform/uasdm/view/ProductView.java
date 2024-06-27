@@ -61,6 +61,8 @@ public class ProductView
 
   private List<DocumentView> mappables;
 
+  private boolean            removable;
+
   public String getPublicStacUrl()
   {
     return publicStacUrl;
@@ -90,22 +92,22 @@ public class ProductView
   {
     this.name = name;
   }
-  
+
   public String getProductName()
   {
     return productName;
   }
-  
+
   public void setProductName(String productName)
   {
     this.productName = productName;
   }
-  
+
   public boolean isPrimary()
   {
     return primary;
   }
-  
+
   public void setPrimary(boolean primary)
   {
     this.primary = primary;
@@ -210,6 +212,16 @@ public class ProductView
   {
     this.locked = locked;
   }
+  
+  public boolean isRemovable()
+  {
+    return removable;
+  }
+  
+  public void setRemovable(boolean removable)
+  {
+    this.removable = removable;
+  }
 
   public JSONObject toJSON()
   {
@@ -221,6 +233,7 @@ public class ProductView
     object.put("published", this.published);
     object.put("locked", this.locked);
     object.put("primary", this.primary);
+    object.put("removable", this.removable);
 
     if (published)
     {

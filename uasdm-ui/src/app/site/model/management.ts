@@ -331,6 +331,7 @@ export class Product {
 	publicStacUrl?: string;
 	locked?: boolean
 	primary?: boolean;
+	removable?: boolean;
 }
 
 

@@ -49,6 +49,8 @@ public interface UasComponentIF extends ComponentIF
 
   public String getOid();
 
+  public String getOwnerOid();
+
   public String getName();
 
   public void setName(String name);
@@ -142,4 +144,5 @@ public interface UasComponentIF extends ComponentIF
   public Optional<ProductIF> getProduct(String productName);
 
   void removeProduct(String productName);
+
 }
