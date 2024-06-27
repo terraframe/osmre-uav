@@ -37,7 +37,7 @@
 							(input)="handleInput(dt, $event.target, col, 'equals')">
 						<p-dropdown *ngSwitchCase="'BOOLEAN'" appendTo="body" [options]="booleanOptions"
 							placeholder="Filter by category..."
-							(onChange)="handleInput(dt, $event.target, col, 'equals')" optionLabel="label"
+							(onChange)="handleInput(dt, $event, col, 'equals')" optionLabel="label"
 							optionValue="value" [virtualScroll]="true"></p-dropdown>
 					</ng-container>
 				</th>
