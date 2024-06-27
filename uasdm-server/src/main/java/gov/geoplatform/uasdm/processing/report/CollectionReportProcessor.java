@@ -20,4 +20,6 @@ public interface CollectionReportProcessor
   public void process(CollectionReportTask task);
 
   public void shutdown();
+
+  public void finish();
 }

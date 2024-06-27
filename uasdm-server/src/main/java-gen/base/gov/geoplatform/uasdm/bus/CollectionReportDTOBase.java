@@ -1,26 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 946101766)
+@com.runwaysdk.business.ClassSignature(hash = -605667806)
 public abstract class CollectionReportDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.CollectionReport";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 946101766;
+  private static final long serialVersionUID = -605667806;
   
   protected CollectionReportDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -60,24 +45,18 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String EXISTS = "exists";
   public static java.lang.String FAAIDNUMBER = "faaIdNumber";
   public static java.lang.String GEOMETRY = "geometry";
-  public static java.lang.String HILLSHADE = "hillshade";
   public static java.lang.String KEYNAME = "keyName";
   public static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public static java.lang.String LOCKEDBY = "lockedBy";
   public static java.lang.String MISSION = "mission";
   public static java.lang.String MISSIONNAME = "missionName";
-  public static java.lang.String ODMPROCESSING = "odmProcessing";
+  public static java.lang.String NUMBEROFPRODUCTS = "numberOfProducts";
   public static java.lang.String OID = "oid";
   public static java.lang.String ORGANIZATION = "organization";
-  public static java.lang.String ORTHOMOSAIC = "orthomosaic";
   public static java.lang.String OWNER = "owner";
   public static java.lang.String PLATFORM = "platform";
   public static java.lang.String PLATFORMNAME = "platformName";
-  public static java.lang.String POINTCLOUD = "pointCloud";
-  public static java.lang.String PRODUCT = "product";
-  public static java.lang.String PRODUCTSLINK = "productsLink";
-  public static java.lang.String PRODUCTSSHARED = "productsShared";
   public static java.lang.String PROJECT = "project";
   public static java.lang.String PROJECTNAME = "projectName";
   public static java.lang.String RAWIMAGESCOUNT = "rawImagesCount";
@@ -709,43 +688,6 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.gis.transport.metadata.AttributePointMdDTO) getAttributeDTO(GEOMETRY).getAttributeMdDTO();
   }
   
-  public Boolean getHillshade()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(HILLSHADE));
-  }
-  
-  public void setHillshade(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(HILLSHADE, "");
-    }
-    else
-    {
-      setValue(HILLSHADE, java.lang.Boolean.toString(value));
-    }
-  }
-  
-  public boolean isHillshadeWritable()
-  {
-    return isWritable(HILLSHADE);
-  }
-  
-  public boolean isHillshadeReadable()
-  {
-    return isReadable(HILLSHADE);
-  }
-  
-  public boolean isHillshadeModified()
-  {
-    return isModified(HILLSHADE);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getHillshadeMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(HILLSHADE).getAttributeMdDTO();
-  }
-  
   public String getKeyName()
   {
     return getValue(KEYNAME);
@@ -919,41 +861,41 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(MISSIONNAME).getAttributeMdDTO();
   }
   
-  public String getOdmProcessing()
+  public Integer getNumberOfProducts()
   {
-    return getValue(ODMPROCESSING);
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(NUMBEROFPRODUCTS));
   }
   
-  public void setOdmProcessing(String value)
+  public void setNumberOfProducts(Integer value)
   {
     if(value == null)
     {
-      setValue(ODMPROCESSING, "");
+      setValue(NUMBEROFPRODUCTS, "");
     }
     else
     {
-      setValue(ODMPROCESSING, value);
+      setValue(NUMBEROFPRODUCTS, java.lang.Integer.toString(value));
     }
   }
   
-  public boolean isOdmProcessingWritable()
+  public boolean isNumberOfProductsWritable()
   {
-    return isWritable(ODMPROCESSING);
+    return isWritable(NUMBEROFPRODUCTS);
   }
   
-  public boolean isOdmProcessingReadable()
+  public boolean isNumberOfProductsReadable()
   {
-    return isReadable(ODMPROCESSING);
+    return isReadable(NUMBEROFPRODUCTS);
   }
   
-  public boolean isOdmProcessingModified()
+  public boolean isNumberOfProductsModified()
   {
-    return isModified(ODMPROCESSING);
+    return isModified(NUMBEROFPRODUCTS);
   }
   
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getOdmProcessingMd()
+  public final com.runwaysdk.transport.metadata.AttributeNumberMdDTO getNumberOfProductsMd()
   {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(ODMPROCESSING).getAttributeMdDTO();
+    return (com.runwaysdk.transport.metadata.AttributeNumberMdDTO) getAttributeDTO(NUMBEROFPRODUCTS).getAttributeMdDTO();
   }
   
   public boolean isOrganizationWritable()
@@ -969,43 +911,6 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public boolean isOrganizationModified()
   {
     return isModified(ORGANIZATION);
-  }
-  
-  public Boolean getOrthomosaic()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(ORTHOMOSAIC));
-  }
-  
-  public void setOrthomosaic(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(ORTHOMOSAIC, "");
-    }
-    else
-    {
-      setValue(ORTHOMOSAIC, java.lang.Boolean.toString(value));
-    }
-  }
-  
-  public boolean isOrthomosaicWritable()
-  {
-    return isWritable(ORTHOMOSAIC);
-  }
-  
-  public boolean isOrthomosaicReadable()
-  {
-    return isReadable(ORTHOMOSAIC);
-  }
-  
-  public boolean isOrthomosaicModified()
-  {
-    return isModified(ORTHOMOSAIC);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getOrthomosaicMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(ORTHOMOSAIC).getAttributeMdDTO();
   }
   
   public com.runwaysdk.system.ActorDTO getOwner()
@@ -1092,117 +997,6 @@ public abstract class CollectionReportDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getPlatformNameMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PLATFORMNAME).getAttributeMdDTO();
-  }
-  
-  public Boolean getPointCloud()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(POINTCLOUD));
-  }
-  
-  public void setPointCloud(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(POINTCLOUD, "");
-    }
-    else
-    {
-      setValue(POINTCLOUD, java.lang.Boolean.toString(value));
-    }
-  }
-  
-  public boolean isPointCloudWritable()
-  {
-    return isWritable(POINTCLOUD);
-  }
-  
-  public boolean isPointCloudReadable()
-  {
-    return isReadable(POINTCLOUD);
-  }
-  
-  public boolean isPointCloudModified()
-  {
-    return isModified(POINTCLOUD);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getPointCloudMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(POINTCLOUD).getAttributeMdDTO();
-  }
-  
-  public String getProductsLink()
-  {
-    return getValue(PRODUCTSLINK);
-  }
-  
-  public void setProductsLink(String value)
-  {
-    if(value == null)
-    {
-      setValue(PRODUCTSLINK, "");
-    }
-    else
-    {
-      setValue(PRODUCTSLINK, value);
-    }
-  }
-  
-  public boolean isProductsLinkWritable()
-  {
-    return isWritable(PRODUCTSLINK);
-  }
-  
-  public boolean isProductsLinkReadable()
-  {
-    return isReadable(PRODUCTSLINK);
-  }
-  
-  public boolean isProductsLinkModified()
-  {
-    return isModified(PRODUCTSLINK);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getProductsLinkMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PRODUCTSLINK).getAttributeMdDTO();
-  }
-  
-  public Boolean getProductsShared()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PRODUCTSSHARED));
-  }
-  
-  public void setProductsShared(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(PRODUCTSSHARED, "");
-    }
-    else
-    {
-      setValue(PRODUCTSSHARED, java.lang.Boolean.toString(value));
-    }
-  }
-  
-  public boolean isProductsSharedWritable()
-  {
-    return isWritable(PRODUCTSSHARED);
-  }
-  
-  public boolean isProductsSharedReadable()
-  {
-    return isReadable(PRODUCTSSHARED);
-  }
-  
-  public boolean isProductsSharedModified()
-  {
-    return isModified(PRODUCTSSHARED);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeBooleanMdDTO getProductsSharedMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeBooleanMdDTO) getAttributeDTO(PRODUCTSSHARED).getAttributeMdDTO();
   }
   
   public String getProjectName()

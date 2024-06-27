@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -89,51 +89,14 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     object.put(CollectionReport.SENSORNAME, this.getSensorName());
     object.put(CollectionReport.FAAIDNUMBER, this.getFaaIdNumber());
     object.put(CollectionReport.SERIALNUMBER, this.getSerialNumber());
-    object.put(CollectionReport.ODMPROCESSING, this.getOdmProcessing());
     object.put(CollectionReport.EROSMETADATACOMPLETE, this.getErosMetadataComplete());
     object.put(CollectionReport.RAWIMAGESCOUNT, this.getRawImagesCount());
     object.put(CollectionReport.VIDEO, this.getVideo());
-    object.put(CollectionReport.ORTHOMOSAIC, this.getOrthomosaic());
-    object.put(CollectionReport.POINTCLOUD, this.getPointCloud());
-    object.put(CollectionReport.HILLSHADE, this.getHillshade());
-    object.put(CollectionReport.PRODUCTSSHARED, this.getProductsShared());
-    object.put(CollectionReport.PRODUCT, this.getValue(PRODUCT));
     object.put(CollectionReport.EXISTS, this.getExists());
     object.put(CollectionReport.DOWNLOADCOUNTS, this.getDownloadCounts());
+    object.put(CollectionReport.NUMBEROFPRODUCTS, this.getNumberOfProducts());
     object.put(CollectionReport.DELETEDATE, Util.formatIso8601(this.getDeleteDate(), false));
     object.put(CollectionReport.CREATEDATE, Util.formatIso8601(this.getCreateDate(), false));
-
-    if (this.getValue(PRODUCT) != null)
-    {
-      Product product = Product.get(this.getValue(PRODUCT));
-      if (product != null)
-      {
-        List<DocumentIF> mappables = product.getMappableDocuments();
-
-        if (mappables.size() > 0)
-        {
-          JSONArray availableServices = new JSONArray();
-          for (DocumentIF mappable : mappables)
-          {
-            String sUrl;
-
-            try
-            {
-              sUrl = "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
-            }
-            catch (UnsupportedEncodingException e)
-            {
-              throw new ProgrammingErrorException(e);
-            }
-
-            availableServices.put(sUrl);
-          }
-
-          object.put("productURLs", availableServices);
-
-        }
-      }
-    }
 
     Long storageSize = this.getAllStorageSize();
 
@@ -184,8 +147,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     report.setCollectionDate(collection.getCollectionDate());
     report.setCollectionName(collection.getName());
     report.setErosMetadataComplete(collection.getMetadataUploaded());
-    report.setProductsShared(false);
-    report.setOdmProcessing("not requested");
     report.setAllStorageSize(0L);
     report.setExists(true);
     report.setDownloadCounts(0L);
@@ -243,45 +204,12 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
     if (collection != null)
     {
-      List<Product> products = collection.getProducts();
-
-      if (products.size() > 0)
-      {
-        Product product = products.get(0);
-
-        report.setProduct(product);
-        report.setProductsShared(product.getPublished());
-        report.setOdmProcessing(ODMStatus.COMPLETED.getLabel());
-      }
-      else
-      {
-        report.setProductsShared(false);
-
-        List<AbstractWorkflowTask> tasks = collection.getTasks();
-        long count = tasks.stream().filter(t -> ( tasks instanceof ODMProcessingTask )).count();
-
-        if (count > 0)
-        {
-          report.setOdmProcessing(ODMStatus.FAILED.getLabel());
-        }
-        else
-        {
-          report.setOdmProcessing("not requested");
-        }
-      }
-
       List<DocumentIF> documents = collection.getDocuments();
       List<DocumentIF> rawDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.RAW + "/")).collect(Collectors.toList());
       List<DocumentIF> videoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.VIDEO + "/")).collect(Collectors.toList());
-      List<DocumentIF> orthoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.ORTHO + "/")).collect(Collectors.toList());
-      List<DocumentIF> pointCloudDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.PTCLOUD + "/")).collect(Collectors.toList());
-      List<DocumentIF> demDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.DEM + "/")).collect(Collectors.toList());
 
       report.setRawImagesCount(rawDocuments.size());
       report.setVideo(videoDocuments.size() > 0);
-      report.setOrthomosaic(orthoDocuments.size() > 0);
-      report.setPointCloud(pointCloudDocuments.size() > 0);
-      report.setHillshade(demDocuments.size() > 0);
     }
 
     report.apply();
@@ -513,9 +441,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     List<DocumentIF> documents = collection.getDocuments();
     List<DocumentIF> rawDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.RAW + "/")).collect(Collectors.toList());
     List<DocumentIF> videoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.VIDEO + "/")).collect(Collectors.toList());
-    List<DocumentIF> orthoDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.ORTHO + "/")).collect(Collectors.toList());
-    List<DocumentIF> pointCloudDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.PTCLOUD + "/")).collect(Collectors.toList());
-    List<DocumentIF> demDocuments = documents.stream().filter(d -> d.getS3location().contains("/" + Collection.DEM + "/")).collect(Collectors.toList());
 
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
@@ -531,9 +456,6 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
           report.appLock();
           report.setRawImagesCount(rawDocuments.size());
           report.setVideo(videoDocuments.size() > 0);
-          report.setOrthomosaic(orthoDocuments.size() > 0);
-          report.setPointCloud(pointCloudDocuments.size() > 0);
-          report.setHillshade(demDocuments.size() > 0);
           report.apply();
         }
         finally
@@ -545,38 +467,13 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void update(String component, String status)
-  {
-    if (component != null && component.length() > 0)
-    {
-      CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
-      query.WHERE(query.getCollection().EQ(component));
-
-      try (OIterator<? extends CollectionReport> iterator = query.getIterator())
-      {
-        while (iterator.hasNext())
-        {
-          CollectionReport report = iterator.next();
-          try
-          {
-            report.appLock();
-            report.setOdmProcessing(status);
-            report.apply();
-          }
-          finally
-          {
-            report.releaseAppLock();
-          }
-        }
-      }
-    }
-  }
-
-  @Transaction
   public static void update(Product product)
   {
-    UasComponent component = product.getComponent();
+    updateProductCount(product.getComponent());
+  }
 
+  private static void updateProductCount(UasComponent component)
+  {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(component.getOid()));
 
@@ -588,9 +485,10 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
         try
         {
+          Integer numberOfProducts = component.getNumberOfProducts();
+
           report.appLock();
-          report.setProductsShared(product.getPublished());
-          report.setProduct(product);
+          report.setNumberOfProducts(numberOfProducts);
           report.apply();
         }
         finally
@@ -744,30 +642,9 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
   }
 
   @Transaction
-  public static void handleDelete(Product product)
+  public static void handleDeleteProduct(UasComponent uasComponent)
   {
-    CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
-    query.WHERE(query.getProduct().EQ(product.getOid()));
-
-    try (OIterator<? extends CollectionReport> iterator = query.getIterator())
-    {
-      while (iterator.hasNext())
-      {
-        CollectionReport report = iterator.next();
-
-        try
-        {
-          report.appLock();
-          report.setProductsShared(false);
-          report.setProduct(null);
-          report.apply();
-        }
-        finally
-        {
-          report.releaseAppLock();
-        }
-      }
-    }
+    updateProductCount(uasComponent);
   }
 
   @Transaction
@@ -964,16 +841,12 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
             headers.add("Sensor");
             headers.add("FAA Id Number");
             headers.add("Serial Number");
-            headers.add("ODM Processing");
             headers.add("RAW Images Count");
             headers.add("EROS Metadata Complete");
             headers.add("Video");
-            headers.add("Orthomosaic");
-            headers.add("Point Cloud");
-            headers.add("Hillshade");
-            headers.add("Products Shared");
             headers.add("Storage size");
             headers.add("Number of Downloads");
+            headers.add("Number of Products");
             headers.add("Date of Creation");
             headers.add("Date of Delete");
 
@@ -1011,16 +884,12 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
                 line.add(row.getSensorName());
                 line.add(row.getFaaIdNumber());
                 line.add(row.getSerialNumber());
-                line.add(row.getOdmProcessing());
                 line.add(row.getRawImagesCount().toString());
                 line.add(row.getErosMetadataComplete().toString());
                 line.add(row.getVideo().toString());
-                line.add(row.getOrthomosaic().toString());
-                line.add(row.getPointCloud().toString());
-                line.add(row.getHillshade().toString());
-                line.add(row.getProductsShared().toString());
                 line.add(row.getAllStorageSize().toString());
                 line.add(row.getDownloadCounts().toString());
+                line.add(row.getNumberOfProducts().toString());
                 line.add(Util.formatIso8601(row.getCreateDate(), false));
                 line.add(Util.formatIso8601(row.getDeleteDate(), false));
 

@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1441874769)
+@com.runwaysdk.business.ClassSignature(hash = -1060856039)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -366,23 +351,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableGeometry)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableBoolean getHillshade()
-  {
-    return getHillshade(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableChar getKeyName()
   {
     return getKeyName(null);
@@ -497,21 +465,21 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.MISSIONNAME, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getOdmProcessing()
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts()
   {
-    return getOdmProcessing(null);
+    return getNumberOfProducts(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getOid()
@@ -552,23 +520,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     com.runwaysdk.dataaccess.MdAttributeDAOIF mdAttributeIF = this.getComponentQuery().getMdAttributeROfromMap(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION);
 
     return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION, mdAttributeIF, this, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
-  {
-    return getOrthomosaic(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, displayLabel);
 
   }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
@@ -626,74 +577,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getPlatformName(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PLATFORMNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getPointCloud()
-  {
-    return getPointCloud(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableUUID getProduct()
-  {
-    return getProduct(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getProductsLink()
-  {
-    return getProductsLink(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getProductsShared()
-  {
-    return getProductsShared(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getProject()
@@ -1077,9 +960,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableGeometry getGeometry();
     public com.runwaysdk.query.SelectableGeometry getGeometry(String alias);
     public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getHillshade();
-    public com.runwaysdk.query.SelectableBoolean getHillshade(String alias);
-    public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -1098,18 +978,15 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableChar getMissionName();
     public com.runwaysdk.query.SelectableChar getMissionName(String alias);
     public com.runwaysdk.query.SelectableChar getMissionName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getOdmProcessing();
-    public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias);
-    public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts();
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias);
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization();
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias);
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic();
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias);
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
@@ -1119,18 +996,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableChar getPlatformName();
     public com.runwaysdk.query.SelectableChar getPlatformName(String alias);
     public com.runwaysdk.query.SelectableChar getPlatformName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getPointCloud();
-    public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias);
-    public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableUUID getProduct();
-    public com.runwaysdk.query.SelectableUUID getProduct(String alias);
-    public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getProductsLink();
-    public com.runwaysdk.query.SelectableChar getProductsLink(String alias);
-    public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getProductsShared();
-    public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias);
-    public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getProject();
     public com.runwaysdk.query.SelectableUUID getProject(String alias);
     public com.runwaysdk.query.SelectableUUID getProject(String alias, String displayLabel);
@@ -1500,23 +1365,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableBoolean getHillshade()
-  {
-    return getHillshade(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableChar getKeyName()
   {
     return getKeyName(null);
@@ -1619,21 +1467,21 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.MISSIONNAME, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getOdmProcessing()
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts()
   {
-    return getOdmProcessing(null);
+    return getNumberOfProducts(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getOid()
@@ -1668,23 +1516,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel)
   {
     return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION,  alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
-  {
-    return getOrthomosaic(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, displayLabel);
 
   }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
@@ -1736,74 +1567,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getPlatformName(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PLATFORMNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getPointCloud()
-  {
-    return getPointCloud(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableUUID getProduct()
-  {
-    return getProduct(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getProductsLink()
-  {
-    return getProductsLink(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getProductsShared()
-  {
-    return getProductsShared(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getProject()
@@ -2164,9 +1927,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableGeometry getGeometry();
     public com.runwaysdk.query.SelectableGeometry getGeometry(String alias);
     public com.runwaysdk.query.SelectableGeometry getGeometry(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getHillshade();
-    public com.runwaysdk.query.SelectableBoolean getHillshade(String alias);
-    public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getKeyName();
     public com.runwaysdk.query.SelectableChar getKeyName(String alias);
     public com.runwaysdk.query.SelectableChar getKeyName(String alias, String displayLabel);
@@ -2185,18 +1945,15 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableChar getMissionName();
     public com.runwaysdk.query.SelectableChar getMissionName(String alias);
     public com.runwaysdk.query.SelectableChar getMissionName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getOdmProcessing();
-    public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias);
-    public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts();
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias);
+    public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getOid();
     public com.runwaysdk.query.SelectableUUID getOid(String alias);
     public com.runwaysdk.query.SelectableUUID getOid(String alias, String displayLabel);
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization();
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias);
     public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic();
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias);
-    public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
@@ -2206,18 +1963,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.query.SelectableChar getPlatformName();
     public com.runwaysdk.query.SelectableChar getPlatformName(String alias);
     public com.runwaysdk.query.SelectableChar getPlatformName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getPointCloud();
-    public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias);
-    public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableUUID getProduct();
-    public com.runwaysdk.query.SelectableUUID getProduct(String alias);
-    public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getProductsLink();
-    public com.runwaysdk.query.SelectableChar getProductsLink(String alias);
-    public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableBoolean getProductsShared();
-    public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias);
-    public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getProject();
     public com.runwaysdk.query.SelectableUUID getProject(String alias);
     public com.runwaysdk.query.SelectableUUID getProject(String alias, String displayLabel);
@@ -2636,23 +2381,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableGeometry)this.get(gov.geoplatform.uasdm.bus.CollectionReport.GEOMETRY, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableBoolean getHillshade()
-  {
-    return getHillshade(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getHillshade(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.HILLSHADE, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableChar getKeyName()
   {
     return getKeyName(null);
@@ -2755,21 +2483,21 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.MISSIONNAME, alias, displayLabel);
 
   }
-  public com.runwaysdk.query.SelectableChar getOdmProcessing()
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts()
   {
-    return getOdmProcessing(null);
+    return getNumberOfProducts(null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, null);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, null);
 
   }
  
-  public com.runwaysdk.query.SelectableChar getOdmProcessing(String alias, String displayLabel)
+  public com.runwaysdk.query.SelectableInteger getNumberOfProducts(String alias, String displayLabel)
   {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ODMPROCESSING, alias, displayLabel);
+    return (com.runwaysdk.query.SelectableInteger)this.get(gov.geoplatform.uasdm.bus.CollectionReport.NUMBEROFPRODUCTS, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getOid()
@@ -2804,23 +2532,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF getOrganization(String alias, String displayLabel)
   {
     return (net.geoprism.registry.OrganizationQuery.OrganizationQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORGANIZATION,  alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic()
-  {
-    return getOrthomosaic(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getOrthomosaic(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.ORTHOMOSAIC, alias, displayLabel);
 
   }
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner()
@@ -2872,74 +2583,6 @@ public  class CollectionReportQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.query.SelectableChar getPlatformName(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PLATFORMNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getPointCloud()
-  {
-    return getPointCloud(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getPointCloud(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.POINTCLOUD, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableUUID getProduct()
-  {
-    return getProduct(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableUUID getProduct(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCT, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getProductsLink()
-  {
-    return getProductsLink(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getProductsLink(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSLINK, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableBoolean getProductsShared()
-  {
-    return getProductsShared(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableBoolean getProductsShared(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableBoolean)this.get(gov.geoplatform.uasdm.bus.CollectionReport.PRODUCTSSHARED, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableUUID getProject()

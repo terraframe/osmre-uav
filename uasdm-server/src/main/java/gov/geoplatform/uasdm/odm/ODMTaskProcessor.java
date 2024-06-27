@@ -142,8 +142,6 @@ public class ODMTaskProcessor
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
       this.sendEmail(uploadTask);
-
-      CollectionReportFacade.update(uploadTask.getImageryComponent().getOid(), ODMStatus.COMPLETED.getLabel()).doIt();
     }
     catch (Throwable t)
     {
@@ -157,8 +155,6 @@ public class ODMTaskProcessor
       uploadTask.apply();
 
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-
-      CollectionReportFacade.update(uploadTask.getImageryComponent().getOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
   }
 
@@ -255,8 +251,6 @@ public class ODMTaskProcessor
         result.setStatus(TaskStatus.ERROR);
 
         sendEmail(task);
-
-        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (resp.hasError())
       {
@@ -268,8 +262,6 @@ public class ODMTaskProcessor
         result.setStatus(TaskStatus.ERROR);
 
         sendEmail(task);
-
-        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -280,8 +272,6 @@ public class ODMTaskProcessor
         task.apply();
 
         result.setStatus(TaskStatus.ERROR);
-
-        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else
       {
@@ -299,8 +289,6 @@ public class ODMTaskProcessor
           sendEmail(task);
 
           removeFromOdm(task, task.getOdmUUID());
-
-          CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
         }
         else if (ODMStatus.FAILED.equals(respStatus))
         {
@@ -315,8 +303,6 @@ public class ODMTaskProcessor
           sendEmail(task);
 
           removeFromOdm(task, task.getOdmUUID());
-
-          CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
         }
         else if (ODMStatus.RUNNING.equals(respStatus))
         {
@@ -405,8 +391,6 @@ public class ODMTaskProcessor
       task.apply();
 
       result.setStatus(TaskStatus.ERROR);
-
-      CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
 
     return result;

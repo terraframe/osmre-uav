@@ -71,19 +71,12 @@ public class CollectionReportFixer implements Runnable
       {
         CollectionReport.create(col);
       }
-      else
-      {
-        CollectionReport.update(col, (DocumentIF) null);
-      }
 
       CollectionReport.updateSize(col);
 
-      Product product = Product.find(col);
-
-      if (product != null)
-      {
-        CollectionReport.update(product);
-      }
+      col.getPrimaryProduct().ifPresent(product -> {
+        CollectionReport.update((Product) product);
+      });
     });
 
     Sensor.getAll().forEach(sensor -> {

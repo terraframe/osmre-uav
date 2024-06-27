@@ -22,6 +22,7 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -31,6 +32,11 @@ import net.geoprism.account.GeoprismActorIF;
 public class CollectionReportFacade
 {
   private static CollectionReportProcessor processor = new QueuedCollectionReportProcessor();
+
+  public static void finish()
+  {
+    processor.finish();
+  }
 
   public static void shutdown()
   {
@@ -67,11 +73,6 @@ public class CollectionReportFacade
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.DOCUMENT, collection, document));
   }
 
-  public static Command update(String component, String status)
-  {
-    return new CollectionReportTaskCommand(new CollectionReportTask(Type.STATUS, component, status));
-  }
-
   public static Command update(Product product)
   {
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.PRODUCT, product));
@@ -102,9 +103,9 @@ public class CollectionReportFacade
     return new CollectionReportTaskCommand(new CollectionReportTask(Type.DELETE_UAV, uav));
   }
 
-  public static Command handleDelete(Product product)
+  public static Command handleDeleteProduct(UasComponent component)
   {
-    return new CollectionReportTaskCommand(new CollectionReportTask(Type.DELETE_PRODUCT, product));
+    return new CollectionReportTaskCommand(new CollectionReportTask(Type.DELETE_PRODUCT, component));
   }
 
   public static Command handleDelete(GeoprismActorIF actor)

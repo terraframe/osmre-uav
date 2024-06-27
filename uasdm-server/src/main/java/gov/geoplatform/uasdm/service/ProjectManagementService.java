@@ -191,8 +191,6 @@ public class ProjectManagementService
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        CollectionReportFacade.update(task.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
-
         throw t;
       }
     }

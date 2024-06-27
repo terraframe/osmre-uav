@@ -131,8 +131,6 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage(resp.getError());
         this.apply();
-
-        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else if (!resp.hasError() && resp.getHTTPResponse().isError())
       {
@@ -140,8 +138,6 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.setStatus(ODMStatus.FAILED.getLabel());
         this.setMessage("The job encountered an unspecified error. [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse() + ".");
         this.apply();
-
-        CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
       }
       else
       {
@@ -171,8 +167,6 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
-
-      CollectionReportFacade.update(this.getImageryComponentOid(), ODMStatus.FAILED.getLabel()).doIt();
     }
     finally
     {

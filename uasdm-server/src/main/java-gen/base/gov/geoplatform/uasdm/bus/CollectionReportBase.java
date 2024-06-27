@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 423350150)
+@com.runwaysdk.business.ClassSignature(hash = -1488012126)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -43,24 +28,18 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public final static java.lang.String EXISTS = "exists";
   public final static java.lang.String FAAIDNUMBER = "faaIdNumber";
   public final static java.lang.String GEOMETRY = "geometry";
-  public final static java.lang.String HILLSHADE = "hillshade";
   public final static java.lang.String KEYNAME = "keyName";
   public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public final static java.lang.String LASTUPDATEDBY = "lastUpdatedBy";
   public final static java.lang.String LOCKEDBY = "lockedBy";
   public final static java.lang.String MISSION = "mission";
   public final static java.lang.String MISSIONNAME = "missionName";
-  public final static java.lang.String ODMPROCESSING = "odmProcessing";
+  public final static java.lang.String NUMBEROFPRODUCTS = "numberOfProducts";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORGANIZATION = "organization";
-  public final static java.lang.String ORTHOMOSAIC = "orthomosaic";
   public final static java.lang.String OWNER = "owner";
   public final static java.lang.String PLATFORM = "platform";
   public final static java.lang.String PLATFORMNAME = "platformName";
-  public final static java.lang.String POINTCLOUD = "pointCloud";
-  public final static java.lang.String PRODUCT = "product";
-  public final static java.lang.String PRODUCTSLINK = "productsLink";
-  public final static java.lang.String PRODUCTSSHARED = "productsShared";
   public final static java.lang.String PROJECT = "project";
   public final static java.lang.String PROJECTNAME = "projectName";
   public final static java.lang.String RAWIMAGESCOUNT = "rawImagesCount";
@@ -77,7 +56,7 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
   public final static java.lang.String USERNAME = "userName";
   public final static java.lang.String VIDEO = "video";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 423350150;
+  private static final long serialVersionUID = -1488012126;
   
   public CollectionReportBase()
   {
@@ -620,34 +599,6 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     }
   }
   
-  public Boolean getHillshade()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(HILLSHADE));
-  }
-  
-  public void validateHillshade()
-  {
-    this.validateAttribute(HILLSHADE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getHillshadeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(HILLSHADE);
-  }
-  
-  public void setHillshade(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(HILLSHADE, "");
-    }
-    else
-    {
-      setValue(HILLSHADE, java.lang.Boolean.toString(value));
-    }
-  }
-  
   public String getKeyName()
   {
     return getValue(KEYNAME);
@@ -804,31 +755,31 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     }
   }
   
-  public String getOdmProcessing()
+  public Integer getNumberOfProducts()
   {
-    return getValue(ODMPROCESSING);
+    return com.runwaysdk.constants.MdAttributeIntegerUtil.getTypeSafeValue(getValue(NUMBEROFPRODUCTS));
   }
   
-  public void validateOdmProcessing()
+  public void validateNumberOfProducts()
   {
-    this.validateAttribute(ODMPROCESSING);
+    this.validateAttribute(NUMBEROFPRODUCTS);
   }
   
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getOdmProcessingMd()
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getNumberOfProductsMd()
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(ODMPROCESSING);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(NUMBEROFPRODUCTS);
   }
   
-  public void setOdmProcessing(String value)
+  public void setNumberOfProducts(Integer value)
   {
     if(value == null)
     {
-      setValue(ODMPROCESSING, "");
+      setValue(NUMBEROFPRODUCTS, "");
     }
     else
     {
-      setValue(ODMPROCESSING, value);
+      setValue(NUMBEROFPRODUCTS, java.lang.Integer.toString(value));
     }
   }
   
@@ -897,34 +848,6 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     else
     {
       setValue(ORGANIZATION, oid);
-    }
-  }
-  
-  public Boolean getOrthomosaic()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(ORTHOMOSAIC));
-  }
-  
-  public void validateOrthomosaic()
-  {
-    this.validateAttribute(ORTHOMOSAIC);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getOrthomosaicMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(ORTHOMOSAIC);
-  }
-  
-  public void setOrthomosaic(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(ORTHOMOSAIC, "");
-    }
-    else
-    {
-      setValue(ORTHOMOSAIC, java.lang.Boolean.toString(value));
     }
   }
   
@@ -1033,118 +956,6 @@ public abstract class CollectionReportBase extends com.runwaysdk.business.Busine
     else
     {
       setValue(PLATFORMNAME, value);
-    }
-  }
-  
-  public Boolean getPointCloud()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(POINTCLOUD));
-  }
-  
-  public void validatePointCloud()
-  {
-    this.validateAttribute(POINTCLOUD);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getPointCloudMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(POINTCLOUD);
-  }
-  
-  public void setPointCloud(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(POINTCLOUD, "");
-    }
-    else
-    {
-      setValue(POINTCLOUD, java.lang.Boolean.toString(value));
-    }
-  }
-  
-  public gov.geoplatform.uasdm.graph.Product getProduct()
-  {
-    return (gov.geoplatform.uasdm.graph.Product)com.runwaysdk.business.graph.VertexObject.get("gov.geoplatform.uasdm.graph.Product", getValue(PRODUCT));
-  }
-  
-  public void validateProduct()
-  {
-    this.validateAttribute(PRODUCT);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getProductMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(PRODUCT);
-  }
-  
-  public void setProduct(gov.geoplatform.uasdm.graph.Product value)
-  {
-    if(value == null)
-    {
-      setValue(PRODUCT, "");
-    }
-    else
-    {
-      setValue(PRODUCT, value.getOid());
-    }
-  }
-  
-  public String getProductsLink()
-  {
-    return getValue(PRODUCTSLINK);
-  }
-  
-  public void validateProductsLink()
-  {
-    this.validateAttribute(PRODUCTSLINK);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getProductsLinkMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PRODUCTSLINK);
-  }
-  
-  public void setProductsLink(String value)
-  {
-    if(value == null)
-    {
-      setValue(PRODUCTSLINK, "");
-    }
-    else
-    {
-      setValue(PRODUCTSLINK, value);
-    }
-  }
-  
-  public Boolean getProductsShared()
-  {
-    return com.runwaysdk.constants.MdAttributeBooleanUtil.getTypeSafeValue(getValue(PRODUCTSSHARED));
-  }
-  
-  public void validateProductsShared()
-  {
-    this.validateAttribute(PRODUCTSSHARED);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getProductsSharedMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.CollectionReport.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(PRODUCTSSHARED);
-  }
-  
-  public void setProductsShared(Boolean value)
-  {
-    if(value == null)
-    {
-      setValue(PRODUCTSSHARED, "");
-    }
-    else
-    {
-      setValue(PRODUCTSSHARED, java.lang.Boolean.toString(value));
     }
   }
   

@@ -184,7 +184,7 @@ public class Product extends ProductBase implements ProductIF
       document.delete(removeFromS3);
     }
 
-    CollectionReportFacade.handleDelete(this).doIt();
+    CollectionReportFacade.handleDeleteProduct(this.getComponent()).doIt();
 
     new IndexDeleteStacCommand(this).doIt();
 

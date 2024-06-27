@@ -17,6 +17,16 @@
 -->
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.orthomosaic" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.pointCloud" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.hillshade" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.productsShared" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.product" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.odmProcessing" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.productsLink" type="com.runwaysdk.system.metadata.MdAttribute" />      
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.odmProcessing" type="com.runwaysdk.system.metadata.MdAttribute" />      
+    </delete>  
     <update>
       <mdVertex name="gov.geoplatform.uasdm.graph.Product">
         <create>
@@ -33,12 +43,19 @@
           </attributes>
         </create>
       </mdBusiness>  
-       
+      <mdBusiness name="gov.geoplatform.uasdm.bus.CollectionReport">
+        <create>      
+          <attributes>
+            <integer name="numberOfProducts" required="false" label="Number of products" />
+          </attributes>
+        </create>
+      </mdBusiness>   
     </update>
   </doIt>
   <undoIt>
     <delete>
       <object key="gov.geoplatform.uasdm.bus.AbstractWorkflowTask.productName" type="com.runwaysdk.system.metadata.MdAttribute" />
+      <object key="gov.geoplatform.uasdm.bus.CollectionReport.numberOfProducts" type="com.runwaysdk.system.metadata.MdAttribute" />      
       <object key="gov.geoplatform.uasdm.graph.Product.productName" type="com.runwaysdk.system.metadata.MdAttribute" />      
       <object key="gov.geoplatform.uasdm.graph.Product.primary" type="com.runwaysdk.system.metadata.MdAttribute" />            
     </delete>

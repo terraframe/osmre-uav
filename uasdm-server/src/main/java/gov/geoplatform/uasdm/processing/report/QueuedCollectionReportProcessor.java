@@ -85,6 +85,25 @@ public class QueuedCollectionReportProcessor implements CollectionReportProcesso
   }
 
   @Override
+  public void finish()
+  {
+    while (this.queue.size() > 0)
+    {
+      try
+      {
+        Thread.sleep(100);
+      }
+      catch (InterruptedException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    this.shutdown();
+  }
+
+  @Override
   public void shutdown()
   {
     executor.shutdown(); // Disable new tasks from being submitted

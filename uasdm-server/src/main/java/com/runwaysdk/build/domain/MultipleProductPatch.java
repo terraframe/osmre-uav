@@ -56,7 +56,7 @@ public class MultipleProductPatch implements Runnable
         }
         finally
         {
-          CollectionReportFacade.shutdown();
+          CollectionReportFacade.finish();
         }
       }
       finally

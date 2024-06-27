@@ -45,36 +45,14 @@ export class ReportsComponent implements OnInit {
         { header: 'Sensor', field: 'sensorName', type: 'TEXT', sortable: true },
         { header: 'FAA Id Number', field: 'faaIdNumber', type: 'TEXT', sortable: true },
         { header: 'Serial Number', field: 'serialNumber', type: 'TEXT', sortable: true },
-        { header: 'ODM Processing', field: 'odmProcessing', type: 'TEXT', sortable: false },
         { header: 'RAW Images Count', field: 'rawImagesCount', type: 'NUMBER', sortable: false },
         { header: 'EROS Metadata Complete', field: 'erosMetadataComplete', type: 'BOOLEAN', sortable: false },
         { header: 'Video', field: 'video', type: 'BOOLEAN', sortable: false },
-        { header: 'Orthomosaic', field: 'orthomosaic', type: 'BOOLEAN', sortable: false },
-        { header: 'Point Cloud', field: 'pointCloud', type: 'BOOLEAN', sortable: false },
-        { header: 'Hillshade', field: 'hillshade', type: 'BOOLEAN', sortable: false },
-        { header: 'Products Shared', field: 'productsShared', type: 'BOOLEAN', sortable: false },
         { header: 'Storage size', field: 'allStorageSize', type: 'NUMBER', sortable: true, filter: false },
         { header: 'Number of Downloads', field: 'downloadCounts', type: 'NUMBER', sortable: true, filter: false },
+        { header: 'Number of Products', field: 'numberOfProducts', type: 'NUMBER', sortable: true, filter: false },
         { header: 'Date of Create', field: 'createDate', type: 'DATE', sortable: true, filter: false },
-        { header: 'Date of Delete', field: 'deleteDate', type: 'DATE', sortable: true, filter: false },
-        {
-            header: 'Product', field: 'product', text: 'View Product', type: 'CONSTANT', sortable: false, columnType: (row: Object) => {
-                if (row['product'] == null || row['product'].length === 0) {
-                    return 'NONE';
-                }
-
-                return 'CONSTANT';
-            }
-        },
-        {
-            header: 'Map Services', field: 'productURLs', type: 'STRING-ARRAY', sortable: false, columnType: (row: Object) => {
-                if (row['product'] == null || row['product'].length === 0) {
-                    return 'NONE';
-                }
-
-                return 'STRING-ARRAY';
-            }
-        },
+        { header: 'Date of Delete', field: 'deleteDate', type: 'DATE', sortable: true, filter: false }
     ];
 
     constructor(private service: ReportService, private pService: ProductService, private modalService: BsModalService, private authService: AuthService) {
