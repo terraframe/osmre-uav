@@ -140,6 +140,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }, {
     label: "Streets",
     id: "streets-v11"
+  }, {
+    label: "OSM",
+    id: "osm"
   }];
 
   layers: MapLayer[] = [];
@@ -217,7 +220,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Content of the location panel
   content: string = "";
-  
+
   tilesLoaded: boolean = false;
 
   activeTab: string = "";
@@ -380,9 +383,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tilesLoaded = this.map.areTilesLoaded();
       });
 
-      if(this.organization != null) {
+      if (this.organization != null) {
         this.onOrganizationChange();
-      }  
+      }
     });
   }
 
@@ -880,7 +883,36 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     layer.selected = true;
 
-    this.map.setStyle("mapbox://styles/mapbox/" + layer.id);
+    if (layer.id === 'osm') {
+      this.map.setStyle({
+        version: 8,
+        name: layer.id,
+        metadata: {
+          "mapbox:autocomposite": true
+        },
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: [
+              "https://osm.gs.mil/tiles/default/{z}/{x}/{y}.png"
+            ],
+            tileSize: 256
+          }
+        },
+        sprite: "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
+        glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+        layers: [
+          {
+            id: layer.id,
+            type: "raster",
+            source: "osm"
+          }
+        ]
+      });
+    }
+    else {
+      this.map.setStyle("mapbox://styles/mapbox/" + layer.id);
+    }
   }
 
   highlightMapFeature(id: string): void {
