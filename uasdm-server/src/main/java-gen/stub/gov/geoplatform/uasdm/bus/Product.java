@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -46,7 +46,7 @@ public class Product extends ProductBase implements ProductIF
   {
     super();
   }
-  
+
   @Override
   public String getProductName()
   {
@@ -197,19 +197,19 @@ public class Product extends ProductBase implements ProductIF
 
     if (this.getImageKey() == null || this.getMapKey() == null)
     {
-//      this.calculateKeys(components);
+      // this.calculateKeys(components);
     }
 
     if (this.getMapKey() != null && this.getMapKey().length() > 0)
     {
-//      String bbox = this.calculateBoundingBox(this.getMapKey());
-//
-//      if (bbox != null)
-//      {
-//        this.lock();
-//        this.setBoundingBox(bbox);
-//        this.apply();
-//      }
+      // String bbox = this.calculateBoundingBox(this.getMapKey());
+      //
+      // if (bbox != null)
+      // {
+      // this.lock();
+      // this.setBoundingBox(bbox);
+      // this.apply();
+      // }
     }
   }
 
@@ -227,12 +227,14 @@ public class Product extends ProductBase implements ProductIF
   }
 
   @Override
-  public boolean isLocked() {
+  public boolean isLocked()
+  {
     return false;
   }
 
   @Override
-  public void toggleLock() {
+  public void toggleLock()
+  {
 
   }
 
@@ -263,16 +265,22 @@ public class Product extends ProductBase implements ProductIF
   {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public String getS3location()
   {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public boolean isPrimary()
   {
     return false;
+  }
+
+  @Override
+  public List<DocumentIF> getMappableDocuments()
+  {
+    return null;
   }
 }

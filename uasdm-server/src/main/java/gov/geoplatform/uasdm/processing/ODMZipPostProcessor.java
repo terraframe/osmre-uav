@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -34,6 +34,7 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
@@ -102,10 +103,10 @@ public class ODMZipPostProcessor
           throw new RuntimeException("ODM did not return any results. (There was a problem unzipping ODM's results zip file)", e);
         }
 
-//        this.cleanExistingProduct();
-        
+        // this.cleanExistingProduct();
+
         this.product = (Product) this.collection.createProductIfNotExist(this.odmConfig.getProductName());
-        
+
         this.collection.setPrimaryProduct(product);
 
         this.processProduct(product, new WorkflowTaskMonitor((AbstractWorkflowTask) this.progressTask), unzippedParentFolder);
@@ -172,41 +173,44 @@ public class ODMZipPostProcessor
 
     IndexService.createStacItems(product);
 
+    new GenerateMetadataCommand(this.collection).doIt();
+
     return this.product;
   }
 
-//  /**
-//   * This must be done before creating the product because the 'removeArtifact'
-//   * method will delete any existing products
-//   */
-//  protected void cleanExistingProduct()
-//  {
-//    if (this.progressTask != null)
-//    {
-//      try
-//      {
-//
-//        if (truthy(this.progressTask.getProcessDem()))
-//        {
-//          this.collection.removeArtifacts(ImageryComponent.DEM, false);
-//        }
-//
-//        if (truthy(this.progressTask.getProcessOrtho()))
-//        {
-//          this.collection.removeArtifacts(ImageryComponent.ORTHO, false);
-//        }
-//
-//        if (truthy(this.progressTask.getProcessPtcloud()))
-//        {
-//          this.collection.removeArtifacts(ImageryComponent.PTCLOUD, false);
-//        }
-//      }
-//      finally
-//      {
-//        new GenerateMetadataCommand(this.collection).doIt();
-//      }
-//    }
-//  }
+  // /**
+  // * This must be done before creating the product because the
+  // 'removeArtifact'
+  // * method will delete any existing products
+  // */
+  // protected void cleanExistingProduct()
+  // {
+  // if (this.progressTask != null)
+  // {
+  // try
+  // {
+  //
+  // if (truthy(this.progressTask.getProcessDem()))
+  // {
+  // this.collection.removeArtifacts(ImageryComponent.DEM, false);
+  // }
+  //
+  // if (truthy(this.progressTask.getProcessOrtho()))
+  // {
+  // this.collection.removeArtifacts(ImageryComponent.ORTHO, false);
+  // }
+  //
+  // if (truthy(this.progressTask.getProcessPtcloud()))
+  // {
+  // this.collection.removeArtifacts(ImageryComponent.PTCLOUD, false);
+  // }
+  // }
+  // finally
+  // {
+  // new GenerateMetadataCommand(this.collection).doIt();
+  // }
+  // }
+  // }
 
   protected void processProduct(Product product, StatusMonitorIF monitor, CloseableFile unzippedParentFolder) throws InterruptedException
   {

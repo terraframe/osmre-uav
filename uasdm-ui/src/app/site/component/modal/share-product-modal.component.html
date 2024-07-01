@@ -1,0 +1,54 @@
+<!--
+
+
+
+-->
+<div class="modal-body" style="padding-bottom: 0;">
+  <div>
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{message}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="product != null">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>{{product.name}}</h2>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="product.published">
+        <div class="col-md-12">
+          <h4>STAC</h4>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a [href]="product.publicStacUrl">{{product.publicStacUrl}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="items.length > 0">
+        <div class="col-md-12">
+          <h4>Services</h4>
+          <ul class="list-group">
+            <li class="list-group-item" *ngFor="let item of items">
+              <a [href]="item">{{item}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-holder" style="text-align: right;">
+      <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+    </div>
+  </div>
+</div>

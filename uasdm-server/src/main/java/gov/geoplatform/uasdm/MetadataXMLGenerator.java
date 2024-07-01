@@ -44,7 +44,6 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
@@ -59,12 +58,12 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ArtifactMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.CollectionMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.MissionMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ProcessingRunMetadata;
+import gov.geoplatform.uasdm.view.FlightMetadata.ProductMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ProjectMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.SensorMetadata;
 
@@ -113,16 +112,8 @@ public class MetadataXMLGenerator
 
     metadata.getCollection().populate(collection);
 
-    collection.getPrimaryProduct().ifPresent(product -> {
-      Artifact[] artifacts = collection.getArtifactObjects(product);
-
-      for (Artifact artifact : artifacts)
-      {
-        if (artifact.hasObjects())
-        {
-          metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
-        }
-      }
+    collection.getProducts().forEach(product -> {
+      metadata.addProduct(new ProductMetadata().populate(product, collection));
     });
 
     UAV uav = collection.getUav();
@@ -232,7 +223,7 @@ public class MetadataXMLGenerator
     e = this.createSensorElement(metadata, dom);
     root.appendChild(e);
 
-    e = this.createArtifactsElement(metadata, dom);
+    e = this.createProductsElement(metadata, dom);
     root.appendChild(e);
 
     e = dom.createElement("Upload");
@@ -287,7 +278,39 @@ public class MetadataXMLGenerator
     return e;
   }
 
-  private Element createArtifactsElement(FlightMetadata metadata, Document dom)
+  private Element createProductsElement(FlightMetadata metadata, Document dom)
+  {
+    Element element = dom.createElement("Products");
+
+    metadata.getProducts().stream().forEach(product -> {
+
+      Element e = this.createProductElement(product, dom);
+
+      element.appendChild(e);
+    });
+
+    return element;
+  }
+
+  private Element createProductElement(ProductMetadata metadata, Document dom)
+  {
+    Element element = dom.createElement("Product");
+    element.setAttribute("productName", metadata.getProductName());
+
+    if (metadata.getProcessingRun() != null)
+    {
+      Element e = this.createProcessingRunElement(metadata.getProcessingRun(), dom);
+
+      element.appendChild(e);
+
+    }
+
+    element.appendChild(this.createArtifactsElement(metadata, dom));
+
+    return element;
+  }
+
+  private Element createArtifactsElement(ProductMetadata metadata, Document dom)
   {
     Element element = dom.createElement("Artifacts");
 
@@ -362,13 +385,13 @@ public class MetadataXMLGenerator
       element.setAttribute("bands", metadata.getBands());
     }
 
-    if (metadata.getProcessingRun() != null)
-    {
-      Element e = this.createProcessingRunElement(metadata.getProcessingRun(), dom);
-
-      element.appendChild(e);
-
-    }
+//    if (metadata.getProcessingRun() != null)
+//    {
+//      Element e = this.createProcessingRunElement(metadata.getProcessingRun(), dom);
+//
+//      element.appendChild(e);
+//
+//    }
 
     return element;
   }

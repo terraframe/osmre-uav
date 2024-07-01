@@ -71,4 +71,6 @@ public interface ProductIF extends ComponentIF
 
   public boolean isPrimary();
 
+  public List<DocumentIF> getMappableDocuments();
+
 }

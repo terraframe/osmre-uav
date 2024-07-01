@@ -42,6 +42,21 @@ export class ProductService {
 			.toPromise();
 	}
 
+	getMappableItems(id: string): Promise<string[]> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('id', id);
+
+		this.eventService.start();
+
+		return this.http
+			.get<string[]>(environment.apiUrl + '/product/mappable-items', { params: params })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise();
+	}
+
+
 	remove(id: string): Promise<void> {
 
 		let headers = new HttpHeaders({

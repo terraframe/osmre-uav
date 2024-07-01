@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -45,13 +45,13 @@ public class ProductController
   {
     this.service = new ProductService();
   }
-  
+
   @Endpoint(url = "get-odm-run", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "artifactId") String artifactId) throws IOException
   {
     return new RestBodyResponse(service.getODMRunByArtifact(request.getSessionId(), artifactId));
   }
-  
+
   @Endpoint(url = "get-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF getAllZip(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
   {
@@ -100,7 +100,7 @@ public class ProductController
 
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "create", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF create(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "productName") String productName) throws IOException
   {
@@ -109,5 +109,12 @@ public class ProductController
     return new RestBodyResponse(view.toJSON());
   }
 
+  @Endpoint(url = "mappable-items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getMappableItems(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  {
+    JSONArray response = service.getMappableItems(request.getSessionId(), id);
+
+    return new RestBodyResponse(response);
+  }
 
 }

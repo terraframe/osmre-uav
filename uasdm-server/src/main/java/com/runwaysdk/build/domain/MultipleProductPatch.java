@@ -17,6 +17,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -136,7 +137,16 @@ public class MultipleProductPatch implements Runnable
 
       RemoteFileFacade.copyObject(sourceKey, AppProperties.getBucketName(), targetKey, AppProperties.getBucketName());
 
-      return (DocumentIF) Document.createIfNotExist(component, targetKey, filename, sourceDocument.toMetadata());
+      Document document = Document.createIfNotExist(component, targetKey, filename, sourceDocument.toMetadata());
+
+      ODMRun run = ODMRun.getGeneratingRun(sourceDocument);
+
+      if (run != null)
+      {
+        run.addODMRunOutputChild(document).apply();
+      }
+
+      return (DocumentIF) document;
     }).collect(Collectors.toList());
 
     targetProduct.addDocuments(targetDocuments);

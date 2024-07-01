@@ -26,6 +26,7 @@ import EnvironmentUtil from '@core/utility/environment-util';
 import { AuthService } from '@shared/service/auth.service';
 import { ErrorHandler } from '@shared/component';
 import { LocalizedValue } from '@shared/model/organization';
+import { ShareProductModalComponent } from '../modal/share-product-modal.component';
 
 @Component({
     selector: 'product-panel',
@@ -109,14 +110,21 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     clipboardPublicStacUrl(product: Product, clipboardPopover) {
-        navigator.clipboard.writeText(product.publicStacUrl);
-        document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
-        clipboardPopover.show();
+        const bsModalRef = this.modalService.show(ShareProductModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+        });
+        bsModalRef.content.init(product);
 
-        setTimeout(() => {
-            document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-link";
-            clipboardPopover.hide();
-        }, 6000);
+        // navigator.clipboard.writeText(product.publicStacUrl);
+        // document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-clipboard-check"; // glyphicon glyphicon-ok-sign
+        // clipboardPopover.show();
+
+        // setTimeout(() => {
+        //     document.getElementById("PublicStacUrl-" + product.id).className = "fa fa-link";
+        //     clipboardPopover.hide();
+        // }, 6000);
     }
 
     refresh(): void {

@@ -145,4 +145,5 @@ public interface UasComponentIF extends ComponentIF
 
   void removeProduct(String productName);
 
+  public <T extends ProductIF> List<T> getProducts();
 }

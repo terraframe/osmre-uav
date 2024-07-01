@@ -15,14 +15,17 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collector;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
@@ -198,6 +201,23 @@ public class ProductService
     NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.PRODUCT_GROUP_CHANGE, data));
 
     return Converter.toView(product, components);
+  }
+
+  @Request(RequestType.SESSION)
+  public JSONArray getMappableItems(String sessionId, String oid)
+  {
+    Product product = Product.get(oid);
+
+    return product.getMappableDocuments().stream().map(mappable -> {
+      try
+      {
+        return "api/cog/tilejson.json?path=" + URLEncoder.encode(mappable.getS3location(), StandardCharsets.UTF_8.name());
+      }
+      catch (UnsupportedEncodingException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
   }
 
 }

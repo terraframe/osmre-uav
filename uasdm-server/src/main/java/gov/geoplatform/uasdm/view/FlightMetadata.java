@@ -45,8 +45,10 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
@@ -329,15 +331,15 @@ public class FlightMetadata
       this.resolution = resolution;
     }
 
-    public ProcessingRunMetadata getProcessingRun()
-    {
-      return processingRun;
-    }
-
-    public void setProcessingRun(ProcessingRunMetadata processingRun)
-    {
-      this.processingRun = processingRun;
-    }
+//    public ProcessingRunMetadata getProcessingRun()
+//    {
+//      return processingRun;
+//    }
+//
+//    public void setProcessingRun(ProcessingRunMetadata processingRun)
+//    {
+//      this.processingRun = processingRun;
+//    }
 
     public Integer getPtEpsg()
     {
@@ -500,6 +502,101 @@ public class FlightMetadata
         }
       }
 
+//      NodeList list = item.getElementsByTagName("ProcessingRun");
+//
+//      if (list.getLength() > 0)
+//      {
+//        Node child = list.item(0);
+//
+//        metadata.setProcessingRun(ProcessingRunMetadata.parse((Element) child));
+//      }
+
+      return metadata;
+    }
+
+  }
+
+  public static class ProductMetadata
+  {
+    private String                 productName;
+
+    private ProcessingRunMetadata  processingRun;
+
+    private List<ArtifactMetadata> artifacts;
+
+    public ProductMetadata()
+    {
+      this.productName = "";
+      this.artifacts = new LinkedList<>();
+    }
+
+    public String getProductName()
+    {
+      return productName;
+    }
+
+    public void setProductName(String productName)
+    {
+      this.productName = productName;
+    }
+
+    public ProcessingRunMetadata getProcessingRun()
+    {
+      return processingRun;
+    }
+
+    public void setProcessingRun(ProcessingRunMetadata processingRun)
+    {
+      this.processingRun = processingRun;
+    }
+
+    public List<ArtifactMetadata> getArtifacts()
+    {
+      return artifacts;
+    }
+
+    public void setArtifacts(List<ArtifactMetadata> artifacts)
+    {
+      this.artifacts = artifacts;
+    }
+
+    public void addArtifact(ArtifactMetadata artifact)
+    {
+      this.artifacts.add(artifact);
+    }
+
+    public ProductMetadata populate(ProductIF product, CollectionIF collection)
+    {
+      this.productName = product.getProductName();
+
+      // Get the processing run
+      List<DocumentIF> documents = product.getMappableDocuments();
+      documents.stream().map(document -> {
+        return ODMRun.getGeneratingRun((gov.geoplatform.uasdm.graph.Document) document);
+      }).filter(run -> run != null).findFirst().ifPresent(run -> {
+        this.processingRun = new ProcessingRunMetadata().populate(run);
+
+      });
+
+      // Load the artifacts
+      Artifact[] artifactObjects = collection.getArtifactObjects(product);
+
+      for (Artifact artifact : artifactObjects)
+      {
+        if (artifact.hasObjects())
+        {
+          this.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+        }
+      }
+
+      return this;
+    }
+
+    public static ProductMetadata parse(Element item)
+    {
+      ProductMetadata metadata = new ProductMetadata();
+      metadata.setProductName(item.getAttribute("productName"));
+
       NodeList list = item.getElementsByTagName("ProcessingRun");
 
       if (list.getLength() > 0)
@@ -507,6 +604,21 @@ public class FlightMetadata
         Node child = list.item(0);
 
         metadata.setProcessingRun(ProcessingRunMetadata.parse((Element) child));
+      }
+
+      list = item.getElementsByTagName("Artifacts");
+
+      if (list.getLength() > 0)
+      {
+        Element child = (Element) list.item(0);
+
+        list = child.getElementsByTagName("Artifact");
+
+        for (int i = 0; i < list.getLength(); i++)
+        {
+          metadata.addArtifact(ArtifactMetadata.parse((Element) list.item(i)));
+        }
+
       }
 
       return metadata;
@@ -1245,21 +1357,21 @@ public class FlightMetadata
 
   }
 
-  private String                 name;
+  private String                name;
 
-  private String                 email;
+  private String                email;
 
-  private ProjectMetadata        project;
+  private ProjectMetadata       project;
 
-  private MissionMetadata        mission;
+  private MissionMetadata       mission;
 
-  private CollectionMetadata     collection;
+  private CollectionMetadata    collection;
 
-  private PlatformMetadata       platform;
+  private PlatformMetadata      platform;
 
-  private SensorMetadata         sensor;
+  private SensorMetadata        sensor;
 
-  private List<ArtifactMetadata> artifacts;
+  private List<ProductMetadata> products;
 
   public FlightMetadata()
   {
@@ -1270,7 +1382,7 @@ public class FlightMetadata
     this.collection = new CollectionMetadata();
     this.platform = new PlatformMetadata();
     this.sensor = new SensorMetadata();
-    this.artifacts = new LinkedList<>();
+    this.products = new LinkedList<>();
   }
 
   public String getName()
@@ -1343,14 +1455,14 @@ public class FlightMetadata
     this.sensor = sensor;
   }
 
-  public void addArtifact(ArtifactMetadata artifact)
+  public void addProduct(ProductMetadata product)
   {
-    this.artifacts.add(artifact);
+    this.products.add(product);
   }
 
-  public List<ArtifactMetadata> getArtifacts()
+  public List<ProductMetadata> getProducts()
   {
-    return artifacts;
+    return this.products;
   }
 
   public void parse(Document document)
@@ -1363,6 +1475,20 @@ public class FlightMetadata
 
     this.parsePlatform(document);
     this.parseSensor(document);
+
+    NodeList list = document.getElementsByTagName("Products");
+
+    if (list.getLength() > 0)
+    {
+      Element child = (Element) list.item(0);
+
+      list = child.getElementsByTagName("Product");
+
+      for (int i = 0; i < list.getLength(); i++)
+      {
+        this.addProduct(ProductMetadata.parse((Element) list.item(i)));
+      }
+    }
   }
 
   private void parseSensor(Document document)
@@ -1512,16 +1638,8 @@ public class FlightMetadata
       metadata.getSensor().setFocalLength(jSensor.get("focalLength").toString());
     }
 
-    collection.getPrimaryProduct().ifPresent(product -> {
-      Artifact[] artifacts = collection.getArtifactObjects(product);
-
-      for (Artifact artifact : artifacts)
-      {
-        if (artifact.hasObjects())
-        {
-          metadata.addArtifact(new ArtifactMetadata().populate(artifact, collection));
-        }
-      }
+    collection.getProducts().forEach(product -> {
+      metadata.addProduct(new ProductMetadata().populate(product, collection));
     });
 
     return metadata;

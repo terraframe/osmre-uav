@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -741,18 +742,7 @@ public class Product extends ProductBase implements ProductIF
 
   public List<DocumentIF> getMappableDocuments()
   {
-    List<DocumentIF> mappableDocs = new ArrayList<DocumentIF>();
-    List<DocumentIF> documents = this.getDocuments();
-
-    for (DocumentIF document : documents)
-    {
-      if (document.isMappable())
-      {
-        mappableDocs.add(document);
-      }
-    }
-
-    return mappableDocs;
+    return this.getDocuments().stream().filter(doc -> doc.isMappable()).collect(Collectors.toList());
   }
 
   @Override

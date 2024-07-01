@@ -827,12 +827,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     ( (Product) product ).setPrimary(true);
     ( (Product) product ).apply();
-
-    // TODO: IS THIS CORRECT
-    if (this instanceof Collection)
-    {
-      new GenerateMetadataCommand((Collection) this).doIt();
-    }
   }
 
   @Override

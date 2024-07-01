@@ -29,6 +29,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Product;
@@ -123,6 +124,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     product.updateBoundingBox(true);
 
     new ReIndexStacItemCommand(product).doIt();
+    new GenerateMetadataCommand(collection).doIt();
 
     this.appLock();
     this.setStatus(ODMStatus.COMPLETED.getLabel());
