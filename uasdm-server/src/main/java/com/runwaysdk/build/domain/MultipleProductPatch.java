@@ -32,28 +32,13 @@ public class MultipleProductPatch implements Runnable
 
   public static void main(String[] args)
   {
-    new MultipleProductPatch().run();
-  }
-
-  public static void start()
-  {
-    Thread t = new Thread(new MultipleProductPatch(), "MultipleProductPatch");
-    t.setDaemon(true);
-    t.start();
-  }
-
-  @Request
-  public void run()
-  {
     try
     {
       try
       {
         try
         {
-          transaction();
-
-          logger.error("Transaction committed");
+          new MultipleProductPatch().run();
         }
         finally
         {
@@ -69,6 +54,22 @@ public class MultipleProductPatch implements Runnable
     {
       CacheShutdown.shutdown();
     }
+
+  }
+
+  public static void start()
+  {
+    Thread t = new Thread(new MultipleProductPatch(), "MultipleProductPatch");
+    t.setDaemon(true);
+    t.start();
+  }
+
+  @Request
+  public void run()
+  {
+    transaction();
+
+    logger.error("Transaction committed");
   }
 
   @Transaction
