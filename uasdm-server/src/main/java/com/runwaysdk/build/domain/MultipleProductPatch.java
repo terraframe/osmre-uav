@@ -34,25 +34,16 @@ public class MultipleProductPatch implements Runnable
   {
     try
     {
-      try
-      {
-        try
-        {
-          new MultipleProductPatch().run();
-        }
-        finally
-        {
-          CollectionReportFacade.finish();
-        }
-      }
-      finally
-      {
-        IndexService.shutdown();
-      }
+      new MultipleProductPatch().run();
     }
     finally
     {
-      CacheShutdown.shutdown();
+      if (args.length > 0 && Boolean.valueOf(args[0]))
+      {
+        IndexService.shutdown();
+        CollectionReportFacade.finish();
+        CacheShutdown.shutdown();
+      }
     }
 
   }
