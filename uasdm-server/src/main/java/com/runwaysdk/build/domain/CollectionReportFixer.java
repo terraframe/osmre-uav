@@ -74,7 +74,7 @@ public class CollectionReportFixer implements Runnable
 
       CollectionReport.updateSize(col);
 
-      col.getPrimaryProduct().ifPresent(product -> {
+      col.getProducts().forEach(product -> {
         CollectionReport.update((Product) product);
       });
     });
@@ -83,8 +83,8 @@ public class CollectionReportFixer implements Runnable
       CollectionReport.update(sensor);
     });
 
-    Platform.getAllPlatforms().forEach(sensor -> {
-      CollectionReport.update(sensor);
+    Platform.getAllPlatforms().forEach(platform -> {
+      CollectionReport.update(platform);
     });
 
     UAV.getAll().forEach(uav -> {
