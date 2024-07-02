@@ -24,27 +24,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<title>IDM <%= request.getAttribute("productName") %> 3D</title>
 
-	<link rel="stylesheet" type="text/css" href="../resource/build/potree/potree.css">
-	<link rel="stylesheet" type="text/css" href="../resource/libs/jquery-ui/jquery-ui.min.css">
-	<link rel="stylesheet" type="text/css" href="../resource/libs/openlayers3/ol.css">
-	<link rel="stylesheet" type="text/css" href="../resource/libs/spectrum/spectrum.css">
-	<link rel="stylesheet" type="text/css" href="../resource/libs/jstree/themes/mixed/style.css">
+	<link rel="stylesheet" type="text/css" href="../../resource/build/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="../../resource/libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../resource/libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="../../resource/libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="../../resource/libs/jstree/themes/mixed/style.css">
 </head>
 
 <body>
-  <script src="../resource/libs/jquery/jquery-3.1.1.min.js"></script>
-  <script src="../resource/libs/spectrum/spectrum.js"></script>
-  <script src="../resource/libs/jquery-ui/jquery-ui.min.js"></script>
+  <script src="../../resource/libs/jquery/jquery-3.1.1.min.js"></script>
+  <script src="../../resource/libs/spectrum/spectrum.js"></script>
+  <script src="../../resource/libs/jquery-ui/jquery-ui.min.js"></script>
 
-  <script src="../resource/libs/other/BinaryHeap.js"></script>
-  <script src="../resource/libs/tween/tween.min.js"></script>
-  <script src="../resource/libs/d3/d3.js"></script>
-  <script src="../resource/libs/proj4/proj4.js"></script>
-  <script src="../resource/libs/openlayers3/ol.js"></script>
-  <script src="../resource/libs/i18next/i18next.js"></script>
-  <script src="../resource/libs/jstree/jstree.js"></script>
-  <script src="../resource/build/potree/potree.js"></script>
-  <script src="../resource/libs/plasio/js/laslaz.js"></script>
+  <script src="../../resource/libs/other/BinaryHeap.js"></script>
+  <script src="../../resource/libs/tween/tween.min.js"></script>
+  <script src="../../resource/libs/d3/d3.js"></script>
+  <script src="../../resource/libs/proj4/proj4.js"></script>
+  <script src="../../resource/libs/openlayers3/ol.js"></script>
+  <script src="../../resource/libs/i18next/i18next.js"></script>
+  <script src="../../resource/libs/jstree/jstree.js"></script>
+  <script src="../../resource/build/potree/potree.js"></script>
+  <script src="../../resource/libs/plasio/js/laslaz.js"></script>
 
   <!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
   <!-- INCLUDE SETTINGS HERE -->
@@ -56,7 +56,7 @@
 
   <script type="module">
 
-  import * as THREE from "../resource/libs/three.js/build/three.module.js";
+  import * as THREE from "../../resource/libs/three.js/build/three.module.js";
 
     window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
 

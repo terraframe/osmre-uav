@@ -58,6 +58,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import gov.geoplatform.uasdm.service.PointcloudService;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
@@ -401,8 +402,11 @@ public abstract class Converter
 
     UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
-    final String s3Loc = component != null ? component.getS3location() : "";
-    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + ODMZipPostProcessor.POTREE + "/ept.json") || RemoteFileFacade.objectExists(s3Loc + PointcloudController.LEGACY_POTREE_SUPPORT + "/cloud.js");
+    final String s3Loc = component != null ? component.getS3location(product, ODMZipPostProcessor.POTREE) : "";
+
+    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + "/metadata.json") || RemoteFileFacade.objectExists(s3Loc + "/ept.json");
+    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "/cloud.js");
+
     view.setHasPointcloud(hasPointcloud);
 
     view.setHasAllZip( ( (Product) product ).hasAllZip());

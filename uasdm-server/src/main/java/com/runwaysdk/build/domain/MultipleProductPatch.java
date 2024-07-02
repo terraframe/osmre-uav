@@ -16,12 +16,14 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
+import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -122,6 +124,15 @@ public class MultipleProductPatch implements Runnable
       String sourceKey = sourceDocument.getS3location();
       String filename = FilenameUtils.getName(sourceKey);
       String uploadTarget = FilenameUtils.getName(FilenameUtils.getPathNoEndSeparator(sourceKey));
+
+      if (uploadTarget.equals("gdal"))
+      {
+        uploadTarget = ODMZipPostProcessor.DEM_GDAL;
+      }
+      else if (uploadTarget.equals("entwine_pointcloud"))
+      {
+        uploadTarget = ODMZipPostProcessor.POTREE;
+      }
 
       String targetKey = component.getS3location(targetProduct, uploadTarget) + "/" + filename;
 

@@ -267,7 +267,7 @@ export class ProductPanelComponent implements OnDestroy {
         if (product.hasPointcloud) {
             let componentId: string = product.entities[product.entities.length - 1].id;
 
-            window.open(this.configuration.getContextPath() + "/pointcloud/" + componentId + "/potree");
+            window.open(this.configuration.getContextPath() + "/pointcloud/" + componentId + "/" + product.productName + "/potree");
         }
     }
 

@@ -711,7 +711,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public String buildUploadKey(ProductIF product, String uploadTarget)
   {
-    if (!StringUtils.isBlank(uploadTarget) && !uploadTarget.equals(ImageryComponent.RAW))
+    if (!StringUtils.isBlank(uploadTarget) && uploadTarget.equals(ImageryComponent.VIDEO))
+    {
+      return this.buildVideoKey();
+    }
+    else if (!StringUtils.isBlank(uploadTarget) && ! ( uploadTarget.equals(ImageryComponent.RAW) ))
     {
       if (product != null)
       {
