@@ -889,7 +889,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
                 line.add(row.getVideo().toString());
                 line.add(row.getAllStorageSize().toString());
                 line.add(row.getDownloadCounts().toString());
-                line.add(row.getNumberOfProducts().toString());
+                line.add(row.getNumberOfProducts() != null ? row.getNumberOfProducts().toString() : Integer.toString(0));
                 line.add(Util.formatIso8601(row.getCreateDate(), false));
                 line.add(Util.formatIso8601(row.getDeleteDate(), false));
 
