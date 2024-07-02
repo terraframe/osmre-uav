@@ -171,7 +171,18 @@ export class ProductPanelComponent implements OnDestroy {
         });
     }
 
-    setCurrent(view: CollectionProductView): void {
+    setVersion(view: CollectionProductView): void {
+        if (view.product != null) {
+
+            if (view.product.orthoMapped) {
+                this.handleMapIt(view.product);
+            }
+
+            if (view.product.demMapped) {
+                this.handleMapDem(view.product);
+            }
+        }
+
         view.product = view.products.find(p => p.id === view.productId);
 
         this.getThumbnail(view.product);
@@ -240,7 +251,6 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     handleMapIt(product: Product): void {
-        console.log('Mapping', product);
 
         if (this.hasOrthoLayer(product)) {
             this.toggleMapOrtho.emit(product);

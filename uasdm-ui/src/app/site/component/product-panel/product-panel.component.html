@@ -47,7 +47,7 @@
                         <label>
                             <label>Versions</label>
                         </label>
-                        <select [(ngModel)]="view.productId" name="productId" (change)="setCurrent(view)">
+                        <select [(ngModel)]="view.productId" name="productId" (change)="setVersion(view)">
                             <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}</option>
                         </select>
                     </div>       
