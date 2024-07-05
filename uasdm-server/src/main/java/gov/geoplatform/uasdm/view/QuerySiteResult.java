@@ -77,6 +77,11 @@ public class QuerySiteResult implements QueryResult
   {
     this.isPrivate = isPrivate;
   }
+  
+  public JSONArray getHierarchy()
+  {
+    return hierarchy;
+  }
 
   @Override
   public Type getType()

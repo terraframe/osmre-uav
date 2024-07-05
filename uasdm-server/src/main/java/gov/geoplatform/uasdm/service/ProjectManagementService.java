@@ -74,6 +74,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
@@ -1023,11 +1024,15 @@ public class ProjectManagementService
       {
         QuerySiteResult site = (QuerySiteResult) result;
 
-        if (site.getIsPrivate())
+//        if (site.getIsPrivate())
         {
-          UasComponent component = UasComponent.get(site.getOid());
+          JSONArray hierarchy = site.getHierarchy();
+          JSONObject object = hierarchy.getJSONObject(hierarchy.length() - 1);
+          String id = object.getString("id");
+          
+          UasComponent component = UasComponent.get(id);
 
-          return component.hasAccess();
+          return UserAccessEntity.hasAccess(component);
         }
       }
 

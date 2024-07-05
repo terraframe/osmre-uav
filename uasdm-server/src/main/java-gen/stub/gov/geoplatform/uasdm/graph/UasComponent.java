@@ -790,14 +790,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString(), parameters);
 
     return query.getSingleResult();
-//    
-//    StringBuilder statement = new StringBuilder();
-//    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() + "').size() FROM :rid");
-//
-//    GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
-//    query.setParameter("rid", this.getRID());
-//
-//    return query.getSingleResult();
+    //
+    // StringBuilder statement = new StringBuilder();
+    // statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName()
+    // + "').size() FROM :rid");
+    //
+    // GraphQuery<Integer> query = new
+    // GraphQuery<Integer>(statement.toString());
+    // query.setParameter("rid", this.getRID());
+    //
+    // return query.getSingleResult();
   }
 
   public List<DocumentIF> getDocuments()
@@ -913,7 +915,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
-    
+
     HashMap<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("rid", this.getRID());
 
@@ -923,12 +925,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
-    
+
     statement.append("  SELECT FROM (");
     statement.append("    SELECT EXPAND(" + expand + ")");
     statement.append("    FROM :rid ");
     statement.append("  )");
-    
+
     // Add the access criteria
     addAccessFilter(parameters, statement);
 
@@ -1117,24 +1119,5 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public ProductIF createProductIfNotExist(String productName)
   {
     return Product.createIfNotExist(this, productName);
-  }
-
-  public boolean hasAccess()
-  {
-    if (this.isPrivate())
-    {
-      SessionIF session = Session.getCurrentSession();
-
-      if (session != null)
-      {
-        SingleActorDAOIF user = session.getUser();
-
-        return ( user.getOid().equals(this.getOwnerOid()) );
-      }
-
-      return false;
-    }
-
-    return true;
   }
 }
