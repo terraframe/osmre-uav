@@ -101,6 +101,7 @@ import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
+import gov.geoplatform.uasdm.view.QuerySiteResult;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -1015,6 +1016,23 @@ public class ProjectManagementService
   public List<QueryResult> search(String sessionId, String term)
   {
     List<QueryResult> results = IndexService.query(term);
+
+    // Filter private results
+    results = results.stream().filter(result -> {
+      if (result instanceof QuerySiteResult)
+      {
+        QuerySiteResult site = (QuerySiteResult) result;
+
+        if (site.getIsPrivate())
+        {
+          UasComponent component = UasComponent.get(site.getOid());
+
+          return component.hasAccess();
+        }
+      }
+
+      return true;
+    }).collect(Collectors.toList());
 
     return results;
   }

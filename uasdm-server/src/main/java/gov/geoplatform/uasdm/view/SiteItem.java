@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -45,6 +45,8 @@ public class SiteItem implements TreeComponent
   public static String        OWNER_EMAIL         = "ownerEmail";
 
   public static String        PRIVILEGE_TYPE      = "privilegeType";
+
+  public static String        IS_PRIVATE          = "isPrivate";
 
   public static String        NUMBER_OF_CHILDREN  = "numberOfChildren";
 
@@ -86,7 +88,7 @@ public class SiteItem implements TreeComponent
 
   private Geometry            geometry;
 
-  private Integer             numberOfChildren;
+  private Long                numberOfChildren;
 
   private String              pilotName;
 
@@ -213,12 +215,12 @@ public class SiteItem implements TreeComponent
     this.metadataUploaded = metadataUploaded;
   }
 
-  public Integer getNumberOfChildren()
+  public Long getNumberOfChildren()
   {
     return numberOfChildren;
   }
 
-  public void setNumberOfChildren(Integer numberOfChildren)
+  public void setNumberOfChildren(Long numberOfChildren)
   {
     this.numberOfChildren = numberOfChildren;
   }
@@ -261,6 +263,76 @@ public class SiteItem implements TreeComponent
   public List<AttributeType> getAttributes()
   {
     return attributes;
+  }
+
+  public JSONObject getUav()
+  {
+    return uav;
+  }
+
+  public void setUav(JSONObject uav)
+  {
+    this.uav = uav;
+  }
+
+  public String getPilotName()
+  {
+    return pilotName;
+  }
+
+  public void setPilotName(String pilotName)
+  {
+    this.pilotName = pilotName;
+  }
+
+  public String getCollectionDate()
+  {
+    return collectionDate;
+  }
+
+  public void setCollectionDate(String collectionDate)
+  {
+    this.collectionDate = collectionDate;
+  }
+
+  public String getCollectionEndDate()
+  {
+    return collectionEndDate;
+  }
+
+  public void setCollectionEndDate(String collectionEndDate)
+  {
+    this.collectionEndDate = collectionEndDate;
+  }
+
+  public String getDateTime()
+  {
+    return dateTime;
+  }
+
+  public void setDateTime(String dateTime)
+  {
+    this.dateTime = dateTime;
+  }
+
+  public JSONObject getSensor()
+  {
+    return sensor;
+  }
+
+  public void setSensor(JSONObject sensor)
+  {
+    this.sensor = sensor;
+  }
+
+  public JSONObject getPlatform()
+  {
+    return platform;
+  }
+
+  public void setPlatform(JSONObject platform)
+  {
+    this.platform = platform;
   }
 
   public JSONObject toJSON()
@@ -453,74 +525,5 @@ public class SiteItem implements TreeComponent
 
     return list;
   }
-  
-  public JSONObject getUav()
-  {
-    return uav;
-  }
-  
-  public void setUav(JSONObject uav)
-  {
-    this.uav = uav;
-  }
 
-  public String getPilotName()
-  {
-    return pilotName;
-  }
-
-  public void setPilotName(String pilotName)
-  {
-    this.pilotName = pilotName;
-  }
-
-  public String getCollectionDate()
-  {
-    return collectionDate;
-  }
-
-  public void setCollectionDate(String collectionDate)
-  {
-    this.collectionDate = collectionDate;
-  }
-
-  public String getCollectionEndDate()
-  {
-    return collectionEndDate;
-  }
-
-  public void setCollectionEndDate(String collectionEndDate)
-  {
-    this.collectionEndDate = collectionEndDate;
-  }
-
-  public String getDateTime()
-  {
-    return dateTime;
-  }
-
-  public void setDateTime(String dateTime)
-  {
-    this.dateTime = dateTime;
-  }
-  
-  public JSONObject getSensor()
-  {
-    return sensor;
-  }
-  
-  public void setSensor(JSONObject sensor)
-  {
-    this.sensor = sensor;
-  }
-  
-  public JSONObject getPlatform()
-  {
-    return platform;
-  }
-  
-  public void setPlatform(JSONObject platform)
-  {
-    this.platform = platform;
-  }
 }

@@ -129,6 +129,14 @@
             </div>
           </div>
 
+          <div [@fadeInOnEnter] class="row" *ngIf="hasField('isPrivate')">
+            <div class="col-md-8">
+              <boolean-field [(value)]="page.selection.isPrivate" label="isPrivate">
+              </boolean-field>
+            </div>
+          </div>
+
+
           <metadata-page *ngIf="hasField('uav')" [(page)]="page"></metadata-page>
         </div>
       </div>

@@ -382,7 +382,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public Integer getNumberOfChildren()
+  public Long getNumberOfChildren()
   {
     // int count = 0;
     // count += this.getItemCount(this.buildRawKey());
@@ -393,7 +393,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     DocumentQuery query = new DocumentQuery(new QueryFactory());
     query.WHERE(query.getComponent().EQ(this));
 
-    return Long.valueOf(query.getCount()).intValue();
+    return Long.valueOf(query.getCount());
   }
 
   public Collection getUasComponent()

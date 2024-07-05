@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
+import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -445,6 +447,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
+  public boolean isPrivate()
+  {
+    return this.getIsPrivate() != null && this.getIsPrivate();
+  }
+
+  @Override
   public JSONArray getArtifacts()
   {
     JSONArray response = new JSONArray();
@@ -604,6 +612,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME), true, new AdminCondition()));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE)));
 
     return list;
   }
@@ -763,15 +772,32 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     throw new UnsupportedOperationException();
   }
 
-  public Integer getNumberOfChildren()
+  public Long getNumberOfChildren()
   {
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() + "').size() FROM :rid");
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
 
-    GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
-    query.setParameter("rid", this.getRID());
+    final MdEdgeDAOIF mdEdge = this.getChildMdEdge();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT COUNT(*) FROM (");
+    statement.append("  SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
+    statement.append("  FROM :rid \n");
+    statement.append(")");
+
+    addAccessFilter(parameters, statement);
+
+    final GraphQuery<Long> query = new GraphQuery<Long>(statement.toString(), parameters);
 
     return query.getSingleResult();
+//    
+//    StringBuilder statement = new StringBuilder();
+//    statement.append("SELECT out('" + this.getChildMdEdge().getDBClassName() + "').size() FROM :rid");
+//
+//    GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+//    query.setParameter("rid", this.getRID());
+//
+//    return query.getSingleResult();
   }
 
   public List<DocumentIF> getDocuments()
@@ -887,6 +913,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
+    
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
 
     String expand = this.buildProductExpandClause();
 
@@ -894,10 +923,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+    
     statement.append("  SELECT FROM (");
     statement.append("    SELECT EXPAND(" + expand + ")");
     statement.append("    FROM :rid ");
     statement.append("  )");
+    
+    // Add the access criteria
+    addAccessFilter(parameters, statement);
 
     if (sortField.equals("name"))
     {
@@ -923,9 +956,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     // statement.append(" ORDER BY " + sortField + " " + sortOrder);
     // }
 
-    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
-    query.setParameter("rid", this.getRID());
-    query.setParameter("primary", true);
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
     return CollectionProductDTO.process(query.getResults());
   }
@@ -939,12 +970,69 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public List<UasComponentIF> getParents()
   {
-    return this.getParents(this.getParentMdEdge(), UasComponentIF.class);
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
+
+    final MdEdgeDAOIF mdEdge = this.getParentMdEdge();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM (");
+    statement.append("  SELECT EXPAND( IN('" + mdEdge.getDBClassName() + "'))\n");
+    statement.append("  FROM :rid \n");
+    statement.append(")");
+
+    addAccessFilter(parameters, statement);
+
+    final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
+
+    return query.getResults();
   }
 
   public List<UasComponentIF> getChildren()
   {
-    return this.getChildren(this.getChildMdEdge(), UasComponentIF.class);
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
+
+    final MdEdgeDAOIF mdEdge = this.getChildMdEdge();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM (");
+    statement.append("  SELECT EXPAND( OUT('" + mdEdge.getDBClassName() + "'))\n");
+    statement.append("  FROM :rid \n");
+    statement.append(")");
+
+    addAccessFilter(parameters, statement);
+
+    final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
+
+    return query.getResults();
+  }
+
+  private void addAccessFilter(HashMap<String, Object> parameters, StringBuilder statement)
+  {
+    // Add the filter for permissions
+    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+    MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
+    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
+
+    SessionIF session = Session.getCurrentSession();
+
+    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+
+    if (session != null)
+    {
+      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
+      statement.append(" OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0");
+    }
+
+    parameters.put("isPrivate", false);
+
+    if (session != null)
+    {
+      parameters.put("owner", session.getUser().getOid());
+    }
   }
 
   @Override
@@ -1029,5 +1117,24 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public ProductIF createProductIfNotExist(String productName)
   {
     return Product.createIfNotExist(this, productName);
+  }
+
+  public boolean hasAccess()
+  {
+    if (this.isPrivate())
+    {
+      SessionIF session = Session.getCurrentSession();
+
+      if (session != null)
+      {
+        SingleActorDAOIF user = session.getUser();
+
+        return ( user.getOid().equals(this.getOwnerOid()) );
+      }
+
+      return false;
+    }
+
+    return true;
   }
 }

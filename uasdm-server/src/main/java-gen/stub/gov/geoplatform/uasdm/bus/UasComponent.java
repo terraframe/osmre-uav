@@ -588,11 +588,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     throw new UnsupportedOperationException();
   }
 
-  public Integer getNumberOfChildren()
+  public Long getNumberOfChildren()
   {
     try (OIterator<? extends UasComponent> children = this.getAllComponents())
     {
-      return children.getAll().size();
+      return Long.valueOf(children.getAll().size());
     }
   }
 
@@ -687,5 +687,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public void removeProduct(String productName)
   {
+  }
+
+  @Override
+  public boolean isPrivate()
+  {
+    return false;
   }
 }

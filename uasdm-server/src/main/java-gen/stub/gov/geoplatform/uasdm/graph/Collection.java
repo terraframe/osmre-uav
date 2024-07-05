@@ -53,7 +53,6 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.CannotDeleteProcessingCollection;
 import gov.geoplatform.uasdm.CollectionStatus;
-import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -587,7 +586,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public Integer getNumberOfChildren()
+  public Long getNumberOfChildren()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
 
@@ -597,7 +596,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
     query.setParameter("rid", this.getRID());
 
-    return query.getSingleResult();
+    return query.getSingleResult().longValue();
   }
 
   public UasComponentIF getUasComponent()

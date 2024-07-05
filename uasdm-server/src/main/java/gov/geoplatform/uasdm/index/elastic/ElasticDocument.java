@@ -1,47 +1,49 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
 public class ElasticDocument extends ElasticLocation
 {
-  private String key;
+  private String  key;
 
-  private String filename;
+  private String  filename;
 
-  private String siteId;
+  private String  siteId;
 
-  private String siteName;
+  private String  siteName;
 
-  private String projectId;
+  private String  projectId;
 
-  private String projectName;
+  private String  projectName;
 
-  private String missionId;
+  private String  missionId;
 
-  private String missionName;
+  private String  missionName;
 
-  private String collectionId;
+  private String  collectionId;
 
-  private String collectionName;
+  private String  collectionName;
 
-  private String content;
+  private String  content;
 
-  private String description;
+  private String  description;
 
-  private String bureau;
+  private String  bureau;
+
+  private Boolean isPrivate;
 
   public String getKey()
   {
@@ -173,6 +175,16 @@ public class ElasticDocument extends ElasticLocation
     this.description = description;
   }
 
+  public Boolean getIsPrivate()
+  {
+    return isPrivate;
+  }
+
+  public void setIsPrivate(Boolean isPrivate)
+  {
+    this.isPrivate = isPrivate;
+  }
+
   public void populate(String fieldName, String value)
   {
     if (fieldName.equals("collectionId"))
@@ -206,6 +218,10 @@ public class ElasticDocument extends ElasticLocation
     else if (fieldName.equals("siteName"))
     {
       this.siteName = value;
+    }
+    else if (fieldName.equals("isPrivate"))
+    {
+      this.isPrivate = Boolean.valueOf(value);
     }
     else
     {

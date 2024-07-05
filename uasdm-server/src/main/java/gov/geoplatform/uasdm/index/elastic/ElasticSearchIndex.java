@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -292,6 +292,7 @@ public class ElasticSearchIndex implements Index
       document.setFilename(name);
       document.populate(component.getSolrIdField(), component.getOid());
       document.populate(component.getSolrNameField(), component.getName());
+      document.setIsPrivate(component.isPrivate());
 
       for (UasComponentIF ancestor : ancestors)
       {
@@ -324,6 +325,7 @@ public class ElasticSearchIndex implements Index
       document.setContent(content);
       document.populate(component.getSolrIdField(), component.getOid());
       document.populate(component.getSolrNameField(), component.getName());
+      document.setIsPrivate(component.isPrivate());
 
       for (UasComponentIF ancestor : ancestors)
       {
@@ -375,6 +377,7 @@ public class ElasticSearchIndex implements Index
         ElasticDocument document = hit.source();
         document.setDescription(component.getDescription());
         document.populate(component.getSolrNameField(), component.getName());
+        document.setIsPrivate(component.isPrivate());
 
         if (component instanceof SiteIF)
         {
@@ -415,6 +418,7 @@ public class ElasticSearchIndex implements Index
       document.populate(component.getSolrIdField(), component.getOid());
       document.populate(component.getSolrNameField(), component.getName());
       document.setDescription(component.getDescription());
+      document.setIsPrivate(component.isPrivate());
 
       if (component instanceof SiteIF)
       {
@@ -503,6 +507,8 @@ public class ElasticSearchIndex implements Index
       QuerySiteResult result = new QuerySiteResult();
       result.setId(hit.id());
       result.setFilename(document.getFilename());
+      result.setOid(document.getOid());
+      result.setIsPrivate(document.getIsPrivate());
       result.addItem(document.getSiteId(), document.getSiteName());
       result.addItem(document.getProjectId(), document.getProjectName());
       result.addItem(document.getMissionId(), document.getMissionName());

@@ -16,9 +16,9 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -682,6 +682,15 @@ public class Product extends ProductBase implements ProductIF
       throw ex;
     }
 
+    UasComponent component = this.getComponent();
+
+    if (component.isPrivate() && !this.isPublished())
+    {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("Private collections can not be published");
+      throw ex;
+    }
+
     IndexService.removeStacItems(this);
 
     try
@@ -707,7 +716,11 @@ public class Product extends ProductBase implements ProductIF
     }
     finally
     {
-      new ReIndexStacItemCommand(this).doIt();
+      if (!component.isPrivate())
+      {
+        new ReIndexStacItemCommand(this).doIt();
+      }
+
     }
   }
 
@@ -939,10 +952,19 @@ public class Product extends ProductBase implements ProductIF
     String sortField = criteria.getSortField();
     String sortOrder = criteria.getSortOrder();
 
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", object.getRID());
+
+    if (!StringUtils.isEmpty(criteria.getOrganization()))
+    {
+      parameters.put("organization", criteria.getOrganization());
+    }
+
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+
     statement.append("  SELECT FROM (\n");
     statement.append("    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
     statement.append("      SELECT FROM (\n");
@@ -956,6 +978,30 @@ public class Product extends ProductBase implements ProductIF
 
     statement.append("    )\n");
     statement.append("  )");
+
+    // Add the filter for permissions
+    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+    MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
+    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
+
+    SessionIF session = Session.getCurrentSession();
+
+    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+
+    if (session != null)
+    {
+      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
+      statement.append(" OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0");
+    }
+
+    parameters.put("isPrivate", false);
+
+    if (session != null)
+    {
+      parameters.put("owner", session.getUser().getOid());
+    }
 
     if (sortField.equals("name"))
     {
@@ -981,13 +1027,7 @@ public class Product extends ProductBase implements ProductIF
     // statement.append(" ORDER BY " + sortField + " " + sortOrder);
     // }
 
-    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
-    query.setParameter("rid", object.getRID());
-
-    if (!StringUtils.isEmpty(criteria.getOrganization()))
-    {
-      query.setParameter("organization", criteria.getOrganization());
-    }
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
     return CollectionProductDTO.process(query.getResults());
   }

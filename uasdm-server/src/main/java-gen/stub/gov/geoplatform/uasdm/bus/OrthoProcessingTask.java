@@ -123,7 +123,11 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     product.updateBoundingBox(true);
 
-    new ReIndexStacItemCommand(product).doIt();
+    if (!collection.isPrivate())
+    {
+      new ReIndexStacItemCommand(product).doIt();
+    }
+    
     new GenerateMetadataCommand(collection).doIt();
 
     this.appLock();

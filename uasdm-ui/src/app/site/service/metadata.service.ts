@@ -60,7 +60,7 @@ export class MetadataService {
                 || fieldName === 'percentSideLap'
                 || fieldName === 'areaCovered'
                 || fieldName === 'weatherConditions'
-
+                || fieldName === 'isPrivate'
                 || fieldName === 'sensor'
                 || fieldName === 'uav');
         }

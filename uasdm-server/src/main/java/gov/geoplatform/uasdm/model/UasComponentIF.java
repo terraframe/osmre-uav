@@ -55,6 +55,8 @@ public interface UasComponentIF extends ComponentIF
 
   public void setName(String name);
 
+  public boolean isPrivate();
+
   public String getFolderName();
 
   public String getDescription();
@@ -77,7 +79,7 @@ public interface UasComponentIF extends ComponentIF
 
   public Geometry getGeoPoint();
 
-  public Integer getNumberOfChildren();
+  public Long getNumberOfChildren();
 
   public void applyWithParent(UasComponentIF parent);
 

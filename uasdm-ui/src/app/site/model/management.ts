@@ -102,6 +102,7 @@ export class SiteEntity {
 	ptEpsg?: number;
 	projectionName?: string;
 	orthoCorrectionModel?: string;
+	isPrivate?: boolean;
 }
 
 export class CollectionArtifact {
@@ -191,6 +192,7 @@ export class Selection {
 	areaCovered?: number;
 	weatherConditions?: string;
 	artifacts?: any[];
+	isPrivate?: boolean;
 };
 
 export class UploadForm {

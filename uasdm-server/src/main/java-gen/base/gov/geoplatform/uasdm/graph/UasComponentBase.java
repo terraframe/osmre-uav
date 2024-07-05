@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1515929756)
+@com.runwaysdk.business.ClassSignature(hash = -797951450)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,15 +11,17 @@ package gov.geoplatform.uasdm.graph;
 public abstract class UasComponentBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.UasComponent";
-  public static java.lang.String DESCRIPTION = "description";
-  public static java.lang.String FOLDERNAME = "folderName";
-  public static java.lang.String GEOPOINT = "geoPoint";
-  public static java.lang.String NAME = "name";
-  public static java.lang.String OID = "oid";
-  public static java.lang.String OWNER = "owner";
-  public static java.lang.String S3LOCATION = "s3location";
-  public static java.lang.String SEQ = "seq";
-  private static final long serialVersionUID = -1515929756;
+  public final static java.lang.String DESCRIPTION = "description";
+  public final static java.lang.String FOLDERNAME = "folderName";
+  public final static java.lang.String GEOPOINT = "geoPoint";
+  public final static java.lang.String ISPRIVATE = "isPrivate";
+  public final static java.lang.String NAME = "name";
+  public final static java.lang.String OID = "oid";
+  public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String S3LOCATION = "s3location";
+  public final static java.lang.String SEQ = "seq";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -797951450;
   
   public UasComponentBase()
   {
@@ -87,6 +74,22 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   public void setGeoPoint(org.locationtech.jts.geom.Point value)
   {
     this.setValue(GEOPOINT, value);
+  }
+  
+  public Boolean getIsPrivate()
+  {
+    return (Boolean) this.getObjectValue(ISPRIVATE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getIsPrivateMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.UasComponent.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(ISPRIVATE);
+  }
+  
+  public void setIsPrivate(Boolean value)
+  {
+    this.setValue(ISPRIVATE, value);
   }
   
   public String getName()
@@ -186,14 +189,14 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
     return CLASS;
   }
   
-  public void addComponentHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
+  public com.runwaysdk.business.graph.EdgeObject addComponentHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addChild(document, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
+    return super.addChild(document, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
   }
   
   public void removeComponentHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.addChild(document, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
+    super.removeChild(document, "gov.geoplatform.uasdm.graph.ComponentHasDocument");
   }
   
   @SuppressWarnings("unchecked")
@@ -202,19 +205,36 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
     return super.getChildren("gov.geoplatform.uasdm.graph.ComponentHasDocument",gov.geoplatform.uasdm.graph.Document.class);
   }
   
-  public void addComponentHasProductChild(gov.geoplatform.uasdm.graph.Product product)
+  public com.runwaysdk.business.graph.EdgeObject addComponentHasProductChild(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addChild(product, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
+    return super.addChild(product, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
   }
   
   public void removeComponentHasProductChild(gov.geoplatform.uasdm.graph.Product product)
   {
-    super.addChild(product, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
+    super.removeChild(product, "gov.geoplatform.uasdm.graph.ComponentHasProduct");
   }
   
+  @SuppressWarnings("unchecked")
   public java.util.List<gov.geoplatform.uasdm.graph.Product> getComponentHasProductChildProducts()
   {
     return super.getChildren("gov.geoplatform.uasdm.graph.ComponentHasProduct",gov.geoplatform.uasdm.graph.Product.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addUserHasAccessParent(gov.geoplatform.uasdm.graph.UserAccessEntity userAccessEntity)
+  {
+    return super.addParent(userAccessEntity, "gov.geoplatform.uasdm.graph.UserHasAccess");
+  }
+  
+  public void removeUserHasAccessParent(gov.geoplatform.uasdm.graph.UserAccessEntity userAccessEntity)
+  {
+    super.removeParent(userAccessEntity, "gov.geoplatform.uasdm.graph.UserHasAccess");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.UserAccessEntity> getUserHasAccessParentUserAccessEntitys()
+  {
+    return super.getParents("gov.geoplatform.uasdm.graph.UserHasAccess", gov.geoplatform.uasdm.graph.UserAccessEntity.class);
   }
   
   public static UasComponent get(String oid)

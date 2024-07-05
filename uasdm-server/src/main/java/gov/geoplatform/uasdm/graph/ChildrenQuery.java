@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -39,6 +39,8 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
+import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -240,7 +242,7 @@ public class ChildrenQuery
 
             parameters.put(mdAttribute.getColumnName(), organization.getGraphOrganization().getRID());
           }
-        }        
+        }
         else if (field.equalsIgnoreCase(Collection.SENSOR))
         {
           MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
@@ -320,7 +322,6 @@ public class ChildrenQuery
               statement.append(" " + mdAttribute.getColumnName() + " = :" + mdAttribute.getColumnName() + "\n");
 
               parameters.put(mdAttribute.getColumnName(), value);
-
             }
             else
             {
@@ -340,10 +341,31 @@ public class ChildrenQuery
     }
 
     MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
 
-    MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UasComponent.NAME);
+    MdAttributeDAOIF nameAttribute = mdClass.definesAttribute(UasComponent.NAME);
+    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
+    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
 
-    statement.append(" ORDER BY " + mdAttribute.getColumnName());
+    SessionIF session = Session.getCurrentSession();
+
+    // Add the filter where clause
+    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+
+    if (session != null)
+    {
+      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
+      statement.append(" OR in('" + mdEdge.getDBClassName() + "')[user = :owner].size() > 0");
+    }
+
+    parameters.put("isPrivate", false);
+
+    if (session != null)
+    {
+      parameters.put("owner", session.getUser().getOid());
+    }
+
+    statement.append(" ORDER BY " + nameAttribute.getColumnName());
   }
 
   private List<QueryBucket> getBuckets(JSONObject cObject)
