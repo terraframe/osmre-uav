@@ -323,7 +323,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   protected boolean needsUpdate()
   {
-    return this.isModified(UasComponent.DESCRIPTION);
+    return this.isModified(UasComponent.DESCRIPTION) || this.isModified(UasComponent.ISPRIVATE);
   }
 
   @Transaction
@@ -973,15 +973,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public List<UasComponentIF> getParents()
   {
     HashMap<String, Object> parameters = new HashMap<String, Object>();
-    parameters.put("rid", this.getRID());
+    parameters.put("oid", this.getOid());
+    // parameters.put("rid", this.getRID());
+
+    MdVertexDAOIF mdVertex = (MdVertexDAOIF) this.getMdClass();
 
     final MdEdgeDAOIF mdEdge = this.getParentMdEdge();
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM (");
+    statement.append("SELECT FROM ( \n");
     statement.append("  SELECT EXPAND( IN('" + mdEdge.getDBClassName() + "'))\n");
-    statement.append("  FROM :rid \n");
-    statement.append(")");
+    statement.append("  FROM ( \n");
+    statement.append("    SELECT FROM " + mdVertex.getDBClassName() + " WHERE oid = :oid \n");
+    statement.append("  )\n");
+    statement.append(")\n");
 
     addAccessFilter(parameters, statement);
 
@@ -1008,33 +1013,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
 
     return query.getResults();
-  }
-
-  private void addAccessFilter(HashMap<String, Object> parameters, StringBuilder statement)
-  {
-    // Add the filter for permissions
-    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
-    MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
-
-    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
-    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
-
-    SessionIF session = Session.getCurrentSession();
-
-    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
-
-    if (session != null)
-    {
-      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
-      statement.append(" OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0");
-    }
-
-    parameters.put("isPrivate", false);
-
-    if (session != null)
-    {
-      parameters.put("owner", session.getUser().getOid());
-    }
   }
 
   @Override
@@ -1120,4 +1098,51 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return Product.createIfNotExist(this, productName);
   }
+
+  public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
+  {
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("oid", oid);
+
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM ( \n");
+    statement.append("  SELECT FROM " + mdVertex.getDBClassName() + " WHERE oid = :oid \n");
+    statement.append(")\n");
+
+    addAccessFilter(parameters, statement);
+
+    final GraphQuery<T> query = new GraphQuery<T>(statement.toString(), parameters);
+
+    return Optional.ofNullable(query.getSingleResult());
+  }
+
+  public static void addAccessFilter(HashMap<String, Object> parameters, StringBuilder statement)
+  {
+    // Add the filter for permissions
+    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+    MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
+    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
+
+    SessionIF session = Session.getCurrentSession();
+
+    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+
+    if (session != null)
+    {
+      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
+      statement.append(" OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0");
+    }
+
+    parameters.put("isPrivate", false);
+
+    if (session != null)
+    {
+      parameters.put("owner", session.getUser().getOid());
+    }
+  }
+
 }

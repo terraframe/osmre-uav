@@ -835,7 +835,7 @@ public class ProjectManagementService
     return getObjectsPresignedReq(sessionId, id, key, pageNumber, pageSize).toJSON(true).toString();
   }
 
-  @Request
+  @Request(RequestType.SESSION)
   public SiteObjectsResultSet getObjectsPresignedReq(String sessionId, String id, String key, Long pageNumber, Long pageSize)
   {
     return this.getObjects(id, key, pageNumber, pageSize);

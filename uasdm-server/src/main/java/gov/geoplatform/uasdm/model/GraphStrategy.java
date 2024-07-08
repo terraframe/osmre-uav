@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -22,12 +22,11 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Imagery;
-import gov.geoplatform.uasdm.graph.Mission;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.CollectionProductDTO;
@@ -38,27 +37,31 @@ public class GraphStrategy implements ComponentStrategy
 
   public UasComponentIF getComponent(String oid)
   {
-    return UasComponent.get(oid);
+    return UasComponent.getWithAccessControl(oid).orElseThrow(() -> {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("Unable to find a component an id of [" + oid + "]");
+      throw ex;
+    });
   }
 
   public SiteIF getSite(String oid)
   {
-    return Site.get(oid);
+    return (SiteIF) this.getComponent(oid);
   }
 
   public ProjectIF getProject(String oid)
   {
-    return Project.get(oid);
+    return (ProjectIF) this.getComponent(oid);
   }
 
   public MissionIF getMission(String oid)
   {
-    return Mission.get(oid);
+    return (MissionIF) this.getComponent(oid);
   }
 
   public CollectionIF getCollection(String oid)
   {
-    return Collection.get(oid);
+    return (CollectionIF) this.getComponent(oid);
   }
 
   public ImageryIF getImagery(String oid)
