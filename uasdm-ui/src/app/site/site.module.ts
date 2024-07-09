@@ -70,6 +70,8 @@ import { ArtifactUploadComponent } from './component/artifact-upload/artifact-up
 import { FilterModalComponent } from './component/modal/filter-modal.component';
 import { CreateProductGroupModalComponent } from './component/modal/create-product-group-modal.component';
 import { ShareProductModalComponent } from './component/modal/share-product-modal.component';
+import { UserAccessService } from './service/user-access.service';
+import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
 
 @NgModule({
 	imports: [
@@ -128,7 +130,8 @@ import { ShareProductModalComponent } from './component/modal/share-product-moda
 		LayerPanelComponent,
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
-		ShareProductModalComponent
+		ShareProductModalComponent,
+		UserAccessModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -140,7 +143,8 @@ import { ShareProductModalComponent } from './component/modal/share-product-moda
 		MetadataService,
 		ClassificationService,
 		UAVService,
-		ReportService
+		ReportService,
+		UserAccessService
 	],
 	entryComponents: [
 		FilterModalComponent,
@@ -154,7 +158,8 @@ import { ShareProductModalComponent } from './component/modal/share-product-moda
 		CollectionModalComponent,
 		ProductModalComponent,
 		CreateProductGroupModalComponent,
-		ShareProductModalComponent
+		ShareProductModalComponent,
+		UserAccessModalComponent
 	]
 })
 export class SiteModule { }

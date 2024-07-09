@@ -1,26 +1,28 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
 import java.util.List;
 
+import com.runwaysdk.session.Session;
+import com.runwaysdk.session.SessionIF;
+
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -74,11 +76,18 @@ public class CollectionConverter extends Converter
       String phoneNumber = user.getPhoneNumber();
       String emailAddress = user.getEmail();
 
+      SessionIF session = Session.getCurrentSession();
+
+      if (session != null)
+      {
+        siteItem.setOwner(user.getOid().equals(session.getUser().getOid()));
+      }
+
       siteItem.setOwnerName(userName);
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
-      
+
       siteItem.setHasAllZip(collection.getHasAllZip());
 
       if (collection.getCollectionDate() != null)
@@ -92,7 +101,7 @@ public class CollectionConverter extends Converter
         String date = Util.formatIso8601(collection.getCollectionEndDate(), false);
         siteItem.setCollectionEndDate(date);
       }
-      
+
       List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
       if (!tasks.isEmpty())
       {
@@ -106,7 +115,7 @@ public class CollectionConverter extends Converter
     // Collection.RAW, uasComponent.getFolderName() +
     // MetadataXMLGenerator.FILENAME);
 
-    siteItem.setPilotName( collection.getPocName());
+    siteItem.setPilotName(collection.getPocName());
 
     Sensor sensor = collection.getSensor();
     if (sensor != null)

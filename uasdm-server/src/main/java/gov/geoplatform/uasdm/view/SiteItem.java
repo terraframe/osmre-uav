@@ -48,6 +48,8 @@ public class SiteItem implements TreeComponent
 
   public static String        IS_PRIVATE          = "isPrivate";
 
+  public static String        IS_OWNER            = "isOwner";
+
   public static String        NUMBER_OF_CHILDREN  = "numberOfChildren";
 
   public static String        METADATA_UPLOADED   = "metadataUploaded";
@@ -75,6 +77,8 @@ public class SiteItem implements TreeComponent
   private String              type;
 
   private String              typeLabel;
+
+  private boolean             owner;
 
   private String              ownerName;
 
@@ -117,6 +121,7 @@ public class SiteItem implements TreeComponent
     this.children = new LinkedList<TreeComponent>();
     this.values = new HashMap<String, Object>();
     this.metadataUploaded = false;
+    this.owner = false;
   }
 
   public boolean isHasAllZip()
@@ -163,6 +168,16 @@ public class SiteItem implements TreeComponent
   public void setTypeLabel(String typeLabel)
   {
     this.typeLabel = typeLabel;
+  }
+
+  public boolean isOwner()
+  {
+    return owner;
+  }
+
+  public void setOwner(boolean owner)
+  {
+    this.owner = owner;
   }
 
   public String getOwnerName()
@@ -344,6 +359,7 @@ public class SiteItem implements TreeComponent
     obj.put(TYPE, this.type);
     obj.put(TYPE_LABEL, this.typeLabel);
     obj.put(NUMBER_OF_CHILDREN, this.numberOfChildren);
+    obj.put(IS_OWNER, this.isOwner());
     obj.put(OWNER_NAME, this.getOwnerName());
     obj.put(OWNER_PHONE, this.getOwnerPhone());
     obj.put(OWNER_EMAIL, this.getOwnerEmail());

@@ -53,6 +53,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.CannotDeleteProcessingCollection;
 import gov.geoplatform.uasdm.CollectionStatus;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.CollectionReport;
@@ -296,6 +297,17 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     if (this.isNew())
     {
       this.setMetadataUploaded(false);
+    }
+    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
+    {
+      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
+
+      if (isPublished)
+      {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("A collection can not be made private if it has published products");
+        throw ex;
+      }
     }
 
     super.applyWithParent(parent);

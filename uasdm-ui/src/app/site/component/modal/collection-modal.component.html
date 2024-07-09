@@ -270,6 +270,9 @@
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
                 </button>
+                <button *ngIf="entity.isOwner && entity.isPrivate" type="button" style="margin-left: 5px;" class="btn btn-warning" (click)="handleAccessManagement()">
+                  Access Management
+                </button>
                 <button *ngIf="tabName === 'image'" type="button" class="btn btn-primary" [disabled]="processRunning"
                   (click)="handleUpload()">
                   Upload

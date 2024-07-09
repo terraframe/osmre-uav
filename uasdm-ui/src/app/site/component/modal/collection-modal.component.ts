@@ -31,6 +31,8 @@ import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
+import { UserAccessModalComponent } from './user-access-modal.component';
+import { AuthService } from '@shared/service/auth.service';
 
 @Component({
 	selector: 'collection-modal',
@@ -85,6 +87,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	constructor(
 		private service: ManagementService,
 		private metadataService: MetadataService,
+		private authService: AuthService,
 		private modalService: BsModalService,
 		public bsModalRef: BsModalRef
 	) {
@@ -387,6 +390,17 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			this.entity.metadataUploaded = true;
 		});
 	}
+
+	handleAccessManagement(): void {
+		let modalRef = this.modalService.show(UserAccessModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'upload-modal'
+		});
+		modalRef.content.init(this.entity);
+	}
+
 
 	handleUpload(): void {
 

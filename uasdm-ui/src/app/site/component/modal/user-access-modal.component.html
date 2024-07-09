@@ -1,0 +1,50 @@
+<!--
+
+
+
+-->
+<div>
+    <form #myForm="ngForm">
+
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input [(ngModel)]="identifier" name="identifier" type="input" class="form-control"
+                            placeholder="john.smith@example.com" required />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" [disabled]="myForm.invalid && (myForm.dirty || myForm.touched)"
+                        (click)="handleGrantAccess()" class="btn btn-primary" role="button" aria-disabled="false"
+                        style="padding: 4px 18px;">Grant Access</button>    
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="list-group">
+                    <div *ngFor="let item of list" class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {{item.name}}
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                (click)="handleRemoveAccess(item)" class="btn btn-danger" role="button" aria-disabled="false"
+                                style="padding: 4px 18px;">Remove Access</button>    
+                            </div>
+                        </div>        
+                    </div>    
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-holder" style="text-align: right;">
+                <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
+                    aria-disabled="false" style="padding: 4px 18px;">Close</button>
+
+            </div>
+        </div>
+    </form>
+
+</div>

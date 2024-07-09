@@ -61,6 +61,7 @@ export class SiteEntity {
 	geometry?: any;
 	numberOfChildren: number;
 	lastModified?: string;
+	isOwner?: boolean;
 	ownerName?: string;
 	ownerPhone?: string;
 	ownerEmail?: string;
@@ -334,6 +335,14 @@ export class Product {
 	locked?: boolean
 	primary?: boolean;
 	removable?: boolean;
+}
+
+export class UserAccess {
+
+	oid: string;
+	component: string;
+	type: string;
+	name: string;
 }
 
 

@@ -1,5 +1,8 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.runwaysdk.business.graph.EdgeObject;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
@@ -9,6 +12,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
+import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.model.EdgeType;
 
@@ -30,32 +34,20 @@ public class UserAccessEntity extends UserAccessEntityBase
     return edge;
   }
 
-  public static UserAccessEntity getForUser(String userId)
-  {
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UserAccessEntity.CLASS);
-
-    StringBuilder statement = new StringBuilder();
-    statement.append("SELECT FROM " + mdVertex.getDBClassName());
-    statement.append(" WHERE user = :user");
-
-    GraphQuery<UserAccessEntity> query = new GraphQuery<UserAccessEntity>(statement.toString());
-    query.setParameter("user", userId);
-
-    return query.getSingleResult();
-  }
-
   public static UserAccessEntity getOrCreate(String userId)
   {
-    UserAccessEntity entity = UserAccessEntity.getForUser(userId);
+    return getOrCreate(SingleActor.get(userId));
+  }
 
-    if (entity == null)
-    {
-      entity = new UserAccessEntity();
-      entity.setUserId(userId);
+  public static UserAccessEntity getOrCreate(SingleActor actor)
+  {
+    return UserAccessEntity.getForUser(actor).orElseGet(() -> {
+      UserAccessEntity entity = new UserAccessEntity();
+      entity.setUserId(actor.getOid());
       entity.apply();
-    }
 
-    return entity;
+      return entity;
+    });
   }
 
   public static boolean hasAccess(UasComponent component)
@@ -92,6 +84,49 @@ public class UserAccessEntity extends UserAccessEntityBase
     }
 
     return false;
+  }
+
+  public static Optional<UserAccessEntity> getForUser(SingleActor user)
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(UserAccessEntity.CLASS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE user = :user");
+
+    GraphQuery<UserAccessEntity> query = new GraphQuery<UserAccessEntity>(statement.toString());
+    query.setParameter("user", user.getOid());
+
+    return Optional.ofNullable(query.getSingleResult());
+  }
+
+  public static List<UserAccessEntity> getForComponent(UasComponent component)
+  {
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(in('" + mdEdge.getDBClassName() + "'))");
+    statement.append(" FROM :rid");
+
+    GraphQuery<UserAccessEntity> query = new GraphQuery<UserAccessEntity>(statement.toString());
+    query.setParameter("rid", component.getRID());
+
+    return query.getResults();
+  }
+
+  public boolean hasEdge(UasComponent component)
+  {
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(out('" + mdEdge.getDBClassName() + "')[oid = :oid])");
+    statement.append(" FROM :rid");
+
+    GraphQuery<UserAccessEntity> query = new GraphQuery<UserAccessEntity>(statement.toString());
+    query.setParameter("rid", this.getRID());
+    query.setParameter("oid", component.getOid());
+
+    return query.getResults().size() > 0;
   }
 
 }
