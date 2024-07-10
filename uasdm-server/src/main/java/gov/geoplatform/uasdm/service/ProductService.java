@@ -33,6 +33,7 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -71,13 +72,21 @@ public class ProductService
   {
     final Product product = Product.get(productId);
 
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
+
     product.refreshDocuments();
   }
 
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    ComponentFacade.getProduct(oid).delete();
+    ProductIF product = ComponentFacade.getProduct(oid);
+
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
+
+    product.delete();
   }
 
   @Request(RequestType.SESSION)
@@ -125,6 +134,7 @@ public class ProductService
     ProductIF product = ComponentFacade.getProduct(id);
 
     UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
 
     List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
@@ -139,9 +149,11 @@ public class ProductService
   public ProductView togglePublish(String sessionId, String id)
   {
     ProductIF product = ComponentFacade.getProduct(id);
-    product.togglePublished();
 
     UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
+
+    product.togglePublished();
 
     List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
@@ -154,6 +166,10 @@ public class ProductService
   public void toggleLock(String sessionId, String id)
   {
     ProductIF product = ComponentFacade.getProduct(id);
+
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
+
     product.toggleLock();
   }
 
@@ -161,6 +177,9 @@ public class ProductService
   public RemoteFileObject downloadAllZip(String sessionId, String id)
   {
     final Product product = Product.get(id);
+
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
 
     return product.downloadAllZip();
   }
@@ -170,12 +189,18 @@ public class ProductService
   {
     final Product product = Product.get(id);
 
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
+
     return product.getAllZip();
   }
 
   public ODMRunView getODMRunByArtifact(String sessionId, String artifactId)
   {
     Document doc = Document.get(artifactId);
+
+    UasComponentIF component = doc.getComponent();
+    UserAccessEntity.validateAccess(component);
 
     ODMRun run = ODMRun.getGeneratingRun(doc);
 
@@ -207,6 +232,9 @@ public class ProductService
   public JSONArray getMappableItems(String sessionId, String oid)
   {
     Product product = Product.get(oid);
+
+    UasComponentIF component = product.getComponent();
+    UserAccessEntity.validateAccess(component);
 
     return product.getMappableDocuments().stream().map(mappable -> {
       try

@@ -934,6 +934,9 @@ public class ProjectManagementService
     {
       Product product = Product.get(productId);
 
+      UasComponentIF component = product.getComponent();
+      UserAccessEntity.validateAccess(component);
+
       Optional<DocumentIF> op = product.getMappableOrtho();
 
       if (op.isPresent())
@@ -1024,12 +1027,12 @@ public class ProjectManagementService
       {
         QuerySiteResult site = (QuerySiteResult) result;
 
-//        if (site.getIsPrivate())
+        // if (site.getIsPrivate())
         {
           JSONArray hierarchy = site.getHierarchy();
           JSONObject object = hierarchy.getJSONObject(hierarchy.length() - 1);
           String id = object.getString("id");
-          
+
           UasComponent component = UasComponent.get(id);
 
           return UserAccessEntity.hasAccess(component);
@@ -1241,7 +1244,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadOdmAll(String sessionId, String colId)
   {
-    Collection collection = Collection.get(colId);
+    Collection collection = (Collection) ComponentFacade.getCollection(colId);
 
     List<Product> products = collection.getProducts();
 
@@ -1253,7 +1256,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadReport(String sessionId, String colId, String folder)
   {
-    Collection collection = Collection.get(colId);
+    Collection collection = (Collection) ComponentFacade.getCollection(colId);
 
     return collection.downloadReport(folder);
   }
@@ -1284,6 +1287,8 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public String getDefaultODMRunConfig(String sessionId, String collectionId)
   {
+    Collection collection = (Collection) ComponentFacade.getCollection(collectionId);
+
     List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
 
     if (runs.size() > 0)
@@ -1301,8 +1306,6 @@ public class ProjectManagementService
     }
     else
     {
-      Collection collection = Collection.get(collectionId);
-
       ODMProcessConfiguration config = new ODMProcessConfiguration();
 
       Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);

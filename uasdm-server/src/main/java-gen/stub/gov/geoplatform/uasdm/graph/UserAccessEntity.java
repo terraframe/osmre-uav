@@ -14,7 +14,9 @@ import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class UserAccessEntity extends UserAccessEntityBase
 {
@@ -50,6 +52,16 @@ public class UserAccessEntity extends UserAccessEntityBase
     });
   }
 
+  public static void validateAccess(UasComponentIF component)
+  {
+    if (component instanceof UasComponent && !hasAccess((UasComponent) component))
+    {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("Unable to find a component an id of [" + component.getOid() + "]");
+      throw ex;
+    }
+  }
+
   public static boolean hasAccess(UasComponent component)
   {
     if (!component.isPrivate())
@@ -69,7 +81,6 @@ public class UserAccessEntity extends UserAccessEntityBase
       }
 
       // Add the filter for permissions
-      MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
       MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
 
       StringBuilder statement = new StringBuilder();
