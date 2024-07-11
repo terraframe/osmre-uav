@@ -52,6 +52,11 @@ public class UserAccessEntity extends UserAccessEntityBase
     });
   }
 
+  public static void validateAccess(String oid)
+  {
+    validateAccess(UasComponent.get(oid));
+  }
+
   public static void validateAccess(UasComponentIF component)
   {
     if (component instanceof UasComponent && !hasAccess((UasComponent) component))
@@ -60,6 +65,11 @@ public class UserAccessEntity extends UserAccessEntityBase
       ex.setUserMessage("Unable to find a component an id of [" + component.getOid() + "]");
       throw ex;
     }
+  }
+
+  public static boolean hasAccess(String componentId)
+  {
+    return hasAccess(UasComponent.get(componentId));
   }
 
   public static boolean hasAccess(UasComponent component)

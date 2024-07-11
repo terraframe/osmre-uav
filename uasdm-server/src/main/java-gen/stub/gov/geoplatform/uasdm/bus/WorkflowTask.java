@@ -301,7 +301,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
   public UasComponentIF getComponentInstance()
   {
-    return ComponentFacade.getComponent(this.getComponent());
+    return gov.geoplatform.uasdm.graph.UasComponent.get(this.getComponent());
   }
 
   public static boolean isShowUserOnly()

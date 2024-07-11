@@ -94,7 +94,6 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
-import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -157,7 +156,7 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            List<String> files = downloadAll(null, this.collection.getOid(), ImageryComponent.RAW, ostream, predicate, false);
+            List<String> files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
 
             filenames.addAll(files);
           }
@@ -500,12 +499,14 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public void downloadAll(String sessionId, String id, String key, OutputStream out, boolean incrementDownloadCount)
   {
-    this.downloadAll(sessionId, id, key, out, null, incrementDownloadCount);
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    this.downloadAll(component, key, out, null, incrementDownloadCount);
   }
 
-  private List<String> downloadAll(String sessionId, String id, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
+  private List<String> downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
   {
-    List<SiteObject> items = getObjects(id, key, null, null).getObjects();
+    List<SiteObject> items = component.getSiteObjects(key, null, null).getObjects();
 
     List<String> filenames = new LinkedList<String>();
 
@@ -518,7 +519,7 @@ public class ProjectManagementService
     {
       for (SiteObject item : items)
       {
-        try (RemoteFileObject remoteFile = download(sessionId, id, item.getKey(), incrementDownloadCount))
+        try (RemoteFileObject remoteFile = download(component, item.getKey(), incrementDownloadCount))
         {
           try (InputStream istream = remoteFile.getObjectContent())
           {
@@ -916,14 +917,7 @@ public class ProjectManagementService
     {
       UasComponentIF component = ComponentFacade.getComponent(id);
 
-      if (component instanceof Collection)
-      {
-        return ( (Collection) component ).download(key, incrementDownloadCount);
-      }
-      else
-      {
-        return component.download(key);
-      }
+      return download(component, key, incrementDownloadCount);
     }
   }
 
@@ -973,6 +967,11 @@ public class ProjectManagementService
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
+    return download(component, key, incrementDownloadCount);
+  }
+
+  private RemoteFileObject download(UasComponentIF component, String key, boolean incrementDownloadCount)
+  {
     if (component instanceof Collection)
     {
       return ( (Collection) component ).download(key, incrementDownloadCount);
