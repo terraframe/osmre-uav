@@ -15,6 +15,9 @@
  */
 package gov.geoplatform.uasdm.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.model.ComponentFacade;
@@ -23,9 +26,11 @@ import gov.geoplatform.uasdm.service.IndexService;
 
 public class IndexUpdateDocumentCommand implements Command
 {
-  private UasComponentIF component;
+  private static final Logger logger = LoggerFactory.getLogger(IndexUpdateDocumentCommand.class);
 
-  private boolean        isNameModified;
+  private UasComponentIF      component;
+
+  private boolean             isNameModified;
 
   public IndexUpdateDocumentCommand(UasComponentIF component, boolean isNameModified)
   {
@@ -36,22 +41,42 @@ public class IndexUpdateDocumentCommand implements Command
   @Override
   public void doIt()
   {
-    if (component.isPrivate())
+    try
     {
-      component.getProducts().forEach(product -> {
-        IndexService.removeStacItems(product);
-      });
-    }
+      if (component.isPrivate())
+      {
+        component.getProducts().forEach(product -> {
+          IndexService.removeStacItems(product);
+        });
+      }
 
-    IndexService.updateComponent(this.component, isNameModified);
+      IndexService.updateComponent(this.component, isNameModified);
+    }
+    catch (RuntimeException e)
+    {
+      logger.error("Error indexing stac item", e);
+
+      throw e;
+    }
   }
 
   @Override
   public void undoIt()
   {
-    UasComponentIF original = ComponentFacade.getComponent(this.component.getOid());
 
-    IndexService.updateComponent(original, isNameModified);
+    try
+    {
+      UasComponentIF original = ComponentFacade.getComponent(this.component.getOid());
+
+      IndexService.updateComponent(original, isNameModified);
+    }
+    catch (RuntimeException e)
+    {
+      logger.error("Error indexing stac item", e);
+
+      throw e;
+    }
+
   }
 
   @Override
