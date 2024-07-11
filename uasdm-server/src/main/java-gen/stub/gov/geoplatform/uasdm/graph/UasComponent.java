@@ -167,6 +167,18 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     boolean isNew = this.isNew();
 
+    if (!isNew && this.isModified(UasComponent.ISPRIVATE))
+    {
+      SessionIF session = Session.getCurrentSession();
+
+      if (session == null || !session.getUser().getOid().equals(this.getOwnerOid()))
+      {
+        GenericException exception = new GenericException();
+        exception.setUserMessage("Only the owner may change component visibility");
+        throw exception;
+      }
+    }
+
     if (isNew && this.getFolderName() == null)
     {
       String folderName = this.generateFolderName(parent);
