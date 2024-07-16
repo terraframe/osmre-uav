@@ -407,7 +407,7 @@ public abstract class Converter
 
     view.setHasPointcloud(hasPointcloud);
 
-    view.setHasAllZip( ( (Product) product ).hasAllZip());
+    view.setHasAllZip(product.hasAllZip());
 
     view.setComponents(list);
     view.setId(product.getOid());

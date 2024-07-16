@@ -21,6 +21,8 @@ import java.util.List;
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+
 public interface ProductIF extends ComponentIF
 {
   public MdClassDAOIF getMdClass();
@@ -72,5 +74,9 @@ public interface ProductIF extends ComponentIF
   public boolean isPrimary();
 
   public List<DocumentIF> getMappableDocuments();
+
+  public RemoteFileObject downloadAllZip();
+
+  public boolean hasAllZip();
 
 }

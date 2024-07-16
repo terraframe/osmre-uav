@@ -101,9 +101,17 @@ public class Document extends DocumentBase implements DocumentIF
   public UasComponent getComponent()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
-    final List<UasComponent> parents = this.getParents(mdEdge, UasComponent.class);
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Document.CLASS);
 
-    return parents.get(0);
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND(in('" + mdEdge.getDBClassName() + "'))");
+    statement.append(" FROM " + mdVertex.getDBClassName());
+    statement.append(" WHERE oid = :oid");
+
+    GraphQuery<UasComponent> query = new GraphQuery<UasComponent>(statement.toString());
+    query.setParameter("oid", this.getOid());
+
+    return query.getSingleResult();
   }
 
   public DocumentIF.Metadata toMetadata()

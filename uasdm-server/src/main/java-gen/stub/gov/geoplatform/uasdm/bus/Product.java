@@ -31,6 +31,7 @@ import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -281,6 +282,20 @@ public class Product extends ProductBase implements ProductIF
   @Override
   public List<DocumentIF> getMappableDocuments()
   {
+    return null;
+  }
+
+  @Override
+  public boolean hasAllZip()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public RemoteFileObject downloadAllZip()
+  {
+    // TODO Auto-generated method stub
     return null;
   }
 }

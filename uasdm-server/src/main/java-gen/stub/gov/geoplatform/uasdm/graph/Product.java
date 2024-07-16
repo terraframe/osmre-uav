@@ -585,26 +585,20 @@ public class Product extends ProductBase implements ProductIF
     // }
     // else
     // {
-    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
+
+    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, this.getS3location() + Product.ODM_ALL_DIR, new LinkedList<SiteObject>(), null, null).getObjects();
 
     SiteObject last = null;
-
-    String path = component.getS3location().replaceAll("\\/", "\\\\/");
-
-    if (!path.endsWith("/"))
-    {
-      path = path + "\\\\/";
-    }
-
-    Pattern pattern = Pattern.compile("^" + path + "odm_all\\/all.+\\.zip$", Pattern.CASE_INSENSITIVE);
 
     for (SiteObject item : items)
     {
       if (last == null || item.getLastModified().after(last.getLastModified()))
       {
-        Matcher matcher = pattern.matcher(item.getKey());
+        String extension = FilenameUtils.getExtension(item.getKey());
+        String baseName = FilenameUtils.getBaseName(item.getKey());
+        String folder = FilenameUtils.getBaseName(FilenameUtils.getFullPathNoEndSeparator(item.getKey()));
 
-        if (matcher.find())
+        if (folder.equals(ODM_ALL_DIR) && baseName.startsWith("all") && extension.equals("zip"))
         {
           last = item;
         }

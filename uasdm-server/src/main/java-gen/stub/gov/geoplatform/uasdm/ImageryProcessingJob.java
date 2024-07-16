@@ -145,6 +145,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       task.apply();
+      
+      t.printStackTrace();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
 

@@ -56,6 +56,7 @@ import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
@@ -1245,11 +1246,13 @@ public class ProjectManagementService
   {
     Collection collection = (Collection) ComponentFacade.getCollection(colId);
 
-    List<Product> products = collection.getProducts();
+    ProductIF product = collection.getPrimaryProduct().orElseThrow(() -> {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("A product does not exist");
+      throw ex;
+    });
 
-    products.sort((a, b) -> a.getLastUpdateDate().compareTo(b.getLastUpdateDate()));
-
-    return products.get(0).downloadAllZip();
+    return product.downloadAllZip();
   }
 
   @Request(RequestType.SESSION)
