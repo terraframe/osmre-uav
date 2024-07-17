@@ -256,7 +256,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       SessionIF session = Session.getCurrentSession();
 
-      if (session == null || !session.getUser().getOid().equals(this.getOwnerOid()))
+      // Session will be null during a patch
+      if (session != null && !session.getUser().getOid().equals(this.getOwnerOid()))
       {
         GenericException exception = new GenericException();
         exception.setUserMessage("Only the owner may change component visibility");
