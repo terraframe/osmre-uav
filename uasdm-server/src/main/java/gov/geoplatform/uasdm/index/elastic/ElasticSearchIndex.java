@@ -63,6 +63,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import co.elastic.clients.util.ObjectBuilder;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.model.Page;
@@ -457,18 +458,33 @@ public class ElasticSearchIndex implements Index
         String[] tokens = text.trim().split("\\s");
 
         SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME).query(q -> {
-          return q.bool(b -> b.must(mu -> {
+          ObjectBuilder<Query> builder = q.bool(b -> b.must(mu -> {
 
-            for (String token : tokens)
-            {
-              mu.queryString(m -> {
-                Builder fields = m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label");
-                return fields.query("*" + token + "*");
-              });
-            }
+            mu.queryString(m -> {
+              Builder fields = m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label");
+
+              StringBuilder query = new StringBuilder();
+
+              for (int i = 0; i < tokens.length; i++)
+              {
+                for (String token : tokens)
+                {
+                  if (i != 0)
+                  {
+                    query.append(" AND ");
+                  }
+
+                  query.append("(" + token + ")");
+                }
+              }
+
+              return fields.query(query.toString());
+            });
 
             return mu;
           }));
+
+          return builder;
         }), ElasticDocument.class);
 
         for (Hit<ElasticDocument> hit : search.hits().hits())

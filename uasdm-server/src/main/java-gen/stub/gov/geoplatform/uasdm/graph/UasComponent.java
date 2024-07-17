@@ -532,11 +532,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       document.delete(true);
     }
 
-    if (new ArtifactQuery(this, product).getDocuments().size() == 0)
-    {
-      // TODO: How to handle this with versions
-      // product.delete();
-    }
+    // TODO: How to handle this with versions
+//    if (new ArtifactQuery(this, product).getDocuments().size() == 0)
+//    {
+//      // product.delete();
+//    }
 
     // Re-index the products
     new ReIndexStacItemCommand(product).doIt();
