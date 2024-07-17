@@ -47,6 +47,11 @@ public class CloudOptimizedGeoTiffService
   // @Request(RequestType.SESSION)
   public ResponseEntity<?> tiles(String sessionId, String path, String matrixSetId, String x, String y, String z, String scale, String format, MultiValueMap<String, String> queryParams, TileAccessControl control)
   {
+    if (!control.contains(path))
+    {
+      this.validateAccess(sessionId, path, control);
+    }
+
     if (!control.hasAccess(path))
     {
       // User does not have access to the tiles
@@ -76,6 +81,27 @@ public class CloudOptimizedGeoTiffService
   @Request(RequestType.SESSION)
   public JSONObject tilejson(String sessionId, String contextPath, String path, TileAccessControl control)
   {
+    validateAccess(path, control);
+
+    TileJsonRequest req = new TileJsonRequest();
+    req.sessionId = sessionId;
+    req.contextPath = contextPath;
+    req.path = path;
+
+    TileServiceAuthenticator authenticator = new TileServiceAuthenticator(applicationContext, req);
+    authenticator.authenticate();
+
+    return (JSONObject) authenticator.GetResponse();
+  }
+
+  @Request(RequestType.SESSION)
+  public void validateAccess(String sessionId, String path, TileAccessControl control)
+  {
+    this.validateAccess(path, control);
+  }
+
+  private void validateAccess(String path, TileAccessControl control)
+  {
     DocumentIF document = Document.find(path);
     UasComponentIF component = document.getComponent();
 
@@ -91,15 +117,5 @@ public class CloudOptimizedGeoTiffService
 
       throw e;
     }
-
-    TileJsonRequest req = new TileJsonRequest();
-    req.sessionId = sessionId;
-    req.contextPath = contextPath;
-    req.path = path;
-
-    TileServiceAuthenticator authenticator = new TileServiceAuthenticator(applicationContext, req);
-    authenticator.authenticate();
-
-    return (JSONObject) authenticator.GetResponse();
   }
 }

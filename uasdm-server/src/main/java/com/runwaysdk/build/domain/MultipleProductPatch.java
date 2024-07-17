@@ -3,7 +3,9 @@ package com.runwaysdk.build.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +25,12 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class MultipleProductPatch implements Runnable
 {
@@ -60,13 +64,12 @@ public class MultipleProductPatch implements Runnable
   @Request
   public void run()
   {
-    transaction();
+    processProducts();
 
     logger.error("Transaction committed");
   }
 
-  @Transaction
-  protected void transaction()
+  protected void processProducts()
   {
     List<Product> products = this.getProducts();
 
@@ -74,52 +77,91 @@ public class MultipleProductPatch implements Runnable
 
     for (Product sourceProduct : products)
     {
-      // Create the new Product
-      UasComponent component = sourceProduct.getComponent();
-
-      Product targetProduct = (Product) component.createProductIfNotExist(System.currentTimeMillis() + "");
-      targetProduct.setPrimary(true);
-      targetProduct.setBoundingBox(sourceProduct.getBoundingBoxInternal());
-      targetProduct.apply();
-
-      sourceProduct.getGeneratedFromDocuments().forEach(doc -> {
-        doc.addGeneratedProduct(targetProduct);
-      });
-
-      copyGeneratedDocuments(sourceProduct, component, targetProduct);
-
-      if (sourceProduct.isPublished())
-      {
-        logger.error("Publishing product [" + targetProduct.getS3location() + "]");
-
-        // NOTE: Publishing will also re-create the stac item
-        targetProduct.togglePublished();
-      }
-      else
-      {
-        // Index the new product
-        new ReIndexStacItemCommand(targetProduct).doIt();
-      }
-
-      // Delete the old product
-      sourceProduct.delete();
-
-      // Regenerate the component XML ??
-      new GenerateMetadataCommand((CollectionIF) component).doIt();
-
-      logger.error("Migration finished for product [" + component.getS3location() + "]");
+      processProduct(sourceProduct);
     }
 
     logger.error("Transaction finished");
   }
 
+  @Transaction
+  private void processProduct(Product sourceProduct)
+  {
+    // Create the new Product
+    UasComponent component = sourceProduct.getComponent();
+
+    Product targetProduct = (Product) component.createProductIfNotExist(System.currentTimeMillis() + "");
+    targetProduct.setPrimary(component.getPrimaryProduct().isEmpty());
+    targetProduct.setBoundingBox(sourceProduct.getBoundingBoxInternal());
+    targetProduct.apply();
+
+    sourceProduct.getGeneratedFromDocuments().forEach(doc -> {
+      doc.addGeneratedProduct(targetProduct);
+    });
+
+    copyGeneratedDocuments(sourceProduct, component, targetProduct);
+
+    if (sourceProduct.isPublished() && !component.isPrivate())
+    {
+      logger.error("Publishing product [" + targetProduct.getS3location() + "]");
+
+      // NOTE: Publishing will also re-create the stac item
+      targetProduct.togglePublished();
+    }
+    else
+    {
+      // Index the new product
+      new ReIndexStacItemCommand(targetProduct).doIt();
+    }
+
+    // Delete the old product
+    sourceProduct.delete();
+
+    // Regenerate the component XML ??
+    new GenerateMetadataCommand((CollectionIF) component).doIt();
+
+    logger.error("Migration finished for product [" + component.getS3location() + "]");
+  }
+
   private void copyGeneratedDocuments(Product sourceProduct, UasComponent component, Product targetProduct)
   {
-    // Copy documents from the old product to the new product
     logger.error("Moving documents for product [" + component.getS3location() + "] to [" + targetProduct.getS3location() + "]");
 
     List<Document> sourceDocuments = sourceProduct.getDocuments().stream().map(d -> (Document) d).collect(Collectors.toList());
 
+    // Copy over all files in the product folders
+    sourceDocuments.stream().findFirst().ifPresent(document -> {
+
+      String location = document.getS3location();
+
+      String sourceRoot = null;
+
+      if (!location.startsWith(component.getS3location() + ImageryComponent.PRODUCTS))
+      {
+        // Older version of the product data
+        sourceRoot = component.getS3location();
+      }
+      else
+      {
+        // Newer version of product data
+        String productName = location.replaceFirst(component.getS3location() + ImageryComponent.PRODUCTS + "/", "").split("/")[0];
+
+        sourceRoot = component.getS3location() + ImageryComponent.PRODUCTS + "/" + productName + "/";
+      }
+
+      String[] folders = new String[] { ImageryComponent.DEM, ImageryComponent.ORTHO, ImageryComponent.PTCLOUD, Product.ODM_ALL_DIR };
+
+      for (String folder : folders)
+      {
+        String sourceKey = sourceRoot + folder;
+        String targetKey = component.getS3location(targetProduct, folder);
+
+        logger.error("Copying source folder [" + sourceKey + "] to target folder [" + targetKey + "]");
+
+        RemoteFileFacade.copyFolder(sourceKey, AppProperties.getBucketName(), targetKey, AppProperties.getBucketName());
+      }
+    });
+
+    // Create new document objects for all the source documents
     List<DocumentIF> targetDocuments = sourceDocuments.stream().map(sourceDocument -> {
       String sourceKey = sourceDocument.getS3location();
       String filename = FilenameUtils.getName(sourceKey);
@@ -136,12 +178,20 @@ public class MultipleProductPatch implements Runnable
 
       String targetKey = component.getS3location(targetProduct, uploadTarget) + "/" + filename;
 
-      logger.error("Moving source key [" + sourceKey + "] target key [" + targetKey + "]");
+      // Ensure that the source file has already been copied to the target
+      // directory
+      if (!RemoteFileFacade.objectExists(targetKey))
+      {
+        logger.error("Moving source key [" + sourceKey + "] target key [" + targetKey + "]");
 
-      RemoteFileFacade.copyObject(sourceKey, AppProperties.getBucketName(), targetKey, AppProperties.getBucketName());
+        RemoteFileFacade.copyObject(sourceKey, AppProperties.getBucketName(), targetKey, AppProperties.getBucketName());
+      }
 
+      // Create the new document
       Document document = Document.createIfNotExist(component, targetKey, filename, sourceDocument.toMetadata());
 
+      // Attach the ODM run to the new document if one created the source
+      // document
       ODMRun run = ODMRun.getGeneratingRun(sourceDocument);
 
       if (run != null)

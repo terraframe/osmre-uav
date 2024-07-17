@@ -19,4 +19,9 @@ public class TileAccessControl
     return cache.containsKey(path) && cache.get(path).booleanValue();
   }
 
+  public boolean contains(String path)
+  {
+    return cache.containsKey(path);
+  }
+
 }

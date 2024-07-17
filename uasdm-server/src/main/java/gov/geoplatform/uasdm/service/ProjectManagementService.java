@@ -1256,11 +1256,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject downloadReport(String sessionId, String colId, String folder)
+  public RemoteFileObject downloadReport(String sessionId, String colId, String productName, String folder)
   {
     Collection collection = (Collection) ComponentFacade.getCollection(colId);
 
-    return collection.downloadReport(folder);
+    return collection.downloadReport(productName, folder);
   }
 
   @Request(RequestType.SESSION)

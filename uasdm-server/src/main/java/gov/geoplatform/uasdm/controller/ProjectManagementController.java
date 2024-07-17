@@ -241,11 +241,11 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "download-report", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadReport(ClientRequestIF request, final @RequestParamter(name = "colId") String colId, final @RequestParamter(name = "folder") String folder)
+  public ResponseIF downloadReport(ClientRequestIF request, final @RequestParamter(name = "colId") String colId, final @RequestParamter(name = "productName") String productName, final @RequestParamter(name = "folder") String folder)
   {
     final String sessionId = request.getSessionId();
 
-    return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, folder));
+    return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, productName, folder));
   }
 
   @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)

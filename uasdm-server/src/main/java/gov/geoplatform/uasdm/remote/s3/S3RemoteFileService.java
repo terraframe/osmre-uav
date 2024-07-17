@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
@@ -90,7 +90,7 @@ public class S3RemoteFileService implements RemoteFileService
 {
   public static final String STAC_BUCKET = "-stac-";
 
-  private Logger logger = LoggerFactory.getLogger(S3RemoteFileService.class);
+  private Logger             logger      = LoggerFactory.getLogger(S3RemoteFileService.class);
 
   @Override
   public void download(String key, File destination) throws IOException, FileNotFoundException
@@ -134,13 +134,13 @@ public class S3RemoteFileService implements RemoteFileService
 
     return new S3ObjectWrapper(object);
   }
-  
+
   @Override
   public URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
   {
     AmazonS3 client = S3ClientFactory.createClient();
     String bucketName = AppProperties.getBucketName();
-    
+
     return client.generatePresignedUrl(bucketName, key, expiration, httpMethod);
   }
 
@@ -211,6 +211,58 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
+  public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
+  {
+    final int maxKeys = 500;
+
+    try
+    {
+      AmazonS3 client = S3ClientFactory.createClient();
+
+      String bucketName = AppProperties.getBucketName();
+
+      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(sourceKey);
+      listObjectsRequest.setMaxKeys(maxKeys);
+
+      ObjectListing objectListing = client.listObjects(listObjectsRequest);
+
+      while (true)
+      {
+        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
+        Iterator<S3ObjectSummary> objIter = list.iterator();
+
+        while (objIter.hasNext())
+        {
+          S3ObjectSummary summary = objIter.next();
+
+          String summaryKey = summary.getKey();
+          String targetKey = destKey + ( summaryKey.replaceFirst(sourceKey, "") );
+
+          this.copyObject(summaryKey, sourceBucket, targetKey, destBucket);
+        }
+
+        // If the bucket contains many objects, the listObjects() call
+        // might not return all of the objects in the first listing. Check to
+        // see whether the listing was truncated.
+        if (objectListing.isTruncated())
+        {
+          objectListing = client.listNextBatchOfObjects(objectListing);
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+    catch (AmazonS3Exception e)
+    {
+      this.logger.error("Unable to copy the s3 folder [" + sourceKey + "]", e);
+
+      throw e;
+    }
+  }
+
+  @Override
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
     AmazonS3 client = S3ClientFactory.createClient();
@@ -221,8 +273,8 @@ public class S3RemoteFileService implements RemoteFileService
       GetObjectMetadataRequest metadataRequest = new GetObjectMetadataRequest(sourceBucket, sourceKey);
       ObjectMetadata metadataResult = client.getObjectMetadata(metadataRequest);
       long sizeInBytes = metadataResult.getContentLength();
-      
-      if (sizeInBytes < (5l * 1024l * 1024l * 1024l))
+
+      if (sizeInBytes < ( 5l * 1024l * 1024l * 1024l ))
       {
         CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
 
@@ -231,7 +283,7 @@ public class S3RemoteFileService implements RemoteFileService
       else
       {
         // Initiate the multipart upload.
-        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(destBucket,destKey);
+        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(destBucket, destKey);
         InitiateMultipartUploadResult initResult = client.initiateMultipartUpload(initRequest);
 
         // Copy the object using 5 MB parts.
@@ -241,56 +293,47 @@ public class S3RemoteFileService implements RemoteFileService
         List<CopyPartResult> copyResponses = new ArrayList<CopyPartResult>();
         while (bytePosition < sizeInBytes)
         {
-            // The last part might be smaller than partSize, so check to make sure
-            // that lastByte isn't beyond the end of the object.
-            long lastByte = Math.min(bytePosition + partSize - 1, sizeInBytes - 1);
+          // The last part might be smaller than partSize, so check to make sure
+          // that lastByte isn't beyond the end of the object.
+          long lastByte = Math.min(bytePosition + partSize - 1, sizeInBytes - 1);
 
-            // Copy this part.
-            CopyPartRequest copyRequest = new CopyPartRequest()
-                    .withSourceBucketName(sourceBucket)
-                    .withSourceKey(sourceKey)
-                    .withDestinationBucketName(destBucket)
-                    .withDestinationKey(destKey)
-                    .withUploadId(initResult.getUploadId())
-                    .withFirstByte(bytePosition)
-                    .withLastByte(lastByte)
-                    .withPartNumber(partNum++);
-            copyResponses.add(client.copyPart(copyRequest));
-            bytePosition += partSize;
+          // Copy this part.
+          CopyPartRequest copyRequest = new CopyPartRequest().withSourceBucketName(sourceBucket).withSourceKey(sourceKey).withDestinationBucketName(destBucket).withDestinationKey(destKey).withUploadId(initResult.getUploadId()).withFirstByte(bytePosition).withLastByte(lastByte).withPartNumber(partNum++);
+          copyResponses.add(client.copyPart(copyRequest));
+          bytePosition += partSize;
         }
 
-        // Complete the upload request to concatenate all uploaded parts and make the
+        // Complete the upload request to concatenate all uploaded parts and
+        // make the
         // copied object available.
-        CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(
-                destBucket,
-                destKey,
-                initResult.getUploadId(),
-                getETags(copyResponses));
+        CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(destBucket, destKey, initResult.getUploadId(), getETags(copyResponses));
         client.completeMultipartUpload(completeRequest);
       }
     }
     catch (AmazonServiceException e)
     {
-        // The call was transmitted successfully, but Amazon S3 couldn't process
-        // it, so it returned an error response.
-        e.printStackTrace();
+      // The call was transmitted successfully, but Amazon S3 couldn't process
+      // it, so it returned an error response.
+      e.printStackTrace();
     }
     catch (SdkClientException e)
     {
-        // Amazon S3 couldn't be contacted for a response, or the client
-        // couldn't parse the response from Amazon S3.
-        e.printStackTrace();
+      // Amazon S3 couldn't be contacted for a response, or the client
+      // couldn't parse the response from Amazon S3.
+      e.printStackTrace();
     }
   }
-  
+
   // This is a helper function to construct a list of ETags.
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/CopyingObjectsMPUapi.html
-  private static List<PartETag> getETags(List<CopyPartResult> responses) {
-      List<PartETag> etags = new ArrayList<PartETag>();
-      for (CopyPartResult response : responses) {
-          etags.add(new PartETag(response.getPartNumber(), response.getETag()));
-      }
-      return etags;
+  private static List<PartETag> getETags(List<CopyPartResult> responses)
+  {
+    List<PartETag> etags = new ArrayList<PartETag>();
+    for (CopyPartResult response : responses)
+    {
+      etags.add(new PartETag(response.getPartNumber(), response.getETag()));
+    }
+    return etags;
   }
 
   @Override
