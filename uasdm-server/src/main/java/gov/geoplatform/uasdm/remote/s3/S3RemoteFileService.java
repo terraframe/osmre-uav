@@ -286,8 +286,8 @@ public class S3RemoteFileService implements RemoteFileService
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(destBucket, destKey);
         InitiateMultipartUploadResult initResult = client.initiateMultipartUpload(initRequest);
 
-        // Copy the object using 5 MB parts.
-        long partSize = 5 * 1024 * 1024;
+        // Copy the object using 5 GB parts.
+        long partSize = 5L * 1024L * 1024L * 1024L;
         long bytePosition = 0;
         int partNum = 1;
         List<CopyPartResult> copyResponses = new ArrayList<CopyPartResult>();
