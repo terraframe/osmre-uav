@@ -15,11 +15,14 @@
  */
 package gov.geoplatform.uasdm.view;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import gov.geoplatform.uasdm.Util;
 
 public class ProductCriteria
 {
@@ -27,9 +30,9 @@ public class ProductCriteria
   {
     private String field;
 
-    private String value;
+    private Object value;
 
-    public Condition(String field, String value)
+    public Condition(String field, Object value)
     {
       super();
       this.field = field;
@@ -46,7 +49,7 @@ public class ProductCriteria
       this.field = field;
     }
 
-    public String getValue()
+    public Object getValue()
     {
       return value;
     }
@@ -59,11 +62,15 @@ public class ProductCriteria
     public static Condition deserialize(JSONObject object)
     {
       String field = object.getString("field");
-      String value = null;
+      Object value = null;
 
       if (field.equals("organization"))
       {
         value = object.getJSONObject("value").getString("code");
+      }
+      else if (field.equals("collectionDate"))
+      {
+        value = Util.parseIso8601GenericException(object.getString("value"), false);
       }
       else
       {
@@ -104,7 +111,7 @@ public class ProductCriteria
       {
         return "sensor.name";
       }
-      
+
       if (this.field.equals("platform"))
       {
         return "uav.platform.name";
