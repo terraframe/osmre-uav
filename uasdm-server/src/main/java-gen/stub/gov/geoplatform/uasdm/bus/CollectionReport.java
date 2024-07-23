@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -128,8 +129,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     gov.geoplatform.uasdm.graph.Project project = (gov.geoplatform.uasdm.graph.Project) ancestors.stream().filter(a -> ( a instanceof gov.geoplatform.uasdm.graph.Project )).findFirst().get();
     gov.geoplatform.uasdm.graph.Mission mission = (gov.geoplatform.uasdm.graph.Mission) ancestors.stream().filter(a -> ( a instanceof gov.geoplatform.uasdm.graph.Mission )).findFirst().get();
     gov.geoplatform.uasdm.graph.Collection collection = (gov.geoplatform.uasdm.graph.Collection) child;
-    gov.geoplatform.uasdm.graph.UAV uav = child.getUav();
-    Sensor sensor = child.getSensor();
+
     ServerOrganization organization = site.getServerOrganization();
     GeoprismActorIF owner = (GeoprismActorIF) collection.getOwner();
 
@@ -171,36 +171,41 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
       report.setBureauName("N/A");
     }
 
-    if (uav != null)
-    {
-      report.setUav(uav);
-      report.setFaaIdNumber(uav.getFaaNumber());
-      report.setSerialNumber(uav.getSerialNumber());
+    collection.getMetadata().ifPresent(metadata -> {
+      gov.geoplatform.uasdm.graph.UAV uav = metadata.getUav();
+      Sensor sensor = metadata.getSensor();
 
-      Platform platform = uav.getPlatform();
-
-      if (platform != null)
+      if (uav != null)
       {
-        report.setPlatform(platform);
-        report.setPlatformName(platform.getName());
-      }
-    }
-    else
-    {
-      report.setFaaIdNumber("N/A");
-      report.setSerialNumber("N/A");
-      report.setPlatformName("N/A");
-    }
+        report.setUav(uav);
+        report.setFaaIdNumber(uav.getFaaNumber());
+        report.setSerialNumber(uav.getSerialNumber());
 
-    if (sensor != null)
-    {
-      report.setSensor(sensor);
-      report.setSensorName(sensor.getName());
-    }
-    else
-    {
-      report.setSensorName("N/A");
-    }
+        Platform platform = uav.getPlatform();
+
+        if (platform != null)
+        {
+          report.setPlatform(platform);
+          report.setPlatformName(platform.getName());
+        }
+      }
+      else
+      {
+        report.setFaaIdNumber("N/A");
+        report.setSerialNumber("N/A");
+        report.setPlatformName("N/A");
+      }
+
+      if (sensor != null)
+      {
+        report.setSensor(sensor);
+        report.setSensorName(sensor.getName());
+      }
+      else
+      {
+        report.setSensorName("N/A");
+      }
+    });
 
     if (collection != null)
     {
@@ -533,6 +538,8 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(collection.getOid()));
 
+    Optional<Date> collectionDate = collection.getMetadata().map(m -> m.getCollectionDate());
+
     try (OIterator<? extends CollectionReport> iterator = query.getIterator())
     {
       while (iterator.hasNext())
@@ -543,7 +550,11 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
         {
           report.appLock();
           report.setCollectionName(collection.getName());
-          report.setCollectionDate(collection.getCollectionDate());
+
+          collectionDate.ifPresent(date -> {
+            report.setCollectionDate(date);
+          });
+
           report.setErosMetadataComplete(collection.getMetadataUploaded());
           report.setAllStorageSize(storageSize);
           report.apply();

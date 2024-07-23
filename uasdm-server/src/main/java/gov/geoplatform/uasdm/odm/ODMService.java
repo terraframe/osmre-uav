@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
@@ -43,6 +44,7 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
@@ -134,7 +136,7 @@ public class ODMService implements ODMServiceIF
   public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
     initialize();
-    
+
     try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration, col))
     {
       if (payload.getImageCount() > 0)
@@ -236,33 +238,41 @@ public class ODMService implements ODMServiceIF
     cog.put("name", "cog");
     cog.put("value", "true");
     arr.put(cog);
-    
-    // Even though the default is false, I caught ODM Web setting this value to true for most of their presets.
-    // Looking at their docs, it seems to me like we pretty much always want this enabled.
+
+    // Even though the default is false, I caught ODM Web setting this value to
+    // true for most of their presets.
+    // Looking at their docs, it seems to me like we pretty much always want
+    // this enabled.
     // https://docs.opendronemap.org/arguments/auto-boundary/
     JSONObject autoBoundary = new JSONObject();
     autoBoundary.put("name", "auto-boundary");
     autoBoundary.put("value", "true");
     arr.put(autoBoundary);
 
+    Optional<CollectionMetadata> metadata = col.getMetadata();
+
     ////////////////
     // resolution //
     ////////////////
     {
       float resolution = 5.0f; // ODM default is 5.0
-      if (Boolean.TRUE.equals(col.getSensor().getHighResolution()))
+
+      if (Boolean.TRUE.equals(metadata.map(m -> m.getSensor().getHighResolution()).orElse(Boolean.FALSE)))
       {
         resolution = 2.0f; // high resolution sensor default is 2.0
       }
+
       if (configuration.getResolution() != null)
       {
-        resolution = configuration.getResolution().floatValue(); // user can override it
+        resolution = configuration.getResolution().floatValue(); // user can
+                                                                 // override it
       }
+
       JSONObject demResolution = new JSONObject();
       demResolution.put("name", "dem-resolution");
       demResolution.put("value", resolution);
       arr.put(demResolution);
-  
+
       JSONObject orthoResolution = new JSONObject();
       orthoResolution.put("name", "orthophoto-resolution");
       orthoResolution.put("value", resolution);
@@ -290,7 +300,7 @@ public class ODMService implements ODMServiceIF
     ////////////////
     {
       Quality pcQuality = Quality.MEDIUM; // ODM default is medium
-      if (Boolean.TRUE.equals(col.getSensor().getHighResolution()))
+      if (Boolean.TRUE.equals(metadata.map(m -> m.getSensor().getHighResolution()).orElse(Boolean.FALSE)))
       {
         pcQuality = Quality.HIGH; // high resolution sensor default is high
       }
@@ -311,7 +321,7 @@ public class ODMService implements ODMServiceIF
       param.put("value", configuration.getFeatureQuality().getCode());
       arr.put(param);
     }
-    
+
     if (configuration.getVideoResolution() != null)
     {
       JSONObject param = new JSONObject();
@@ -319,7 +329,7 @@ public class ODMService implements ODMServiceIF
       param.put("value", configuration.getVideoResolution());
       arr.put(param);
     }
-    
+
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.addTextBody("options", arr.toString());
 

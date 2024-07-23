@@ -1,0 +1,93 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+  <!-- 
+   -->
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.graph.CollectionMetadata" label="Product Metadata">
+          <attributes>
+            <decimal name="northBound" label="North Bound" length="7" decimal="5" />
+            <decimal name="southBound" label="South Bound" length="7" decimal="5" />
+            <decimal name="eastBound" label="East Bound" length="7" decimal="5" />
+            <decimal name="westBound" label="West Bound" length="7" decimal="5" />
+            <boolean name="exifIncluded" label="EXIF Included" />
+            <date name="acquisitionDateStart" label="Acquisition Date Start" />
+            <date name="acquisitionDateEnd" label="Acquisition Date End" />
+            <integer name="flyingHeight" label="Flying Height" />
+            <integer name="numberOfFlights" label="Number of flights" />
+            <integer name="percentEndLap" label="% endlap" />
+            <integer name="percentSideLap" label="% sidelap" />
+            <decimal name="areaCovered" label="Area covered" length="9" decimal="5" />            
+            <text name="weatherConditions" label="Weather conditions" />
+            <dateTime name="collectionEndDate" required="false" label="Collection End Date" description="End Date collection was flown" />            
+            <graphReference name="uav"
+              type="gov.geoplatform.uasdm.graph.UAV" required="false"
+              label="UAV" />
+            <graphReference name="sensor"
+              type="gov.geoplatform.uasdm.graph.Sensor" required="false"
+              label="Sensor" />
+            <date name="collectionDate" required="false" label="Collection Date" description="Date collection was flown" />
+          </attributes>      
+      </mdVertex>    
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.CollectionHasMetadata" label="Collection Has Metadata" parent="gov.geoplatform.uasdm.graph.Collection" child="gov.geoplatform.uasdm.graph.CollectionMetadata">
+      </mdEdge>      
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProductHasMetadata" label="Product Has Metadata" parent="gov.geoplatform.uasdm.graph.Product" child="gov.geoplatform.uasdm.graph.CollectionMetadata">
+      </mdEdge>            
+    </create>      
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.CollectionMetadata">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.CollectionHasMetadata">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProductHasMetadata">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.CollectionMetadata">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.CollectionHasMetadata">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProductHasMetadata">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
+    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ProductHasMetadata" type="com.runwaysdk.system.metadata.MdEdge"/>
+      <object key="gov.geoplatform.uasdm.graph.CollectionHasMetadata" type="com.runwaysdk.system.metadata.MdEdge"/>
+      <object key="gov.geoplatform.uasdm.graph.CollectionMetadata" type="com.runwaysdk.system.metadata.MdVertex"/>
+    </delete>
+  </undoIt>
+</version>

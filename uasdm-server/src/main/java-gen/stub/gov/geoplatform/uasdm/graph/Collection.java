@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.Pair;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
@@ -67,6 +68,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -135,24 +137,52 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<AttributeType> attributes()
+  public Optional<CollectionMetadata> getMetadata()
   {
-    List<AttributeType> attributes = super.attributes();
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.EXIFINCLUDED)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.NORTHBOUND)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.SOUTHBOUND)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.EASTBOUND)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WESTBOUND)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATESTART)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.ACQUISITIONDATEEND)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.FLYINGHEIGHT)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.NUMBEROFFLIGHTS)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.PERCENTENDLAP)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.PERCENTSIDELAP)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.AREACOVERED)));
-    attributes.add(AttributeType.create(this.getMdAttributeDAO(Collection.WEATHERCONDITIONS)));
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COLLECTION_HAS_METADATA);
 
-    return attributes;
+    // USING THE RID FAILS ON TRANSACTIONS WHICH HAVE NOT BEEN COMMITTED, WORK
+    // AROUND BY DOING A SEARCH BASED ON THE OID
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND( ");
+    statement.append(" OUT('" + mdEdge.getDBClassName() + "')");
+    statement.append(")");
+    statement.append(" FROM ( ");
+    statement.append("   SELECT FROM " + mdVertex.getDBClassName() + " WHERE oid = :oid");
+    statement.append(" ) ");
+
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
+    query.setParameter("oid", this.getOid());
+
+    return Optional.ofNullable(query.getSingleResult());
+  }
+
+  @Override
+  public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes()
+  {
+    List<Pair<ComponentWithAttributes, List<AttributeType>>> list = super.getCompositeAttributes();
+
+    this.getMetadata().ifPresent(metadata -> {
+      List<AttributeType> attributes = new LinkedList<>();
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.EXIFINCLUDED)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.NORTHBOUND)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.SOUTHBOUND)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.EASTBOUND)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.WESTBOUND)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.ACQUISITIONDATESTART)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.ACQUISITIONDATEEND)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.FLYINGHEIGHT)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.NUMBEROFFLIGHTS)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.PERCENTENDLAP)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.PERCENTSIDELAP)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.AREACOVERED)));
+      attributes.add(AttributeType.create(metadata.getMdAttributeDAO(Collection.WEATHERCONDITIONS)));
+
+      list.add(new Pair<ComponentWithAttributes, List<AttributeType>>(metadata, attributes));
+    });
+
+    return list;
   }
 
   @Override
@@ -658,20 +688,20 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return workflowTask;
   }
 
-  @Override
-  public UAV getUav()
-  {
-    String oid = this.getObjectValue(UAV);
-
-    if (oid != null && oid.length() > 0)
-    {
-      return ( gov.geoplatform.uasdm.graph.UAV.get(oid) );
-    }
-
-    return null;
-  }
-
-  @Override
+//  @Override
+//  public UAV getUav()
+//  {
+//    String oid = this.getObjectValue(UAV);
+//
+//    if (oid != null && oid.length() > 0)
+//    {
+//      return ( gov.geoplatform.uasdm.graph.UAV.get(oid) );
+//    }
+//
+//    return null;
+//  }
+//
+//  @Override
   public Sensor getSensor()
   {
     String oid = this.getObjectValue(COLLECTIONSENSOR);
@@ -683,29 +713,31 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return null;
   }
-
-  @Override
-  public void setSensor(Sensor sensor)
-  {
-    this.setCollectionSensor(sensor);
-  }
+//
+//  @Override
+//  public void setSensor(Sensor sensor)
+//  {
+//    this.setCollectionSensor(sensor);
+//  }
 
   @Override
   public boolean isMultiSpectral()
   {
-    Sensor sensor = this.getSensor();
+    return this.getMetadata().map(metadata -> {
+      Sensor sensor = metadata.getSensor();
 
-    if (sensor != null)
-    {
-      SensorType type = sensor.getSensorType();
-
-      if (type.getIsMultispectral())
+      if (sensor != null)
       {
-        return true;
-      }
-    }
+        SensorType type = sensor.getSensorType();
 
-    return false;
+        if (type.getIsMultispectral())
+        {
+          return true;
+        }
+      }
+
+      return false;
+    }).orElse(false);
   }
 
   @Override
@@ -716,6 +748,22 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     CollectionReportFacade.update(this, document).doIt();
 
     return document;
+  }
+
+  @Override
+  public ProductIF createProductIfNotExist(String productName)
+  {
+    final Product product = (Product) super.createProductIfNotExist(productName);
+
+    if (product.isNew())
+    {
+      this.getMetadata().ifPresent(metadata -> {
+        product.addChild(metadata, EdgeType.PRODUCT_HAS_METADATA).apply();
+      });
+
+    }
+
+    return product;
   }
 
   /**

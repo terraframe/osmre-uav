@@ -23,14 +23,16 @@ import com.runwaysdk.session.SessionIF;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.model.ComponentWithAttributes;
+import gov.geoplatform.uasdm.model.CompositeComponent;
 import net.geoprism.account.GeoprismActorIF;
 
-public class CollectionConverter extends Converter
+public class CollectionConverter extends Converter<CollectionIF>
 {
   public CollectionConverter()
   {
@@ -38,23 +40,23 @@ public class CollectionConverter extends Converter
   }
 
   @Override
-  protected UasComponentIF convert(SiteItem siteItem, UasComponentIF uasComponent)
+  protected CompositeComponent<CollectionIF> convert(SiteItem siteItem, CollectionIF uasComponent)
   {
-    CollectionIF collection = (CollectionIF) super.convert(siteItem, uasComponent);
+    CompositeComponent<CollectionIF> component = super.convert(siteItem, uasComponent);
+
+    CollectionIF collection = component.getComponent();
 
     AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType());
 
     collection.addPrivilegeType(privilegeType);
 
-    return collection;
+    return component;
   }
 
   @Override
-  protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
+  protected SiteItem convert(CollectionIF collection, boolean includeMetadata, boolean hasChildren)
   {
-    SiteItem siteItem = super.convert(uasComponent, metadata, hasChildren);
-
-    CollectionIF collection = (CollectionIF) uasComponent;
+    SiteItem siteItem = super.convert(collection, includeMetadata, hasChildren);
 
     if (!collection.getPrivilegeType().isEmpty())
     {
@@ -92,18 +94,6 @@ public class CollectionConverter extends Converter
         siteItem.setHasAllZip(product.hasAllZip());
       });
 
-      if (collection.getCollectionDate() != null)
-      {
-        String date = Util.formatIso8601(collection.getCollectionDate(), false);
-        siteItem.setCollectionDate(date);
-      }
-
-      if (collection.getCollectionEndDate() != null)
-      {
-        String date = Util.formatIso8601(collection.getCollectionEndDate(), false);
-        siteItem.setCollectionEndDate(date);
-      }
-
       List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
       if (!tasks.isEmpty())
       {
@@ -119,37 +109,60 @@ public class CollectionConverter extends Converter
 
     siteItem.setPilotName(collection.getPocName());
 
-    Sensor sensor = collection.getSensor();
-    if (sensor != null)
-    {
-      siteItem.setSensor(sensor.toJSON());
-    }
-
-    UAV uav = collection.getUav();
-    if (uav != null)
-    {
-      siteItem.setUav(uav.toJSON());
-
-      Platform platform = uav.getPlatform();
-      if (platform != null)
+    collection.getMetadata().ifPresent(metadata -> {
+      if (metadata.getCollectionDate() != null)
       {
-        siteItem.setPlatform(platform.toJSON());
+        String date = Util.formatIso8601(metadata.getCollectionDate(), false);
+        siteItem.setCollectionDate(date);
       }
-    }
+
+      if (metadata.getCollectionEndDate() != null)
+      {
+        String date = Util.formatIso8601(metadata.getCollectionEndDate(), false);
+        siteItem.setCollectionEndDate(date);
+      }
+
+      Sensor sensor = metadata.getSensor();
+      if (sensor != null)
+      {
+        siteItem.setSensor(sensor.toJSON());
+      }
+
+      UAV uav = metadata.getUav();
+      if (uav != null)
+      {
+        siteItem.setUav(uav.toJSON());
+
+        Platform platform = uav.getPlatform();
+        if (platform != null)
+        {
+          siteItem.setPlatform(platform.toJSON());
+        }
+      }
+    });
 
     return siteItem;
   }
 
-  protected CollectionIF convertNew(UasComponentIF uasComponent, SiteItem siteItem)
+  @Override
+  protected CompositeComponent<CollectionIF> newInstance(CollectionIF uasComponent)
   {
-    CollectionIF collection = (CollectionIF) super.convertNew(uasComponent, siteItem);
+    CompositeComponent<CollectionIF> component = super.newInstance(uasComponent);
+    component.addMetadata(new CollectionMetadata());
+
+    return component;
+  }
+
+  protected CompositeComponent<CollectionIF> convertNew(CollectionIF uasComponent, SiteItem siteItem)
+  {
+    CompositeComponent<CollectionIF> component = super.convertNew(uasComponent, siteItem);
 
     if (siteItem.getPrivilegeType() != null && !siteItem.getPrivilegeType().trim().equals(""))
     {
       AllPrivilegeType privilegeType = AllPrivilegeType.valueOf(siteItem.getPrivilegeType().trim().toUpperCase());
-      collection.addPrivilegeType(privilegeType);
+      component.getComponent().addPrivilegeType(privilegeType);
     }
 
-    return collection;
+    return component;
   }
 }

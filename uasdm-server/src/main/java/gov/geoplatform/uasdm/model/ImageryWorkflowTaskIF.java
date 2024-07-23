@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runwaysdk.business.Entity;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.DataAccessException;
 
 import gov.geoplatform.uasdm.GenericException;
@@ -32,6 +33,7 @@ import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Mission;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.UasComponent;
@@ -149,36 +151,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           }
           else if (child instanceof CollectionIF)
           {
-            if (selection.has(Collection.EXIFINCLUDED))
-            {
-              child.setValue(Collection.EXIFINCLUDED, selection.getBoolean(Collection.EXIFINCLUDED));
-            }
-
-            setDecimalValue(selection, child, Collection.NORTHBOUND);
-            setDecimalValue(selection, child, Collection.SOUTHBOUND);
-            setDecimalValue(selection, child, Collection.EASTBOUND);
-            setDecimalValue(selection, child, Collection.WESTBOUND);
-            setDateValue(selection, child, Collection.ACQUISITIONDATESTART);
-            setDateValue(selection, child, Collection.ACQUISITIONDATEEND);
-            setDateValue(selection, child, Collection.COLLECTIONDATE);
-            setDateValue(selection, child, Collection.COLLECTIONENDDATE);
-            setIntegerValue(selection, child, Collection.FLYINGHEIGHT);
-            setIntegerValue(selection, child, Collection.NUMBEROFFLIGHTS);
-            setIntegerValue(selection, child, Collection.PERCENTENDLAP);
-            setIntegerValue(selection, child, Collection.PERCENTSIDELAP);
-            setDecimalValue(selection, child, Collection.AREACOVERED);
-            setStringValue(selection, child, Collection.WEATHERCONDITIONS);
-
-            if (selection.has(Collection.UAV))
-            {
-              child.setValue(Collection.UAV, selection.getString(Collection.UAV));
-            }
-
-            if (selection.has(Collection.SENSOR))
-            {
-              child.setValue(Collection.COLLECTIONSENSOR, selection.getString(Collection.SENSOR));
-            }
-
             if (selection.has(Collection.POINT_OF_CONTACT))
             {
               JSONObject poc = selection.getJSONObject(Collection.POINT_OF_CONTACT);
@@ -193,7 +165,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
                 child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
               }
             }
-
           }
 
           child.applyWithParent(component);
@@ -201,6 +172,40 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           // Upload the metadata file
           if (child instanceof CollectionIF)
           {
+            CollectionMetadata metadata = new CollectionMetadata();
+
+            if (selection.has(CollectionMetadata.EXIFINCLUDED))
+            {
+              metadata.setValue(CollectionMetadata.EXIFINCLUDED, selection.getBoolean(CollectionMetadata.EXIFINCLUDED));
+            }
+
+            setDecimalValue(selection, metadata, CollectionMetadata.NORTHBOUND);
+            setDecimalValue(selection, metadata, CollectionMetadata.SOUTHBOUND);
+            setDecimalValue(selection, metadata, CollectionMetadata.EASTBOUND);
+            setDecimalValue(selection, metadata, CollectionMetadata.WESTBOUND);
+            setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATESTART);
+            setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATEEND);
+            setDateValue(selection, metadata, CollectionMetadata.COLLECTIONDATE);
+            setDateValue(selection, metadata, CollectionMetadata.COLLECTIONENDDATE);
+            setIntegerValue(selection, metadata, CollectionMetadata.FLYINGHEIGHT);
+            setIntegerValue(selection, metadata, CollectionMetadata.NUMBEROFFLIGHTS);
+            setIntegerValue(selection, metadata, CollectionMetadata.PERCENTENDLAP);
+            setIntegerValue(selection, metadata, CollectionMetadata.PERCENTSIDELAP);
+            setDecimalValue(selection, metadata, CollectionMetadata.AREACOVERED);
+            setStringValue(selection, metadata, CollectionMetadata.WEATHERCONDITIONS);
+
+            if (selection.has(CollectionMetadata.UAV))
+            {
+              metadata.setValue(CollectionMetadata.UAV, selection.getString(CollectionMetadata.UAV));
+            }
+
+            if (selection.has(CollectionMetadata.SENSOR))
+            {
+              metadata.setValue(CollectionMetadata.SENSOR, selection.getString(CollectionMetadata.SENSOR));
+            }
+
+            metadata.applyWithCollection((CollectionIF) child);
+
             new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
 
             MissingUploadMessage message = new MissingUploadMessage();
@@ -243,7 +248,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     return null;
   }
 
-  public static void setDateValue(JSONObject selection, UasComponentIF child, String attributeName)
+  public static void setDateValue(JSONObject selection, ComponentWithAttributes child, String attributeName)
   {
     if (selection.has(attributeName))
     {
@@ -268,7 +273,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
   }
 
-  public static void setDecimalValue(JSONObject selection, UasComponentIF child, String attributeName)
+  public static void setDecimalValue(JSONObject selection, ComponentWithAttributes child, String attributeName)
   {
     if (selection.has(attributeName))
     {
@@ -283,7 +288,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
   }
 
-  public static void setBooleanValue(JSONObject selection, UasComponentIF child, String attributeName)
+  public static void setBooleanValue(JSONObject selection, ComponentWithAttributes child, String attributeName)
   {
     if (selection.has(attributeName))
     {
@@ -298,7 +303,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
   }
 
-  public static void setIntegerValue(JSONObject selection, UasComponentIF child, String attributeName)
+  public static void setIntegerValue(JSONObject selection, ComponentWithAttributes child, String attributeName)
   {
     if (selection.has(attributeName))
     {
@@ -313,7 +318,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
   }
 
-  public static void setStringValue(JSONObject selection, UasComponentIF child, String attributeName)
+  public static void setStringValue(JSONObject selection, ComponentWithAttributes child, String attributeName)
   {
     if (selection.has(attributeName))
     {

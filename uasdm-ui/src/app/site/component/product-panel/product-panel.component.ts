@@ -61,7 +61,7 @@ export class ProductPanelComponent implements OnDestroy {
         { label: "Sensor", value: "sensor" },
         { label: "Flight Number", value: "faaNumber" },
         { label: "Serial Number", value: "serialNumber" },
-        { label: "Product Date", value: "lastUpdateDate" }
+        { label: "Collection Date", value: "collectionDate" }
     ];
 
     sortField: string = "name";

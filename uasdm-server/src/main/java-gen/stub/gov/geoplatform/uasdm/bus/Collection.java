@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -37,6 +38,7 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -70,6 +72,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
+  public Optional<CollectionMetadata> getMetadata()
+  {
+    return Optional.empty();
+  }
+
+  @Override
   public String getSolrIdField()
   {
     return "collectionId";
@@ -82,23 +90,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public Date getCollectionDate()
-  {
-    return null;
-  }
-  
-  @Override
-  public Date getCollectionEndDate()
-  {
-    return null;
-  }
-  
-  @Override
   public Boolean getHasAllZip()
   {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public void setHasAllZip(Boolean b)
   {
@@ -113,30 +109,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   @Override
   public String getPocName()
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public UAV getUav()
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void setUav(UAV uav)
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Sensor getSensor()
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void setSensor(Sensor sensor)
   {
     throw new UnsupportedOperationException();
   }
@@ -412,88 +384,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return new TreeSet<String>();
   }
 
-  @Override
-  public BigDecimal getNorthBound()
-  {
-    return null;
-  }
-
-  @Override
-  public BigDecimal getSouthBound()
-  {
-    return null;
-  }
-
-  @Override
-  public BigDecimal getEastBound()
-  {
-    return null;
-  }
-
-  @Override
-  public BigDecimal getWestBound()
-  {
-    return null;
-  }
-
-  @Override
-  public Boolean getExifIncluded()
-  {
-    return null;
-  }
-
-  @Override
-  public Date getAcquisitionDateStart()
-  {
-    return null;
-  }
-
-  @Override
-  public Date getAcquisitionDateEnd()
-  {
-    return null;
-  }
-
-  @Override
-  public Integer getFlyingHeight()
-  {
-    
-    return null;
-  }
-
-  @Override
-  public Integer getNumberOfFlights()
-  {
-    
-    return null;
-  }
-
-  @Override
-  public Integer getPercentEndLap()
-  {
-    
-    return null;
-  }
-
-  @Override
-  public Integer getPercentSideLap()
-  {
-    
-    return null;
-  }
-
-  @Override
-  public BigDecimal getAreaCovered()
-  {    
-    return null;
-  }
-
-  @Override
-  public String getWeatherConditions()
-  {
-    
-    return null;
-  }
 
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)

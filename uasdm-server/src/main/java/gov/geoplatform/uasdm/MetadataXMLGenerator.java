@@ -116,70 +116,73 @@ public class MetadataXMLGenerator
       metadata.addProduct(new ProductMetadata().populate(product, collection));
     });
 
-    UAV uav = collection.getUav();
-    Platform platform = uav.getPlatform();
-    PlatformType platformType = platform.getPlatformType();
+    Integer width = collection.getImageWidth();
 
-    metadata.getPlatform().setName(platform.getName());
-    metadata.getPlatform().setType(platformType.getName());
-    metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
-    metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
-
-    Sensor sensor = collection.getSensor();
-
-    if (sensor != null)
+    if (width != null && width != 0)
     {
-
-      SensorType sensorType = sensor.getSensorType();
-
-      List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
-      JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
-
-      metadata.getSensor().setName(sensor.getName());
-      metadata.getSensor().setType(sensorType.getName());
-      metadata.getSensor().setModel(sensor.getModel());
-      metadata.getSensor().setWavelength(array.toString());
-
-      Integer width = collection.getImageWidth();
-
-      if (width != null && width != 0)
-      {
-        metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
-      }
-
-      Integer height = collection.getImageHeight();
-
-      if (height != null && height != 0)
-      {
-        metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
-      }
-
-      if (sensor.getRealSensorWidth() != null)
-      {
-        metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
-      }
-
-      if (sensor.getRealSensorHeight() != null)
-      {
-        metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
-      }
-
-      if (sensor.getRealPixelSizeWidth() != null)
-      {
-        metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
-      }
-
-      if (sensor.getRealPixelSizeHeight() != null)
-      {
-        metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
-      }
-
-      if (sensor.getRealFocalLength() != null)
-      {
-        metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
-      }
-
+      metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
     }
+
+    Integer height = collection.getImageHeight();
+
+    if (height != null && height != 0)
+    {
+      metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
+    }
+
+    collection.getMetadata().ifPresent(colMetadata -> {
+      UAV uav = colMetadata.getUav();
+      Platform platform = uav.getPlatform();
+      PlatformType platformType = platform.getPlatformType();
+
+      metadata.getPlatform().setName(platform.getName());
+      metadata.getPlatform().setType(platformType.getName());
+      metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
+      metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
+
+      Sensor sensor = colMetadata.getSensor();
+
+      if (sensor != null)
+      {
+
+        SensorType sensorType = sensor.getSensorType();
+
+        List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
+        JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+
+        metadata.getSensor().setName(sensor.getName());
+        metadata.getSensor().setType(sensorType.getName());
+        metadata.getSensor().setModel(sensor.getModel());
+        metadata.getSensor().setWavelength(array.toString());
+
+        if (sensor.getRealSensorWidth() != null)
+        {
+          metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
+        }
+
+        if (sensor.getRealSensorHeight() != null)
+        {
+          metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
+        }
+
+        if (sensor.getRealPixelSizeWidth() != null)
+        {
+          metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+        }
+
+        if (sensor.getRealPixelSizeHeight() != null)
+        {
+          metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+        }
+
+        if (sensor.getRealFocalLength() != null)
+        {
+          metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
+        }
+
+      }
+
+    });
 
     return metadata;
   }
@@ -385,13 +388,14 @@ public class MetadataXMLGenerator
       element.setAttribute("bands", metadata.getBands());
     }
 
-//    if (metadata.getProcessingRun() != null)
-//    {
-//      Element e = this.createProcessingRunElement(metadata.getProcessingRun(), dom);
-//
-//      element.appendChild(e);
-//
-//    }
+    // if (metadata.getProcessingRun() != null)
+    // {
+    // Element e = this.createProcessingRunElement(metadata.getProcessingRun(),
+    // dom);
+    //
+    // element.appendChild(e);
+    //
+    // }
 
     return element;
   }

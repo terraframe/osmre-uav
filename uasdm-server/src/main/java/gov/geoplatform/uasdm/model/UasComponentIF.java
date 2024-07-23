@@ -27,6 +27,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.ComponentIF;
+import com.runwaysdk.Pair;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.Actor;
@@ -39,7 +41,7 @@ import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.CollectionProductDTO;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
-public interface UasComponentIF extends ComponentIF
+public interface UasComponentIF extends ComponentWithAttributes
 {
   public void apply();
 
@@ -69,13 +71,9 @@ public interface UasComponentIF extends ComponentIF
 
   public List<AttributeType> attributes();
 
-  public void setValue(String name, Object value);
-
   public void setGeoPoint(Point geometry);
 
   public MdClassDAOIF getMdClass();
-
-  public <T> T getObjectValue(String name);
 
   public Geometry getGeoPoint();
 
@@ -148,4 +146,6 @@ public interface UasComponentIF extends ComponentIF
   void removeProduct(String productName);
 
   public <T extends ProductIF> List<T> getProducts();
+
+  public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes();
 }

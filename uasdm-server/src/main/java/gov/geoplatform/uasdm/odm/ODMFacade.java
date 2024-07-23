@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -45,6 +45,7 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
@@ -59,7 +60,7 @@ public class ODMFacade
     private CloseableFile file;
 
     private Set<String>   imageNames = new HashSet<String>();
-    
+
     private String        geoLocationFile;
 
     private String        groundControlPointFile;
@@ -68,22 +69,24 @@ public class ODMFacade
     {
       this.file = file;
     }
-    
+
     public void setGeoLocationFile(String geoLocationFile)
     {
       this.geoLocationFile = geoLocationFile;
     }
-    
+
     public String getGeoLocationFile()
     {
       return geoLocationFile;
     }
 
-    public String getGroundControlPointFile() {
+    public String getGroundControlPointFile()
+    {
       return groundControlPointFile;
     }
 
-    public void setGroundControlPointFile(String groundControlPointFile) {
+    public void setGroundControlPointFile(String groundControlPointFile)
+    {
       this.groundControlPointFile = groundControlPointFile;
     }
 
@@ -91,7 +94,7 @@ public class ODMFacade
     {
       return file;
     }
-    
+
     public void addImage(String filename)
     {
       imageNames.add(filename);
@@ -101,12 +104,12 @@ public class ODMFacade
     {
       return imageNames.size();
     }
-    
+
     public Set<String> getImageNames()
     {
       return imageNames;
     }
-    
+
     public void close()
     {
       this.file.close();
@@ -172,7 +175,7 @@ public class ODMFacade
     String extension = archive.getNameExtension();
 
     ODMProcessingPayload payload;
-    
+
     if (extension.equalsIgnoreCase("zip"))
     {
       payload = filterZipArchive(archive, configuration);
@@ -185,13 +188,20 @@ public class ODMFacade
     {
       throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
     }
-    
-    if (col != null && (col.getSensor().getName().toLowerCase().contains("workswell wiris pro") || col.getSensor().getModel().toLowerCase().contains("wiris pro"))
-        && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
+
+    if (col != null)
     {
-      new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(payload.getFile()));
+      col.getMetadata().ifPresent(metadata -> {
+        Sensor sensor = metadata.getSensor();
+
+        if ( ( sensor.getName().toLowerCase().contains("workswell wiris pro") || sensor.getModel().toLowerCase().contains("wiris pro") ) 
+            && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
+        {
+          new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(payload.getFile()));
+        }
+      });
     }
-    
+
     return payload;
   }
 

@@ -45,8 +45,9 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
+import gov.geoplatform.uasdm.model.ComponentWithAttributes;
+import gov.geoplatform.uasdm.model.CompositeComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -58,10 +59,9 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.PointcloudService;
 import net.geoprism.rbac.RoleConstants;
-import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 
-public abstract class Converter
+public abstract class Converter<T extends UasComponentIF>
 {
 
   public Converter()
@@ -69,7 +69,7 @@ public abstract class Converter
 
   }
 
-  protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
+  protected SiteItem convert(T uasComponent, boolean metadata, boolean hasChildren)
   {
     final SessionIF session = Session.getCurrentSession();
 
@@ -77,6 +77,8 @@ public abstract class Converter
     {
       throw new ReadPermissionException("User does not have read access", (ComponentIF) uasComponent, session.getUser());
     }
+
+    List<AttributeType> all = new LinkedList<>();
 
     SiteItem siteItem = new SiteItem();
 
@@ -88,8 +90,28 @@ public abstract class Converter
     String typeLabel = uasComponent.getMdClass().getDisplayLabel(Session.getCurrentLocale());
     siteItem.setTypeLabel(typeLabel);
 
-    List<AttributeType> attributes = uasComponent.attributes();
+    all.addAll(uasComponent.attributes());
+    convert(uasComponent, siteItem, uasComponent.attributes());
 
+    uasComponent.getCompositeAttributes().forEach(pair -> {
+
+      all.addAll(pair.getSecond());
+      convert(pair.getFirst(), siteItem, pair.getSecond());
+    });
+
+    siteItem.setGeometry(uasComponent.getGeoPoint());
+    siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
+
+    if (metadata)
+    {
+      siteItem.setAttributes(all);
+    }
+
+    return siteItem;
+  }
+
+  private void convert(ComponentWithAttributes uasComponent, SiteItem siteItem, List<AttributeType> attributes)
+  {
     for (AttributeType attribute : attributes)
     {
       if (attribute instanceof AttributeDateType)
@@ -121,22 +143,32 @@ public abstract class Converter
         siteItem.setValue(attribute.getName(), uasComponent.getObjectValue(attribute.getName()));
       }
     }
-
-    siteItem.setGeometry(uasComponent.getGeoPoint());
-    siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
-
-    if (metadata)
-    {
-      siteItem.setAttributes(attributes);
-    }
-
-    return siteItem;
   }
 
-  protected UasComponentIF convert(SiteItem siteItem, UasComponentIF uasComponent)
+  protected CompositeComponent<T> convert(SiteItem siteItem, T uasComponent)
   {
-    List<AttributeType> attributes = uasComponent.attributes();
+    CompositeComponent<T> component = new CompositeComponent<T>(uasComponent);
 
+    convert(siteItem, uasComponent, uasComponent.attributes());
+
+    uasComponent.getCompositeAttributes().forEach(pair -> {
+      convert(siteItem, pair.getFirst(), pair.getSecond());
+
+      component.addMetadata(pair.getFirst());
+    });
+
+    Geometry geometry = siteItem.getGeometry();
+
+    if (geometry != null && geometry instanceof Point)
+    {
+      uasComponent.setGeoPoint((Point) geometry);
+    }
+
+    return component;
+  }
+
+  private void convert(SiteItem siteItem, ComponentWithAttributes component, List<AttributeType> attributes)
+  {
     for (AttributeType attribute : attributes)
     {
       if ( ( attribute instanceof AttributeDateType ))
@@ -147,7 +179,7 @@ public abstract class Converter
         {
           try
           {
-            uasComponent.setValue(attribute.getName(), Util.parseIso8601(dateStr, false));
+            component.setValue(attribute.getName(), Util.parseIso8601(dateStr, false));
           }
           catch (ParseException e)
           {
@@ -156,9 +188,18 @@ public abstract class Converter
             throw exception;
           }
         }
+      }
+      else if ( ( attribute instanceof AttributeBooleanType ))
+      {
+        Boolean value = (Boolean) siteItem.getValue(attribute.getName());
+
+        if (value != null)
+        {
+          component.setValue(attribute.getName(), value);
+        }
         else
         {
-          uasComponent.setValue(attribute.getName(), null);
+          component.setValue(attribute.getName(), false);
         }
       }
       else if ( ( attribute instanceof AttributeIntegerType ))
@@ -178,11 +219,11 @@ public abstract class Converter
             throw new UnsupportedOperationException("Unsupported type [" + number.getClass().getTypeName() + "].");
           }
 
-          uasComponent.setValue(attribute.getName(), dec);
+          component.setValue(attribute.getName(), dec);
         }
         else
         {
-          uasComponent.setValue(attribute.getName(), null);
+          component.setValue(attribute.getName(), null);
         }
       }
       else if ( ( attribute instanceof AttributeOrganizationType ))
@@ -194,11 +235,15 @@ public abstract class Converter
           String code = object.getString(OrganizationDTO.JSON_CODE);
           ServerOrganization organization = ServerOrganization.getByCode(code);
 
-          uasComponent.setValue(attribute.getName(), organization.getGraphOrganization());
+          component.setValue(attribute.getName(), organization.getGraphOrganization());
+        }
+        else if (attribute.getRequired())
+        {
+          throw new GenericException("The field [" + attribute.getLabel() + "] is required");
         }
         else
         {
-          uasComponent.setValue(attribute.getName(), null);
+          component.setValue(attribute.getName(), null);
         }
       }
       else if ( ( attribute instanceof AttributeNumberType ))
@@ -233,58 +278,35 @@ public abstract class Converter
             throw new UnsupportedOperationException("Unsupported type [" + number.getClass().getTypeName() + "].");
           }
 
-          uasComponent.setValue(attribute.getName(), dec);
+          component.setValue(attribute.getName(), dec);
         }
         else
         {
-          uasComponent.setValue(attribute.getName(), null);
+          component.setValue(attribute.getName(), null);
         }
       }
       else if (! ( attribute instanceof AttributePointType ))
       {
-        uasComponent.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
+        component.setValue(attribute.getName(), siteItem.getValue(attribute.getName()));
       }
     }
-
-    Geometry geometry = siteItem.getGeometry();
-
-    if (geometry != null && geometry instanceof Point)
-    {
-      uasComponent.setGeoPoint((Point) geometry);
-    }
-
-    return uasComponent;
   }
 
-  protected UasComponentIF convertNew(UasComponentIF uasComponent, SiteItem siteItem)
+  protected CompositeComponent<T> newInstance(T uasComponent)
   {
-    List<AttributeType> attributes = uasComponent.attributes();
+    return new CompositeComponent<T>(uasComponent);
+  }
 
-    for (AttributeType attribute : attributes)
-    {
-      Object value = siteItem.getValue(attribute.getName());
+  protected CompositeComponent<T> convertNew(T uasComponent, SiteItem siteItem)
+  {
+    CompositeComponent<T> component = this.newInstance(uasComponent);
 
-      if (attribute instanceof AttributeOrganizationType)
-      {
-        if (value != null)
-        {
-          JSONObject object = (JSONObject) value;
-          String code = object.getString(Organization.CODE);
+    convert(siteItem, uasComponent, uasComponent.attributes());
 
-          ServerOrganization org = ServerOrganization.getByCode(code);
-
-          uasComponent.setValue(attribute.getName(), org.getGraphOrganization());
-        }
-        else if (attribute.getRequired())
-        {
-          throw new GenericException("The field [" + attribute.getLabel() + "] is required");
-        }
-      }
-      else
-      {
-        uasComponent.setValue(attribute.getName(), value);
-      }
-    }
+    // TODO: HEADS UP FIGURE THIS OUT
+    // uasComponent.getCompositeAttributes().forEach(pair -> {
+    // convert(siteItem, pair.getFirst(), pair.getSecond());
+    // });
 
     Geometry geometry = siteItem.getGeometry();
 
@@ -303,7 +325,7 @@ public abstract class Converter
       // attribute.setValue(siteItem.getId());
     }
 
-    return uasComponent;
+    return component;
   }
 
   /**
@@ -313,7 +335,7 @@ public abstract class Converter
    * @param siteItem
    * @return
    */
-  public static UasComponentIF toNewUasComponent(UasComponentIF parent, SiteItem siteItem)
+  public static CompositeComponent<UasComponentIF> toNewUasComponent(UasComponentIF parent, SiteItem siteItem)
   {
     UasComponentIF newChild = parent != null ? parent.createChild(siteItem.getType()) : ComponentFacade.newRoot();
 
@@ -327,7 +349,7 @@ public abstract class Converter
     }
   }
 
-  public static UasComponentIF toExistingUasComponent(SiteItem siteItem)
+  public static CompositeComponent<UasComponentIF> toExistingUasComponent(SiteItem siteItem)
   {
     UasComponentIF uasComponent = ComponentFacade.getComponent(siteItem.getId());
 
@@ -344,28 +366,29 @@ public abstract class Converter
     return factory(uasComponent).convert(uasComponent, metadata, hasChildren);
   }
 
-  private static Converter factory(UasComponentIF uasComponent)
+  @SuppressWarnings("unchecked")
+  private static <T extends UasComponentIF> Converter<T> factory(T uasComponent)
   {
     if (uasComponent instanceof SiteIF)
     {
-      return new SiteConverter();
+      return (Converter<T>) new SiteConverter();
     }
     else if (uasComponent instanceof ProjectIF)
     {
-      return new ProjectConverter();
+      return (Converter<T>) new ProjectConverter();
     }
     else if (uasComponent instanceof MissionIF)
     {
-      return new MissionConverter();
+      return (Converter<T>) new MissionConverter();
     }
     else if (uasComponent instanceof CollectionIF)
     {
-      return new CollectionConverter();
+      return (Converter<T>) new CollectionConverter();
     }
-    else if (uasComponent instanceof ImageryIF)
-    {
-      return new ImageryConverter();
-    }
+    // else if (uasComponent instanceof ImageryIF)
+    // {
+    // return (Converter<T>) new ImageryConverter();
+    // }
     else
     {
       // Should never hit this case unless a new type is added to the hierarchy
@@ -498,28 +521,31 @@ public abstract class Converter
 
     view.setPilotName(collection.getPocName());
 
-    Sensor sensor = ( (CollectionIF) collection ).getSensor();
-    if (sensor != null)
-    {
-      view.setSensor(sensor.toJSON());
-    }
+    collection.getMetadata().ifPresent(metadata -> {
 
-    UAV uav = ( (CollectionIF) collection ).getUav();
-    if (uav != null)
-    {
-      view.setUAV(uav.toJSON());
-
-      Platform platform = uav.getPlatform();
-      if (platform != null)
+      Sensor sensor = metadata.getSensor();
+      if (sensor != null)
       {
-        view.setPlatform(platform.toJSON());
+        view.setSensor(sensor.toJSON());
       }
-    }
 
-    if (collection.getCollectionDate() != null)
-    {
-      view.setCollectionDate(collection.getCollectionDate());
-    }
+      UAV uav = metadata.getUav();
+      if (uav != null)
+      {
+        view.setUAV(uav.toJSON());
+
+        Platform platform = uav.getPlatform();
+        if (platform != null)
+        {
+          view.setPlatform(platform.toJSON());
+        }
+      }
+
+      if (metadata.getCollectionDate() != null)
+      {
+        view.setCollectionDate(metadata.getCollectionDate());
+      }
+    });
 
     view.setDateTime(product.getLastUpdateDate());
 

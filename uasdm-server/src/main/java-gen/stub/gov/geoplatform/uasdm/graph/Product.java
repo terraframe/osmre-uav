@@ -800,27 +800,30 @@ public class Product extends ProductBase implements ProductIF
       properties.setDatetime(dateTime);
       properties.setUpdated(this.getLastUpdateDate());
 
-      Sensor sensor = collection.getSensor();
+      collection.getMetadata().ifPresent(metadata -> {
 
-      if (sensor != null)
-      {
-        properties.setSensor(sensor.getName());
-      }
+        Sensor sensor = metadata.getSensor();
 
-      UAV uav = collection.getUav();
-
-      if (uav != null)
-      {
-        properties.setFaaNumber(uav.getFaaNumber());
-        properties.setSerialNumber(uav.getSerialNumber());
-
-        Platform platform = uav.getPlatform();
-
-        if (platform != null)
+        if (sensor != null)
         {
-          properties.setPlatform(platform.getName());
+          properties.setSensor(sensor.getName());
         }
-      }
+
+        UAV uav = metadata.getUav();
+
+        if (uav != null)
+        {
+          properties.setFaaNumber(uav.getFaaNumber());
+          properties.setSerialNumber(uav.getSerialNumber());
+
+          Platform platform = uav.getPlatform();
+
+          if (platform != null)
+          {
+            properties.setPlatform(platform.getName());
+          }
+        }
+      });
 
       item.setProperties(properties);
 
@@ -956,10 +959,32 @@ public class Product extends ProductBase implements ProductIF
 
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
+    boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
+
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
 
-    statement.append("  SELECT FROM (\n");
+    if (hasMetadataSort)
+    {
+      String sortAttribute = "sensor.name";
+
+      if (sortField.equals("serialNumber"))
+      {
+        sortAttribute = "uav.serialNumber";
+      }
+      else if (sortField.equals("faaNumber"))
+      {
+        sortAttribute = "uav.faaNumber";
+      }
+
+      statement.append("  SELECT @rid FROM (\n");
+      statement.append("    SELECT @rid, first(out('collection_has_metadata'))." + sortAttribute + " AS sortBy FROM (\n");
+    }
+    else
+    {
+      statement.append("  SELECT FROM (\n");
+    }
+
     statement.append("    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
@@ -983,6 +1008,7 @@ public class Product extends ProductBase implements ProductIF
     SessionIF session = Session.getCurrentSession();
 
     statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+    statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
 
     if (session != null)
     {
@@ -999,22 +1025,20 @@ public class Product extends ProductBase implements ProductIF
 
     if (sortField.equals("name"))
     {
-      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+      statement.append("  ORDER BY name " + sortOrder);
     }
-    else if (sortField.equals("sensor"))
+    else if (sortField.equals("collectionDate"))
     {
-      statement.append("  ORDER BY collectionSensor.name " + sortOrder);
+      statement.append("  ORDER BY collectionDate " + sortOrder);
     }
-    else if (sortField.equals("serialNumber"))
+    else if (hasMetadataSort)
     {
-      statement.append("  ORDER BY uav.serialNumber " + sortOrder);
+      statement.append(")\n");
+      statement.append("  ORDER BY sortBy " + sortOrder);
+      statement.append(")\n");
     }
-    else if (sortField.equals("faaNumber"))
-    {
-      statement.append("  ORDER BY uav.faaNumber " + sortOrder);
-    }
-
     statement.append(")\n");
+
 
     // if (sortField.equals(Product.LASTUPDATEDATE))
     // {

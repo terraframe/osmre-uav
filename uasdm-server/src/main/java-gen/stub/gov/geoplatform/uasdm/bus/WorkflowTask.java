@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -73,13 +73,13 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     CollectionStatus.updateStatus(this);
   }
-  
+
   @Override
   @Transaction
   public void delete()
   {
     String component = this.getComponent();
-    
+
     super.delete();
 
     CollectionStatus.updateStatus(component);
@@ -258,12 +258,14 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
 
     if (component instanceof CollectionIF)
     {
-      Sensor sensor = ( (CollectionIF) component ).getSensor();
+      ( (CollectionIF) component ).getMetadata().ifPresent(metadata -> {
+        Sensor sensor = metadata.getSensor();
 
-      if (sensor != null)
-      {
-        obj.put("sensorName", sensor.getName());
-      }
+        if (sensor != null)
+        {
+          obj.put("sensorName", sensor.getName());
+        }
+      });
     }
 
     return obj;
@@ -278,21 +280,20 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   {
     return this.getImageryComponent().getName();
   }
-  
+
   @Override
   public String getDetailedComponentLabel()
   {
     UasComponentIF component = this.getComponentInstance();
-    
+
     List<UasComponentIF> components = component.getAncestors();
     Collections.reverse(components);
     components.add(component);
-    
+
     String label = StringUtils.join(components.stream().map(a -> a.getName()).collect(Collectors.toList()), ", ");
-    
+
     return label;
   }
-
 
   public ImageryComponent getImageryComponent()
   {

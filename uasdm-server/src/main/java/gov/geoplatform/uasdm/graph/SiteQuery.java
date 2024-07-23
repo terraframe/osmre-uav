@@ -254,8 +254,8 @@ public class SiteQuery
         }
         else if (field.equalsIgnoreCase(Collection.SENSOR))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.COLLECTIONSENSOR);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.SENSOR);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(Sensor.NAME);
@@ -269,8 +269,8 @@ public class SiteQuery
         }
         else if (field.equalsIgnoreCase(Collection.UAV))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.UAV);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.UAV);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UAV.FAANUMBER);
@@ -284,8 +284,8 @@ public class SiteQuery
         }
         else if (field.equalsIgnoreCase(UAV.PLATFORM))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.UAV);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.UAV);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UAV.PLATFORM);
@@ -360,7 +360,8 @@ public class SiteQuery
   private List<QueryBucket> getBuckets(JSONObject cObject)
   {
     List<QueryBucket> buckets = new ArrayList<QueryBucket>();
-    buckets.add(QueryBucket.build(Collection.CLASS, EdgeType.MISSION_HAS_COLLECTION, Collection.COLLECTIONDATE, Collection.SENSOR, Collection.UAV, UAV.PLATFORM, UasComponent.OWNER));
+    buckets.add(QueryBucket.build(CollectionMetadata.CLASS, EdgeType.COLLECTION_HAS_METADATA, CollectionMetadata.COLLECTIONDATE, CollectionMetadata.SENSOR, CollectionMetadata.UAV, UAV.PLATFORM));
+    buckets.add(QueryBucket.build(Collection.CLASS, EdgeType.MISSION_HAS_COLLECTION, UasComponent.OWNER));
     buckets.add(QueryBucket.build(Mission.CLASS, EdgeType.PROJECT_HAS_MISSION));
     buckets.add(QueryBucket.build(Project.CLASS, EdgeType.SITE_HAS_PROJECT, Project.PROJECTTYPE));
     buckets.add(QueryBucket.build(Site.CLASS, null, Site.BUREAU, Site.ORGANIZATION, "bounds"));

@@ -243,10 +243,10 @@ public class ChildrenQuery
             parameters.put(mdAttribute.getColumnName(), organization.getGraphOrganization().getRID());
           }
         }
-        else if (field.equalsIgnoreCase(Collection.SENSOR))
+        else if (field.equalsIgnoreCase(CollectionMetadata.SENSOR))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.COLLECTIONSENSOR);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.SENSOR);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(Sensor.NAME);
@@ -260,8 +260,8 @@ public class ChildrenQuery
         }
         else if (field.equalsIgnoreCase(Collection.UAV))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.UAV);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.UAV);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UAV.FAANUMBER);
@@ -275,8 +275,8 @@ public class ChildrenQuery
         }
         else if (field.equalsIgnoreCase(UAV.PLATFORM))
         {
-          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-          MdAttributeDAOIF sensor = collection.definesAttribute(Collection.UAV);
+          MdVertexDAOIF collection = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+          MdAttributeDAOIF sensor = collection.definesAttribute(CollectionMetadata.UAV);
 
           MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UAV.CLASS);
           MdAttributeDAOIF mdAttribute = mdClass.definesAttribute(UAV.PLATFORM);
@@ -351,6 +351,7 @@ public class ChildrenQuery
 
     // Add the filter where clause
     statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+    statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
 
     if (session != null)
     {
@@ -371,7 +372,8 @@ public class ChildrenQuery
   private List<QueryBucket> getBuckets(JSONObject cObject)
   {
     List<QueryBucket> buckets = new ArrayList<QueryBucket>();
-    buckets.add(QueryBucket.build(Collection.CLASS, EdgeType.MISSION_HAS_COLLECTION, Collection.COLLECTIONDATE, Collection.SENSOR, Collection.UAV, UAV.PLATFORM, UasComponent.OWNER));
+    buckets.add(QueryBucket.build(CollectionMetadata.CLASS, EdgeType.COLLECTION_HAS_METADATA, CollectionMetadata.COLLECTIONDATE, CollectionMetadata.SENSOR, CollectionMetadata.UAV, UAV.PLATFORM));
+    buckets.add(QueryBucket.build(Collection.CLASS, EdgeType.MISSION_HAS_COLLECTION, UasComponent.OWNER));
     buckets.add(QueryBucket.build(Mission.CLASS, EdgeType.PROJECT_HAS_MISSION));
     buckets.add(QueryBucket.build(Project.CLASS, EdgeType.SITE_HAS_PROJECT, Project.PROJECTTYPE));
     buckets.add(QueryBucket.build(Site.CLASS, null, Site.BUREAU, "bounds"));
@@ -413,15 +415,15 @@ public class ChildrenQuery
 
       if (component.getType().equals(Project.CLASS))
       {
-        return Arrays.asList(Mission.CLASS, Collection.CLASS).contains(bucket.className);
+        return Arrays.asList(Mission.CLASS, Collection.CLASS, CollectionMetadata.CLASS).contains(bucket.className);
       }
       else if (component.getType().equals(Mission.CLASS))
       {
-        return Arrays.asList(Collection.CLASS).contains(bucket.className);
+        return Arrays.asList(Collection.CLASS, CollectionMetadata.CLASS).contains(bucket.className);
       }
       else if (component.getType().equals(Collection.CLASS))
       {
-        return false;
+        return Arrays.asList(CollectionMetadata.CLASS).contains(bucket.className);
       }
 
       return !component.getType().equals(bucket.className);
@@ -445,7 +447,7 @@ public class ChildrenQuery
     }
     else if (this.component.getType().equals(Collection.CLASS))
     {
-      return false;
+      return bucket.className.equals(CollectionMetadata.CLASS) && bucket.hasCondition();
     }
 
     return bucket.hasCondition();

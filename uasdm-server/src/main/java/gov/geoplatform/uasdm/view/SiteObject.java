@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.runwaysdk.ComponentIF;
 
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -286,7 +285,7 @@ public class SiteObject implements TreeComponent
     return object;
   }
 
-  public static SiteObject create(ComponentIF component, DocumentIF document)
+  public static SiteObject create(UasComponentIF component, DocumentIF document)
   {
     String key = document.getS3location();
     String name = FilenameUtils.getName(key);

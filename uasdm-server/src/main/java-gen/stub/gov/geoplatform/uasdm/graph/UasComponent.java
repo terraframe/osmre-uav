@@ -36,9 +36,9 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.Pair;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
-import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
@@ -74,6 +74,7 @@ import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -534,10 +535,10 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
 
     // TODO: How to handle this with versions
-//    if (new ArtifactQuery(this, product).getDocuments().size() == 0)
-//    {
-//      // product.delete();
-//    }
+    // if (new ArtifactQuery(this, product).getDocuments().size() == 0)
+    // {
+    // // product.delete();
+    // }
 
     // Re-index the products
     new ReIndexStacItemCommand(product).doIt();
@@ -628,6 +629,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE)));
 
     return list;
+  }
+
+  @Override
+  public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes()
+  {
+    return new LinkedList<>();
   }
 
   public void writeFeature(JSONWriter writer) throws IOException
@@ -935,9 +942,30 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     String expand = this.buildProductExpandClause();
 
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
+    
+    boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
+
+
 
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+    
+    if (hasMetadataSort)
+    {
+      String sortAttribute = "sensor.name";
+
+      if (sortField.equals("serialNumber"))
+      {
+        sortAttribute = "uav.serialNumber";
+      }
+      else if (sortField.equals("faaNumber"))
+      {
+        sortAttribute = "uav.faaNumber";
+      }
+
+      statement.append("  SELECT @rid FROM (\n");
+      statement.append("    SELECT @rid, first(out('collection_has_metadata'))." + sortAttribute + " AS sortBy FROM (\n");
+    }
 
     statement.append("  SELECT FROM (");
     statement.append("    SELECT EXPAND(" + expand + ")");
@@ -949,27 +977,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (sortField.equals("name"))
     {
-      statement.append("  ORDER BY " + sortField + " " + sortOrder);
+      statement.append("  ORDER BY name " + sortOrder);
     }
-    else if (sortField.equals("sensor"))
+    else if (sortField.equals("collectionDate"))
     {
-      statement.append("  ORDER BY collectionSensor.name " + sortOrder);
+      statement.append("  ORDER BY collectionDate " + sortOrder);
     }
-    else if (sortField.equals("serialNumber"))
+    else if (hasMetadataSort)
     {
-      statement.append("  ORDER BY uav.serialNumber " + sortOrder);
-    }
-    else if (sortField.equals("faaNumber"))
-    {
-      statement.append("  ORDER BY uav.faaNumber " + sortOrder);
+      statement.append(")\n");
+      statement.append("  ORDER BY sortBy " + sortOrder);
+      statement.append(")\n");
     }
 
     statement.append(")");
-
-    // if (sortField.equals(Product.LASTUPDATEDATE))
-    // {
-    // statement.append(" ORDER BY " + sortField + " " + sortOrder);
-    // }
 
     final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
@@ -1143,6 +1164,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     SessionIF session = Session.getCurrentSession();
 
     statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+    statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
 
     if (session != null)
     {

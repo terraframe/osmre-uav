@@ -19,17 +19,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -331,15 +328,15 @@ public class FlightMetadata
       this.resolution = resolution;
     }
 
-//    public ProcessingRunMetadata getProcessingRun()
-//    {
-//      return processingRun;
-//    }
-//
-//    public void setProcessingRun(ProcessingRunMetadata processingRun)
-//    {
-//      this.processingRun = processingRun;
-//    }
+    // public ProcessingRunMetadata getProcessingRun()
+    // {
+    // return processingRun;
+    // }
+    //
+    // public void setProcessingRun(ProcessingRunMetadata processingRun)
+    // {
+    // this.processingRun = processingRun;
+    // }
 
     public Integer getPtEpsg()
     {
@@ -397,13 +394,16 @@ public class FlightMetadata
       this.ptEpsg = artifact.getPtEpsg();
       this.projectionName = artifact.getProjectionName();
       this.orthoCorrectionModel = artifact.getOrthoCorrectionModel();
-      this.startDate = collection.getCollectionDate();
-      this.endDate = collection.getCollectionEndDate();
 
-      if (this.endDate == null)
-      {
-        this.endDate = collection.getCollectionDate();
-      }
+      collection.getMetadata().ifPresent(metadata -> {
+        this.startDate = metadata.getCollectionDate();
+        this.endDate = metadata.getCollectionEndDate();
+
+        if (this.endDate == null)
+        {
+          this.endDate = metadata.getCollectionDate();
+        }
+      });
 
       List<SiteObject> objects = artifact.getObjects();
 
@@ -502,14 +502,15 @@ public class FlightMetadata
         }
       }
 
-//      NodeList list = item.getElementsByTagName("ProcessingRun");
-//
-//      if (list.getLength() > 0)
-//      {
-//        Node child = list.item(0);
-//
-//        metadata.setProcessingRun(ProcessingRunMetadata.parse((Element) child));
-//      }
+      // NodeList list = item.getElementsByTagName("ProcessingRun");
+      //
+      // if (list.getLength() > 0)
+      // {
+      // Node child = list.item(0);
+      //
+      // metadata.setProcessingRun(ProcessingRunMetadata.parse((Element)
+      // child));
+      // }
 
       return metadata;
     }
@@ -1086,19 +1087,21 @@ public class FlightMetadata
       {
         CollectionIF collection = (CollectionIF) component;
 
-        this.setNorthBound(collection.getNorthBound());
-        this.setSouthBound(collection.getSouthBound());
-        this.setEastBound(collection.getEastBound());
-        this.setWestBound(collection.getWestBound());
-        this.setExifIncluded(collection.getExifIncluded());
-        this.setAcquisitionDateStart(collection.getAcquisitionDateStart());
-        this.setAcquisitionDateEnd(collection.getAcquisitionDateEnd());
-        this.setFlyingHeight(collection.getFlyingHeight());
-        this.setNumberOfFlights(collection.getNumberOfFlights());
-        this.setPercentEndLap(collection.getPercentEndLap());
-        this.setPercentSideLap(collection.getPercentSideLap());
-        this.setAreaCovered(collection.getAreaCovered());
-        this.setWeatherConditions(collection.getWeatherConditions());
+        collection.getMetadata().ifPresent(metadata -> {
+          this.setNorthBound(metadata.getNorthBound());
+          this.setSouthBound(metadata.getSouthBound());
+          this.setEastBound(metadata.getEastBound());
+          this.setWestBound(metadata.getWestBound());
+          this.setExifIncluded(metadata.getExifIncluded());
+          this.setAcquisitionDateStart(metadata.getAcquisitionDateStart());
+          this.setAcquisitionDateEnd(metadata.getAcquisitionDateEnd());
+          this.setFlyingHeight(metadata.getFlyingHeight());
+          this.setNumberOfFlights(metadata.getNumberOfFlights());
+          this.setPercentEndLap(metadata.getPercentEndLap());
+          this.setPercentSideLap(metadata.getPercentSideLap());
+          this.setAreaCovered(metadata.getAreaCovered());
+          this.setWeatherConditions(metadata.getWeatherConditions());
+        });
       }
     }
 

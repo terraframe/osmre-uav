@@ -35,6 +35,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
+import com.runwaysdk.Pair;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
@@ -51,6 +53,7 @@ import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
+import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
@@ -80,6 +83,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
    * @return a new {@link UasComponent} of the correct type.
    */
   public abstract UasComponent createDefaultChild();
+
+  @Override
+  public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes()
+  {
+    return new LinkedList<>();
+  }
 
   /**
    * Create the child of the given type.

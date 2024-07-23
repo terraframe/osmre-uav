@@ -38,4 +38,8 @@ public interface EdgeType
   public static final String ODM_RUN_OUTPUT             = "gov.geoplatform.uasdm.graph.ODMRunOutput";
 
   public static final String USER_HAS_ACCESS            = "gov.geoplatform.uasdm.graph.UserHasAccess";
+
+  public static final String COLLECTION_HAS_METADATA    = "gov.geoplatform.uasdm.graph.CollectionHasMetadata";
+
+  public static final String PRODUCT_HAS_METADATA       = "gov.geoplatform.uasdm.graph.ProductHasMetadata";
 }

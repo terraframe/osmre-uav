@@ -287,7 +287,7 @@ public class S3RemoteFileService implements RemoteFileService
         InitiateMultipartUploadResult initResult = client.initiateMultipartUpload(initRequest);
 
         // Copy the object using 5 GB parts.
-        long partSize = 5L * 1024L * 1024L * 1024L;
+        long partSize = 5L * 1024L * 1024L;
         long bytePosition = 0;
         int partNum = 1;
         List<CopyPartResult> copyResponses = new ArrayList<CopyPartResult>();
@@ -304,8 +304,7 @@ public class S3RemoteFileService implements RemoteFileService
         }
 
         // Complete the upload request to concatenate all uploaded parts and
-        // make the
-        // copied object available.
+        // make the copied object available.
         CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(destBucket, destKey, initResult.getUploadId(), getETags(copyResponses));
         client.completeMultipartUpload(completeRequest);
       }

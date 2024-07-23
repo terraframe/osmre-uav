@@ -1,44 +1,26 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
 import gov.geoplatform.uasdm.model.MissionIF;
-import gov.geoplatform.uasdm.model.UasComponentIF;
 
-public class MissionConverter extends Converter
+public class MissionConverter extends Converter<MissionIF>
 {
   public MissionConverter()
   {
     super();
-  }
-
-  @Override
-  protected UasComponentIF convert(SiteItem siteItem, UasComponentIF uasComponent)
-  {
-    return super.convert(siteItem, uasComponent);
-  }
-
-  @Override
-  protected SiteItem convert(UasComponentIF uasComponent, boolean metadata, boolean hasChildren)
-  {
-    return super.convert(uasComponent, metadata, hasChildren);
-  }
-
-  protected MissionIF convertNew(UasComponentIF uasComponent, SiteItem siteItem)
-  {
-    return (MissionIF) super.convertNew(uasComponent, siteItem);
   }
 }

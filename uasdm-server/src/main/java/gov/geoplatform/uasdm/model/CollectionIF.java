@@ -18,11 +18,13 @@ package gov.geoplatform.uasdm.model;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 
@@ -50,18 +52,18 @@ public interface CollectionIF extends UasComponentIF
 
   public boolean isMultiSpectral();
 
-  public Sensor getSensor();
-
-  public void setSensor(Sensor sensor);
-
-  public UAV getUav();
-
-  public void setUav(UAV uav);
-
-  public Date getCollectionDate();
-
-  public Date getCollectionEndDate();
-
+//  public Sensor getSensor();
+//
+//  public void setSensor(Sensor sensor);
+//
+//  public UAV getUav();
+//
+//  public void setUav(UAV uav);
+//
+//  public Date getCollectionDate();
+//
+//  public Date getCollectionEndDate();
+//
   public void setImageHeight(Integer imageHeight);
 
   public void setImageWidth(Integer imageWidth);
@@ -69,35 +71,36 @@ public interface CollectionIF extends UasComponentIF
   public String getPocName();
 
   public String getPocEmail();
-
-  public BigDecimal getNorthBound();
-
-  public BigDecimal getSouthBound();
-
-  public BigDecimal getEastBound();
-
-  public BigDecimal getWestBound();
-
-  public Boolean getExifIncluded();
-
-  public Date getAcquisitionDateStart();
-
-  public Date getAcquisitionDateEnd();
-
-  public Integer getFlyingHeight();
-
-  public Integer getNumberOfFlights();
-
-  public Integer getPercentEndLap();
-
-  public Integer getPercentSideLap();
-
-  public BigDecimal getAreaCovered();
-
-  public String getWeatherConditions();
+//
+//  public BigDecimal getNorthBound();
+//
+//  public BigDecimal getSouthBound();
+//
+//  public BigDecimal getEastBound();
+//
+//  public BigDecimal getWestBound();
+//
+//  public Boolean getExifIncluded();
+//
+//  public Date getAcquisitionDateStart();
+//
+//  public Date getAcquisitionDateEnd();
+//
+//  public Integer getFlyingHeight();
+//
+//  public Integer getNumberOfFlights();
+//
+//  public Integer getPercentEndLap();
+//
+//  public Integer getPercentSideLap();
+//
+//  public BigDecimal getAreaCovered();
+//
+//  public String getWeatherConditions();
 
   public Boolean getHasAllZip();
 
   public void setHasAllZip(Boolean b);
 
+  public Optional<CollectionMetadata> getMetadata();
 }
