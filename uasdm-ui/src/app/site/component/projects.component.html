@@ -325,6 +325,7 @@
                           <product-panel *ngIf="activeTab === 'Products'" 
                             [selection]="current"
                             [organization]="organization"
+                            [filter]="filter"
                             (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
@@ -340,6 +341,7 @@
                           <product-panel *ngIf="activeTab === 'Products'" 
                             [selection]="current"
                             [organization]="organization"
+                            [filter]="filter"
                             (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>

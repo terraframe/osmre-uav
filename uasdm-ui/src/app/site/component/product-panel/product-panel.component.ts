@@ -10,7 +10,7 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 import { ProductModalComponent } from '../modal/product-modal.component';
 
-import { CollectionProductView, Product, ProductCriteria, SELECTION_TYPE, ViewerSelection } from '@site/model/management';
+import { CollectionProductView, Filter, Product, ProductCriteria, SELECTION_TYPE, ViewerSelection } from '@site/model/management';
 import { ProductService } from '@site/service/product.service';
 import { ManagementService } from '@site/service/management.service';
 
@@ -41,6 +41,8 @@ import { ShareProductModalComponent } from '../modal/share-product-modal.compone
 export class ProductPanelComponent implements OnDestroy {
 
     @Input() selection: ViewerSelection;
+
+    @Input() filter: Filter;
 
     @Input() organization?: { code: string, label: LocalizedValue };
 
@@ -149,10 +151,27 @@ export class ProductPanelComponent implements OnDestroy {
             criteria.id = selection.data.id;
         }
 
+        let conditions = [];
+
+        conditions.push({ field: 'organization', value: this.organization });
+        conditions.push({ field: 'collectionDate', value: this.filter.collectionDate });
+        conditions.push({ field: 'owner', value: this.filter.owner });
+        conditions.push({ field: 'platform', value: this.filter.platform });
+        conditions.push({ field: 'projectType', value: this.filter.projectType });
+        conditions.push({ field: 'sensor', value: this.filter.sensor });
+        conditions.push({ field: 'uav', value: this.filter.uav });
+        conditions = conditions.filter(c => {
+            if (c.field === 'organization') {
+                return c.value != null && c.value.code.length > 0
+            }
+
+            return c.value != null && c.value.length > 0
+        });
+
         if (criteria.type === SELECTION_TYPE.LOCATION) {
             criteria.uid = selection.data.properties.uid;
             criteria.hierarchy = selection.hierarchy;
-            criteria.organization = this.organization.code
+            criteria.conditions = conditions;
         }
 
         this.pService.getProducts(criteria).then(views => {

@@ -952,10 +952,9 @@ public class Product extends ProductBase implements ProductIF
     HashMap<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("rid", object.getRID());
 
-    if (!StringUtils.isEmpty(criteria.getOrganization()))
-    {
-      parameters.put("organization", criteria.getOrganization());
-    }
+    criteria.getConditions().forEach(condition -> {
+      parameters.put(condition.getField(), condition.getValue());
+    });
 
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
@@ -985,18 +984,23 @@ public class Product extends ProductBase implements ProductIF
       statement.append("  SELECT FROM (\n");
     }
 
-    statement.append("    SELECT EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
+    statement.append("    SELECT EXPAND(OUT('site_has_project')");
+
+    criteria.getConditions().stream().filter(condition -> condition.isProject()).forEach(condition -> {
+      statement.append("[" + condition.getSQL() + " = :" + condition.getField() + "]");
+    });
+
+    statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
     statement.append("      ) WHERE @class = 'site0' \n");
 
-    if (!StringUtils.isEmpty(criteria.getOrganization()))
-    {
-      statement.append("      AND organization.code = :organization \n");
-    }
+    criteria.getConditions().stream().filter(condition -> condition.isSite()).forEach(condition -> {
+      statement.append("      AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
+    });
 
     statement.append("    )\n");
-    statement.append("  )");
+    statement.append("  )\n");
 
     // Add the filter for permissions
     MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
@@ -1007,14 +1011,15 @@ public class Product extends ProductBase implements ProductIF
 
     SessionIF session = Session.getCurrentSession();
 
-    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
-    statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
+    statement.append(" WHERE (" + privateAttribute.getColumnName() + " = :isPrivate \n");
+    statement.append("   OR " + privateAttribute.getColumnName() + " IS NULL \n");
 
     if (session != null)
     {
-      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
-      statement.append(" OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0");
+      statement.append("   OR " + ownerAttribute.getColumnName() + " = :owner \n");
+      statement.append("   OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0 \n");
     }
+    statement.append(" ) \n");
 
     parameters.put("isPrivate", false);
 
@@ -1022,6 +1027,15 @@ public class Product extends ProductBase implements ProductIF
     {
       parameters.put("owner", session.getUser().getOid());
     }
+    
+    criteria.getConditions().stream().filter(condition -> condition.isCollection()).forEach(condition -> {
+      statement.append(" AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
+    });
+    
+    criteria.getConditions().stream().filter(condition -> condition.isMetadata()).forEach(condition -> {
+      statement.append(" AND first(out('collection_has_metadata'))." + condition.getSQL() + " = :" + condition.getField() + " \n");
+    });
+
 
     if (sortField.equals("name"))
     {
@@ -1035,10 +1049,8 @@ public class Product extends ProductBase implements ProductIF
     {
       statement.append(")\n");
       statement.append("  ORDER BY sortBy " + sortOrder);
-      statement.append(")\n");
     }
     statement.append(")\n");
-
 
     // if (sortField.equals(Product.LASTUPDATEDATE))
     // {
