@@ -41,6 +41,6 @@ docker rm -f $(docker ps -a -q --filter="name=solr") > /dev/null || true
 rm -rf ../../target/solr
 
 
-docker run -d -p 8983:8983 -v $BASEDIR/../../src/solr/configsets/uasdm:/opt/solr/server/solr/configsets/uasdm:ro --name solr solr:6.6.5 solr-precreate uasdm /opt/solr/server/solr/configsets/uasdm
+docker run -d -p 8983:8983 -v $BASEDIR/../../solr/configsets/uasdm:/opt/solr/server/solr/configsets/uasdm:ro --name solr solr:6.6.5 solr-precreate uasdm /opt/solr/server/solr/configsets/uasdm
 
 echo "Solr should now be running at http://127.0.0.1:8983."
