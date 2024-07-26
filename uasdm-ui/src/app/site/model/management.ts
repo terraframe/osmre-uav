@@ -395,8 +395,33 @@ export enum SELECTION_TYPE {
 
 export class ViewerSelection {
 	type: SELECTION_TYPE;
-	data: any;
-	metadata: any;
+	data: {
+		folderName?: string;
+		hasAllZip?: boolean;
+		id?: string;
+		isOwner?: boolean;
+		metadataUploaded?: boolean;
+		name?: string;
+		numberOfChildren?: number;
+		shortName?: string;
+		type?: string;
+		typeLabel?: string;
+		children?: any[];
+		component?: string;
+		key?: string;
+		properties?: any;
+	};
+	metadata: {
+		childLabel?: string;
+		drillable?: boolean;
+		expandable?: boolean;
+		label?: string;
+		leaf?: boolean;
+		processable?: boolean;
+		root?: boolean;
+		uploadable?: boolean;
+		attributes?: any[];
+	};
 	hierarchy?: string;
 }
 

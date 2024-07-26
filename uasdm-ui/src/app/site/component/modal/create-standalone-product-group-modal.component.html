@@ -1,0 +1,131 @@
+<!--
+
+
+
+-->
+<div>
+  <div class="modal-body" tabindex="-1" role="dialog">
+
+
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="label-holder">
+          <strong style="color:#8c0000;">Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+
+        <div [@fadeInOnEnter] class="form-group">
+          <div class="row">
+            <div class="col-md-8">
+              <input autofocus [(ngModel)]="productGroupName" name="productGroupName" type="input" class="form-control"
+                [placeholder]="'Product group name...'" required />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">Collection Date:</label>
+              <input [(ngModel)]="metadata.collectionDate" name="collectionDate" type="date" class="form-control"
+                required />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="platform" style="margin-top: 10px;">Collection End Date:</label>
+              <input [(ngModel)]="metadata.collectionEndDate" name="collectionEndDate" type="date"
+                class="form-control" />
+            </div>
+          </div>
+
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="shortName" style="margin-top: 10px;">Short Name:</label>
+              <input [(ngModel)]="metadata.shortName" name="shortName" type="text" class="form-control"
+                maxlength="8" required />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <boolean-field [(value)]="metadata.restricted" label="Restricted">
+              </boolean-field>
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="sunsetDate" style="margin-top: 10px;">Sunset Date:</label>
+              <input [(ngModel)]="metadata.sunsetDate" name="sunsetDate" type="date" class="form-control" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="proejctType" style="margin-top: 10px;">Project Type:</label>
+              <select [(ngModel)]="metadata.projectType" [name]="'projectType'">
+                <option></option>
+                <option *ngFor="let projectType of projectTypes" value="projectType">{{projectType}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="contractingOffice" style="margin-top: 10px;">Contracting Office:</label>
+              <input [(ngModel)]="metadata.contractingOffice" name="contractingOffice" type="text"
+                class="form-control" maxlength="50" />
+            </div>
+          </div>
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <label for="vendor" style="margin-top: 10px;">Vendor:</label>
+              <input [(ngModel)]="metadata.vendor" name="vendor" type="text" class="form-control"
+                maxlength="50" />
+            </div>
+          </div>
+
+          <div [@fadeInOnEnter] class="row">
+            <div class="col-md-8">
+              <boolean-field [(value)]="metadata.isPrivate" label="Is Private">
+              </boolean-field>
+            </div>
+          </div>
+
+
+          <metadata-page [page]="getMetadataPage()"></metadata-page>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-holder" style="text-align: right;">
+          <button type="button" (click)="close()" class="btn btn-default"
+            role="button" aria-disabled="false" style="padding: 4px 18px;">
+            <span class="ui-button-text">Close</span>
+          </button>
+
+          <span style="position: relative; display: inline-block;">
+            <button type="button btn btn-primary"
+              [disabled]="!isValid() || disabled || loading" class="btn btn-primary" (click)="handleCreate()">
+              <i class="icon-upload icon-white"></i>
+              Create
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

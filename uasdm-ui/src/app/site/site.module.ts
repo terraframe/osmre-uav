@@ -63,6 +63,7 @@ import { MetadataPageComponent } from './component/metadata-page/metadata-page.c
 import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
+import { CreateStandaloneProductModalComponent } from './component/modal/create-standalone-product-group-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
@@ -72,6 +73,8 @@ import { CreateProductGroupModalComponent } from './component/modal/create-produ
 import { ShareProductModalComponent } from './component/modal/share-product-modal.component';
 import { UserAccessService } from './service/user-access.service';
 import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
 	imports: [
@@ -100,6 +103,7 @@ import { UserAccessModalComponent } from './component/modal/user-access-modal.co
 		MetadataModalComponent,
 		ImagePreviewModalComponent,
 		CreateCollectionModalComponent,
+		CreateStandaloneProductModalComponent,
 		UploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
@@ -150,6 +154,7 @@ import { UserAccessModalComponent } from './component/modal/user-access-modal.co
 		FilterModalComponent,
 		RunOrthoModalComponent,
 		CreateCollectionModalComponent,
+		CreateStandaloneProductModalComponent,
 		UploadModalComponent,
 		ODMRunModalComponent,
 		EntityModalComponent,

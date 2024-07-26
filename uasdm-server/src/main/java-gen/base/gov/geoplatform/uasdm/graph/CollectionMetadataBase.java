@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -152748745)
+@com.runwaysdk.business.ClassSignature(hash = -1062617555)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -24,14 +24,17 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public final static java.lang.String OID = "oid";
   public final static java.lang.String PERCENTENDLAP = "percentEndLap";
   public final static java.lang.String PERCENTSIDELAP = "percentSideLap";
+  public final static java.lang.String POCEMAIL = "pocEmail";
+  public final static java.lang.String POCNAME = "pocName";
   public final static java.lang.String SENSOR = "sensor";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String SOUTHBOUND = "southBound";
   public final static java.lang.String UAV = "uav";
+  public final static java.lang.String UPLOADED = "uploaded";
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -152748745;
+  private static final long serialVersionUID = -1062617555;
   
   public CollectionMetadataBase()
   {
@@ -241,6 +244,38 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
     this.setValue(PERCENTSIDELAP, value);
   }
   
+  public String getPocEmail()
+  {
+    return (String) this.getObjectValue(POCEMAIL);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getPocEmailMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.CollectionMetadata.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(POCEMAIL);
+  }
+  
+  public void setPocEmail(String value)
+  {
+    this.setValue(POCEMAIL, value);
+  }
+  
+  public String getPocName()
+  {
+    return (String) this.getObjectValue(POCNAME);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getPocNameMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.CollectionMetadata.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(POCNAME);
+  }
+  
+  public void setPocName(String value)
+  {
+    this.setValue(POCNAME, value);
+  }
+  
   public gov.geoplatform.uasdm.graph.Sensor getSensor()
   {
     return (gov.geoplatform.uasdm.graph.Sensor) this.getObjectValue(SENSOR);
@@ -303,6 +338,22 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public void setUav(gov.geoplatform.uasdm.graph.UAV value)
   {
     this.setValue(UAV, value);
+  }
+  
+  public Boolean getUploaded()
+  {
+    return (Boolean) this.getObjectValue(UPLOADED);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getUploadedMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.CollectionMetadata.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(UPLOADED);
+  }
+  
+  public void setUploaded(Boolean value)
+  {
+    this.setValue(UPLOADED, value);
   }
   
   public String getWeatherConditions()

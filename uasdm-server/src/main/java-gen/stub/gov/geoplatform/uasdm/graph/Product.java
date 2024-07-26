@@ -800,7 +800,7 @@ public class Product extends ProductBase implements ProductIF
       properties.setDatetime(dateTime);
       properties.setUpdated(this.getLastUpdateDate());
 
-      collection.getMetadata().ifPresent(metadata -> {
+      getMetadata().ifPresent(metadata -> {
 
         Sensor sensor = metadata.getSensor();
 
@@ -884,6 +884,27 @@ public class Product extends ProductBase implements ProductIF
     }
 
     return null;
+  }
+  
+  public Optional<CollectionMetadata> getMetadata()
+  {
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_METADATA);
+
+    // USING THE RID FAILS ON TRANSACTIONS WHICH HAVE NOT BEEN COMMITTED, WORK
+    // AROUND BY DOING A SEARCH BASED ON THE OID
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT EXPAND( ");
+    statement.append(" OUT('" + mdEdge.getDBClassName() + "')");
+    statement.append(")");
+    statement.append(" FROM ( ");
+    statement.append("   SELECT FROM " + mdVertex.getDBClassName() + " WHERE oid = :oid");
+    statement.append(" ) ");
+
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
+    query.setParameter("oid", this.getOid());
+
+    return Optional.ofNullable(query.getSingleResult());
   }
 
   public static List<ProductIF> getProducts()

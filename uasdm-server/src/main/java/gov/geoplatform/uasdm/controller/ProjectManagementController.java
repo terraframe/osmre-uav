@@ -180,6 +180,17 @@ public class ProjectManagementController
 
     return response;
   }
+  
+  @Endpoint(url = "create-standalone-product-group", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF createStandaloneProductGroup(ClientRequestIF request, @RequestParamter(name = "productGroup") String productGroupJson)
+  {
+    String oid = this.service.createStandaloneProductGroup(request.getSessionId(), productGroupJson);
+
+    RestResponse response = new RestResponse();
+    response.set("oid", oid);
+
+    return response;
+  }
 
   @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)

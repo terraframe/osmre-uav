@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -81,6 +82,7 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeComponent;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
@@ -1273,6 +1275,20 @@ public class ProjectManagementService
     JSONArray selections = new JSONArray(json);
 
     return Collection.createCollection(selections);
+  }
+  
+  @Request(RequestType.SESSION)
+  public String createStandaloneProductGroup(String sessionId, String sJson)
+  {
+    JSONObject json = new JSONObject(sJson);
+    
+    UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
+    
+    ProductIF product = component.createProductIfNotExist(json.getString("productGroupName"));
+
+    ImageryWorkflowTaskIF.createMetadata(json, component, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
+    
+    return product.getOid();
   }
 
   // @Request(RequestType.SESSION) // This was causing quite a nasty little bug

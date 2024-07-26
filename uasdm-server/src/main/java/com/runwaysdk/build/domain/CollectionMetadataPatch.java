@@ -1,15 +1,12 @@
 package com.runwaysdk.build.domain;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
@@ -17,25 +14,11 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
-import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
-import gov.geoplatform.uasdm.controller.PointcloudController;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.Document;
-import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public class CollectionMetadataPatch implements Runnable
 {

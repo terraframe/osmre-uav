@@ -41,7 +41,7 @@ public class GenerateMetadataCommand implements Command
   {
     try
     {
-      new MetadataXMLGenerator().generateAndUpload(this.collection);
+      new MetadataXMLGenerator().generateAndUpload(this.collection, this.collection.getMetadata().orElseThrow());
     }
     catch (RuntimeException e)
     {
@@ -59,7 +59,7 @@ public class GenerateMetadataCommand implements Command
     {
       CollectionIF original = ComponentFacade.getCollection(this.collection.getOid());
 
-      new MetadataXMLGenerator().generateAndUpload(original);
+      new MetadataXMLGenerator().generateAndUpload(original, original.getMetadata().orElseThrow());
     }
     catch (RuntimeException e)
     {

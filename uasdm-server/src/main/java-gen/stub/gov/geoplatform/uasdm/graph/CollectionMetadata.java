@@ -6,6 +6,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ProductIF;
 
 public class CollectionMetadata extends CollectionMetadataBase implements ComponentWithAttributes
 {
@@ -22,7 +23,7 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
   {
     this.apply();
 
-    ( (VertexObject) collection ).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
+    ((VertexObject) collection).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
   }
 
   @Override

@@ -10,11 +10,16 @@ import { Page } from '../modal/upload-modal.component';
 import { MetadataOptions } from '@site/model/uav';
 import { Observable, Observer } from 'rxjs';
 import { UAVService } from '@site/service/uav.service';
+import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
 
 @Component({
 	selector: 'metadata-page',
 	templateUrl: './metadata-page.component.html',
-	styleUrls: []
+	styleUrls: [],
+	animations: [
+		fadeInOnEnterAnimation(),
+		fadeOutOnLeaveAnimation()
+	]
 })
 export class MetadataPageComponent implements OnInit {
 	/*

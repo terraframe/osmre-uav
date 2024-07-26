@@ -172,41 +172,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           // Upload the metadata file
           if (child instanceof CollectionIF)
           {
-            CollectionMetadata metadata = new CollectionMetadata();
-
-            if (selection.has(CollectionMetadata.EXIFINCLUDED))
-            {
-              metadata.setValue(CollectionMetadata.EXIFINCLUDED, selection.getBoolean(CollectionMetadata.EXIFINCLUDED));
-            }
-
-            setDecimalValue(selection, metadata, CollectionMetadata.NORTHBOUND);
-            setDecimalValue(selection, metadata, CollectionMetadata.SOUTHBOUND);
-            setDecimalValue(selection, metadata, CollectionMetadata.EASTBOUND);
-            setDecimalValue(selection, metadata, CollectionMetadata.WESTBOUND);
-            setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATESTART);
-            setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATEEND);
-            setDateValue(selection, metadata, CollectionMetadata.COLLECTIONDATE);
-            setDateValue(selection, metadata, CollectionMetadata.COLLECTIONENDDATE);
-            setIntegerValue(selection, metadata, CollectionMetadata.FLYINGHEIGHT);
-            setIntegerValue(selection, metadata, CollectionMetadata.NUMBEROFFLIGHTS);
-            setIntegerValue(selection, metadata, CollectionMetadata.PERCENTENDLAP);
-            setIntegerValue(selection, metadata, CollectionMetadata.PERCENTSIDELAP);
-            setDecimalValue(selection, metadata, CollectionMetadata.AREACOVERED);
-            setStringValue(selection, metadata, CollectionMetadata.WEATHERCONDITIONS);
-
-            if (selection.has(CollectionMetadata.UAV))
-            {
-              metadata.setValue(CollectionMetadata.UAV, selection.getString(CollectionMetadata.UAV));
-            }
-
-            if (selection.has(CollectionMetadata.SENSOR))
-            {
-              metadata.setValue(CollectionMetadata.SENSOR, selection.getString(CollectionMetadata.SENSOR));
-            }
-
-            metadata.applyWithCollection((CollectionIF) child);
-
-            new MetadataXMLGenerator().generateAndUpload((CollectionIF) child);
+            createMetadata(selection, child, (VertexObject) child, EdgeType.COLLECTION_HAS_METADATA);
 
             MissingUploadMessage message = new MissingUploadMessage();
             message.setComponent(child.getOid());
@@ -224,6 +190,48 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
 
     return component;
+  }
+
+  public static CollectionMetadata createMetadata(JSONObject json, UasComponentIF component, VertexObject vertexHasMetadata, String vertexHasMetadataEdge)
+  {
+    CollectionMetadata metadata = new CollectionMetadata();
+
+    if (json.has(CollectionMetadata.EXIFINCLUDED))
+    {
+      metadata.setValue(CollectionMetadata.EXIFINCLUDED, json.getBoolean(CollectionMetadata.EXIFINCLUDED));
+    }
+
+    setDecimalValue(json, metadata, CollectionMetadata.NORTHBOUND);
+    setDecimalValue(json, metadata, CollectionMetadata.SOUTHBOUND);
+    setDecimalValue(json, metadata, CollectionMetadata.EASTBOUND);
+    setDecimalValue(json, metadata, CollectionMetadata.WESTBOUND);
+    setDateValue(json, metadata, CollectionMetadata.ACQUISITIONDATESTART);
+    setDateValue(json, metadata, CollectionMetadata.ACQUISITIONDATEEND);
+    setDateValue(json, metadata, CollectionMetadata.COLLECTIONDATE);
+    setDateValue(json, metadata, CollectionMetadata.COLLECTIONENDDATE);
+    setIntegerValue(json, metadata, CollectionMetadata.FLYINGHEIGHT);
+    setIntegerValue(json, metadata, CollectionMetadata.NUMBEROFFLIGHTS);
+    setIntegerValue(json, metadata, CollectionMetadata.PERCENTENDLAP);
+    setIntegerValue(json, metadata, CollectionMetadata.PERCENTSIDELAP);
+    setDecimalValue(json, metadata, CollectionMetadata.AREACOVERED);
+    setStringValue(json, metadata, CollectionMetadata.WEATHERCONDITIONS);
+
+    if (json.has(CollectionMetadata.UAV))
+    {
+      metadata.setValue(CollectionMetadata.UAV, json.getString(CollectionMetadata.UAV));
+    }
+
+    if (json.has(CollectionMetadata.SENSOR))
+    {
+      metadata.setValue(CollectionMetadata.SENSOR, json.getString(CollectionMetadata.SENSOR));
+    }
+
+    metadata.apply();
+    ((VertexObject) vertexHasMetadata).addChild(metadata, vertexHasMetadataEdge).apply();
+    
+    new MetadataXMLGenerator().generateAndUpload(component, metadata);
+    
+    return metadata;
   }
 
   public static Date getDateValue(JSONObject selection, String attributeName)

@@ -32,6 +32,7 @@ import {
 } from "angular-animations";
 import { ActivatedRoute } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
+import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
 import { UIOptions } from "fine-uploader";
 import { FineUploaderBasic } from "fine-uploader/lib/core";
 import { UploadModalComponent } from "./modal/upload-modal.component";
@@ -696,6 +697,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  handleUploadProducts(): void {
+
+    this.bsModalRef = this.modalService.show(CreateStandaloneProductModalComponent, {
+      animated: true,
+      backdrop: true,
+      ignoreBackdropClick: true,
+      "class": "upload-modal"
+    });
+    this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
+
+    this.bsModalRef.content.onCreateComplete.subscribe(oid => {
+
+      this.handleViewSite(oid);
+    });
+  }
+
 
   handleCreate(parent: SiteEntity, type: string): void {
     let parentId = parent != null ? parent.id : null;
@@ -1188,7 +1205,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       else {
-        this.showLeafModal(this.current.data, [node], breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
+        this.showLeafModal(this.current.data as SiteEntity, [node], breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
       }
     }
     else if (node.type === "object") {
@@ -1209,6 +1226,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.addBreadcrumb(node);
         this.setNodes(nodes);
+
+        console.log(this.current);
       });
     }
   }
@@ -1285,7 +1304,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     else if (breadcrumb.type === SELECTION_TYPE.SITE) {
-      const node: SiteEntity = breadcrumb.data;
+      const node: SiteEntity = breadcrumb.data as SiteEntity;
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });

@@ -760,7 +760,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       this.getMetadata().ifPresent(metadata -> {
         product.addChild(metadata, EdgeType.PRODUCT_HAS_METADATA).apply();
       });
-
     }
 
     return product;

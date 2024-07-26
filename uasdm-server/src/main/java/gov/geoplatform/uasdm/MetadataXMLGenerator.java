@@ -93,101 +93,85 @@ public class MetadataXMLGenerator
 
   }
 
-  public FlightMetadata generate(CollectionIF collection)
+  public FlightMetadata generate(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata colMetadata)
   {
     FlightMetadata metadata = new FlightMetadata();
 
-    List<UasComponentIF> ancestors = collection.getAncestors();
+    List<UasComponentIF> ancestors = component.getAncestors();
 
-    metadata.setName(collection.getPocName());
-    metadata.setEmail(collection.getPocEmail());
+    metadata.setName(colMetadata.getPocName());
+    metadata.setEmail(colMetadata.getPocEmail());
 
-    UasComponentIF proj = ancestors.get(1);
+    // TODO
+//    UasComponentIF proj = ancestors.get(1);
+//
+//    metadata.getProject().populate(proj);
+//
+//    UasComponentIF mission = ancestors.get(0);
+//
+//    metadata.getMission().populate(mission);
+//
+//    metadata.getCollection().populate(collection);
+//
+//    collection.getProducts().forEach(product -> {
+//      metadata.addProduct(new ProductMetadata().populate(product, collection));
+//    });
 
-    metadata.getProject().populate(proj);
+    UAV uav = colMetadata.getUav();
+    Platform platform = uav.getPlatform();
+    PlatformType platformType = platform.getPlatformType();
 
-    UasComponentIF mission = ancestors.get(0);
+    metadata.getPlatform().setName(platform.getName());
+    metadata.getPlatform().setType(platformType.getName());
+    metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
+    metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
 
-    metadata.getMission().populate(mission);
+    Sensor sensor = colMetadata.getSensor();
 
-    metadata.getCollection().populate(collection);
-
-    collection.getProducts().forEach(product -> {
-      metadata.addProduct(new ProductMetadata().populate(product, collection));
-    });
-
-    Integer width = collection.getImageWidth();
-
-    if (width != null && width != 0)
+    if (sensor != null)
     {
-      metadata.getSensor().setImageWidth(String.valueOf(collection.getImageWidth()));
-    }
 
-    Integer height = collection.getImageHeight();
+      SensorType sensorType = sensor.getSensorType();
 
-    if (height != null && height != 0)
-    {
-      metadata.getSensor().setImageHeight(String.valueOf(collection.getImageHeight()));
-    }
+      List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
+      JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
-    collection.getMetadata().ifPresent(colMetadata -> {
-      UAV uav = colMetadata.getUav();
-      Platform platform = uav.getPlatform();
-      PlatformType platformType = platform.getPlatformType();
+      metadata.getSensor().setName(sensor.getName());
+      metadata.getSensor().setType(sensorType.getName());
+      metadata.getSensor().setModel(sensor.getModel());
+      metadata.getSensor().setWavelength(array.toString());
 
-      metadata.getPlatform().setName(platform.getName());
-      metadata.getPlatform().setType(platformType.getName());
-      metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
-      metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
-
-      Sensor sensor = colMetadata.getSensor();
-
-      if (sensor != null)
+      if (sensor.getRealSensorWidth() != null)
       {
-
-        SensorType sensorType = sensor.getSensorType();
-
-        List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
-        JSONArray array = wavelengths.stream().map(w -> w.getName()).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
-
-        metadata.getSensor().setName(sensor.getName());
-        metadata.getSensor().setType(sensorType.getName());
-        metadata.getSensor().setModel(sensor.getModel());
-        metadata.getSensor().setWavelength(array.toString());
-
-        if (sensor.getRealSensorWidth() != null)
-        {
-          metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
-        }
-
-        if (sensor.getRealSensorHeight() != null)
-        {
-          metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
-        }
-
-        if (sensor.getRealPixelSizeWidth() != null)
-        {
-          metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
-        }
-
-        if (sensor.getRealPixelSizeHeight() != null)
-        {
-          metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
-        }
-
-        if (sensor.getRealFocalLength() != null)
-        {
-          metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
-        }
-
+        metadata.getSensor().setSensorWidth(sensor.getRealSensorWidth().toString());
       }
 
-    });
+      if (sensor.getRealSensorHeight() != null)
+      {
+        metadata.getSensor().setSensorHeight(sensor.getRealSensorHeight().toString());
+      }
+
+      if (sensor.getRealPixelSizeWidth() != null)
+      {
+        metadata.getSensor().setPixelSizeWidth(sensor.getRealPixelSizeWidth().toString());
+      }
+
+      if (sensor.getRealPixelSizeHeight() != null)
+      {
+        metadata.getSensor().setPixelSizeHeight(sensor.getRealPixelSizeHeight().toString());
+      }
+
+      if (sensor.getRealFocalLength() != null)
+      {
+        metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
+      }
+
+    }
 
     return metadata;
   }
 
-  public Document generate(CollectionIF collection, FlightMetadata metadata)
+  public Document generate(UasComponentIF component, FlightMetadata metadata)
   {
     Document dom = this.builder.newDocument();
     dom.setStrictErrorChecking(false);
@@ -601,22 +585,22 @@ public class MetadataXMLGenerator
   }
 
   @Transaction
-  public void generateAndUpload(CollectionIF collection)
+  public void generateAndUpload(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata meta)
   {
-    FlightMetadata metadata = this.generate(collection);
+    FlightMetadata metadata = this.generate(component, meta);
 
-    this.generateAndUpload(collection, metadata);
+    this.generateAndUpload(component, metadata);
   }
 
   @Transaction
-  public void generateAndUpload(CollectionIF collection, FlightMetadata metadata)
+  public void generateAndUpload(UasComponentIF component, FlightMetadata metadata)
   {
-    Document document = generate(collection, metadata);
+    Document document = generate(component, metadata);
 
-    this.upload(collection, document);
+    this.upload(component, document);
   }
 
-  private void upload(CollectionIF collection, Document document) throws TransformerFactoryConfigurationError
+  private void upload(UasComponentIF component, Document document) throws TransformerFactoryConfigurationError
   {
     File temp = null;
 
@@ -625,27 +609,30 @@ public class MetadataXMLGenerator
 
       temp = createTempFile(document);
 
-      String fileName = collection.getFolderName() + FILENAME;
-      String key = collection.getS3location() + Collection.RAW + "/" + collection.getFolderName() + FILENAME;
+      String fileName = component.getFolderName() + FILENAME;
+      String key = component.getS3location() + Collection.RAW + "/" + component.getFolderName() + FILENAME;
       Util.uploadFileToS3(temp, key, null);
 
       DocumentIF.Metadata meta = new DocumentIF.Metadata();
       meta.setFileSize(temp.length());
-      collection.createDocumentIfNotExist(key, fileName, meta);
+      component.createDocumentIfNotExist(key, fileName, meta);
 
-      IndexService.updateOrCreateMetadataDocument(collection.getAncestors(), collection, key, fileName, temp);
+      IndexService.updateOrCreateMetadataDocument(component.getAncestors(), component, key, fileName, temp);
 
-      if (!collection.getMetadataUploaded())
-      {
-        collection.appLock();
-        collection.setMetadataUploaded(true);
-        collection.apply();
-      }
+      // TODO
+//      if (!component.getMetadataUploaded())
+//      {
+//        component.appLock();
+//        component.setMetadataUploaded(true);
+//        component.apply();
+//      }
 
       // Remove any messages
-      MissingMetadataMessage.remove(collection);
-
-      CollectionReportFacade.updateIncludeSize(collection).doIt();
+      if (component instanceof CollectionIF) {
+        MissingMetadataMessage.remove((CollectionIF) component);
+  
+        CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt(); // TODO : And for things other than collection?
+      }
     }
     finally
     {

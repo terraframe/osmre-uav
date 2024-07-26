@@ -22,6 +22,9 @@
     <create>
       <mdVertex name="gov.geoplatform.uasdm.graph.CollectionMetadata" label="Product Metadata">
           <attributes>
+            <text name="pocName" label="Point of Contact Name" />
+            <text name="pocEmail" label="Point of Contact Email" />
+            <boolean name="uploaded" label="uploaded" />
             <decimal name="northBound" label="North Bound" length="7" decimal="5" />
             <decimal name="southBound" label="South Bound" length="7" decimal="5" />
             <decimal name="eastBound" label="East Bound" length="7" decimal="5" />
