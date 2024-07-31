@@ -21,7 +21,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 
 public interface ComponentStrategy
@@ -44,7 +44,7 @@ public interface ComponentStrategy
 
   public List<ProductIF> getProducts();
 
-  public List<CollectionProductDTO> getProducts(ProductCriteria criteria);
+  public List<ComponentProductDTO> getProducts(ProductCriteria criteria);
 
   public List<SiteIF> getSites(String conditions, String sort);
 

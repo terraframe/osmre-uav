@@ -165,7 +165,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
             metadata.getSensor().setImageHeight(Integer.toString(collection.getImageHeight()));
 
             MetadataXMLGenerator generator = new MetadataXMLGenerator();
-            generator.generateAndUpload(collection, metadata);
+            generator.generateAndUpload(collection, metadata, collection.getMetadata().orElseThrow());
           }
         }
 

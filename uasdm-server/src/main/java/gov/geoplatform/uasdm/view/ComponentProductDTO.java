@@ -10,18 +10,19 @@ import com.runwaysdk.business.graph.VertexObject;
 
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
-public class CollectionProductDTO
+public class ComponentProductDTO
 {
-  private CollectionIF          collection;
+  private UasComponentIF component;
 
   private ProductIF             primary;
 
   private Collection<ProductIF> products;
 
-  public CollectionProductDTO(CollectionIF collection)
+  public ComponentProductDTO(UasComponentIF component)
   {
-    this.collection = collection;
+    this.component = component;
     this.products = new TreeSet<ProductIF>((ProductIF p1, ProductIF p2) -> {
       if (p1.isPrimary() == p2.isPrimary())
       {
@@ -32,9 +33,9 @@ public class CollectionProductDTO
     });
   }
 
-  public CollectionIF getCollection()
+  public UasComponentIF getComponent()
   {
-    return collection;
+    return component;
   }
 
   public void addProduct(ProductIF product)
@@ -62,17 +63,17 @@ public class CollectionProductDTO
     return this.products.isEmpty();
   }
 
-  public static List<CollectionProductDTO> process(List<VertexObject> results)
+  public static List<ComponentProductDTO> process(List<VertexObject> results)
   {
-    List<CollectionProductDTO> dtos = new LinkedList<CollectionProductDTO>();
+    List<ComponentProductDTO> dtos = new LinkedList<ComponentProductDTO>();
 
-    CollectionProductDTO current = null;
+    ComponentProductDTO current = null;
 
     for (VertexObject result : results)
     {
-      if (result instanceof CollectionIF)
+      if (result instanceof UasComponentIF)
       {
-        current = new CollectionProductDTO((CollectionIF) result);
+        current = new ComponentProductDTO((UasComponentIF) result);
 
         dtos.add(current);
       }

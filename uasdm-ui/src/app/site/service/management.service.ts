@@ -693,7 +693,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<{ oid: string }>(environment.apiUrl + '/project/create-standalone-product-group', JSON.stringify(productGroup), { headers: headers })
+			.post<{ oid: string }>(environment.apiUrl + '/project/create-standalone-product-group', JSON.stringify({ "productGroup": productGroup }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

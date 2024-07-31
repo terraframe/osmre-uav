@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,7 +47,6 @@ import gov.geoplatform.uasdm.bus.DuplicateSiteException;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.view.AttributeListType;
 import gov.geoplatform.uasdm.view.AttributeOrganizationType;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.EqCondition;
@@ -330,7 +331,7 @@ public class Site extends SiteBase implements SiteIF
   }
 
   @Override
-  protected String buildProductExpandClause()
+  protected List<String> buildProductExpandClause()
   {
     return Site.expandClause();
   }
@@ -366,11 +367,13 @@ public class Site extends SiteBase implements SiteIF
     return query.getResults().stream().map(a -> (SiteIF) a).collect(Collectors.toList());
   }
 
-  public static String expandClause()
+  public static List<String> expandClause()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.SITE_HAS_PROJECT);
 
-    return "OUT('" + mdEdge.getDBClassName() + "')." + Project.expandClause();
+    List<String> out = new ArrayList<String>(Arrays.asList("OUT('" + mdEdge.getDBClassName() + "')"));
+    out.addAll(Project.expandClause());
+    return out;
   }
 
   public static List<Site> getAll()

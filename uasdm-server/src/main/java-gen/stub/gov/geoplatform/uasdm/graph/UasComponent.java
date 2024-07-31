@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,7 +92,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -143,7 +144,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
    */
   public abstract String getSolrNameField();
 
-  protected abstract String buildProductExpandClause();
+  protected abstract List<String> buildProductExpandClause();
 
   @Override
   public String getS3location(ProductIF product, String folder)
@@ -918,7 +919,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   public List<CollectionIF> getDerivedCollections()
   {
-    String expand = this.buildProductExpandClause();
+    String expand = String.join(".", this.buildProductExpandClause());
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT EXPAND(" + expand + ")");
@@ -930,8 +931,49 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return query.getResults();
   }
 
+  
+  // Dumb first attempt
+  
+//  SELECT EXPAND( $c )
+//  LET $a = (
+//    TRAVERSE OUT('component_has_product')
+//    FROM (
+//      SELECT FROM (
+//        SELECT *
+//        FROM #34:0
+//      )
+//      ORDER BY name ASC
+//    )
+//  ),
+//  $b = (
+//      TRAVERSE OUT ('component_has_product')
+//      FROM (
+//        SELECT FROM (
+//          SELECT EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0'))
+//          FROM #34:0
+//        )
+//        ORDER BY name ASC
+//      )
+//  ),
+//  $c = UNIONALL( $a, $b )
+
+  
+  
+  
+  
+  // Getting a little smarter...
+  
+//  TRAVERSE OUT ('component_has_product')
+//  FROM (
+//    SELECT EXPAND(*) FROM (
+//      SELECT unionall(*, OUT('project_has_mission0'), OUT('project_has_mission0').OUT('mission_has_collection0'))
+//        FROM #34:0
+//      )
+//    ORDER BY name ASC
+//  )
+  
   @Override
-  public List<CollectionProductDTO> getDerivedProducts(String sortField, String sortOrder)
+  public List<ComponentProductDTO> getDerivedProducts(String sortField, String sortOrder)
   {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
@@ -939,7 +981,19 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     HashMap<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("rid", this.getRID());
 
-    String expand = this.buildProductExpandClause();
+//    String expand = "unionall(*, " + String.join(", ", this.buildProductExpandClause()) + ")";
+    
+    List<String> descends = new ArrayList<String>();
+    List<String> clause = this.buildProductExpandClause();
+    for (int i = 0; i < clause.size(); ++i) {
+      List<String> d2 = new ArrayList<String>();
+      for (int j = 0; j < clause.size() - i; ++j) {
+        d2.add(clause.get(j));
+      }
+      descends.add(String.join(".", d2));
+    }
+    String expand = "unionall(*, " + String.join(",", descends) + ")";
+    
 
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
     
@@ -994,7 +1048,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
-    return CollectionProductDTO.process(query.getResults());
+    return ComponentProductDTO.process(query.getResults());
   }
 
   public void addComponent(UasComponentIF parent)

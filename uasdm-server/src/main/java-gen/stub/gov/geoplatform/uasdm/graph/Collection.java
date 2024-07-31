@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.graph;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -216,7 +217,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  protected String buildProductExpandClause()
+  protected List<String> buildProductExpandClause()
   {
     return Collection.expandClause();
   }
@@ -858,11 +859,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return messages;
   }
 
-  public static String expandClause()
+  public static List<String> expandClause()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
-    return "OUT('" + mdEdge.getDBClassName() + "')";
+    return new ArrayList<String>(Arrays.asList("OUT('" + mdEdge.getDBClassName() + "')"));
   }
 
   public static boolean isUAVReferenced(UAV uav)

@@ -38,7 +38,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public interface UasComponentIF extends ComponentWithAttributes
@@ -117,7 +117,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public void setPrimaryProduct(ProductIF product);
 
-  public List<CollectionProductDTO> getDerivedProducts(String sortField, String sortOrder);
+  public List<ComponentProductDTO> getDerivedProducts(String sortField, String sortOrder);
 
   public List<UasComponentIF> getChildren();
 

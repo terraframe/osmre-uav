@@ -24,12 +24,11 @@
           <attributes>
             <text name="pocName" label="Point of Contact Name" />
             <text name="pocEmail" label="Point of Contact Email" />
-            <boolean name="uploaded" label="uploaded" />
             <decimal name="northBound" label="North Bound" length="7" decimal="5" />
             <decimal name="southBound" label="South Bound" length="7" decimal="5" />
             <decimal name="eastBound" label="East Bound" length="7" decimal="5" />
             <decimal name="westBound" label="West Bound" length="7" decimal="5" />
-            <boolean name="exifIncluded" label="EXIF Included" />
+            <boolean name="exifIncluded" label="EXIF Included" defaultValue="false" />
             <date name="acquisitionDateStart" label="Acquisition Date Start" />
             <date name="acquisitionDateEnd" label="Acquisition Date End" />
             <integer name="flyingHeight" label="Flying Height" />
@@ -47,7 +46,13 @@
               label="Sensor" />
             <date name="collectionDate" required="false" label="Collection Date" description="Date collection was flown" />
           </attributes>      
-      </mdVertex>    
+      </mdVertex>
+      
+      <mdVertex name="gov.geoplatform.uasdm.graph.Product" label="Product Metadata">
+        <attributes>
+          <boolean name="primary" defaultValue="false" />
+        </attributes>
+      </mdVertex>
       
       <mdEdge name="gov.geoplatform.uasdm.graph.CollectionHasMetadata" label="Collection Has Metadata" parent="gov.geoplatform.uasdm.graph.Collection" child="gov.geoplatform.uasdm.graph.CollectionMetadata">
       </mdEdge>      

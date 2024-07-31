@@ -91,7 +91,7 @@ public class Imagery extends ImageryBase implements ImageryIF
   }
 
   @Override
-  protected String buildProductExpandClause()
+  protected List<String> buildProductExpandClause()
   {
     throw new UnsupportedOperationException();
   }

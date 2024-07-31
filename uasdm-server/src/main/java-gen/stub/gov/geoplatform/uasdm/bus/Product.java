@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.bus;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -63,13 +65,18 @@ public class Product extends ProductBase implements ProductIF
   {
     return this.mapKey;
   }
+  
+  public Optional<CollectionMetadata> getMetadata()
+  {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public void delete()
   {
     this.delete(true);
   }
-
+  
   @Transaction
   public void delete(boolean removeFromS3)
   {

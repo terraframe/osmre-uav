@@ -40,7 +40,7 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.ProductCriteria;
@@ -94,7 +94,7 @@ public class ProductService
   {
     JSONArray array = new JSONArray();
 
-    List<CollectionProductDTO> dtos = null;
+    List<ComponentProductDTO> dtos = null;
 
     if (criteria.getType().equals(ProductCriteria.SITE))
     {
@@ -106,9 +106,9 @@ public class ProductService
       dtos = ComponentFacade.getProducts(criteria);
     }
 
-    for (CollectionProductDTO dto : dtos)
+    for (ComponentProductDTO dto : dtos)
     {
-      CollectionIF component = dto.getCollection();
+      UasComponentIF component = dto.getComponent();
 
       List<UasComponentIF> components = component.getAncestors();
       Collections.reverse(components);

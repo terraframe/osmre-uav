@@ -17,10 +17,12 @@ package gov.geoplatform.uasdm.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
 
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 
 public interface ProductIF extends ComponentIF
@@ -78,5 +80,7 @@ public interface ProductIF extends ComponentIF
   public RemoteFileObject downloadAllZip();
 
   public boolean hasAllZip();
+  
+  public Optional<CollectionMetadata> getMetadata();
 
 }

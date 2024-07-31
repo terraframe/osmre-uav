@@ -30,7 +30,6 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String SOUTHBOUND = "southBound";
   public final static java.lang.String UAV = "uav";
-  public final static java.lang.String UPLOADED = "uploaded";
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
@@ -338,22 +337,6 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public void setUav(gov.geoplatform.uasdm.graph.UAV value)
   {
     this.setValue(UAV, value);
-  }
-  
-  public Boolean getUploaded()
-  {
-    return (Boolean) this.getObjectValue(UPLOADED);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getUploadedMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.CollectionMetadata.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(UPLOADED);
-  }
-  
-  public void setUploaded(Boolean value)
-  {
-    this.setValue(UPLOADED, value);
   }
   
   public String getWeatherConditions()

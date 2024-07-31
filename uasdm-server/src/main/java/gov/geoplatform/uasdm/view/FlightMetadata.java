@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -388,22 +389,17 @@ public class FlightMetadata
       this.endDate = endDate;
     }
 
-    public ArtifactMetadata populate(Artifact artifact, CollectionIF collection)
+    public ArtifactMetadata populate(Optional<gov.geoplatform.uasdm.graph.CollectionMetadata> metadata, Artifact artifact, UasComponentIF component)
     {
       this.type = artifact.getFolder();
       this.ptEpsg = artifact.getPtEpsg();
       this.projectionName = artifact.getProjectionName();
       this.orthoCorrectionModel = artifact.getOrthoCorrectionModel();
-
-      collection.getMetadata().ifPresent(metadata -> {
-        this.startDate = metadata.getCollectionDate();
-        this.endDate = metadata.getCollectionEndDate();
-
-        if (this.endDate == null)
-        {
-          this.endDate = metadata.getCollectionDate();
-        }
-      });
+      
+      if (metadata.isPresent()) {
+        this.startDate = metadata.get().getAcquisitionDateStart();
+        this.endDate = metadata.get().getAcquisitionDateEnd();
+      }
 
       List<SiteObject> objects = artifact.getObjects();
 
@@ -566,7 +562,7 @@ public class FlightMetadata
       this.artifacts.add(artifact);
     }
 
-    public ProductMetadata populate(ProductIF product, CollectionIF collection)
+    public ProductMetadata populate(ProductIF product, UasComponentIF component)
     {
       this.productName = product.getProductName();
 
@@ -580,13 +576,13 @@ public class FlightMetadata
       });
 
       // Load the artifacts
-      Artifact[] artifactObjects = collection.getArtifactObjects(product);
+      Artifact[] artifactObjects = component.getArtifactObjects(product);
 
       for (Artifact artifact : artifactObjects)
       {
         if (artifact.hasObjects())
         {
-          this.addArtifact(new ArtifactMetadata().populate(artifact, collection));
+          this.addArtifact(new ArtifactMetadata().populate(product.getMetadata(), artifact, component));
         }
       }
 

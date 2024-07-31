@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.graph;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -91,7 +93,7 @@ public class Mission extends MissionBase implements MissionIF
   }
 
   @Override
-  protected String buildProductExpandClause()
+  protected List<String> buildProductExpandClause()
   {
     return Mission.expandClause();
   }
@@ -161,10 +163,10 @@ public class Mission extends MissionBase implements MissionIF
     return new LinkedList<AbstractWorkflowTask>();
   }
 
-  public static String expandClause()
+  public static List<String> expandClause()
   {
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.MISSION_HAS_COLLECTION);
 
-    return "OUT('" + mdEdge.getDBClassName() + "')";
+    return new ArrayList<String>(Arrays.asList("OUT('" + mdEdge.getDBClassName() + "')"));
   }
 }

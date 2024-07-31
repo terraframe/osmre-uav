@@ -515,13 +515,10 @@ public abstract class Converter<T extends UasComponentIF>
     Page<JSONWrapper> page = product.getGeneratedFromDocuments(pageNumber, pageSize).map(r -> {
       return new JSONWrapper(r.toJSON());
     });
-
-    // Get metadata
-    CollectionIF collection = (CollectionIF) product.getComponent();
-
-    view.setPilotName(collection.getPocName());
-
-    collection.getMetadata().ifPresent(metadata -> {
+    
+    product.getMetadata().ifPresent(metadata -> {
+      
+      view.setPilotName(metadata.getPocName());
 
       Sensor sensor = metadata.getSensor();
       if (sensor != null)

@@ -64,7 +64,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -671,7 +671,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public List<CollectionProductDTO> getDerivedProducts(String sortField, String sortOrder)
+  public List<ComponentProductDTO> getDerivedProducts(String sortField, String sortOrder)
   {
     throw new UnsupportedOperationException();
   }

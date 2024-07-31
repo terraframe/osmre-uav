@@ -80,7 +80,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
@@ -148,7 +148,7 @@ public class Product extends ProductBase implements ProductIF
   @Override
   public boolean isPrimary()
   {
-    return this.getPrimary();
+    return Boolean.TRUE.equals(this.getPrimary());
   }
 
   @Override
@@ -406,17 +406,25 @@ public class Product extends ProductBase implements ProductIF
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
 
-      if (component instanceof Collection)
-      {
-        Collection collection = (Collection) component;
-
-        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
-        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
-        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
-        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-
-        collection.apply();
-      }
+//      if (component instanceof Collection)
+//      {
+//        Collection collection = (Collection) component;
+//
+//        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
+//        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
+//        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
+//        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
+//
+//        collection.apply();
+//      }
+      
+      this.getMetadata().ifPresent(metadata -> {
+        metadata.setNorthBound(new BigDecimal(bbox.getMaxLat()));
+        metadata.setSouthBound(new BigDecimal(bbox.getMinLat()));
+        metadata.setEastBound(new BigDecimal(bbox.getMaxLong()));
+        metadata.setWestBound(new BigDecimal(bbox.getMinLong()));
+        metadata.apply();
+      });
     }
     else
     {
@@ -526,15 +534,19 @@ public class Product extends ProductBase implements ProductIF
    */
   public void refreshDocuments() throws InterruptedException
   {
-    final CollectionIF collection = (CollectionIF) this.getComponent();
-
-    boolean allZipExists = this.hasAllZip();
-
-    if (allZipExists)
-    {
-      ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
-
-      uploader.processAllZip();
+    UasComponent c = this.getComponent();
+    
+    if (c != null && c instanceof CollectionIF) {
+      final CollectionIF collection = (CollectionIF) this.getComponent();
+  
+      boolean allZipExists = this.hasAllZip();
+  
+      if (allZipExists)
+      {
+        ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
+  
+        uploader.processAllZip();
+      }
     }
   }
 
@@ -542,7 +554,12 @@ public class Product extends ProductBase implements ProductIF
   {
     // return this.getDocuments().stream().filter(doc ->
     // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    return ( (Collection) this.getComponent() ).getHasAllZip();
+    
+    UasComponent c = this.getComponent();
+    
+    if (!(c instanceof Collection)) return false;
+    
+    return ((Collection) c).getHasAllZip();
   }
 
   public SiteObject getAllZip()
@@ -759,7 +776,7 @@ public class Product extends ProductBase implements ProductIF
 
     UasComponent component = this.getComponent();
 
-    if (component instanceof CollectionIF)
+    if (component instanceof CollectionIF) // TODO
     {
       CollectionIF collection = (CollectionIF) component;
 
@@ -946,7 +963,7 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  public static List<CollectionProductDTO> getProducts(ProductCriteria criteria)
+  public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
 
@@ -1080,7 +1097,7 @@ public class Product extends ProductBase implements ProductIF
 
     final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
-    return CollectionProductDTO.process(query.getResults());
+    return ComponentProductDTO.process(query.getResults());
   }
 
   public String getS3location()

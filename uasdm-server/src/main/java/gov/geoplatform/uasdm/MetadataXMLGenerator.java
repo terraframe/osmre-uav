@@ -55,6 +55,8 @@ import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.MissionIF;
+import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.service.IndexService;
@@ -101,22 +103,22 @@ public class MetadataXMLGenerator
 
     metadata.setName(colMetadata.getPocName());
     metadata.setEmail(colMetadata.getPocEmail());
-
-    // TODO
-//    UasComponentIF proj = ancestors.get(1);
-//
-//    metadata.getProject().populate(proj);
-//
-//    UasComponentIF mission = ancestors.get(0);
-//
-//    metadata.getMission().populate(mission);
-//
-//    metadata.getCollection().populate(collection);
-//
-//    collection.getProducts().forEach(product -> {
-//      metadata.addProduct(new ProductMetadata().populate(product, collection));
-//    });
-
+    
+    if (component instanceof CollectionIF) {
+      metadata.getProject().populate(ancestors.get(1));
+      metadata.getMission().populate(ancestors.get(0));
+      metadata.getCollection().populate(component);
+    } else if (component instanceof MissionIF) {
+      metadata.getProject().populate(ancestors.get(0));
+      metadata.getMission().populate(component);
+    } else if (component instanceof ProjectIF) {
+      metadata.getProject().populate(component);
+    }
+    
+    component.getProducts().forEach(product -> {
+      metadata.addProduct(new ProductMetadata().populate(product, component));
+    });
+    
     UAV uav = colMetadata.getUav();
     Platform platform = uav.getPlatform();
     PlatformType platformType = platform.getPlatformType();
@@ -585,22 +587,22 @@ public class MetadataXMLGenerator
   }
 
   @Transaction
-  public void generateAndUpload(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata meta)
+  public void generateAndUpload(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
   {
-    FlightMetadata metadata = this.generate(component, meta);
+    FlightMetadata metadata = this.generate(component, colMeta);
 
-    this.generateAndUpload(component, metadata);
+    this.generateAndUpload(component, metadata, colMeta);
   }
 
   @Transaction
-  public void generateAndUpload(UasComponentIF component, FlightMetadata metadata)
+  public void generateAndUpload(UasComponentIF component, FlightMetadata metadata, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
   {
     Document document = generate(component, metadata);
 
-    this.upload(component, document);
+    this.upload(component, document, colMeta);
   }
 
-  private void upload(UasComponentIF component, Document document) throws TransformerFactoryConfigurationError
+  private void upload(UasComponentIF component, Document document, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta) throws TransformerFactoryConfigurationError
   {
     File temp = null;
 
@@ -610,7 +612,14 @@ public class MetadataXMLGenerator
       temp = createTempFile(document);
 
       String fileName = component.getFolderName() + FILENAME;
-      String key = component.getS3location() + Collection.RAW + "/" + component.getFolderName() + FILENAME;
+      
+      String key;
+      if (component instanceof CollectionIF) {
+        key = component.getS3location() + Collection.RAW + "/" + component.getFolderName() + FILENAME;
+      } else {
+        key = component.getS3location() + "/" + component.getFolderName() + FILENAME;
+      }
+      
       Util.uploadFileToS3(temp, key, null);
 
       DocumentIF.Metadata meta = new DocumentIF.Metadata();
@@ -619,17 +628,15 @@ public class MetadataXMLGenerator
 
       IndexService.updateOrCreateMetadataDocument(component.getAncestors(), component, key, fileName, temp);
 
-      // TODO
-//      if (!component.getMetadataUploaded())
-//      {
-//        component.appLock();
-//        component.setMetadataUploaded(true);
-//        component.apply();
-//      }
-
       // Remove any messages
       if (component instanceof CollectionIF) {
+        CollectionIF col = (CollectionIF) component;
+        
         MissingMetadataMessage.remove((CollectionIF) component);
+        
+        col.appLock();
+        col.setMetadataUploaded(true);
+        col.appLock();
   
         CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt(); // TODO : And for things other than collection?
       }

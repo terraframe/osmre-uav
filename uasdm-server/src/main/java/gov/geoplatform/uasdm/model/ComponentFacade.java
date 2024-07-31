@@ -21,7 +21,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.view.CollectionProductDTO;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 
 public class ComponentFacade
@@ -103,7 +103,7 @@ public class ComponentFacade
     return STRATEGY.bbox();
   }
 
-  public static List<CollectionProductDTO> getProducts(ProductCriteria criteria)
+  public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     return STRATEGY.getProducts(criteria);
   }

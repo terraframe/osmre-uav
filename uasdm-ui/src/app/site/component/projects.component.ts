@@ -47,6 +47,8 @@ import { LPGSync } from "@shared/model/lpg";
 import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
 import { LocalizedValue } from "@shared/model/organization";
+import { ProductService } from "@site/service/product.service";
+import { ProductModalComponent } from "./modal/product-modal.component";
 
 
 const enum PANEL_TYPE {
@@ -230,6 +232,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private configuration: ConfigurationService,
     private service: ManagementService,
     private authService: AuthService,
+    private pService: ProductService,
     private mapService: MapService,
     private modalService: BsModalService,
     private metadataService: MetadataService,
@@ -709,7 +712,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.bsModalRef.content.onCreateComplete.subscribe(oid => {
 
-      this.handleViewSite(oid);
+      this.handleViewStandaloneProduct(oid);
     });
   }
 
@@ -1002,6 +1005,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (result.type === 'LOCATION') {
       this.handleViewLocation(result.synchronizationId, result.oid);
     }
+  }
+
+  handleViewStandaloneProduct(id: string): void {
+    this.pService.getDetail(id, 1, 20).then(detail => {
+      this.bsModalRef = this.modalService.show(ProductModalComponent, {
+          animated: true,
+          backdrop: true,
+          ignoreBackdropClick: true,
+          'class': 'product-info-modal'
+      });
+      this.bsModalRef.content.init(detail);
+    });
   }
 
   handleViewSite(id: string): void {

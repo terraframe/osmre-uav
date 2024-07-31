@@ -830,7 +830,7 @@ public class ProjectManagementService
 
     FlightMetadata metadata = FlightMetadata.parse(collection, new JSONObject(json));
 
-    new MetadataXMLGenerator().generateAndUpload(collection, metadata);
+    new MetadataXMLGenerator().generateAndUpload(collection, metadata, collection.getMetadata().orElseThrow());
   }
 
   public String getObjectsPresigned(String sessionId, String id, String key, Long pageNumber, Long pageSize)
@@ -1285,8 +1285,9 @@ public class ProjectManagementService
     UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
     
     ProductIF product = component.createProductIfNotExist(json.getString("productGroupName"));
+    ((Product)product).setPrimary(true);
 
-    ImageryWorkflowTaskIF.createMetadata(json, component, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
+    ImageryWorkflowTaskIF.createMetadata(json.getJSONObject("metadata"), component, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
     
     return product.getOid();
   }
