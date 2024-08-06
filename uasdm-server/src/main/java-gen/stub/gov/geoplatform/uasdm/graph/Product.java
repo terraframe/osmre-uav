@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,12 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
@@ -42,11 +40,13 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
+import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdGraphClassDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.metadata.MdClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
@@ -262,6 +262,26 @@ public class Product extends ProductBase implements ProductIF
       product.setName(uasComponent.getName());
       product.setProductName(productName);
       product.setPublished(false);
+    }
+
+    product.setLastUpdateDate(new Date());
+    product.apply(uasComponent);
+
+    return product;
+  }
+  
+  public static Product createIfNotExistOrThrow(UasComponentIF uasComponent, String productName)
+  {
+    Product product = find(uasComponent, productName);
+
+    if (product == null)
+    {
+      product = new Product();
+      product.setName(uasComponent.getName());
+      product.setProductName(productName);
+      product.setPublished(false);
+    } else {
+      throw new DuplicateDataException("Product with name [" + productName + "] is already associated with the provided component. Choose a different product name, or a different associated component.", MdClassDAO.getMdClassDAO(Product.CLASS), Arrays.asList(Product.getProductNameMd()), Arrays.asList(productName));
     }
 
     product.setLastUpdateDate(new Date());

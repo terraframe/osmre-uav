@@ -112,7 +112,7 @@ public interface UasComponentIF extends ComponentWithAttributes
   public DocumentIF createDocumentIfNotExist(String key, String name, DocumentIF.Metadata metadata);
 
   public ProductIF createProductIfNotExist(String productName);
-
+  
   public Optional<ProductIF> getPrimaryProduct();
 
   public void setPrimaryProduct(ProductIF product);

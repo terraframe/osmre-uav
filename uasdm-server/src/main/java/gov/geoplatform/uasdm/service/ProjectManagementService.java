@@ -1284,12 +1284,19 @@ public class ProjectManagementService
     
     UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
     
-    ProductIF product = component.createProductIfNotExist(json.getString("productGroupName"));
+    ProductIF product = createStandaloneProductGroupInTrans(json, component);
+    
+    return product.getOid();
+  }
+
+  @Transaction
+  private ProductIF createStandaloneProductGroupInTrans(JSONObject json, UasComponentIF component)
+  {
+    ProductIF product = Product.createIfNotExistOrThrow(component, json.getString("productGroupName"));
     ((Product)product).setPrimary(true);
 
     ImageryWorkflowTaskIF.createMetadata(json.getJSONObject("metadata"), component, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
-    
-    return product.getOid();
+    return product;
   }
 
   // @Request(RequestType.SESSION) // This was causing quite a nasty little bug
