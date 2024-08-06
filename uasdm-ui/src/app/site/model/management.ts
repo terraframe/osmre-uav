@@ -349,6 +349,7 @@ export class UserAccess {
 
 export class CollectionProductView {
 	componentId: string;
+	componentType: string;
 	products: Product[];
 
 	productId?: string;

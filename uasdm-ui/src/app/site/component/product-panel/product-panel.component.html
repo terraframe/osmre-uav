@@ -34,7 +34,12 @@
             <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
                 <div class="card-body">
                     <h5 class="card-title" style="color:#a0a0a0">
-                        {{view.product.name}}
+                        <span *ngIf="view.componentType !== 'collection'">
+                            {{view.product.productName}}
+                        </span>
+                        <span *ngIf="view.componentType === 'collection'">
+                            {{view.product.name}}
+                        </span>
                     </h5>
 
                     <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
@@ -43,7 +48,7 @@
                         </li>
                     </ul>
 
-                    <div style="padding:10px 15px;">
+                    <div *ngIf="view.componentType === 'collection'" style="padding:10px 15px;">
                         <label>
                             <label>Versions</label>
                         </label>

@@ -118,11 +118,26 @@ public class ProductService
         return Converter.toView(product, components).toJSON();
       }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
-      JSONObject object = new JSONObject();
-      object.put("componentId", component.getOid());
-      object.put("products", products);
-
-      array.put(object);
+      if (component instanceof CollectionIF) {
+        JSONObject object = new JSONObject();
+        object.put("componentId", component.getOid());
+        object.put("products", products);
+        object.put("componentType", component.getClass().getSimpleName().toLowerCase());
+        array.put(object);
+      } else {
+        for (int i = 0; i < products.length(); ++i) {
+          JSONObject joProduct = products.getJSONObject(i);
+          
+          JSONArray newProducts = new JSONArray();
+          newProducts.put(joProduct);
+          
+          JSONObject object = new JSONObject();
+          object.put("componentId", component.getOid());
+          object.put("products", newProducts);
+          object.put("componentType", component.getClass().getSimpleName().toLowerCase());
+          array.put(object);
+        }
+      }
     }
 
     return array;
