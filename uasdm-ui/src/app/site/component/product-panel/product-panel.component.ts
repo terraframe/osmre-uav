@@ -299,7 +299,7 @@ export class ProductPanelComponent implements OnDestroy {
             backdrop: true,
             ignoreBackdropClick: true,
         });
-        this.bsModalRef.content.message = 'Are you sure you want to delete [' + view.product.name + ']?';
+        this.bsModalRef.content.message = 'Are you sure you want to delete [' + view.product.productName + ']?';
         this.bsModalRef.content.data = view.product;
         this.bsModalRef.content.type = 'DANGER';
         this.bsModalRef.content.submitText = 'Delete';

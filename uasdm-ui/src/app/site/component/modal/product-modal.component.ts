@@ -27,7 +27,7 @@ import { environment } from 'src/environments/environment';
 	selector: 'product-modal',
 	templateUrl: './product-modal.component.html',
 	providers: [CollectionModalComponent],
-	styleUrls: [],
+	styleUrls: ['./product-modal.component.css'],
 	animations: [
 		fadeInOnEnterAnimation(),
 		fadeOutOnLeaveAnimation(),
@@ -43,6 +43,7 @@ export class ProductModalComponent implements OnInit {
 	message: string;
 	initData: any;
 	rawImagePreviewModal: BsModalRef;
+	activeTab: string = "images";
 
 	constructor(private pService: ProductService, private service: ManagementService, public bsModalRef: BsModalRef, private modalService: BsModalService) { }
 
@@ -59,6 +60,14 @@ export class ProductModalComponent implements OnInit {
 		this.product.page.resultSet.forEach(pDocument => {
 			this.getThumbnail(pDocument.id, pDocument.key, pDocument.presignedThumbnailDownload);
 		});
+
+		if (this.isStandalone()) {
+			this.setTab("images");
+		}
+	}
+
+	isStandalone(): boolean {
+		return this.product.entities[this.product.entities.length-1].type.toLowerCase() !== 'collection';
 	}
 
 	createImageFromBlob(image: Blob, id: string) {
@@ -120,6 +129,33 @@ export class ProductModalComponent implements OnInit {
 			this.showSite = true;
 		});
 
+	}
+
+	setTab(tab: string) {
+		this.activeTab = tab;
+
+		if (tab === "image" || tab === "data" || tab === "video") {
+			// this.page.results = [];
+
+			// let pn: number = null;
+			// let ps: number = null;
+
+			// if (tabName === "image") {
+			// 	if (this.page.pageNumber == null) {
+			// 		pn = 1;
+			// 	}
+			// 	else {
+			// 		pn = this.page.pageNumber;
+			// 	}
+			// 	ps = this.constPageSize;
+			// }
+
+			// this.video.src = null;
+			// this.video.name = null;
+
+			// this.getData(this.entity.id, this.tabName, pn, ps);
+
+		}
 	}
 
 	previewImage(document: ProductDocument): void {

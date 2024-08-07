@@ -8,7 +8,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Inject } fro
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
-import { CollectionArtifacts, SiteEntity } from '@site/model/management';
+import { CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
 import { UploadModalComponent } from './upload-modal.component';
@@ -30,6 +30,7 @@ import { ODMRunModalComponent } from './odmrun-modal.component';
 export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	@Input() entity: SiteEntity;
+	@Input() standaloneProduct?: ProductDetail;
 	@Input() processRunning: boolean;
 	@Input() edit: boolean = false;
 
@@ -55,8 +56,6 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		label: 'Ortho',
 		folder: 'ortho'
 	}];
-
-	thumbnails: any = {};
 
 	context: string;
 
@@ -98,6 +97,8 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(groups => {
 
+			if (this.standaloneProduct != null) { groups = groups.filter(g => g.productName === this.standaloneProduct.productName) }
+
 			this.loading = false;
 
 			this.groups = groups;
@@ -111,73 +112,6 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 			this.error(err);
 		});
 	}
-
-	createImageFromBlob(image: Blob, imageData: any) {
-		let reader = new FileReader();
-		reader.addEventListener("load", () => {
-			// this.imageToShow = reader.result;
-			this.thumbnails[imageData.key] = reader.result;
-		}, false);
-
-		if (image) {
-			reader.readAsDataURL(image);
-		}
-	}
-
-	getThumbnail(image: any): void {
-		if (image != null) {
-
-			let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
-			let fileName: string = /[^/]*$/.exec(image.key)[0];
-			const lastPeriod: number = fileName.lastIndexOf(".");
-			const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
-
-			this.service.download(image.component, thumbKey, false).subscribe(blob => {
-				this.createImageFromBlob(blob, image);
-			}, error => {
-				console.log(error);
-			});
-		}
-	}
-
-	isImage(item: any): boolean {
-		if (item.name.toLowerCase().indexOf(".png") !== -1 || item.name.toLowerCase().indexOf(".jpg") !== -1 ||
-			item.name.toLowerCase().indexOf(".jpeg") !== -1 || item.name.toLowerCase().indexOf(".tif") !== -1 ||
-			item.name.toLowerCase().indexOf(".tiff") !== -1) {
-
-			return true;
-		}
-		return false;
-	}
-
-	previewImage(event: any, image: any): void {
-		//        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-		//            animated: true,
-		//            backdrop: true,
-		//            ignoreBackdropClick: true,
-		//            'class': 'image-preview-modal'
-		//        } );
-		//        this.bsModalRef.content.image = image;
-		//        this.bsModalRef.content.src = event.target.src;
-	}
-
-	toggleExcludeImage(event: any, image: any): void {
-		this.service.setExclude(image.id, !image.exclude).then(result => {
-			image.exclude = result.exclude;
-		});
-		//
-		//
-		//		if (image.exclude) {
-		//			this.excludes.push(image.name);
-		//		}
-		//		else {
-		//			let position = this.excludes.indexOf(image.name);
-		//			if (position > -1) {
-		//				this.excludes.splice(position, 1);
-		//			}
-		//		}
-	}
-
 
 	showODMRun(artifact): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {

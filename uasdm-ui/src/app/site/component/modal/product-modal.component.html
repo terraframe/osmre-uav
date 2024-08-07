@@ -19,7 +19,7 @@
     <div *ngIf="product != null">
       <div class="row">
         <div class="col-md-12">
-          <h2>{{product.name}}</h2>
+          <h2>{{product.productName}}</h2>
         </div>
       </div>
 
@@ -154,35 +154,49 @@
         <label>Raw Images</label> 
       </div>
     </div> -->
-      <div class="row" style="background-color: #ececec;">
-        <div class="col-md-12">
-          <div id="image-list-container">
-            <h3>Raw Images</h3>
-            <ul class="list-group row">
-              <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
-                <div class="" *ngIf="thumbnails[item.id] != null">
-                  <a class="thumbnail" (click)="previewImage(item)">
-                    <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
-                    <div class="caption">
-                      <h4 class="media-heading">{{item.name}}</h4>
-                    </div>
-                  </a>
+      <div *ngIf="!isStandalone()">
+        <tabset class="nav-full-width">
+          <tab heading="raw images" (selectTab)="setTab('images')">
+            <div *ngIf="activeTab === 'images'">
+              <div class="row" style="background-color: #ececec;">
+                <div class="col-md-12">
+                  <div id="image-list-container">
+                    <h3>Raw Images</h3>
+                    <ul class="list-group row">
+                      <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
+                        <div class="" *ngIf="thumbnails[item.id] != null">
+                          <a class="thumbnail" (click)="previewImage(item)">
+                            <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                            <div class="caption">
+                              <h4 class="media-heading">{{item.name}}</h4>
+                            </div>
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+              </div>
+              <div class="row">
+                <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+              </div>
+            </div>
+          </tab>
+          <tab heading="files" (selectTab)="setTab('files')">
+            <artifact-page *ngIf="activeTab === 'files'" [entity]="product.entities[product.entities.length-1]"
+            [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
+          </tab>
+        </tabset>
       </div>
 
+      <artifact-page *ngIf="isStandalone()" [entity]="product.entities[product.entities.length-1]"
+            [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
 
       <div class="row" style="background-color: #ececec;">
         <div class="btn-holder" style="text-align: right;margin:20px 20px 20px 20px;">
           <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
           <button *ngIf="product.hasAllZip" type="button" class="btn btn-secondary" style="margin-left: 5px;" (click)="handleDownload()">Download ODM Files</button>
-          <button (click)="handleGoto()" class="btn btn-primary" style="margin-left: 5px;">
+          <button *ngIf="!isStandalone()" (click)="handleGoto()" class="btn btn-primary" style="margin-left: 5px;">
             Collection Details
           </button>
         </div>

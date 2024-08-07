@@ -24,7 +24,7 @@ import gov.geoplatform.uasdm.model.Page;
 
 public class ProductDetailView extends ProductView
 {
-
+  
   private Page<JSONWrapper> page;
 
   private String            pilotName;

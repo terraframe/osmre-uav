@@ -319,6 +319,7 @@ export class ProductCriteria {
 export class Product {
 	id: string;
 	name: string;
+	componentType: string;
 	productName: string;
 	entities: SiteEntity[];
 	published: boolean;

@@ -8,12 +8,11 @@
   <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
   <div class="list-group" *ngIf="groups != null">
-    <div class="list-group-item" *ngFor="let group of groups" style="border: 1px solid black">
+    <div class="list-group-item" *ngFor="let group of groups" style="border: 1px solid black" [ngStyle]="{'border': standaloneProduct == null ? '1px solid black' : ''}">
       <div class="row">
         <div class="col-sm-4">
-          <h3>
-            {{group.productName}}
-          </h3>
+          <h3 *ngIf="standaloneProduct == null"> {{group.productName}} </h3>
+          <h3 *ngIf="standaloneProduct != null"> Artifacts </h3>
         </div>
         <div class="col-sm-4">
         </div>
