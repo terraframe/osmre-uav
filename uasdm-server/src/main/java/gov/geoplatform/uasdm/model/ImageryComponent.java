@@ -27,10 +27,10 @@ import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 /**
- * Assumes that this is implemented ONLY by {@link UasComponent}
+ * Represents a component which you are allowed to upload and associate products with
  * 
  * @author nathan
- *
+ * @author rrowlands
  */
 public interface ImageryComponent
 {
@@ -51,8 +51,6 @@ public interface ImageryComponent
   public String getOid();
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product);
-
-  public Logger getLog();
 
   public List<UasComponentIF> getAncestors();
 

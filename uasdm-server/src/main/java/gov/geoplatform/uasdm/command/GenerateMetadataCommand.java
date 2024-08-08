@@ -21,19 +21,23 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
-import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class GenerateMetadataCommand implements Command
 {
   private static final Logger logger = LoggerFactory.getLogger(GenerateMetadataCommand.class);
 
-  private CollectionIF        collection;
+  private UasComponentIF        component;
+  
+  private CollectionMetadata metadata;
 
-  public GenerateMetadataCommand(CollectionIF collection)
+  public GenerateMetadataCommand(UasComponentIF component, CollectionMetadata metadata)
   {
-    this.collection = collection;
+    this.component = component;
+    this.metadata = metadata;
   }
 
   @Override
@@ -41,7 +45,7 @@ public class GenerateMetadataCommand implements Command
   {
     try
     {
-      new MetadataXMLGenerator().generateAndUpload(this.collection, this.collection.getMetadata().orElseThrow());
+      new MetadataXMLGenerator().generateAndUpload(this.component, this.metadata);
     }
     catch (RuntimeException e)
     {
@@ -57,9 +61,10 @@ public class GenerateMetadataCommand implements Command
   {
     try
     {
-      CollectionIF original = ComponentFacade.getCollection(this.collection.getOid());
+      UasComponentIF original = ComponentFacade.getCollection(this.component.getOid());
+      CollectionMetadata origMeta = CollectionMetadata.get(this.metadata.getOid());
 
-      new MetadataXMLGenerator().generateAndUpload(original, original.getMetadata().orElseThrow());
+      new MetadataXMLGenerator().generateAndUpload(original, origMeta);
     }
     catch (RuntimeException e)
     {

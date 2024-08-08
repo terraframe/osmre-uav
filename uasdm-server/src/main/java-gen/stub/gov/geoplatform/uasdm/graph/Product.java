@@ -823,131 +823,124 @@ public class Product extends ProductBase implements ProductIF
 
     UasComponent component = this.getComponent();
 
-    if (component instanceof CollectionIF) // TODO
+    List<UasComponentIF> ancestors = component.getAncestors();
+
+    Envelope envelope = this.getEnvelope();
+
+    StacItem item = new StacItem();
+    item.setId(this.getOid());
+    item.setPublished(this.isPublished());
+    if (envelope != null)
     {
-      CollectionIF collection = (CollectionIF) component;
+      item.setBbox(envelope);
+      item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
+    }
 
-      List<UasComponentIF> ancestors = component.getAncestors();
+    Properties properties = new Properties();
+    properties.setTitle(component.getName());
+    properties.setCollection(component.getName());
+    properties.setDescription(component.getDescription());
+    properties.setUpdated(this.getLastUpdateDate());
 
-      Envelope envelope = this.getEnvelope();
+    Date dateTime = new Date();
+    
+    Optional<CollectionMetadata> opMeta = getMetadata();
+    if (opMeta.isPresent()) {
+      CollectionMetadata metadata = opMeta.get();
+      
+      Sensor sensor = metadata.getSensor();
 
-      StacItem item = new StacItem();
-      item.setId(this.getOid());
-      item.setPublished(this.isPublished());
-      if (envelope != null)
+      if (sensor != null)
       {
-        item.setBbox(envelope);
-        item.setGeometry(new GeometryFactory(new PrecisionModel(), 4326).toGeometry(envelope));
+        properties.setSensor(sensor.getName());
       }
 
-      Date dateTime = ( (Collection) component ).getCollectionDate();
+      UAV uav = metadata.getUav();
+
+      if (uav != null)
+      {
+        properties.setFaaNumber(uav.getFaaNumber());
+        properties.setSerialNumber(uav.getSerialNumber());
+
+        Platform platform = uav.getPlatform();
+
+        if (platform != null)
+        {
+          properties.setPlatform(platform.getName());
+        }
+      }
+      
+      dateTime = metadata.getCollectionDate();
 
       if (dateTime == null)
       {
-        dateTime = ( (Collection) component ).getCollectionEndDate();
+        dateTime = metadata.getCollectionEndDate();
       }
 
       if (dateTime == null)
       {
         dateTime = this.getLastUpdateDate();
       }
+    }
+    
+    properties.setDatetime(dateTime);
 
-      if (dateTime == null)
-      {
-        dateTime = new Date();
-      }
+    item.setProperties(properties);
 
-      Properties properties = new Properties();
-      properties.setTitle(component.getName());
-      properties.setCollection(component.getName());
-      properties.setDescription(component.getDescription());
-      properties.setDatetime(dateTime);
-      properties.setUpdated(this.getLastUpdateDate());
-
-      getMetadata().ifPresent(metadata -> {
-
-        Sensor sensor = metadata.getSensor();
-
-        if (sensor != null)
-        {
-          properties.setSensor(sensor.getName());
-        }
-
-        UAV uav = metadata.getUav();
-
-        if (uav != null)
-        {
-          properties.setFaaNumber(uav.getFaaNumber());
-          properties.setSerialNumber(uav.getSerialNumber());
-
-          Platform platform = uav.getPlatform();
-
-          if (platform != null)
-          {
-            properties.setPlatform(platform.getName());
-          }
-        }
-      });
-
-      item.setProperties(properties);
-
-      for (UasComponentIF ancestor : ancestors)
-      {
-        properties.set(ancestor.getSolrNameField(), ancestor.getName());
-      }
-
-      for (DocumentIF document : documents)
-      {
-        String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-        final String location = "s3://" + bucketName + "/" + document.getS3location();
-
-        if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
-        {
-          String ext = FilenameUtils.getExtension(document.getName());
-
-          if (ext.toUpperCase().equals("PNG"))
-          {
-            String title = "Thumbnail";
-            String role = "visual";
-
-            item.addAsset("thumbnail-hd", StacItem.buildAsset("image/png", title, location, role));
-
-            // Private thumbnail
-            String rootPath = FilenameUtils.getPath(document.getS3location());
-            String baseName = FilenameUtils.getBaseName(document.getName());
-            String thumbnail = "s3://" + AppProperties.getBucketName() + "/" + rootPath + "thumbnails/" + baseName + ".png";
-
-            item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
-          }
-          else
-          {
-            String assetName = FilenameUtils.getBaseName(document.getName());
-
-            String type = "image/tiff; application=geotiff;";
-
-            if (location.toUpperCase().endsWith("COG.TIF"))
-            {
-              type = "image/tiff; application=geotiff; profile=cloud-optimized";
-            }
-
-            String title = "Visual";
-            String role = "visual";
-
-            item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
-          }
-        }
-      }
-
-      // Add the self link
-      String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-      String url = "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
-
-      item.addLink(StacLink.build(url, "self", "application/json"));
-
-      return item;
+    for (UasComponentIF ancestor : ancestors)
+    {
+      properties.set(ancestor.getSolrNameField(), ancestor.getName());
     }
 
-    return null;
+    for (DocumentIF document : documents)
+    {
+      String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+      final String location = "s3://" + bucketName + "/" + document.getS3location();
+
+      if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
+      {
+        String ext = FilenameUtils.getExtension(document.getName());
+
+        if (ext.toUpperCase().equals("PNG"))
+        {
+          String title = "Thumbnail";
+          String role = "visual";
+
+          item.addAsset("thumbnail-hd", StacItem.buildAsset("image/png", title, location, role));
+
+          // Private thumbnail
+          String rootPath = FilenameUtils.getPath(document.getS3location());
+          String baseName = FilenameUtils.getBaseName(document.getName());
+          String thumbnail = "s3://" + AppProperties.getBucketName() + "/" + rootPath + "thumbnails/" + baseName + ".png";
+
+          item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
+        }
+        else
+        {
+          String assetName = FilenameUtils.getBaseName(document.getName());
+
+          String type = "image/tiff; application=geotiff;";
+
+          if (location.toUpperCase().endsWith("COG.TIF"))
+          {
+            type = "image/tiff; application=geotiff; profile=cloud-optimized";
+          }
+
+          String title = "Visual";
+          String role = "visual";
+
+          item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
+        }
+      }
+    }
+
+    // Add the self link
+    String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
+    String url = "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
+
+    item.addLink(StacLink.build(url, "self", "application/json"));
+
+    return item;
   }
   
   public Optional<CollectionMetadata> getMetadata()

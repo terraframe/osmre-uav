@@ -183,13 +183,13 @@
             </div>
           </tab>
           <tab heading="files" (selectTab)="setTab('files')">
-            <artifact-page *ngIf="activeTab === 'files'" [entity]="product.entities[product.entities.length-1]"
+            <artifact-page *ngIf="activeTab === 'files'" [entity]="getArtifactPageEntity()"
             [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
           </tab>
         </tabset>
       </div>
 
-      <artifact-page *ngIf="isStandalone()" [entity]="product.entities[product.entities.length-1]"
+      <artifact-page *ngIf="isStandalone()" [entity]="getArtifactPageEntity()"
             [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
 
       <div class="row" style="background-color: #ececec;">

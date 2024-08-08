@@ -67,6 +67,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexCreateDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
@@ -271,12 +272,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (!isNew)
     {
+      List<ComponentProductDTO> derivedProducts = null;
+      
       if (needsUpdate || isNameModified)
       {
         new IndexUpdateDocumentCommand(this, isNameModified).doIt();
+        
+        derivedProducts = this.getDerivedProducts(null, null);
 
         // Re-index all of the derived products below this component
-        this.getDerivedProducts(null, null).forEach(view -> {
+        derivedProducts.forEach(view -> {
           view.getProducts().forEach(prod -> new ReIndexStacItemCommand(view.getPrimary()).doIt());
         });
       }
@@ -285,8 +290,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       // such we do not need to update when there is a change.
       if (regenerateMetadata && ! ( ( this instanceof SiteIF ) ))
       {
-        this.getDerivedCollections().forEach(collection -> {
-          new GenerateMetadataCommand(collection).doIt();
+        derivedProducts = (derivedProducts == null) ? this.getDerivedProducts(null, null) : derivedProducts;
+        
+        derivedProducts.forEach(view -> {
+          view.getProducts().forEach(product -> {
+            new GenerateMetadataCommand(view.getComponent(), product.getMetadata().orElseThrow()).doIt();
+          });
         });
       }
 
@@ -544,9 +553,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     // Re-index the products
     new ReIndexStacItemCommand(product).doIt();
 
-    if (updateMetadata && this instanceof Collection)
+    if (updateMetadata)
     {
-      new GenerateMetadataCommand((Collection) this).doIt();
+      new GenerateMetadataCommand(product.getComponent(), product.getMetadata().orElseThrow()).doIt();
     }
   }
 
@@ -779,7 +788,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
-    throw new UnsupportedOperationException();
+    WorkflowTask workflowTask = new WorkflowTask();
+    workflowTask.setUploadId(uploadId);
+    workflowTask.setUploadTarget(uploadTarget);
+    workflowTask.setComponent(this.getOid());
+    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
+    workflowTask.setTaskLabel("UAV data upload for " + this.getClass().getSimpleName().toLowerCase() + " [" + this.getName() + "]");
+
+    return workflowTask;
   }
 
   @Override
@@ -788,9 +804,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return Util.putFile(this, folder, product, fileName, metadata, stream);
   }
 
+  @Override
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
   {
-    throw new UnsupportedOperationException();
+    if (this instanceof ImageryComponent) {
+      return Util.uploadArchive(task, archive, (ImageryComponent) this, uploadTarget, product);
+    } else {
+      throw new UnsupportedOperationException();
+    }
   }
 
   public Long getNumberOfChildren()
@@ -1232,6 +1253,36 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     {
       parameters.put("owner", session.getUser().getOid());
     }
+  }
+  
+  public String buildRawKey()
+  {
+    return this.getS3location() + ImageryComponent.RAW + "/";
+  }
+  
+  public String buildVideoKey()
+  {
+    return this.getS3location() + ImageryComponent.VIDEO + "/";
+  }
+
+  public String buildPointCloudKey()
+  {
+    return this.getS3location() + ImageryComponent.PTCLOUD + "/";
+  }
+
+  public String buildDemKey()
+  {
+    return this.getS3location() + ImageryComponent.DEM + "/";
+  }
+
+  public String buildOrthoKey()
+  {
+    return this.getS3location() + ImageryComponent.ORTHO + "/";
+  }
+  
+  public UasComponentIF getUasComponent()
+  {
+    return this;
   }
 
 }

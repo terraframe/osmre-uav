@@ -29,6 +29,7 @@ import com.runwaysdk.resource.FileResource;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class PotreeConverterProcessor implements Processor
 {
@@ -38,16 +39,16 @@ public class PotreeConverterProcessor implements Processor
 
   protected StatusMonitorIF monitor;
 
-  protected CollectionIF    collection;
+  protected UasComponentIF component;
 
   protected Product         product;
 
-  public PotreeConverterProcessor(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public PotreeConverterProcessor(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
     this.s3Path = s3Path;
     this.monitor = monitor;
     this.product = product;
-    this.collection = collection;
+    this.component = component;
   }
 
   @Override
@@ -79,7 +80,7 @@ public class PotreeConverterProcessor implements Processor
             // Upload all of the generated files
             for (File outfile : files)
             {
-              new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, collection, this.monitor).process(new FileResource(outfile));
+              new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, component, this.monitor).process(new FileResource(outfile));
             }
           }
         }

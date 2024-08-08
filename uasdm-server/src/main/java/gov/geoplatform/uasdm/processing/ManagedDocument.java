@@ -26,6 +26,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.IndexService;
 
 public class ManagedDocument extends S3FileUpload
@@ -105,21 +106,21 @@ public class ManagedDocument extends S3FileUpload
 
   private DocumentInfo info;
 
-  public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public ManagedDocument(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
-    this(s3Path, product, collection, monitor, true);
+    this(s3Path, product, component, monitor, true);
   }
 
-  public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, boolean searchable)
+  public ManagedDocument(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor, boolean searchable)
   {
-    super(s3Path, product, collection, monitor);
+    super(s3Path, product, component, monitor);
 
     this.info = new DocumentInfo(searchable);
   }
 
-  public ManagedDocument(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor, DocumentInfo info)
+  public ManagedDocument(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor, DocumentInfo info)
   {
-    super(s3Path, product, collection, monitor);
+    super(s3Path, product, component, monitor);
 
     this.info = info;
   }
@@ -143,7 +144,7 @@ public class ManagedDocument extends S3FileUpload
       
       Metadata metadata = DocumentIF.Metadata.build(null, this.getTool().name(), this.info.getPtEpsg(), this.info.getProjectionName(), this.info.getOrthoCorrectionModel(), res.getUnderlyingFile().length());
 
-      DocumentIF document = this.collection.createDocumentIfNotExist(key, documentName, metadata);
+      DocumentIF document = this.component.createDocumentIfNotExist(key, documentName, metadata);
 
       final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT);
 
@@ -151,7 +152,7 @@ public class ManagedDocument extends S3FileUpload
 
       if (info.isSearchable())
       {
-        IndexService.updateOrCreateDocument(this.collection.getAncestors(), this.collection, key, documentName);
+        IndexService.updateOrCreateDocument(this.component.getAncestors(), this.component, key, documentName);
       }
     }
 

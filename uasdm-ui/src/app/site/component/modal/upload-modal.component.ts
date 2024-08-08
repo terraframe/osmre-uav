@@ -355,6 +355,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	init(component: SiteEntity, uploadTarget: string, productName?: string): void {
+		console.log(component);
+
 		this.component = component;
 		this.uploadTarget = uploadTarget;
 		
@@ -385,12 +387,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
 		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
 
-		this.service.getDefaultODMRunConfig(this.component.id).then((config: ODMRunConfig) => {
-			this.values.pcQuality = config.pcQuality;
-			this.values.resolution = config.resolution;
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
+		if (this.component.type.toLowerCase() === 'collection') {
+			this.service.getDefaultODMRunConfig(this.component.id).then((config: ODMRunConfig) => {
+				this.values.pcQuality = config.pcQuality;
+				this.values.resolution = config.resolution;
+			}).catch((err: HttpErrorResponse) => {
+				this.error(err);
+			});
+		}
 	}
 
 	close(): void {

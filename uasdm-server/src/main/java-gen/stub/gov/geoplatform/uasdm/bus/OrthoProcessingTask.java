@@ -31,7 +31,7 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
-import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -45,7 +45,6 @@ import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.IndexService;
 
 public class OrthoProcessingTask extends OrthoProcessingTaskBase
 {
@@ -74,11 +73,11 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
   @Transaction
   public void initiate(ApplicationFileResource infile)
   {
-    Collection collection = Collection.get(this.getComponent());
+    UasComponent component = UasComponent.get(this.getComponent());
+    
+    Product product = (Product) component.createProductIfNotExist(this.getProductName());
 
-    Product product = (Product) collection.createProductIfNotExist(this.getProductName());
-
-    List<DocumentIF> documents = collection.getDocuments().stream().filter(doc -> {
+    List<DocumentIF> documents = component.getDocuments().stream().filter(doc -> {
       return doc.getS3location().contains("/" + product.getProductName() + "/" + this.getUploadTarget() + "/");
     }).collect(Collectors.toList());
 
@@ -90,27 +89,27 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (!new CogTifValidator().isValidCog(infile))
       {
-        new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, collection, monitor).process(infile);
+        new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, component, monitor).process(infile);
       }
 
-      new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, collection, monitor).process(infile);
+      new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, component, monitor).process(infile);
     }
 
     if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
     {
       if (!new CogTifValidator().isValidCog(infile))
       {
-        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this))).process(infile);
+        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))).process(infile);
       }
       else
       {
-        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, collection, new WorkflowTaskMonitor(this)).process(infile);
+        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)).process(infile);
       }
     }
 
     if (this.getUploadTarget().equals(ImageryComponent.PTCLOUD) && this.getProcessPtcloud() && !StringUtils.isEmpty(AppProperties.getPotreeConverterPath()))
     {
-      new PotreeConverterProcessor(ODMZipPostProcessor.POTREE, product, collection, new WorkflowTaskMonitor(this)).process(infile);
+      new PotreeConverterProcessor(ODMZipPostProcessor.POTREE, product, component, new WorkflowTaskMonitor(this)).process(infile);
     }
 
     if (product.getPublished())
@@ -123,12 +122,12 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     product.updateBoundingBox(true);
 
-    if (!collection.isPrivate())
+    if (!component.isPrivate())
     {
       new ReIndexStacItemCommand(product).doIt();
     }
     
-    new GenerateMetadataCommand(collection).doIt();
+    new GenerateMetadataCommand(component, product.getMetadata().orElseThrow()).doIt();
 
     this.appLock();
     this.setStatus(ODMStatus.COMPLETED.getLabel());

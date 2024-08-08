@@ -534,37 +534,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
   }
 
-  public String buildRawKey()
-  {
-    return this.getS3location() + RAW + "/";
-  }
-
-  public String buildVideoKey()
-  {
-    return this.getS3location() + VIDEO + "/";
-  }
-
-  public String buildPointCloudKey()
-  {
-    return this.getS3location() + PTCLOUD + "/";
-  }
-
-  public String buildDemKey()
-  {
-    return this.getS3location() + DEM + "/";
-  }
-
-  public String buildOrthoKey()
-  {
-    return this.getS3location() + ORTHO + "/";
-  }
-
-  @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
-  {
-    return Util.uploadArchive(task, archive, this, uploadTarget, product);
-  }
-
   @Override
   public SiteObjectsResultSet getSiteObjects(String folder, Long pageNumber, Long pageSize)
   {
@@ -648,16 +617,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return query.getSingleResult().longValue();
   }
 
-  public UasComponentIF getUasComponent()
-  {
-    return this;
-  }
-
-  public Logger getLog()
-  {
-    return this.log;
-  }
-
   @Override
   public Set<String> getExcludes()
   {
@@ -674,19 +633,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
 
     return filenames;
-  }
-
-  @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
-  {
-    WorkflowTask workflowTask = new WorkflowTask();
-    workflowTask.setUploadId(uploadId);
-    workflowTask.setUploadTarget(uploadTarget);
-    workflowTask.setComponent(this.getOid());
-    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
-    workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
-
-    return workflowTask;
   }
 
 //  @Override

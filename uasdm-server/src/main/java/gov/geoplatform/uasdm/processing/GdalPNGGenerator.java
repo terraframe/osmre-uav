@@ -25,15 +25,15 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class GdalPNGGenerator extends ManagedDocument
 {
   private Logger logger = LoggerFactory.getLogger(GdalPNGGenerator.class);
   
-  public GdalPNGGenerator(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public GdalPNGGenerator(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
-    super(s3Path, product, collection, monitor, false);
+    super(s3Path, product, component, monitor, false);
   }
   
   @Override

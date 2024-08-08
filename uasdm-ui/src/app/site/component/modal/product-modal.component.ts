@@ -70,6 +70,18 @@ export class ProductModalComponent implements OnInit {
 		return this.product.entities[this.product.entities.length-1].type.toLowerCase() !== 'collection';
 	}
 
+	// The artifact viewer expects certain metadata to be on the component. If it's a collection, it's directly on the component
+	// If it's a standalone product, the metadata is available on the product. We're going to just copy our metadata onto the
+	// component so that the artifact viewer doesn't need to care where it comes from.
+	getArtifactPageEntity(): SiteEntity {
+		if (!this.isStandalone()) { return this.product.entities[this.product.entities.length-1]; }
+
+		let entity = JSON.parse(JSON.stringify(this.product.entities[this.product.entities.length-1]));
+		entity.uav = this.product.uav;
+		entity.sensor = this.product.sensor;
+		return entity;
+	}
+
 	createImageFromBlob(image: Blob, id: string) {
 		let reader = new FileReader();
 		reader.addEventListener("load", () => {

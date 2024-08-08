@@ -62,8 +62,8 @@ public class UAV extends UAVBase implements JSONSerializable
 
     if (!isNew)
     {
-      this.getCollections().forEach(collection -> {
-        new GenerateMetadataCommand(collection).doIt();
+      this.getReferencingMetadata().forEach(metadata -> {
+        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
       });
 
       CollectionReportFacade.update(this).doIt();
@@ -107,16 +107,16 @@ public class UAV extends UAVBase implements JSONSerializable
     return ServerOrganization.getByGraphId((String) this.getObjectValue(ORGANIZATION));
   }
 
-  public List<CollectionIF> getCollections()
+  public List<CollectionMetadata> getReferencingMetadata()
   {
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.UAV);
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.UAV);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
     statement.append(" WHERE " + mdAttribute.getColumnName() + " = :rid");
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();

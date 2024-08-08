@@ -22,6 +22,7 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
@@ -31,7 +32,7 @@ public class S3FileUpload implements Processor
   
   protected StatusMonitorIF monitor;
   
-  protected CollectionIF collection;
+  protected UasComponentIF component;
   
   protected Product product;
   
@@ -42,12 +43,12 @@ public class S3FileUpload implements Processor
    * @param isDirectory
    * @param monitor
    */
-  public S3FileUpload(String s3Path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public S3FileUpload(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
     this.s3Path = s3Path;
     this.monitor = monitor;
     this.product = product;
-    this.collection = collection;
+    this.component = component;
   }
 
   public String getS3Path()
@@ -71,19 +72,21 @@ public class S3FileUpload implements Processor
     
     this.uploadFile(res);
 
-    CollectionReportFacade.updateSize(this.collection).doIt();
+    if (this.component instanceof CollectionIF) {
+      CollectionReportFacade.updateSize((CollectionIF) this.component).doIt();
+    }
     
     return true;
   }
   
   protected String getS3Key()
   {
-    if (this.s3Path.startsWith(this.collection.getS3location()))
+    if (this.s3Path.startsWith(this.component.getS3location()))
     {
       return this.s3Path;
     }
     
-    return this.collection.getS3location(product, s3Path);
+    return this.component.getS3location(product, s3Path);
   }
   
   protected void uploadFile(ApplicationFileResource res)

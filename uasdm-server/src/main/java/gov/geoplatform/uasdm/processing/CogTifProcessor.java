@@ -30,7 +30,7 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class CogTifProcessor extends ManagedDocument
 {
@@ -40,9 +40,9 @@ public class CogTifProcessor extends ManagedDocument
 
   private Processor          downstream    = null;
 
-  public CogTifProcessor(String s3path, Product product, CollectionIF collection, StatusMonitorIF monitor)
+  public CogTifProcessor(String s3path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
-    super(s3path, product, collection, monitor, false);
+    super(s3path, product, component, monitor, false);
   }
 
   @Override

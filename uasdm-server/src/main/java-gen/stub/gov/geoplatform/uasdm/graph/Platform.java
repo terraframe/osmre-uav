@@ -68,21 +68,21 @@ public class Platform extends PlatformBase implements JSONSerializable
 
     if (!isNew)
     {
-      this.getCollections().forEach(collection -> {
-        new GenerateMetadataCommand(collection).doIt();
+      this.getReferencingMetadata().forEach(metadata -> {
+        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
       });
 
       CollectionReportFacade.update(this).doIt();
     }
   }
 
-  public List<CollectionIF> getCollections()
+  public List<CollectionMetadata> getReferencingMetadata()
   {
     // SELECT from collection0 where collectionSensor IN (
     // select out('platform_has_sensor') from platform0)
 
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO("gov.geoplatform.uasdm.graph.PlatformHasSensor");
 
     StringBuilder statement = new StringBuilder();
@@ -91,7 +91,7 @@ public class Platform extends PlatformBase implements JSONSerializable
     statement.append("   SELECT OUT ('" + mdEdge.getDBClassName() + "') FROM :rid");
     statement.append(" )");
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();

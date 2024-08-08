@@ -57,19 +57,19 @@ public class SensorType extends SensorTypeBase implements Classification
 
     if (!isNew)
     {
-      this.getCollections().forEach(collection -> {
-        new GenerateMetadataCommand(collection).doIt();
+      this.getReferencingMetadata().forEach(metadata -> {
+        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
       });
     }
   }
 
-  public List<CollectionIF> getCollections()
+  public List<CollectionMetadata> getReferencingMetadata()
   {
     final MdVertexDAOIF sensorVertex = MdVertexDAO.getMdVertexDAO(Sensor.CLASS);
     MdAttributeDAOIF sensorAttribute = sensorVertex.definesAttribute(Sensor.SENSORTYPE);    
     
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);
     
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName());
@@ -78,12 +78,11 @@ public class SensorType extends SensorTypeBase implements Classification
     statement.append("   WHERE " + sensorAttribute.getColumnName() + " = :rid");    
     statement.append(" )");
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();
   }
-
   
   @Request
   public static SensorType getByName(String name)

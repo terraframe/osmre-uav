@@ -69,24 +69,24 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     if (!isNew)
     {
-      this.getCollections().forEach(collection -> {
-        new GenerateMetadataCommand(collection).doIt();
+      this.getReferencingMetdata().forEach(meta -> {
+        new GenerateMetadataCommand(meta.getProduct().getComponent(), meta).doIt();
       });
 
       CollectionReportFacade.update(this).doIt();
     }
   }
 
-  public List<CollectionIF> getCollections()
+  public List<CollectionMetadata> getReferencingMetdata()
   {
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName() + "");
     statement.append(" WHERE " + mdAttribute.getColumnName() + " = :rid");
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();

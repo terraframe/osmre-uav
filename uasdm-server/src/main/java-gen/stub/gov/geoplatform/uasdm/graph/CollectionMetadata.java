@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.util.List;
+
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
@@ -22,8 +24,15 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
   public void applyWithCollection(CollectionIF collection)
   {
     this.apply();
-
+    
     ((VertexObject) collection).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
+  }
+  
+  public ProductIF getProduct()
+  {
+    final List<Product> parents = this.getParents(EdgeType.PRODUCT_HAS_METADATA, Product.class);
+    
+    return parents.get(0);
   }
 
   @Override

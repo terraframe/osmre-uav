@@ -59,17 +59,17 @@ public class WaveLength extends WaveLengthBase implements Classification
 
     if (!isNew)
     {
-      this.getCollections().forEach(collection -> {
-        new GenerateMetadataCommand(collection).doIt();
+      this.getCollections().forEach(metadata -> {
+        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
       });
     }
   }
   
 
-  public List<CollectionIF> getCollections()
+  public List<CollectionMetadata> getCollections()
   {
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Collection.COLLECTIONSENSOR);
+    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO("gov.geoplatform.uasdm.graph.SensorHasWaveLength");
 
     StringBuilder statement = new StringBuilder();
@@ -78,7 +78,7 @@ public class WaveLength extends WaveLengthBase implements Classification
     statement.append("   SELECT IN('" + mdEdge.getDBClassName() + "') FROM :rid");
     statement.append(" )");
 
-    final GraphQuery<CollectionIF> query = new GraphQuery<CollectionIF>(statement.toString());
+    final GraphQuery<CollectionMetadata> query = new GraphQuery<CollectionMetadata>(statement.toString());
     query.setParameter("rid", this.getRID());
 
     return query.getResults();

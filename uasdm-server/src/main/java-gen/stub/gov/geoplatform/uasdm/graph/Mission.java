@@ -27,13 +27,14 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
-public class Mission extends MissionBase implements MissionIF
+public class Mission extends MissionBase implements MissionIF, ImageryComponent
 {
   public static final long    serialVersionUID   = -1962072709;
 
