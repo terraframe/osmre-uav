@@ -22,6 +22,7 @@ import {
 	bounceInOnEnterAnimation,
 } from 'angular-animations';
 import { environment } from 'src/environments/environment';
+import { MetadataModalComponent } from './metadata-modal.component';
 
 @Component({
 	selector: 'product-modal',
@@ -80,6 +81,22 @@ export class ProductModalComponent implements OnInit {
 		entity.uav = this.product.uav;
 		entity.sensor = this.product.sensor;
 		return entity;
+	}
+
+	editMetadata(): void {
+		let entity = this.product.entities[this.product.entities.length-1];
+
+		let modalRef = this.modalService.show(MetadataModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'upload-modal'
+		});
+		modalRef.content.initStandaloneProduct(this.product.id, this.product.productName);
+
+		modalRef.content.onMetadataChange.subscribe(() => {
+			entity.metadataUploaded = true;
+		});
 	}
 
 	createImageFromBlob(image: Blob, id: string) {

@@ -716,12 +716,14 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getMetadataOptions(id: string): Promise<MetadataResponse> {
+	getMetadataOptions( input: { collectionId?: string, productId?: string } ): Promise<MetadataResponse> {
 
 		let params: HttpParams = new HttpParams();
 
-		if (id != null) {
-			params = params.set('id', id);
+		if (input.collectionId != null) {
+			params = params.set('collectionId', input.collectionId);
+		} else if (input.productId != null) {
+			params = params.set('productId', input.productId);
 		}
 
 		return this.noErrorHttpClient

@@ -194,8 +194,14 @@
               [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
       </div>
 
-      <div class="row" style="background-color: #ececec;">
-        <div class="btn-holder" style="text-align: right;margin:20px 20px 20px 20px;">
+      <div class="row footer-buttons" style="background-color: #ececec;" style="padding:20px 20px 20px 20px;">
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-warning" (click)="editMetadata()">
+            <i class="fa fa-edit" style="color:white"></i>
+            Edit Metadata
+          </button>
+        </div>
+        <div class="col-md-8 btn-holder" style="text-align: right;">
           <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
           <button *ngIf="product.hasAllZip" type="button" class="btn btn-secondary" style="margin-left: 5px;" (click)="handleDownload()">Download ODM Files</button>
           <button *ngIf="!isStandalone()" (click)="handleGoto()" class="btn btn-primary" style="margin-left: 5px;">

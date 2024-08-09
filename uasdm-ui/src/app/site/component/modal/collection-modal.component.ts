@@ -377,14 +377,14 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
-	handleSetMetadata(): void {
+	editMetadata(): void {
 		let modalRef = this.modalService.show(MetadataModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal'
 		});
-		modalRef.content.init(this.entity.id, this.entity.name);
+		modalRef.content.initCollection(this.entity.id, this.entity.name);
 
 		modalRef.content.onMetadataChange.subscribe(() => {
 			this.entity.metadataUploaded = true;

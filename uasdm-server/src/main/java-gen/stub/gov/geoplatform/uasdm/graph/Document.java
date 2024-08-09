@@ -16,10 +16,11 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
@@ -40,6 +41,8 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 public class Document extends DocumentBase implements DocumentIF
 {
   private static final long serialVersionUID = -1445705168;
+  
+  private static final Logger logger = LoggerFactory.getLogger(Document.class);
 
   public Document()
   {
@@ -146,7 +149,7 @@ public class Document extends DocumentBase implements DocumentIF
     {
     }
     
-    System.out.println("Creating document at " + key);
+    logger.info("Creating document at " + key);
 
     document.setName(name);
     document.setDescription(metadata.getDescription());

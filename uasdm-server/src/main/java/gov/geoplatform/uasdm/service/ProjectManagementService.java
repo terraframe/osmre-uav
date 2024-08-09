@@ -37,6 +37,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -70,6 +71,7 @@ import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.graph.ArtifactQuery;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
@@ -717,11 +719,26 @@ public class ProjectManagementService
   @Transaction
   public void applyMetadata(JSONObject selection)
   {
-    String collectionId = selection.getString("value");
+    String collectionId = selection.has("collectionId") ? selection.getString("collectionId") : null;
+    String productId = selection.has("productId") ? selection.getString("productId") : null;
     String uavId = selection.getString("uav");
     String sensorId = selection.getString("sensor");
 
-    CollectionIF collection = ComponentFacade.getCollection(collectionId);
+    CollectionMetadata metadata = null;
+    ProductIF product = null;
+    UasComponentIF component = null;
+    
+    if (StringUtils.isNotBlank(collectionId)) {
+      component = ComponentFacade.getCollection(collectionId);
+      
+      metadata = ((CollectionIF)component).getMetadata().orElse(null);
+      product = component.getPrimaryProduct().orElse(null);
+    } else if (StringUtils.isNotBlank(productId)) {
+      product = Product.get(productId);
+      component = product.getComponent();
+      
+      metadata = product.getMetadata().orElse(null);
+    }
 
     if (selection.has(Collection.POINT_OF_CONTACT))
     {
@@ -729,12 +746,14 @@ public class ProjectManagementService
 
       if (poc.has(Collection.NAME))
       {
-        collection.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
+        metadata.setValue(CollectionMetadata.POCNAME, poc.getString(Collection.NAME));
+        if (component != null && component instanceof CollectionIF) component.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
       }
 
       if (poc.has(Collection.EMAIL))
       {
-        collection.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
+        metadata.setValue(CollectionMetadata.POCEMAIL, poc.getString(Collection.EMAIL));
+        if (component != null && component instanceof CollectionIF) component.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
 
@@ -750,10 +769,9 @@ public class ProjectManagementService
         {
           Integer ptEpsg = object.has(Document.PTEPSG) ? object.getInt(Document.PTEPSG) : null;
           String projectName = object.has(Document.PROJECTIONNAME) ? object.getString(Document.PROJECTIONNAME) : null;
-
-          collection.getPrimaryProduct().ifPresent(product -> {
-
-            new ArtifactQuery(collection, product).getDocuments().stream().filter(document -> {
+          
+          if (product != null) {
+            new ArtifactQuery(component, product).getDocuments().stream().filter(document -> {
               return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
             }).forEach(document -> {
               String name = document.getName().toUpperCase();
@@ -765,16 +783,15 @@ public class ProjectManagementService
                 document.apply();
               }
             });
-          });
+          }
         }
 
         if (object.getString("folder").equals(ImageryComponent.ORTHO))
         {
           String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
 
-          collection.getPrimaryProduct().ifPresent(product -> {
-
-            new ArtifactQuery(collection, product).getDocuments().stream().filter(document -> {
+          if (product != null) {
+            new ArtifactQuery(component, product).getDocuments().stream().filter(document -> {
               return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
             }).forEach(document -> {
               String name = document.getName().toUpperCase();
@@ -785,41 +802,56 @@ public class ProjectManagementService
                 document.apply();
               }
             });
-          });
+          }
         }
       }
     }
 
-    collection.apply();
+    if (component != null && component instanceof CollectionIF) {
+      ImageryWorkflowTaskIF.setBooleanValue(selection, component, Collection.EXIFINCLUDED);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.NORTHBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.SOUTHBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.EASTBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.WESTBOUND);
+      ImageryWorkflowTaskIF.setDateValue(selection, component, Collection.ACQUISITIONDATESTART);
+      ImageryWorkflowTaskIF.setDateValue(selection, component, Collection.ACQUISITIONDATEEND);
+      ImageryWorkflowTaskIF.setDateValue(selection, component, Collection.COLLECTIONDATE);
+      ImageryWorkflowTaskIF.setDateValue(selection, component, Collection.COLLECTIONENDDATE);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, component, Collection.FLYINGHEIGHT);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, component, Collection.NUMBEROFFLIGHTS);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, component, Collection.PERCENTENDLAP);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, component, Collection.PERCENTSIDELAP);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.AREACOVERED);
+      ImageryWorkflowTaskIF.setStringValue(selection, component, Collection.WEATHERCONDITIONS);
+      
+      component.apply();
+    }
 
-    collection.getMetadata().ifPresentOrElse(metadata -> {
-
+    if (metadata != null) {
       UAV uav = ( uavId != null && uavId.length() > 0 ) ? UAV.get(uavId) : null;
       Sensor sensor = ( sensorId != null && sensorId.length() > 0 ) ? Sensor.get(sensorId) : null;
 
       metadata.setUav(uav);
       metadata.setSensor(sensor);
 
-      ImageryWorkflowTaskIF.setBooleanValue(selection, collection, Collection.EXIFINCLUDED);
-      ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.NORTHBOUND);
-      ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.SOUTHBOUND);
-      ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.EASTBOUND);
-      ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.WESTBOUND);
-      ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATESTART);
-      ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.ACQUISITIONDATEEND);
-      ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONDATE);
-      ImageryWorkflowTaskIF.setDateValue(selection, collection, Collection.COLLECTIONENDDATE);
-      ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.FLYINGHEIGHT);
-      ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.NUMBEROFFLIGHTS);
-      ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.PERCENTENDLAP);
-      ImageryWorkflowTaskIF.setIntegerValue(selection, collection, Collection.PERCENTSIDELAP);
-      ImageryWorkflowTaskIF.setDecimalValue(selection, collection, Collection.AREACOVERED);
-      ImageryWorkflowTaskIF.setStringValue(selection, collection, Collection.WEATHERCONDITIONS);
+      ImageryWorkflowTaskIF.setBooleanValue(selection, metadata, CollectionMetadata.EXIFINCLUDED);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.NORTHBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.SOUTHBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.EASTBOUND);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.WESTBOUND);
+      ImageryWorkflowTaskIF.setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATESTART);
+      ImageryWorkflowTaskIF.setDateValue(selection, metadata, CollectionMetadata.ACQUISITIONDATEEND);
+      ImageryWorkflowTaskIF.setDateValue(selection, metadata, CollectionMetadata.COLLECTIONDATE);
+      ImageryWorkflowTaskIF.setDateValue(selection, metadata, CollectionMetadata.COLLECTIONENDDATE);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, metadata, CollectionMetadata.FLYINGHEIGHT);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, metadata, CollectionMetadata.NUMBEROFFLIGHTS);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, metadata, CollectionMetadata.PERCENTENDLAP);
+      ImageryWorkflowTaskIF.setIntegerValue(selection, metadata, CollectionMetadata.PERCENTSIDELAP);
+      ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.AREACOVERED);
+      ImageryWorkflowTaskIF.setStringValue(selection, metadata, CollectionMetadata.WEATHERCONDITIONS);
       
       metadata.apply();
-    }, () -> {
-      throw new ProgrammingErrorException("Unabled to find metadata object for collection [" + collection.getOid() + "]");
-    });
+    }
 
   }
 
@@ -1103,7 +1135,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject getMetadataOptions(String sessionId, String id)
+  public JSONObject getMetadataOptions(String sessionId, String collectionId, String productId)
   {
     SingleActorDAOIF user = Session.getCurrentSession().getUser();
 
@@ -1112,103 +1144,119 @@ public class ProjectManagementService
     // response.put("platforms", Platform.getAll());
     response.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
     response.put("email", user.getValue(GeoprismUser.EMAIL));
+    
+    CollectionMetadata metadata = null;
+    ProductIF product = null;
+    UasComponentIF component = null;
 
-    if (id != null && id.length() > 0)
+    if (StringUtils.isNotBlank(collectionId))
     {
-      UasComponentIF component = ComponentFacade.getComponent(id);
+      component = ComponentFacade.getComponent(collectionId);
 
-      if (component instanceof CollectionIF)
+      CollectionIF collection = (CollectionIF) component;
+      
+      metadata = collection.getMetadata().orElse(null);
+      product = collection.getPrimaryProduct().orElse(null);
+    }
+    
+    if (StringUtils.isNotBlank(productId)) {
+      product = Product.get(productId);
+      component = product.getComponent();
+      
+      metadata = product.getMetadata().orElse(null);
+    }
+    
+    if (product != null) {
+      JSONArray artifacts = Arrays.stream(component.getArtifactObjects(product)).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
+  
+      response.put("artifacts", artifacts);
+    }
+    
+    if (metadata != null) {
+      UAV uav = metadata.getUav();
+      Sensor sensor = metadata.getSensor();
+      
+      if (metadata.getPocName() != null) {
+        response.put("name", metadata.getPocName());
+      }
+      
+      if (metadata.getPocEmail() != null) {
+        response.put("email", metadata.getPocEmail());
+      }
+
+      if (uav != null)
       {
-        CollectionIF collection = (CollectionIF) component;
+        response.put("uav", uav.toView());
+      }
 
-        response.put("name", collection.getPocName());
-        response.put("email", collection.getPocEmail());
+      if (sensor != null)
+      {
+        response.put("sensor", sensor.toView());
+      }
 
-        collection.getMetadata().ifPresent(metadata -> {
-          UAV uav = metadata.getUav();
-          Sensor sensor = metadata.getSensor();
+      if (metadata.getExifIncluded() != null)
+      {
+        response.put("exifIncluded", metadata.getExifIncluded());
+      }
 
-          if (uav != null)
-          {
-            response.put("uav", uav.toView());
-          }
+      if (metadata.getNorthBound() != null)
+      {
+        response.put("northBound", metadata.getNorthBound().setScale(5, RoundingMode.HALF_UP));
+      }
 
-          if (sensor != null)
-          {
-            response.put("sensor", sensor.toView());
-          }
+      if (metadata.getSouthBound() != null)
+      {
+        response.put("southBound", metadata.getSouthBound().setScale(5, RoundingMode.HALF_UP));
+      }
 
-          if (metadata.getExifIncluded() != null)
-          {
-            response.put("exifIncluded", metadata.getExifIncluded());
-          }
+      if (metadata.getEastBound() != null)
+      {
+        response.put("eastBound", metadata.getEastBound().setScale(5, RoundingMode.HALF_UP));
+      }
 
-          if (metadata.getNorthBound() != null)
-          {
-            response.put("northBound", metadata.getNorthBound().setScale(5, RoundingMode.HALF_UP));
-          }
+      if (metadata.getWestBound() != null)
+      {
+        response.put("westBound", metadata.getWestBound().setScale(5, RoundingMode.HALF_UP));
+      }
 
-          if (metadata.getSouthBound() != null)
-          {
-            response.put("southBound", metadata.getSouthBound().setScale(5, RoundingMode.HALF_UP));
-          }
+      if (metadata.getAcquisitionDateStart() != null)
+      {
+        response.put("acquisitionDateStart", Util.formatIso8601(metadata.getAcquisitionDateStart(), false));
+      }
 
-          if (metadata.getEastBound() != null)
-          {
-            response.put("eastBound", metadata.getEastBound().setScale(5, RoundingMode.HALF_UP));
-          }
+      if (metadata.getAcquisitionDateEnd() != null)
+      {
+        response.put("acquisitionDateEnd", Util.formatIso8601(metadata.getAcquisitionDateEnd(), false));
+      }
 
-          if (metadata.getWestBound() != null)
-          {
-            response.put("westBound", metadata.getWestBound().setScale(5, RoundingMode.HALF_UP));
-          }
+      if (metadata.getFlyingHeight() != null)
+      {
+        response.put("flyingHeight", metadata.getFlyingHeight());
+      }
 
-          if (metadata.getAcquisitionDateStart() != null)
-          {
-            response.put("acquisitionDateStart", Util.formatIso8601(metadata.getAcquisitionDateStart(), false));
-          }
+      if (metadata.getNumberOfFlights() != null)
+      {
+        response.put("numberOfFlights", metadata.getNumberOfFlights());
+      }
 
-          if (metadata.getAcquisitionDateEnd() != null)
-          {
-            response.put("acquisitionDateEnd", Util.formatIso8601(metadata.getAcquisitionDateEnd(), false));
-          }
+      if (metadata.getPercentEndLap() != null)
+      {
+        response.put("percentEndLap", metadata.getPercentEndLap());
+      }
 
-          if (metadata.getFlyingHeight() != null)
-          {
-            response.put("flyingHeight", metadata.getFlyingHeight());
-          }
+      if (metadata.getPercentSideLap() != null)
+      {
+        response.put("percentSideLap", metadata.getPercentSideLap());
+      }
 
-          if (metadata.getNumberOfFlights() != null)
-          {
-            response.put("numberOfFlights", metadata.getNumberOfFlights());
-          }
+      if (metadata.getAreaCovered() != null)
+      {
+        response.put("areaCovered", metadata.getAreaCovered().setScale(5, RoundingMode.HALF_UP));
+      }
 
-          if (metadata.getPercentEndLap() != null)
-          {
-            response.put("percentEndLap", metadata.getPercentEndLap());
-          }
-
-          if (metadata.getPercentSideLap() != null)
-          {
-            response.put("percentSideLap", metadata.getPercentSideLap());
-          }
-
-          if (metadata.getAreaCovered() != null)
-          {
-            response.put("areaCovered", metadata.getAreaCovered().setScale(5, RoundingMode.HALF_UP));
-          }
-
-          if (metadata.getWeatherConditions() != null)
-          {
-            response.put("weatherConditions", metadata.getWeatherConditions());
-          }
-        });
-
-        JSONArray artifacts = collection.getPrimaryProduct().map(product -> {
-          return Arrays.stream(collection.getArtifactObjects(product)).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
-        }).orElseGet(() -> new JSONArray());
-
-        response.put("artifacts", artifacts);
+      if (metadata.getWeatherConditions() != null)
+      {
+        response.put("weatherConditions", metadata.getWeatherConditions());
       }
     }
 

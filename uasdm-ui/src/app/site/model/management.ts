@@ -163,7 +163,9 @@ export class ImageHierarchy {
 export class Selection {
 	type: string;
 	isNew: boolean;
-	value: string;
+	value?: string;
+	collectionId?: string;
+	productId?: string;
 	label: string;
 	uav?: string;
 	sensor?: string;

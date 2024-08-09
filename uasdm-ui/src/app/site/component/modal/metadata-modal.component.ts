@@ -19,10 +19,10 @@ import { Page } from './upload-modal.component';
 	styleUrls: []
 })
 export class MetadataModalComponent implements OnInit, OnDestroy {
-	/*
-	 * collectionId for the metadata
-	 */
-	collectionId: string;
+
+	collectionId?: string | null = null;
+
+	productId?: string | null = null;
 
 	message: string = null;
 
@@ -48,45 +48,62 @@ export class MetadataModalComponent implements OnInit, OnDestroy {
 		this.onMetadataChange.unsubscribe();
 	}
 
-	init(collectionId: string, collectionName: string): void {
+	initCollection(collectionId: string, collectionName: string): void {
 		this.collectionId = collectionId;
 
-		this.service.getMetadataOptions(this.collectionId).then((options) => {
-
-			this.isOldFormat = (options.uav == null || options.sensor == null);
-
-			this.page = {
-				selection: {
-					type: 'CATEGORY',
-					isNew: false,
-					value: this.collectionId,
-					label: collectionName,
-					exifIncluded : options.exifIncluded,
-					northBound : options.northBound,
-					southBound : options.southBound,
-					eastBound : options.eastBound,
-					westBound : options.westBound,
-					acquisitionDateStart : options.acquisitionDateStart,
-					acquisitionDateEnd : options.acquisitionDateEnd,	
-					uav: options.uav != null ? options.uav.oid : null,
-					sensor: options.sensor != null ? options.sensor.oid : null,
-					pointOfContact: {
-						name: options.name,
-						email: options.email
-					},
-					flyingHeight : options.flyingHeight,
-					numberOfFlights : options.numberOfFlights,
-					percentEndLap : options.percentEndLap,
-					percentSideLap : options.percentSideLap,
-					areaCovered : options.areaCovered,
-					weatherConditions : options.weatherConditions,
-					artifacts: options.artifacts
-				}
-			}
-
+		this.service.getMetadataOptions({ collectionId : this.collectionId }).then((options) => {
+			this.loadOptions(options, collectionName);
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
+	}
+
+	initStandaloneProduct(productId: string, label: string): void {
+		this.productId = productId;
+
+		this.service.getMetadataOptions({ productId: this.productId }).then((options) => {
+			this.loadOptions(options, label);
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
+	}
+
+	loadOptions(options, label) {
+		this.isOldFormat = (options.uav == null || options.sensor == null);
+
+		this.page = {
+			selection: {
+				type: 'CATEGORY',
+				isNew: false,
+				label: label,
+				exifIncluded : options.exifIncluded,
+				northBound : options.northBound,
+				southBound : options.southBound,
+				eastBound : options.eastBound,
+				westBound : options.westBound,
+				acquisitionDateStart : options.acquisitionDateStart,
+				acquisitionDateEnd : options.acquisitionDateEnd,	
+				uav: options.uav != null ? options.uav.oid : null,
+				sensor: options.sensor != null ? options.sensor.oid : null,
+				pointOfContact: {
+					name: options.name,
+					email: options.email
+				},
+				flyingHeight : options.flyingHeight,
+				numberOfFlights : options.numberOfFlights,
+				percentEndLap : options.percentEndLap,
+				percentSideLap : options.percentSideLap,
+				areaCovered : options.areaCovered,
+				weatherConditions : options.weatherConditions,
+				artifacts: options.artifacts
+			}
+		}
+
+		if (this.collectionId != null) {
+			this.page.selection.collectionId = this.collectionId;
+		} else if (this.productId != null) {
+			this.page.selection.productId = this.productId;
+		}
 	}
 
 	close(): void {

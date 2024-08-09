@@ -129,9 +129,9 @@ public class ProjectManagementController
   }
 
   @Endpoint(url = "metadata-options", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "productId") String productId)
   {
-    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId(), id));
+    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId(), collectionId, productId));
   }
 
   @Endpoint(url = "uav-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
