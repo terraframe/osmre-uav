@@ -83,7 +83,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public String getS3location();
 
-  public String getS3location(ProductIF product, String folder);
+  public String getS3location(ProductIF product, String folderOrFilename);
 
   public SiteObjectsResultSet getSiteObjects(String key, Long pageNumber, Long pageSize);
 

@@ -148,14 +148,18 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   protected abstract List<String> buildProductExpandClause();
 
   @Override
-  public String getS3location(ProductIF product, String folder)
+  public String getS3location(ProductIF product, String folderOrFilename)
   {
-    if (product == null || StringUtils.isBlank(folder) || folder.equals(ImageryComponent.RAW))
-    {
-      return this.getS3location() + folder;
+    if (StringUtils.isBlank(folderOrFilename)) folderOrFilename = ImageryComponent.RAW;
+    
+    String ending = "";
+    if (!folderOrFilename.contains(".")) ending = "/";
+    
+    if (folderOrFilename.equals(ImageryComponent.RAW) || product == null) {
+      return this.getS3location() + folderOrFilename + ending;
     }
 
-    return this.getS3location() + product.getS3location() + folder;
+    return this.getS3location() + product.getS3location() + folderOrFilename + ending;
   }
 
   /**

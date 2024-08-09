@@ -158,10 +158,9 @@
         <tabset class="nav-full-width">
           <tab heading="raw images" (selectTab)="setTab('images')">
             <div *ngIf="activeTab === 'images'">
-              <div class="row" style="background-color: #ececec;">
+              <div class="row">
                 <div class="col-md-12">
                   <div id="image-list-container">
-                    <h3>Raw Images</h3>
                     <ul class="list-group row">
                       <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
                         <div class="" *ngIf="thumbnails[item.id] != null">
@@ -182,15 +181,18 @@
               </div>
             </div>
           </tab>
-          <tab heading="files" (selectTab)="setTab('files')">
-            <artifact-page *ngIf="activeTab === 'files'" [entity]="getArtifactPageEntity()"
+          <tab heading="products" (selectTab)="setTab('products')">
+            <artifact-page *ngIf="activeTab === 'products'" [entity]="getArtifactPageEntity()"
             [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
           </tab>
         </tabset>
       </div>
 
-      <artifact-page *ngIf="isStandalone()" [entity]="getArtifactPageEntity()"
-            [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
+      <div *ngIf="isStandalone()">
+        <h3> Products </h3>
+        <artifact-page [entity]="getArtifactPageEntity()"
+              [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
+      </div>
 
       <div class="row" style="background-color: #ececec;">
         <div class="btn-holder" style="text-align: right;margin:20px 20px 20px 20px;">

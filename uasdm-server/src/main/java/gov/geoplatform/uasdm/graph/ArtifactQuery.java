@@ -95,9 +95,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     }
 
     final GraphQuery<Document> query = new GraphQuery<Document>(ql.toString());
-    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "/" + "%");
-    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO)  + "/"+ "%");
-    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "/" + "%");
+    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "%");
+    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO) + "%");
+    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "%");
 
     return query;
   }
@@ -115,9 +115,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
 
     final GraphQuery<Long> query = new GraphQuery<Long>(ql.toString());
-    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "/" + "%");
-    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO) + "/" + "%");
-    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "/" + "%");
+    query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "%");
+    query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO) + "%");
+    query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "%");
 
     return query.getSingleResult();
   }

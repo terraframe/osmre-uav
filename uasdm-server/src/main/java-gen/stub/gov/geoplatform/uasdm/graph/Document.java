@@ -145,6 +145,8 @@ public class Document extends DocumentBase implements DocumentIF
     else
     {
     }
+    
+    System.out.println("Creating document at " + key);
 
     document.setName(name);
     document.setDescription(metadata.getDescription());

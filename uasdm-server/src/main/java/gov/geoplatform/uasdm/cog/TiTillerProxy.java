@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jboss.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
@@ -54,10 +55,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
 import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -67,6 +69,7 @@ import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class TiTillerProxy
 {
+  public static final Logger logger = Logger.getLogger(TiTillerProxy.class);
 
   /**
    * -90 to 90 for latitude and -180 to 180 for longitude
@@ -366,38 +369,48 @@ public class TiTillerProxy
 
   protected void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
   {
-    if ( ( (gov.geoplatform.uasdm.graph.Collection) document.getComponent() ).isMultiSpectral() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+    try
     {
-      TitilerCogInfo info = this.getCogInfo(document);
-      if (info != null)
+      Product p = ((Document) document).getProductHasDocumentParentProducts().get(0);
+      CollectionMetadata m = p.getMetadata().orElseThrow();
+      
+      if (m.isMultiSpectral() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
       {
-        int redIdx = info.getColorinterp().indexOf("red");
-        int greenIdx = info.getColorinterp().indexOf("green");
-        int blueIdx = info.getColorinterp().indexOf("blue");
-
-        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+        TitilerCogInfo info = this.getCogInfo(document);
+        if (info != null)
         {
-          redIdx++;
-          greenIdx++;
-          blueIdx++;
-
-          parameters.put("bidx", Arrays.asList(new String[] { String.valueOf(redIdx), String.valueOf(greenIdx), String.valueOf(blueIdx) }));
-
-          TitilerCogStatistics stats = this.getCogStatistics(document);
-          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
-          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
-          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
-
-          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
-          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
-
-          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
-          // could be negative. But it's happening on my sample data and it
-          // doesn't render properly if it is.
-
-          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+          int redIdx = info.getColorinterp().indexOf("red");
+          int greenIdx = info.getColorinterp().indexOf("green");
+          int blueIdx = info.getColorinterp().indexOf("blue");
+  
+          if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+          {
+            redIdx++;
+            greenIdx++;
+            blueIdx++;
+  
+            parameters.put("bidx", Arrays.asList(new String[] { String.valueOf(redIdx), String.valueOf(greenIdx), String.valueOf(blueIdx) }));
+  
+            TitilerCogStatistics stats = this.getCogStatistics(document);
+            TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
+            TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
+            TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+  
+            Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
+            Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
+  
+            // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
+            // could be negative. But it's happening on my sample data and it
+            // doesn't render properly if it is.
+  
+            parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+          }
         }
       }
+    }
+    catch (Throwable t)
+    {
+      logger.error(t);
     }
   }
 

@@ -24,15 +24,15 @@ public class PointcloudService
     UasComponent component = UasComponent.get(componentId);
 
     return component.getProduct(productName).map(product -> {
-      if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "/ept.json"))
+      if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "ept.json"))
       {
         return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + "ept.json";
       }
-      else if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "/metadata.json"))
+      else if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "metadata.json"))
       {
         return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + "metadata.json";
       }
-      else if (RemoteFileFacade.objectExists(component.getS3location(product, LEGACY_POTREE_SUPPORT) + "/cloud.js"))
+      else if (RemoteFileFacade.objectExists(component.getS3location(product, LEGACY_POTREE_SUPPORT) + "cloud.js"))
       {
         return product.getS3location() + LEGACY_POTREE_SUPPORT + "/" + "cloud.js";
       }

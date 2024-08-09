@@ -102,7 +102,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       actualFolder = "raw";
     }
 
-    query.setParameter("s3location", component.getS3location(this.product, actualFolder) + "/" + "%");
+    query.setParameter("s3location", component.getS3location(this.product, actualFolder) + "%");
 
     if (this.folder.equals("image") || this.folder.equals("data"))
     {

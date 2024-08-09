@@ -178,7 +178,7 @@ public class MultipleProductPatch implements Runnable
         uploadTarget = ODMZipPostProcessor.POTREE;
       }
 
-      String targetKey = component.getS3location(targetProduct, uploadTarget) + "/" + filename;
+      String targetKey = component.getS3location(targetProduct, uploadTarget) + filename;
 
       // Ensure that the source file has already been copied to the target
       // directory

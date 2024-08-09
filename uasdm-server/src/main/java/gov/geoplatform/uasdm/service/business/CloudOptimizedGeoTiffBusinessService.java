@@ -102,7 +102,7 @@ public class CloudOptimizedGeoTiffBusinessService
   {
     DocumentIF document = Document.find(path);
     boolean isPublished = isPublished(document);
-
+    
     if (UserDAOIF.PUBLIC_USER_ID.equals(Session.getCurrentSession().getUser().getOid()) && !isPublished)
     {
       throw new UnauthorizedAccessException();

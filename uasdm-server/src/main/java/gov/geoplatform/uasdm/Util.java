@@ -282,7 +282,7 @@ public class Util
               throw new UnsupportedOperationException("Unknown upload target [" + uploadTarget + "]");
             }
 
-            boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), filename, tmp, imageryComponent);
+            boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
 
             if (success)
             {
@@ -353,7 +353,7 @@ public class Util
                 folder = ImageryComponent.VIDEO;
               }
 
-              boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), filename, tmp, imageryComponent);
+              boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
 
               if (success)
               {
@@ -389,7 +389,7 @@ public class Util
         folder = ImageryComponent.VIDEO;
       }
 
-      boolean success = uploadFile(task, ancestors, imageryComponent.buildUploadKey(product, folder), archive.getName(), file, imageryComponent);
+      boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), archive.getName(), file, imageryComponent);
 
       if (success)
       {
@@ -403,7 +403,7 @@ public class Util
   @Transaction
   public static DocumentIF putFile(UasComponent component, String folder, ProductIF product, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
-    String key = product != null ? component.getS3location(product, folder) + "/" + fileName : component.getS3location() + folder + "/" + fileName;
+    String key = product != null ? component.getS3location(product, folder) + fileName : component.getS3location() + folder + "/" + fileName;
 
     RemoteFileFacade.uploadFile(key, metadata, stream);
 

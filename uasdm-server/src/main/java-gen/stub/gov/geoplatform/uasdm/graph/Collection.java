@@ -278,7 +278,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     // @see https://github.com/OpenDroneMap/ODM/issues/1658
     if (this.isMultiSpectral() && key.matches(Product.THUMBNAIL_ORTHO_PNG_REGEX))
     {
-      Product product = this.getProducts().get(0);
+      Product product = this.getProducts().get(0); // TODO : This might be the wrong product...
       InputStream is = new TiTillerProxy().getCogPreview(product, product.getMappableOrtho().get(), new CogPreviewParams(250, 250));
 
       try
@@ -304,7 +304,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       throw ex;
     });
 
-    return this.download(this.getS3location(product, folder) + "/report.pdf");
+    return this.download(this.getS3location(product, folder) + "report.pdf");
   }
 
   @Override
@@ -710,35 +710,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }
 
     return product;
-  }
-
-  /**
-   * If the @param uploadTarget is null or blank, then return the raw key.
-   * 
-   * @param uploadTarget
-   * 
-   * @return S3 upload key or the raw upload key
-   */
-  @Override
-  public String buildUploadKey(ProductIF product, String uploadTarget)
-  {
-    if (!StringUtils.isBlank(uploadTarget) && uploadTarget.equals(ImageryComponent.VIDEO))
-    {
-      return this.buildVideoKey();
-    }
-    else if (!StringUtils.isBlank(uploadTarget) && ! ( uploadTarget.equals(ImageryComponent.RAW) ))
-    {
-      if (product != null)
-      {
-        return this.getS3location(product, uploadTarget) + "/";
-      }
-
-      throw new UnsupportedOperationException("Cannot manually upload files to a non raw directory if there is not a product");
-    }
-    else
-    {
-      return this.buildRawKey();
-    }
   }
 
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)

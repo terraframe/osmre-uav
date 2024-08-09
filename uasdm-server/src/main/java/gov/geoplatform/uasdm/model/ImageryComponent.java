@@ -74,17 +74,17 @@ public interface ImageryComponent
    *          TODO
    * @return S3 upload key or the raw upload key
    */
-  public default String buildUploadKey(ProductIF product, String uploadTarget)
-  {
-    if (uploadTarget != null && !uploadTarget.trim().equals(""))
-    {
-      return this.getS3location() + uploadTarget + "/";
-    }
-    else
-    {
-      return this.buildRawKey();
-    }
-  }
+//  public default String buildUploadKey(ProductIF product, String uploadTarget)
+//  {
+//    if (uploadTarget != null && !uploadTarget.trim().equals(""))
+//    {
+//      return this.getS3location() + uploadTarget + "/";
+//    }
+//    else
+//    {
+//      return this.buildRawKey();
+//    }
+//  }
 
   public static boolean isValidTarget(String uploadTarget)
   {
