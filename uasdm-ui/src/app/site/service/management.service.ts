@@ -720,10 +720,12 @@ export class ManagementService {
 
 		let params: HttpParams = new HttpParams();
 
-		if (input.collectionId != null) {
-			params = params.set('collectionId', input.collectionId);
-		} else if (input.productId != null) {
-			params = params.set('productId', input.productId);
+		if (input != null) {
+			if (input.collectionId != null) {
+				params = params.set('collectionId', input.collectionId);
+			} else if (input.productId != null) {
+				params = params.set('productId', input.productId);
+			}
 		}
 
 		return this.noErrorHttpClient
