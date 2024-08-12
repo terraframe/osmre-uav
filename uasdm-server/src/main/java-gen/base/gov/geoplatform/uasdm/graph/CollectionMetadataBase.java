@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1062617555)
+@com.runwaysdk.business.ClassSignature(hash = 802232386)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -33,7 +33,7 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1062617555;
+  private static final long serialVersionUID = 802232386;
   
   public CollectionMetadataBase()
   {
