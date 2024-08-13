@@ -122,16 +122,18 @@
               <div class="panel-heading clickable">
                 <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
                   <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
-                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
-                    <h4>{{taskGroup.label}}</h4>
+                    [attr.aria-expanded]="!isVisible(taskGroup)" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{getTaskLabel(taskGroup)}}</h4>
                   </a>
                 </h4>
 
                 <span class="dot"
                   [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}"></span>
 
-                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
-                  Collection</button>
+                <button class="btn btn-default pull-right" (click)="handleGotoTask(taskGroup)">
+                  <span *ngIf="taskGroup.productId == '' || taskGroup.productId == null">View Collection</span>
+                  <span *ngIf="taskGroup.productId != '' && taskGroup.productId != null">View Product</span>
+                </button>
 
                 <div style="margin-top:10px;margin-bottom:0;color:grey;">
                   <ul class="breadcrumb" style="color:grey;">
@@ -146,7 +148,7 @@
 
               </div>
 
-              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+              <div class="panel-body" [isAnimated]="false" [collapse]="!isVisible(taskGroup)">
                 <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
 
                 <span *ngIf="!taskGroup.loading">
@@ -190,16 +192,18 @@
               <div class="panel-heading clickable">
                 <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
                   <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
-                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
-                    <h4>{{taskGroup.label}}</h4>
+                    [attr.aria-expanded]="!isVisible(taskGroup)" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{getTaskLabel(taskGroup)}}</h4>
                   </a>
                 </h4>
 
                 <span class="dot"
                   [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}"></span>
 
-                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
-                  Collection</button>
+                <button class="btn btn-default pull-right" (click)="handleGotoTask(taskGroup)">
+                  <span *ngIf="taskGroup.productId == '' || taskGroup.productId == null">View Collection</span>
+                  <span *ngIf="taskGroup.productId != '' && taskGroup.productId != null">View Product</span>
+                </button>
 
                 <div style="margin-top:10px;margin-bottom:0;color:grey;">
                   <ul class="breadcrumb" style="color:grey;">
@@ -214,7 +218,7 @@
 
               </div>
 
-              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+              <div class="panel-body" [isAnimated]="false" [collapse]="!isVisible(taskGroup)">
 
                 <div *ngFor="let taskGroupType of taskGroup.groups; let grpi=index">
                   <div *ngIf="taskGroupType.tasks.length > 0" [id]="'task'+ grpi">
@@ -252,16 +256,18 @@
               <div class="panel-heading clickable">
                 <h4 class="panel-title" style="display: inline-block; vertical-align: middle;">
                   <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
-                    [attr.aria-expanded]="!visible[taskGroup.collectionId]" [attr.aria-controls]="'taskGroup'+ idx">
-                    <h4>{{taskGroup.label}}</h4>
+                    [attr.aria-expanded]="!isVisible(taskGroup)" [attr.aria-controls]="'taskGroup'+ idx">
+                    <h4>{{getTaskLabel(taskGroup)}}</h4>
                   </a>
                 </h4>
 
                 <span class="dot"
                   [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued', 'fail':taskGroup.status === 'Failed'}"></span>
 
-                <button class="btn btn-default pull-right" (click)="handleGoto(taskGroup.collectionId)">View
-                  Collection</button>
+                <button class="btn btn-default pull-right" (click)="handleGotoTask(taskGroup)">
+                  <span *ngIf="taskGroup.productId == '' || taskGroup.productId == null">View Collection</span>
+                  <span *ngIf="taskGroup.productId != '' && taskGroup.productId != null">View Product</span>
+                </button>
 
                 <div style="margin-top:10px;margin-bottom:0;color:grey;">
                   <ul class="breadcrumb" style="color:grey;">
@@ -275,7 +281,7 @@
                 </div>
               </div>
 
-              <div class="panel-body" [isAnimated]="false" [collapse]="!visible[taskGroup.collectionId]">
+              <div class="panel-body" [isAnimated]="false" [collapse]="!isVisible(taskGroup)">
                 <i *ngIf="taskGroup.loading" class="fa fa-spinner fa-spin task-group-loading"></i>
 
                 <span *ngIf="!taskGroup.loading">

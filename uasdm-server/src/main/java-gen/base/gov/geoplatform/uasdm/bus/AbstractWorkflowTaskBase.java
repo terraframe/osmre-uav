@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1670077353)
+@com.runwaysdk.business.ClassSignature(hash = 1249007203)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -24,6 +24,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public final static java.lang.String OWNER = "owner";
+  public final static java.lang.String PRODUCTID = "productId";
   public final static java.lang.String PRODUCTNAME = "productName";
   public final static java.lang.String PROJECTIONNAME = "projectionName";
   public final static java.lang.String PTEPSG = "ptEpsg";
@@ -34,7 +35,7 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
   public final static java.lang.String TOOL = "tool";
   public final static java.lang.String TYPE = "type";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1670077353;
+  private static final long serialVersionUID = 1249007203;
   
   public AbstractWorkflowTaskBase()
   {
@@ -438,6 +439,34 @@ public abstract class AbstractWorkflowTaskBase extends com.runwaysdk.business.Bu
     else
     {
       setValue(OWNER, oid);
+    }
+  }
+  
+  public String getProductId()
+  {
+    return getValue(PRODUCTID);
+  }
+  
+  public void validateProductId()
+  {
+    this.validateAttribute(PRODUCTID);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getProductIdMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(PRODUCTID);
+  }
+  
+  public void setProductId(String value)
+  {
+    if(value == null)
+    {
+      setValue(PRODUCTID, "");
+    }
+    else
+    {
+      setValue(PRODUCTID, value);
     }
   }
   

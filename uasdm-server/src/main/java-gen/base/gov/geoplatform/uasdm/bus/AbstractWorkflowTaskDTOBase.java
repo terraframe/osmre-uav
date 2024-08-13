@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1043334615)
+@com.runwaysdk.business.ClassSignature(hash = 1609496547)
 public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractWorkflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1043334615;
+  private static final long serialVersionUID = 1609496547;
   
   protected AbstractWorkflowTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -41,6 +41,7 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public static java.lang.String OID = "oid";
   public static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PRODUCTID = "productId";
   public static java.lang.String PRODUCTNAME = "productName";
   public static java.lang.String PROJECTIONNAME = "projectionName";
   public static java.lang.String PTEPSG = "ptEpsg";
@@ -504,6 +505,43 @@ public abstract class AbstractWorkflowTaskDTOBase extends com.runwaysdk.business
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getProductId()
+  {
+    return getValue(PRODUCTID);
+  }
+  
+  public void setProductId(String value)
+  {
+    if(value == null)
+    {
+      setValue(PRODUCTID, "");
+    }
+    else
+    {
+      setValue(PRODUCTID, value);
+    }
+  }
+  
+  public boolean isProductIdWritable()
+  {
+    return isWritable(PRODUCTID);
+  }
+  
+  public boolean isProductIdReadable()
+  {
+    return isReadable(PRODUCTID);
+  }
+  
+  public boolean isProductIdModified()
+  {
+    return isModified(PRODUCTID);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getProductIdMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PRODUCTID).getAttributeMdDTO();
   }
   
   public String getProductName()

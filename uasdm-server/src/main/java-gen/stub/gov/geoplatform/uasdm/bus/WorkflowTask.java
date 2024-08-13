@@ -79,10 +79,11 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public void delete()
   {
     String component = this.getComponent();
+    String product = this.getProductId();
 
     super.delete();
 
-    CollectionStatus.updateStatus(component);
+    CollectionStatus.updateStatus(component, product);
   }
 
   public static long getUserWorkflowTasksCount(String statuses)
@@ -366,9 +367,15 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     return components;
   }
 
-  public static JSONArray getCollectionTasks(String collectionId)
+  public static JSONArray getComponentTasks(String componentId, String productId)
   {
-    List<? extends WorkflowTask> tasks = getTasksForCollection(collectionId);
+    List<? extends WorkflowTask> tasks;
+    
+    if (StringUtils.isBlank(productId)) {
+      tasks = getTasksForComponent(componentId);
+    } else {
+      tasks = getTasksForProduct(productId);
+    }
 
     JSONArray results = new JSONArray();
 
@@ -378,13 +385,24 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
     }
 
     return results;
-
   }
 
-  public static List<? extends WorkflowTask> getTasksForCollection(String collectionId)
+  public static List<? extends WorkflowTask> getTasksForComponent(String componentId)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
-    query.WHERE(query.getComponent().EQ(collectionId));
+    query.WHERE(query.getComponent().EQ(componentId));
+    query.ORDER_BY_DESC(query.getCreateDate());
+
+    try (OIterator<? extends WorkflowTask> iterator = query.getIterator())
+    {
+      return iterator.getAll();
+    }
+  }
+  
+  public static List<? extends WorkflowTask> getTasksForProduct(String productId)
+  {
+    WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());
+    query.WHERE(query.getProductId().EQ(productId));
     query.ORDER_BY_DESC(query.getCreateDate());
 
     try (OIterator<? extends WorkflowTask> iterator = query.getIterator())

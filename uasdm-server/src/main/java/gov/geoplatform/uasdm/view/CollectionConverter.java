@@ -94,7 +94,7 @@ public class CollectionConverter extends Converter<CollectionIF>
         siteItem.setHasAllZip(product.hasAllZip());
       });
 
-      List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(collection.getOid());
+      List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForComponent(collection.getOid());
       if (!tasks.isEmpty())
       {
         WorkflowTask lastTask = tasks.get(tasks.size() - 1);

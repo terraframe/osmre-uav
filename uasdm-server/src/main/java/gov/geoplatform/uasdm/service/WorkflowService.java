@@ -168,9 +168,9 @@ public class WorkflowService
   }
 
   @Request(RequestType.SESSION)
-  public JSONArray getCollectionTasks(String sessionId, String collectionId)
+  public JSONArray getComponentTasks(String sessionId, String componentId, String productId)
   {
-    return WorkflowTask.getCollectionTasks(collectionId);
+    return WorkflowTask.getComponentTasks(componentId, productId);
   }
 
   @Request(RequestType.SESSION)

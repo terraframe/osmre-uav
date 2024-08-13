@@ -353,10 +353,10 @@ public class ProjectManagementController
     return new RestBodyResponse(response);
   }
 
-  @Endpoint(url = "collection-tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getCollectionTasks(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  @Endpoint(url = "component-tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getComponentTasks(ClientRequestIF request, @RequestParamter(name = "componentId") String componentId, @RequestParamter(name = "productId") String productId)
   {
-    JSONArray response = new WorkflowService().getCollectionTasks(request.getSessionId(), collectionId);
+    JSONArray response = new WorkflowService().getComponentTasks(request.getSessionId(), componentId, productId);
 
     return new RestBodyResponse(response);
   }

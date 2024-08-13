@@ -1,26 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 1650855875)
+@com.runwaysdk.business.ClassSignature(hash = -528059993)
 public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.BusinessDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.CollectionStatus";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1650855875;
+  private static final long serialVersionUID = -528059993;
   
   protected CollectionStatusDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -43,8 +28,6 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
     return CLASS;
   }
   
-  public static java.lang.String COLLECTIONNAME = "collectionName";
-  public static java.lang.String COLLECTIONS3PATH = "collectionS3Path";
   public static java.lang.String COMPONENT = "component";
   public static java.lang.String CREATEDATE = "createDate";
   public static java.lang.String CREATEDBY = "createdBy";
@@ -56,84 +39,11 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public static java.lang.String LOCKEDBY = "lockedBy";
   public static java.lang.String OID = "oid";
   public static java.lang.String OWNER = "owner";
+  public static java.lang.String PRODUCTID = "productId";
   public static java.lang.String SEQ = "seq";
   public static java.lang.String SITEMASTER = "siteMaster";
   public static java.lang.String STATUS = "status";
   public static java.lang.String TYPE = "type";
-  public String getCollectionName()
-  {
-    return getValue(COLLECTIONNAME);
-  }
-  
-  public void setCollectionName(String value)
-  {
-    if(value == null)
-    {
-      setValue(COLLECTIONNAME, "");
-    }
-    else
-    {
-      setValue(COLLECTIONNAME, value);
-    }
-  }
-  
-  public boolean isCollectionNameWritable()
-  {
-    return isWritable(COLLECTIONNAME);
-  }
-  
-  public boolean isCollectionNameReadable()
-  {
-    return isReadable(COLLECTIONNAME);
-  }
-  
-  public boolean isCollectionNameModified()
-  {
-    return isModified(COLLECTIONNAME);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getCollectionNameMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(COLLECTIONNAME).getAttributeMdDTO();
-  }
-  
-  public String getCollectionS3Path()
-  {
-    return getValue(COLLECTIONS3PATH);
-  }
-  
-  public void setCollectionS3Path(String value)
-  {
-    if(value == null)
-    {
-      setValue(COLLECTIONS3PATH, "");
-    }
-    else
-    {
-      setValue(COLLECTIONS3PATH, value);
-    }
-  }
-  
-  public boolean isCollectionS3PathWritable()
-  {
-    return isWritable(COLLECTIONS3PATH);
-  }
-  
-  public boolean isCollectionS3PathReadable()
-  {
-    return isReadable(COLLECTIONS3PATH);
-  }
-  
-  public boolean isCollectionS3PathModified()
-  {
-    return isModified(COLLECTIONS3PATH);
-  }
-  
-  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getCollectionS3PathMd()
-  {
-    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(COLLECTIONS3PATH).getAttributeMdDTO();
-  }
-  
   public String getComponent()
   {
     return getValue(COMPONENT);
@@ -502,6 +412,43 @@ public abstract class CollectionStatusDTOBase extends com.runwaysdk.business.Bus
   public final com.runwaysdk.transport.metadata.AttributeReferenceMdDTO getOwnerMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeReferenceMdDTO) getAttributeDTO(OWNER).getAttributeMdDTO();
+  }
+  
+  public String getProductId()
+  {
+    return getValue(PRODUCTID);
+  }
+  
+  public void setProductId(String value)
+  {
+    if(value == null)
+    {
+      setValue(PRODUCTID, "");
+    }
+    else
+    {
+      setValue(PRODUCTID, value);
+    }
+  }
+  
+  public boolean isProductIdWritable()
+  {
+    return isWritable(PRODUCTID);
+  }
+  
+  public boolean isProductIdReadable()
+  {
+    return isReadable(PRODUCTID);
+  }
+  
+  public boolean isProductIdModified()
+  {
+    return isModified(PRODUCTID);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeCharacterMdDTO getProductIdMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeCharacterMdDTO) getAttributeDTO(PRODUCTID).getAttributeMdDTO();
   }
   
   public Long getSeq()

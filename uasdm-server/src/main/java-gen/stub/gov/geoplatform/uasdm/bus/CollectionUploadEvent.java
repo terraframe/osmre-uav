@@ -77,11 +77,6 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
   public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ODMProcessConfiguration configuration)
   {
-    task.lock();
-    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
-    task.setMessage("Processing archived files");
-    task.apply();
-
     // if (Session.getCurrentSession() != null)
     // {
     // NotificationFacade.queue(new
@@ -92,7 +87,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
     ProductIF product = null;
 
-    if (!uploadTarget.equals(ImageryComponent.RAW))
+    task.lock();
+    if (!uploadTarget.equals(ImageryComponent.RAW) && !uploadTarget.equals(ImageryComponent.VIDEO) && !uploadTarget.equals(ImageryComponent.GEOREF))
     {
       Optional<ProductIF> optional = component.getProduct(configuration.getProductName());
 
@@ -104,7 +100,12 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       // If the product doesn't exist, then create it
       product = optional.orElseGet(() -> component.createProductIfNotExist(configuration.getProductName()));
 
+      task.setProductId(product.getOid());
     }
+    
+    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
+    task.setMessage("Processing archived files");
+    task.apply();
 
     List<String> uploadedFiles = new LinkedList<String>();
 

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -1211035762)
+@com.runwaysdk.business.ClassSignature(hash = -506824166)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -295,6 +295,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER, mdAttributeIF, this, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProductName()
   {
     return getProductName(null);
@@ -554,6 +571,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProductId();
+    public com.runwaysdk.query.SelectableChar getProductId(String alias);
+    public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProductName();
     public com.runwaysdk.query.SelectableChar getProductName(String alias);
     public com.runwaysdk.query.SelectableChar getProductName(String alias, String displayLabel);
@@ -837,6 +857,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER,  alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProductName()
   {
     return getProductName(null);
@@ -1073,6 +1110,9 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProductId();
+    public com.runwaysdk.query.SelectableChar getProductId(String alias);
+    public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProductName();
     public com.runwaysdk.query.SelectableChar getProductName(String alias);
     public com.runwaysdk.query.SelectableChar getProductName(String alias, String displayLabel);
@@ -1403,6 +1443,23 @@ public  class AbstractWorkflowTaskQuery extends com.runwaysdk.query.GeneratedBus
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.OWNER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractWorkflowTask.PRODUCTID, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getProductName()

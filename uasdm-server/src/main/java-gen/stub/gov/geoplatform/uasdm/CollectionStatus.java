@@ -15,16 +15,15 @@
  */
 package gov.geoplatform.uasdm;
 
-import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,12 +33,16 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OR;
 import com.runwaysdk.query.QueryFactory;
 
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
@@ -73,6 +76,13 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     JSONObject obj = new JSONObject();
     obj.put("label", component.getName());
     obj.put("collectionId", component.getOid());
+    
+    obj.put("productId", this.getProductId());
+    
+    if (StringUtils.isNotBlank(this.getProductId())) {
+      obj.put("productName", Product.get(this.getProductId()).getProductName());
+    }
+    
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", Util.formatIso8601(this.getLastModificationDate(), true));
     obj.put("ancestors", parents);
@@ -231,22 +241,44 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
   {
     if (task instanceof WorkflowTask)
     {
-      updateStatus( ( (WorkflowTask) task ).getComponent());
+      updateStatus( ( (WorkflowTask) task ).getComponent(), ((AbstractWorkflowTask)task).getProductId());
     }
+  }
+  
+  public static void updateStatus(String componentId)
+  {
+    updateStatus(componentId, null);
   }
 
   @Transaction
-  public static void updateStatus(String componentId)
+  public static void updateStatus(String componentId, String productId)
   {
-    if (componentId != null && componentId.length() > 0)
+    if (StringUtils.isBlank(componentId)) return;
+    
+    UasComponentIF component = UasComponent.get(componentId);
+    
+    List<? extends WorkflowTask> tasks = null;
+    
+    if (component instanceof CollectionIF)
     {
-      List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(componentId);
-
+      tasks = WorkflowTask.getTasksForComponent(componentId);
+    }
+    else if (StringUtils.isNotBlank(productId))
+    {
+      tasks = WorkflowTask.getTasksForProduct(productId);
+    }
+    
+    if (tasks != null && tasks.size() > 0) {
       Map<String, LinkedList<WorkflowTask>> taskGroups = createTaskGroups(tasks);
       String status = mergeTaskGroupStatuses(taskGroups);
 
       CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
-      query.WHERE(query.getComponent().EQ(componentId));
+      
+      if (StringUtils.isNotBlank(productId)) {
+        query.WHERE(query.getProductId().EQ(productId));
+      } else {
+        query.WHERE(query.getComponent().EQ(componentId));
+      }
 
       try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
       {
@@ -261,6 +293,10 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
         {
           collectionStatus = new CollectionStatus();
           collectionStatus.setComponent(componentId);
+        }
+        
+        if (StringUtils.isNotBlank(productId)) {
+          collectionStatus.setProductId(productId);
         }
 
         collectionStatus.setStatus(status);

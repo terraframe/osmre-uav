@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm;
 
-@com.runwaysdk.business.ClassSignature(hash = 612274348)
+@com.runwaysdk.business.ClassSignature(hash = 1655357776)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -52,40 +37,6 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public String getClassType()
   {
     return gov.geoplatform.uasdm.CollectionStatus.CLASS;
-  }
-  public com.runwaysdk.query.SelectableChar getCollectionName()
-  {
-    return getCollectionName(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
-  {
-    return getCollectionS3Path(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
-
   }
   public com.runwaysdk.query.SelectableUUID getComponent()
   {
@@ -304,6 +255,23 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.getComponentQuery().internalAttributeFactory(gov.geoplatform.uasdm.CollectionStatus.OWNER, mdAttributeIF, this, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableLong getSeq()
   {
     return getSeq(null);
@@ -435,12 +403,6 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionStatusQueryReferenceIF extends com.runwaysdk.query.SelectableReference
   {
 
-    public com.runwaysdk.query.SelectableChar getCollectionName();
-    public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
-    public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path();
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias);
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
@@ -474,6 +436,9 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProductId();
+    public com.runwaysdk.query.SelectableChar getProductId(String alias);
+    public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -521,40 +486,6 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
       return this.NE(collectionStatus.getOid());
     }
 
-  public com.runwaysdk.query.SelectableChar getCollectionName()
-  {
-    return getCollectionName(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
-  {
-    return getCollectionS3Path(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
-
-  }
   public com.runwaysdk.query.SelectableUUID getComponent()
   {
     return getComponent(null);
@@ -740,6 +671,23 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.CollectionStatus.OWNER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()
@@ -850,12 +798,6 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public interface CollectionStatusQueryMultiReferenceIF extends com.runwaysdk.query.SelectableMultiReference
   {
 
-    public com.runwaysdk.query.SelectableChar getCollectionName();
-    public com.runwaysdk.query.SelectableChar getCollectionName(String alias);
-    public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel);
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path();
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias);
-    public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableUUID getComponent();
     public com.runwaysdk.query.SelectableUUID getComponent(String alias);
     public com.runwaysdk.query.SelectableUUID getComponent(String alias, String displayLabel);
@@ -889,6 +831,9 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner();
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias);
     public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableChar getProductId();
+    public com.runwaysdk.query.SelectableChar getProductId(String alias);
+    public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableLong getSeq();
     public com.runwaysdk.query.SelectableLong getSeq(String alias);
     public com.runwaysdk.query.SelectableLong getSeq(String alias, String displayLabel);
@@ -984,40 +929,6 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
       }
 
       return this.containsExactly(itemIdArray);
-  }
-  public com.runwaysdk.query.SelectableChar getCollectionName()
-  {
-    return getCollectionName(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionName(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONNAME, alias, displayLabel);
-
-  }
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path()
-  {
-    return getCollectionS3Path(null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, null);
-
-  }
- 
-  public com.runwaysdk.query.SelectableChar getCollectionS3Path(String alias, String displayLabel)
-  {
-    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.COLLECTIONS3PATH, alias, displayLabel);
-
   }
   public com.runwaysdk.query.SelectableUUID getComponent()
   {
@@ -1204,6 +1115,23 @@ public  class CollectionStatusQuery extends com.runwaysdk.query.GeneratedBusines
   public com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF getOwner(String alias, String displayLabel)
   {
     return (com.runwaysdk.system.ActorQuery.ActorQueryReferenceIF)this.get(gov.geoplatform.uasdm.CollectionStatus.OWNER,  alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableChar getProductId()
+  {
+    return getProductId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProductId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.CollectionStatus.PRODUCTID, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableLong getSeq()

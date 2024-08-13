@@ -440,7 +440,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public String getStatus()
   {
-    List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForCollection(this.getOid());
+    List<? extends WorkflowTask> tasks = WorkflowTask.getTasksForComponent(this.getOid());
 
     Map<String, LinkedList<WorkflowTask>> taskGroups = CollectionStatus.createTaskGroups(tasks);
 

@@ -480,14 +480,18 @@ export class ManagementService {
 	}
 
 
-	getTasks(collectionId: string): Promise<Task[]> {
+	getTasks(componentId: string, productId: string | null = null): Promise<Task[]> {
 
 		// status options: PROCESSING, COMPLETE, ERROR, QUEUED
 		let params: HttpParams = new HttpParams();
-		params = params.set('collectionId', collectionId);
+		params = params.set('componentId', componentId);
+
+		if (productId != null) {
+			params = params.set('productId', productId);
+		}
 
 		return this.http
-			.get<Task[]>(environment.apiUrl + '/project/collection-tasks', { params: params })
+			.get<Task[]>(environment.apiUrl + '/project/component-tasks', { params: params })
 			.toPromise()
 	}
 

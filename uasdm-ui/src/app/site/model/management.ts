@@ -270,6 +270,8 @@ export class Task {
 export class TaskGroup {
 	label: string;
 	collectionId: string;
+	productId?: string;
+	productName?: string;
 	visible?: boolean;
 	loading?: boolean;
 	groups: TaskGroupType[];

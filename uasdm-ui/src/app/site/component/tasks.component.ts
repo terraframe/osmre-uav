@@ -19,6 +19,8 @@ import EnvironmentUtil from '@core/utility/environment-util';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
+import { ProductService } from '@site/service/product.service';
+import { ProductModalComponent } from './modal/product-modal.component';
 
 
 
@@ -69,7 +71,8 @@ export class TasksComponent implements OnInit {
 
   constructor(
     private managementService: ManagementService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private pService: ProductService
   ) { }
 
   ngOnInit(): void {
@@ -151,7 +154,7 @@ export class TasksComponent implements OnInit {
     this.visible = {};
 
     this.taskPage.resultSet.forEach(task => {
-      this.visible[task.collectionId] = false;
+      this.setVisible(task, false);
     });
   }
 
@@ -248,21 +251,37 @@ export class TasksComponent implements OnInit {
     this.taskPage = page;
 
     this.taskPage.resultSet.forEach(task => {
-      if (this.visible[task.collectionId]) {
-        this.managementService.getTasks(task.collectionId).then(tasks => {
+      if (this.isVisible(task)) {
+        this.managementService.getTasks(task.collectionId, task.productId).then(tasks => {
           this.setGroupTasks(task, tasks);
         });
       }
     });
   }
 
+  isVisible(task: TaskGroup) {
+    if (task.productId != null) {
+      return this.visible[task.productId];
+    } else {
+      return this.visible[task.collectionId];
+    }
+  }
+
+  setVisible(task: TaskGroup, b: boolean) {
+    if (task.productId != null) {
+      this.visible[task.productId] = b;
+    } else {
+      this.visible[task.collectionId] = b;
+    }
+  }
+
   setVisibility(taskGroup: TaskGroup): void {
-    if (!this.visible[taskGroup.collectionId]) {
-      this.visible[taskGroup.collectionId] = true;
+    if (!this.isVisible(taskGroup)) {
+      this.setVisible(taskGroup, true);
 
       if (taskGroup.groups == null && !taskGroup.loading) {
         taskGroup.loading = true;
-        this.managementService.getTasks(taskGroup.collectionId).then(tasks => {
+        this.managementService.getTasks(taskGroup.collectionId, taskGroup.productId).then(tasks => {
           this.setGroupTasks(taskGroup, tasks);
 
           taskGroup.loading = false;
@@ -270,7 +289,7 @@ export class TasksComponent implements OnInit {
       }
     }
     else {
-      this.visible[taskGroup.collectionId] = false;
+      this.setVisible(taskGroup, false);
     }
   }
 
@@ -310,6 +329,32 @@ export class TasksComponent implements OnInit {
         this.bsModalRef.content.init(entity, nodes, breadcrumbs);
       })
     })
+  }
+
+  handleGotoTask(task: TaskGroup): void {
+    // let breadcrumbs = []
+
+    if (task.productId == null || task.productId == '') {
+      this.handleGoto(task.collectionId);
+    } else {
+      this.pService.getDetail(task.productId, 1, 20).then(detail => {
+        this.bsModalRef = this.modalService.show(ProductModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            'class': 'product-info-modal'
+        });
+        this.bsModalRef.content.init(detail);
+      });
+    }
+  }
+
+  getTaskLabel(task: TaskGroup): string {
+    if (task.productId != null && task.productId != '') {
+      return task.productName;
+    } else {
+      return task.label;
+    }
   }
 
   getMessages(): void {
