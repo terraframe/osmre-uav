@@ -32,7 +32,7 @@
         <create>
           <attributes>
             <text name="productName" label="Product Name" required="false" />
-            <boolean name="primary" label="Is Primary" required="false" />            
+            <boolean name="primary" label="Is Primary" required="false" defaultValue="false" />            
           </attributes>
         </create>
       </mdVertex>

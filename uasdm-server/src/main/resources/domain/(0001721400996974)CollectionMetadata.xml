@@ -48,12 +48,6 @@
           </attributes>      
       </mdVertex>
       
-      <mdVertex name="gov.geoplatform.uasdm.graph.Product" label="Product Metadata">
-        <attributes>
-          <boolean name="primary" defaultValue="false" />
-        </attributes>
-      </mdVertex>
-      
       <mdEdge name="gov.geoplatform.uasdm.graph.CollectionHasMetadata" label="Collection Has Metadata" parent="gov.geoplatform.uasdm.graph.Collection" child="gov.geoplatform.uasdm.graph.CollectionMetadata">
       </mdEdge>      
       
