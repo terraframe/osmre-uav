@@ -1,0 +1,28 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdBusiness name="gov.geoplatform.uasdm.CollectionStatus">
+        <attributes>
+          <uuid name="component" indexType="non-unique index" />
+        </attributes>
+      
+        <create>
+          <attributes>
+			<char name="productId" label="Product" size="64" required="false" indexType="unique index" />
+		  </attributes>
+        </create>
+      </mdBusiness>
+      <mdBusiness name="gov.geoplatform.uasdm.bus.AbstractWorkflowTask">
+        <create>
+          <attributes>
+          	<char name="productId" label="Product" size="64" required="false" />
+          </attributes>
+        </create>
+      </mdBusiness>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete></delete>
+  </undoIt>
+</version>
