@@ -296,17 +296,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return super.download(key);
   }
 
-  public RemoteFileObject downloadReport(String productName, String folder)
-  {
-    ProductIF product = this.getProduct(productName).orElseThrow(() -> {
-      GenericException ex = new GenericException();
-      ex.setUserMessage("A product with the name [" + productName + "] does not exist");
-      throw ex;
-    });
-
-    return this.download(this.getS3location(product, folder) + "report.pdf");
-  }
-
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {

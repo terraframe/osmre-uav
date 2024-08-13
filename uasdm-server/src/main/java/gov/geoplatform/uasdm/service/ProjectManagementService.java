@@ -1312,7 +1312,7 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public RemoteFileObject downloadReport(String sessionId, String colId, String productName, String folder)
   {
-    Collection collection = (Collection) ComponentFacade.getCollection(colId);
+    UasComponent collection = (UasComponent) ComponentFacade.getComponent(colId);
 
     return collection.downloadReport(productName, folder);
   }
