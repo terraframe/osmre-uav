@@ -52,6 +52,11 @@ public class Site extends SiteBase implements SiteIF
   {
     throw new UnsupportedOperationException();
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+  }
 
   @Override
   public void applyWithParent(UasComponentIF parent)

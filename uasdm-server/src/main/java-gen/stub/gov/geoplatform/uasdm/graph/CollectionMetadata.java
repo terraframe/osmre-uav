@@ -1,6 +1,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -8,7 +9,6 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.EdgeType;
-import gov.geoplatform.uasdm.model.ProductIF;
 
 public class CollectionMetadata extends CollectionMetadataBase implements ComponentWithAttributes
 {
@@ -28,11 +28,19 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
     ((VertexObject) collection).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
   }
   
-  public ProductIF getProduct()
+  public List<Product> getProducts()
   {
-    final List<Product> parents = this.getParents(EdgeType.PRODUCT_HAS_METADATA, Product.class);
+    return this.getParents(EdgeType.PRODUCT_HAS_METADATA, Product.class);
+  }
+  
+  public Optional<Collection> getCollection()
+  {
+    List<Collection> list = this.getParents(EdgeType.COLLECTION_HAS_METADATA, Collection.class);
     
-    return parents.get(0);
+    if (list.size() == 0) return Optional.empty();
+    else if (list.size() > 1) throw new IndexOutOfBoundsException();
+    
+    return Optional.of(list.get(0));
   }
 
   @Override

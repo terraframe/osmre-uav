@@ -127,7 +127,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       new ReIndexStacItemCommand(product).doIt();
     }
     
-    new GenerateMetadataCommand(component, product.getMetadata().orElseThrow()).doIt();
+    new GenerateMetadataCommand(component, product, product.getMetadata().orElseThrow()).doIt();
 
     this.appLock();
     this.setStatus(ODMStatus.COMPLETED.getLabel());

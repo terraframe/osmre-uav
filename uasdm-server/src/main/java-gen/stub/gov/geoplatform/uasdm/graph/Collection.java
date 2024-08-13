@@ -68,6 +68,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -106,6 +107,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public Collection()
   {
     super();
+  }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+    new GenerateMetadataCommand(this, null, ((CollectionIF) this).getMetadata().orElseThrow()).doIt();
   }
 
   @Override

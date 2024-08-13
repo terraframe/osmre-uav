@@ -148,4 +148,6 @@ public interface UasComponentIF extends ComponentWithAttributes
   public <T extends ProductIF> List<T> getProducts();
 
   public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes();
+
+  public void regenerateMetadata();
 }

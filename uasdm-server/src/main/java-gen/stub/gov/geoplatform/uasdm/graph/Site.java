@@ -44,11 +44,13 @@ import com.runwaysdk.system.metadata.MdVertex;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.AttributeOrganizationType;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
@@ -71,6 +73,11 @@ public class Site extends SiteBase implements SiteIF
   public Site()
   {
     super();
+  }
+  
+  @Override
+  public void regenerateMetadata()
+  {
   }
 
   @Override

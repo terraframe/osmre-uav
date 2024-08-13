@@ -33,6 +33,12 @@ public class Project extends ProjectBase implements ProjectIF
   {
     super();
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public Mission createDefaultChild()

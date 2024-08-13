@@ -59,6 +59,11 @@ public class Imagery extends ImageryBase implements ImageryIF
   {
     // Balk
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+  }
 
   @Override
   public UasComponent createDefaultChild()

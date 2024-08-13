@@ -267,15 +267,6 @@ public class ProjectManagementController
     return new RestResponse();
   }
 
-  @Endpoint(url = "submit-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF submitMetadata(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "json") String json)
-  {
-    // TODO : This needs to work for more than just collections
-    this.service.submitMetadata(request.getSessionId(), collectionId, json);
-
-    return new RestResponse();
-  }
-
   @Endpoint(url = "edit", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF edit(ClientRequestIF request, @RequestParamter(name = "id") String id)
   {

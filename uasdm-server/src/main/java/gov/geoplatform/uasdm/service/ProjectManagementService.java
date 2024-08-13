@@ -69,6 +69,7 @@ import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.ArtifactQuery;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
@@ -824,7 +825,7 @@ public class ProjectManagementService
       ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.AREACOVERED);
       ImageryWorkflowTaskIF.setStringValue(selection, component, Collection.WEATHERCONDITIONS);
       
-      component.apply();
+      ((Collection)component).apply(false);
     }
 
     if (metadata != null) {
@@ -851,18 +852,13 @@ public class ProjectManagementService
       ImageryWorkflowTaskIF.setStringValue(selection, metadata, CollectionMetadata.WEATHERCONDITIONS);
       
       metadata.apply();
+      
+      if (product != null) {
+        new GenerateMetadataCommand(component, (Product) product, metadata).doIt();
+      } else {
+        component.regenerateMetadata();
+      }
     }
-
-  }
-
-  @Request(RequestType.SESSION)
-  public void submitMetadata(String sessionId, String collectionId, String json)
-  {
-    CollectionIF collection = ComponentFacade.getCollection(collectionId);
-
-    FlightMetadata metadata = FlightMetadata.parse(collection, new JSONObject(json));
-
-    new MetadataXMLGenerator().generateAndUpload(collection, metadata, collection.getMetadata().orElseThrow());
   }
 
   public String getObjectsPresigned(String sessionId, String id, String key, Long pageNumber, Long pageSize)
@@ -1340,10 +1336,10 @@ public class ProjectManagementService
   @Transaction
   private ProductIF createStandaloneProductGroupInTrans(JSONObject json, UasComponentIF component)
   {
-    ProductIF product = Product.createIfNotExistOrThrow(component, json.getString("productGroupName"));
-    ((Product)product).setPrimary(true);
+    Product product = (Product) Product.createIfNotExistOrThrow(component, json.getString("productGroupName"));
+    product.setPrimary(true);
 
-    ImageryWorkflowTaskIF.createMetadata(json.getJSONObject("metadata"), component, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
+    ImageryWorkflowTaskIF.createMetadata(json.getJSONObject("metadata"), component, product, (VertexObject) product, EdgeType.PRODUCT_HAS_METADATA);
     return product;
   }
 

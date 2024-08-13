@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collector;
@@ -36,7 +37,6 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
-import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
@@ -69,7 +69,17 @@ public class Platform extends PlatformBase implements JSONSerializable
     if (!isNew)
     {
       this.getReferencingMetadata().forEach(metadata -> {
-        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
+        Optional<Collection> col = metadata.getCollection();
+        
+        if (col.isPresent()) {
+          new GenerateMetadataCommand(col.get(), null, metadata).doIt();
+        } else {
+          List<Product> prods = metadata.getProducts();
+          
+          if (prods.size() > 0) {
+            new GenerateMetadataCommand(prods.get(0).getComponent(), prods.get(0), metadata).doIt();
+          }
+        }
       });
 
       CollectionReportFacade.update(this).doIt();

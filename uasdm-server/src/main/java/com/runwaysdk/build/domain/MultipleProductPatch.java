@@ -118,7 +118,7 @@ public class MultipleProductPatch implements Runnable
 
     // Regenerate the component XML ??
     if (component instanceof CollectionIF) {
-      new GenerateMetadataCommand(component, ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
+      new GenerateMetadataCommand(component, null, ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
     }
 
     logger.error("Migration finished for product [" + component.getS3location() + "]");

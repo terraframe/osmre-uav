@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collector;
@@ -69,15 +70,25 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     if (!isNew)
     {
-      this.getReferencingMetdata().forEach(meta -> {
-        new GenerateMetadataCommand(meta.getProduct().getComponent(), meta).doIt();
+      this.getReferencingMetadata().forEach(metadata -> {
+        Optional<Collection> col = metadata.getCollection();
+        
+        if (col.isPresent()) {
+          new GenerateMetadataCommand(col.get(), null, metadata).doIt();
+        } else {
+          List<Product> prods = metadata.getProducts();
+          
+          if (prods.size() > 0) {
+            new GenerateMetadataCommand(prods.get(0).getComponent(), prods.get(0), metadata).doIt();
+          }
+        }
       });
 
       CollectionReportFacade.update(this).doIt();
     }
   }
 
-  public List<CollectionMetadata> getReferencingMetdata()
+  public List<CollectionMetadata> getReferencingMetadata()
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);

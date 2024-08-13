@@ -173,7 +173,7 @@ public class ODMZipPostProcessor
 
     IndexService.createStacItems(product);
 
-    new GenerateMetadataCommand(this.collection, this.collection.getMetadata().orElseThrow()).doIt();
+    new GenerateMetadataCommand(this.collection, null, this.collection.getMetadata().orElseThrow()).doIt();
 
     return this.product;
   }

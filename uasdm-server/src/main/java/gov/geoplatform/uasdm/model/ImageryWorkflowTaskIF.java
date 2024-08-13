@@ -35,6 +35,7 @@ import gov.geoplatform.uasdm.bus.MissingUploadMessage;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Mission;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.RequestParser;
@@ -172,7 +173,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
           // Upload the metadata file
           if (child instanceof CollectionIF)
           {
-            createMetadata(selection, child, (VertexObject) child, EdgeType.COLLECTION_HAS_METADATA);
+            createMetadata(selection, child, null, (VertexObject) child, EdgeType.COLLECTION_HAS_METADATA);
 
             MissingUploadMessage message = new MissingUploadMessage();
             message.setComponent(child.getOid());
@@ -192,7 +193,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     return component;
   }
 
-  public static CollectionMetadata createMetadata(JSONObject json, UasComponentIF component, VertexObject vertexHasMetadata, String vertexHasMetadataEdge)
+  public static CollectionMetadata createMetadata(JSONObject json, UasComponentIF component, Product product, VertexObject vertexHasMetadata, String vertexHasMetadataEdge)
   {
     CollectionMetadata metadata = new CollectionMetadata();
 
@@ -229,7 +230,7 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     metadata.apply();
     ((VertexObject) vertexHasMetadata).addChild(metadata, vertexHasMetadataEdge).apply();
     
-    new MetadataXMLGenerator().generateAndUpload(component, metadata);
+    new MetadataXMLGenerator().generateAndUpload(component, product, metadata);
     
     return metadata;
   }

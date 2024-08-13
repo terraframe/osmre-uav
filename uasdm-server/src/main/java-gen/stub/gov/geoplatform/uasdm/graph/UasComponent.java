@@ -62,6 +62,7 @@ import com.runwaysdk.system.metadata.MdBusiness;
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
@@ -134,6 +135,18 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return this.createDefaultChild();
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+    List<ComponentProductDTO> derivedProducts = this.getDerivedProducts(null, null);
+    
+    derivedProducts.forEach(view -> {
+      view.getProducts().forEach(product -> {
+        new GenerateMetadataCommand(view.getComponent(), (Product) product, product.getMetadata().orElseThrow()).doIt();
+      });
+    });
+  }
 
   /**
    * @return The name of the solr field for the components id.
@@ -155,7 +168,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     String ending = "";
     if (!folderOrFilename.contains(".")) ending = "/";
     
-    if (folderOrFilename.equals(ImageryComponent.RAW) || product == null) {
+    if (product == null) {
       return this.getS3location() + folderOrFilename + ending;
     }
 
@@ -276,13 +289,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (!isNew)
     {
-      List<ComponentProductDTO> derivedProducts = null;
-      
       if (needsUpdate || isNameModified)
       {
         new IndexUpdateDocumentCommand(this, isNameModified).doIt();
         
-        derivedProducts = this.getDerivedProducts(null, null);
+        List<ComponentProductDTO> derivedProducts = this.getDerivedProducts(null, null);
 
         // Re-index all of the derived products below this component
         derivedProducts.forEach(view -> {
@@ -292,21 +303,15 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
       // Site data is not included in the XML metadata spec and as
       // such we do not need to update when there is a change.
-      if (regenerateMetadata && ! ( ( this instanceof SiteIF ) ))
+      if (regenerateMetadata)
       {
-        derivedProducts = (derivedProducts == null) ? this.getDerivedProducts(null, null) : derivedProducts;
-        
-        derivedProducts.forEach(view -> {
-          view.getProducts().forEach(product -> {
-            new GenerateMetadataCommand(view.getComponent(), product.getMetadata().orElseThrow()).doIt();
-          });
-        });
+        this.regenerateMetadata();
       }
 
       CollectionReportFacade.update(this).doIt();
     }
   }
-
+  
   @Override
   @Transaction
   public void apply()
@@ -559,7 +564,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     if (updateMetadata)
     {
-      new GenerateMetadataCommand(product.getComponent(), product.getMetadata().orElseThrow()).doIt();
+      new GenerateMetadataCommand(product.getComponent(), (Product) product, product.getMetadata().orElseThrow()).doIt();
     }
   }
 

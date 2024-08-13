@@ -20,19 +20,18 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.system.metadata.MdBusiness;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Imagery;
+import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProjectIF;
-import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 
 public class Project extends ProjectBase implements ProjectIF, ImageryComponent
 {
@@ -46,7 +45,7 @@ public class Project extends ProjectBase implements ProjectIF, ImageryComponent
   {
     super();
   }
-
+  
   @Override
   public Mission createDefaultChild()
   {

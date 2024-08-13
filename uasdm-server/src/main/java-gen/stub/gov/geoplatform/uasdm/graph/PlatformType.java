@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +54,17 @@ public class PlatformType extends PlatformTypeBase implements Classification
     if (!isNew)
     {
       this.getReferencingMetadata().forEach(metadata -> {
-        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
+        Optional<Collection> col = metadata.getCollection();
+        
+        if (col.isPresent()) {
+          new GenerateMetadataCommand(col.get(), null, metadata).doIt();
+        } else {
+          List<Product> prods = metadata.getProducts();
+          
+          if (prods.size() > 0) {
+            new GenerateMetadataCommand(prods.get(0).getComponent(), prods.get(0), metadata).doIt();
+          }
+        }
       });
     }
   }

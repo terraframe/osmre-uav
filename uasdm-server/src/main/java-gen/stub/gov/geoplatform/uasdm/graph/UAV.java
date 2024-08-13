@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collector;
 
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
@@ -63,7 +64,17 @@ public class UAV extends UAVBase implements JSONSerializable
     if (!isNew)
     {
       this.getReferencingMetadata().forEach(metadata -> {
-        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
+        Optional<Collection> col = metadata.getCollection();
+        
+        if (col.isPresent()) {
+          new GenerateMetadataCommand(col.get(), null, metadata).doIt();
+        } else {
+          List<Product> prods = metadata.getProducts();
+          
+          if (prods.size() > 0) {
+            new GenerateMetadataCommand(prods.get(0).getComponent(), prods.get(0), metadata).doIt();
+          }
+        }
       });
 
       CollectionReportFacade.update(this).doIt();

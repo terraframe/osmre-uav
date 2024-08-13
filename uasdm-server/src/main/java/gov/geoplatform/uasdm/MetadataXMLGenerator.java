@@ -45,9 +45,9 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.PlatformType;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -95,7 +95,7 @@ public class MetadataXMLGenerator
 
   }
 
-  public FlightMetadata generate(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata colMetadata)
+  public FlightMetadata generate(UasComponentIF component, Product product, gov.geoplatform.uasdm.graph.CollectionMetadata colMetadata)
   {
     FlightMetadata metadata = new FlightMetadata();
 
@@ -115,9 +115,13 @@ public class MetadataXMLGenerator
       metadata.getProject().populate(component);
     }
     
-    component.getProducts().forEach(product -> {
+    if (product == null) {
+      component.getProducts().forEach(p -> {
+        metadata.addProduct(new ProductMetadata().populate(p, component));
+      });
+    } else {
       metadata.addProduct(new ProductMetadata().populate(product, component));
-    });
+    }
     
     UAV uav = colMetadata.getUav();
     Platform platform = uav.getPlatform();
@@ -173,7 +177,7 @@ public class MetadataXMLGenerator
     return metadata;
   }
 
-  public Document generate(UasComponentIF component, FlightMetadata metadata)
+  public Document generate(UasComponentIF component, Product product, FlightMetadata metadata)
   {
     Document dom = this.builder.newDocument();
     dom.setStrictErrorChecking(false);
@@ -587,23 +591,25 @@ public class MetadataXMLGenerator
   }
 
   @Transaction
-  public void generateAndUpload(UasComponentIF component, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
+  public void generateAndUpload(UasComponentIF component, Product product, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
   {
-    FlightMetadata metadata = this.generate(component, colMeta);
+    FlightMetadata metadata = this.generate(component, product, colMeta);
 
-    this.generateAndUpload(component, metadata, colMeta);
+    this.generateAndUpload(component, product, metadata, colMeta);
   }
 
   @Transaction
-  public void generateAndUpload(UasComponentIF component, FlightMetadata metadata, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
+  public void generateAndUpload(UasComponentIF component, Product product, FlightMetadata metadata, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta)
   {
-    Document document = generate(component, metadata);
+    Document document = generate(component, product, metadata);
 
-    this.upload(component, document, colMeta);
+    this.upload(component, product, document, colMeta);
   }
 
-  private void upload(UasComponentIF component, Document document, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta) throws TransformerFactoryConfigurationError
+  private void upload(UasComponentIF component, Product product, Document document, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta) throws TransformerFactoryConfigurationError
   {
+    if (!(component instanceof CollectionIF) && product == null) throw new ProgrammingErrorException("Product cannot be null for non-collection components.");
+    
     File temp = null;
 
     try
@@ -612,13 +618,7 @@ public class MetadataXMLGenerator
       temp = createTempFile(document);
 
       String fileName = component.getFolderName() + FILENAME;
-      
-      String key;
-      if (component instanceof CollectionIF) {
-        key = component.getS3location() + Collection.RAW + "/" + component.getFolderName() + FILENAME;
-      } else {
-        key = component.getS3location() + "/" + component.getFolderName() + FILENAME;
-      }
+      String key = component.getS3location(component instanceof CollectionIF ? null : product, ImageryComponent.RAW) + fileName;
       
       Util.uploadFileToS3(temp, key, null);
 

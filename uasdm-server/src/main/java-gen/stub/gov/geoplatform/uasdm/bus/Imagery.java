@@ -49,6 +49,11 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
   {
     super();
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+  }
 
   /**
    * Returns null, as a Imagery cannot have a child.

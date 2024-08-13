@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,14 +60,24 @@ public class WaveLength extends WaveLengthBase implements Classification
 
     if (!isNew)
     {
-      this.getCollections().forEach(metadata -> {
-        new GenerateMetadataCommand(metadata.getProduct().getComponent(), metadata).doIt();
+      this.getReferencingMetadata().forEach(metadata -> {
+        Optional<Collection> col = metadata.getCollection();
+        
+        if (col.isPresent()) {
+          new GenerateMetadataCommand(col.get(), null, metadata).doIt();
+        } else {
+          List<Product> prods = metadata.getProducts();
+          
+          if (prods.size() > 0) {
+            new GenerateMetadataCommand(prods.get(0).getComponent(), prods.get(0), metadata).doIt();
+          }
+        }
       });
     }
   }
   
 
-  public List<CollectionMetadata> getCollections()
+  public List<CollectionMetadata> getReferencingMetadata()
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(CollectionMetadata.CLASS);
     MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(CollectionMetadata.SENSOR);

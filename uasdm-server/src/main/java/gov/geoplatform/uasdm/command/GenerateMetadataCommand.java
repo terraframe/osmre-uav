@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import com.runwaysdk.dataaccess.Command;
 
 import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -32,11 +33,14 @@ public class GenerateMetadataCommand implements Command
 
   private UasComponentIF        component;
   
+  private Product product;
+  
   private CollectionMetadata metadata;
 
-  public GenerateMetadataCommand(UasComponentIF component, CollectionMetadata metadata)
+  public GenerateMetadataCommand(UasComponentIF component, Product product, CollectionMetadata metadata)
   {
     this.component = component;
+    this.product = product;
     this.metadata = metadata;
   }
 
@@ -45,7 +49,7 @@ public class GenerateMetadataCommand implements Command
   {
     try
     {
-      new MetadataXMLGenerator().generateAndUpload(this.component, this.metadata);
+      new MetadataXMLGenerator().generateAndUpload(this.component, this.product, this.metadata);
     }
     catch (RuntimeException e)
     {
@@ -62,9 +66,10 @@ public class GenerateMetadataCommand implements Command
     try
     {
       UasComponentIF original = ComponentFacade.getCollection(this.component.getOid());
+      Product origProduct = this.product == null ? null : Product.get(this.product.getOid());
       CollectionMetadata origMeta = CollectionMetadata.get(this.metadata.getOid());
 
-      new MetadataXMLGenerator().generateAndUpload(original, origMeta);
+      new MetadataXMLGenerator().generateAndUpload(original, origProduct, origMeta);
     }
     catch (RuntimeException e)
     {

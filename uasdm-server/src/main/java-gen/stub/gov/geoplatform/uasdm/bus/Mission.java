@@ -37,6 +37,11 @@ public class Mission extends MissionBase implements MissionIF
   {
     super();
   }
+  
+  @Override
+  public void regenerateMetadata()
+  {
+  }
 
   @Override
   public Collection createDefaultChild()
