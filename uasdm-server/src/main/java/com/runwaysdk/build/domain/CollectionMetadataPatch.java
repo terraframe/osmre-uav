@@ -89,7 +89,7 @@ public class CollectionMetadataPatch implements Runnable
     metadata.setPercentSideLap(collection.getPercentSideLap());
     metadata.setSensor(collection.getSensor());
     metadata.setSouthBound(collection.getSouthBound());
-    metadata.setUav(UAV.get(collection.getUav()));
+    metadata.setUav(collection.getUav());
     metadata.setWeatherConditions(collection.getWeatherConditions());
     metadata.setWestBound(collection.getWestBound());
     metadata.applyWithCollection(collection);
