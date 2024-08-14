@@ -88,6 +88,8 @@ public class MultipleProductPatch implements Runnable
   {
     // Create the new Product
     UasComponent component = sourceProduct.getComponent();
+    
+    if (! (component instanceof CollectionIF)) return;
 
     Product targetProduct = (Product) component.createProductIfNotExist(System.currentTimeMillis() + "");
     targetProduct.setPrimary(component.getPrimaryProduct().isEmpty());
