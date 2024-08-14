@@ -260,7 +260,7 @@ export class TasksComponent implements OnInit {
   }
 
   isVisible(task: TaskGroup) {
-    if (task.productId != null) {
+    if (task.productId != null && task.productId != "") {
       return this.visible[task.productId];
     } else {
       return this.visible[task.collectionId];
