@@ -268,7 +268,7 @@ export class TasksComponent implements OnInit {
   }
 
   setVisible(task: TaskGroup, b: boolean) {
-    if (task.productId != null) {
+    if (task.productId != null && task.productId != "") {
       this.visible[task.productId] = b;
     } else {
       this.visible[task.collectionId] = b;
