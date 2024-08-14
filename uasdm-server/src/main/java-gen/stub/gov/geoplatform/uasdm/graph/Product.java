@@ -192,20 +192,18 @@ public class Product extends ProductBase implements ProductIF
 
     new IndexDeleteStacCommand(this).doIt();
     
-    if (this.isPrimary()) {
-      if (component instanceof CollectionIF) {
-        CollectionIF col = ((CollectionIF) component);
-        
-        List<ProductIF> prods = col.getProducts();
-        if (prods.size() > 0) {
-          Product prod = (Product) prods.get(0);
-          prod.setPrimary(true);
-          prod.apply();
-        }
-      } else {
-        this.getMetadata().ifPresent(meta -> {
-          meta.delete();
-        });
+    if (!(component instanceof CollectionIF)) {
+      this.getMetadata().ifPresent(meta -> {
+        meta.delete();
+      });
+    } else if (this.isPrimary() && component instanceof CollectionIF) {
+      CollectionIF col = ((CollectionIF) component);
+      
+      List<ProductIF> prods = col.getProducts();
+      if (prods.size() > 0) {
+        Product prod = (Product) prods.get(0);
+        prod.setPrimary(true);
+        prod.apply();
       }
     }
 
@@ -284,7 +282,7 @@ public class Product extends ProductBase implements ProductIF
       product.setPublished(false);
       
       if (!(uasComponent instanceof CollectionIF)) {
-        product.setPrimary(true);
+        product.setPrimary(false);
       }
     }
 
@@ -306,7 +304,7 @@ public class Product extends ProductBase implements ProductIF
       product.setPublished(false);
       
       if (!(uasComponent instanceof CollectionIF)) {
-        product.setPrimary(true);
+        product.setPrimary(false);
       }
     } else {
       throw new DuplicateDataException("Product with name [" + productName + "] is already associated with the provided component. Choose a different product name, or a different associated component.", MdClassDAO.getMdClassDAO(Product.CLASS), Arrays.asList(Product.getProductNameMd()), Arrays.asList(productName));
