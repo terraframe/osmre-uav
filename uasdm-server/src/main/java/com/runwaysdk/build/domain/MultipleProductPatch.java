@@ -156,6 +156,8 @@ public class MultipleProductPatch implements Runnable
       {
         String sourceKey = sourceRoot + folder;
         String targetKey = component.getS3location(targetProduct, folder);
+        
+        if (targetKey.endsWith("/")) targetKey = targetKey.substring(0, targetKey.length() - 1);
 
         logger.error("Copying source folder [" + sourceKey + "] to target folder [" + targetKey + "]");
 
