@@ -55,7 +55,7 @@ public class ComponentProductDTO
   
   public ProductIF getPrimaryOrAny()
   {
-    return primary == null ? primary : products.stream().findAny().get();
+    return primary != null ? primary : products.stream().findAny().get();
   }
 
   public Collection<ProductIF> getProducts()
