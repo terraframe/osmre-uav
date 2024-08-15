@@ -297,7 +297,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
         // Re-index all of the derived products below this component
         derivedProducts.forEach(view -> {
-          view.getProducts().forEach(prod -> new ReIndexStacItemCommand(view.getPrimary()).doIt());
+          view.getProducts().forEach(prod -> new ReIndexStacItemCommand(view.getPrimaryOrAny()).doIt());
         });
       }
 
