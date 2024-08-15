@@ -564,7 +564,7 @@ public class FlightMetadata
 
     public ProductMetadata populate(ProductIF product, UasComponentIF component)
     {
-      this.productName = product.getProductName();
+      this.productName = product.getProductName() == null ? "" : product.getProductName();
 
       // Get the processing run
       List<DocumentIF> documents = product.getMappableDocuments();

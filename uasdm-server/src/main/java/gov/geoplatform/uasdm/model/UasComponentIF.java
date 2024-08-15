@@ -133,7 +133,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public static boolean isValidName(String name)
   {
-    return !Pattern.compile(DISALLOWED_FILENAME_REGEX).matcher(name).find();
+    return !Pattern.compile(DISALLOWED_FILENAME_REGEX).matcher(name == null ? "" : name).find();
   }
 
   public static boolean isValid(char c)

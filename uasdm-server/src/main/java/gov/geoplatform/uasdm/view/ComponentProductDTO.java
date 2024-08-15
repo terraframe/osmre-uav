@@ -26,10 +26,10 @@ public class ComponentProductDTO
     this.products = new TreeSet<ProductIF>((ProductIF p1, ProductIF p2) -> {
       if (p1.isPrimary() == p2.isPrimary())
       {
-        return p1.getProductName().compareTo(p2.getProductName());
+         return (p1.getProductName() == null ? "" : p1.getProductName()).compareTo(p2.getProductName() == null ? "" : p2.getProductName());
       }
 
-      return Boolean.compare(p2.isPrimary(), p1.isPrimary());
+      return Boolean.compare(Boolean.TRUE.equals(p2.isPrimary()), Boolean.TRUE.equals(p1.isPrimary()));
     });
   }
 

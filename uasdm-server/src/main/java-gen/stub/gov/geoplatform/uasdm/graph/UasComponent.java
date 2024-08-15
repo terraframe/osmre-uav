@@ -497,7 +497,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       Artifact[] artifacts = getArtifactObjects(product);
 
       JSONObject map = new JSONObject();
-      map.put("productName", product.getProductName());
+      map.put("productName", product.getProductName() == null ? "" : product.getProductName());
       map.put("primary", product.isPrimary());
 
       for (Artifact artifact : artifacts)

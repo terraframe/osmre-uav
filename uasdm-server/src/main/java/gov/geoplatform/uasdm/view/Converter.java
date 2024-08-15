@@ -435,7 +435,7 @@ public abstract class Converter<T extends UasComponentIF>
     view.setComponents(list);
     view.setId(product.getOid());
     view.setName(product.getName());
-    view.setProductName(product.getProductName());
+    view.setProductName(product.getProductName() == null ? "" : product.getProductName());
     view.setPublished(product.isPublished());
     view.setLocked(product.isLocked());
     view.setPrimary(product.isPrimary());
