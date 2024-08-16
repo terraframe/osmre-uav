@@ -103,34 +103,46 @@ public class MetadataXMLGenerator
 
     metadata.setName(colMetadata.getPocName());
     metadata.setEmail(colMetadata.getPocEmail());
-    
-    if (component instanceof CollectionIF) {
+
+    if (component instanceof CollectionIF)
+    {
       metadata.getProject().populate(ancestors.get(1));
       metadata.getMission().populate(ancestors.get(0));
       metadata.getCollection().populate(component);
-    } else if (component instanceof MissionIF) {
+    }
+    else if (component instanceof MissionIF)
+    {
       metadata.getProject().populate(ancestors.get(0));
       metadata.getMission().populate(component);
-    } else if (component instanceof ProjectIF) {
+    }
+    else if (component instanceof ProjectIF)
+    {
       metadata.getProject().populate(component);
     }
-    
-    if (product == null) {
+
+    if (product == null)
+    {
       component.getProducts().forEach(p -> {
         metadata.addProduct(new ProductMetadata().populate(p, component));
       });
-    } else {
+    }
+    else
+    {
       metadata.addProduct(new ProductMetadata().populate(product, component));
     }
-    
-    UAV uav = colMetadata.getUav();
-    Platform platform = uav.getPlatform();
-    PlatformType platformType = platform.getPlatformType();
 
-    metadata.getPlatform().setName(platform.getName());
-    metadata.getPlatform().setType(platformType.getName());
-    metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
-    metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
+    UAV uav = colMetadata.getUav();
+
+    if (uav != null)
+    {
+      Platform platform = uav.getPlatform();
+      PlatformType platformType = platform.getPlatformType();
+
+      metadata.getPlatform().setName(platform.getName());
+      metadata.getPlatform().setType(platformType.getName());
+      metadata.getPlatform().setSerialNumber(uav.getSerialNumber());
+      metadata.getPlatform().setFaaIdNumber(uav.getFaaNumber());
+    }
 
     Sensor sensor = colMetadata.getSensor();
 
@@ -608,8 +620,9 @@ public class MetadataXMLGenerator
 
   private void upload(UasComponentIF component, Product product, Document document, gov.geoplatform.uasdm.graph.CollectionMetadata colMeta) throws TransformerFactoryConfigurationError
   {
-    if (!(component instanceof CollectionIF) && product == null) throw new ProgrammingErrorException("Product cannot be null for non-collection components.");
-    
+    if (! ( component instanceof CollectionIF ) && product == null)
+      throw new ProgrammingErrorException("Product cannot be null for non-collection components.");
+
     File temp = null;
 
     try
@@ -619,7 +632,7 @@ public class MetadataXMLGenerator
 
       String fileName = component.getFolderName() + FILENAME;
       String key = component.getS3location(component instanceof CollectionIF ? null : product, ImageryComponent.RAW) + fileName;
-      
+
       Util.uploadFileToS3(temp, key, null);
 
       DocumentIF.Metadata meta = new DocumentIF.Metadata();
@@ -629,16 +642,24 @@ public class MetadataXMLGenerator
       IndexService.updateOrCreateMetadataDocument(component.getAncestors(), component, key, fileName, temp);
 
       // Remove any messages
-      if (component instanceof CollectionIF) {
+      if (component instanceof CollectionIF)
+      {
         CollectionIF col = (CollectionIF) component;
-        
+
         MissingMetadataMessage.remove((CollectionIF) component);
-        
+
         col.appLock();
         col.setMetadataUploaded(true);
         col.appLock();
-  
-        CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt(); // TODO : And for things other than collection?
+
+        CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt(); // TODO
+                                                                                   // :
+                                                                                   // And
+                                                                                   // for
+                                                                                   // things
+                                                                                   // other
+                                                                                   // than
+                                                                                   // collection?
       }
     }
     finally
