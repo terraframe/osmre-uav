@@ -119,9 +119,10 @@ public class MultipleProductPatch implements Runnable
     sourceProduct.delete();
 
     // Regenerate the component XML ??
-    if (component instanceof CollectionIF) {
-      new GenerateMetadataCommand(component, null, ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
-    }
+    // This will happen as part of the CollectionMetadataPatch
+//    if (component instanceof CollectionIF) {
+//      new GenerateMetadataCommand(component, null, ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
+//    }
 
     logger.error("Migration finished for product [" + component.getS3location() + "]");
   }

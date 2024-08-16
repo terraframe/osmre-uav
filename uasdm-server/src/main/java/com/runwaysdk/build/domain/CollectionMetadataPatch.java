@@ -97,6 +97,8 @@ public class CollectionMetadataPatch implements Runnable
     collection.getProducts().forEach(product -> {
       product.addChild(metadata, EdgeType.PRODUCT_HAS_METADATA).apply();
     });
+    
+    collection.regenerateMetadata();
 
     logger.error("Metadata created for collection [" + collection.getS3location() + "]");
   }
