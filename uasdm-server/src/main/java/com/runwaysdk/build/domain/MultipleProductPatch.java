@@ -88,19 +88,27 @@ public class MultipleProductPatch implements Runnable
   {
     // Create the new Product
     UasComponent component = sourceProduct.getComponent();
-    
-    if (! (component instanceof CollectionIF)) return;
+
+    if (! ( component instanceof CollectionIF ))
+      return;
 
     Product targetProduct = (Product) component.createProductIfNotExist(System.currentTimeMillis() + "");
     targetProduct.setPrimary(component.getPrimaryProduct().isEmpty());
     targetProduct.setBoundingBox(sourceProduct.getBoundingBoxInternal());
     targetProduct.apply();
 
+    logger.error("");
+
     sourceProduct.getGeneratedFromDocuments().forEach(doc -> {
+
+      logger.error("Adding document_generated_product0 edge between document [" + doc.getS3location() + "] and the target product");
+
       doc.addGeneratedProduct(targetProduct);
     });
 
     copyGeneratedDocuments(sourceProduct, component, targetProduct);
+
+    logger.error("");
 
     if (sourceProduct.isPublished() && !component.isPrivate())
     {
@@ -120,9 +128,10 @@ public class MultipleProductPatch implements Runnable
 
     // Regenerate the component XML ??
     // This will happen as part of the CollectionMetadataPatch
-//    if (component instanceof CollectionIF) {
-//      new GenerateMetadataCommand(component, null, ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
-//    }
+    // if (component instanceof CollectionIF) {
+    // new GenerateMetadataCommand(component, null,
+    // ((CollectionIF)component).getMetadata().orElseThrow()).doIt();
+    // }
 
     logger.error("Migration finished for product [" + component.getS3location() + "]");
   }
@@ -159,8 +168,9 @@ public class MultipleProductPatch implements Runnable
       {
         String sourceKey = sourceRoot + folder;
         String targetKey = component.getS3location(targetProduct, folder);
-        
-        if (targetKey.endsWith("/")) targetKey = targetKey.substring(0, targetKey.length() - 1);
+
+        if (targetKey.endsWith("/"))
+          targetKey = targetKey.substring(0, targetKey.length() - 1);
 
         logger.error("Copying source folder [" + sourceKey + "] to target folder [" + targetKey + "]");
 
@@ -208,6 +218,13 @@ public class MultipleProductPatch implements Runnable
 
       return (DocumentIF) document;
     }).collect(Collectors.toList());
+
+    logger.error("");
+    
+    for (DocumentIF doc : targetDocuments)
+    {
+      logger.error("Adding product_has_document0 edge between document [" + doc.getS3location() + "] and the target product");
+    }
 
     targetProduct.addDocuments(targetDocuments);
   }
