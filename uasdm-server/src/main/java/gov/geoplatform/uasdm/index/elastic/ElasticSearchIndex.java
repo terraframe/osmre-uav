@@ -149,7 +149,14 @@ public class ElasticSearchIndex implements Index
           catch (ElasticsearchException e)
           {
             // Index doesn't exist, create it
-            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v)).properties("links", p -> p.dynamicProperty(v -> v.dynamic(DynamicMapping.False))).properties("assets", p -> p.dynamicProperty(v -> v.dynamic(DynamicMapping.False)))));
+            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m
+                .properties("geometry", p -> p.geoShape(v -> v))
+                .properties("properties.datetime", p -> p.date(v -> v))
+                .properties("properties.start_datetime", p -> p.date(v -> v))
+                .properties("properties.end_datetime", p -> p.date(v -> v))
+                .properties("properties.updated", p -> p.date(v -> v))
+                .properties("properties.created", p -> p.date(v -> v))
+                .properties("assets", p -> p.object(v -> v.enabled(false)))));
           }
 
           try
