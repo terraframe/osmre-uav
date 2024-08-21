@@ -62,6 +62,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
@@ -936,7 +937,12 @@ public class ElasticSearchIndex implements Index
     try
     {
       ElasticsearchClient client = createClient();
-      client.indices().delete(new DeleteIndexRequest.Builder().index(STAC_INDEX_NAME).build());
+      DeleteIndexResponse response = client.indices().delete(new DeleteIndexRequest.Builder().index(STAC_INDEX_NAME).build());
+
+      if (!response.acknowledged())
+      {
+        throw new RuntimeException("Index failed to delete");
+      }
     }
     catch (ElasticsearchException e)
     {
