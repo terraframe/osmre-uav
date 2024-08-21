@@ -24,6 +24,8 @@ fi
 export ORIENTDB_CONTAINER_NAME=idm-orientdb
 export ORIENTDB_ROOT_PASS=root
 
+sudo rm -rf /data/orientdb/databases
+
 # Requires AWS CLI : pip3 install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
@@ -34,4 +36,4 @@ set -e
 docker rm -f $(docker ps -a -q --filter="name=$ORIENTDB_CONTAINER_NAME") > /dev/null || true
 
 # Pull & Run the orientdb container
-docker run -d -p 2424:2424 -p 2480:2480 -e ORIENTDB_ROOT_PASSWORD=$ORIENTDB_ROOT_PASS -e ORIENTDB_OPTS_MEMORY="-Xms512M -Xmx4G -Dnetwork.maxConcurrentSessions=2500 -Dnetwork.binary.maxLength=56384" --name $ORIENTDB_CONTAINER_NAME orientdb:3.2
+docker run -d -p 2424:2424 -p 2480:2480 -v /data/orientdb/databases:/orientdb/databases -e ORIENTDB_ROOT_PASSWORD=$ORIENTDB_ROOT_PASS -e ORIENTDB_OPTS_MEMORY="-Xms512M -Xmx4G -Dnetwork.maxConcurrentSessions=2500 -Dnetwork.binary.maxLength=56384" --name $ORIENTDB_CONTAINER_NAME orientdb:3.2.30
