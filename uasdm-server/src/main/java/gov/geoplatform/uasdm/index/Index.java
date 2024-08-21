@@ -66,4 +66,6 @@ public interface Index
   public void deleteDocuments(LabeledPropertyGraphSynchronization synchronization);
   
   public void deleteDocuments(LabeledPropertyGraphTypeVersion version);
+
+  public void deleteStacIndex();
 }

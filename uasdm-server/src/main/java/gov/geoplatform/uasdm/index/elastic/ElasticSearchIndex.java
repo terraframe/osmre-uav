@@ -52,13 +52,16 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
+import co.elastic.clients.elasticsearch._types.mapping.DynamicMapping;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery.Builder;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
@@ -145,7 +148,7 @@ public class ElasticSearchIndex implements Index
           catch (ElasticsearchException e)
           {
             // Index doesn't exist, create it
-            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v))));
+            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v)).properties("links", p -> p.dynamicProperty(v -> v.dynamic(DynamicMapping.False))).properties("assets", p -> p.dynamicProperty(v -> v.dynamic(DynamicMapping.False)))));
           }
 
           try
@@ -920,6 +923,24 @@ public class ElasticSearchIndex implements Index
 
       ElasticsearchClient client = createClient();
       client.deleteByQuery(request);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Override
+  public void deleteStacIndex()
+  {
+    try
+    {
+      ElasticsearchClient client = createClient();
+      client.indices().delete(new DeleteIndexRequest.Builder().index(STAC_INDEX_NAME).build());
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
     }
     catch (IOException e)
     {

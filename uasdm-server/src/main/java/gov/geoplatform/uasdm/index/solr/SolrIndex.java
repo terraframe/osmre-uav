@@ -617,4 +617,9 @@ public class SolrIndex implements Index
 //    // TODO Auto-generated method stub
 //    
 //  }
+  
+  @Override
+  public void deleteStacIndex()
+  {
+  }
 }
