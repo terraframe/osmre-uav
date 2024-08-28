@@ -148,6 +148,7 @@
               <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
                 [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
                 aria-hidden="true"></i>
+              <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px" (click)="handleDelete(node, $event)" title="Delete"></a>
               <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
                 (click)="handleEdit(node, $event)" title="Edit"></a>
 
