@@ -23,10 +23,14 @@
     </div>
 
     <div class="row">
-      <div class="col-md-2"></div>
+    
+      <div class="col-md-2"></div> <!-- Hack alert. There's a column on the left here that we're just ignoring  -->
+      
       <div class="col-md-8">
 
         <div [@fadeInOnEnter] class="form-group">
+          <h2 style="margin-bottom: 20px;" *ngIf="component">Upload to {{component.name}}</h2>
+        
           <div class="row">
             <div class="col-md-8">
               <input autofocus [(ngModel)]="productGroupName" name="productGroupName" type="input" class="form-control"
