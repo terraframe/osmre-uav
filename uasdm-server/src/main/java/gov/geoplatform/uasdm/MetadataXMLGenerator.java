@@ -148,7 +148,6 @@ public class MetadataXMLGenerator
 
     if (sensor != null)
     {
-
       SensorType sensorType = sensor.getSensorType();
 
       List<WaveLength> wavelengths = sensor.getSensorHasWaveLengthChildWaveLengths();
@@ -183,7 +182,23 @@ public class MetadataXMLGenerator
       {
         metadata.getSensor().setFocalLength(sensor.getRealFocalLength().toString());
       }
+    }
 
+    if (component instanceof CollectionIF)
+    {
+      Integer width = ( (CollectionIF) component ).getImageWidth();
+
+      if (width != null && width != 0)
+      {
+        metadata.getSensor().setImageWidth(String.valueOf( ( (CollectionIF) component ).getImageWidth()));
+      }
+
+      Integer height = ( (CollectionIF) component ).getImageHeight();
+
+      if (height != null && height != 0)
+      {
+        metadata.getSensor().setImageHeight(String.valueOf( ( (CollectionIF) component ).getImageHeight()));
+      }
     }
 
     return metadata;
