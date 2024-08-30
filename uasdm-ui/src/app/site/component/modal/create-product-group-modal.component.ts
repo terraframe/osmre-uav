@@ -35,6 +35,7 @@ export class CreateProductGroupModalComponent {
     confirm(): void {
 
         this.service.create(this.entity.id, this.productName).then((product: Product) => {
+            this.entity.hasAllZip = false;
             this.bsModalRef.hide();
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
