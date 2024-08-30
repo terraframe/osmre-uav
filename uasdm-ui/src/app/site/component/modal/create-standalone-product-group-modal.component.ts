@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
@@ -45,6 +45,8 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 	message: string = "";
 
 	disabled: boolean = false;
+	
+	public component;
 	
 	public projectTypes: string[] = projectTypes;
 
@@ -91,6 +93,7 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 
 	init(entities: SiteEntity[]): void {
 		this.parents = entities;
+		this.component = this.parents[this.parents.length - 1];
 	}
 
 	close(): void {
@@ -118,7 +121,7 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 	handleCreate(): void {
 		let payload = {
 			productGroupName: this.productGroupName,
-			component: this.parents[this.parents.length - 1].id,
+			component: this.component.id,
 			metadata: this.metadata
 		};
 
