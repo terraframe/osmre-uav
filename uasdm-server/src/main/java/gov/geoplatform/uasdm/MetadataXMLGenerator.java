@@ -120,7 +120,7 @@ public class MetadataXMLGenerator
       metadata.getProject().populate(component);
     }
 
-    if (product == null)
+    if (component instanceof CollectionIF || product == null)
     {
       component.getProducts().forEach(p -> {
         metadata.addProduct(new ProductMetadata().populate(p, component));
