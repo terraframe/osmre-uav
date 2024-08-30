@@ -187,7 +187,9 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	handleSetPrimary(productName: string): void {
 
-		this.service.setPrimaryProduct(this.entity.id, productName).catch((err: HttpErrorResponse) => {
+		this.service.setPrimaryProduct(this.entity.id, productName).then(() => {
+			this.entity.hasAllZip = false;
+		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
