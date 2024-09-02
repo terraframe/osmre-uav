@@ -277,7 +277,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       SessionIF session = Session.getCurrentSession();
 
       // Session will be null during a patch
-      if (session != null && !session.getUser().getOid().equals(this.getOwnerOid()))
+      if (session != null && ! ( session.userHasRole(RoleConstants.ADMIN) || this.getOwnerOid().equals(session.getUser().getOid()) ))
       {
         GenericException exception = new GenericException();
         exception.setUserMessage("Only the owner may change component visibility");
@@ -633,18 +633,23 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return RemoteFileFacade.getItemCount(key);
   }
-
+  
   public List<UasComponentIF> getAncestors()
+  {
+    return getAncestors(true);
+  }
+
+  public List<UasComponentIF> getAncestors(boolean filterByPermissions)
   {
     List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
 
-    List<UasComponentIF> parents = getParents();
+    List<UasComponentIF> parents = getParents(filterByPermissions);
 
     ancestors.addAll(parents);
 
     for (UasComponentIF parent : parents)
     {
-      ancestors.addAll(parent.getAncestors());
+      ancestors.addAll(parent.getAncestors(filterByPermissions));
     }
 
     return ancestors;
@@ -1098,8 +1103,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     this.addParent((UasComponent) parent, mdEdge).apply();
   }
-
+  
   public List<UasComponentIF> getParents()
+  {
+    return getParents(true);
+  }
+
+  public List<UasComponentIF> getParents(boolean filterByPermissions)
   {
     HashMap<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("oid", this.getOid());
@@ -1117,7 +1127,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     statement.append("  )\n");
     statement.append(")\n");
 
-    addAccessFilter(parameters, statement);
+    if (filterByPermissions)
+      addAccessFilter(parameters, statement);
 
     final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
 

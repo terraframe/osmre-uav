@@ -99,7 +99,7 @@ public class MetadataXMLGenerator
   {
     FlightMetadata metadata = new FlightMetadata();
 
-    List<UasComponentIF> ancestors = component.getAncestors();
+    List<UasComponentIF> ancestors = component.getAncestors(false);
 
     metadata.setName(colMetadata.getPocName());
     metadata.setEmail(colMetadata.getPocEmail());
