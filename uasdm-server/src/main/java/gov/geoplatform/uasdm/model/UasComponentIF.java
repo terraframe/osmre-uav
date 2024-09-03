@@ -100,6 +100,8 @@ public interface UasComponentIF extends ComponentWithAttributes
   public Actor getOwner();
 
   public List<UasComponentIF> getAncestors();
+  
+  public List<UasComponentIF> getAncestors(boolean filterByPermissions);
 
   public RemoteFileObject download(String key);
 

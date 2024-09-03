@@ -324,6 +324,13 @@ public class Site extends SiteBase implements SiteIF
   {
     throw new UnsupportedOperationException();
   }
+  
+  public List<UasComponentIF> getAncestors(boolean filterByPermissions)
+  {
+    List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
+    
+    return ancestors;
+  }
 
   @Override
   protected MdEdgeDAOIF getChildMdEdge()

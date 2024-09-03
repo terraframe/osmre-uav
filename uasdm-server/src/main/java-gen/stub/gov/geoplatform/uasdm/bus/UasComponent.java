@@ -369,8 +369,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return RemoteFileFacade.getItemCount(key);
   }
-
+  
   public List<UasComponentIF> getAncestors()
+  {
+    return getAncestors(true);
+  }
+
+  public List<UasComponentIF> getAncestors(boolean filter)
   {
     List<UasComponentIF> ancestors = new LinkedList<UasComponentIF>();
 

@@ -45,6 +45,7 @@ import com.runwaysdk.session.SessionIF;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 
@@ -349,21 +350,23 @@ public class ChildrenQuery
 
     SessionIF session = Session.getCurrentSession();
 
-    // Add the filter where clause
-    statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
-    statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
-
-    if (session != null)
-    {
-      statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
-      statement.append(" OR in('" + mdEdge.getDBClassName() + "')[user = :owner].size() > 0");
-    }
-
-    parameters.put("isPrivate", false);
-
-    if (session != null)
-    {
-      parameters.put("owner", session.getUser().getOid());
+    if (session == null || ! session.userHasRole(RoleConstants.ADMIN)) {
+      // Add the filter where clause
+      statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+      statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
+  
+      if (session != null)
+      {
+        statement.append(" OR " + ownerAttribute.getColumnName() + " = :owner");
+        statement.append(" OR in('" + mdEdge.getDBClassName() + "')[user = :owner].size() > 0");
+      }
+  
+      parameters.put("isPrivate", false);
+  
+      if (session != null)
+      {
+        parameters.put("owner", session.getUser().getOid());
+      }
     }
 
     statement.append(" ORDER BY " + nameAttribute.getColumnName());
