@@ -1268,6 +1268,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
 
     SessionIF session = Session.getCurrentSession();
+    
+    if (session != null && session.userHasRole(RoleConstants.ADMIN)) return;
 
     statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
     statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
