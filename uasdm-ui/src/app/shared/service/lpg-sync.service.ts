@@ -13,6 +13,7 @@ import { PageResult } from '@shared/model/page';
 import { GenericTableService } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
 import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
+import { LocalizedValue } from '@shared/model/organization';
 
 
 
@@ -240,8 +241,9 @@ export class LPGSyncService implements GenericTableService {
     }
 
     select(oid: string, parentType: string, parentId: string, includeMetadata: boolean,): Promise<{
+        version: string,
         children: any[],
-        metadata?: any,
+        metadata?: any[],
         envelope?: any
     }> {
         let params: HttpParams = new HttpParams();
@@ -254,8 +256,9 @@ export class LPGSyncService implements GenericTableService {
 
         return this.http
             .get<{
+                version: string,
                 children: any[],
-                metadata?: any,
+                metadata?: any[],
                 envelope?: any
             }>(environment.apiUrl + '/api/labeled-property-graph-synchronization/select', { params: params })
             .pipe(finalize(() => {

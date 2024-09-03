@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service.request;
 
@@ -22,6 +22,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
+import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -57,6 +58,7 @@ import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.conversion.LocalizedValueConverter;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
@@ -225,6 +227,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
 
     JsonObject object = new JsonObject();
     object.add("children", children);
+    object.addProperty("version", version.getOid());
 
     String envelope = this.getEnvelope(snapshot, parentId);
 
@@ -235,7 +238,13 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
 
     if (includeMetadata)
     {
-      object.add("metadata", snapshot.toGeoObjectType().toJSON());
+      JsonArray metadata = new JsonArray();
+
+      this.versionService.getTypes(version).stream().filter(t -> !t.getIsAbstract()).forEach(t -> {
+        metadata.add(t.toGeoObjectType().toJSON());
+      });
+
+      object.add("metadata", metadata);
     }
 
     return object;
