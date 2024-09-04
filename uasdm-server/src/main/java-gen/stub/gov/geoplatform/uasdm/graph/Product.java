@@ -1002,6 +1002,38 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
+  
+  /*
+   * 
+   TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
+   * 
+   * 
+   TRAVERSE OUT('component_has_product') FROM (
+    SELECT FROM (
+      SELECT FROM (
+        SELECT FROM (
+          TRAVERSE OUT ('mission_has_collection0') FROM (
+            TRAVERSE OUT ('project_has_mission0') FROM (
+              TRAVERSE OUT('site_has_project') FROM (
+                SELECT FROM (
+                  SELECT FROM (
+                      TRAVERSE OUT('g_0__operational', 'ha_0__graph_541834') FROM #274:1
+                  )
+                  WHERE @class = 'site0' AND organization.code = '100013241'
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+   WHERE (isPrivate = false 
+     OR isPrivate IS NULL 
+     OR owner = 'a2c721a5-a547-4627-bf3a-8f5ae000052a' 
+     OR in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size() > 0 
+   ) 
+  ORDER BY name ASC)
+   */
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
@@ -1014,14 +1046,6 @@ public class Product extends ProductBase implements ProductIF
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();
 
     VertexObject object = service.getObject(version, criteria.getUid());
-
-    /*
-     * SELECT EXPAND(OUT('component_has_product')) FROM ( SELECT FROM ( SELECT
-     * EXPAND(OUT('site_has_project').OUT('project_has_mission0').OUT('
-     * mission_has_collection0')) FROM ( SELECT FROM (traverse
-     * out('g_0__operational', 'ha_0__graph_271118') from #485:20 ) where @class
-     * = 'site0' ) ) ORDER by collectionSensor.realPixelSizeWidth ASC )
-     */
 
     String sortField = criteria.getSortField();
     String sortOrder = criteria.getSortOrder();
@@ -1061,13 +1085,16 @@ public class Product extends ProductBase implements ProductIF
       statement.append("  SELECT FROM (\n");
     }
 
-    statement.append("    SELECT EXPAND(OUT('site_has_project')");
-
-    criteria.getConditions().stream().filter(condition -> condition.isProject()).forEach(condition -> {
-      statement.append("[" + condition.getSQL() + " = :" + condition.getField() + "]");
-    });
-
-    statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
+//    statement.append("    SELECT EXPAND(OUT('site_has_project')");
+//
+//    criteria.getConditions().stream().filter(condition -> condition.isProject()).forEach(condition -> {
+//      statement.append("[" + condition.getSQL() + " = :" + condition.getField() + "]");
+//    });
+//
+//    statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
+    
+    statement.append("TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (");
+    
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
     statement.append("      ) WHERE @class = 'site0' \n");
@@ -1077,7 +1104,7 @@ public class Product extends ProductBase implements ProductIF
     });
 
     statement.append("    )\n");
-    statement.append("  )\n");
+    statement.append("  )))\n");
 
     // Add the filter for permissions
     MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
@@ -1110,7 +1137,7 @@ public class Product extends ProductBase implements ProductIF
     });
     
     criteria.getConditions().stream().filter(condition -> condition.isMetadata()).forEach(condition -> {
-      statement.append(" AND first(out('collection_has_metadata'))." + condition.getSQL() + " = :" + condition.getField() + " \n");
+      statement.append(" AND (first(out('collection_has_metadata'))." + condition.getSQL() + " = :" + condition.getField() + " OR OUT('component_has_product').out('product_has_metadata')." + condition.getSQL() + " = :" + condition.getField() + ") \n");
     });
 
 

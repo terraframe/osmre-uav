@@ -1066,7 +1066,7 @@ public class ProjectManagementService
 
           UasComponent component = UasComponent.get(id);
 
-          return UserAccessEntity.hasAccess(component);
+          return component != null && UserAccessEntity.hasAccess(component);
         }
       }
 
