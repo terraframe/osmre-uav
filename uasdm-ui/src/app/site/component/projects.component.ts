@@ -1010,10 +1010,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleViewStandaloneProduct(id: string): void {
     this.pService.getDetail(id, 1, 20).then(detail => {
       this.bsModalRef = this.modalService.show(ProductModalComponent, {
-          animated: true,
-          backdrop: true,
-          ignoreBackdropClick: true,
-          'class': 'product-info-modal'
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        'class': 'product-info-modal'
       });
       this.bsModalRef.content.init(detail);
     });
@@ -1740,21 +1740,26 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleHierarchyClick(row: any): void {
     if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
       this.clearHierarchyLayers();
+      this.children = [];
 
       const includeMetadata = (this.metadataCache[row.properties.type] == null);
 
       this.syncService.select(this.hierarchy.oid, row.properties.type, row.properties.uid, includeMetadata).then(result => {
 
+        this.hierarchy.version = result.version;
+
         if (result.metadata != null) {
-          const metadata = result.metadata;
 
-          metadata.attributes = metadata.attributes.filter(attribute => {
-            return (attribute.code == 'code'
-              || (!attribute.isDefault
-                && attribute.code != 'uuid'));
-          });
+          result.metadata.forEach(metadata => {
 
-          this.metadataCache[row.properties.type] = result.metadata;
+            metadata.attributes = metadata.attributes.filter(attribute => {
+              return (attribute.code == 'code'
+                || (!attribute.isDefault
+                  && attribute.code != 'uuid'));
+            });
+
+            this.metadataCache[metadata.code] = metadata;
+          })
         }
 
         this.current = {
@@ -1765,6 +1770,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         this.breadcrumbs.push(this.current);
+
 
         // Add the parent layer
         const type = this.current.metadata;
@@ -1794,11 +1800,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.types = new Set();
     this.children = [];
 
+    let i = 0;
+
     children.forEach(c => {
       const type = c.properties.type;
 
       this.types.add(this.metadataCache[type]);
-
 
       if (this.childMap[type] == null) {
         this.childMap[type] = [];
