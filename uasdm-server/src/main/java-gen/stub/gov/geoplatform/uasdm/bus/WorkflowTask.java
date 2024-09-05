@@ -371,7 +371,14 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   {
     List<? extends WorkflowTask> tasks;
     
-    if (StringUtils.isBlank(productId)) {
+    boolean isCollection = StringUtils.isBlank(productId);
+    if (StringUtils.isNotBlank(componentId)) {
+      UasComponentIF c = ComponentFacade.getComponent(componentId);
+      
+      isCollection = (c instanceof CollectionIF);
+    }
+    
+    if (isCollection) {
       tasks = getTasksForComponent(componentId);
     } else {
       tasks = getTasksForProduct(productId);

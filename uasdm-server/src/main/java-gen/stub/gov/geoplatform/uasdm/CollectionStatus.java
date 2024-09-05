@@ -274,7 +274,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
       CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
       
-      if (StringUtils.isNotBlank(productId)) {
+      if (StringUtils.isNotBlank(productId) && !(component instanceof CollectionIF)) {
         query.WHERE(query.getProductId().EQ(productId));
       } else {
         query.WHERE(query.getComponent().EQ(componentId));
