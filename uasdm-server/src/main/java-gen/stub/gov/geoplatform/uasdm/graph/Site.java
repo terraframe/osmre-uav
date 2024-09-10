@@ -250,10 +250,12 @@ public class Site extends SiteBase implements SiteIF
     return types;
   }
 
-  public List<VertexObject> getHierarchyObjects()
+  public List<VertexObject> getHierarchyObjects(SynchronizationEdge edgeType)
   {
+    MdEdge mdEdge = edgeType.getGraphEdge();
+    
     StringBuffer statement = new StringBuffer();
-    statement.append("SELECT EXPAND(in()) FROM :rid");
+    statement.append("SELECT EXPAND(in('" + mdEdge.getDbClassName()+"')) FROM :rid");
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString());
     query.setParameter("rid", this.getRID());

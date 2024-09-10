@@ -77,6 +77,7 @@ import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
 import gov.geoplatform.uasdm.view.QueryLocationResult;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
@@ -84,6 +85,7 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
 import net.geoprism.registry.model.ServerOrganization;
+import net.geoprism.spring.ApplicationContextHolder;
 
 public class ElasticSearchIndex implements Index
 {
@@ -149,14 +151,7 @@ public class ElasticSearchIndex implements Index
           catch (ElasticsearchException e)
           {
             // Index doesn't exist, create it
-            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m
-                .properties("geometry", p -> p.geoShape(v -> v))
-                .properties("properties.datetime", p -> p.date(v -> v))
-                .properties("properties.start_datetime", p -> p.date(v -> v))
-                .properties("properties.end_datetime", p -> p.date(v -> v))
-                .properties("properties.updated", p -> p.date(v -> v))
-                .properties("properties.created", p -> p.date(v -> v))
-                .properties("assets", p -> p.object(v -> v.enabled(false)))));
+            client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> m.properties("geometry", p -> p.geoShape(v -> v)).properties("properties.datetime", p -> p.date(v -> v)).properties("properties.start_datetime", p -> p.date(v -> v)).properties("properties.end_datetime", p -> p.date(v -> v)).properties("properties.updated", p -> p.date(v -> v)).properties("properties.created", p -> p.date(v -> v)).properties("assets", p -> p.object(v -> v.enabled(false)))));
           }
 
           try
@@ -570,9 +565,16 @@ public class ElasticSearchIndex implements Index
     // private files. However, the front-end uses the thumbnail information on
     // the search results panel. As such, we still need the thumbnail asset in
     // the index.
-    item.removeAsset("thumbnail");
+    // item.removeAsset("thumbnail");
 
     RemoteFileFacade.putStacItem(item);
+
+    if (item.isPublished())
+    {
+      KnowStacBusinessService service = ApplicationContextHolder.getBean(KnowStacBusinessService.class);
+      service.put(item);
+    }
+
   }
 
   @Override
@@ -593,6 +595,9 @@ public class ElasticSearchIndex implements Index
     }
 
     RemoteFileFacade.removeStacItem(product);
+
+    KnowStacBusinessService service = ApplicationContextHolder.getBean(KnowStacBusinessService.class);
+    service.remove(product.getOid());
   }
 
   public JSONArray getTotals(String text, JSONArray filters)

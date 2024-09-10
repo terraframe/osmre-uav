@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,8 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 
 import gov.geoplatform.uasdm.serialization.DateDeserializer;
 import gov.geoplatform.uasdm.serialization.DateSerializer;
@@ -55,34 +55,30 @@ import gov.geoplatform.uasdm.serialization.GeoJsonSerializer;
  * data, DEMs). Version 1.0.0.
  */
 // @JsonSerialize(using = StacItemSerializer.class)
-@JsonPropertyOrder({
-    "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets"
-})
+@JsonPropertyOrder({ "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets" })
 public class StacItem implements JSONSerializable
 {
-  @JsonPropertyOrder({
-      "href", "type", "title", "description", "roles"
-  })
+  @JsonPropertyOrder({ "href", "type", "title", "description", "roles" })
   public static class Asset
   {
     // string REQUIRED. URI to the asset object. Relative and absolute URI are
     // both allowed.
-    private String href;
+    private String       href;
 
     // string The displayed title for clients and users.
     @JsonInclude(Include.NON_NULL)
-    private String title;
+    private String       title;
 
     // string A description of the Asset providing additional details, such as
     // how it was processed or created. CommonMark 0.29 syntax MAY be used for
     // rich text representation.
     @JsonInclude(Include.NON_NULL)
-    private String description;
+    private String       description;
 
     // string Media type of the asset. See the common media types in the best
     // practice doc for commonly used asset types.
     @JsonInclude(Include.NON_NULL)
-    private String type;
+    private String       type;
 
     // [string] The semantic roles of the asset, similar to the use of rel in
     // links.
@@ -179,55 +175,59 @@ public class StacItem implements JSONSerializable
   {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = DateSerializer.class)
-    private Date datetime;
+    private Date                   datetime;
 
     @JsonInclude(Include.NON_NULL)
-    private String title;
+    private String                 title;
 
     @JsonInclude(Include.NON_NULL)
-    private String description;
+    private String                 description;
 
     @JsonInclude(Include.NON_NULL)
     @JsonProperty("start_datetime")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date startDateTime;
+    private Date                   startDateTime;
 
     @JsonInclude(Include.NON_NULL)
     @JsonProperty("end_datetime")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date endDateTime;
+    private Date                   endDateTime;
 
     @JsonInclude(Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date created;
+    private Date                   created;
 
     @JsonInclude(Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date updated;
+    private Date                   updated;
 
     @JsonInclude(Include.NON_NULL)
-    private String platform;
+    private String                 platform;
 
     @JsonInclude(Include.NON_NULL)
-    private String sensor;
+    private String                 sensor;
 
     @JsonInclude(Include.NON_NULL)
-    private String collection;
+    private String                 collection;
 
     @JsonInclude(Include.NON_NULL)
-    private String mission;
+    private String                 mission;
 
     @JsonInclude(Include.NON_NULL)
-    private String project;
+    private String                 project;
 
     @JsonInclude(Include.NON_NULL)
-    private String site;
+    private String                 site;
 
     @JsonInclude(Include.NON_NULL)
-    private String faaNumber;
+    private String                 faaNumber;
 
     @JsonInclude(Include.NON_NULL)
-    private String serialNumber;
+    private String                 serialNumber;
+
+    private List<StacLocation>     operational;
+
+    private List<StacOrganization> agency;
 
     public Date getDatetime()
     {
@@ -379,6 +379,26 @@ public class StacItem implements JSONSerializable
       this.serialNumber = serialNumber;
     }
 
+    public List<StacOrganization> getAgency()
+    {
+      return agency;
+    }
+
+    public void setAgency(List<StacOrganization> agency)
+    {
+      this.agency = agency;
+    }
+
+    public List<StacLocation> getOperational()
+    {
+      return operational;
+    }
+
+    public void setOperational(List<StacLocation> operational)
+    {
+      this.operational = operational;
+    }
+
     public void set(String fieldName, String value)
     {
       if (fieldName.equals("siteName"))
@@ -406,19 +426,19 @@ public class StacItem implements JSONSerializable
   }
 
   // string REQUIRED. Type of the GeoJSON Object. MUST be set to Feature.
-  private String type;
+  private String             type;
 
   // string REQUIRED. The STAC version the Item implements.
   @JsonProperty("stac_version")
-  private String stacVersion;
+  private String             stacVersion;
 
   // [string] A list of extensions the Item implements.
   @JsonProperty("stac_extensions")
-  private List<String> stacExtensions;
+  private List<String>       stacExtensions;
 
   // string REQUIRED. Provider identifier. The ID should be unique within the
   // Collection that contains the Item.
-  private String id;
+  private String             id;
 
   // GeoJSON Geometry Object | null REQUIRED. Defines the full footprint of the
   // asset represented by this item, formatted according to RFC 7946, section
@@ -427,21 +447,21 @@ public class StacItem implements JSONSerializable
   // Longitude/Latitude or Longitude/Latitude/Elevation based on WGS 84.
   @JsonDeserialize(using = GeoJsonDeserializer.class)
   @JsonSerialize(using = GeoJsonSerializer.class)
-  private Geometry geometry;
+  private Geometry           geometry;
 
   // [number] REQUIRED if geometry is not null. Bounding Box of the asset
   // represented by this Item, formatted according to RFC 7946, section 5.
   @JsonDeserialize(using = EnvelopeDeserializer.class)
   @JsonSerialize(using = EnvelopeSerializer.class)
-  private Envelope bbox;
+  private Envelope           bbox;
 
   // Properties Object REQUIRED. A dictionary of additional metadata for the
   // Item.
-  private Properties properties;
+  private Properties         properties;
 
   // [Link Object] REQUIRED. List of link objects to resources and related URLs.
   // A link with the rel set to self is strongly recommended.
-  private List<StacLink> links;
+  private List<StacLink>     links;
 
   // Map<string, Asset Object> REQUIRED. Dictionary of asset objects that can be
   // downloaded, each with a unique key.
@@ -453,10 +473,10 @@ public class StacItem implements JSONSerializable
   // for a user to search for any Items that belong in a specified Collection.
   // Must be a non-empty string.
   @JsonInclude(Include.NON_NULL)
-  private String collection;
+  private String             collection;
 
   @JsonIgnore
-  private boolean published;
+  private boolean            published;
 
   public StacItem()
   {

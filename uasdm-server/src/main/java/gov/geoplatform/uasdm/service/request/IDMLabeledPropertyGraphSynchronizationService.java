@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
-import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.commongeoregistry.adapter.metadata.GeoObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -58,7 +58,7 @@ import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.registry.conversion.LocalizedValueConverter;
+import net.geoprism.registry.JsonCollectors;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
@@ -182,8 +182,11 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
 
   private JsonArray getParents(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
   {
-    JsonArray parents = new JsonArray();
+    return this.getAncestors(version, mdEdge, child).stream().map(o -> o.toJSON()).collect(JsonCollectors.toJsonArray());
+  }
 
+  public List<GeoObject> getAncestors(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
+  {
     StringBuffer s = new StringBuffer();
     s.append("SELECT FROM (");
     s.append(" TRAVERSE in('" + mdEdge.getDbClassName() + "') FROM :rid");
@@ -200,18 +203,14 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     // should be included or not
     p.remove(0);
 
-    p.forEach(parent -> {
+    return p.stream().map(parent -> {
       MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();
 
       GeoObjectTypeSnapshot parentType = this.typeService.get(version, parentVertex);
 
-      GeoObject parentObject = this.typeService.toGeoObject(parentType, parent);
+      return this.typeService.toGeoObject(parentType, parent);
 
-      parents.add(parentObject.toJSON());
-
-    });
-
-    return parents;
+    }).collect(Collectors.toList());
   }
 
   @Request(RequestType.SESSION)

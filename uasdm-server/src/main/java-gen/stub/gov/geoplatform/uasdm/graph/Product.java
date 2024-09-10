@@ -51,6 +51,8 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdGraphClassDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.metadata.MdEdge;
@@ -61,7 +63,6 @@ import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -73,6 +74,8 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.StacItem.Properties;
 import gov.geoplatform.uasdm.model.StacLink;
+import gov.geoplatform.uasdm.model.StacLocation;
+import gov.geoplatform.uasdm.model.StacOrganization;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
@@ -81,13 +84,21 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
+import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
+import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
+import net.geoprism.registry.model.ServerOrganization;
+import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 import net.geoprism.spring.ApplicationContextHolder;
 
@@ -185,22 +196,26 @@ public class Product extends ProductBase implements ProductIF
     {
       document.delete(removeFromS3);
     }
-    
+
     UasComponent component = this.getComponent();
 
     CollectionReportFacade.handleDeleteProduct(component).doIt();
 
     new IndexDeleteStacCommand(this).doIt();
-    
-    if (!(component instanceof CollectionIF)) {
+
+    if (! ( component instanceof CollectionIF ))
+    {
       this.getMetadata().ifPresent(meta -> {
         meta.delete();
       });
-    } else if (this.isPrimary() && component instanceof CollectionIF) {
-      CollectionIF col = ((CollectionIF) component);
-      
+    }
+    else if (this.isPrimary() && component instanceof CollectionIF)
+    {
+      CollectionIF col = ( (CollectionIF) component );
+
       List<ProductIF> prods = col.getProducts();
-      if (prods.size() > 0) {
+      if (prods.size() > 0)
+      {
         Product prod = (Product) prods.get(0);
         prod.setPrimary(true);
         prod.apply();
@@ -280,8 +295,9 @@ public class Product extends ProductBase implements ProductIF
       product.setName(uasComponent.getName());
       product.setProductName(productName);
       product.setPublished(false);
-      
-      if (!(uasComponent instanceof CollectionIF)) {
+
+      if (! ( uasComponent instanceof CollectionIF ))
+      {
         product.setPrimary(false);
       }
     }
@@ -291,7 +307,7 @@ public class Product extends ProductBase implements ProductIF
 
     return product;
   }
-  
+
   public static Product createIfNotExistOrThrow(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);
@@ -302,11 +318,14 @@ public class Product extends ProductBase implements ProductIF
       product.setName(uasComponent.getName());
       product.setProductName(productName);
       product.setPublished(false);
-      
-      if (!(uasComponent instanceof CollectionIF)) {
+
+      if (! ( uasComponent instanceof CollectionIF ))
+      {
         product.setPrimary(false);
       }
-    } else {
+    }
+    else
+    {
       throw new DuplicateDataException("Product with name [" + productName + "] is already associated with the provided component. Choose a different product name, or a different associated component.", MdClassDAO.getMdClassDAO(Product.CLASS), Arrays.asList(Product.getProductNameMd()), Arrays.asList(productName));
     }
 
@@ -452,18 +471,22 @@ public class Product extends ProductBase implements ProductIF
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
 
-//      if (component instanceof Collection)
-//      {
-//        Collection collection = (Collection) component;
-//
-//        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
-//        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
-//        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
-//        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-//
-//        collection.apply();
-//      }
-      
+      // if (component instanceof Collection)
+      // {
+      // Collection collection = (Collection) component;
+      //
+      // collection.setValue(Collection.NORTHBOUND, new
+      // BigDecimal(bbox.getMaxLat()));
+      // collection.setValue(Collection.SOUTHBOUND, new
+      // BigDecimal(bbox.getMinLat()));
+      // collection.setValue(Collection.EASTBOUND, new
+      // BigDecimal(bbox.getMaxLong()));
+      // collection.setValue(Collection.WESTBOUND, new
+      // BigDecimal(bbox.getMinLong()));
+      //
+      // collection.apply();
+      // }
+
       this.getMetadata().ifPresent(metadata -> {
         metadata.setNorthBound(new BigDecimal(bbox.getMaxLat()));
         metadata.setSouthBound(new BigDecimal(bbox.getMinLat()));
@@ -581,16 +604,17 @@ public class Product extends ProductBase implements ProductIF
   public void refreshDocuments() throws InterruptedException
   {
     UasComponent c = this.getComponent();
-    
-    if (c != null && c instanceof CollectionIF) {
+
+    if (c != null && c instanceof CollectionIF)
+    {
       final CollectionIF collection = (CollectionIF) this.getComponent();
-  
+
       boolean allZipExists = this.hasAllZip();
-  
+
       if (allZipExists)
       {
         ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
-  
+
         uploader.processAllZip();
       }
     }
@@ -600,12 +624,13 @@ public class Product extends ProductBase implements ProductIF
   {
     // return this.getDocuments().stream().filter(doc ->
     // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    
+
     UasComponent c = this.getComponent();
-    
-    if (!(c instanceof Collection)) return false;
-    
-    return ((Collection) c).getHasAllZip();
+
+    if (! ( c instanceof Collection ))
+      return false;
+
+    return ( (Collection) c ).getHasAllZip();
   }
 
   public SiteObject getAllZip()
@@ -763,11 +788,33 @@ public class Product extends ProductBase implements ProductIF
         {
           // Add to public S3 bucket
           RemoteFileFacade.copyObject(document.getS3location(), AppProperties.getBucketName(), document.getS3location(), AppProperties.getPublicBucketName());
+
+          // Copy the thumbnail over to the public bucket
+          String ext = FilenameUtils.getExtension(document.getName());
+
+          if (ext.toUpperCase().equals("PNG"))
+          {
+            String rootPath = FilenameUtils.getPath(document.getS3location());
+            String baseName = FilenameUtils.getBaseName(document.getName());
+
+            RemoteFileFacade.copyObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getBucketName(), rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+          }
+
         }
         else
         {
           // Remove from public S3 bucket
           RemoteFileFacade.deleteObject(document.getS3location(), AppProperties.getPublicBucketName());
+
+          String ext = FilenameUtils.getExtension(document.getName());
+
+          if (ext.toUpperCase().equals("PNG"))
+          {
+            String rootPath = FilenameUtils.getPath(document.getS3location());
+            String baseName = FilenameUtils.getBaseName(document.getName());
+
+            RemoteFileFacade.deleteObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+          }
         }
       }
     }
@@ -777,7 +824,6 @@ public class Product extends ProductBase implements ProductIF
       {
         new ReIndexStacItemCommand(this).doIt();
       }
-
     }
   }
 
@@ -841,12 +887,52 @@ public class Product extends ProductBase implements ProductIF
     properties.setDescription(component.getDescription());
     properties.setUpdated(this.getLastUpdateDate());
 
+    ancestors.stream().filter(a -> a instanceof Site).map(a -> (Site) a).findFirst().ifPresent(site -> {
+
+      ServerOrganization organization = site.getServerOrganization();
+
+      List<StacOrganization> agency = organization.getAncestors(null).stream().map(org -> {
+        return StacOrganization.build(org.getCode(), org.getDisplayLabel().getValue());
+      }).collect(Collectors.toList());
+
+      properties.setAgency(agency);
+
+      LabeledPropertyGraphSynchronizationQuery query = new LabeledPropertyGraphSynchronizationQuery(new QueryFactory());
+      try (OIterator<? extends LabeledPropertyGraphSynchronization> iterator = query.getIterator())
+      {
+        LabeledPropertyGraphSynchronization synchronization = iterator.next();
+        LabeledPropertyGraphType graphType = synchronization.getGraphType();
+        LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+
+        List<VertexObject> locations = site.getHierarchyObjects(SynchronizationEdge.get(version));
+
+        if (locations.size() > 0)
+        {
+          VertexObject location = locations.get(0);
+
+          HierarchyTypeSnapshotBusinessServiceIF hTypeService = ApplicationContextHolder.getBean(HierarchyTypeSnapshotBusinessServiceIF.class);
+          IDMLabeledPropertyGraphSynchronizationService service = ApplicationContextHolder.getBean(IDMLabeledPropertyGraphSynchronizationService.class);
+
+          HierarchyTypeSnapshot hierarchyType = hTypeService.get(version, graphType.getHierarchy());
+
+          List<StacLocation> operational = service.getAncestors(version, hierarchyType.getGraphMdEdge(), location).stream().map(org -> {
+            return StacLocation.build(org.getUid(), org.getDisplayLabel().getValue());
+          }).collect(Collectors.toList());
+
+          Collections.reverse(operational);
+
+          properties.setOperational(operational);
+        }
+      }
+    });
+
     Date dateTime = new Date();
-    
+
     Optional<CollectionMetadata> opMeta = getMetadata();
-    if (opMeta.isPresent()) {
+    if (opMeta.isPresent())
+    {
       CollectionMetadata metadata = opMeta.get();
-      
+
       Sensor sensor = metadata.getSensor();
 
       if (sensor != null)
@@ -868,7 +954,7 @@ public class Product extends ProductBase implements ProductIF
           properties.setPlatform(platform.getName());
         }
       }
-      
+
       dateTime = metadata.getCollectionDate();
 
       if (dateTime == null)
@@ -881,7 +967,7 @@ public class Product extends ProductBase implements ProductIF
         dateTime = this.getLastUpdateDate();
       }
     }
-    
+
     properties.setDatetime(dateTime);
 
     item.setProperties(properties);
@@ -910,7 +996,7 @@ public class Product extends ProductBase implements ProductIF
           // Private thumbnail
           String rootPath = FilenameUtils.getPath(document.getS3location());
           String baseName = FilenameUtils.getBaseName(document.getName());
-          String thumbnail = "s3://" + AppProperties.getBucketName() + "/" + rootPath + "thumbnails/" + baseName + ".png";
+          String thumbnail = "s3://" + bucketName + "/" + rootPath + "thumbnails/" + baseName + ".png";
 
           item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
         }
@@ -941,7 +1027,7 @@ public class Product extends ProductBase implements ProductIF
 
     return item;
   }
-  
+
   public Optional<CollectionMetadata> getMetadata()
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
@@ -1002,37 +1088,21 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  
   /*
    * 
-   TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
+   * TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT
+   * ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
    * 
    * 
-   TRAVERSE OUT('component_has_product') FROM (
-    SELECT FROM (
-      SELECT FROM (
-        SELECT FROM (
-          TRAVERSE OUT ('mission_has_collection0') FROM (
-            TRAVERSE OUT ('project_has_mission0') FROM (
-              TRAVERSE OUT('site_has_project') FROM (
-                SELECT FROM (
-                  SELECT FROM (
-                      TRAVERSE OUT('g_0__operational', 'ha_0__graph_541834') FROM #274:1
-                  )
-                  WHERE @class = 'site0' AND organization.code = '100013241'
-                )
-              )
-            )
-          )
-        )
-      )
-    )
-   WHERE (isPrivate = false 
-     OR isPrivate IS NULL 
-     OR owner = 'a2c721a5-a547-4627-bf3a-8f5ae000052a' 
-     OR in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size() > 0 
-   ) 
-  ORDER BY name ASC)
+   * TRAVERSE OUT('component_has_product') FROM ( SELECT FROM ( SELECT FROM (
+   * SELECT FROM ( TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT
+   * ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
+   * SELECT FROM ( SELECT FROM ( TRAVERSE OUT('g_0__operational',
+   * 'ha_0__graph_541834') FROM #274:1 ) WHERE @class = 'site0' AND
+   * organization.code = '100013241' ) ) ) ) ) ) ) WHERE (isPrivate = false OR
+   * isPrivate IS NULL OR owner = 'a2c721a5-a547-4627-bf3a-8f5ae000052a' OR
+   * in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size()
+   * > 0 ) ORDER BY name ASC)
    */
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
@@ -1085,16 +1155,19 @@ public class Product extends ProductBase implements ProductIF
       statement.append("  SELECT FROM (\n");
     }
 
-//    statement.append("    SELECT EXPAND(OUT('site_has_project')");
-//
-//    criteria.getConditions().stream().filter(condition -> condition.isProject()).forEach(condition -> {
-//      statement.append("[" + condition.getSQL() + " = :" + condition.getField() + "]");
-//    });
-//
-//    statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
-    
+    // statement.append(" SELECT EXPAND(OUT('site_has_project')");
+    //
+    // criteria.getConditions().stream().filter(condition ->
+    // condition.isProject()).forEach(condition -> {
+    // statement.append("[" + condition.getSQL() + " = :" + condition.getField()
+    // + "]");
+    // });
+    //
+    // statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0'))
+    // FROM (\n");
+
     statement.append("TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (");
-    
+
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
     statement.append("      ) WHERE @class = 'site0' \n");
@@ -1131,15 +1204,14 @@ public class Product extends ProductBase implements ProductIF
     {
       parameters.put("owner", session.getUser().getOid());
     }
-    
+
     criteria.getConditions().stream().filter(condition -> condition.isCollection()).forEach(condition -> {
       statement.append(" AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
     });
-    
+
     criteria.getConditions().stream().filter(condition -> condition.isMetadata()).forEach(condition -> {
       statement.append(" AND (first(out('collection_has_metadata'))." + condition.getSQL() + " = :" + condition.getField() + " OR OUT('component_has_product').out('product_has_metadata')." + condition.getSQL() + " = :" + condition.getField() + ") \n");
     });
-
 
     if (sortField.equals("name"))
     {

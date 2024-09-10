@@ -287,4 +287,9 @@ public class AppProperties
   {
     return Singleton.getProps().getString("potree.converter.bin");
   }
+  
+  public static String getKnowStacUrl()
+  {
+    return Singleton.getProps().getString("knowstac.url", "https://localhost:8444/know-stac");
+  }
 }
