@@ -188,4 +188,9 @@ public class RemoteFileFacade
     return service.getBoundingBox(product, mappable);
   }
 
+  public static String getUrl(String bucket, String key)
+  {
+    return service.getUrl(bucket, key);
+  }
+
 }

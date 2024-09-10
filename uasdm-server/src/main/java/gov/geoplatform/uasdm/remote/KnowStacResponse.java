@@ -13,9 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package gov.geoplatform.uasdm.odm;
+package gov.geoplatform.uasdm.remote;
 
-public class KnowStacResponse
+import gov.geoplatform.uasdm.odm.Response;
+
+public class KnowStacResponse implements KnowStacResponseIF
 {
   Response http;
 

@@ -67,17 +67,31 @@ import gov.geoplatform.uasdm.DevProperties;
 
 public class HTTPConnector
 {
-  CloseableHttpClient         client;
+  CloseableHttpClient          client;
 
-  Logger                      logger = LoggerFactory.getLogger(HTTPConnector.class);
+  Logger                       logger = LoggerFactory.getLogger(HTTPConnector.class);
 
-  String                      serverurl;
+  String                       serverurl;
 
-  String                      username;
+  String                       username;
 
-  String                      password;
+  String                       password;
 
-  protected HttpClientContext localContext;
+  protected HttpClientContext  localContext;
+
+  private HTTPExceptionHandler handler;
+
+  public HTTPConnector()
+  {
+    this.handler = (e) -> {
+      throw new UnreachableHostException(e);
+    };
+  }
+
+  public HTTPConnector(HTTPExceptionHandler handler)
+  {
+    this.handler = handler;
+  }
 
   public void setCredentials(String username, String password)
   {
@@ -303,7 +317,10 @@ public class HTTPConnector
     }
     catch (IOException e)
     {
-      throw new UnreachableHostException(e);
+      this.handler.uncaughtException(e);
+
+      return null;
     }
   }
+
 }

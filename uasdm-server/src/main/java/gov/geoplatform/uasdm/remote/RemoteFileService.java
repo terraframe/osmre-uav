@@ -87,4 +87,6 @@ public interface RemoteFileService
 
   public BBoxView getBoundingBox(Product product, DocumentIF mappable);
 
+  public String getUrl(String bucket, String key);
+
 }

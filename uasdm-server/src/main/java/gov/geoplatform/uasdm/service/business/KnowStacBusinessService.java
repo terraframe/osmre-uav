@@ -13,8 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.odm.HTTPConnector;
-import gov.geoplatform.uasdm.odm.KnowStacResponse;
 import gov.geoplatform.uasdm.odm.Response;
+import gov.geoplatform.uasdm.remote.KnowStacNoopResponse;
+import gov.geoplatform.uasdm.remote.KnowStacResponse;
+import gov.geoplatform.uasdm.remote.KnowStacResponseIF;
 
 @Service
 public class KnowStacBusinessService
@@ -29,7 +31,7 @@ public class KnowStacBusinessService
     this.connector.setServerUrl(AppProperties.getKnowStacUrl());
   }
 
-  public KnowStacResponse put(StacItem item)
+  public KnowStacResponseIF put(StacItem item)
   {
     try
     {
@@ -40,18 +42,27 @@ public class KnowStacBusinessService
 
       return new KnowStacResponse(resp);
     }
-    catch (IOException e)
+    catch (RuntimeException | IOException e)
     {
-      throw new RuntimeException(e);
+      logger.error("Unable to upload stac item to know stac server", e);
     }
+    return new KnowStacNoopResponse();
   }
 
-  public KnowStacResponse remove(String id)
+  public KnowStacResponseIF remove(String id)
   {
+    try
+    {
+      Response resp = connector.httpPost("api/item/remove", Arrays.asList(new BasicNameValuePair("id", id)));
 
-    Response resp = connector.httpPost("api/item/remove", Arrays.asList(new BasicNameValuePair("id", id)));
+      return new KnowStacResponse(resp);
+    }
+    catch (RuntimeException e)
+    {
+      logger.error("Unable to remove stac item to know stac server", e);
+    }
 
-    return new KnowStacResponse(resp);
+    return new KnowStacNoopResponse();
   }
 
 }

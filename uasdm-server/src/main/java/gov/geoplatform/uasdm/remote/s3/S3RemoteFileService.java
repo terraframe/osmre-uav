@@ -38,6 +38,8 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
@@ -424,6 +426,14 @@ public class S3RemoteFileService implements RemoteFileService
     String bucketName = AppProperties.getBucketName();
 
     return client.doesObjectExist(bucketName, key);
+  }
+
+  @Override
+  public String getUrl(String bucket, String key)
+  {
+    AmazonS3Client client = (AmazonS3Client) S3ClientFactory.createClient();
+
+    return client.getResourceUrl(bucket, key);
   }
 
   @Override

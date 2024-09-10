@@ -980,7 +980,9 @@ public class Product extends ProductBase implements ProductIF
     for (DocumentIF document : documents)
     {
       String bucketName = this.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-      final String location = "s3://" + bucketName + "/" + document.getS3location();
+      
+      final String location = this.isPublished() ? "https://" + AppProperties.getPublicBucketName() + ".s3.amazonaws.com/" + document.getS3location() : "s3://" + bucketName + "/" + document.getS3location();
+//      final String location = this.isPublished() ? RemoteFileFacade.getUrl(AppProperties.getPublicBucketName(), document.getS3location()) : "s3://" + bucketName + "/" + document.getS3location();
 
       if ( ( location.contains("/" + ImageryComponent.DEM + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".TIF") ) || ( location.contains("/" + ImageryComponent.ORTHO + "/") && location.toUpperCase().endsWith(".PNG") ))
       {
@@ -996,7 +998,10 @@ public class Product extends ProductBase implements ProductIF
           // Private thumbnail
           String rootPath = FilenameUtils.getPath(document.getS3location());
           String baseName = FilenameUtils.getBaseName(document.getName());
-          String thumbnail = "s3://" + bucketName + "/" + rootPath + "thumbnails/" + baseName + ".png";
+          final String thumbnail = this.isPublished() ? 
+            "https://" + bucketName + ".s3.amazonaws.com/" + rootPath + "thumbnails/" + baseName + ".png":
+            "s3://" + bucketName + "/" + rootPath + "thumbnails/" + baseName + ".png";
+
 
           item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
         }
@@ -1021,8 +1026,11 @@ public class Product extends ProductBase implements ProductIF
 
     // Add the self link
     String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
-    String url = "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
-
+    
+    final String url = this.isPublished() ? 
+        "https://" + bucket + ".s3.amazonaws.com/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json" :
+        "s3://" + bucket + "/" + S3RemoteFileService.STAC_BUCKET + "/" + item.getId() + ".json";
+    
     item.addLink(StacLink.build(url, "self", "application/json"));
 
     return item;
