@@ -11,6 +11,9 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.VaultFileQuery;
 
+import gov.geoplatform.uasdm.ImageryProcessingJob;
+import gov.geoplatform.uasdm.ImageryProcessingJobQuery;
+
 public class DeleteLingeringVaultFiles
 {
   private Logger logger = LoggerFactory.getLogger(DeleteLingeringVaultFiles.class);
@@ -28,7 +31,11 @@ public class DeleteLingeringVaultFiles
   @Request
   public void doIt() throws Throwable
   {
-    VaultFileQuery vfq = new VaultFileQuery(new QueryFactory());
+    QueryFactory qf = new QueryFactory();
+    ImageryProcessingJobQuery jobq = new ImageryProcessingJobQuery(qf);
+    VaultFileQuery vfq = new VaultFileQuery(qf);
+    
+    jobq.WHERE(jobq.getImageryFile().EQ(jobq));
     
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MONTH, -4);
@@ -36,10 +43,14 @@ public class DeleteLingeringVaultFiles
     
     logger.error("deleting " + vfq.getCount() + " old vault files");
     
-    OIterator<? extends VaultFile> it = vfq.getIterator();
+    OIterator<? extends ImageryProcessingJob> it = jobq.getIterator();
     
     while (it.hasNext()) {
-      it.next().delete();
+      try {
+        VaultFile.get(it.next().getImageryFile());
+      } catch(Throwable t) {
+        logger.error("Error deleting vault file", t);
+      }
     }
   }
 }
