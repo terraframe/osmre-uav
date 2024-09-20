@@ -66,7 +66,6 @@ import { CreateCollectionModalComponent } from './component/modal/create-collect
 import { CreateStandaloneProductModalComponent } from './component/modal/create-standalone-product-group-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
 import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
-import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 import { FilterModalComponent } from './component/modal/filter-modal.component';
 import { CreateProductGroupModalComponent } from './component/modal/create-product-group-modal.component';
@@ -75,6 +74,11 @@ import { UserAccessService } from './service/user-access.service';
 import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StacItemPanelComponent } from './component/stac-item-panel/stac-item-panel.component';
+import { KnowStacService } from './service/know-stac.service';
+import { KnowStacPanelComponent } from './component/know-stac-panel/know-stac-panel.component';
+import { ImageryPanelComponent } from './component/imagery-panel/imagery-panel.component';
+import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-modal.component';
 
 @NgModule({
 	imports: [
@@ -131,11 +135,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		MetadataPageComponent,
 		ReportsComponent,
         EquipmentComponent,
-		LayerPanelComponent,
+		StacItemPanelComponent,
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		ImageryPanelComponent,
+		KnowStacPanelComponent,
+		KnowStacModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -148,7 +155,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		ClassificationService,
 		UAVService,
 		ReportService,
-		UserAccessService
+		UserAccessService,
+		KnowStacService
 	],
 	entryComponents: [
 		FilterModalComponent,
@@ -164,7 +172,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		ProductModalComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		KnowStacModalComponent
 	]
 })
 export class SiteModule { }

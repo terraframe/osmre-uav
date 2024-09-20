@@ -8,6 +8,7 @@ export class Configuration {
   uasdmRequireKeycloakLogin: boolean;
   uasAppDisclaimer: string;
   localization: any;
+  knowStacUrl: string;
 }
 
 export class Application {

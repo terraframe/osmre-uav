@@ -47,19 +47,32 @@ body {
 .base-layer-panel {
   position: absolute;
   top: 10px;
-  left: 10px;
-  z-index: 2;
-  padding: 5px;
-}
-
-.stac-layer-panel {
-  position: absolute;
-  top: 10px;
   right: 10px;
   z-index: 2;
   padding: 5px;
 }
 
+.geoplatform-map-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 5px;
+}
+
+.imagery-map-button {
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  z-index: 2;
+  padding: 5px;
+}
+
+.badge{
+  position: relative;
+  margin-left: 60%;
+  margin-top: -60%;
+}
 
 .site-explorer-list {
   padding: 20px;

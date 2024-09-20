@@ -51,10 +51,13 @@ export class ProductPanelComponent implements OnDestroy {
 
     @Output() public toggleMapDem = new EventEmitter<Product>();
 
+    @Output() onViewsChange = new EventEmitter<CollectionProductView[]>();
+
+
     /* 
      * List of products for the current node
      */
-    views: CollectionProductView[] = [];
+    @Input() views: CollectionProductView[] = [];
 
     thumbnails: any = {};
 
@@ -92,23 +95,26 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.views.forEach(view => {
+        this.onViewsChange.emit([]);
 
-            view.products.forEach(product => {
-                if (product.orthoMapped) {
-                    this.handleMapIt(product);
-                }
-                if (product.demMapped) {
-                    this.handleMapDem(product);
-                }
-            });
-        });
+        // this.views.forEach(view => {
+
+        //     view.products.forEach(product => {
+        //         if (product.orthoMapped) {
+        //             this.handleMapIt(product);
+        //         }
+        //         if (product.demMapped) {
+        //             this.handleMapDem(product);
+        //         }
+        //     });
+        // });
 
     }
 
     ngOnChanges(changes: SimpleChanges) {
-
-        this.refreshProducts(changes['selection'].currentValue);
+        if (changes.selection != null) {
+            this.refreshProducts(changes.selection.currentValue);
+        }
     }
 
     clipboardPublicStacUrl(product: Product, clipboardPopover) {
@@ -134,7 +140,7 @@ export class ProductPanelComponent implements OnDestroy {
     }
 
     refreshProducts(selection: ViewerSelection): void {
-        this.views = [];
+        this.onViewsChange.emit([]);
         this.thumbnails = {};
 
         this.loading = true;
@@ -177,15 +183,16 @@ export class ProductPanelComponent implements OnDestroy {
         this.pService.getProducts(criteria).then(views => {
             if (original === this.requestId) {
 
-                this.views = views;
                 this.loading = false;
 
-                this.views.forEach(view => {
+                views.forEach(view => {
                     view.product = view.products[0];
                     view.productId = view.product.id;
 
                     this.getThumbnail(view.product);
                 });
+
+                this.onViewsChange.emit(views);
             }
         });
     }
@@ -319,7 +326,9 @@ export class ProductPanelComponent implements OnDestroy {
                 view.product = view.products[0];
             }
             else {
-                this.views = this.views.filter((n: CollectionProductView) => n.componentId !== view.componentId);
+                this.onViewsChange.emit(
+                    this.views.filter((n: CollectionProductView) => n.componentId !== view.componentId)
+                );
             }
         });
     }

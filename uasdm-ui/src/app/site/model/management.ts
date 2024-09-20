@@ -331,7 +331,7 @@ export class Product {
 	orthoKey?: string;
 	demKey?: string;
 	boundingBox?: number[];
-	layers: MapLayer[];
+	layers: MapAsset[];
 	orthoMapped?: boolean;
 	demMapped?: boolean;
 	hasPointcloud?: boolean;
@@ -361,13 +361,18 @@ export class CollectionProductView {
 	product?: Product;
 }
 
+export class MapAsset {
+	classification: string;
+	key: string;
+	public: boolean;
+	url: string;
+}
+
 
 export class MapLayer {
-	workspace?: string;
 	classification: string;
 	key: string;
 	isMapped?: boolean;
-	public: boolean;
 	url: string;
 }
 

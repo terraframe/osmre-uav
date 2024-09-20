@@ -5,7 +5,8 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
-import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from "mapbox-gl";
+import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl, GeoJSONSource } from "mapbox-gl";
+import { v4 as uuid } from "uuid";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -15,7 +16,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -36,9 +37,9 @@ import { CreateStandaloneProductModalComponent } from "./modal/create-standalone
 import { UIOptions } from "fine-uploader";
 import { FineUploaderBasic } from "fine-uploader/lib/core";
 import { UploadModalComponent } from "./modal/upload-modal.component";
-import { StacLayer } from "@site/model/layer";
+import { StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
 
-import { bbox, bboxPolygon, envelope, featureCollection } from "@turf/turf";
+import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
@@ -49,12 +50,16 @@ import { FilterModalComponent } from "./modal/filter-modal.component";
 import { LocalizedValue } from "@shared/model/organization";
 import { ProductService } from "@site/service/product.service";
 import { ProductModalComponent } from "./modal/product-modal.component";
+import { KnowStacModalComponent } from "./know-stac-modal/know-stac-modal.component";
+import { KnowStacService } from "@site/service/know-stac.service";
 
 
 const enum PANEL_TYPE {
   SITE = 0,
   STAC = 1,
-  LPG = 2
+  LPG = 2,
+  KNOWSTAC = 3,
+  IMAGES = 4
 }
 
 @Component({
@@ -182,9 +187,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   bounds: LngLatBounds = null;
   sort: string = "name";
 
-  stacLayers: StacLayer[] = [];
+  mapLayers: ToggleableLayer[] = [];
 
-  stacLayer: StacLayer = null;
+  mapLayer: ToggleableLayer = null;
 
   organization?: { code: string, label: LocalizedValue };
 
@@ -228,11 +233,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeTab: string = "";
 
+  collection: StacCollection = null;
+
+  views: CollectionProductView[] = [];
+
+  properties: StacProperty[] = null;
+
   constructor(
     private configuration: ConfigurationService,
     private service: ManagementService,
     private authService: AuthService,
     private pService: ProductService,
+    private stacService: KnowStacService,
     private mapService: MapService,
     private modalService: BsModalService,
     private metadataService: MetadataService,
@@ -454,8 +466,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.subject.next(e);
     });
 
-    // Sit selection from map
     this.map.on("click", (e) => {
+      // Site selection from map
       let features = this.map.queryRenderedFeatures(e.point, { layers: ["points"] });
 
       if (features.length > 0) {
@@ -469,10 +481,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         else {
           this.handleViewSite(focusFeatureId);
         }
+      }
 
+      // Items
+      features = this.map.queryRenderedFeatures(e.point, { layers: ["items"] });
 
+      if (features.length > 0) {
+        const id = features[0].properties.id;
+        const type = features[0].properties.type;
+
+        if (type === ToggleableLayerType.PRODUCT) {
+          this.handleGetProductInfo(id);
+        }
+        else if (type === ToggleableLayerType.KNOWSTAC && this.collection != null) {
+          const link = this.collection.links.find(l => l.id === id);
+
+          if (link != null) {
+            this.handleGetKnowStacInfo(link);
+          }
+        }
       }
     });
+
+
 
     // MapboxGL doesn"t have a good way to detect when moving off the map
     let sidebar = document.getElementById("navigator-left-sidebar");
@@ -503,6 +534,71 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addLayers(): void {
 
+    // STAC collection source and layer
+    this.map.addSource('collection', {
+      'type': 'geojson',
+      'data': {
+        type: "FeatureCollection",
+        features: []
+      }
+    });
+
+    this.map.addLayer({
+      'id': 'collection',
+      'type': 'fill',
+      'source': 'collection',
+      'paint': {
+        "fill-color": "grey",
+        "fill-opacity": 0.3,
+        "fill-outline-color": "black"
+      }
+    });
+
+    // Add the site layers
+    this.map.addSource("items", {
+      type: "geojson",
+      data: {
+        "type": "FeatureCollection",
+        "features": []
+      }
+    });
+
+    // Item result layer
+    this.map.addLayer({
+      "id": "items",
+      "type": "circle",
+      "source": "items",
+      "paint": {
+        "circle-radius": 5,
+        "circle-color": [
+          "case",
+          ['==', ['get', "type"], ToggleableLayerType.KNOWSTAC], '#48b842',
+          ['==', ['get', "type"], ToggleableLayerType.PRODUCT], '#D8BB48',
+          '#79E4E8'
+        ],
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#FFFFFF"
+      }
+    });
+
+    // Item result label layer
+    this.map.addLayer({
+      "id": "items-label",
+      "source": "items",
+      "type": "symbol",
+      "paint": {
+        "text-color": "black",
+        "text-halo-color": "#fff",
+        "text-halo-width": 2
+      },
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top",
+        "text-size": 12,
+      }
+    });
 
     // Add the site layers
     this.map.addSource("sites", {
@@ -567,30 +663,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addImageLayer(layer);
       }
     });
-
-    // https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/cog/tiles/WebMercatorQuad/19/100308/199769@1x?url=s3%3A%2F%2Fosmre-uas-dev-public%2Fabcsite%2Fabcproject%2Fabcmission%2Fabccollection%2Fortho%2Fodm_orthophoto.cog.tif
-    // Test STAC layer
-    // s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json
-
-    /*
-    {
-  "public": true,
-  "classification": "ORTHO",
-  "key": "abcsite/abcproject/abcmission/abccollection/ortho/odm_orthophoto.cog.tif",
-  "url": "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/cog/tilejson.json?url=s3%3A%2F%2Fosmre-uas-dev-public%2Fabcsite%2Fabcproject%2Fabcmission%2Fabccollection%2Fortho%2Fodm_orthophoto.cog.tif",
-  "isMapped": false
-}
-    this.addImageLayer({
-      workspace: "",
-      classification: "ORTHO",
-      key: "s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json",
-      isMapped: false,
-      public: true,
-      url: "https://k67ob0ncba.execute-api.us-east-1.amazonaws.com/stac/tilejson.json"
-        + "?url=" + encodeURIComponent("s3://osmre-uas-dev-public/_stac_/da5c2faa-99aa-4f1e-87bc-a38cd1c6a236.json")
-        + "&assets=" + encodeURIComponent("odm_orthophoto.cog")
-    });
-    */
   }
 
   handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
@@ -1062,77 +1134,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  handleMapOrtho(product: Product): void {
-
-    const layer = this.getLayerByClassification("ORTHO", product);
-
-    if (layer != null && layer.key != null) {
-      if (this.map.getLayer(layer.key) != null) {
-        this.map.removeLayer(layer.key);
-        this.map.removeSource(layer.key);
-
-        layer.isMapped = false;
-        product.orthoMapped = false;
-      }
-      else {
-        this.addImageLayer(layer);
-
-        layer.isMapped = true;
-        product.orthoMapped = true;
-
-        if (product.boundingBox != null) {
-          let bbox = product.boundingBox;
-
-          let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
-
-          this.map.fitBounds(bounds, { padding: 50 });
-        }
-      }
-    }
-  }
-
-  getLayerByClassification(classification: string, product: Product): MapLayer {
-    let len = product.layers.length;
-
-    for (let i = 0; i < len; ++i) {
-      let layer: MapLayer = product.layers[i];
-
-      if (layer.classification === classification) {
-        return layer;
-      }
-    }
-
-    return null;
-  }
-
-  handleMapDem(product: Product): void {
-
-    const layer = this.getLayerByClassification("DEM_DSM", product);
-
-    if (layer != null && layer.key != null) {
-      if (this.map.getLayer(layer.key) != null) {
-        this.map.removeLayer(layer.key);
-        this.map.removeSource(layer.key);
-
-        layer.isMapped = false;
-        product.demMapped = false;
-      }
-      else {
-        this.addImageLayer(layer);
-
-        layer.isMapped = true;
-        product.demMapped = true;
-
-        if (product.boundingBox != null) {
-          let bbox = product.boundingBox;
-
-          let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
-
-          this.map.fitBounds(bounds, { padding: 50 });
-        }
-      }
-    }
-  }
 
   addImageLayer(layer: MapLayer) {
 
@@ -1400,105 +1401,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleStacLayer(layer?: StacLayer): void {
-
-    this.panelType = PANEL_TYPE.STAC;
-
-    if (layer != null) {
-      this.stacLayer = JSON.parse(JSON.stringify(layer));
-    }
-    else {
-      this.stacLayer = null;
-    }
-  }
-
-  handleRemoveStacLayer(layer: StacLayer): void {
-
-    if (layer.active) {
-      this.hideStacLayer(layer);
-    }
-
-    this.stacLayers = this.stacLayers.filter(f => f.id !== layer.id);
-  }
-
-  handleStacConfirm(layer: StacLayer): void {
-    const index = this.stacLayers.findIndex(l => l.id === layer.id);
-
-    if (index !== -1) {
-      // Remove existing image layers
-      if (this.stacLayers[index].active) {
-        this.hideStacLayer(this.stacLayers[index]);
-      }
-
-      this.stacLayers[index] = layer;
-    }
-    else {
-      this.stacLayers.push(layer);
-    }
-
-    if (layer.active) {
-
-      this.handleStacZoom(layer);
-
-      this.showStacLayer(layer);
-    }
-
-    this.panelType = PANEL_TYPE.SITE;
-    this.stacLayer = null;
-  }
-
-  handleStacZoom(layer: StacLayer): void {
-    const polygons = layer.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
-
-    // Determine the bounding box of the layer
-    const features = featureCollection(polygons);
-    const env = envelope(features);
-    const bounds = bbox(env) as [number, number, number, number];
-
-    this.map.fitBounds(bounds);
-  }
-
-  handleStacCancel(): void {
-    this.panelType = PANEL_TYPE.SITE;
-    this.stacLayer = null;
-  }
-
-  handleToggleStacLayer(layer: StacLayer): void {
-    layer.active = !layer.active;
-
-    if (layer.active) {
-      this.showStacLayer(layer);
-    }
-    else {
-      this.hideStacLayer(layer);
-    }
-  }
-
-  showStacLayer(layer: StacLayer): void {
-    layer.items.forEach(item => {
-
-      const index = item.links.findIndex(link => link.rel === 'self');
-      const link = item.links[index];
-
-      let url = "/stac/tilejson.json";
-      url += "?url=" + encodeURIComponent(link.href);
-      url += "&assets=" + encodeURIComponent(item.asset);
-
-      this.addImageLayer({
-        classification: "ORTHO",
-        key: layer.id + '-' + item.id + '-' + item.asset,
-        isMapped: layer.active,
-        public: true,
-        url: url
-      });
-    });
-  }
-
-  hideStacLayer(layer: StacLayer): void {
-    layer.items.forEach(item => {
-      this.removeImageLayer(layer.id + '-' + item.id + '-' + item.asset);
-    });
-  }
 
   onContentChange(type: any): void {
 
@@ -1572,7 +1474,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           ["get", attribute]
         ]
       ],
-    }, 'points');
+    }, 'collection');
 
     // Add the hierarchy label layer
     this.map.addLayer({
@@ -1600,7 +1502,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           ["get", attribute]
         ]
       ],
-    }, 'points');
+    }, 'collection');
 
   }
 
@@ -1909,4 +1811,362 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return conditions;
   }
+
+  buildItemsLayer() {
+    // Update the items layer with new data
+    const features = [];
+
+    if (this.collection != null) {
+
+      this.collection.links.filter(link => link.rel === 'item').forEach(link => {
+
+        features.push(centroid(bboxPolygon(<any>link.bbox), {
+          name: link.title,
+          type: ToggleableLayerType.KNOWSTAC,
+          id: link.id
+        }));
+      })
+    }
+
+    if (this.views != null) {
+      this.views.forEach(view => {
+
+        view.products.filter(p => p.boundingBox != null).forEach(product => {
+          let bbox = product.boundingBox;
+
+          features.push(centroid(bboxPolygon([bbox[0], bbox[2], bbox[1], bbox[3]]), {
+            name: product.name + " - " + product.productName,
+            type: ToggleableLayerType.PRODUCT,
+            id: product.id
+          }));
+        });
+      });
+    }
+
+    (<any>this.map.getSource("items")).setData(featureCollection(features));
+  }
+
+  handleCollectionChange(collection: StacCollection): void {
+
+    if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
+
+      // Setup the bbox information
+      for (let i = 1; i < collection.links.length; i++) {
+        collection.links[i].bbox = collection.extent.spatial.bbox[i];
+        collection.links[i].id = uuid();
+      }
+
+      // Setup the map layer
+      const collectionBbox: any = collection.extent.spatial.bbox[0];
+
+      // Update the collection layer
+      (<any>this.map.getSource("collection")).setData(featureCollection([bboxPolygon(collectionBbox)]));
+
+      this.map.fitBounds(collectionBbox);
+    }
+    else {
+      (<any>this.map.getSource("collection")).setData(featureCollection([]));
+    }
+
+    this.collection = collection;
+
+    this.buildItemsLayer();
+  }
+
+  handleProductsChange(views: CollectionProductView[]): void {
+
+    this.views = views;
+
+    this.buildItemsLayer();
+  }
+
+  handleMapDem(product: Product): void {
+    product.demMapped = !product.demMapped;
+
+    this.handleProductAsset(product, 'DEM_DSM', product.demMapped);
+  }
+
+  handleMapOrtho(product: Product): void {
+    product.orthoMapped = !product.orthoMapped;
+
+    this.handleProductAsset(product, 'ORTHO', product.orthoMapped);
+  }
+
+  handleProductAsset(product: Product, classification: string, mapIt: boolean): void {
+    const id = product.id + '-' + classification;
+
+    if (mapIt) {
+
+      // Create the map layer from the StacItem
+      const index = this.mapLayers.findIndex(l => l.id === id);
+
+      // The layer may already exist
+      if (index === -1) {
+        const layer: ToggleableLayer = {
+          id: id,
+          type: ToggleableLayerType.PRODUCT,
+          layerName: product.name,
+          active: true,
+          item: product,
+          asset: product.layers.find(l => l.classification === classification)
+        };
+
+        this.mapLayers.push(layer);
+
+        this.showToggleableLayer(layer);
+      }
+
+      if (product.boundingBox != null) {
+        let bbox = product.boundingBox;
+
+        let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+        this.map.fitBounds(bounds, { padding: 50 });
+      }
+    }
+    else {
+      const index = this.mapLayers.findIndex(l => l.id === id);
+
+      if (index !== -1) {
+        this.handleRemoveToggleableLayer(this.mapLayers[index])
+      }
+    }
+  }
+
+
+  handleToggleMapItem(item: StacItem): void {
+    if (item.enabled) {
+
+      // Create the map layer from the StacItem
+      const layer: ToggleableLayer = {
+        id: item.id,
+        type: ToggleableLayerType.KNOWSTAC,
+        layerName: item.properties.title,
+        active: true,
+        item: item
+      };
+
+      this.mapLayers.push(layer);
+
+      this.showToggleableLayer(layer);
+    }
+    else {
+      const index = this.mapLayers.findIndex(l => l.id === item.id);
+
+      if (index !== -1) {
+        this.handleRemoveToggleableLayer(this.mapLayers[index])
+      }
+    }
+  }
+
+  handleViewExtent(link: StacLink): void {
+    if (link.bbox != null) {
+      this.map.fitBounds(<any>link.bbox);
+    }
+  }
+
+  handleGotoExtent(layer: ToggleableLayer): void {
+    if (layer.type === ToggleableLayerType.KNOWSTAC) {
+      this.map.fitBounds(<any>layer.item.bbox);
+    }
+    else if (layer.type === ToggleableLayerType.PRODUCT) {
+      const product: Product = layer.item;
+
+      if (product.boundingBox != null) {
+        let bbox = product.boundingBox;
+
+        let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+        this.map.fitBounds(bounds, { padding: 50 });
+      }
+
+    }
+  }
+
+  handleLayerVisibilityChange(layer: ToggleableLayer): void {
+    if (layer.active) {
+      this.showToggleableLayer(layer);
+    }
+    else {
+      this.hideToggleableLayer(layer);
+    }
+  }
+
+  handleRemoveToggleableLayer(layer: ToggleableLayer): void {
+
+    if (layer.active) {
+      this.hideToggleableLayer(layer);
+    }
+
+    this.mapLayers = this.mapLayers.filter(f => f.id !== layer.id);
+  }
+
+  handleToggleToggleableLayer(layer: ToggleableLayer): void {
+    layer.active = !layer.active;
+
+    if (layer.active) {
+      this.showToggleableLayer(layer);
+    }
+    else {
+      this.hideToggleableLayer(layer);
+    }
+  }
+
+  showToggleableLayer(layer: ToggleableLayer): void {
+
+    if (layer.type === ToggleableLayerType.STAC) {
+
+      layer.item.items.forEach(item => {
+
+        const index = item.links.findIndex(link => link.rel === 'self');
+        const link = item.links[index];
+
+        let url = "/stac/tilejson.json";
+        url += "?url=" + encodeURIComponent(link.href);
+        url += "&assets=" + encodeURIComponent(item.asset);
+
+        this.addImageLayer({
+          classification: "ORTHO",
+          key: layer.id + '-' + item.id + '-' + item.asset,
+          isMapped: true,
+          url: url
+        });
+      });
+    }
+    else if (layer.type === ToggleableLayerType.KNOWSTAC) {
+      const item: StacItem = layer.item;
+
+      // Add the layer to the map
+      const index = item.links.findIndex(link => link.rel === 'self');
+      const link = item.links[index];
+
+      let url = "/stac/tilejson.json";
+      url += "?url=" + encodeURIComponent(link.href);
+      url += "&assets=" + encodeURIComponent(item.asset);
+
+      this.addImageLayer({
+        classification: "ORTHO",
+        key: item.id + '-' + item.asset,
+        isMapped: true,
+        url: url
+      });
+    }
+    else if (layer.type === ToggleableLayerType.PRODUCT) {
+
+      this.addImageLayer({
+        classification: layer.asset.classification,
+        key: layer.id,
+        isMapped: true,
+        url: layer.asset.url
+      });
+    }
+  }
+
+  hideToggleableLayer(layer: ToggleableLayer): void {
+    if (layer.type === ToggleableLayerType.STAC) {
+      layer.item.items.forEach(item => {
+        this.removeImageLayer(layer.id + '-' + item.id + '-' + item.asset);
+      });
+    }
+    else if (layer.type === ToggleableLayerType.KNOWSTAC) {
+      const item: StacItem = layer.item;
+
+      this.removeImageLayer(item.id + '-' + item.asset);
+    }
+    else if (layer.type === ToggleableLayerType.PRODUCT) {
+      this.removeImageLayer(layer.id);
+    }
+  }
+
+  /*
+   * Original STAC panel management
+   */
+  handleStacEdit(layer?: ToggleableLayer): void {
+
+    this.panelType = PANEL_TYPE.STAC;
+
+    if (layer != null) {
+      this.mapLayer = JSON.parse(JSON.stringify(layer));
+    }
+    else {
+      this.mapLayer = null;
+    }
+  }
+
+  handleStacConfirm(layer: ToggleableLayer): void {
+    const index = this.mapLayers.findIndex(l => l.id === layer.id);
+
+    if (index !== -1) {
+      // Remove existing image layers
+      if (this.mapLayers[index].active) {
+        this.hideToggleableLayer(this.mapLayers[index]);
+      }
+
+      this.mapLayers[index] = layer;
+    }
+    else {
+      this.mapLayers.push(layer);
+    }
+
+    if (layer.active) {
+
+      this.handleStacZoom(layer);
+
+      this.showToggleableLayer(layer);
+    }
+
+    this.panelType = PANEL_TYPE.SITE;
+    this.mapLayer = null;
+  }
+
+  handleStacZoom(layer: ToggleableLayer): void {
+
+    if (layer.type === ToggleableLayerType.STAC) {
+      const polygons = layer.item.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
+
+      // Determine the bounding box of the layer
+      const features = featureCollection(polygons);
+      const env = envelope(features);
+      const bounds = bbox(env) as [number, number, number, number];
+
+      this.map.fitBounds(bounds);
+    }
+  }
+
+  handleStacCancel(): void {
+    this.panelType = PANEL_TYPE.SITE;
+    this.mapLayer = null;
+  }
+
+  handleGetProductInfo(productId: string): void {
+    this.pService.getDetail(productId, 1, 20).then(detail => {
+      const bsModalRef = this.modalService.show(ProductModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        'class': 'product-info-modal'
+      });
+      bsModalRef.content.init(detail);
+    });
+  }
+
+  handleGetKnowStacInfo(link: StacLink): void {
+
+    ((link.item != null) ? new Promise<StacItem>(function (myResolve, myReject) {
+      myResolve(link.item);
+    }) : this.stacService.item(link.href)).then(item => {
+      link.item = item;
+
+      const bsModalRef = this.modalService.show(KnowStacModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        'class': 'product-info-modal'
+      });
+      bsModalRef.content.init(item, this.properties);
+    });
+
+
+  }
+
 }

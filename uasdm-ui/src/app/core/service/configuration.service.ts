@@ -13,11 +13,11 @@ import EnvironmentUtil from '@core/utility/environment-util';
 export class ConfigurationService {
 
     configuration: Configuration;
-    
+
     context: string;
 
     constructor(private http: HttpClient) {
-		this.context = EnvironmentUtil.getApiUrl();
+        this.context = EnvironmentUtil.getApiUrl();
     }
 
     load(): Promise<Configuration> {
@@ -39,10 +39,10 @@ export class ConfigurationService {
     isKeycloakEnabled(): boolean {
         return this.getConfiguration().uasdmKeycloakEnabled;
     }
-    
+
     isRequireKeycloakLogin(): boolean {
-		return this.getConfiguration().uasdmRequireKeycloakLogin;
-	}
+        return this.getConfiguration().uasdmRequireKeycloakLogin;
+    }
 
     getAppDisclaimer(): string {
         return this.getConfiguration().uasAppDisclaimer;
@@ -51,4 +51,9 @@ export class ConfigurationService {
     getContextPath(): string {
         return this.getConfiguration().contextPath;
     }
+
+    getKnowStacURL(): string {
+        return this.getConfiguration().knowStacUrl;
+    }
+
 }

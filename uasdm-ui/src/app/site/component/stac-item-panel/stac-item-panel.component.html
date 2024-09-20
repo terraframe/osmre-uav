@@ -20,14 +20,14 @@
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
                 <label>Start Date</label>
-                <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;"
+                <input type="date" [(ngModel)]="layer.item.startDate" name="startDate" style="width: 100%;"
                     [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
                 <label>End Date</label>
-                <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate" style="width: 100%;"
+                <input type="date" class="form-element" [(ngModel)]="layer.item.endDate" name="endDate" style="width: 100%;"
                     [disabled]="readonly" />
             </div>
         </div>
@@ -48,7 +48,7 @@
                 <label>Filters</label>
             </div>
         </div>
-        <ng-container *ngFor="let filter of layer.filters">
+        <ng-container *ngFor="let filter of layer.item.filters">
             <div *ngIf="filter.field !== 'datetime'" class="row">
                 <div class="col-md-12">
                     {{filter.label}} contains {{filter.value}}
@@ -137,7 +137,7 @@
                 </button>
 
                 <button *ngIf="viewMode !== 0" type="button btn btn-primary"
-                    [disabled]="form.invalid || layer.items.length === 0" class="btn btn-primary"
+                    [disabled]="form.invalid || layer.item.items.length === 0" class="btn btn-primary"
                     (click)="handleSubmit()">
                     <i class="icon-upload icon-white"></i>
                     {{readonly ? 'Modify layer' : 'Create layer'}}

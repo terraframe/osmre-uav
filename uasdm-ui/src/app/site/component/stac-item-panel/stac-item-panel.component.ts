@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { v4 as uuid } from "uuid";
 
 import { ManagementService } from '@site/service/management.service';
-import { Criteria, Filter, StacItem, StacLayer } from '@site/model/layer';
+import { Criteria, Filter, StacItem, StacLayer, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
 import { LngLatBounds } from 'mapbox-gl';
 import EnvironmentUtil from '@core/utility/environment-util';
@@ -19,11 +19,11 @@ const enum VIEW_MODE {
 }
 
 @Component({
-	selector: 'layer-panel',
-	templateUrl: './layer-panel.component.html',
+	selector: 'stac-item-panel',
+	templateUrl: './stac-item-panel.component.html',
 	styleUrls: []
 })
-export class LayerPanelComponent implements OnInit, OnDestroy {
+export class StacItemPanelComponent implements OnInit, OnDestroy {
 
 	/* 
 	 * Datasource to get search responses
@@ -35,11 +35,11 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	 */
 	search: string = "";
 
-	@Output() confirm: EventEmitter<StacLayer> = new EventEmitter<StacLayer>();
+	@Output() confirm: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
 
 	@Output() cancel: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() layer: StacLayer;
+	@Input() layer: ToggleableLayer;
 
 	@Input() bounds: LngLatBounds = null;
 
@@ -73,12 +73,15 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 		if (this.layer == null) {
 			this.layer = {
 				id: uuid(),
+				type: ToggleableLayerType.STAC,
 				layerName: "",
-				startDate: "",
-				endDate: "",
-				filters: [],
-				items: [],
-				active: true
+				active: true,
+				item: {
+					startDate: "",
+					endDate: "",
+					filters: [],
+					items: [],
+				}
 			}
 		}
 	}
@@ -88,21 +91,21 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	}
 
 	getFilters(): Filter[] {
-		const filters = [...this.layer.filters];
+		const filters = [...this.layer.item.filters];
 
-		if (this.layer.startDate.length > 0 || this.layer.endDate.length > 0) {
+		if (this.layer.item.startDate.length > 0 || this.layer.item.endDate.length > 0) {
 			const filter: Filter = {
 				id: uuid(),
 				label: "Date",
 				field: "datetime",
 			};
 
-			if (this.layer.startDate.length > 0) {
-				filter.startDate = this.layer.startDate;
+			if (this.layer.item.startDate.length > 0) {
+				filter.startDate = this.layer.item.startDate;
 			}
 
-			if (this.layer.endDate.length > 0) {
-				filter.endDate = this.layer.endDate;
+			if (this.layer.item.endDate.length > 0) {
+				filter.endDate = this.layer.item.endDate;
 			}
 
 			filters.push(filter);
@@ -112,7 +115,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	}
 
 	handleClick($event: any): void {
-		this.layer.filters.push({
+		this.layer.item.filters.push({
 			id: uuid(),
 			label: $event.item.label,
 			field: $event.item.key,
@@ -123,7 +126,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	}
 
 	handleRemove(filter: Filter): void {
-		this.layer.filters = this.layer.filters.filter(f => f.id !== filter.id);
+		this.layer.item.filters = this.layer.item.filters.filter(f => f.id !== filter.id);
 	}
 
 	onPageChange(pageNumber: number): void {
@@ -150,7 +153,7 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 
 			// Replace any incoming stac item with the existing definition
 			// if that stac item has already been selected
-			this.layer.items.forEach(item => {
+			this.layer.item.items.forEach(item => {
 				const index = this.page.resultSet.findIndex(i => item.id === i.id);
 
 				if (index !== -1) {
@@ -186,13 +189,13 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 	handleToggleItem(item: StacItem): void {
 		item.enabled = !item.enabled;
 
-		const index = this.layer.items.findIndex(i => i.id === item.id);
+		const index = this.layer.item.items.findIndex(i => i.id === item.id);
 
 		if (index === -1 && item.enabled) {
-			this.layer.items.push(item);
+			this.layer.item.items.push(item);
 		}
 		else if (index !== -1 && !item.enabled) {
-			this.layer.items = this.layer.items.filter(f => f.id !== item.id);
+			this.layer.item.items = this.layer.item.items.filter(f => f.id !== item.id);
 		}
 	}
 

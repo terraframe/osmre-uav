@@ -885,7 +885,6 @@ public class Product extends ProductBase implements ProductIF
     properties.setTitle(component.getName());
     properties.setCollection(component.getName());
     properties.setDescription(component.getDescription());
-    properties.setUpdated(this.getLastUpdateDate());
 
     ancestors.stream().filter(a -> a instanceof Site).map(a -> (Site) a).findFirst().ifPresent(site -> {
 

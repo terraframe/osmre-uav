@@ -184,24 +184,6 @@ public class StacItem implements JSONSerializable
     private String                 description;
 
     @JsonInclude(Include.NON_NULL)
-    @JsonProperty("start_datetime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date                   startDateTime;
-
-    @JsonInclude(Include.NON_NULL)
-    @JsonProperty("end_datetime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date                   endDateTime;
-
-    @JsonInclude(Include.NON_NULL)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date                   created;
-
-    @JsonInclude(Include.NON_NULL)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date                   updated;
-
-    @JsonInclude(Include.NON_NULL)
     private String                 platform;
 
     @JsonInclude(Include.NON_NULL)
@@ -257,46 +239,6 @@ public class StacItem implements JSONSerializable
     public void setDescription(String description)
     {
       this.description = description;
-    }
-
-    public Date getStartDateTime()
-    {
-      return startDateTime;
-    }
-
-    public void setStartDateTime(Date startDateTime)
-    {
-      this.startDateTime = startDateTime;
-    }
-
-    public Date getEndDateTime()
-    {
-      return endDateTime;
-    }
-
-    public void setEndDateTime(Date endDateTime)
-    {
-      this.endDateTime = endDateTime;
-    }
-
-    public Date getCreated()
-    {
-      return created;
-    }
-
-    public void setCreated(Date created)
-    {
-      this.created = created;
-    }
-
-    public Date getUpdated()
-    {
-      return updated;
-    }
-
-    public void setUpdated(Date updated)
-    {
-      this.updated = updated;
     }
 
     public String getPlatform()

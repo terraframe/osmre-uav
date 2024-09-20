@@ -1,0 +1,82 @@
+<ng-container>
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="btn-holder" style="text-align: right;padding: 0 10px 10px 0;">
+                <button type="button" (click)="handleClose()" class="btn btn-default" role="button"
+                    aria-disabled="false" style="padding: 4px 18px;">
+                    <span class="ui-button-text">Close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
+            <div class="list-group">
+                <ng-container *ngFor="let layer of layers">
+                    <div class="list-group-item">
+                        <div class="card card-default">
+                            <div class="card-body">
+                                <!-- Know STAC Layer-->
+                                <ng-container *ngIf="layer.type === 2">
+                                    <h5 class="card-title" style="color:#a0a0a0">
+                                        {{layer.layerName}}
+                                    </h5>
+
+                                    <span class="thumbnail">
+                                        <img style="max-height: 110px"
+                                            [src]="layer.item.thumbnail != null ? layer.item.thumbnail : (context + '/assets/thumbnail-default.png')"
+                                            alt="Image">
+                                    </span>
+                                </ng-container>
+
+                                <!-- Product Layer-->
+                                <ng-container *ngIf="layer.type === 1">
+
+                                    <h5 class="card-title" style="color:#a0a0a0">
+                                        {{layer.layerName}} - {{layer.asset.classification}}
+                                    </h5>
+
+                                    <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
+                                        <li *ngFor="let entity of layer.item.entities">
+                                            <span> {{entity.name}} </span>
+                                        </li>
+                                    </ul>
+
+                                    <span class="thumbnail" *ngIf="thumbnails[layer.id] != null">
+                                        <img style="max-height: 110px" class="" [src]="thumbnails[layer.id] | safeHtml"
+                                            (error)="getDefaultImgURL($event)" alt="Image">
+                                    </span>
+                                </ng-container>
+
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <a class="fa fa-eye" (click)="handleToggleVisibility(layer)">
+                                            {{layer.active ? 'Hide' : 'Show'}}
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <a class="fa fa-glasses" (click)="handleGotoExtent(layer)">
+                                            Zoom
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <a class="fa fa-trash-alt" (click)="handleRemoveLayer(layer)">
+                                            Remove
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(layer)"
+                                            title="View more information layer.">Get Info</a>
+                                    </div>                                    
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-container>
