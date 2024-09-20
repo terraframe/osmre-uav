@@ -1,0 +1,95 @@
+<div class="modal-body" style="padding-bottom: 0;">
+
+    <div *ngIf="item != null">
+        <div>
+            <h3 style="color:#a0a0a0">
+                {{item.properties.title}}
+            </h3>
+            <ng-container>
+
+                <div>
+                    <span class="thumbnail">
+                        <img style="max-height: 110px"
+                            [src]="item.thumbnail != null ? item.thumbnail : (context + '/assets/thumbnail-default.png')"
+                            alt="Image">
+                    </span>
+                </div>
+                <!--
+    <div class="card-right" style="width: 13em;">
+        <ul style="list-style: none;padding: 0;">
+                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                            Asset
+                            <select [(ngModel)]="item.asset" [name]="item.id + '-asset'">
+                                <ng-container *ngFor="let asset of item.assets | keyvalue">
+                                    <option
+                                    *ngIf="asset.value.type === 'image/tiff; application=geotiff; profile=cloud-optimized'"
+                                    [value]="asset.key">
+                                    {{asset.key}}
+                                </option>
+                            </ng-container>
+                            </select>
+                        </li>
+                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                            <boolean-field [value]="item.enabled" (valueChange)="handleToggleItem(item)"
+                            label="Enabled">
+                        </boolean-field>
+                    </li>
+                </ul>
+            </div>
+            -->
+                <ng-container *ngIf="properties != null">
+                    <h4>Properties</h4>
+                    <table class="list-table table table-bordered table-striped">
+                        <tbody>
+                            <ng-container *ngFor="let field of properties">
+                                <tr *ngIf="item.properties[field.name] != null">
+                                    <td class="label-column"> {{ field.label }} </td>
+                                    <td>
+                                        <ng-container [ngSwitch]="field.type">
+                                            <ng-container *ngSwitchCase="'LOCATION'">
+                                                <ul class="list-group">
+                                                    <li *ngFor="let location of item.properties[field.name]"
+                                                        class="list-group-item">
+                                                        {{location.label}}
+                                                    </li>
+                                                </ul>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'ORGANIZATION'">
+                                                <ul class="list-group">
+                                                    <li *ngFor="let organization of item.properties[field.name]"
+                                                        class="list-group-item">
+                                                        {{organization.label}}
+                                                    </li>
+                                                </ul>
+                                            </ng-container>
+                                            <ng-container *ngSwitchDefault>
+                                                {{ item.properties[field.name] }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </ng-container>
+            </ng-container>
+
+            <h4>Assets</h4>
+            <table class="list-table table table-bordered table-striped">
+                <tbody>
+                    <tr *ngFor="let asset of item.assets | keyvalue">
+                        <td class="label-column"> {{asset.key}} </td>
+                        <td>
+                            <a [href]="asset.value.href">{{asset.value.href}}</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row footer-buttons" style="background-color: #ececec;" style="padding:20px 20px 20px 20px;">
+        <div class="col-md-12 btn-holder" style="text-align: right;">
+            <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+        </div>
+    </div>
+</div>
