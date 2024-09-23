@@ -79,6 +79,7 @@ import { KnowStacService } from './service/know-stac.service';
 import { KnowStacPanelComponent } from './component/know-stac-panel/know-stac-panel.component';
 import { ImageryPanelComponent } from './component/imagery-panel/imagery-panel.component';
 import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-modal.component';
+import { LegendPanelComponent } from './component/legend-panel/legend-panel.component';
 
 @NgModule({
 	imports: [
@@ -142,7 +143,8 @@ import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-mo
 		UserAccessModalComponent,
 		ImageryPanelComponent,
 		KnowStacPanelComponent,
-		KnowStacModalComponent
+		KnowStacModalComponent,
+		LegendPanelComponent
 	],
 	providers: [
 		CanDeactivateGuardService,

@@ -412,8 +412,9 @@
         <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
           style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
-          <imagery-panel [layers]="mapLayers" [properties]="properties" (close)="handleStacCancel()" (onGotoExtent)="handleGotoExtent($event)"
-            (onVisibilityChange)="handleLayerVisibilityChange($event)" (onRemove)="handleRemoveToggleableLayer($event)">
+          <imagery-panel [layers]="mapLayers" [properties]="properties" (close)="handleStacCancel()"
+            (onGotoExtent)="handleGotoExtent($event)" (onVisibilityChange)="handleLayerVisibilityChange($event)"
+            (onRemove)="handleRemoveToggleableLayer($event)">
           </imagery-panel>
 
         </div>
@@ -518,20 +519,27 @@
         </article>
 
         <article class="geoplatform-map-button">
-          <div style="background:#fff;padding:8px;border-radius:4px;">
-            <a class="fa fa-search" (click)="panelType = 3" title="Search GeoPlatform"></a>
+          <div [style]="panelType === 3 ? 'background:#000;': 'background:#fff;'"
+            style="padding:8px;border-radius:4px;">
+            <a class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}" (click)="panelType = 3"
+              title="Search GeoPlatform"></a>
           </div>
         </article>
 
         <article class="imagery-map-button">
-          <div style="background:#fff;padding:8px;border-radius:4px;">
+          <div [style]="panelType === 4 ? 'background:#000;': 'background:#fff;'"
+            style="padding:8px;border-radius:4px;">
             <a (click)="panelType = 4">
               <span class="fa-stack">
-                <i class="fa fa-globe fa-stack-1x" style="margin: 0px;"></i>
+                <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}" style="margin: 0px;"></i>
                 <span class="badge">{{mapLayers.length}}</span>
               </span>
             </a>
           </div>
+        </article>
+
+        <article class="legend-map-button">
+          <legend-panel [collection]="collection" [views]="views"></legend-panel>
         </article>
 
 

@@ -1,0 +1,44 @@
+<div style="background:#fff; padding:8px;border-radius:4px; cursor: pointer" (click)="handleClick()">
+    <ng-container *ngIf="!open">
+        <i class="fa fa-map" style="margin: 2px;"></i>
+    </ng-container>
+    <ng-container *ngIf="open">
+        <h4>Legend</h4>
+        <hr />
+        <ul class="list-group" style="min-width: 200px;">
+            <li class="list-group-item" style="padding:5px;">
+                <div class="row">
+                    <div class="col-md-8">
+                        Site
+                    </div>
+                    <div class="col-md-4">
+                        <span class="legend-dot" [style]="'background:' + LayerColor.SITE +';'"></span>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item" style="padding:5px;" *ngIf="collection != null">
+                <div class="row">
+                    <div class="col-md-8">
+                        GeoPlatform
+                    </div>
+                    <div class="col-md-4">
+                    <span class="legend-dot" [style]="'background:' + LayerColor.KNOWSTAC +';'"></span>
+                    </div>
+                </div>
+
+            </li>
+            <li class="list-group-item" style="padding:5px;" *ngIf="views != null && views.length > 0">
+                <div class="row">
+                    <div class="col-md-8">
+                        Product
+                    </div>
+                    <div class="col-md-4">
+                        <span class="legend-dot" [style]="'background:' + LayerColor.PRODUCT +';'"></span>
+                    </div>
+                </div>
+
+            </li>
+        </ul>
+    </ng-container>
+
+</div>
