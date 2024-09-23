@@ -50,7 +50,7 @@
                                             <li style="padding: 3px 0 3px 0; min-width:6em;">
                                                 Asset
                                                 <select [(ngModel)]="result.item.asset"
-                                                    [name]="result.item.id + '-asset'">
+                                                    [name]="result.item.id + '-asset'" [disabled]="result.item.enabled">
                                                     <ng-container *ngFor="let asset of result.item.assets | keyvalue">
                                                         <option
                                                             *ngIf="asset.value.type === 'image/tiff; application=geotiff; profile=cloud-optimized'"
@@ -62,7 +62,8 @@
                                             </li>
                                             <li style="padding: 3px 0 3px 0; min-width:6em;">
                                                 <boolean-field [value]="result.item.enabled"
-                                                    (valueChange)="handleToggleItem(result.item)" label="Enabled">
+                                                    (valueChange)="handleToggleItem(result.item)"
+                                                    [disabled]="result.item.asset == null || result.item.asset == ''" label="Enabled">
                                                 </boolean-field>
                                             </li>
                                         </ul>

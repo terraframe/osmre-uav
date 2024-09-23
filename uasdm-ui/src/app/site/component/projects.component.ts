@@ -661,6 +661,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addImageLayer(layer);
       }
     });
+
+    // Reload the item layers
+    this.handleCollectionChange(this.collection);
   }
 
   handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
@@ -2153,6 +2156,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     ((link.item != null) ? new Promise<StacItem>(function (myResolve, myReject) {
       myResolve(link.item);
     }) : this.stacService.item(link.href)).then(item => {
+      if (item.assets.thumbnail != null) {
+        item.thumbnail = item.assets.thumbnail.href;
+      }
+      else if (item.assets['thumbnail-hd'] != null) {
+        item.thumbnail = item.assets['thumbnail-hd'].href;
+      }
+
       link.item = item;
 
       const bsModalRef = this.modalService.show(KnowStacModalComponent, {
