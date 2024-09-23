@@ -48,8 +48,10 @@ COPY . /opt/uasdm-clusterlidar
 
 ##ENTRYPOINT ["conda", "run", "-n", "silvimetric", "/bin/bash", "-c", "silvimetric", "-d", "autzen", "--scheduler", "distributed", "--dasktype", "ec2", "--threads", "4", "--workers", "4", "--watch", "shatter", "--date", "2018-12-01","autzen.copc.lazvim"]
 
-ENTRYPOINT ["conda", "run", "-n", "silvimetric", "/bin/bash", "-c"]
+#ENTRYPOINT ["conda", "run", "-n", "silvimetric", "/bin/bash", "-c"]
 
-CMD ["python autoscale.py"]
+#CMD ["python autoscale.py"]
 
 ##ENTRYPOINT ["python", "autoscale.py"]
+
+ENTRYPOINT ["tini", "-g", "--", "/usr/bin/prepare.sh"]
