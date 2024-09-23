@@ -150,7 +150,8 @@ def autoscale():
         # Cluster manager specific config kwargs
         security=False,
         docker_image="daskdev/dask@sha256:6a66c4a42ed84bb2fa4866876a7b59f8e355d434e63682d2ccb0295938fbccbd",
-        env_vars={"AWS_REGION": "us-west-2", "DEFAULT_AWS_REGION": "us-west-2" }
+        env_vars={"AWS_REGION": "us-west-2", "DEFAULT_AWS_REGION": "us-west-2" },
+        
     )
 
     client = Client(cluster)
