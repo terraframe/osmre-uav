@@ -149,7 +149,7 @@ def autoscale():
     cluster = EC2Cluster(
         # Cluster manager specific config kwargs
         security=False,
-        docker_image="daskdev/dask@sha256:6a66c4a42ed84bb2fa4866876a7b59f8e355d434e63682d2ccb0295938fbccbd",
+        docker_image="813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-clusterlidar-worker:latest",
         env_vars={"AWS_REGION": "us-west-2", "DEFAULT_AWS_REGION": "us-west-2" },
         
     )
