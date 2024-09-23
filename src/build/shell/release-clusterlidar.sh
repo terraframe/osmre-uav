@@ -20,7 +20,6 @@ set -e
 [ -z "$UASDM_ECR_KEY" ] && echo "UASDM_ECR_KEY is null. Set this environment variable and then try running this script again." && exit 1;
 [ -z "$UASDM_ECR_SECRET" ] && echo "UASDM_ECR_SECRET is null. Set this environment variable and then try running this script again." && exit 1;
 
-cd $WORKSPACE/uasdm/uasdm-clusterlidar
-sh -xe ./init.sh
+cd $WORKSPACE/uasdm/uasdm-clusterlidar/worker
 sh -xe ./build.sh
 sudo -E sh -xe ./deploy.sh
