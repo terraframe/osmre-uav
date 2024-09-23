@@ -86,6 +86,11 @@ export enum ToggleableLayerType {
     STAC = 0, PRODUCT = 1, KNOWSTAC = 2
 }
 
+export enum LayerColor {
+    STAC = '#79E4E8', PRODUCT = '#9141AC', KNOWSTAC = '#E76EB1', SITE = '#800000'
+}
+
+
 export class ToggleableLayer {
     id: string;
     type: ToggleableLayerType;

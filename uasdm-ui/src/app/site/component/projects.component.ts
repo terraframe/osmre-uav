@@ -37,7 +37,7 @@ import { CreateStandaloneProductModalComponent } from "./modal/create-standalone
 import { UIOptions } from "fine-uploader";
 import { FineUploaderBasic } from "fine-uploader/lib/core";
 import { UploadModalComponent } from "./modal/upload-modal.component";
-import { StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
+import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
 
 import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
@@ -572,12 +572,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "circle-radius": 5,
         "circle-color": [
           "case",
-          ['==', ['get', "type"], ToggleableLayerType.KNOWSTAC], '#48b842',
-          ['==', ['get', "type"], ToggleableLayerType.PRODUCT], '#D8BB48',
-          '#79E4E8'
-        ],
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#FFFFFF"
+          ['==', ['get', "type"], ToggleableLayerType.KNOWSTAC], LayerColor.KNOWSTAC,
+          ['==', ['get', "type"], ToggleableLayerType.PRODUCT], LayerColor.PRODUCT,
+          LayerColor.STAC
+        ]
       }
     });
 
@@ -616,7 +614,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       "source": "sites",
       "paint": {
         "circle-radius": 10,
-        "circle-color": "#800000",
+        "circle-color": LayerColor.SITE,
         "circle-stroke-width": 2,
         "circle-stroke-color": "#FFFFFF"
       }

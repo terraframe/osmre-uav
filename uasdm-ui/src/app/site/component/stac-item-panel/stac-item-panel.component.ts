@@ -7,10 +7,9 @@ import { Observable } from 'rxjs';
 import { v4 as uuid } from "uuid";
 
 import { ManagementService } from '@site/service/management.service';
-import { Criteria, Filter, StacItem, StacLayer, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
+import { Criteria, Filter, StacItem, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
 import { LngLatBounds } from 'mapbox-gl';
-import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 
 const enum VIEW_MODE {

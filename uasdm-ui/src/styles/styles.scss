@@ -54,7 +54,7 @@ body {
 
 .geoplatform-map-button {
   position: absolute;
-  top: 10px;
+  top: 70px;
   left: 10px;
   z-index: 2;
   padding: 5px;
@@ -62,10 +62,33 @@ body {
 
 .imagery-map-button {
   position: absolute;
-  top: 70px;
+  top: 10px;
   left: 10px;
   z-index: 2;
   padding: 5px;
+}
+
+.legend-map-button {
+  position: absolute;
+  top: 130px;
+  left: 10px;
+  z-index: 2;
+  padding: 5px;
+}
+
+.legend-dot {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-icon {
+  background-image: url(../assets/map-legend-o-svgrepo-com.svg);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 20px;
 }
 
 .badge{
