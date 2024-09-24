@@ -572,6 +572,7 @@ public class ElasticSearchIndex implements Index
     if (item.isPublished())
     {
       KnowStacBusinessService service = ApplicationContextHolder.getBean(KnowStacBusinessService.class);
+//      service.remove(item.getId());
       service.put(item);
     }
 

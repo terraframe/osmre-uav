@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -56,9 +56,9 @@ public class AppProperties
       return getInstance().props;
     }
   }
-  
+
   public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
-  
+
   public static String getCogValidatorCommand()
   {
     return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
@@ -68,16 +68,17 @@ public class AppProperties
   {
     return Singleton.getProps().getString("titiler.url");
   }
-  
+
   public static Boolean getExposePublicTileEndpoints()
   {
     return Singleton.getProps().getBoolean("titiler.public.expose", true);
   }
-  
+
   public static String getBucketName()
   {
     return Singleton.getProps().getString("bucket.name");
   }
+
   public static String getPublicBucketName()
   {
     return Singleton.getProps().getString("bucket.public.name");
@@ -142,12 +143,12 @@ public class AppProperties
   {
     return Singleton.getProps().getBoolean("keycloak.enabled", false);
   }
-  
+
   public static Boolean requireKeycloakLogin()
   {
     return Singleton.getProps().getBoolean("keycloak.requireKeycloakLogin", false);
   }
-  
+
   public static Boolean IsKeycloakNg2Dev()
   {
     return Singleton.getProps().getBoolean("keycloak.ng2dev", false);
@@ -168,24 +169,24 @@ public class AppProperties
   public static File getTempDirectory()
   {
     File temp = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("temp.dir", "temp"));
-    
+
     if (!temp.exists())
     {
       temp.mkdir();
     }
-    
+
     return temp;
   }
 
   public static File getUploadDirectory()
   {
     File upload = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("upload.dir", "upload"));
-    
+
     if (!upload.exists())
     {
       upload.mkdir();
     }
-    
+
     return upload;
   }
 
@@ -287,9 +288,14 @@ public class AppProperties
   {
     return Singleton.getProps().getString("potree.converter.bin");
   }
-  
+
+  public static Boolean isKnowStacEnabled()
+  {
+    return Singleton.getProps().getBoolean("knowstac.enabled", true);
+  }
+
   public static String getKnowStacUrl()
   {
-    return Singleton.getProps().getString("knowstac.url", "https://localhost:8444/know-stac");
+    return Singleton.getProps().getString("knowstac.url", "https://localhost:8444/");
   }
 }

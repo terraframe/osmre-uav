@@ -1353,6 +1353,7 @@ public class ProjectManagementService
     config.put("uasdmKeycloakEnabled", AppProperties.isKeycloakEnabled());
     config.put("uasdmRequireKeycloakLogin", AppProperties.requireKeycloakLogin());
     config.put("uasAppDisclaimer", AppProperties.getAppDisclaimer());
+    config.put("knowStacUrl", AppProperties.getKnowStacUrl());
     config.put("localization", new JSONObject(new LocalizationService().getAllView()));
 
     return config;

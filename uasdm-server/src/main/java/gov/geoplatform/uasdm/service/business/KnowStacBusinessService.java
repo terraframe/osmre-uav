@@ -1,6 +1,5 @@
 package gov.geoplatform.uasdm.service.business;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -8,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.odm.HTTPConnector;
-import gov.geoplatform.uasdm.odm.Response;
-import gov.geoplatform.uasdm.remote.KnowStacNoopResponse;
 import gov.geoplatform.uasdm.remote.KnowStacResponse;
-import gov.geoplatform.uasdm.remote.KnowStacResponseIF;
 
 @Service
 public class KnowStacBusinessService
@@ -31,38 +30,66 @@ public class KnowStacBusinessService
     this.connector.setServerUrl(AppProperties.getKnowStacUrl());
   }
 
-  public KnowStacResponseIF put(StacItem item)
+  private void processRespose(KnowStacResponse resp)
   {
-    try
+    if (resp.hasError())
     {
-      ObjectMapper mapper = new ObjectMapper();
-      String json = mapper.writeValueAsString(item);
+      String message = resp.getError();
 
-      Response resp = connector.httpPost("api/item/put", json);
-
-      return new KnowStacResponse(resp);
+      GenericException ex = new GenericException();
+      ex.setUserMessage(message);
+      throw ex;
     }
-    catch (RuntimeException | IOException e)
-    {
-      logger.error("Unable to upload stac item to know stac server", e);
-    }
-    return new KnowStacNoopResponse();
   }
 
-  public KnowStacResponseIF remove(String id)
+  public void put(StacItem item)
   {
-    try
+    if (AppProperties.isKnowStacEnabled())
     {
-      Response resp = connector.httpPost("api/item/remove", Arrays.asList(new BasicNameValuePair("id", id)));
 
-      return new KnowStacResponse(resp);
+      try
+      {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(item);
+
+        this.processRespose(new KnowStacResponse(connector.httpPost("api/item/put", json)));
+      }
+      catch (GenericException e)
+      {
+        throw e;
+      }
+      catch (JsonProcessingException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+      catch (RuntimeException e)
+      {
+        GenericException ex = new GenericException(e);
+        ex.setUserMessage("A problem occurred while communicating with the KnowSTAC server. Please try your request again.");
+        throw ex;
+      }
     }
-    catch (RuntimeException e)
+  }
+
+  public void remove(String id)
+  {
+    if (AppProperties.isKnowStacEnabled())
     {
-      logger.error("Unable to remove stac item to know stac server", e);
+      try
+      {
+        processRespose(new KnowStacResponse(connector.httpPost("api/item/remove", Arrays.asList(new BasicNameValuePair("id", id)))));
+      }
+      catch (GenericException e)
+      {
+        throw e;
+      }
+      catch (RuntimeException e)
+      {
+        GenericException ex = new GenericException(e);
+        ex.setUserMessage("A problem occurred while communicating with the KnowSTAC server. Please try your request again.");
+        throw ex;
+      }
     }
-
-    return new KnowStacNoopResponse();
   }
 
 }

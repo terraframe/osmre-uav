@@ -28,7 +28,7 @@ public class KnowStacResponse implements KnowStacResponseIF
 
   public boolean hasError()
   {
-    return http.isJSONObject() && http.getJSONObject().has("error");
+    return http.getStatusCode() != 200;
   }
 
   public Response getHTTPResponse()
@@ -38,6 +38,13 @@ public class KnowStacResponse implements KnowStacResponseIF
 
   public String getError()
   {
-    return http.getJSONObject().getString("error");
+    // Give the server error message if one exists
+    if (http.isJSONObject() && http.getJSONObject().has("localizedMessage"))
+    {
+      return http.getJSONObject().getString("localizedMessage");
+    }
+
+    // Otherwise give a generic exception
+    return "A problem occurred while communicating with the KnowSTAC server. Please try your request again later.";
   }
 }
