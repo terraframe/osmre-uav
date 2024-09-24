@@ -107,52 +107,55 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     ODMProcessConfiguration configuration = ODMProcessConfiguration.parse(parser);
 
-    File newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration);
-
-    if (newArchive == null)
+    try (CloseableFile newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration))
     {
-      return null;
-    }
-    else
-    {
+      if (newArchive == null)
+      {
+        return null;
+      }
+      
       FileUtils.deleteQuietly(archive);
       archive = newArchive;
-    }
-
-    try
-    {
-
-      VaultFile vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
-      Boolean processUpload = parser.getProcessUpload();
-
-      ImageryProcessingJob job = new ImageryProcessingJob();
-      job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
-      job.setWorkflowTask(task);
-      job.setImageryFile(vfImageryZip.getOid());
-      job.setUploadTarget(task.getUploadTarget());
-      job.setProcessUpload(processUpload);
-      job.setConfiguration(configuration);
-      job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
-      job.apply();
-
-      JobHistory history = job.start();
-
-      return history;
-    }
-    catch (Throwable t)
-    {
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
-      task.apply();
       
-      t.printStackTrace();
-
-      logger.error("An error occurred while uploading the imagery to S3.", t);
-
-      if (Session.getCurrentSession() != null)
+      VaultFile vfImageryZip = null;
+  
+      try
       {
-        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+  
+        vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
+        Boolean processUpload = parser.getProcessUpload();
+  
+        ImageryProcessingJob job = new ImageryProcessingJob();
+        job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
+        job.setWorkflowTask(task);
+        job.setImageryFile(vfImageryZip.getOid());
+        job.setUploadTarget(task.getUploadTarget());
+        job.setProcessUpload(processUpload);
+        job.setConfiguration(configuration);
+        job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
+        job.apply();
+  
+        JobHistory history = job.start();
+  
+        return history;
+      }
+      catch (Throwable t)
+      {
+        try { vfImageryZip.delete(); } catch(Throwable t2) {}
+        
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
+        task.apply();
+        
+        t.printStackTrace();
+  
+        logger.error("An error occurred while uploading the imagery to S3.", t);
+  
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
       }
     }
 
@@ -487,7 +490,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     AbstractWorkflowTask task = this.getWorkflowTask();
-
+    
     try
     {
       if (task instanceof ImageryWorkflowTask)
