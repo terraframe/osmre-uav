@@ -45,6 +45,6 @@ public class KnowStacResponse implements KnowStacResponseIF
     }
 
     // Otherwise give a generic exception
-    return "A problem occurred while communicating with the KnowSTAC server. Please try your request again later.";
+    return "A problem occurred while communicating with the GeoPlatform server. Please try your request again later.";
   }
 }

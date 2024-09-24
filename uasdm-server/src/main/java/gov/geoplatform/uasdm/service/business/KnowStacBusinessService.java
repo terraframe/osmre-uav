@@ -82,7 +82,7 @@ public class KnowStacBusinessService
 
         if (session != null)
         {
-          JSONObject content = NotificationMessage.content("text", "There was a problem publishing the product to KnowSTAC. If you want this product to be available on KnowSTAC please republish the product later.");
+          JSONObject content = NotificationMessage.content("text", "There was a problem publishing the product to GeoPlatform. If you want this product to be available on GeoPlatform please republish the product later.");
 
           NotificationFacade.queue(new UserNotificationMessage(session, MessageType.NOTIFICATION, content));
         }
@@ -116,7 +116,7 @@ public class KnowStacBusinessService
 
         if (session != null)
         {
-          JSONObject content = NotificationMessage.content("text", "There was a problem removing the product from KnowSTAC.");
+          JSONObject content = NotificationMessage.content("text", "There was a problem removing the product from GeoPlatform.");
 
           NotificationFacade.queue(new UserNotificationMessage(session, MessageType.NOTIFICATION, content));
         }
