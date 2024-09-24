@@ -245,6 +245,11 @@ export class Action {
 	description: string;
 }
 
+export class Notification {
+	text: string;
+}
+
+
 export class Task {
 	oid: string;
 	label: string;

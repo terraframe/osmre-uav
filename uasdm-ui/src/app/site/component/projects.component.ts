@@ -173,6 +173,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   tasks: Task[] = [];
 
+  notifications: { text: string }[] = [];
+
   existingTask: {
     task: Task,
     filename: string
@@ -293,6 +295,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notifier.subscribe(message => {
       if (message.type === "UPLOAD_JOB_CHANGE") {
         this.tasks.push(message.content);
+      }
+      if (message.type === "NOTIFICATION") {
+        this.notifications.push(message.content);
       }
     });
 

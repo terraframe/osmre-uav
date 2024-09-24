@@ -452,6 +452,13 @@
               <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}.
             </alert>
           </div>
+
+          <div class="idm-toast" *ngFor="let notification of notifications; let idx = index">
+            <alert type="warning" [dismissible]="true" (onClosed)="notifications.splice(idx, 1)">
+              {{notification.text}}
+            </alert>
+          </div>
+
         </article>
 
 
