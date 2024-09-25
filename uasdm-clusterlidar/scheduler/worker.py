@@ -145,6 +145,8 @@ def localTasks():
     ex()
     uploadToS3()
 
+# TODO : Might be able to use user_data to log into a remote ecr
+
 def autoscale():
     cluster = EC2Cluster(
         # Cluster manager specific config kwargs
